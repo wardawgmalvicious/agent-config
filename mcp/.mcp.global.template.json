@@ -29,21 +29,54 @@
                 "all"
             ]
         },
-        "azure-mcp": {
-            "type": "stdio",
-            "command": "cmd",
-            "args": [
-                "/c",
-                "npx",
-                "-y",
-                "@azure/mcp@latest",
-                "server",
-                "start"
-            ]
-        },
         "microsoft-learn-mcp": {
             "type": "http",
             "url": "https://learn.microsoft.com/api/mcp"
+        },
+        "github-mcp": {
+            "command": "docker",
+            "args": [
+                "mcp",
+                "gateway",
+                "run",
+                "--servers",
+                "github-official"
+            ],
+            "env": {
+                "LOCALAPPDATA": "C:\\Users\\<USER>\\AppData\\Local",
+                "ProgramData": "C:\\ProgramData",
+                "ProgramFiles": "C:\\Program Files"
+            }
+        },
+        "azure-mcp": {
+            "command": "docker",
+            "args": [
+                "mcp",
+                "gateway",
+                "run",
+                "--servers",
+                "azure"
+            ],
+            "env": {
+                "LOCALAPPDATA": "C:\\Users\\<USER>\\AppData\\Local",
+                "ProgramData": "C:\\ProgramData",
+                "ProgramFiles": "C:\\Program Files"
+            }
+        },
+        "dockerhub-mcp": {
+            "command": "docker",
+            "args": [
+                "mcp",
+                "gateway",
+                "run",
+                "--servers",
+                "dockerhub"
+            ],
+            "env": {
+                "LOCALAPPDATA": "C:\\Users\\<USER>\\AppData\\Local",
+                "ProgramData": "C:\\ProgramData",
+                "ProgramFiles": "C:\\Program Files"
+            }
         }
     }
 }
