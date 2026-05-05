@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/c/Users/<USER>/.claude/hooks/log-instructions-loaded.sh'"
+            "command": "bash $HOME/.claude/hooks/log-instructions-loaded.sh"
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/c/Users/<USER>/.claude/hooks/security-reviewer-memory-scope.sh"
+            "command": "bash $HOME/.claude/hooks/security-reviewer-memory-scope.sh"
           }
         ]
       }
