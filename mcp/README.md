@@ -15,7 +15,16 @@ Claude Code supports three MCP scopes: **user** (across every project on the mac
 
 [.mcp.global.template.json](.mcp.global.template.json) is the set of MCP servers that should be available in **every** Claude Code session on this machine. It is not tied to any single repo.
 
-### Installation
+### Prerequisites
+
+Two server families ride on different runtimes:
+
+- **`npx`-based stdio servers** (`powerbi-modeling-mcp`, `microsoft-fabric-mcp`) need [Node.js](https://nodejs.org/) on `PATH`. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux drop `"cmd", "/c"` and invoke `npx` directly.
+- **Docker MCP Gateway servers** (`github-mcp`, `azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view.
+
+Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows username before merging. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
+
+### Install (user scope)
 
 Merge the `mcpServers` object from the template into the **top level** of `~/.claude.json` (on Windows: `C:\Users\<you>\.claude.json`):
 
@@ -26,8 +35,10 @@ Merge the `mcpServers` object from the template into the **top level** of `~/.cl
         "powerbi-modeling-mcp": { /* from template */ },
         "powerbi-remote-mcp":   { /* from template */ },
         "microsoft-fabric-mcp": { /* from template */ },
+        "microsoft-learn-mcp":  { /* from template */ },
+        "github-mcp":           { /* from template */ },
         "azure-mcp":            { /* from template */ },
-        "microsoft-learn-mcp":  { /* from template */ }
+        "dockerhub-mcp":        { /* from template */ }
     },
     "projects": { /* ...existing per-project local-scope entries stay here... */ }
 }
@@ -41,17 +52,17 @@ Alternatively, use the CLI (writes to the same top-level `mcpServers` key):
 claude mcp add --scope user powerbi-remote-mcp --transport http https://api.fabric.microsoft.com/v1/mcp/powerbi
 ```
 
-### What each server provides
+### Servers (user scope)
 
-| Server | Transport | Purpose |
+| Server | Runtime | Purpose |
 | --- | --- | --- |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Local Power BI Desktop / TOM operations — tables, measures, relationships, partitions, DAX query execution against an open model. |
-| `powerbi-remote-mcp`   | http  | Hosted Fabric service for Power BI — authenticates against `api.fabric.microsoft.com` and exposes workspace-scoped tools. |
+| `powerbi-remote-mcp` | http | Hosted Fabric service for Power BI — authenticates against `api.fabric.microsoft.com` and exposes workspace-scoped tools. |
 | `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. |
-| `azure-mcp`            | stdio (`npx @azure/mcp`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. |
-| `microsoft-learn-mcp`  | http  | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). |
-
-`cmd /c npx ...` is the Windows-friendly invocation; Claude Code launches `cmd.exe` which in turn resolves `npx` from `PATH`. On macOS / Linux drop `"cmd", "/c"` and invoke `npx` directly.
+| `microsoft-learn-mcp` | http | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). |
+| `github-mcp` | stdio (Docker MCP Gateway → `github-official`) | GitHub repos, issues, PRs, releases, code search; uses your local gh / GitHub credentials via the gateway. |
+| `azure-mcp` | stdio (Docker MCP Gateway → `azure`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. |
+| `dockerhub-mcp` | stdio (Docker MCP Gateway → `dockerhub`) | Docker Hub repos, tags, namespaces, search; useful for image discovery and registry housekeeping. |
 
 ---
 
@@ -59,7 +70,7 @@ claude mcp add --scope user powerbi-remote-mcp --transport http https://api.fabr
 
 [.mcp.project.template.json](.mcp.project.template.json) is the starter set for servers that only make sense inside a specific repo. Copy it to the repo root as `.mcp.json` and commit it — every collaborator who opens the repo in Claude Code will get the same MCP tools.
 
-### Installation
+### Install (project scope)
 
 1. Copy the template to the repo root:
 
@@ -76,6 +87,7 @@ claude mcp add --scope user powerbi-remote-mcp --transport http https://api.fabr
     | `<your-database>` | Initial catalog / database name. |
     | `<OrgName>` | Azure DevOps organization. |
     | `<ProjectName>` | Azure DevOps project. |
+    | `<WorkspaceId>` / `<KqlDatabaseId>` | Fabric Eventhouse identifiers for the remote KQL MCP. |
 
 3. Commit `.mcp.json` to version control.
 
@@ -85,12 +97,13 @@ claude mcp add --scope user powerbi-remote-mcp --transport http https://api.fabr
     claude mcp reset-project-choices
     ```
 
-### What each server provides
+### Servers (project scope)
 
-| Server | Transport | Purpose |
+| Server | Runtime | Purpose |
 | --- | --- | --- |
 | `sql-mcp` | stdio (`dab start --mcp-stdio`) | Data API Builder exposing the repo's Azure SQL schema as MCP tools. Uses `Active Directory Interactive` auth by default; override via the `DAB_CONNECTION_STRING` env var. |
 | `azure-devops-mcp` | stdio (`npx @azure-devops/mcp`) | Azure DevOps work items, repos, pipelines scoped to the configured org + project. |
+| `eventhouse-remote-mcp` | http | Fabric Eventhouse remote MCP scoped to a specific KQL database via workspace + database IDs. |
 
 > `ASPNETCORE_URLS=http://127.0.0.1:0` forces DAB to pick a free loopback port so multiple Claude sessions or a running dev server don't collide.
 
