@@ -4,6 +4,15 @@ Personal Claude Code configuration: skills, agents, coding rules, hooks,
 MCP templates, and settings. This repo IS ~/.claude/ — clone or sync it
 into your home directory; edit in place, commit, push.
 
+## What this is
+
+This repo is the live `~/.claude/` of a data professional working day-to-day
+in Microsoft Fabric, Azure, and Power BI. It holds skills, a subagent,
+path-scoped coding rules, hooks, MCP templates, a pre-commit linter, and
+fixture tests — the same files Claude Code loads when I open a session.
+Cherry-pick what's useful; the contents track active Microsoft data-
+platform work, so expect drift as the platform moves.
+
 ## Status
 
 Active personal configuration. The repo is browseable and cherry-pickable
@@ -45,6 +54,56 @@ public artifact second.
   entries live in `settings.local.json` (gitignored) — add your own
   there.
 
+## Install
+
+> **Back up first.** Cloning into `~/.claude/` overwrites any existing
+> Claude Code configuration in your home directory. If you already have
+> a `~/.claude/`, either move it aside (`mv ~/.claude ~/.claude.bak`)
+> or clone this repo elsewhere and cherry-pick the pieces you want into
+> your existing `~/.claude/`.
+
+1. Clone into `~/.claude/`:
+
+    ```bash
+    git clone git@github.com:wardawgmalvicious/claude-config.git ~/.claude
+    ```
+
+2. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
+   it once across all files):
+
+    ```bash
+    cd ~/.claude && scripts/bootstrap-pre-commit
+    ```
+
+3. Add `~/.claude/scripts` to `PATH` so the helpers (`instructions-log`,
+   `lint-skills.py`, `bootstrap-pre-commit`) are callable by name.
+
+    Git Bash (`~/.bashrc`):
+
+    ```bash
+    export PATH="$HOME/.claude/scripts:$PATH"
+    ```
+
+    PowerShell (`$PROFILE`):
+
+    ```powershell
+    $env:PATH = "$HOME\.claude\scripts;$env:PATH"
+    ```
+
+**Notes:**
+
+- Plugins, agent memory, runtime state (sessions, projects, todos,
+  caches, file history), and secrets are gitignored — see
+  [.gitignore](.gitignore). After cloning, plugins reinstall from
+  scratch and any MCP servers requiring auth will need to reauth on
+  first use.
+- This config is Windows-targeted (Git Bash + the PowerShell tool in
+  Claude Code). Hook commands resolve via `$HOME` so they're portable
+  across users on Windows, but Linux / macOS users will need path
+  adjustments — paths, shell shebangs, and the MCP `LOCALAPPDATA` env
+  block all assume Windows. No promise it works elsewhere out of the
+  box.
+
 ## Ongoing workflow
 
 Edit files in place. This repo IS ~/.claude/. git add / commit / push
@@ -81,6 +140,4 @@ in case the discipline is useful elsewhere.
 
 ## License
 
-Default copyright applies; treat as personal use. A permissive license
-(MIT or Apache 2.0) will be added if/when the publishable trajectory
-firms up.
+MIT — see [LICENSE](LICENSE).
