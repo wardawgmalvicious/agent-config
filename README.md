@@ -38,13 +38,12 @@ public artifact second.
   [Handoff discipline](#handoff-discipline)).
 - [CLAUDE.md](CLAUDE.md) — Personal-scope instructions; pointer to
   per-language rules.
-- [settings.json](settings.json) — Claude Code settings (permissions,
-  enabled plugins, hook registry). **Personal config — review before
-  using.** Hook commands reference absolute paths under `~/.claude/`,
-  and the `permissions.allow` / `permissions.deny` lists are tied to
-  the author's machine (a personal scheduled task and a personal `C:\Z`
-  drive). Edit to fit your environment, or strip the personal entries
-  and keep them in your own `settings.local.json` (gitignored).
+- [settings.json](settings.json) — Claude Code settings (enabled
+  plugins, hook registry, effort level, update channel). Hook commands
+  resolve via `$HOME/.claude/...` so they're portable across users, but
+  assume this repo is cloned at `~/.claude/`. Personal `permissions`
+  entries live in `settings.local.json` (gitignored) — add your own
+  there.
 
 ## Ongoing workflow
 
