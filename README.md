@@ -1,7 +1,8 @@
 # Claude Config
 
-Personal Claude Code configuration: skills, modules, CLAUDE.md, and
-settings. This repo IS ~/.claude/ — edit in place, commit, push.
+Personal Claude Code configuration: skills, agents, coding rules, hooks,
+MCP templates, and settings. This repo IS ~/.claude/ — clone or sync it
+into your home directory; edit in place, commit, push.
 
 ## Status
 
@@ -18,12 +19,32 @@ public artifact second.
 
 ## Contents
 
-- `skills/` — 28 skills total: 17 Fabric, 10 Power BI / TMDL, 1 behavioral (code-review)
-- `agents/` — 1 subagent (security-reviewer)
-- `rules/` — 8 path-scoped coding conventions (T-SQL, Spark SQL, Python/PySpark, KQL, DAX, M, TMDL, Fabric pipeline expressions); auto-load via `paths:` globs when matching files enter session scope
-- `CLAUDE.md` — personal-scope instructions; pointer to per-language rules
-- `settings.json` — Claude Code settings (permissions, enabled plugins, hook registry)
-- `docs/handoff-briefs/` — templates and worked examples for the brief-before-draft pattern (see Handoff discipline below)
+- [skills/](skills/) — 30 skills: 18 Fabric, 10 Power BI / TMDL, 2
+  behavioral (code-review, drift-audit). See [skills/README.md](skills/README.md).
+- [agents/](agents/) — 1 subagent ([security-reviewer](agents/security-reviewer.md)).
+- [rules/](rules/) — 8 path-scoped coding conventions (T-SQL, Spark SQL,
+  Python/PySpark, KQL, DAX, M, TMDL, Fabric pipeline expressions);
+  auto-load via `paths:` globs when matching files enter session scope.
+- [hooks/](hooks/) — InstructionsLoaded logger and a security-reviewer
+  memory-scope guard.
+- [mcp/](mcp/) — Starter templates for global (user-scope) and project-
+  scope MCP server configs.
+- [scripts/](scripts/) — pre-commit bootstrap, instructions-log query
+  helper, SKILL.md frontmatter linter.
+- [tests/](tests/) — Synthetic fixtures for validating the code-review
+  skill and security-reviewer agent.
+- [docs/handoff-briefs/](docs/handoff-briefs/) — Templates and worked
+  examples for the brief-before-draft pattern (see
+  [Handoff discipline](#handoff-discipline)).
+- [CLAUDE.md](CLAUDE.md) — Personal-scope instructions; pointer to
+  per-language rules.
+- [settings.json](settings.json) — Claude Code settings (permissions,
+  enabled plugins, hook registry). **Personal config — review before
+  using.** Hook commands reference absolute paths under `~/.claude/`,
+  and the `permissions.allow` / `permissions.deny` lists are tied to
+  the author's machine (a personal scheduled task and a personal `C:\Z`
+  drive). Edit to fit your environment, or strip the personal entries
+  and keep them in your own `settings.local.json` (gitignored).
 
 ## Ongoing workflow
 
@@ -46,20 +67,21 @@ contracts — refusal patterns, severity rubrics, scope-enforced read-only
 or destructive guards. For pure reference skills (canonical-answer
 content), the pattern is overkill; real-use validation suffices.
 
-Templates and worked examples live in `docs/handoff-briefs/`:
+Templates and worked examples live in [docs/handoff-briefs/](docs/handoff-briefs/):
 
-- `skill-handoff-template.md` — fill-in template for new skills
-- `subagent-handoff-template.md` — fill-in template for new subagents
-- `examples/` — reference briefs derived from validated artifacts
+- [skill-handoff-template.md](docs/handoff-briefs/skill-handoff-template.md)
+  — fill-in template for new skills
+- [subagent-handoff-template.md](docs/handoff-briefs/subagent-handoff-template.md)
+  — fill-in template for new subagents
+- [examples/](docs/handoff-briefs/examples/) — reference briefs derived
+  from validated artifacts
 
 The templates are internal tooling. Consumers cherry-picking from this
 repo don't need to adopt the brief pattern; the templates are included
 in case the discipline is useful elsewhere.
 
-## TODO
+## License
 
-- Fresh machine bootstrap procedure — write after first verified
-  fresh-machine clone
-- License — add a permissive license (MIT or Apache 2.0) when the
-  publishable-pack trajectory firms up. Until then, default copyright
-  applies; treat as personal use.
+Default copyright applies; treat as personal use. A permissive license
+(MIT or Apache 2.0) will be added if/when the publishable trajectory
+firms up.
