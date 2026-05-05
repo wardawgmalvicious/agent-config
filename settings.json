@@ -1,15 +1,4 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(powershell.exe -NoProfile -Command \"schtasks /query /tn ''CloseTeamsDaily'' /v /fo LIST 2>&1 | Select-String -Pattern ''Task To Run|Start In|Run As User|Last Result|Last Run|Status|Logon Mode''\")"
-    ],
-    "deny": [
-      "Read(C:\\Z/**)",
-      "Write(C:\\Z/**)",
-      "Edit(C:\\Z/**)",
-      "Bash(*Z*)"
-    ]
-  },
   "hooks": {
     "InstructionsLoaded": [
       {
