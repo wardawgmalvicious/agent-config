@@ -109,6 +109,54 @@ claude mcp add --scope user powerbi-remote-mcp --transport http https://api.fabr
 
 ---
 
+## Customizing the templates
+
+JSON files don't support comments, so substitution instructions live
+here.
+
+### `<USER>` placeholder (global template)
+
+[.mcp.global.template.json](.mcp.global.template.json) contains literal
+`<USER>` strings inside the `LOCALAPPDATA` env-var paths for the three
+Docker MCP Gateway servers (`github-mcp`, `azure-mcp`, `dockerhub-mcp`).
+Replace each occurrence with your **Windows profile name** before
+merging the template into `~/.claude.json`.
+
+To see the value:
+
+```powershell
+# PowerShell
+$env:USERNAME
+```
+
+```bash
+# Git Bash
+echo "$USER"
+```
+
+Example: if `$env:USERNAME` is `Warren`, then
+`C:\\Users\\<USER>\\AppData\\Local` becomes
+`C:\\Users\\Warren\\AppData\\Local`.
+
+The entire `env` block (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`)
+is **Windows-specific** — it tells the gateway process where to find
+Docker Desktop's per-user state on Windows. On Linux / macOS, Docker
+Desktop resolves these from the OS, so omit the `env` block entirely.
+The `cmd /c npx ...` wrapper for the stdio servers is also Windows-
+specific and should be replaced with a direct `npx` invocation on
+Linux / macOS — but the Docker gateway servers themselves still won't
+run via this template without further adjustment, so don't expect to
+copy `.mcp.global.template.json` verbatim outside Windows.
+
+### Project-template placeholders
+
+See the [Install (project scope)](#install-project-scope) table above
+for the `.mcp.project.template.json` placeholders
+(`<ABSOLUTE_PATH_TO_REPO>`, `<your-sql-server>`, `<your-database>`,
+`<OrgName>`, `<ProjectName>`, `<WorkspaceId>`, `<KqlDatabaseId>`).
+
+---
+
 ## Verifying the setup
 
 ```bash
