@@ -1,0 +1,49 @@
+{
+    "mcpServers": {
+        "powerbi-modeling-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@microsoft/powerbi-modeling-mcp@latest",
+                "--start"
+            ]
+        },
+        "powerbi-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/powerbi"
+        },
+        "microsoft-fabric-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@microsoft/fabric-mcp@latest",
+                "server",
+                "start",
+                "--mode",
+                "all"
+            ]
+        },
+        "azure-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@azure/mcp@latest",
+                "server",
+                "start"
+            ]
+        },
+        "microsoft-learn-mcp": {
+            "type": "http",
+            "url": "https://learn.microsoft.com/api/mcp"
+        }
+    }
+}
