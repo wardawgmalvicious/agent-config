@@ -1,5 +1,9 @@
 # ==============================================================
-# Claude Code user configuration — not portable, but important to keep
+# Nested project-scope .claude/ — Claude Code creates a project-level
+# .claude/ (with settings.local.json, etc.) when launched inside any
+# directory. Because this repo IS ~/.claude/, that nested .claude/
+# lives at ~/.claude/.claude/ and would otherwise get committed. The
+# project-scope settings inside it are per-machine and not portable.
 # ==============================================================
 .claude/*
 
