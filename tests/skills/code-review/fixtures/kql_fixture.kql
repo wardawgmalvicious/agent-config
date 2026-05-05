@@ -1,0 +1,11 @@
+SecurityEvent
+| SUMMARIZE FailedLogons = count() by Account, Computer
+| WHERE FailedLogons > 5
+| WHERE TimeGenerated > ago(7d)
+| ORDER BY FailedLogons DESC
+| TAKE 100
+
+SigninLogs
+| where TOLOWER(UserPrincipalName) == "admin@contoso.com"
+| where ResultType != 0
+| project TimeGenerated, UserPrincipalName, IPAddress

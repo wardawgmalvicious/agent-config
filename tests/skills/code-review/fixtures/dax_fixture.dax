@@ -1,0 +1,15 @@
+Total Sales = sumx('Transaction Line', [Quantity] * [Unit Price])
+
+Margin Pct = IF([Revenue] = 0, 0, ([Revenue] - [Cost]) / [Revenue])
+
+Sales YoY % =
+DIVIDE(
+    [Total Sales] - CALCULATE([Total Sales], SAMEPERIODLASTYEAR('Date'[Date])),
+    CALCULATE([Total Sales], SAMEPERIODLASTYEAR('Date'[Date]))
+)
+
+Customer Tier =
+IF([Total Sales] > 100000, "Platinum",
+    IF([Total Sales] > 50000, "Gold",
+        IF([Total Sales] > 10000, "Silver",
+            IF([Total Sales] > 0, "Bronze", "None"))))

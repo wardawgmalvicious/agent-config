@@ -1,0 +1,23 @@
+table transaction_line
+	lineageTag: 11111111-1111-1111-1111-111111111111
+
+	column transaction_date
+		dataType: dateTime
+		summarizeBy: sum
+
+	column OrderTotal
+		dataType: decimal
+		summarizeBy: sum
+
+	column CustomerId
+		dataType: int64
+		summarizeBy: sum
+
+	measure totalSales = SUM('transaction_line'[OrderTotal])
+
+	measure margin = 
+			DIVIDE(
+				[totalSales] - [Cost],
+				[Cost]
+			)
+		formatString: "0.00%"

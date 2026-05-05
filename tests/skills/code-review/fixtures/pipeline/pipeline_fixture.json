@@ -1,0 +1,49 @@
+{
+  "name": "load customer pipeline",
+  "properties": {
+    "parameters": {
+      "sourceSchema": { "type": "String", "defaultValue": "raw" },
+      "targetSchema": { "type": "String" }
+    },
+    "variables": {
+      "row_count": { "type": "Integer" }
+    },
+    "activities": [
+      {
+        "name": "Lookup Config",
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": "SELECT BatchSize FROM dbo.Config WHERE PipelineId = 'load_customer'"
+          }
+        }
+      },
+      {
+        "name": "Set BatchSize",
+        "type": "SetVariable",
+        "typeProperties": {
+          "variableName": "row_count",
+          "value": "@activity('Lookup Config').output.firstRow.BatchSize"
+        }
+      },
+      {
+        "name": "Copy Customer",
+        "type": "Copy",
+        "typeProperties": {
+          "source": {
+            "type": "AzureSqlSource",
+            "sqlReaderQuery": "@Concat('SELECT * FROM ', pipeline().parameters.sourceSchema, '.Customer')"
+          },
+          "sink": {
+            "type": "LakehouseTableSink",
+            "tableOption": "autoCreate"
+          }
+        },
+        "dependsOn": [
+          { "activity": "Set BatchSize", "dependencyConditions": ["Completion"] }
+        ]
+      }
+    ]
+  }
+}
