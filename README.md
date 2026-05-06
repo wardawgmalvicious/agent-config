@@ -53,8 +53,20 @@ public artifact second.
   assume this repo is cloned at `~/.claude/`. Personal `permissions`
   entries live in `settings.local.json` (gitignored) — add your own
   there.
+- [LICENSE](LICENSE) — MIT.
+- [SECURITY.md](SECURITY.md) — security-issue reporting policy.
+- [.gitignore](.gitignore) — runtime state, plugin install, secrets.
+- [.pre-commit-config.yaml](.pre-commit-config.yaml) and [.gitleaks.toml](.gitleaks.toml)
+  — pre-commit framework config (gitleaks + the SKILL.md frontmatter
+  linter at [scripts/lint-skills.py](scripts/lint-skills.py)).
 
 ## Install
+
+> **Cherry-picking?** Browse this repo on GitHub and copy individual
+> files into your existing `~/.claude/`. No install needed. The
+> numbered steps below are for cloning the whole thing.
+
+<!-- -->
 
 > **Back up first.** Cloning into `~/.claude/` overwrites any existing
 > Claude Code configuration in your home directory. If you already have
@@ -65,11 +77,17 @@ public artifact second.
 1. Clone into `~/.claude/`:
 
     ```bash
+    # HTTPS (default — works for any GitHub user)
+    git clone https://github.com/wardawgmalvicious/claude-config.git ~/.claude
+
+    # SSH (requires GitHub SSH keys configured)
     git clone git@github.com:wardawgmalvicious/claude-config.git ~/.claude
     ```
 
 2. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
-   it once across all files):
+   it once across all files). **Requires
+   [uv](https://docs.astral.sh/uv/) on PATH.** Skip this step if you
+   only intend to read, not commit.
 
     ```bash
     cd ~/.claude && scripts/bootstrap-pre-commit
@@ -107,8 +125,9 @@ public artifact second.
 ## Ongoing workflow
 
 Edit files in place. This repo IS ~/.claude/. git add / commit / push
-like any other repo. Claude Code picks up skill changes immediately
-(live change detection).
+like any other repo. Skill edits don't reliably take effect mid-session
+under Git Bash on Windows — restart the Claude Code session after
+editing a SKILL.md to be safe.
 
 ## Handoff discipline
 
@@ -138,6 +157,7 @@ The templates are internal tooling. Consumers cherry-picking from this
 repo don't need to adopt the brief pattern; the templates are included
 in case the discipline is useful elsewhere.
 
-## License
+## License & security
 
-MIT — see [LICENSE](LICENSE).
+- License: MIT — see [LICENSE](LICENSE).
+- Security: see [SECURITY.md](SECURITY.md) for reporting issues.
