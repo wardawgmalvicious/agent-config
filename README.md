@@ -24,7 +24,32 @@ docs before relying on any specific guidance.
 
 If you find this useful, that's the goal. If you find a bug, an issue
 report is welcome but not guaranteed a response. Personal config first,
-public artifact second.
+public artifact second — see [Tags](#tags) for per-artifact
+reuse-readiness.
+
+## Tags
+
+Each artifact in this repo carries one of three reuse-readiness tags:
+
+- **personal** — Default. In this repo because I use it; not validated
+  for general reuse. Treat as reference, not a recommendation.
+- **publishable** — Real-use validated AND content-reviewed for general
+  reuse.
+- **client-only** — Reserved for client-scoped artifacts; by design
+  these don't live in this repo.
+
+**All artifacts are currently `personal`.** The taxonomy is documented
+for future use as individual artifacts validate through real-use and
+earn promotion. Promoting to `publishable` is per-artifact and
+requires content review, not just a tag flip.
+
+The following four skills haven't been real-use tested yet — extra
+unproven, even by `personal` standards:
+
+- [fabric-eventhouse](skills/fabric-eventhouse/)
+- [fabric-eventstream](skills/fabric-eventstream/)
+- [fabric-mlv](skills/fabric-mlv/)
+- [fabric-variable-library](skills/fabric-variable-library/)
 
 ## Contents
 
