@@ -44,9 +44,13 @@ The 3 highest-leverage entry points (overview, feature comparison vs Azure SQL D
 
 ## Source control, SqlPackage, CI/CD
 
-- [SQL database source control integration in Fabric](https://learn.microsoft.com/fabric/database/sql/source-control) — Git integration, automatic SQL project generation in the repo, commit/update flow, branching with workspace mapping, post-deployment scripts. Tutorial format.
+- [SQL database source control integration in Fabric](https://learn.microsoft.com/fabric/database/sql/source-control) — Git integration, automatic SQL project generation in the repo, commit/update flow, branching with workspace mapping. The `.sqlproj` is auto-managed by Fabric — do NOT hand-edit (overwritten on next commit from Fabric). Tutorial format.
+- [Manage static data with a post-deployment script](https://learn.microsoft.com/fabric/database/sql/source-control#manage-static-data-with-a-post-deployment-script) — Fabric-specific deployment-script convention. Scripts live under the `.sharedQueries` folder (surfaced in the Fabric portal as "Shared Queries"), NOT the standard SQL-projects `Pre-Deployment` / `Post-Deployment` folders. Designate a query as a deployment script via the `...` menu in Shared Queries → "Set as Pre-deployment Script" / "Set as Post-deployment Script". Fabric excludes `.sharedQueries` from `.sqlproj` build validation so scripts don't break `dotnet build`. Recommended pattern for static lookup data is `MERGE` (idempotent across re-runs). Same scripts run on both git Update and deployment-pipeline deploy. Editable in the Fabric editor or locally via the VS Code SQL projects extension.
+- [Pre-deployment and post-deployment scripts (SQL projects concept)](https://learn.microsoft.com/sql/tools/sql-database-projects/concepts/pre-post-deployment-scripts) — generic SQL-projects background: how scripts are emitted into the `.dacpac` and run by SqlPackage publish. For Fabric the folder convention is `.sharedQueries`, not the SDK defaults.
 - [SqlPackage with SQL database in Fabric](https://learn.microsoft.com/fabric/database/sql/sqlpackage) — `.dacpac` extract / publish workflow against Fabric SQL DB; cross-platform CLI.
 - [SQL projects automation (CI/CD)](https://learn.microsoft.com/sql/tools/sql-database-projects/sql-projects-automation) — `dotnet build` of `.sqlproj` → `.dacpac` → SqlPackage publish. Build-once-deploy-many pipelines, `Script` action for plan review before apply.
+
+**Fabric Update-from-source-control publish defaults** — when Fabric runs SqlPackage publish on Update, these flags are fixed: `/p:GenerateSmartDefaults=true`, `/p:IncludeTransactionalScripts=true`, `/p:ScriptDatabaseOptions=false`, `/p:DoNotAlterReplicatedObjects=false`. Database-level settings (collation, compatibility level) are NOT included in source control or deployment pipelines — apply with T-SQL after database creation.
 
 ## GraphQL API
 
