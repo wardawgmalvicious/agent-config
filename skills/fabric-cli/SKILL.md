@@ -1,11 +1,17 @@
 ---
 name: fabric-cli
-description: "Use for the Fabric CLI `fab` — filesystem-style CLI over Fabric + Power BI REST. Covers path syntax (Workspace.Workspace/Item.ItemType, .ItemType suffix mandatory, hidden roots .capacities/.connections/.domains/.gateways), auth reuse from `az login`, navigation (ls/cd/pwd/exists/get/desc), item CRUD (mkdir/set/rm/cp/mv/export/import), ACLs, capacity/domain assign, labels, jobs, table maintenance, `fab api` REST passthrough (-A powerbi/storage/azure), deployment pipelines, DuckDB-on-OneLake, executing DAX via fab api, and common gotchas (InvalidPath, GUID vs friendly names for schema tables, -f for non-interactive)."
+description: "Use for the Fabric CLI `fab` (v1.5 GA March 2026, `pip install ms-fabric-cli`, Python 3.10–3.13, pre-installed in Fabric Notebooks) — filesystem-style CLI over Fabric + Power BI REST. Covers path syntax (Workspace.Workspace/Item.ItemType, .ItemType suffix mandatory, hidden roots .capacities/.connections/.domains/.gateways), auth reuse from `az login`, navigation (ls/cd/pwd/exists/get/desc/find), item CRUD (mkdir/set/rm/cp/mv/ln/export/import), ACLs, capacity/domain assign, labels, jobs (incl. semantic-model refresh + dataflow), table maintenance, shortcuts via `fab ln`, `fab deploy --config <yaml>` for one-command workspace CI/CD on top of fabric-cicd (v1.5+), `fab api` REST passthrough (-A powerbi/storage/azure), deployment pipelines, report rebind via `fab set semanticModelId`, DuckDB-on-OneLake, executing DAX via fab api, and common gotchas (InvalidPath, GUID vs friendly names for schema tables, -f for non-interactive)."
 ---
 
 # Fabric CLI (`fab`)
 
 Filesystem-style CLI over the Fabric + Power BI REST APIs. Paths use `Workspace.Workspace/Item.ItemType/...`. The `.ItemType` suffix is **mandatory** on items. Workspaces use `.Workspace`; hidden roots like `.capacities`, `.connections`, `.domains`, `.gateways` expose tenant resources.
+
+**Version / install:** v1.5 went GA March 2026; current is v1.6.x (April 2026+). Install with `pip install ms-fabric-cli` or `uv tool install ms-fabric-cli`. Requires Python 3.10, 3.11, 3.12, or 3.13. Pre-installed in Fabric Notebooks (no install step needed when running `!fab ...` from a notebook cell). Confirm version with `fab --version`. Canonical per-command reference: [microsoft.github.io/fabric-cli](https://microsoft.github.io/fabric-cli/). Release notes: [github.com/microsoft/fabric-cli/releases](https://github.com/microsoft/fabric-cli/releases).
+
+**Interactive (REPL) mode:** `fab config set mode interactive` switches `fab` to a persistent shell where commands no longer need the `fab` prefix and `cd` state survives between calls. Default is command-line mode.
+
+**AI assets (v1.5+):** The repo's [`.ai-assets/`](https://github.com/microsoft/fabric-cli/tree/main/.ai-assets) folder bundles `context/`, `modes/`, `prompts/`, and `skills/` files designed to be loaded by AI coding assistants (Copilot, Claude, Cursor) so the assistant can author `fab` invocations correctly. These are *consumable artifacts*, not CLI verbs — there is no `fab agent` or `fab ai` subcommand.
 
 ## Authentication
 
@@ -38,6 +44,8 @@ Names with spaces or apostrophes work inside double quotes with no escaping: `"C
 | `fab exists <path>` | Returns `* true` / `* false` |
 | `fab get <path> [-v] [-q <jmespath>] [-o <file>]` | Item details; `-v` all properties |
 | `fab desc .<ItemType>` | List commands supported by an item type |
+| `fab find "<text>" [-P type=[...]] [-l]` | OneLake-catalog search across all workspaces by display name / description / workspace name (**v1.6+**). `-P` uses `key=value` / `key!=value` with `[a,b]` bracket syntax (distinct from the JSON-array form `fab deploy` uses) |
+| `fab open <path>` | Open the workspace or item in the browser |
 
 ### Item CRUD
 
@@ -45,11 +53,12 @@ Names with spaces or apostrophes work inside double quotes with no escaping: `"C
 |---|---|
 | `fab mkdir <path> [-P key=value,...]` | Create workspace or item; `-P capacityname=...` for workspaces |
 | `fab set <path> -q <prop> -i <value>` | Update a single property (e.g. `displayName`, `description`, `semanticModelId`) |
-| `fab rm <path> -f` | Delete; `-r` recursive on workspaces |
+| `fab rm <path> -f [--hard]` | Delete (alias `del`); `--hard` permanently deletes an item (no recovery, **v1.6+**) |
 | `fab cp <src> <dst> [-r] [-f] [-bpc]` | Copy item or files; `-bpc` blocks cross-folder same-name conflicts |
 | `fab mv <src> <dst> [-r] [-f]` | Move / rename |
 | `fab export <path> -o <dir> [-a] [-f] [--format py]` | Export item definition; `-a` entire workspace |
 | `fab import <path> -i <dir> -f` | Import definition from local folder (`-f` required for non-interactive) |
+| `fab ln <link-path> --target <target-path>` | Create a OneLake shortcut (alias `mklink`) |
 
 ### Access Control
 
@@ -139,9 +148,38 @@ MODEL_ID=$(fab get "Prod.Workspace/Model.SemanticModel" -q "id" | tr -d '"')
 fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" -X post -i '{"type":"Full"}'
 ```
 
-## Deployment Pipelines
+## Workspace Deployment (`fab deploy`, v1.5+)
 
-No native commands — use `fab api -A powerbi`:
+One-command CI/CD that wraps the [fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/) Python library. Deploys items from local source folders to a target workspace, with environment-aware parameterization. Use this — not `fab api` — for code-first workspace promotion from a Git checkout.
+
+```bash
+fab deploy --config <config_file> [-tenv <env>] [-P '<json-array>'] [-f] [--output_format <fmt>]
+```
+
+| Flag | Purpose |
+|---|---|
+| `--config <file>` | **Required.** Path to the deployment YAML. Defines source items, target workspace, item-types-in-scope, and the parameter file. |
+| `-tenv`, `--target_env <env>` | Picks the env block (e.g. `dev` / `test` / `prod`) from the config + parameter file. |
+| `-P`, `--params '<json>'` | JSON-array of override parameters: `'[{"p1":"v1","p2":"v2"}]'`. **Quote the whole array** — single object form (`-P key=value`) is *not* what this verb accepts (that's `fab find`'s param style — they differ). |
+| `-f`, `--force` | Skip interactive confirmation (required in CI). |
+| `--output_format <fmt>` | Override output format (json / text / etc.). |
+
+Examples:
+
+```bash
+fab deploy --config config.yml --target_env dev
+fab deploy --config config.yml --target_env prod -f
+fab deploy --config config.yml --target_env test \
+  -P '[{"param1":"value1"}]' -f
+```
+
+The config file resolves source folders, target workspace IDs/names, and per-env GUID replacements through fabric-cicd's parameter model — same `$workspace.$id` and `$items.<Type>.<name>.id` tokens documented in the Azure DevOps tutorial. Authenticates via the active `fab auth` session (interactive or SPN).
+
+**When to use `fab deploy` vs Power BI deployment pipelines:** `fab deploy` is **source-of-truth-is-Git** (workspace = artifact of the deploy). Power BI deployment pipelines is **source-of-truth-is-workspace** (dev workspace promotes to test/prod workspaces via the service-side pipeline). They are distinct surfaces — don't mix.
+
+## Deployment Pipelines (Power BI service-side)
+
+For the service-side stage-to-stage deployment pipelines (different feature from `fab deploy`), there are no native verbs — use `fab api -A powerbi`:
 
 ```bash
 fab api -A powerbi pipelines                                     # user pipelines
@@ -162,10 +200,11 @@ fab api -X post "deploymentPipelines/$PIPELINE_ID/deploy" -i '{
 | Item Type | Local Format | Notes |
 |---|---|---|
 | `.Report` | PBIR folder | `.pbir` launches Power BI Desktop (Developer Mode) |
-| `.SemanticModel` | TMDL folder | `definition/database.tmdl`, `model.tmdl`, `tables/*.tmdl` |
+| `.SemanticModel` | TMDL folder | `definition/database.tmdl`, `model.tmdl`, `tables/*.tmdl` (export/import formats stabilized in v1.5) |
+| `.SparkJobDefinition` | JSON folder | Export/import added in v1.5 |
 | `.Notebook` | `.py` or folder | Use `--format py` for plain Python |
 | `.DataPipeline` | JSON folder | Activity definitions |
-| `.Lakehouse` | Metadata only | Files must be copied separately with `fab cp` |
+| `.Lakehouse` | Metadata + tables | Export/import support added in **v1.6+**; before that, only `fab cp` worked for Files |
 
 Export output layout:
 
@@ -185,7 +224,9 @@ output/
 
 **Critical:** `fab export` does **not** create intermediate directories. Always `mkdir -p <out>` first, or it fails with `InvalidPath`. **Never** include `.platform` when making definition API calls directly — it is Git integration metadata. See the fabric-tmdl-api skill.
 
-Non-exportable types: `.Dashboard`, `.SQLEndpoint`, `.Lakehouse` (use `fab cp` for files instead). Check with `fab desc .<ItemType>`.
+Non-exportable types: `.Dashboard`, `.SQLEndpoint`. (`.Lakehouse` is now exportable as of v1.6.) Check with `fab desc .<ItemType>`.
+
+**VariableLibrary (v1.6+):** Variable Libraries now have full CLI coverage via the standard verbs — `mkdir`, `get`, `set`, `rm`, `ls`, `export`, `import`, `cp`, `mv` — backed by the Variable Library REST APIs. Before v1.6 only the portal could manage them.
 
 ## DuckDB on OneLake
 
@@ -248,10 +289,15 @@ fab ls "Prod.Workspace" | grep ".Report" | while read item; do
   fab export "Prod.Workspace/$item" -o /tmp/reports -f
 done
 
-# Rebind a report to a new model after deployment
+# Rebind a report to a new model after deployment (v1.5 first-class path)
 fab set "Prod.Workspace/Report.Report" -q semanticModelId -i "<new-model-id>"
 
-# Trigger + poll semantic model refresh
+# Trigger semantic model refresh (v1.5 first-class via fab job, no fab api required)
+fab job run "Prod.Workspace/Sales.SemanticModel"                       # synchronous
+fab job start "Prod.Workspace/Sales.SemanticModel"                     # fire and forget
+fab job run "Prod.Workspace/Sales.SemanticModel" -P refreshType:string=Full
+
+# Equivalent REST passthrough (still valid if you need finer control over the body)
 fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" -X post -i '{"type":"Full"}'
 fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 ```
@@ -280,7 +326,9 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 
 - Microsoft Learn: [Fabric command line interface (install + login)](https://learn.microsoft.com/rest/api/fabric/articles/fabric-command-line-interface)
 - GitHub Pages: [Fabric CLI documentation (canonical per-command reference)](https://microsoft.github.io/fabric-cli/)
+- GitHub Pages: [`fab deploy` command reference](https://microsoft.github.io/fabric-cli/commands/fs/deploy/)
 - Microsoft Learn: [Item management overview (REST APIs `fab` wraps)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/item-management-overview)
+- Microsoft Learn What's New: [Fabric CLI v1.5 GA — March 2026](https://learn.microsoft.com/fabric/fundamentals/whats-new#generally-available-features) — one-command workspace deploys with fabric-cicd integration, first-class Power BI (rebind/refresh), pre-installed in Fabric Notebooks, Python 3.13, 30+ item types.
 - Comprehensive MS Learn link bundle (concept / examples / underlying REST / authentication / lakehouse ops / CI/CD): [references/REFERENCE.md](references/REFERENCE.md)
 
 ## See also
