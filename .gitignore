@@ -46,6 +46,7 @@ ide/
 debug/
 downloads/
 plugins/
+.last-cleanup
 
 # ==============================================================
 # Secrets and local-only overrides — never commit
