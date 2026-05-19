@@ -29,6 +29,26 @@
                 "all"
             ]
         },
+        "fabric-rti-mcp": {
+            "type": "stdio",
+            "command": "uvx",
+            "args": [
+                "microsoft-fabric-rti-mcp"
+            ]
+        },
+        "kql-global-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint"
+        },
+        "fabric-data-factory-mcp": {
+            "type": "stdio",
+            "command": "dnx",
+            "args": [
+                "Microsoft.DataFactory.MCP",
+                "--prerelease",
+                "--yes"
+            ]
+        },
         "microsoft-learn-mcp": {
             "type": "http",
             "url": "https://learn.microsoft.com/api/mcp"
