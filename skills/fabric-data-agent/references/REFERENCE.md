@@ -4,6 +4,8 @@ Curated set of Microsoft Learn pages relevant to creating, configuring, consumin
 
 The three highest-leverage entry points (concept, configurations, tenant settings) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
 
+**GA status (March 2026):** the core Data Agent surface (authoring, publishing, sharing, diagnostics, deployment-pipeline-based CI/CD) is generally available. The pages marked `(preview)` below cover companion features that remain in preview at GA — primarily the Fabric Data Agent Python SDK, Microsoft Copilot Studio integration, and Azure AI Foundry / Azure AI Agent Service integration. Keep production rollouts on the GA surface; gate preview SDK and external-orchestrator paths behind an explicit decision.
+
 ## Concept and overview
 
 - [Fabric data agent — concept](https://learn.microsoft.com/fabric/data-science/concept-data-agent) — what a data agent is, what it does, where it sits architecturally. Read first for new users.

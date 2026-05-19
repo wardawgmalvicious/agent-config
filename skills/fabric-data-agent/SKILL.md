@@ -1,6 +1,6 @@
 ---
 name: fabric-data-agent
-description: "Use when configuring Microsoft Fabric Data Agents — the conversational Q&A interface built on Azure OpenAI Assistant APIs over Lakehouse/Warehouse/KQL/Semantic Model/Ontology/Microsoft Graph (up to 5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, data source descriptions for routing, example queries up to 100 per source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (scope instructions to the right layer, iterate against real questions, version control alongside data platform code), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources)."
+description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A built on Azure OpenAI Assistant APIs over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / Microsoft Graph (up to 5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries up to 100 per source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (scope to the right layer, iterate against real questions, version control alongside data platform code), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources). Python SDK (incl. programmatic evaluation), Copilot Studio, and Azure AI Foundry / Agent Service integrations remain in preview."
 paths:
   - "**/*.DataAgent/**"
 ---
@@ -15,7 +15,9 @@ A practical, reusable guide for configuring a Fabric Data Agent so it returns ac
 
 A Fabric Data Agent is a conversational Q&A interface built on Azure OpenAI Assistant APIs. It accepts natural-language questions, routes them to the right data source, generates a query (SQL / DAX / KQL / Microsoft Graph), validates it, executes it read-only, and returns a human-readable answer.
 
-Supported data sources: **Lakehouse, Warehouse, KQL Database, Power BI Semantic Model, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**.
+**Status — Generally Available as of March 2026.** The core agent (create / configure / publish / share), built-in diagnostics, and end-to-end lifecycle management via Git integration + deployment pipelines are all GA. Treat as a production surface. The following companion features are still in **preview** at GA and should be gated accordingly: the **Fabric Data Agent Python SDK** (including programmatic `evaluate_few_shots` and ground-truth evaluation), **Microsoft Copilot Studio integration**, **Azure AI Foundry / Azure AI Agent Service integration**, and the **external Python client SDK** (interactive-browser auth pattern for embedding in custom apps).
+
+Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power BI Semantic Model, Fabric SQL Database, Mirrored Database, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**.
 
 Read-only by design — it never generates create/update/delete queries.
 
@@ -275,4 +277,4 @@ See [assets/example-retail-agent.md](assets/example-retail-agent.md) for a compl
 
 ---
 
-Last updated: 2026-04-20
+Last updated: 2026-05-18
