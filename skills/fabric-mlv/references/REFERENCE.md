@@ -1,6 +1,6 @@
 # MS Learn link bundle — Materialized Lake Views
 
-Curated set of Microsoft Learn pages relevant to Microsoft Fabric Materialized Lake Views (MLVs) — the declarative `CREATE MATERIALIZED LAKE VIEW` Spark SQL surface, the preview `@fmlv.materialized_lake_view` PySpark decorator, optimal refresh (skip / incremental / full) and the CDF prerequisite, lineage-driven scheduling, the `RefreshMaterializedLakeViews` REST API, the auto-generated data quality report, and the lakehouse-schemas + Runtime 1.3 prerequisites.
+Curated set of Microsoft Learn pages relevant to Microsoft Fabric Materialized Lake Views (MLVs) — the declarative `CREATE MATERIALIZED LAKE VIEW` Spark SQL surface (GA March 2026), the still-preview `@fmlv.materialized_lake_view` PySpark decorator, optimal refresh (skip / incremental / full) and the CDF prerequisite, lineage-driven scheduling, the `RefreshMaterializedLakeViews` REST API, the auto-generated data quality report, and the lakehouse-schemas + Runtime 1.3 prerequisites.
 
 The 3 highest-leverage entry points (concept overview, Spark SQL reference, optimal refresh) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
 
