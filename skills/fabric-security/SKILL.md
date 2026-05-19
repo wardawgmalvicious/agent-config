@@ -71,6 +71,10 @@ GRANT UNMASK ON dbo.Customers TO [finance_team@contoso.com];
 
 DDM is a **viewing restriction, not encryption**. Workspace Admin / Member / Contributor see unmasked data by default — DDM only protects Viewer-role users.
 
+## Sensitivity Labels (REST-discoverable)
+
+Item-level Purview labels became programmatically discoverable on the core item REST surface in March 2026 GA: `GET /v1/workspaces/{wsId}/items` and `GET /v1/workspaces/{wsId}/items/{itemId}` now include `sensitivityLabel: { "sensitivityLabelId": "<labelGuid>" }` on the `Item` object when a label is applied (field omitted on unlabeled items). Note the inner field is `sensitivityLabelId` at runtime — the MS Learn schema page calls it `id`, but the live API returns `sensitivityLabelId` (verified on 233/233 labeled items, May 2026). Any caller with the Viewer workspace role + `Workspace.Read.All` can read it — no admin elevation needed — making label-coverage audits possible without Fabric admin privileges. Only the GUID is returned; resolve to a human-readable name via Microsoft Graph `/security/informationProtection/sensitivityLabels`. Setting or removing labels still requires the existing admin APIs (`/v1/admin/labels/bulkSetLabels` / `bulkRemoveLabels` — Fabric admin role, `Tenant.ReadWrite.All`). See [[fabric-rest-api]] for the response shape.
+
 ## Reference
 
 - Microsoft Learn: [Security in Microsoft Fabric (overview)](https://learn.microsoft.com/fabric/security/security-overview)

@@ -1,6 +1,6 @@
 ---
 name: fabric-rest-api
-description: "Use for Microsoft Fabric REST API patterns: listing and paginating workspaces/items with continuationToken/continuationUri, calling /v1/workspaces/{wsId}/items, handling long-running operations (202 Accepted, Location header, polling /v1/operations/{id}, Retry-After, /result), the runtime item ID vs .platform logicalId distinction (PowerBIEntityNotFound root cause), the 201-or-202 create pattern, jobType values for /jobs/instances (RunNotebook, Pipeline, SparkJob, Refresh — NOT DefaultJob), the `definition` envelope and `?updateMetadata=true` `.platform` flag, job scheduling (Daily/Weekly/Monthly), 429 rate limiting with Retry-After, and capacity assignment."
+description: "Use for Microsoft Fabric REST API patterns: listing and paginating workspaces/items with continuationToken/continuationUri, calling /v1/workspaces/{wsId}/items, handling long-running operations (202 Accepted, Location header, polling /v1/operations/{id}, Retry-After, /result), the runtime item ID vs .platform logicalId distinction (PowerBIEntityNotFound root cause), the 201-or-202 create pattern, jobType values for /jobs/instances (RunNotebook, Pipeline, SparkJob, Refresh — NOT DefaultJob), the `definition` envelope and `?updateMetadata=true` `.platform` flag, job scheduling (Daily/Weekly/Monthly), 429 rate limiting with Retry-After, capacity assignment, and the GA `sensitivityLabel` field on List/Get/Update Item responses (GUID only, not settable via PATCH)."
 ---
 
 # Fabric REST API patterns
@@ -14,6 +14,26 @@ Base URL: `https://api.fabric.microsoft.com/v1`
 3. List items in workspace: `GET /v1/workspaces/{wsId}/items?type={ItemType}`
 4. Type-specific endpoints return extra `properties` (connection strings, etc.):
    `GET /v1/workspaces/{wsId}/{lakehouses|warehouses|notebooks|semanticModels|...}`
+
+## Sensitivity Labels on Item Responses
+
+As of March 2026 GA, `List Items` / `Get Item` / `Update Item` responses include a `sensitivityLabel` property on the `Item` object when the item has a Purview information-protection label applied:
+
+```json
+{
+  "id": "34fa05fc-e7ba-435a-b1ab-63534b6aa4f9",
+  "displayName": "PDF_Env",
+  "type": "Environment",
+  "workspaceId": "2ae4b0b9-895b-4676-bfcd-125b1f20e34d",
+  "sensitivityLabel": { "sensitivityLabelId": "4922deb9-fe99-4f4f-971c-9bdf556ec6a9" }
+}
+```
+
+**Field name gotcha — spec vs runtime drift.** The MS Learn `Item` definition page documents this inner field as `id`, but the live API returns `sensitivityLabelId`. Verified across 233 labeled items in 7 workspaces (May 2026) on both `GET /v1/workspaces/{wsId}/items` and `GET /v1/workspaces/{wsId}/items/{itemId}` — 233/233 use `sensitivityLabelId`. Trust the runtime, not the schema page.
+
+The `sensitivityLabel` object carries **only the label GUID** — there is no `displayName` / `name` on the response. Resolving the GUID to a human-readable label name requires a separate call (Microsoft Graph `/security/informationProtection/sensitivityLabels` or Purview). The `sensitivityLabel` field is omitted entirely on unlabeled items.
+
+**Read-only on these endpoints.** The `Update Item` PATCH body schema (`UpdateItemRequest`) accepts only `displayName` and `description` — it does NOT accept a `sensitivityLabel` field. To apply, change, or remove labels programmatically, call the admin APIs `POST /v1/admin/labels/bulkSetLabels` / `bulkRemoveLabels` (require `Tenant.ReadWrite.All` + Fabric admin role; ≤ 25 req/hour, ≤ 2000 items/request).
 
 ## Item IDs: Runtime vs logicalId
 
