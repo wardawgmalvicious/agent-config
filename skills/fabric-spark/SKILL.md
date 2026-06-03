@@ -40,7 +40,23 @@ Two different things that are often confused:
 - Run `VACUUM` to remove unreferenced files
 - V-Order write optimization is default — do not disable
 - Avoid high-cardinality partition columns; aim for partitions ≥ 1 GB
-- SQL Endpoint metadata sync lag is normally < 1 minute but increases with: many lakehouses per workspace, small-file fragmentation, large ETL volume, or SQLEP idle > 15 min
+- SQL Endpoint metadata sync lag is normally < 1 minute but increases with: many lakehouses per workspace, small-file fragmentation, large ETL volume, or SQLEP idle > 15 min (this describes the legacy background sync)
+
+### New SQL analytics endpoint metadata sync (PREVIEW, May 2026)
+
+Opt-in faster sync that keeps data queryable within seconds of landing. **Preview** — and applies to **NEW SQL analytics endpoints only**: existing endpoints in the workspace stay on the legacy sync above.
+
+- **Enable**: Workspace settings → Warehouse → New metadata sync (preview). Only endpoints created *after* enabling get the new sync.
+- **Architecture**: external-tables-based Delta-log parsing with decoupled schema-vs-data change detection (schema changes and data changes refresh separately), plus a periodic background refresh and on-demand refresh when a read query hits stale data.
+- **New DMV** `sys.dm_db_external_tables_log_status` — `last_update_time_utc`, `latest_log_version`, `latest_checkpoint_version`, `is_blocked` (`1` = last update blocked, `0` = succeeded).
+- **Targeted manual refresh** (new-sync endpoints only, for data-only changes):
+
+  ```sql
+  EXEC sys.sp_dw_refresh_ext_table 'dbo.<table>';
+  ```
+
+  For schema changes (add/drop tables or columns, type changes) use the full-item Refresh SQL endpoint metadata REST API instead.
+- **Limitations**: no support for multi-part checkpoint (a deprecated Delta feature — tables containing them fail to update); cannot be enabled when the workspace uses workspace private link.
 
 ## Notebook REST API / UI Upload
 
