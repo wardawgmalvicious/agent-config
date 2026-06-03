@@ -59,7 +59,7 @@ The 3 highest-leverage entry points (concept overview, performance guidelines, s
 ## Backup, restore, time travel
 
 - [Restore in-place](https://learn.microsoft.com/fabric/data-warehouse/restore-in-place) — point-in-time restore from restore points; for accidental corruption, dev-test reset, or rollback after a failed release.
-- [Time travel — query data as it existed in the past](https://learn.microsoft.com/fabric/data-warehouse/time-travel) — `OPTION (FOR TIMESTAMP AS OF ...)` syntax and rules (UTC, single per SELECT, current schema returned).
+- [Time travel — query data as it existed in the past](https://learn.microsoft.com/fabric/data-warehouse/time-travel) — `OPTION (FOR TIMESTAMP AS OF ...)` syntax and rules (UTC, single per SELECT, current schema returned). Extended to the **SQL analytics endpoint (preview, May 2026)** — requires New metadata sync enabled; retention there is governed by Delta VACUUM settings per table, not the Warehouse configurable retention. DML time travel stays Warehouse-only.
 - [Clone table](https://learn.microsoft.com/fabric/data-warehouse/clone-table) — zero-copy table cloning; permission and inheritance behavior (RLS / DDM / constraints inherited).
 
 ## Source control, CI/CD, REST API

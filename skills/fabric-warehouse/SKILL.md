@@ -177,6 +177,16 @@ OPTION (FOR TIMESTAMP AS OF '2026-03-01T08:00:00.000');
 - **Cannot** be used in `CREATE VIEW` definitions (but you can query views with it).
 - Returns the **current schema** — dropped columns won't appear in time-travel results.
 - Drop + recreate resets history.
+- **DML time travel** (`INSERT...SELECT`, CTAS, `SELECT INTO` carrying the hint) is **Warehouse-only**.
+
+### SQL analytics endpoint time travel (preview)
+
+Time travel extended to the **SQL analytics endpoint** in May 2026 (preview) — same `OPTION (FOR TIMESTAMP AS OF '...')` read-only `SELECT` syntax, UTC, `yyyy-MM-ddTHH:mm:ss[.fff]` (max 3 fractional digits). Distinct from the Warehouse behavior above:
+
+- **Gated on New metadata sync.** Only enabled for SQLEPs **created with [New metadata sync (preview)](https://learn.microsoft.com/fabric/data-engineering/sql-analytics-endpoint-metadata-sync#new-metadata-sync-preview)** turned on (Workspace settings → Warehouse). Endpoints on legacy metadata sync don't get time travel.
+- **Retention is NOT the Warehouse 1–120 day window.** For a Lakehouse SQL analytics endpoint the time-travel window is governed **per table by Delta VACUUM retention** (`delta.logRetentionDuration`, default 30 days; VACUUM keeps unreferenced files 7 days by default) — controlled through Lakehouse table maintenance, not warehouse `data-retention`. Aggressive VACUUM shortens how far back you can travel even if a version still shows in table history.
+- **Read-only only** — no DML time-travel variants (SQLEP has no DML anyway).
+- Same CLS / RLS / DDM enforcement, single-hint-per-`SELECT`, current-schema, and view limitations as Warehouse.
 - Works in stored procedures via `sp_executesql`.
 
 ### Warehouse Snapshots (GA)
