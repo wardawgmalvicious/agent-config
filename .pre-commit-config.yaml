@@ -3,6 +3,7 @@ repos:
     rev: v8.30.1
     hooks:
       - id: gitleaks
+        name: Scan staged changes for secrets (gitleaks)
 
   - repo: local
     hooks:
