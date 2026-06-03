@@ -1,6 +1,6 @@
 ---
 name: fabric-data-agent
-description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A built on Azure OpenAI Assistant APIs over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / Microsoft Graph (up to 5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries up to 100 per source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (scope to the right layer, iterate against real questions, version control alongside data platform code), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources). Python SDK (incl. programmatic evaluation), Copilot Studio, and Azure AI Foundry / Agent Service integrations remain in preview."
+description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A built on Azure OpenAI Assistant APIs over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / Microsoft Graph (≤5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (scope to the right layer, iterate against real questions, version control alongside data platform code), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources). Python SDK (incl. programmatic eval), Copilot Studio, Azure AI Foundry / Agent Service integrations, and service-principal auth for the published query endpoint (not on Foundry/Copilot or KQL) all remain in preview."
 paths:
   - "**/*.DataAgent/**"
 ---
@@ -20,6 +20,20 @@ A Fabric Data Agent is a conversational Q&A interface built on Azure OpenAI Assi
 Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power BI Semantic Model, Fabric SQL Database, Mirrored Database, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**.
 
 Read-only by design — it never generates create/update/delete queries.
+
+---
+
+## Authentication modes for consuming an agent
+
+How a caller authenticates depends on the consumption surface:
+
+- **In-product chat (GA)** — runs under your signed-in Microsoft Entra **user** identity and your workspace/data permissions. No token or key to supply; Fabric uses a Microsoft-managed Azure OpenAI Assistant and handles auth for you.
+- **Foundry / Copilot Studio integration (preview)** — identity passthrough (On-Behalf-Of): the integration runs under the **end user's** identity. Service principal auth is **not** supported on these surfaces — each end user needs access to the agent and its underlying data sources.
+- **Service principal (SPN) auth — preview** — call the *published data agent query endpoint* directly from automation, background services, custom apps, and CI/CD without a signed-in user. The SPN authenticates to Entra via the **client-credentials flow**, requests a token for the Fabric resource (`https://analysis.windows.net/powerbi/api/.default`), and passes it as a bearer token. This endpoint is for asking natural-language questions only — **not** for managing or configuring the agent.
+
+SPN setup (high level): register an app in Entra ID → enable the tenant setting **Service principals can use Fabric APIs** (Developer settings) → grant the SPN **Member** or **Contributor** on the agent's workspace → grant it **read** on every attached data source. The agent runs queries under the calling identity, so the SPN only sees data it has been granted.
+
+SPN limitations (preview): **managed identities are not supported** (use an SPN); the SPN needs explicit read access to *every* attached source — sharing only the agent item is not enough; and SPN auth is **not yet supported for KQL database (Kusto) sources**.
 
 ---
 
@@ -273,8 +287,9 @@ See [assets/example-retail-agent.md](assets/example-retail-agent.md) for a compl
 - Microsoft Learn: [Data agent configurations](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-configurations)
 - Microsoft Learn: [Fabric data agent concept](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent)
 - Microsoft Learn: [Data agent tenant settings](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings)
+- Microsoft Learn: [Use service principal authentication with Fabric data agent (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-service-principal)
 - Comprehensive MS Learn link bundle (create / consume / Foundry / governance): [references/REFERENCE.md](references/REFERENCE.md)
 
 ---
 
-Last updated: 2026-05-18
+Last updated: 2026-06-03
