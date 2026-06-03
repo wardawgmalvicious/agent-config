@@ -28,6 +28,8 @@ description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (
 | Cross-database query fails | Items in different regions or workspaces | All items must share same workspace AND region |
 | Notebook upload `400 exceptionCulprit:1` | Cell `source` is a bare string, not an array | Convert every cell's `source` to array-of-strings form (`["line\n", "line\n", "last"]`). Applies to markdown and code cells. |
 
+> **Slow SQLEP — new metadata sync (preview, May 2026):** on endpoints created with the new opt-in metadata sync, target a single table with `EXEC sys.sp_dw_refresh_ext_table '<schema.table>'` and inspect last sync time / blocked state via `sys.dm_db_external_tables_log_status`. Full preview note (scope, enablement, limitations): [[fabric-spark]].
+
 ---
 
 ## Best Practices Summary
