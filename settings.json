@@ -29,6 +29,6 @@
     "claude-code-setup@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {},
-  "effortLevel": "xhigh",
+  "effortLevel": "max",
   "autoUpdatesChannel": "latest"
 }
