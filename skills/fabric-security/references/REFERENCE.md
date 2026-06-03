@@ -19,11 +19,11 @@ The 3 highest-leverage entry points (security overview, permission model, OneLak
 
 ## OneLake security (RLS / CLS / OLS at the lake layer)
 
-- [OneLake security — get started](https://learn.microsoft.com/fabric/onelake/security/get-started-security) — the OneLake security model (newer than the SQL-only RLS/CLS), workspace-permission interaction, ReadData / ReadAll meaning under OneLake security. Required first read before defining lake-level roles.
+- [OneLake security — get started](https://learn.microsoft.com/fabric/onelake/security/get-started-onelake-security) — the OneLake security model (GA May 2026; data access roles, ReadWrite, DefaultReader virtualized membership, enabling user's-identity mode on the SQL analytics endpoint). Required first read before defining lake-level roles.
 - [OneLake security access control model](https://learn.microsoft.com/fabric/onelake/security/data-access-control-model) — folder hierarchy + role evaluation, shortcut behavior (target permissions vs listing), RLS / CLS / OLS interaction.
-- [Row-level security in OneLake (preview)](https://learn.microsoft.com/fabric/onelake/security/row-level-security) — RLS rule syntax, supported operators, character limit, RLS+CLS combination caveats.
-- [Column-level security in OneLake (preview)](https://learn.microsoft.com/fabric/onelake/security/column-level-security) — column hiding, single-role RLS+CLS combination requirement.
-- [OneLake security for SQL analytics endpoints (preview)](https://learn.microsoft.com/fabric/onelake/security/sql-analytics-endpoint-onelake-security) — user identity vs delegated identity modes; per-object security control matrix; bypass behavior for Admin/Member/Contributor.
+- [Row-level security in OneLake](https://learn.microsoft.com/fabric/onelake/security/row-level-security) — RLS rule syntax, supported operators, character limit, RLS+CLS combination caveats. (GA May 2026; enforced across all Fabric engines.)
+- [Column-level security in OneLake](https://learn.microsoft.com/fabric/onelake/security/column-level-security) — column hiding, single-role RLS+CLS combination requirement; CLS in the SQL endpoint uses deny/intersection semantics. (GA May 2026.)
+- [OneLake security for SQL analytics endpoints](https://learn.microsoft.com/fabric/onelake/security/sql-analytics-endpoint-onelake-security) — user's-identity vs delegated-identity modes (one-time per-endpoint switch under the Security tab); per-object security control matrix; bypass behavior for Admin/Member/Contributor. (GA May 2026; user's-identity mode required for OneLake security roles to enforce on the SQL endpoint.)
 
 ## Per-item authorization (SQL granular, Direct Lake)
 
