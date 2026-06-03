@@ -177,6 +177,24 @@ The config file resolves source folders, target workspace IDs/names, and per-env
 
 **When to use `fab deploy` vs Power BI deployment pipelines:** `fab deploy` is **source-of-truth-is-Git** (workspace = artifact of the deploy). Power BI deployment pipelines is **source-of-truth-is-workspace** (dev workspace promotes to test/prod workspaces via the service-side pipeline). They are distinct surfaces — don't mix.
 
+### Built-in Azure DevOps task (`FabricCLI@1`, preview)
+
+There are two ways to run `fab` in an Azure DevOps pipeline:
+
+1. **Install-then-script** (the pattern in the [fabric-cicd ADO tutorial](https://learn.microsoft.com/fabric/cicd/tutorial-fabric-cicd-azure-devops)) — a `pip install ms-fabric-cli` step followed by a script step that calls `fab`. Works everywhere, but you own the install/version pinning in every pipeline.
+2. **Built-in task** (preview, March 2026) — the [Azure DevOps Pipelines extension for Fabric](https://marketplace.visualstudio.com/items?itemName=ms-fabric.fabric-devops-pipelines) (marketplace ID `ms-fabric.fabric-devops-pipelines`) ships `fab` as a native `FabricCLI@1` task. The CLI is auto-provisioned in the pipeline runtime — **no `pip install` step**. Auth is via an Azure DevOps **service connection** to your Fabric tenant (rather than passing SPN env vars into a script). Get started at [aka.ms/FabCLI](https://aka.ms/FabCLI).
+
+```yaml
+- task: FabricCLI@1
+  inputs:
+    scriptType: 'pscore'          # ps | pscore | batch | bash
+    scriptLocation: 'inlineScript'
+    inlineScript: 'fab ls'
+    FabricCLIVersion: 'v1.2.0'    # pin the CLI version
+```
+
+Prefer the built-in task for new pipelines (less boilerplate, service-connection auth); keep install-then-script when you need a CLI version the task doesn't yet offer, a self-hosted agent, or non-ADO CI. The task is **preview** — pin `FabricCLIVersion` and validate before relying on it for prod promotion.
+
 ## Deployment Pipelines (Power BI service-side)
 
 For the service-side stage-to-stage deployment pipelines (different feature from `fab deploy`), there are no native verbs — use `fab api -A powerbi`:
