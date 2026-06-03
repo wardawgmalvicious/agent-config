@@ -14,6 +14,7 @@ Base URL: `https://api.fabric.microsoft.com/v1`
 3. List items in workspace: `GET /v1/workspaces/{wsId}/items?type={ItemType}`
 4. Type-specific endpoints return extra `properties` (connection strings, etc.):
    `GET /v1/workspaces/{wsId}/{lakehouses|warehouses|notebooks|semanticModels|...}`
+5. Cross-workspace discovery (no `wsId` in path): `POST /v1/catalog/search` with `{ "search": "Sales Revenue", "pageSize": 50, "filter": "Type eq 'Lakehouse'" }` → permission-trimmed items (each with `id` GUID + `workspaceId`) across your whole accessible estate, by catalog metadata (name/description/workspace name). OneLake Catalog Search API (Preview, March 2026); same capability as the `fab find` CLI verb (fabric-cli skill) and the Fabric Core MCP server's `search_catalog` tool.
 
 ## Sensitivity Labels on Item Responses
 
