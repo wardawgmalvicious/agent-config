@@ -23,7 +23,7 @@ Five server families ride on different runtimes:
 - **`uvx`-based stdio servers** (`fabric-rti-mcp`) need [`uv`](https://docs.astral.sh/uv/) on `PATH` — `uvx` is the Python tool-runner shipped with `uv` (the `npx` analog for PyPI-packaged tools). The server is distributed on PyPI as `microsoft-fabric-rti-mcp` and downloaded on first launch.
 - **`dnx`-based stdio servers** (`fabric-data-factory-mcp`) need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) on `PATH` — `dnx` is the .NET tool-runner that ships with it (the `npx` analog for NuGet-packaged tools). The server is distributed via NuGet and downloaded on first launch.
 - **Docker MCP Gateway servers** (`github-mcp`, `azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view.
-- **Hosted http endpoints** (`microsoft-learn-mcp` plus the Fabric-hosted `powerbi-remote-mcp` / `kql-global-mcp`, and the project-scope `eventhouse-remote-mcp` / `activator-remote-mcp`) need no local runtime. ⚠ **The Fabric-hosted ones at `api.fabric.microsoft.com/v1/mcp/*` currently error from Claude Code** — Microsoft's auth stack requires OAuth Dynamic Client Registration (DCR) that Claude Code doesn't support. They work from VS Code Copilot / GitHub Copilot CLI (first-party client IDs). The global and project templates retain them as reference; the working `~/.claude.json` and project-level `.mcp.json` should omit them until either side adds support. `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
+- **Hosted http endpoints** (`microsoft-learn-mcp` plus the Fabric-hosted `powerbi-remote-mcp` / `fabric-core-remote-mcp` / `kql-global-mcp`, and the project-scope `eventhouse-remote-mcp` / `activator-remote-mcp`) need no local runtime. ⚠ **The Fabric-hosted ones at `api.fabric.microsoft.com/v1/mcp/*` currently error from Claude Code** — Microsoft's auth stack requires OAuth Dynamic Client Registration (DCR) that Claude Code doesn't support. They work from VS Code Copilot / GitHub Copilot CLI (first-party client IDs). The global and project templates retain them as reference; the working `~/.claude.json` and project-level `.mcp.json` should omit them until either side adds support. `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
 
 Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows username before merging. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
 
@@ -38,6 +38,7 @@ Merge the `mcpServers` object from the template into the **top level** of `~/.cl
         "powerbi-modeling-mcp":    { /* from template */ },
         "powerbi-remote-mcp":      { /* template-only — DCR-unsupported from Claude Code */ },
         "microsoft-fabric-mcp":    { /* from template */ },
+        "fabric-core-remote-mcp":  { /* template-only — DCR-unsupported from Claude Code */ },
         "fabric-rti-mcp":          { /* from template */ },
         "kql-global-mcp":          { /* template-only — DCR-unsupported from Claude Code */ },
         "fabric-data-factory-mcp": { /* from template */ },
@@ -50,7 +51,7 @@ Merge the `mcpServers` object from the template into the **top level** of `~/.cl
 }
 ```
 
-> Skip the two **template-only** entries above when merging into your working `~/.claude.json` — they're retained in `.mcp.global.template.json` for reference, but produce auth errors from Claude Code (see Prerequisites for the DCR background). For RTI / KQL workflows from Claude Code, use the local `fabric-rti-mcp` instead.
+> Skip the three **template-only** entries above when merging into your working `~/.claude.json` — they're retained in `.mcp.global.template.json` for reference, but produce auth errors from Claude Code (see Prerequisites for the DCR background). For Fabric-core workflows from Claude Code, use the stdio `microsoft-fabric-mcp` instead; for RTI / KQL, use the local `fabric-rti-mcp`.
 >
 > **Don't** place these under `projects.<path>.mcpServers` — that is **local scope** (per-project, private), not user scope.
 
@@ -67,6 +68,7 @@ claude mcp add --scope user microsoft-learn-mcp --transport http https://learn.m
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Local Power BI Desktop / TOM operations — tables, measures, relationships, partitions, DAX query execution against an open model. |
 | `powerbi-remote-mcp` ⚠ | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | Hosted Fabric service for Power BI — workspace-scoped tools. **DCR-unsupported from Claude Code; works from VS Code Copilot.** |
 | `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. |
+| `fabric-core-remote-mcp` ⚠ | http (`api.fabric.microsoft.com/v1/mcp/core`) | Hosted Fabric Core MCP — natural-language workspace + item CRUD, role assignments, capacity ops via OAuth-authenticated REST. Functional overlap with stdio `microsoft-fabric-mcp` for the core surface. **DCR-unsupported from Claude Code; works from VS Code Copilot.** Use `microsoft-fabric-mcp` instead from Claude Code. Preview as of 2026-05. |
 | `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. PyPI-distributed via `microsoft-fabric-rti-mcp`; covers most RTI workflows without needing the remote endpoints. |
 | `kql-global-mcp` ⚠ | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint`) | Hosted Fabric global KQL endpoint — workspace + database IDs passed per tool call rather than baked into the URL. **DCR-unsupported from Claude Code; works from VS Code Copilot.** Use `fabric-rti-mcp` instead from Claude Code. |
 | `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
