@@ -32,6 +32,10 @@
             "type": "http",
             "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<KqlDatabaseId>/kqlEndpoint"
         },
+        "warehouse-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<WarehouseId>/sqlEndpoint"
+        },
         "activator-remote-mcp": {
             "type": "http",
             "url": "https://api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>"
