@@ -11,7 +11,7 @@ description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (
 | `403 Forbidden` on Power BI API | User has Viewer role | Refresh/data sources/permissions APIs require Contributor+. Stop retrying — it's permissions. |
 | `404 EntityNotFound` on getDefinition | Insufficient permissions masquerading as 404 | Check workspace role first; don't retry with different URLs |
 | `PowerBIEntityNotFound` / `EntityNotFound` from pipeline, Variable Library, or REST call | Used `.platform` `logicalId` instead of runtime item ID | Fetch runtime ID from Fabric portal URL or `GET /v1/workspaces/{wsId}/items`. See fabric-rest-api skill (Item IDs section) |
-| `Login failed... database not found` | Wrong Initial Catalog | Use item display name, not FQDN. Verify workspace role. |
+| `Login failed... database not found` | Wrong Initial Catalog | Use item display name, not FQDN. Verify workspace role. Connections with no Initial Catalog now land deterministically on `master` (drill-verified) — confirm with `SELECT DB_NAME()` and switch with `USE [<item display name>]` instead of reconnecting. |
 | Error 24556/24706 snapshot conflict | Concurrent writes to same table | Serialize writes; retry with backoff |
 | `nvarchar` / `datetime` / `money` errors | Unsupported types in Fabric Warehouse | Use `varchar`, `datetime2(6)`, `decimal(19,4)` (Warehouse only — fabric-database skill supports these) |
 | COPY INTO auth error | Missing Storage Blob Data Reader on ADLS | Grant role or use SAS in CREDENTIAL |
@@ -21,7 +21,7 @@ description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (
 | Parts missing after updateDefinition | Only modified parts sent | Must include ALL parts in every update |
 | `DefaultJob` in job execution | Wrong jobType | Use type-specific values: `RunNotebook`, `Pipeline`, `SparkJob`, `Refresh` |
 | `sqlcmd` not found or ODBC errors | Wrong sqlcmd version | Use Go version: `winget install sqlcmd` (not ODBC `/opt/mssql-tools/` version) |
-| Slow Lakehouse SQLEP queries | Small-file problem | Run OPTIMIZE and VACUUM via Spark |
+| Slow / stale Lakehouse SQLEP queries | Small-file problem, or metadata-sync lag on newly-landed data | Run OPTIMIZE and VACUUM via Spark. If on the new metadata-sync preview, diagnose staleness via the DMV / targeted refresh in the note below |
 | Query Insights empty | Views not yet generated after creation | Wait ~2 minutes |
 | OneLake 401 | Wrong storage audience | Must use `https://storage.azure.com/.default` exactly |
 | TDS connection timeout | Port 1433 blocked | Open outbound TCP 1433; allow `*.datawarehouse.fabric.microsoft.com` |
