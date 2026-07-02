@@ -1,6 +1,6 @@
 ---
 name: fabric-warehouse
-description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid) and replacements, unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, ALTER COLUMN, cursors, MERGE-preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename April 2025+, IDENTITY preview, transactional ALTER TABLE GA April 2026, CTAS workaround for type changes), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/explicit columns/variables), COPY INTO with AUTO_CREATE_TABLE (PARQUET/CSV/JSONL), OPENROWSET surface, snapshot-only isolation (24556/24706 retry pattern), DDL inside transactions (CREATE/DROP/TRUNCATE/CTAS/sp_rename/ALTER TABLE — Sch-M lock blocks reads), Time Travel (UTC, single per SELECT) + Warehouse Snapshots (GA, REST/portal not T-SQL), pipeline integration via Script activity (NOT Stored Procedure)."
+description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename April 2025+, IDENTITY preview, transactional ALTER TABLE GA April 2026, CTAS workaround for type changes), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/explicit columns/variables), COPY INTO with AUTO_CREATE_TABLE (PARQUET/CSV/JSONL) + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry pattern), DDL inside transactions (Sch-M lock blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA, REST/portal not T-SQL), sp_get_table_health_metrics (SQLEP), source control/CI-CD (preview), pipeline calls via Script activity (NOT Stored Procedure)."
 paths:
   - "**/*.Warehouse/**/*.sql"
 ---
@@ -70,9 +70,31 @@ paths:
 | Rename table | ✅ | `EXEC sp_rename 'OldName', 'NewName'` |
 | Add / drop `NONCLUSTERED NOT ENFORCED` PK / UNIQUE / FK | ✅ | `ALTER TABLE t ADD CONSTRAINT ... NONCLUSTERED NOT ENFORCED` / `DROP CONSTRAINT` |
 | ALTER TABLE inside `BEGIN TRAN ... COMMIT` | ✅ April 2026+ GA | All supported ALTER TABLE variants run atomically; any failure rolls every schema change back |
-| Change column type / nullability / Add NOT NULL | ❌ | CTAS workaround: create new table with desired schema, `DROP TABLE`, `sp_rename`, re-add constraints/security |
+| `ALTER COLUMN` — **widen** type (metadata-only) | 🔶 Preview | `ALTER TABLE t ALTER COLUMN col wider_type`. Metadata-only type-widening only (see subsection below). No narrowing, no `NULL`→`NOT NULL`. |
+| `ALTER COLUMN` — narrow type / `NULL`→`NOT NULL` / retype IDENTITY / change collation | ❌ | Not supported even in preview. CTAS workaround: create new table with desired schema, `DROP TABLE`, `sp_rename`, re-add constraints/security |
 
 CTAS workaround **destroys time-travel history and security (GRANT/DENY)** on the original table — re-apply security after the swap.
+
+### `ALTER COLUMN` (Preview)
+
+`ALTER TABLE ... ALTER COLUMN` is **in preview**. It supports **metadata-only schema evolution** — only changes that don't require validating or rewriting the underlying Parquet files (i.e. **type widening** compatible with existing stored data). Takes a **Sch-M lock** for the duration (blocks/blocked by concurrent workloads).
+
+**Supported conversions (widening / interchange only):**
+
+| Category | Source → Target |
+|---|---|
+| Integer widening | `smallint`→`int`/`bigint`; `int`→`bigint` |
+| Floating-point widening | `real`→`float`; `smallint`/`int`→`float` |
+| Decimal widening | `decimal(p,s)`→`decimal(p+k1, s+k2)` where k1 ≥ k2 ≥ 0; `smallint`/`int`→`decimal(10+k1, k2)` |
+| Decimal / numeric interchange | `decimal(p,s)` ↔ `numeric(p,s)` |
+| Float / real interchange | `float(n<25)`→`real`; `float(n)`→`float(n+m)`; `real`→`float(n)` |
+| Time widening | `time`→`datetime2`; `datetime2(n)`→`datetime2(n+m)` |
+| String widening | `char(n)`→`varchar(n+m)`/`char(n+m)`; `varchar(n)`→`varchar(n+m)`/`char(n+m)` |
+| Binary widening | `varbinary(n)`→`varbinary(n+m)` |
+
+**NOT supported (use the CTAS workaround):** narrowing / reducing size of the same type · `NULL`→`NOT NULL` · altering an IDENTITY column · changing collation · decreasing precision on `time`→`datetime2` · a column with manually-created stats (`DROP STATISTICS` first) · a column that is part of the data-clustering (`CLUSTER BY`) index. `time`→`datetime2` sets the date component to `1970-01-01` (Delta/Unix epoch), unlike SQL Server's `1900-01-01`.
+
+**Cross-engine caveat:** widening surfaces as Delta **type widening** at the storage layer — external engines reading the same Delta tables must support Delta type-widening reads. To strip type widening from the schema, rebuild with CTAS.
 
 ## IDENTITY Columns (Preview)
 
@@ -92,27 +114,32 @@ CREATE TABLE dbo.DimProduct (
 | Capability | Warehouse |
 |---|---|
 | CREATE / ALTER / DROP base tables | ✅ |
-| INSERT / UPDATE / DELETE / MERGE | ✅ (MERGE preview) |
+| INSERT / UPDATE / DELETE / MERGE | ✅ (MERGE **GA Jan 2026**) |
 | COPY INTO, OPENROWSET (read + ingest) | ✅ |
+| `bcp` bulk copy utility | 🔶 Preview (`BULK LOAD` / `BULK INSERT` T-SQL not supported) |
 | Transactions | ✅ (snapshot isolation only) |
-| Time travel (`OPTION (FOR TIMESTAMP AS OF ...)`) | ✅ (30-day retention) |
+| Time travel (`OPTION (FOR TIMESTAMP AS OF ...)`) | ✅ (1–120 day retention, default 30) |
+| Time travel on **SQL analytics endpoint** | 🔶 Preview (June 2026 — New metadata sync only) |
 | Warehouse Snapshots | ✅ (GA — created via REST API / portal, not T-SQL) |
+| `sys.sp_get_table_health_metrics` (SQLEP, Lakehouse tables) | ✅ (GA June 2026) |
+| Source control (Git integration + deployment pipelines) | 🔶 Preview |
 | CREATE VIEW / FUNCTION / PROCEDURE / SCHEMA | ✅ |
 | TRUNCATE TABLE | ✅ |
-| ALTER COLUMN | ❌ |
+| `ALTER COLUMN` | 🔶 Preview |
 | Cursors | ❌ |
 | `DEFAULT` / `CHECK`; enforced FK / PK / UNIQUE | ❌ |
 
 ## Warehouse Authoring Rules
 
-- **MERGE is preview-only** with table-level conflict detection. Use DELETE + INSERT for production upserts.
-- **ALTER COLUMN is not supported.** Use CTAS + sp_rename workaround for schema evolution (see Schema Evolution).
+- **MERGE is GA (January 2026)** — single-statement conditional INSERT/UPDATE/DELETE. Takes an Intent Exclusive (`IX`) lock like other DML, but under snapshot isolation a MERGE **conflicts with any concurrent DML on the same table** (even append-only MERGE) — serialize writes or fall back to DELETE + INSERT where concurrency is high.
+- **ALTER COLUMN is in preview** and **widening-only** (metadata-only, no Parquet rewrite): widen ints/floats/decimals/strings/binary/time, or `decimal`↔`numeric`. It **cannot** narrow, tighten `NULL`→`NOT NULL`, retype IDENTITY, or change collation — use the CTAS + sp_rename workaround for those (see [ALTER COLUMN (Preview)](#alter-column-preview)).
 - **Snapshot isolation only** — write-write conflicts are detected at the table level. Serialize writes to the same table.
 - **CTAS over CREATE TABLE + INSERT** — parallel, single-operation, better performance.
 - **TRUNCATE TABLE over DELETE FROM** (without WHERE) — faster, preserves time-travel history.
 - **INSERT...SELECT over singleton INSERT...VALUES** at scale — singletons create tiny Parquet files. Remediate existing fragmentation: `CREATE TABLE T_Clean AS SELECT * FROM T; DROP TABLE T; EXEC sp_rename 'T_Clean', 'T';`
 - **Transactions**: keep short to reduce conflict window. Error 24556 / 24706 = snapshot conflict → serialize and retry with exponential backoff.
 - **COPY INTO** for external file ingestion — highest throughput. `FILE_TYPE`: `PARQUET` / `CSV` / `JSONL` (JSONL added April 2026). Requires Storage Blob Data Reader on ADLS or SAS in CREDENTIAL. Set `WITH (AUTO_CREATE_TABLE = 'TRUE')` to create the target table on the fly. Files ≥ 4 MB optimal.
+- **`bcp` is supported as a preview feature** for bulk load/export from the command line. The `BULK LOAD` and `BULK INSERT` T-SQL statements are **not** supported — use COPY INTO / OPENROWSET for in-engine ingestion instead.
 
 ### CTAS Synapse-vs-Fabric rules
 
@@ -181,7 +208,7 @@ OPTION (FOR TIMESTAMP AS OF '2026-03-01T08:00:00.000');
 
 ### SQL analytics endpoint time travel (preview)
 
-Time travel extended to the **SQL analytics endpoint** in May 2026 (preview) — same `OPTION (FOR TIMESTAMP AS OF '...')` read-only `SELECT` syntax, UTC, `yyyy-MM-ddTHH:mm:ss[.fff]` (max 3 fractional digits). Distinct from the Warehouse behavior above:
+Time travel extended to the **SQL analytics endpoint** in June 2026 (preview) — same `OPTION (FOR TIMESTAMP AS OF '...')` read-only `SELECT` syntax, UTC, `yyyy-MM-ddTHH:mm:ss[.fff]` (max 3 fractional digits). Distinct from the Warehouse behavior above:
 
 - **Gated on New metadata sync.** Only enabled for SQLEPs **created with [New metadata sync (preview)](https://learn.microsoft.com/fabric/data-engineering/sql-analytics-endpoint-metadata-sync#new-metadata-sync-preview)** turned on (Workspace settings → Warehouse). Endpoints on legacy metadata sync don't get time travel.
 - **Retention is NOT the Warehouse 1–120 day window.** For a Lakehouse SQL analytics endpoint the time-travel window is governed **per table by Delta VACUUM retention** (`delta.logRetentionDuration`, default 30 days; VACUUM keeps unreferenced files 7 days by default) — controlled through Lakehouse table maintenance, not warehouse `data-retention`. Aggressive VACUUM shortens how far back you can travel even if a version still shows in table history.
@@ -196,6 +223,36 @@ Time travel extended to the **SQL analytics endpoint** in May 2026 (preview) —
 - Query as `SnapshotName.dbo.Table` via 3-part naming.
 - Up to 30 days retention; zero-copy (reference existing Parquet files); atomically refreshable to a new point in time.
 - Use cases: financial close (lock KPIs), audit comparisons, stable Power BI reporting during ETL, data recovery.
+
+## Table Health Metrics — `sys.sp_get_table_health_metrics` (GA June 2026)
+
+Built-in system stored procedure that returns file-level storage health for a **Lakehouse Delta table**, exposed on the **SQL analytics endpoint** (read-only). Use it to drive *check-then-act* maintenance — run `OPTIMIZE` only when the table actually needs it, instead of on a blind schedule.
+
+```sql
+EXEC sys.sp_get_table_health_metrics @table_name = 'dbo.FactSales';
+-- positional form also works:
+EXEC sys.sp_get_table_health_metrics 'sales.SalesOrderFacts';
+```
+
+- `@table_name` is **nvarchar(256)**, required, `schema.table` (schema optional for `dbo`).
+- Caller needs at least **VIEW DEFINITION** on the target table.
+- Returns a **single row**: `PotentialAnomalyType` + `PotentialAnomalyDescription`, snapshot/checkpoint versions, summary counts (`PhysicalRowCount`, `DeletedRowCount`, `FileCount`, `FileSizeInBytes`), and histogram bins for file row-count, deleted-row-count, and file-size distribution.
+- **`PotentialAnomalyType` codes** (one per run — highest severity only; re-run after maintenance to surface the next): `0` None · `1` Invalid file statistics · `2` Many deleted rows · `3` Many small files · `4` No recent checkpoint.
+- Healthy DW-target layout: most files in `FileRowCount[1M,10M)` (~2M rows/file) and `FileSize[1GiB,16GiB)` (~1.2 GB/file). Concentration in small bins ⇒ small-file problem ⇒ `OPTIMIZE`.
+- File-metadata inspection only (no rowgroup analysis). Empty tables return all-zero histograms with `PotentialAnomalyType = 0`.
+- SQLEP is read-only — you **can't** run `OPTIMIZE` from it. Trigger the actual compaction from Spark / Lakehouse / a pipeline notebook.
+
+**Pipeline pattern**: call it from a **Script activity** (not the Stored Procedure activity — only Script exposes the structured JSON result set for a downstream **If Condition** on `PotentialAnomalyType > 0`), then branch into a notebook that runs `OPTIMIZE`. Note before `VACUUM`: removing old files permanently shortens the time-travel window.
+
+## Source Control and CI/CD (Preview)
+
+Source control for Fabric Warehouse is a **preview** feature — both Git integration and deployment pipelines.
+
+- **Git integration** (workspace-level, Azure DevOps or GitHub): commit/sync warehouse objects, branch out to feature workspaces, revert, bi-directional sync; automatable via Fabric REST APIs. Warehouse appears as a supported item (preview) in the Source control panel.
+- **Deployment pipelines**: promote across Dev → Test → Prod stages.
+- **IDE / local**: VS Code with **DacFx** (SQL database projects) for schema management, **SSMS** for interactive dev; external CI/CD via **SQLPackage CLI**, DacFx tasks, and REST APIs.
+- Use SQL database projects + Git for incremental object-level change and history; use deployment pipelines for environment promotion.
+- **Collation-mismatch gotcha**: promoting/branching/merging when source and target warehouses were created with different collations is **not supported** — deployment may succeed but dataset collation isn't reconciled. Fix with the `dw-collation-error-update-tmsl` script in the Fabric toolbox.
 
 ## Default Collation
 
