@@ -189,6 +189,97 @@ END
   `TRY`/`CATCH` for any multi-statement write.
 - Avoid output parameters when a result set or return value will do.
 
+## Fabric Warehouse string operators and functions
+
+Fabric Warehouse and the SQL analytics endpoint (also SQL Server 2025,
+Azure SQL DB/MI on the 2025 update policy) add ANSI string operators and
+fuzzy-match/Unicode functions. As of mid-2026 these are **Preview** —
+gate production use, and don't assume portability to Synapse dedicated
+SQL pools or pre-2025 SQL Server.
+
+### `||` and `||=` concatenation
+
+- `||` is the ANSI concatenation operator; `||=` is its compound-assignment
+  form (`SET @s ||= 'x'`). Prefer over `+` in new Warehouse code for
+  portability and predictable NULL handling.
+- Key semantic difference: `||` **always** yields `NULL` if any operand is
+  `NULL` (ANSI behavior) and ignores `SET CONCAT_NULL_YIELDS_NULL`. `+`
+  honors that setting. Don't mix `||` and `+` in one expression expecting
+  uniform NULL behavior.
+- Same 8,000-byte truncation rule as `+`: if the result exceeds 8,000
+  bytes and no operand is a large-value type (`VARCHAR(MAX)`/`NVARCHAR(MAX)`),
+  the result truncates. Cast one operand to `MAX` to avoid it.
+- `CAST`/`CONVERT` still required to concatenate non-character types
+  (numeric, date, binary-plus-space).
+
+```sql
+-- Good (ANSI, NULL-safe semantics explicit)
+SELECT cust.LastName || ', ' || cust.FirstName AS FullName
+FROM dbo.Customer AS cust;
+```
+
+### Fuzzy string matching
+
+Damerau-Levenshtein and Jaro-Winkler, as distance and similarity pairs.
+Inputs can't be `VARCHAR(MAX)`/`NVARCHAR(MAX)`. `NULL` input yields `NULL`.
+
+- `EDIT_DISTANCE(a, b [, max_distance])` → `INT`. Number of edits; `0` =
+  identical. Optional `max_distance` caps (and short-circuits) the compute.
+- `EDIT_DISTANCE_SIMILARITY(a, b)` → similarity score (higher = closer).
+- `JARO_WINKLER_DISTANCE(a, b)` → `FLOAT`. `0` = identical (it's a distance).
+- `JARO_WINKLER_SIMILARITY(a, b)` → `INT` `0`–`100`, `100` = identical.
+
+Note the inversion: for the distance functions lower is closer; for the
+similarity functions higher is closer. There is **no** function named
+`LEVENSHTEIN` or `JARO_WINKLER` — use the names above.
+
+```sql
+-- Fuzzy-join on near-matching names
+SELECT s.SupplierName, m.MasterName
+FROM dbo.StagingSupplier AS s
+INNER JOIN dbo.MasterSupplier AS m
+    ON JARO_WINKLER_SIMILARITY(s.SupplierName, m.MasterName) >= 90;
+```
+
+### `UNISTR`
+
+`UNISTR('...' [, 'escape_char'])` builds Unicode string literals from
+escape sequences: `\xxxx` (UTF-16 code point) or `\+xxxxxx` (Unicode code
+point). More flexible than `NCHAR` — handles multiple code points and
+literal text in one call. For `CHAR`/`VARCHAR` input the collation must be
+UTF-8; supply a custom escape char when `\` is inconvenient.
+
+```sql
+SELECT UNISTR(N'Hello! \D83D\DE00');   -- Hello! 😃
+```
+
+## Time travel — `OPTION (FOR TIMESTAMP AS OF ...)`
+
+Fabric Warehouse and SQL analytics endpoint (Preview) query prior data
+versions at the statement level via the `OPTION` clause. Format is
+`yyyy-MM-ddTHH:mm:ss[.fff]`, **UTC only**.
+
+- Bounded by the warehouse data-retention period (default 30 days,
+  configurable); the SQL analytics endpoint is bounded by Delta VACUUM
+  retention.
+- The hint applies to the **entire** statement — all joined Warehouse
+  tables resolve to the same timestamp. Declare it once per `SELECT`.
+- Read-only for the time-traveled data, but works as the source of
+  `INSERT INTO ... SELECT`, `CREATE TABLE AS SELECT` (CTAS), and
+  `SELECT INTO`. It does not affect session-scoped `#temp` tables.
+- Returns the *latest* table schema; a query referencing columns that
+  didn't exist at that timestamp fails.
+- The timestamp must be deterministic — a variable can't be passed
+  directly. Use `sp_executesql` (or a stored proc) to inject a strongly
+  typed `DATETIME`, formatting with `CONVERT(..., 126)`.
+
+```sql
+-- Query a table as of a past point in time (UTC)
+SELECT *
+FROM dbo.DimCustomer
+OPTION (FOR TIMESTAMP AS OF '2026-06-18T19:55:13.853');
+```
+
 ## Anti-patterns
 
 - `NOLOCK` / `READ UNCOMMITTED` as a "performance fix". Masks real
