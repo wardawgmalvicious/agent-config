@@ -35,9 +35,9 @@ For real-time analytics on the resulting events, pair an Eventstream with `fabri
 | **Azure Cosmos DB CDC** | Container-level change feed |
 | **Mirrored Database Delta CDF (preview, April 2026)** | New: stream row-level inserts/updates/deletes from a Mirrored Database's Delta Change Data Feed into Eventstream. Toggle via Mirrored DB config dashboard → **Delta table management** → **Enable delta change data feed**, or via `enableDeltaChangeDataFeed` in the [Mirrored DB REST API](https://learn.microsoft.com/fabric/mirroring/mirrored-database-rest-api#enable-delta-change-data-feed-for-a-mirrored-database). Connector reference: [extended capabilities](https://learn.microsoft.com/fabric/mirroring/extended-capabilities). |
 | **Azure Event Hubs / IoT Hub** | Native sources — no CDC layer |
-| **Apache Kafka / Amazon MSK / Confluent Cloud Kafka** | Kafka-protocol sources; mTLS support (preview) below |
+| **Apache Kafka / Amazon MSK / Confluent Cloud Kafka** | Kafka-protocol sources — base connector **GA (June 2026)**; SASL_SSL / SASL_PLAINTEXT / Microsoft Entra auth. Custom-CA / mTLS is still preview — see below |
 | **Amazon Kinesis Data Streams** | Single-shard or multi-shard |
-| **Azure Service Bus** | Queue or topic subscription |
+| **Azure Service Bus** | Queue or topic subscription — **GA (June 2026)** |
 | **Google Cloud Pub/Sub** | |
 | **Solace PubSub+** | |
 | **MQTT (preview)** | |
