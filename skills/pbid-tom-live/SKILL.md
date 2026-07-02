@@ -30,6 +30,8 @@ Each open `.pbix`/`.pbip` spawns one `msmdsrv.exe` on a random localhost port. W
 | Port file (Store) | MS Store install | `Get-Content "$env:LOCALAPPDATA\Packages\Microsoft.MicrosoftPowerBIDesktop_*\LocalState\AnalysisServicesWorkspaces\*\Data\msmdsrv.port.txt"` |
 | netstat | Any | Filter `netstat -ano` LISTENING rows by `(Get-Process msmdsrv).Id` |
 
+> **Watch (verified July 2026, preview)**: The [Power BI Desktop Bridge](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-desktop-bridge-overview) is a preview IPC surface hosted inside the Desktop process — a named pipe `pbi-desktop-bridge-<processId>` speaking JSON-RPC 2.0 (Content-Length framing), enabled by default under **Options → Preview Features → "Enable external tool access to Power BI Desktop through secure local APIs"**. Discover methods with `bridge.manifest` (call it first; the surface changes per Desktop version, and unsupported methods return `-32601 MethodNotFound`). This *could* eventually supersede the msmdsrv port-discovery + AS-proxy dance in this skill — pipe name keys off the PID (no `msmdsrv.port.txt` / `netstat` needed), and one Desktop window = one bridge. **Not there yet**: it's preview with an unstable API, currently oriented toward report-authoring / agentic scenarios, and does not replace TOM metadata + ADOMD DAX access covered here. Track the manifest and GA status before relying on it. Re-verify the Learn page before acting on this note.
+
 ### Connection Strings
 
 | Target | Connection String |
