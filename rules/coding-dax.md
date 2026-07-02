@@ -200,6 +200,68 @@ NAMEOF ( 'Sales', FULL, UNESCAPED )                         -- Sales
 - Variables and dynamic expressions are not allowed as `object` arguments.
 - Not supported in DirectQuery mode for calculated columns or RLS rules.
 
+## User-defined functions (UDFs)
+
+GA in Power BI Desktop and the Service as of the June 2026 release
+(requires database compatibility level 1702+). Package reusable DAX
+logic behind the `FUNCTION` keyword; callable from measures, calculated
+columns, visual calculations, and other UDFs. First-class model objects —
+author in DAX query view or TMDL view, browse under the *Functions* node
+in Model explorer.
+
+```dax
+DEFINE
+    /// AddTax returns amount including tax at the given rate.
+    /// @param {NUMERIC} amount - pre-tax amount
+    /// @param {NUMERIC} rate - tax rate; defaults to 10%
+    /// @returns amount grossed up by rate
+    FUNCTION AddTax = (
+            amount : NUMERIC,
+            rate : NUMERIC = 0.1
+        ) =>
+        amount * ( 1 + rate )
+
+EVALUATE
+{ AddTax ( 10 ), AddTax ( 10, 0.2 ) }
+-- Returns 11, 12
+```
+
+TMDL equivalent (note lowercase `function`):
+
+```tmdl
+createOrReplace
+    /// AddTax returns amount including tax at the given rate.
+    function AddTax = (amount : NUMERIC, rate : NUMERIC = 0.1) => amount * ( 1 + rate )
+```
+
+- **Type hints** are optional, in the form `[type] [subtype] [parameterMode]`.
+  Add them to make call sites safer and more predictable; omit everything
+  and a parameter defaults to `AnyVal val` (evaluated eagerly at call time).
+  - *Type*: `AnyVal` / `Scalar` / `Table` / `AnyRef` / `CalendarRef` /
+    `ColumnRef` / `MeasureRef` / `TableRef`.
+  - *Subtype* (scalar only): `Variant` / `Int64` / `Decimal` / `Double` /
+    `String` / `DateTime` / `Boolean` / `Numeric`. Specifying a subtype
+    implies `Scalar`.
+  - *ParameterMode*: `val` (eager — evaluated once in the caller's context
+    before entering the body; inherits row **and** filter context) or
+    `expr` (lazy — evaluated inside the body, so it inherits only filter
+    context and can be re-evaluated under `CALCULATE`/iterators). Reference
+    types must be `expr`.
+- **Optional (default-valued) parameters**: append `= <DefaultExpression>`
+  to make a parameter optional; the default is used when the caller omits
+  the argument.
+  - Unlike KQL/M, optional parameters may appear in **any** position — a
+    required parameter can follow an optional one, and callers skip an
+    argument with an empty slot: `AddTax ( , 0.2 )`. Arity is set by the
+    position of the *rightmost required* parameter.
+  - The default expression may only reference names visible where the UDF
+    is **defined**, not where it's called, and cannot reference another
+    optional parameter.
+  - The type hint is enforced against the default only when the default is
+    used; an explicit argument is checked against the hint instead.
+- Use `///` doc comments above the definition (`@param` / `@returns`) — they
+  surface as IntelliSense at call sites.
+
 ## Performance smells
 
 - `CALCULATE ( ..., FILTER ( ALL ( 'Table' ), ... ) )` patterns —
