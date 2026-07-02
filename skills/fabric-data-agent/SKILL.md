@@ -1,6 +1,6 @@
 ---
 name: fabric-data-agent
-description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A built on Azure OpenAI Assistant APIs over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / Microsoft Graph (≤5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (scope to the right layer, iterate against real questions, version control alongside data platform code), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources). Python SDK (incl. programmatic eval), Copilot Studio, Azure AI Foundry / Agent Service integrations, and service-principal auth for the published query endpoint (not on Foundry/Copilot or KQL) all remain in preview."
+description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A built on Azure OpenAI Assistant APIs over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / Microsoft Graph (≤5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (right-layer scoping, iterate on real questions, version control), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources). The Creator Agent ('Build agent with AI', SQL/Eventhouse only), M365 Copilot Agent Store + Copilot-in-Power-BI, Python SDK, Copilot Studio, Azure AI Foundry / Agent Service, and service-principal auth (not Foundry/Copilot or KQL) all remain in preview."
 paths:
   - "**/*.DataAgent/**"
 ---
@@ -15,7 +15,7 @@ A practical, reusable guide for configuring a Fabric Data Agent so it returns ac
 
 A Fabric Data Agent is a conversational Q&A interface built on Azure OpenAI Assistant APIs. It accepts natural-language questions, routes them to the right data source, generates a query (SQL / DAX / KQL / Microsoft Graph), validates it, executes it read-only, and returns a human-readable answer.
 
-**Status — Generally Available as of March 2026.** The core agent (create / configure / publish / share), built-in diagnostics, and end-to-end lifecycle management via Git integration + deployment pipelines are all GA. Treat as a production surface. The following companion features are still in **preview** at GA and should be gated accordingly: the **Fabric Data Agent Python SDK** (including programmatic `evaluate_few_shots` and ground-truth evaluation), **Microsoft Copilot Studio integration**, **Azure AI Foundry / Azure AI Agent Service integration**, and the **external Python client SDK** (interactive-browser auth pattern for embedding in custom apps).
+**Status — Generally Available as of March 2026.** The core agent (create / configure / publish / share), built-in diagnostics, and end-to-end lifecycle management via Git integration + deployment pipelines are all GA. Treat as a production surface. The following companion features are still in **preview** at GA and should be gated accordingly: the **Creator Agent** ("Build agent with AI") for AI-assisted authoring of the four configuration layers, consumption from **Microsoft 365 Copilot** (Agent Store) and **Copilot in Power BI**, the **Fabric Data Agent Python SDK** (including programmatic `evaluate_few_shots` and ground-truth evaluation), **Microsoft Copilot Studio integration**, **Azure AI Foundry / Azure AI Agent Service integration**, and the **external Python client SDK** (interactive-browser auth pattern for embedding in custom apps).
 
 Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power BI Semantic Model, Fabric SQL Database, Mirrored Database, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**.
 
@@ -209,6 +209,30 @@ One well-chosen example can outperform paragraphs of prose instructions.
 
 ---
 
+## Creator Agent ("Build agent with AI") — preview
+
+The **Creator Agent** is a specialized AI assistant that helps you author and refine the four configuration layers above instead of hand-writing them. Open it from the data agent ribbon via **Build agent with AI**; the same ribbon's **Test data agent** switches to the standard test mode. Use it to explore a connected source, discuss the questions you want answered, review recommended config changes, **Accept** them (changes apply immediately), then switch to Test mode to validate.
+
+**Preview scope — SQL and Eventhouse sources only.** The Creator Agent does not work if the agent has any unsupported source attached. Prerequisites: an F SKU or trial capacity, the data agent tenant setting enabled, at least one supported source with the relevant tables selected, and read permission on the source (query-history exploration also needs permission to view that source's query history).
+
+What it generates/manages: **Agent Instructions**, **Data Source Instructions**, **Data Source Descriptions**, and **Example Queries** — the same four layers, produced conversationally. It can run **read-only** queries to validate proposed joins/few-shots (writes are blocked) and reports back the result set or the error.
+
+Recommended loop: **Explore** (schema exploration) → **Learn** (query-history exploration, when available) → **Generate** (instructions + few-shot examples) → **Validate** (execute query against real data) → **Apply** (accept, then Test mode). Repeat.
+
+**Not covered by the Creator Agent (preview)** — you still configure these yourself: data source selection, schema selection, the data agent description used at publish time, semantic models / Power BI Prep for AI, Ontology, Graph, and unstructured data.
+
+---
+
+## Consumption surfaces
+
+Beyond in-product chat (GA), a published data agent can be consumed from several surfaces — **all in preview** at the time of writing:
+
+- **Microsoft 365 Copilot (Agent Store) — preview.** At publish time, choose **Publish to Agent Store** to make the agent available in M365 Copilot. Users chat with it directly or `@`-mention it from the main Copilot chat in Teams, share it via link (1:1, group, or channel), and use the **code interpreter** to visualize results. Requires a paid **F2+** (or P1+ with Fabric enabled) capacity, an **M365 Copilot license** (or Office 365 commercial subscription) plus per-user licenses, the **cross-geo processing and cross-geo storing for AI** tenant settings enabled, and the agent + Copilot on the **same tenant / same account**. The publish **description** becomes the `description_for_model` that steers the M365 orchestrator — you can instruct it to return the agent's output as-is, but the orchestrator still reasons over the grounding data, so some rephrasing is inevitable. RLS/CLS and underlying-source access are fully enforced per the calling user. **Compliance note:** responses may leave Fabric's compliance boundary / geographic region and be processed or stored under M365's data-handling policies.
+- **Copilot in Power BI — preview.** Add the agent via **Add items for better results → Data agents**, or let Copilot search rank it alongside semantic models and reports. RLS/CLS enforced.
+- **Copilot Studio / Azure AI Foundry (Agent Service) — preview.** Identity passthrough (On-Behalf-Of); see the authentication section above.
+
+---
+
 ## Governance and intent precedence
 
 When the agent decides what to do, layers override each other in this order (highest precedence first):
@@ -288,8 +312,11 @@ See [assets/example-retail-agent.md](assets/example-retail-agent.md) for a compl
 - Microsoft Learn: [Fabric data agent concept](https://learn.microsoft.com/en-us/fabric/data-science/concept-data-agent)
 - Microsoft Learn: [Data agent tenant settings](https://learn.microsoft.com/en-us/fabric/data-science/data-agent-tenant-settings)
 - Microsoft Learn: [Use service principal authentication with Fabric data agent (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-service-principal)
+- Microsoft Learn: [Creator agent for data agent (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-creator-agent-overview)
+- Microsoft Learn: [Consume Fabric data agent in Microsoft 365 Copilot (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-microsoft-365-copilot)
+- Microsoft Learn: [Consume a Fabric data agent from Copilot in Power BI (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-copilot-powerbi)
 - Comprehensive MS Learn link bundle (create / consume / Foundry / governance): [references/REFERENCE.md](references/REFERENCE.md)
 
 ---
 
-Last updated: 2026-06-03
+Last updated: 2026-07-01
