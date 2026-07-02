@@ -1,6 +1,6 @@
 ---
 name: fabric-monitoring
-description: "Use for monitoring Fabric Warehouse queries — OPTION (LABEL = '...') for tracking, the queryinsights schema (exec_requests_history, exec_sessions_history, long_running_queries, frequently_run_queries), 30-day retention, 15-minute appearance lag, and the `Invalid object name` gotcha on newly-created warehouses."
+description: "Use for monitoring Fabric Warehouse queries — OPTION (LABEL = '...') for tracking, the queryinsights schema (exec_requests_history, exec_sessions_history, long_running_queries, frequently_run_queries), 30-day retention, 15-minute appearance lag, the `Invalid object name` gotcha on newly-created warehouses, and diagnosing slow/stale Lakehouse SQLEP reads under the new metadata-sync preview (`sys.dm_db_external_tables_log_status`, `sp_dw_refresh_ext_table`)."
 ---
 
 # Monitoring & diagnostics
@@ -59,6 +59,21 @@ SELECT login_name FROM sys.dm_exec_sessions WHERE session_id = <id>;
 -- Kill a runaway query (Admin only)
 KILL '<session_id>';
 ```
+
+## SQL Endpoint Metadata Sync (new sync — Preview, May 2026)
+
+Diagnose slow/stale Lakehouse SQLEP reads when queries return data older than what has landed. On endpoints created under the **new metadata-sync preview** (opt-in, new endpoints only):
+
+```sql
+-- Inspect per-table sync freshness and blocked state
+SELECT last_update_time_utc, latest_log_version, latest_checkpoint_version, is_blocked
+FROM sys.dm_db_external_tables_log_status;   -- is_blocked: 1 = last update blocked, 0 = succeeded
+
+-- Force a targeted refresh of one table's data (data-only changes)
+EXEC sys.sp_dw_refresh_ext_table 'dbo.<table>';
+```
+
+Schema changes (add/drop tables or columns, type changes) need the full-item Refresh SQL endpoint metadata REST API instead. Full preview note — enablement, architecture, limitations — lives in the **fabric-spark skill**; the slow-SQLEP gotcha cross-references it in the **fabric-gotchas skill**.
 
 ## Result Set Caching (Preview)
 
