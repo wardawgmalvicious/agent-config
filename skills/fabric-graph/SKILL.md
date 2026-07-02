@@ -107,7 +107,9 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 ## Other gotchas / limits
 
 - **Storage floor 100 GB** provisioned (billed at OneLake Cache rate); compute billed by CPU uptime at **10 CU-seconds per second**, rounded up to the minute. Uses your existing Fabric capacity — no separate SKU.
+- **Hard limits:** max **10 graph models per workspace**; the GA SKU processes roughly **2 billion graph elements** (nodes + edges — contact the product team for larger); variable-length patterns support up to **8 hops**; queries **time out at 20 minutes** and responses are **truncated above 64 MB** (aggregation gets unstable past 128 MB). String property max 65,535 chars; `List<T>` property max 65,535 elements. See [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - **NL2GQL** (natural-language → GQL via Fabric Data Agent, see fabric-data-agent) is **preview**. **openCypher** support is preview and is the KQL-graph path, not this item.
+- **Set operations not yet supported.** `UNION DISTINCT`, `EXCEPT`, `INTERSECT`, and `OTHERWISE` are not available — compose with linear chaining of core statements (`MATCH`/`LET`/`FILTER`/`RETURN`) instead. Full conformance-gap list → [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - Governed by OneLake security + workspace RBAC (see fabric-security).
 
 ## Reference
