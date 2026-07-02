@@ -39,6 +39,7 @@ The graph **type** is the schema. `CREATE GRAPH` with a *closed* graph type is s
 GQL graph **schema management** (`GC01`) and `DROP GRAPH` are **not** — drop via UI/REST.
 
 Operators to know:
+
 - `::` — type operator (`id :: UINT64 NOT NULL`)
 - `=>` — node type definition / inheritance (`(:City => :Place)`)
 - `+=` — extend an inherited type with extra properties
@@ -146,7 +147,7 @@ RETURN c ORDER BY c.creationDate LIMIT 100
 Selected rows from MS Learn `gql-conformance`. Useful to avoid generating unsupported syntax.
 
 | Feature ID | Feature | Supported | Notes |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | GB01 | Long identifiers | No | |
 | GB02 | `--` line comments | Yes | |
 | GB03 | `//` line comments, `/* */` block comments | Yes | |
@@ -155,9 +156,12 @@ Selected rows from MS Learn `gql-conformance`. Useful to avoid generating unsupp
 | GD01 | Updatable graphs | **No** | No GQL `INSERT`/`SET`/`DELETE`. Load/refresh via data management. |
 | GD02 | Graph label set changes | No | |
 | GD03/GD04 | `DELETE` statement variants | No | |
+| — | Set operations (`UNION DISTINCT`, `EXCEPT ALL/DISTINCT`, `INTERSECT ALL/DISTINCT`, `OTHERWISE`) | **No** | Not yet supported — use linear statement chaining (`MATCH`/`LET`/`FILTER`/`RETURN`). |
+| — | `NEXT` statement chaining | **No** | Conformance still in progress. |
 
 Implication: treat GQL as **query-only** against an already-ingested graph. All structural
 and data changes go through the model editor (save = ingest) or the REST item-definition API.
+Full in-progress conformance list → `gql-conformance` / [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 
 ---
 
@@ -201,7 +205,7 @@ az rest --method get --resource "https://api.fabric.microsoft.com" \
 **Status codes** are 6-character strings, hierarchical by prefix:
 
 | Prefix | Meaning |
-|---|---|
+| --- | --- |
 | `00xxxx` | Complete success |
 | `01xxxx` | Success with warnings |
 | `02xxxx` | Success with no data |
@@ -227,7 +231,7 @@ results this is optimized: for **known-typed columns** only the raw value is ser
 `ANY` columns the full `{gqlType,value}` object appears per cell.
 
 | Category | GQL types / notes |
-|---|---|
+| --- | --- |
 | Boolean | `BOOL` → native JSON boolean |
 | String | `STRING` → UTF-8 string |
 | Integer | `INT64`, `UINT64` — **serialized as strings** when outside JS safe range (±9,007,199,254,740,991), e.g. `{"gqlType":"INT64","value":"9223372036854775807"}` |
@@ -375,6 +379,23 @@ A node can carry **multiple labels** (e.g. `["Customer","Employee"]`).
 - Metrics App line items: *Graph general operations* (meter: Graph capacity usage CU) and
   *Graph cache storage* (meter: OneLake Cache).
 - Available in 30+ regions (see overview page for the current list).
+
+### Capacity & query limits (from `limitations`)
+
+| Limit | Value |
+| --- | --- |
+| Graph models per workspace | **10** |
+| Graph size (GA SKU) | ~**2 billion** elements (nodes + edges); contact product team for larger |
+| Data sources | OneLake **Parquet and CSV only** (Power BI semantic-model sources under development) |
+| Variable-length pattern hops | up to **8** |
+| Query timeout | **20 minutes** |
+| Graph create/update timeout | **20 minutes** (may occur up to ~once/week; re-initiate) |
+| Response size | **truncated above 64 MB**; aggregation unstable past 128 MB |
+| String property max length | **65,535** chars (data past 64 KiB unreachable to deserializer) |
+| `List<T>` property max elements | **65,535** |
+| Export / Power BI direct connect | **not supported** |
+| Returning `ANY` / `RECORD` types | not supported — `TO_JSON_STRING` workaround |
+| Identifiers | can't start with underscore |
 
 ---
 
