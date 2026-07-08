@@ -1,6 +1,6 @@
 ---
 name: fabric-eventstream
-description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams. Covers source connectors (Azure SQL / SQL MI / SQL Server VM / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored Database Delta CDF April 2026 preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Pub-Sub / Service Bus / MQTT / HTTP / Solace), DeltaFlow CDC → analytics-ready transformation (auto-table-create + schema evolution from Debezium), Activator destination + in-Eventstream `Set Alert` flow (on each event / when / grouped by), the three workspace-monitoring KQL tables (`EventStreamNodeStatus` ~6h, `EventStreamMetrics` 1m, `EventStreamErrorMetrics` 1m) + republish-on-enable requirement, mTLS Key Vault on Kafka-family connectors, edit/publish workflow, VNet injection, gotchas (republish required, 6h status lag, filter by ArtifactId not name, CorrelationId-vs-NodeId, no log messages in preview)."
+description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and how external apps produce events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC (auto-table + schema evolution), Activator destination + in-Eventstream `Set Alert` flow, three workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`, ~6h status lag) + republish-on-enable, mTLS Key Vault on Kafka, custom-endpoint CloudEvents producer format (binary mode — `cloudEvents:` app properties, `dataschema` version routing), and gotchas (republish required, 6h status lag, filter by ArtifactId not name, CloudEventPropertyMissingException)."
 paths:
   - "**/*.Eventstream/**"
 ---
@@ -132,6 +132,56 @@ For ad-hoc per-node visualizations during authoring, the **Data insights** tab o
 
 For Kafka, Amazon MSK, and Confluent Cloud Kafka sources, you can specify a **custom CA certificate** and a **client certificate** sourced from **Azure Key Vault** to enforce TLS / mTLS. Configured in the source connection step. Use when the broker is behind a private CA or requires client-cert auth.
 
+## Producing to a schema-associated custom endpoint (CloudEvents)
+
+This is the **producer** side — how an *external* app must format events it pushes to a custom-endpoint source. The Eventstream authoring side (adding the source, wiring destinations) is above; this section is what the sending code has to get right. Applies only when the custom endpoint has an **associated schema** (a schema group / EventDefinition set). The portal's authoritative reference is the endpoint's **Show sample code → Event Hub tab**, which emits `CloudNative.CloudEvents` SDK code.
+
+Verified end-to-end (2026-07-07) by pushing records and reading them back via Kusto; this wire format is **not** documented on Microsoft Learn (the extended-features docs describe the UI, not the format).
+
+### Binary content mode is required — not structured
+
+The endpoint's Azure Stream Analytics EventHub input adapter reads CloudEvents attributes from the Event Hub message's **application properties** (CloudEvents AMQP **binary** content mode), *not* from the JSON body. Structured mode — the whole CloudEvent in the body with `ContentType=application/cloudevents+json` — is **silently ignored**: the adapter still hunts for a `type` property, doesn't find it, and drops the event with:
+
+```
+Microsoft.Streaming.AzureStreamAnalytics.Adapters.Input.EventHub.Exceptions.CloudEventPropertyMissingException: CloudEvent property type is missing.
+```
+
+### Correct per-event shape (`Azure.Messaging.EventHubs.EventData`)
+
+- **Body** = the data payload JSON *only* (just the record fields — not a wrapped CloudEvent).
+- **ContentType** = `application/json`.
+- **Application properties**, each prefixed `cloudEvents:` (the CloudEvents AMQP binding convention):
+
+| Property | Value | Notes |
+|---|---|---|
+| `cloudEvents:specversion` | `1.0` | |
+| `cloudEvents:type` | schema name, e.g. `Orders` | **Selects the schema** — must exactly match a schema id in the associated set (**case-sensitive**) |
+| `cloudEvents:source` | any non-empty URI | Value unconstrained by the schema envelope |
+| `cloudEvents:id` | fresh GUID per event | CloudEvents requires `source`+`id` unique |
+| `cloudEvents:dataschema` | `https://<host>.messagingcatalog.azure.net/schemagroups/<EventDefinition artifactId>/schemas/<type>/versions/<vN>` | **Required to route to a table** — the `/versions/vN` segment supplies `{CloudEventSchemaVersion}` |
+
+The portal sample copies the attributes generically:
+
+```csharp
+foreach (var attr in cloudEvent.GetPopulatedAttributes())
+    eventData.Properties[$"cloudEvents:{attr.Key}"] = attr.Value?.ToString();
+```
+
+### Two independent gates
+
+1. **Envelope gate** — the adapter finds `type` in the application properties. Fails with `CloudEventPropertyMissingException` if attributes are in the body or not `cloudEvents:`-prefixed.
+2. **Schema-validation gate** — the body fields must match the Avro schema types. All-string schemas pass easily; non-string fields (Avro `bytes` / `boolean`) reject mismatched JSON values. A failure here shows a generic *"dropped per schema registry error policy"* diagnostic (not the envelope exception).
+
+### Destination table naming (Eventhouse)
+
+A schema-associated eventstream → Eventhouse (processed ingestion) **auto-creates one table per schema**, named `{CloudEventType}_{CloudEventSchemaVersion}` — e.g. `Orders_v1`, `Products_v2`. The version comes from the `dataschema` `/versions/vN` segment.
+
+### Version-bump gotcha
+
+**Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
+
+Reference C# implementation: `edgebridge.core/Helpers/AzureEventHubPusher.cs` (`SendBatch` sets the `cloudEvents:*` props; `ExportToAzureEventHub` is the SDK path) and `edgebridge.core/Models/Job/JobOutput.cs` (`BuildDataSchema`).
+
 ## Gotchas
 
 | Issue | Cause | Fix |
@@ -146,6 +196,9 @@ For Kafka, Amazon MSK, and Confluent Cloud Kafka sources, you can specify a **cu
 | New Activator rule doesn't fire | Eventstream wasn't republished after adding the destination | Republish the Eventstream after wiring the destination |
 | Connector behind firewall fails | Source not publicly reachable | Use [Eventstream connector VNet injection](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/streaming-connector-private-network-support-guide) |
 | DeltaFlow not available on a CDC source | Currently scoped to Azure SQL / SQL MI / SQL Server VM / PostgreSQL CDC | Use raw mode for other CDC sources and flatten Debezium yourself |
+| `CloudEventPropertyMissingException: ...type is missing` when pushing to a schema-associated custom endpoint | Attributes sent in the body / structured mode | Use CloudEvents **binary** mode: `cloudEvents:`-prefixed application properties (esp. `cloudEvents:type`), body = payload JSON only. See *Producing to a schema-associated custom endpoint* above |
+| Event associates in **Data preview** but no table is written | Missing / wrong `cloudEvents:dataschema` | Set `dataschema` to the current schema version URI (`/versions/vN`) — it's what routes to a table |
+| Event dropped after editing a schema | The schema edit bumped the version | Update `dataschema` `/versions/vN` to the new current version; versions can differ per schema in the same set |
 
 ## Reference
 
