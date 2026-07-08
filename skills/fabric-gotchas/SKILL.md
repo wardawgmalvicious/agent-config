@@ -27,6 +27,7 @@ description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (
 | TDS connection timeout | Port 1433 blocked | Open outbound TCP 1433; allow `*.datawarehouse.fabric.microsoft.com` |
 | Cross-database query fails | Items in different regions or workspaces | All items must share same workspace AND region |
 | Notebook upload `400 exceptionCulprit:1` | Cell `source` is a bare string, not an array | Convert every cell's `source` to array-of-strings form (`["line\n", "line\n", "last"]`). Applies to markdown and code cells. |
+| `CloudEventPropertyMissingException: ...type is missing` when publishing to a schema-associated Eventstream custom endpoint | Attributes sent in the JSON body / structured mode | Send **binary**-mode CloudEvents: `cloudEvents:`-prefixed Event Hub application properties (not body). See [[fabric-eventstream]] — *Producing to a schema-associated custom endpoint* |
 
 > **Slow SQLEP — new metadata sync (preview, May 2026):** on endpoints created with the new opt-in metadata sync, target a single table with `EXEC sys.sp_dw_refresh_ext_table '<schema.table>'` and inspect last sync time / blocked state via `sys.dm_db_external_tables_log_status`. Full preview note (scope, enablement, limitations): [[fabric-spark]].
 
