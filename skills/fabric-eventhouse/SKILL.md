@@ -88,6 +88,8 @@ Pre-April 2026 behavior required disabling availability for *any* schema change.
 .alter table Events policy streamingingestion enable
 ```
 
+> **Schema-associated Eventstream destinations** auto-create one table per schema named `{CloudEventType}_{CloudEventSchemaVersion}` (e.g. `Orders_v1`) — you don't create these by hand. The producer's `cloudEvents:type` and `dataschema` version drive the table name; see `fabric-eventstream` → *Producing to a schema-associated custom endpoint*.
+
 ## Data Mappings
 
 ```kql
