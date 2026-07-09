@@ -167,6 +167,14 @@ foreach (var attr in cloudEvent.GetPopulatedAttributes())
     eventData.Properties[$"cloudEvents:{attr.Key}"] = attr.Value?.ToString();
 ```
 
+### Where the schema-group base URI comes from
+
+The `https://<host>.messagingcatalog.azure.net/schemagroups/<id>` **base** of `dataschema` is the only piece the producer can't derive — the code appends `/schemas/{type}/versions/{vN}` itself. Provenance:
+
+- It's the **Fabric-auto-provisioned Azure Schema Registry** ("messaging catalog") endpoint for the eventstream's schema group; the trailing GUID is the **schema-group ID** tied to the workspace's **Event Schema Set** item.
+- **Not surfaced in the Fabric portal UI** except inside the custom endpoint's **Show sample code → Event Hub tab** — copy it from there (verified 2026-07-08).
+- **Not present in the git-synced Eventstream definition** either: the `.Eventstream` folder (`eventstream.json`, `eventstreamProperties.json`, `.platform`) carries `schemaMode` and the `{CloudEventType}_{CloudEventSchemaVersion}` table template but **no `messagingcatalog` host and no schema-group GUID** (verified 2026-07-08). The CustomEndpoint source's `properties` is `{}`. So the sample code is currently the only confirmed source; whether the live REST `eventstream_get_definition` returns more than the git sync is untested.
+
 ### Two independent gates
 
 1. **Envelope gate** — the adapter finds `type` in the application properties. Fails with `CloudEventPropertyMissingException` if attributes are in the body or not `cloudEvents:`-prefixed.
