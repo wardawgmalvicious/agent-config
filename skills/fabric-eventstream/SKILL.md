@@ -1,6 +1,6 @@
 ---
 name: fabric-eventstream
-description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and how external apps produce events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC (auto-table + schema evolution), Activator destination + in-Eventstream `Set Alert` flow, three workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`, ~6h status lag) + republish-on-enable, mTLS Key Vault on Kafka, custom-endpoint CloudEvents producer format (binary mode — `cloudEvents:` app properties, `dataschema` version routing), and gotchas (republish required, 6h status lag, filter by ArtifactId not name, CloudEventPropertyMissingException)."
+description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and how external apps produce events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC (auto-table + schema evolution), Activator destination + in-Eventstream `Set Alert` flow, three workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`, ~6h status lag) + republish-on-enable, mTLS Key Vault on Kafka, custom-endpoint CloudEvents producer format (binary mode — `cloudEvents:` app properties, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath = <namespace>_eh, key_<guid> SAS policy — parts-built connection strings), schema-registry URL anatomy (per-schema-set messagingcatalog host; schema-group id = Event Schema Set item id), and gotchas (republish required, 6h status lag, filter by ArtifactId not name, CloudEventPropertyMissingException)."
 paths:
   - "**/*.Eventstream/**"
 ---
@@ -158,7 +158,7 @@ Microsoft.Streaming.AzureStreamAnalytics.Adapters.Input.EventHub.Exceptions.Clou
 | `cloudEvents:type` | schema name, e.g. `Orders` | **Selects the schema** — must exactly match a schema id in the associated set (**case-sensitive**) |
 | `cloudEvents:source` | any non-empty URI | Value unconstrained by the schema envelope |
 | `cloudEvents:id` | fresh GUID per event | CloudEvents requires `source`+`id` unique |
-| `cloudEvents:dataschema` | `https://<host>.messagingcatalog.azure.net/schemagroups/<EventDefinition artifactId>/schemas/<type>/versions/<vN>` | **Required to route to a table** — the `/versions/vN` segment supplies `{CloudEventSchemaVersion}` |
+| `cloudEvents:dataschema` | `https://<host>.<region>.messagingcatalog.azure.net/schemagroups/<schema-set itemId>/schemas/<type>/versions/<vN>` | **Required to route to a table** — the `/versions/vN` segment supplies `{CloudEventSchemaVersion}` |
 
 The portal sample copies the attributes generically:
 
@@ -169,11 +169,12 @@ foreach (var attr in cloudEvent.GetPopulatedAttributes())
 
 ### Where the schema-group base URI comes from
 
-The `https://<host>.messagingcatalog.azure.net/schemagroups/<id>` **base** of `dataschema` is the only piece the producer can't derive — the code appends `/schemas/{type}/versions/{vN}` itself. Provenance:
+Anatomy of the base: `https://<host>.<region>.messagingcatalog.azure.net/schemagroups/<groupId>` — the producer appends `/schemas/{type}/versions/{vN}` itself.
 
-- It's the **Fabric-auto-provisioned Azure Schema Registry** ("messaging catalog") endpoint for the eventstream's schema group; the trailing GUID is the **schema-group ID** tied to the workspace's **Event Schema Set** item.
-- **Not surfaced in the Fabric portal UI** except inside the custom endpoint's **Show sample code → Event Hub tab** — copy it from there (verified 2026-07-08).
-- **Not present in the git-synced Eventstream definition** either: the `.Eventstream` folder (`eventstream.json`, `eventstreamProperties.json`, `.platform`) carries `schemaMode` and the `{CloudEventType}_{CloudEventSchemaVersion}` table template but **no `messagingcatalog` host and no schema-group GUID** (verified 2026-07-08). The CustomEndpoint source's `properties` is `{}`. So the sample code is currently the only confirmed source; whether the live REST `eventstream_get_definition` returns more than the git sync is untested.
+- **`<groupId>` = the Event Schema Set's runtime item id** (verified 2026-08-06 across three schema sets: the group GUID in each working `dataschema` equals the schema set's item id). The group half IS therefore derivable — store an ItemReference to the schema set (e.g. in a Variable Library) and use its `itemId`.
+- **`<host>` (`rthprod…` label) is service-generated and per schema set** — three schema sets in one tenant + region produced three different hosts (verified 2026-08-06). It is NOT tenant- or region-stable: never share it across environments; capture it per schema set. `rth` = Real-Time hub, `prod` = service ring; the rest is an opaque scale-unit/instance label.
+- The host is the **Fabric-auto-provisioned Azure Schema Registry** ("messaging catalog") endpoint. It's **not surfaced in the Fabric portal UI** except inside the custom endpoint's **Show sample code → Event Hub tab** — copy it from there (verified 2026-07-08).
+- **Not present in the git-synced Eventstream definition** either: the `.Eventstream` folder (`eventstream.json`, `eventstreamProperties.json`, `.platform`) carries `schemaMode` and the `{CloudEventType}_{CloudEventSchemaVersion}` table template but **no `messagingcatalog` host** (verified 2026-07-08). The CustomEndpoint source's `properties` is `{}`.
 
 ### Two independent gates
 
@@ -189,6 +190,22 @@ A schema-associated eventstream → Eventhouse (processed ingestion) **auto-crea
 **Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
 
 Reference C# implementation: `edgebridge.core/Helpers/AzureEventHubPusher.cs` (`SendBatch` sets the `cloudEvents:*` props; `ExportToAzureEventHub` is the SDK path) and `edgebridge.core/Models/Job/JobOutput.cs` (`BuildDataSchema`).
+
+### Custom endpoint connection anatomy (Event Hub mode)
+
+Everything in a custom endpoint's connection string except the key follows service-generated naming conventions (verified 2026-08-06 against three real endpoints):
+
+```
+Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=key_<guid>;SharedAccessKey=<secret>;EntityPath=<namespace>_eh
+```
+
+- **Namespace**: `eseh<random>` (e.g. `esehexampleabcdefgh123`) — the portal labels it "Event hub name".
+- **EntityPath** (the hub — `eventhub_name` in SDKs): always **`<namespace>_eh`**. Derive it; don't store it separately.
+- **SAS policy name**: `key_<guid>` — not secret. Only `SharedAccessKey` is secret material.
+
+This enables a **parts-built connection string**: namespace + key name in per-environment config (Variable Library), only the key in Key Vault, assembled at run time — see `fabric-variable-library` (blank-parameter resolution pattern). Caveat: these are observed service conventions, not documented contracts; if the `_eh` suffix ever changes, the failure mode is an Event Hubs entity-not-found at send time.
+
+Schema support itself is a **creation-time flag**: it cannot be enabled on an existing eventstream, and schema-enabled eventstreams don't survive deployment pipelines with their registries intact — plan workspaces accordingly (e.g. one shared multi-environment workspace for the schema-enabled ingestion edge, one endpoint + schema set per environment).
 
 ## Gotchas
 
@@ -207,6 +224,7 @@ Reference C# implementation: `edgebridge.core/Helpers/AzureEventHubPusher.cs` (`
 | `CloudEventPropertyMissingException: ...type is missing` when pushing to a schema-associated custom endpoint | Attributes sent in the body / structured mode | Use CloudEvents **binary** mode: `cloudEvents:`-prefixed application properties (esp. `cloudEvents:type`), body = payload JSON only. See *Producing to a schema-associated custom endpoint* above |
 | Event associates in **Data preview** but no table is written | Missing / wrong `cloudEvents:dataschema` | Set `dataschema` to the current schema version URI (`/versions/vN`) — it's what routes to a table |
 | Event dropped after editing a schema | The schema edit bumped the version | Update `dataschema` `/versions/vN` to the new current version; versions can differ per schema in the same set |
+| Events rejected / missing after copying producer config to another environment | Schema-registry host or group id reused across environments | Host and group are **per schema set** — capture `<host>`, `<region>`, and the schema set's itemId per environment |
 
 ## Reference
 
