@@ -1,6 +1,6 @@
 ---
 name: fabric-gotchas
-description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (wrong token audience), 403 on Power BI API (Viewer role), 404 EntityNotFound on getDefinition (permissions masquerading), PowerBIEntityNotFound from pipeline/Variable Library (logicalId vs runtime ID confusion), Login failed (wrong Initial Catalog), 24556/24706 snapshot conflict, nvarchar/datetime/money errors (Warehouse unsupported types), COPY INTO auth, MERGE/ALTER COLUMN failures, TMDL validation (tabs vs spaces, /// comments), DefaultJob jobType mistake, sqlcmd version, slow SQLEP (small files), notebook `400 exceptionCulprit:1` (bare-string cell source), plus the MUST/PREFER/AVOID best-practices summary."
+description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (wrong token audience), 403 on Power BI API (Viewer role), 404 EntityNotFound on getDefinition (permissions masquerading), PowerBIEntityNotFound from pipeline/Variable Library (logicalId vs runtime ID confusion), Login failed (wrong Initial Catalog), 24556/24706 snapshot conflict, nvarchar/datetime/money errors (Warehouse unsupported types), COPY INTO auth, MERGE/ALTER COLUMN failures, TMDL validation (tabs vs spaces, /// comments), DefaultJob jobType mistake, sqlcmd version, slow SQLEP (small files), notebook `400 exceptionCulprit:1` (bare-string cell source), Variable Library git-sync `InvalidContent (ValueMismatch)` (stale override name after a rename / empty value), plus the MUST/PREFER/AVOID best-practices summary."
 ---
 
 # Common gotchas & troubleshooting
@@ -28,6 +28,7 @@ description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (
 | Cross-database query fails | Items in different regions or workspaces | All items must share same workspace AND region |
 | Notebook upload `400 exceptionCulprit:1` | Cell `source` is a bare string, not an array | Convert every cell's `source` to array-of-strings form (`["line\n", "line\n", "last"]`). Applies to markdown and code cells. |
 | `CloudEventPropertyMissingException: ...type is missing` when publishing to a schema-associated Eventstream custom endpoint | Attributes sent in the JSON body / structured mode | Send **binary**-mode CloudEvents: `cloudEvents:`-prefixed Event Hub application properties (not body). See [[fabric-eventstream]] — *Producing to a schema-associated custom endpoint* |
+| `InvalidContent (first issue: ValueMismatch)` syncing Git → workspace | Variable Library value-set override names a nonexistent variable (rename not propagated to `valueSets/*.json`) or an empty `value` | Rename in **every** value-set file; never commit `""` values — use a `FILL-ME`-style sentinel. See [[fabric-variable-library]] |
 
 > **Slow SQLEP — new metadata sync (preview, May 2026):** on endpoints created with the new opt-in metadata sync, target a single table with `EXEC sys.sp_dw_refresh_ext_table '<schema.table>'` and inspect last sync time / blocked state via `sys.dm_db_external_tables_log_status`. Full preview note (scope, enablement, limitations): [[fabric-spark]].
 
