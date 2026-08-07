@@ -1,6 +1,6 @@
 ---
 name: fabric-variable-library
-description: "Use for Microsoft Fabric Variable Library — config-as-code for parameterizing notebooks and pipelines across environments. Covers definition parts (variables.json, settings.json, valueSets/<name>.json — VariableLibrary does NOT support the `format` field, omit entirely), supported variable types (String, Boolean, Number, Integer, DateTime, ItemReference), notebook consumption via `notebookutils.variableLibrary.getLibrary('Lib').<var>` dot notation (NOT `.get('lib','var')` — that signature does not exist), the `bool('false')` → True trap (compare strings with `.lower() == 'true'`), pipeline integration via `libraryVariables` block (sibling to `activities`), the Variable-Library-to-Pipeline type-name mapping (Boolean→Bool, Integer→Int, Number→Double, DateTime→String, ItemReference→String), Expression-object wrapping for dynamic references, Value Sets ordering via `valueSetsOrder` in settings.json, and the runtime-ID rule for ItemReference values."
+description: "Use for Microsoft Fabric Variable Library — config-as-code for parameterizing notebooks and pipelines across environments. Covers definition parts (variables.json, settings.json, valueSets/<name>.json — VariableLibrary does NOT support the `format` field, omit entirely), supported variable types (String, Boolean, Number, Integer, DateTime, ItemReference), notebook consumption via `notebookutils.variableLibrary.getLibrary('Lib').<var>` dot notation (NOT `.get('lib','var')` — that signature does not exist) or the `get(\"$(/**/Lib/Var)\")` reference-path form, runtime limits (same-workspace only, NO SPN support, resolves the active value set), the ItemReference kernel-shape trap (pure-Python kernel returns dict-like — `.get('itemId')` is already the GUID; the documented `.value()` accessor AttributeErrors), Git-sync `InvalidContent (ValueMismatch)` (override naming a nonexistent variable after a rename, or an empty value — use a FILL-ME sentinel), the blank-parameter + lazy-resolution notebook pattern, the `bool('false')` → True trap (compare strings with `.lower() == 'true'`), pipeline integration via `libraryVariables` block (sibling to `activities`), the Variable-Library-to-Pipeline type-name mapping (Boolean→Bool, Integer→Int, Number→Double, DateTime→String, ItemReference→String), Expression-object wrapping for dynamic references, Value Sets ordering via `valueSetsOrder` in settings.json, and the runtime-ID rule for ItemReference values."
 paths:
   - "**/*.VariableLibrary/**"
 ---
@@ -71,6 +71,15 @@ Every entry in `valueSetsOrder` must have a matching file under `valueSets/`:
 }
 ```
 
+## Git-sync validation (`InvalidContent`)
+
+Importing a Variable Library from Git validates the whole item; a failure surfaces on the workspace sync as `InvalidContent (first issue: ValueMismatch)` / "Item content cannot be used". Two verified causes (2026-08-06):
+
+1. **A value-set override names a variable that doesn't exist** — when renaming a variable in `variables.json`, propagate the rename to **every** `valueSets/*.json`, including value sets populated by someone else.
+2. **An empty `value`** — the library rejects `""` for any variable or override. For not-yet-supplied values use a sentinel (e.g. `FILL-ME`) and make consumers treat it as unset.
+
+Also enforced: override value type must match the variable's declared type, and the item must stay under 1 MB.
+
 ## Notebook consumption
 
 Use `getLibrary()` + dot notation:
@@ -90,6 +99,40 @@ if flag.lower() == "true":
 ```python
 notebookutils.variableLibrary.get("MyConfig", "lakehouse_name")   # ❌ signature does not exist
 bool(flag)                                                         # ❌ "false" → True
+```
+
+The **reference-path form** of `get()` does exist and auto-types the value — the `/**/` prefix is required and names are case-sensitive:
+
+```python
+notebookutils.variableLibrary.get("$(/**/MyConfig/lakehouse_name)")   # ✅
+```
+
+**Runtime limits** (all verified 2026-08-06): same-workspace libraries only; **no SPN support** — scheduled / service-principal runs must receive values as notebook parameters instead; always resolves the workspace's **active value set**. Works in the pure-Python (non-Spark) kernel.
+
+**ItemReference shape differs by kernel.** The pure-Python kernel returns a plain dict-like object — `.get("itemId")` is already the GUID string; the documented `.get("itemId").value()` accessor (Spark surface) raises `AttributeError: 'str' object has no attribute 'value'` there. Accept both:
+
+```python
+ref = notebookutils.variableLibrary.get("$(/**/MyConfig/target_warehouse)")
+item_id = ref.get("itemId")
+if callable(getattr(item_id, "value", None)):
+    item_id = item_id.value()
+```
+
+### Blank-parameter + lazy resolution pattern
+
+Ship the notebook's parameters cell blank and resolve blanks from the workspace's Variable Library at run time. Interactive runs — including branched-out workspaces — pick up their own workspace's config with zero edits; pipeline runs pass every parameter explicitly and never touch the API, which sidesteps the no-SPN limit by design:
+
+```python
+# parameters cell:  WAREHOUSE = ""   # pipeline overrides with an explicit value
+
+def vl_lookup(name: str):
+    try:
+        return notebookutils.variableLibrary.get(f"$(/**/MyConfig/{name})")
+    except Exception as exc:
+        raise RuntimeError(f"Variable Library lookup failed for '{name}' — is the library in "
+                           "this workspace, and does this runtime support variableLibrary?") from exc
+
+WAREHOUSE = WAREHOUSE or vl_lookup("WarehouseConnectionString")
 ```
 
 ## Pipeline consumption
@@ -155,6 +198,9 @@ Dynamic references must be wrapped in Expression objects: `{"value": "@pipeline(
 | Value Sets ignored | Add `valueSetsOrder` array to `settings.json` |
 | Value Set validation error | Create matching file under `valueSets/` for every entry in `valueSetsOrder` |
 | `PowerBIEntityNotFound` from `ItemReference` | Stored a `.platform` `logicalId` instead of the runtime item ID |
+| Git sync fails `InvalidContent (ValueMismatch)` | Rename propagated to `variables.json` but not every `valueSets/*.json`, or an empty `value` — the library rejects `""`; use a `FILL-ME` sentinel |
+| `AttributeError: 'str' object has no attribute 'value'` on ItemReference | Pure-Python kernel returns dict-like — `.get("itemId")` is already the GUID; only call `.value()` when it exists |
+| Lookup fails under SPN / scheduled run | `notebookutils.variableLibrary` has no SPN support — pass values as notebook parameters from the pipeline |
 
 ## Reference
 
