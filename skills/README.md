@@ -26,7 +26,7 @@ See each `SKILL.md` for its specific triggering conditions.
   / release notes for skill staleness, drift in existing skills, new-
   skill candidates, and MCP/tooling additions. Findings only — no edits.
 
-## Microsoft Fabric platform (19)
+## Microsoft Fabric platform (22)
 
 - [fabric-auth/](fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -37,11 +37,16 @@ See each `SKILL.md` for its specific triggering conditions.
 - [fabric-cli/](fabric-cli/) — `fab` CLI: filesystem-style access over
   Fabric + Power BI REST. Path syntax, navigation, item CRUD, ACLs,
   capacity/domain, jobs, `fab api` REST passthrough.
+- [fabric-copy-job/](fabric-copy-job/) — Copy job item: full vs
+  incremental modes, watermark vs CDC incremental, JSON definition,
+  REST + on-demand runs, Activator invocation.
 - [fabric-warehouse/](fabric-warehouse/) — Fabric Warehouse T-SQL,
   unsupported types, MERGE constraints, COPY INTO auth.
 - [fabric-database/](fabric-database/) — Fabric SQL database.
 - [fabric-eventhouse/](fabric-eventhouse/) — Fabric Eventhouse + KQL.
 - [fabric-eventstream/](fabric-eventstream/) — Fabric Eventstream.
+- [fabric-graph/](fabric-graph/) — GraphModel item: GQL queries and
+  graph-type DDL over OneLake Delta tables, executeQuery REST API.
 - [fabric-mlv/](fabric-mlv/) — Materialized Lake Views: `CREATE
   MATERIALIZED LAKE VIEW` Spark SQL + the preview `@fmlv` PySpark
   decorator. Refresh modes, CDF prerequisite, lineage scheduling.
@@ -62,6 +67,9 @@ See each `SKILL.md` for its specific triggering conditions.
 - [fabric-semantic-model-ai-instructions/](fabric-semantic-model-ai-instructions/)
   — Copilot semantic model AI-instructions authoring.
 - [fabric-data-agent/](fabric-data-agent/) — Fabric Copilot data agent.
+- [fabric-ai-functions/](fabric-ai-functions/) — `ai.*` LLM functions
+  on pandas/PySpark DataFrames in notebooks: import paths, config
+  objects, custom endpoints, billing meters.
 - [fabric-variable-library/](fabric-variable-library/) — variable
   libraries.
 - [fabric-error-handling/](fabric-error-handling/) — error-handling
