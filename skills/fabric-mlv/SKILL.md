@@ -216,5 +216,5 @@ Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. La
 - `fabric-spark` — PySpark in Fabric notebooks (the broader Spark surface; MLVs are one consumer)
 - `fabric-eventhouse` — KQL materialized views (different engine, similar concept)
 - `fabric-error-handling` — notebook/pipeline error patterns; useful when wrapping MLV refresh in a larger flow
-- `fabric-monitoring` — Monitor hub and Workspace monitoring
+- `fabric-warehouse-monitoring` — Warehouse `queryinsights` + DMVs; workspace-monitoring and Capacity Metrics links in its references bundle
 - `pbip-project-structure` — `.Lakehouse/` folder placement when MLV-bearing lakehouses live in a PBIP repo

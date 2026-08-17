@@ -158,7 +158,7 @@ Most functions accept file paths (images, PDFs, text) instead of literal text: `
 
 ## Billing
 
-AI Functions bill against the **Copilot and AI** meter on your capacity — **separate from the Spark meter** that covers the notebook/cluster compute. A PySpark `ai.classify` over millions of rows therefore shows up as two line items: notebook compute (Spark meter) + model token usage (AI Functions on the Copilot-&-AI meter). From 2026-03-17 the Capacity Metrics app reports **AI Functions** and **AI Services** as separate operations (reporting change only; rates unchanged). See `fabric-monitoring` for the metrics app.
+AI Functions bill against the **Copilot and AI** meter on your capacity — **separate from the Spark meter** that covers the notebook/cluster compute. A PySpark `ai.classify` over millions of rows therefore shows up as two line items: notebook compute (Spark meter) + model token usage (AI Functions on the Copilot-&-AI meter). From 2026-03-17 the Capacity Metrics app reports **AI Functions** and **AI Services** as separate operations (reporting change only; rates unchanged). See `fabric-warehouse-monitoring` for the metrics app.
 
 ## Gotchas
 
@@ -194,5 +194,5 @@ Same capability, different engines — not covered in depth here:
 - `fabric-spark` — the broader PySpark-in-Fabric surface; AI Functions are one consumer of it
 - `fabric-data-agent` — governed NL-to-data over semantic models/lakehouses (different tool, different job)
 - `fabric-warehouse` — the T-SQL `ai_*` scalar functions
-- `fabric-monitoring` — Capacity Metrics app and the Copilot-&-AI meter
+- `fabric-warehouse-monitoring` — Capacity Metrics app links in its references bundle
 - `coding-python` rule — conventions for the pandas/PySpark you'll write around these calls

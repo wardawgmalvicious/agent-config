@@ -1,5 +1,5 @@
 ---
-name: fabric-monitoring
+name: fabric-warehouse-monitoring
 description: "Use for monitoring Fabric Warehouse queries — OPTION (LABEL = '...') for tracking, the queryinsights schema (exec_requests_history, exec_sessions_history, long_running_queries, frequently_run_queries), 30-day retention, 15-minute appearance lag, the `Invalid object name` gotcha on newly-created warehouses, and diagnosing slow/stale Lakehouse SQLEP reads under the new metadata-sync preview (`sys.dm_db_external_tables_log_status`, `sp_dw_refresh_ext_table`)."
 ---
 
