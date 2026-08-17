@@ -64,6 +64,6 @@ The 3 highest-leverage entry points (concept overview, Spark SQL reference, opti
 - `fabric-spark` — the broader PySpark surface MLVs ride on; covers the no-external-HTTP rule and `abfss://` URI shape relevant to MLV `SELECT` sources
 - `fabric-eventhouse` — KQL materialized views, the closest cross-engine analog
 - `fabric-error-handling` — notebookutils / pipeline error patterns for wrapping MLV refresh in a larger flow
-- `fabric-monitoring` — Workspace Monitoring + Monitor hub for the broader observability story
+- `fabric-warehouse-monitoring` — Warehouse `queryinsights` + DMVs; workspace-monitoring and Capacity Metrics links in its references bundle
 - `fabric-rest-api` — generic LRO / 202 Accepted polling pattern used by the MLV on-demand endpoint
 - `pbip-project-structure` — `.Lakehouse/` folder placement when MLV-bearing lakehouses live in a PBIP repo

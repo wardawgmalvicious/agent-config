@@ -80,7 +80,7 @@ The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface ar
 ## Capacity throttling errors (`CapacityLimitExceeded`)
 
 - [Smoothing and throttling in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/compute-capacity-smoothing-throttling) — SQL error code `24801` from SSMS / mssql VS Code when capacity rejects.
-- [The Fabric throttling policy](https://learn.microsoft.com/fabric/enterprise/throttling) — full overage / carryforward / burndown model. See `fabric-monitoring` for the Capacity Metrics App reference.
+- [The Fabric throttling policy](https://learn.microsoft.com/fabric/enterprise/throttling) — full overage / carryforward / burndown model. See `fabric-warehouse-monitoring` for the Capacity Metrics App reference.
 
 ## OneLake auth
 

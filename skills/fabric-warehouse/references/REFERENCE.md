@@ -38,7 +38,7 @@ The 3 highest-leverage entry points (concept overview, performance guidelines, s
 ## Monitoring
 
 - [Monitor Fabric Data Warehouse (overview)](https://learn.microsoft.com/fabric/data-warehouse/monitoring-overview) — entry point for Capacity Metrics app, Query activity, Query Insights, DMVs.
-- [Query Insights](https://learn.microsoft.com/fabric/data-warehouse/query-insights) — `queryinsights.exec_requests_history` and friends; 30-day retention. Sample queries for top-CPU, frequent-runs, long-running, cold-start detection. Pair with the `fabric-monitoring` skill.
+- [Query Insights](https://learn.microsoft.com/fabric/data-warehouse/query-insights) — `queryinsights.exec_requests_history` and friends; 30-day retention. Sample queries for top-CPU, frequent-runs, long-running, cold-start detection. Pair with the `fabric-warehouse-monitoring` skill.
 - [Monitor connections, sessions, requests via DMVs](https://learn.microsoft.com/fabric/data-warehouse/monitor-using-dmv) — DMV approach for live state (vs Query Insights' historical view).
 - [Billing and utilization reporting](https://learn.microsoft.com/fabric/data-warehouse/usage-reporting) — Capacity Metrics app columns and how warehouse compute charges are reported.
 

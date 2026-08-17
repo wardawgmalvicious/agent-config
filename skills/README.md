@@ -46,8 +46,9 @@ See each `SKILL.md` for its specific triggering conditions.
   MATERIALIZED LAKE VIEW` Spark SQL + the preview `@fmlv` PySpark
   decorator. Refresh modes, CDF prerequisite, lineage scheduling.
 - [fabric-spark/](fabric-spark/) — Fabric Spark patterns.
-- [fabric-monitoring/](fabric-monitoring/) — Warehouse query monitoring:
-  `OPTION (LABEL = ...)`, `queryinsights` schema, retention windows.
+- [fabric-warehouse-monitoring/](fabric-warehouse-monitoring/) —
+  Warehouse query monitoring: `OPTION (LABEL = ...)`, `queryinsights`
+  schema, retention windows.
 - [fabric-security/](fabric-security/) — workspace roles, item-level
   permissions, SQL GRANT/DENY/REVOKE, RLS/CLS bypass via Spark/OneLake.
 - [fabric-tmdl/](fabric-tmdl/) — TMDL semantic-model authoring.

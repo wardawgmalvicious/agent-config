@@ -161,4 +161,4 @@ Default format (omit `format` or set to `null`). Key parts:
 
 - fabric-rest-api skill — notebook definition upload API and LRO pattern
 - fabric-error-handling skill — Tier 1/2 convention for notebook code
-- fabric-monitoring skill — Query Insights for SQLEP queries against lakehouse tables
+- fabric-warehouse-monitoring skill — Query Insights for SQLEP queries against lakehouse tables

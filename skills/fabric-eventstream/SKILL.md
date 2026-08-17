@@ -242,4 +242,4 @@ Schema support itself is a **creation-time flag**: it cannot be enabled on an ex
 - `fabric-eventhouse` — the natural KQL-Database pair for analytics on streamed events
 - `fabric-rest-api` — Eventstream item REST endpoints, LRO polling, jobType values
 - `fabric-auth` — token audience for Fabric REST against Eventstream items
-- `fabric-monitoring` — Workspace monitoring, broader L1/L2 monitoring picture beyond Eventstreams
+- `fabric-warehouse-monitoring` — Warehouse-side query monitoring; workspace-monitoring links in its references bundle
