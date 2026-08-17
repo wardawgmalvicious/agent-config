@@ -26,7 +26,7 @@ See each `SKILL.md` for its specific triggering conditions.
   / release notes for skill staleness, drift in existing skills, new-
   skill candidates, and MCP/tooling additions. Findings only — no edits.
 
-## Microsoft Fabric platform (18)
+## Microsoft Fabric platform (19)
 
 - [fabric-auth/](fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -49,6 +49,10 @@ See each `SKILL.md` for its specific triggering conditions.
 - [fabric-warehouse-monitoring/](fabric-warehouse-monitoring/) —
   Warehouse query monitoring: `OPTION (LABEL = ...)`, `queryinsights`
   schema, retention windows.
+- [fabric-spark-monitoring/](fabric-spark-monitoring/) — Spark runtime
+  diagnostics via the monitoring REST APIs: Livy session listings,
+  Spark History Server mirror, five-phase wall-clock attribution,
+  high-concurrency session reuse verification.
 - [fabric-security/](fabric-security/) — workspace roles, item-level
   permissions, SQL GRANT/DENY/REVOKE, RLS/CLS bypass via Spark/OneLake.
 - [fabric-tmdl/](fabric-tmdl/) — TMDL semantic-model authoring.

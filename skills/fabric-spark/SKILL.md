@@ -162,3 +162,4 @@ Default format (omit `format` or set to `null`). Key parts:
 - fabric-rest-api skill — notebook definition upload API and LRO pattern
 - fabric-error-handling skill — Tier 1/2 convention for notebook code
 - fabric-warehouse-monitoring skill — Query Insights for SQLEP queries against lakehouse tables
+- fabric-spark-monitoring skill — Livy session listings, Spark History Server mirror, notebook wall-clock attribution
