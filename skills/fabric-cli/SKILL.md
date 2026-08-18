@@ -351,6 +351,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 
 ## See also
 
+- fabric-cicd skill — the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
 - fabric-rest-api skill — direct REST patterns behind `fab api`
 - fabric-tmdl-api skill — definition payloads for semantic models
 - fabric-auth skill — token audiences when acquiring tokens outside `az login`
