@@ -30,7 +30,7 @@ See each `SKILL.md` for its specific triggering conditions.
   / release notes for skill staleness, drift in existing skills, new-
   skill candidates, and MCP/tooling additions. Findings only — no edits.
 
-## Microsoft Fabric platform (22)
+## Microsoft Fabric platform (23)
 
 - [fabric-auth/](fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -41,6 +41,10 @@ See each `SKILL.md` for its specific triggering conditions.
 - [fabric-cli/](fabric-cli/) — `fab` CLI: filesystem-style access over
   Fabric + Power BI REST. Path syntax, navigation, item CRUD, ACLs,
   capacity/domain, jobs, `fab api` REST passthrough.
+- [fabric-cicd/](fabric-cicd/) — the fabric-cicd Python deployment
+  library: `FabricWorkspace` / `publish_all_items`, `parameter.yml`
+  substitution model, `config.yml` deploys, feature flags, ADO /
+  GitHub Actions wiring.
 - [fabric-copy-job/](fabric-copy-job/) — Copy job item: full vs
   incremental modes, watermark vs CDC incremental, JSON definition,
   REST + on-demand runs, Activator invocation.
