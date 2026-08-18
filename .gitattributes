@@ -1,0 +1,4 @@
+# Normalize all text to LF in repo and on checkout, regardless of any
+# machine's core.autocrlf. This is a plain config repo — the Fabric
+# portal-serialization `-text` rule (see CLAUDE.md) does NOT apply here.
+* text=auto eol=lf
