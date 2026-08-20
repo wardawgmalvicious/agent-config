@@ -29,6 +29,10 @@ See each `SKILL.md` for its specific triggering conditions.
 - [drift-audit/](drift-audit/) — audit Microsoft monthly feature blogs
   / release notes for skill staleness, drift in existing skills, new-
   skill candidates, and MCP/tooling additions. Findings only — no edits.
+- [learn/](learn/) — "learn!": capture a session learning into the
+  skill / rule / CLAUDE.md that should have covered it. Auto-detects
+  which guidance was in use, checks existing coverage, verifies against
+  docs, proposes a diff for approval, hands off to `/commit`.
 
 ## Microsoft Fabric platform (23)
 
