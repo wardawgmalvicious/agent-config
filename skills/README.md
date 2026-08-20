@@ -18,6 +18,10 @@ See each `SKILL.md` for its specific triggering conditions.
 
 ## Behavioral (cross-domain)
 
+Naming convention: behavioral skills are named as the verb you invoke
+(`/commit`, `/learn`); platform skills carry a `fabric-` / `pbir-` /
+`pbid-` namespace prefix.
+
 - [code-review/](code-review/) — review code for quality, naming,
   error handling, security, and scaling. Multi-language: Python,
   PySpark, T-SQL, Spark SQL, KQL, DAX, TMDL, Fabric pipeline
