@@ -37,8 +37,9 @@ Do **not** ask the user which skill was used. Reconstruct it:
    loaded-skill blocks). Record the `name:` of each.
 2. **Rules auto-loaded** — any `rules/coding-*.md` content present in
    context, triggered by files in session scope (`paths:` globs).
-3. **CLAUDE.md sections** relied on — e.g. the Fabric serialization
-   or `uv` guidance.
+3. **Global CLAUDE.md or rule sections** relied on — e.g. the `uv`
+   guidance (`global/CLAUDE.md`) or the Fabric serialization rule
+   (`rules/fabric-git-serialization.md`).
 4. **Tools used** — MCP servers / CLIs (`fab`, `pbir`, fabric-cicd,
    Fabric REST) point at the skill that owns them even if it wasn't
    explicitly invoked. Map by the skill's `description`.
@@ -55,7 +56,7 @@ Output a short table: `learning → owning skill/rule → section`.
 | Domain procedure, API shape, syntax, gotcha for one product area | `skills/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<name>/references/REFERENCE.md` |
 | Cross-product troubleshooting symptom (error text → cause) | `skills/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `rules/coding-<lang>.md` (path-scoped via `paths:`) |
-| Environment or repo-wide constraint for every session | `CLAUDE.md` — then mirror to `~/.claude/CLAUDE.md` by hand (it is a copy, not a junction) |
+| Environment or machine-wide constraint for every session | `global/CLAUDE.md` — then re-run `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md` (it is a copy, not a junction) |
 | Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars, see `scripts/lint-skills.py`) |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
 
@@ -69,7 +70,7 @@ reader finds it where they'd look.
 Before writing anything:
 
 ```
-grep -rn -i "<key term>" skills/ rules/ CLAUDE.md
+grep -rn -i "<key term>" skills/ rules/ CLAUDE.md global/CLAUDE.md
 ```
 
 - Already covered correctly → nothing to do; say so.
@@ -125,8 +126,8 @@ commit yourself). Suggested subject shape:
 - `fix(fabric-gotchas): correct cause of 24556 snapshot conflict`
 - `feat(rules): add KQL materialize() guidance`
 
-If `CLAUDE.md` changed, remind the user to mirror it to
-`~/.claude/CLAUDE.md`.
+If `global/CLAUDE.md` changed, remind the user to re-run
+`scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`.
 
 ## Example (illustrative — not a real fabric-cicd fact)
 

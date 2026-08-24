@@ -17,6 +17,11 @@
     and pushed repo -> home only with -Force. Reconcile drift manually
     before forcing — the home copy may hold edits the repo lacks.
 
+    ~/.claude/CLAUDE.md (user scope, all projects) is sourced from the
+    repo's global/CLAUDE.md — NOT the repo-root CLAUDE.md, which is
+    project-scope instructions for working on this repo and is never
+    deployed.
+
     settings.json gets a key-level comparison instead of a byte comparison:
     Claude Code rewrites the live copy at runtime (e.g. the model pin), so
     the check passes when every repo key is present in home with an equal
@@ -49,7 +54,12 @@ $ErrorActionPreference = 'Stop'
 
 $RepoRoot  = Split-Path -Parent $PSScriptRoot
 $LinkDirs  = 'agents', 'hooks', 'rules', 'skills'
-$MirrorFiles = 'CLAUDE.md', 'settings.json'
+# Repo-relative source -> filename under $ClaudeDir. Root CLAUDE.md is
+# project-scope for this repo and deliberately absent here.
+$MirrorFiles = @(
+    @{ Source = 'global/CLAUDE.md'; Dest = 'CLAUDE.md' }
+    @{ Source = 'settings.json';    Dest = 'settings.json' }
+)
 $script:DriftCount = 0
 
 function Get-LinkTarget([System.IO.FileSystemInfo]$Item) {
@@ -133,9 +143,10 @@ foreach ($name in $LinkDirs) {
     Write-Host "Linked  $name -> $target"
 }
 
-foreach ($name in $MirrorFiles) {
-    $src = Join-Path $RepoRoot $name
-    $dst = Join-Path $ClaudeDir $name
+foreach ($mirror in $MirrorFiles) {
+    $src  = Join-Path $RepoRoot $mirror.Source
+    $dst  = Join-Path $ClaudeDir $mirror.Dest
+    $name = $mirror.Dest
 
     if (-not (Test-Path $src)) {
         Write-Warning "Repo file missing, skipped: $src"
