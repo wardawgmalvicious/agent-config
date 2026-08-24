@@ -28,7 +28,9 @@ The InstructionsLoaded log feeds [scripts/instructions-log](../scripts/instructi
 
 Hooks must be registered in `settings.json` to fire. Both hooks here
 are wired in this repo's [settings.json](../settings.json) under the
-`hooks` key. The committed commands resolve via `$HOME/.claude/...`,
-so they work for any user as long as the repo is cloned at `~/.claude/`.
-If you keep your Claude Code config under a different directory, edit
-the paths in `settings.json` to match.
+`hooks` key. The committed commands resolve via `$HOME/.claude/...` —
+[scripts/link-claude.ps1](../scripts/link-claude.ps1) junctions this
+`hooks/` directory into `~/.claude/hooks/` and mirrors `settings.json`
+there, so the paths work for any user regardless of where the repo is
+cloned. If you keep your Claude Code config somewhere other than
+`~/.claude`, edit the paths in `settings.json` to match.
