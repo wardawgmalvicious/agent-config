@@ -1,17 +1,26 @@
-# Claude Config
+# Agent Config
 
-Personal Claude Code configuration: skills, agents, coding rules, hooks,
-MCP templates, and settings. This repo IS ~/.claude/ — clone or sync it
-into your home directory; edit in place, commit, push.
+Personal configuration for coding agents: skills, subagents, coding
+rules, hooks, MCP templates, and settings. Clone it anywhere; link
+scripts wire it into each tool's config directory — Claude Code via
+`~/.claude`, GitHub Copilot via `~/.agents`.
 
 ## What this is
 
-This repo is the live `~/.claude/` of a data professional working day-to-day
-in Microsoft Fabric, Azure, and Power BI. It holds skills, a subagent,
-path-scoped coding rules, hooks, MCP templates, a pre-commit linter, and
-fixture tests — the same files Claude Code loads when I open a session.
-Cherry-pick what's useful; the contents track active Microsoft data-
-platform work, so expect drift as the platform moves.
+This repo is the live agent configuration of a data professional
+working day-to-day in Microsoft Fabric, Azure, and Power BI. It holds
+skills, a subagent, path-scoped coding rules, hooks, MCP templates, a
+pre-commit linter, and fixture tests — the same files my agents load
+when I open a session. Cherry-pick what's useful; the contents track
+active Microsoft data-platform work, so expect drift as the platform
+moves.
+
+The repo started life as a Claude Code config cloned directly into
+`~/.claude`. It now lives outside any tool's config directory and is
+linked in per tool, which keeps runtime state out of the working tree
+and lets the same skill content serve more than one agent. The
+*content* is still Claude-flavored — see
+[Tool support](#tool-support) for what each tool consumes.
 
 ## Status
 
@@ -53,7 +62,7 @@ unproven, even by `personal` standards:
 
 ## Contents
 
-- [skills/](skills/) — 30 skills: 18 Fabric, 10 Power BI / TMDL, 2
+- [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and
   behavioral (code-review, drift-audit). See [skills/README.md](skills/README.md).
 - [agents/](agents/) — 1 subagent ([security-reviewer](agents/security-reviewer.md)).
 - [rules/](rules/) — 8 path-scoped coding conventions (T-SQL, Spark SQL,
@@ -63,21 +72,25 @@ unproven, even by `personal` standards:
   memory-scope guard.
 - [mcp/](mcp/) — Starter templates for global (user-scope) and project-
   scope MCP server configs.
-- [scripts/](scripts/) — pre-commit bootstrap, instructions-log query
-  helper, SKILL.md frontmatter linter.
+- [scripts/](scripts/) — link scripts (see [Install](#install)),
+  pre-commit bootstrap, instructions-log query helper, SKILL.md
+  frontmatter linter.
 - [tests/](tests/) — Synthetic fixtures for validating the code-review
   skill and security-reviewer agent.
 - [docs/handoff-briefs/](docs/handoff-briefs/) — Templates and worked
   examples for the brief-before-draft pattern (see
   [Handoff discipline](#handoff-discipline)).
 - [CLAUDE.md](CLAUDE.md) — Personal-scope instructions; pointer to
-  per-language rules.
-- [settings.json](settings.json) — Claude Code settings (enabled
-  plugins, hook registry, effort level, update channel). Hook commands
-  resolve via `$HOME/.claude/...` so they're portable across users, but
-  assume this repo is cloned at `~/.claude/`. Personal `permissions`
-  entries live in `settings.local.json` (gitignored) — add your own
-  there.
+  per-language rules. Deployed to `~/.claude/CLAUDE.md` by the link
+  script.
+- [settings.json](settings.json) — Claude Code settings (hook registry,
+  enabled plugins, effort level, update channel). Deployed to
+  `~/.claude/settings.json` by the link script, which compares it at
+  the key level — runtime keys Claude Code writes to the live copy
+  (like the model pin) stay untracked. Hook commands resolve via
+  `$HOME/.claude/...`, which the junctions provide regardless of where
+  the repo is cloned. Personal `permissions` entries live in
+  `settings.local.json` (gitignored) — add your own there.
 - [LICENSE](LICENSE) — MIT.
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
@@ -85,74 +98,100 @@ unproven, even by `personal` standards:
   — pre-commit framework config (gitleaks + the SKILL.md frontmatter
   linter at [scripts/lint-skills.py](scripts/lint-skills.py)).
 
+## Tool support
+
+The repo is structured so agnostic content and tool-specific wiring
+stay separable:
+
+- **Portable content** — [skills/](skills/) (the Agent Skills format is
+  an open spec other tools are adopting), [rules/](rules/) bodies,
+  [docs/](docs/), [tests/](tests/), and the MCP templates (MCP is
+  cross-tool; only the config file shape differs per tool).
+- **Claude Code-specific** — [settings.json](settings.json), the hook
+  event wiring in [hooks/](hooks/), the subagent frontmatter in
+  [agents/](agents/), the `CLAUDE.md` filename, and the `paths:`
+  auto-load frontmatter on rules (GitHub Copilot's `.instructions.md`
+  `applyTo:` globs are the direct analog).
+- **GitHub Copilot** — consumes the skills via per-skill links into
+  `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)).
+  Rules, hooks, and settings are not wired into Copilot.
+
+"Agnostic" here means *structured so other tools can consume it* — the
+content is written for and validated with Claude Code first.
+
 ## Install
 
 > **Cherry-picking?** Browse this repo on GitHub and copy individual
-> files into your existing `~/.claude/`. No install needed. The
-> numbered steps below are for cloning the whole thing.
+> files into your own agent config. No install needed. The numbered
+> steps below wire up the whole thing.
 
-<!-- -->
-
-> **Back up first.** Cloning into `~/.claude/` overwrites any existing
-> Claude Code configuration in your home directory. If you already have
-> a `~/.claude/`, either move it aside (`mv ~/.claude ~/.claude.bak`)
-> or clone this repo elsewhere and cherry-pick the pieces you want into
-> your existing `~/.claude/`.
-
-1. Clone into `~/.claude/`:
+1. Clone anywhere (the link scripts resolve the repo location from
+   their own path):
 
     ```bash
     # HTTPS (default — works for any GitHub user)
-    git clone https://github.com/wardawgmalvicious/claude-config.git ~/.claude
+    git clone https://github.com/wardawgmalvicious/agent-config.git
 
     # SSH (requires GitHub SSH keys configured)
-    git clone git@github.com:wardawgmalvicious/claude-config.git ~/.claude
+    git clone git@github.com:wardawgmalvicious/agent-config.git
     ```
 
-2. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
+2. Link into Claude Code. Creates directory junctions (no elevation
+   needed) for `agents/`, `hooks/`, `rules/`, and `skills/` under
+   `~/.claude`, and mirrors `CLAUDE.md` + `settings.json` as plain
+   copies. **Back up first if you already have a `~/.claude`** — the
+   script refuses to replace real directories or drifted files without
+   `-Force`, but review its warnings before forcing anything.
+
+    ```powershell
+    ./scripts/link-claude.ps1
+    ```
+
+3. (Optional) Link skills into GitHub Copilot's `~/.agents/skills`,
+   one junction per skill, alongside any skills other providers have
+   installed there:
+
+    ```powershell
+    ./scripts/link-copilot.ps1
+    ```
+
+4. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
    it once across all files). **Requires
    [uv](https://docs.astral.sh/uv/) on PATH.** Skip this step if you
    only intend to read, not commit.
 
     ```bash
-    cd ~/.claude && scripts/bootstrap-pre-commit
+    cd agent-config && scripts/bootstrap-pre-commit
     ```
 
-3. Add `~/.claude/scripts` to `PATH` so the helpers (`instructions-log`,
-   `lint-skills.py`, `bootstrap-pre-commit`) are callable by name.
-
-    Git Bash (`~/.bashrc`):
-
-    ```bash
-    export PATH="$HOME/.claude/scripts:$PATH"
-    ```
-
-    PowerShell (`$PROFILE`):
-
-    ```powershell
-    $env:PATH = "$HOME\.claude\scripts;$env:PATH"
-    ```
+5. (Optional) Add the repo's `scripts/` directory to `PATH` so the
+   helpers (`instructions-log`, `lint-skills.py`) are callable by name.
 
 **Notes:**
 
-- Plugins, agent memory, runtime state (sessions, projects, todos,
-  caches, file history), and secrets are gitignored — see
-  [.gitignore](.gitignore). After cloning, plugins reinstall from
-  scratch and any MCP servers requiring auth will need to reauth on
-  first use.
-- This config is Windows-targeted (Git Bash + the PowerShell tool in
-  Claude Code). Hook commands resolve via `$HOME` so they're portable
-  across users on Windows, but Linux / macOS users will need path
-  adjustments — paths, shell shebangs, and the MCP `LOCALAPPDATA` env
-  block all assume Windows. No promise it works elsewhere out of the
-  box.
+- Plugins, agent memory, and Claude Code runtime state live in
+  `~/.claude`, not in this repo — nothing to gitignore away, nothing
+  to leak into commits. That separation is the point of linking
+  instead of cloning into the config directory.
+- This config is Windows-targeted (junctions, PowerShell link scripts,
+  Git Bash for the shell hooks). Hook commands resolve via `$HOME` so
+  they're portable across users on Windows, but Linux / macOS users
+  will need to symlink manually and adjust paths — no promise it works
+  elsewhere out of the box.
 
 ## Ongoing workflow
 
-Edit files in place. This repo IS ~/.claude/. git add / commit / push
-like any other repo. Skill edits don't reliably take effect mid-session
-under Git Bash on Windows — restart the Claude Code session after
-editing a SKILL.md to be safe.
+Edit files in place and commit like any other repo. Changes to the
+junctioned directories (`agents/`, `hooks/`, `rules/`, `skills/`) are
+live immediately — the tools read the same files. Changes to
+`CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1` re-run
+to reach the live copies (the script also verifies everything else and
+exits non-zero if any link or mirror needs attention — including after
+moving or renaming the repo folder, which it repairs automatically).
+
+Skill edits don't reliably take effect mid-session under Git Bash on
+Windows — restart the Claude Code session after editing a SKILL.md to
+be safe.
 
 ## Handoff discipline
 

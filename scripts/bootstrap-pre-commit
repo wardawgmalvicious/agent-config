@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install pre-commit framework and wire git hooks for claude-config.
+# Install pre-commit framework and wire git hooks for this repo.
 # Idempotent: safe to re-run.
 set -euo pipefail
 
