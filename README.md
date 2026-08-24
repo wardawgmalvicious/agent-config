@@ -66,8 +66,9 @@ unproven, even by `personal` standards:
   behavioral (code-review, drift-audit). See [skills/README.md](skills/README.md).
 - [agents/](agents/) — 1 subagent ([security-reviewer](agents/security-reviewer.md)).
 - [rules/](rules/) — 8 path-scoped coding conventions (T-SQL, Spark SQL,
-  Python/PySpark, KQL, DAX, M, TMDL, Fabric pipeline expressions);
-  auto-load via `paths:` globs when matching files enter session scope.
+  Python/PySpark, KQL, DAX, M, TMDL, Fabric pipeline expressions) plus
+  a Fabric Git-serialization rule; auto-load via `paths:` globs when
+  matching files enter session scope.
 - [hooks/](hooks/) — InstructionsLoaded logger and a security-reviewer
   memory-scope guard.
 - [mcp/](mcp/) — Starter templates for global (user-scope) and project-
@@ -80,9 +81,11 @@ unproven, even by `personal` standards:
 - [docs/handoff-briefs/](docs/handoff-briefs/) — Templates and worked
   examples for the brief-before-draft pattern (see
   [Handoff discipline](#handoff-discipline)).
-- [CLAUDE.md](CLAUDE.md) — Personal-scope instructions; pointer to
-  per-language rules. Deployed to `~/.claude/CLAUDE.md` by the link
-  script.
+- [global/CLAUDE.md](global/CLAUDE.md) — User-scope instructions
+  loaded in every session (machine environment, pointers to rules).
+  Deployed to `~/.claude/CLAUDE.md` by the link script.
+- [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
+  this repo (sync model, authoring conventions). Not deployed.
 - [settings.json](settings.json) — Claude Code settings (hook registry,
   enabled plugins, effort level, update channel). Deployed to
   `~/.claude/settings.json` by the link script, which compares it at
@@ -138,8 +141,8 @@ content is written for and validated with Claude Code first.
 
 2. Link into Claude Code. Creates directory junctions (no elevation
    needed) for `agents/`, `hooks/`, `rules/`, and `skills/` under
-   `~/.claude`, and mirrors `CLAUDE.md` + `settings.json` as plain
-   copies. **Back up first if you already have a `~/.claude`** — the
+   `~/.claude`, and mirrors `global/CLAUDE.md` (→ `~/.claude/CLAUDE.md`)
+   and `settings.json` as plain copies. **Back up first if you already have a `~/.claude`** — the
    script refuses to replace real directories or drifted files without
    `-Force`, but review its warnings before forcing anything.
 
@@ -184,8 +187,8 @@ content is written for and validated with Claude Code first.
 Edit files in place and commit like any other repo. Changes to the
 junctioned directories (`agents/`, `hooks/`, `rules/`, `skills/`) are
 live immediately — the tools read the same files. Changes to
-`CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1` re-run
-to reach the live copies (the script also verifies everything else and
+`global/CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1`
+re-run to reach the live copies (the script also verifies everything else and
 exits non-zero if any link or mirror needs attention — including after
 moving or renaming the repo folder, which it repairs automatically).
 
