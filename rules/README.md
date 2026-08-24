@@ -30,6 +30,11 @@ conformance checking.
 - [coding-expressions.md](coding-expressions.md) — Fabric pipeline
   expressions; idioms also apply to ADF, Synapse pipelines, Logic Apps,
   and Power Automate (Workflow Definition Language family)
+- [fabric-git-serialization.md](fabric-git-serialization.md) — not a
+  coding convention: portal serialization behavior for Fabric
+  Git-synced repos (EOF newlines, mixed CRLF/LF, the auto-generated
+  view header, `.gitattributes -text`). Triggers on `*.{ItemType}`
+  item folders and `.platform` files.
 
 ## Project-scope override
 
