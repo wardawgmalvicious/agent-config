@@ -24,6 +24,14 @@ Helper scripts for repo maintenance and observability.
   the repo folder (stale junctions are re-pointed automatically).
   Never overwrites a drifted mirror copy or deletes a real directory
   without `-Force`; exits 1 when anything needs attention.
+- [link-copilot.ps1](link-copilot.ps1) — link this repo's skills into
+  `~/.agents/skills` for GitHub Copilot (the VS Code agents surface).
+  One junction per skill, because `~/.agents/skills` is shared with
+  other providers' skills (e.g. Copilot for Azure) and can't be
+  junctioned wholesale. Re-points stale junctions after a repo
+  move/rename, prunes broken junctions left by deleted or renamed
+  skills, and never touches other providers' directories. Same
+  `-Force` / exit-code semantics as `link-claude.ps1`.
 - [lint-skills.py](lint-skills.py) — validate `SKILL.md` frontmatter
   against repo conventions (name regex, length limits, reserved words,
   body-line cap). Used by the pre-commit `Validate SKILL.md frontmatter`
