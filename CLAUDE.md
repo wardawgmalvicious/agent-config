@@ -1,86 +1,40 @@
-# Microsoft Fabric Development Instructions
+# agent-config: repo instructions
 
-When the user asks about Power BI / Fabric / TMDL topics, prefer skill content over training-data answers when both exist. If unsure whether a relevant skill is loaded, err toward answering conservatively and asking for clarification rather than fabricating specifics.
+This repo is the source for the user's agent configuration (skills,
+rules, hooks, subagents, settings). Files here are synced into tool
+config directories; where an edit lands determines when it goes live:
 
-## Local environment
+| Repo path | Deployed to | Mechanism | Live when |
+| --- | --- | --- | --- |
+| `agents/`, `hooks/`, `rules/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `global/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
+| `settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
+| `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-copilot.ps1`) | immediately |
 
-Python is **not** on `PATH` on this machine. Always go through `uv`:
+This file (root `CLAUDE.md`) is project scope only — it is **not**
+deployed anywhere and loads only in sessions inside this repo.
 
-| Intent | Command |
-| --- | --- |
-| Run a script | `uv run script.py` |
-| Run a module | `uv run -m module` |
-| One-liner / REPL check | `uv run python -c "..."` |
-| Script with ad-hoc deps | `uv run --with pandas script.py` |
-| Run a CLI tool once | `uvx <tool>` |
-| Install a CLI tool | `uv tool install <tool>` |
-| Project dependencies | `uv add <pkg>` / `uv sync` |
+## Editing conventions
 
-Never invoke bare `python`, `python3`, or `pip` — they will fail with
-"command not found", not with a useful error.
+- **Skills** — frontmatter `description` ≤ 1024 chars; lint with
+  `uv run --with pyyaml scripts/lint-skills.py skills/<name>/SKILL.md`
+  (pre-commit runs it too). Long detail goes in
+  `skills/<name>/references/`, not SKILL.md. Skill edits don't
+  reliably reload mid-session on Windows — restart the session to
+  test a changed SKILL.md.
+- **Rules** — `paths:` frontmatter globs control auto-load; a rule
+  fires when a matching file enters session scope. Client repos can
+  override any rule with `.claude/rules/<same-name>.md`.
+- **`global/CLAUDE.md`** — loaded into *every* session on this
+  machine. Keep it lean: machine environment and pointers only. If
+  guidance has a narrower trigger (a file type, a product area),
+  prefer a path-scoped rule or a skill instead.
+- Capturing a session learning into skills/rules: use `/learn`.
+  Committing: use `/commit`.
 
-## Coding conventions
+## Line endings
 
-Per-language conventions live in `~/.claude/rules/coding-<lang>.md`,
-auto-loaded via `paths:` globs when matching files are in session
-scope. Project-scope overrides via `.claude/rules/coding-<lang>.md`
-in client repos. See userPreferences for the cross-language summary.
-
-## Fabric Git-synced repos: portal serialization
-
-Fabric re-serializes an item's definition files whenever the item is
-committed from the portal, and its canonical form for JSON and SQL
-parts (`pipeline-content.json`, `variables.json`, eventstream/report
-JSON, Warehouse `.sql` scripts) **has no final newline** — a trailing
-newline added locally is stripped on the next portal round-trip,
-producing a whitespace-only diff. TMDL, `notebook-content.*`, and
-`.kql` parts *do* end with a newline.
-
-When editing files inside `*.{ItemType}` folders of a Fabric
-Git-synced repo:
-
-- **Preserve the file's existing EOF exactly** — never append a final
-  newline to a file that lacks one, never remove one that's there.
-- New JSON / SQL item parts: end at the last character, no final
-  newline. New TMDL / notebook / KQL parts: end with one.
-- Don't "clean up" portal-written formatting in Warehouse scripts —
-  trailing spaces after commas in table DDL and the
-  `-- Auto Generated (Do not modify) <hash>` header on views are
-  reapplied by the portal on every sync. That header is **not** a
-  content hash: the portal reapplies the same value after the view's
-  schema name, comments, and column list have all changed. Carry it
-  forward verbatim across edits and moves; never recompute or drop it.
-  A brand-new view has no way to know its hash in advance — omit the
-  header and accept one round-trip.
-
-### Line endings: every Fabric repo needs a `.gitattributes`
-
-Fabric writes some lines CRLF and some LF **inside the same file** —
-the `GO` / `ALTER TABLE` constraint block in Warehouse table DDL and
-the auto-generated view header are CRLF, the surrounding body is LF.
-With Git for Windows' default `core.autocrlf = true` and no
-`.gitattributes`, a local commit strips those CRs, the next portal
-sync puts them back, and the history fills with recurring
-"Auto formatted" commits. No amount of careful local authoring fixes
-this — it is a translation layer underneath the edit, not an
-authoring mistake.
-
-Check early in any Fabric repo: `git config core.autocrlf` and whether
-`.gitattributes` exists. If translation is on and unpinned, add one
-scoped to the workspace folders holding item definitions:
-
-```gitattributes
-Engineering/** -text
-RealTime/**    -text
-Analytics/**   -text
-```
-
-`-text` (no translation at all), **not** `text eol=lf` — forcing LF
-strips the portal's CRLF lines and restarts the ping-pong from the
-other side. This does not retroactively fix already-committed blobs;
-expect one more normalization commit before it settles.
-
-Practical consequence while editing: exact-match string edits against
-these files can fail on the CRLF lines even when the text looks
-identical. Match a smaller span that avoids the line break, or operate
-on bytes.
+This repo pins `* text=auto eol=lf` in `.gitattributes`. The Fabric
+portal-serialization guidance in
+`rules/fabric-git-serialization.md` applies to Fabric Git-synced
+repos, **not** to this one.
