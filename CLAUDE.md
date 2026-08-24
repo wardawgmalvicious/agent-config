@@ -46,4 +46,41 @@ Git-synced repo:
 - Don't "clean up" portal-written formatting in Warehouse scripts —
   trailing spaces after commas in table DDL and the
   `-- Auto Generated (Do not modify) <hash>` header on views are
-  reapplied by the portal on every sync.
+  reapplied by the portal on every sync. That header is **not** a
+  content hash: the portal reapplies the same value after the view's
+  schema name, comments, and column list have all changed. Carry it
+  forward verbatim across edits and moves; never recompute or drop it.
+  A brand-new view has no way to know its hash in advance — omit the
+  header and accept one round-trip.
+
+### Line endings: every Fabric repo needs a `.gitattributes`
+
+Fabric writes some lines CRLF and some LF **inside the same file** —
+the `GO` / `ALTER TABLE` constraint block in Warehouse table DDL and
+the auto-generated view header are CRLF, the surrounding body is LF.
+With Git for Windows' default `core.autocrlf = true` and no
+`.gitattributes`, a local commit strips those CRs, the next portal
+sync puts them back, and the history fills with recurring
+"Auto formatted" commits. No amount of careful local authoring fixes
+this — it is a translation layer underneath the edit, not an
+authoring mistake.
+
+Check early in any Fabric repo: `git config core.autocrlf` and whether
+`.gitattributes` exists. If translation is on and unpinned, add one
+scoped to the workspace folders holding item definitions:
+
+```gitattributes
+Engineering/** -text
+RealTime/**    -text
+Analytics/**   -text
+```
+
+`-text` (no translation at all), **not** `text eol=lf` — forcing LF
+strips the portal's CRLF lines and restarts the ping-pong from the
+other side. This does not retroactively fix already-committed blobs;
+expect one more normalization commit before it settles.
+
+Practical consequence while editing: exact-match string edits against
+these files can fail on the CRLF lines even when the text looks
+identical. Match a smaller span that avoids the line break, or operate
+on bytes.
