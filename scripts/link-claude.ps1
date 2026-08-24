@@ -13,9 +13,15 @@
     CLAUDE.md and settings.json cannot be junctioned (file symlinks require
     elevation or Developer Mode, and hard links silently break when git
     replaces the file by rename on pull/checkout), so they are mirrored as
-    plain copies: copied when missing at home, reported when the two copies
-    differ, and overwritten repo -> home only with -Force. Reconcile drift
-    manually before forcing — the home copy may hold edits the repo lacks.
+    plain copies: copied when missing at home, reported when they drift,
+    and pushed repo -> home only with -Force. Reconcile drift manually
+    before forcing — the home copy may hold edits the repo lacks.
+
+    settings.json gets a key-level comparison instead of a byte comparison:
+    Claude Code rewrites the live copy at runtime (e.g. the model pin), so
+    the check passes when every repo key is present in home with an equal
+    value, and home-only keys are ignored. -Force merges repo keys into
+    home (top-level, whole-key replacement) and keeps home-only keys.
 
     Idempotent; safe to re-run any time, including after moving or renaming
     the repo folder (the script resolves targets from its own location).
@@ -60,6 +66,28 @@ function Get-LinkTarget([System.IO.FileSystemInfo]$Item) {
 
 function Test-SamePath([string]$A, [string]$B) {
     [IO.Path]::GetFullPath($A).TrimEnd('\') -ieq [IO.Path]::GetFullPath($B).TrimEnd('\')
+}
+
+function Test-JsonSubset($Subset, $Superset) {
+    # True when every key/value in $Subset exists with an equal value in
+    # $Superset. Extra keys in $Superset are allowed.
+    if ($Subset -is [System.Management.Automation.PSCustomObject]) {
+        if ($Superset -isnot [System.Management.Automation.PSCustomObject]) { return $false }
+        foreach ($p in $Subset.PSObject.Properties) {
+            $match = $Superset.PSObject.Properties[$p.Name]
+            if (-not $match) { return $false }
+            if (-not (Test-JsonSubset $p.Value $match.Value)) { return $false }
+        }
+        return $true
+    }
+    if ($Subset -is [Array]) {
+        if ($Superset -isnot [Array] -or $Subset.Count -ne $Superset.Count) { return $false }
+        for ($i = 0; $i -lt $Subset.Count; $i++) {
+            if (-not (Test-JsonSubset $Subset[$i] $Superset[$i])) { return $false }
+        }
+        return $true
+    }
+    return $Subset -eq $Superset
 }
 
 if (-not (Test-Path $ClaudeDir)) {
@@ -118,6 +146,28 @@ foreach ($name in $MirrorFiles) {
         Write-Host "Copied  $name (home copy was missing)"
         continue
     }
+    if ($name -eq 'settings.json') {
+        $srcJson = Get-Content $src -Raw | ConvertFrom-Json
+        $dstJson = Get-Content $dst -Raw | ConvertFrom-Json
+        if (Test-JsonSubset $srcJson $dstJson) {
+            Write-Host "OK      $name (repo keys all present in home)"
+        }
+        elseif ($Force) {
+            foreach ($p in $srcJson.PSObject.Properties) {
+                $dstJson | Add-Member -NotePropertyName $p.Name -NotePropertyValue $p.Value -Force
+            }
+            $dstJson | ConvertTo-Json -Depth 32 | Set-Content $dst
+            Write-Host "Merged  $name repo keys -> home (-Force; home-only keys kept)"
+        }
+        else {
+            Write-Warning ("$name : repo keys are missing or differ in the home copy. " +
+                "Diff and reconcile (repo: $src | home: $dst), or re-run with -Force " +
+                "to merge repo keys into home (home-only keys are kept).")
+            $script:DriftCount++
+        }
+        continue
+    }
+
     if ((Get-FileHash $src).Hash -eq (Get-FileHash $dst).Hash) {
         Write-Host "OK      $name (in sync)"
         continue
