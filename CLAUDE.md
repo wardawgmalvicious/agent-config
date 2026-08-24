@@ -1,8 +1,23 @@
 # agent-config: repo instructions
 
-This repo is the source for the user's agent configuration (skills,
-rules, hooks, subagents, settings). Files here are synced into tool
-config directories; where an edit lands determines when it goes live:
+This repo is the source for the user's coding-agent configuration
+(skills, a subagent, coding rules, hooks, MCP server templates,
+settings) — see [README.md](README.md) for the full picture. It's
+written to be cherry-picked by any agentic tool, not only the ones the
+user personally runs day to day (Claude Code and GitHub Copilot).
+
+This file mirrors root [AGENTS.md](AGENTS.md) — both describe
+conventions for working *on* this repo itself, not its deployed
+content. [global/CLAUDE.md](global/CLAUDE.md) — the portable,
+machine-wide instructions payload — is similarly mirrored by
+[global/AGENTS.md](global/AGENTS.md). **Keep each pair in sync by
+hand**: when editing either member of a pair, mirror the change into
+its counterpart — nothing automates this.
+
+## How this repo is structured
+
+Files here are synced into tool config directories; where an edit
+lands determines when it goes live:
 
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
@@ -27,12 +42,15 @@ deployed anywhere and loads only in sessions inside this repo.
   reliably reload mid-session on Windows — restart the session to
   test a changed SKILL.md.
 - **Rules** — `paths:` frontmatter globs control auto-load; a rule
-  fires when a matching file enters session scope. Client repos can
-  override any rule with `.claude/rules/<same-name>.md`.
+  fires when a matching file enters session scope (GitHub Copilot's
+  `.instructions.md` `applyTo:` globs are the direct analog). Client
+  repos can override any rule with `.claude/rules/<same-name>.md`.
 - **`global/CLAUDE.md`** — loaded into *every* session on this
   machine. Keep it lean: machine environment and pointers only. If
   guidance has a narrower trigger (a file type, a product area),
-  prefer a path-scoped rule or a skill instead.
+  prefer a path-scoped rule or a skill instead. After editing it,
+  re-run `scripts/link-claude.ps1 -Force` to push it to
+  `~/.claude/CLAUDE.md`, and mirror the edit into `global/AGENTS.md`.
 - Capturing a session learning into skills/rules: use `/learn`.
   Committing: use `/commit`.
 
