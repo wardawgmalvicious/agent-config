@@ -4,8 +4,10 @@
 
 .DESCRIPTION
     Creates directory junctions (no elevation or Developer Mode needed) for
-    agents/, hooks/, rules/, and skills/ under ~/.claude, pointing back into
-    this repo. Junctions already pointing at the right target are left
+    agents/, hooks/, mcp/, rules/, and skills/ under ~/.claude, pointing
+    back into this repo. (Claude Code itself doesn't read ~/.claude/mcp;
+    the junction exists so the template-copy commands documented in
+    mcp/README.md resolve from a stable path.) Junctions already pointing at the right target are left
     alone; junctions pointing elsewhere (e.g. after the repo folder moved or
     was renamed) are replaced. A real directory occupying a link path is
     never removed unless -Force is passed.
@@ -53,7 +55,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $RepoRoot  = Split-Path -Parent $PSScriptRoot
-$LinkDirs  = 'agents', 'hooks', 'rules', 'skills'
+$LinkDirs  = 'agents', 'hooks', 'mcp', 'rules', 'skills'
 # Repo-relative source -> filename under $ClaudeDir. Root CLAUDE.md is
 # project-scope for this repo and deliberately absent here.
 $MirrorFiles = @(

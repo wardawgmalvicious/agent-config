@@ -140,8 +140,8 @@ content is written for and validated with Claude Code first.
     ```
 
 2. Link into Claude Code. Creates directory junctions (no elevation
-   needed) for `agents/`, `hooks/`, `rules/`, and `skills/` under
-   `~/.claude`, and mirrors `global/CLAUDE.md` (→ `~/.claude/CLAUDE.md`)
+   needed) for `agents/`, `hooks/`, `mcp/`, `rules/`, and `skills/`
+   under `~/.claude`, and mirrors `global/CLAUDE.md` (→ `~/.claude/CLAUDE.md`)
    and `settings.json` as plain copies. **Back up first if you already have a `~/.claude`** — the
    script refuses to replace real directories or drifted files without
    `-Force`, but review its warnings before forcing anything.
@@ -185,7 +185,8 @@ content is written for and validated with Claude Code first.
 ## Ongoing workflow
 
 Edit files in place and commit like any other repo. Changes to the
-junctioned directories (`agents/`, `hooks/`, `rules/`, `skills/`) are
+junctioned directories (`agents/`, `hooks/`, `mcp/`, `rules/`,
+`skills/`) are
 live immediately — the tools read the same files. Changes to
 `global/CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1`
 re-run to reach the live copies (the script also verifies everything else and
