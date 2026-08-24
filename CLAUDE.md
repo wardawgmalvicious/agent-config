@@ -6,10 +6,14 @@ config directories; where an edit lands determines when it goes live:
 
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
-| `agents/`, `hooks/`, `rules/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `agents/`, `hooks/`, `mcp/`, `rules/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `global/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
 | `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-copilot.ps1`) | immediately |
+
+(Claude Code doesn't read `~/.claude/mcp` itself — that junction exists
+so the template-copy commands in [mcp/README.md](mcp/README.md) resolve
+from a stable path.)
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
 deployed anywhere and loads only in sessions inside this repo.
