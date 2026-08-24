@@ -15,9 +15,10 @@ Helper scripts for repo maintenance and observability.
 - [link-claude.ps1](link-claude.ps1) — link this repo into `~/.claude`
   so Claude Code loads its config from a clone living anywhere on disk.
   Creates directory junctions (no elevation needed) for `agents/`,
-  `hooks/`, `rules/`, and `skills/`, and mirrors `CLAUDE.md` and
-  `settings.json` as plain copies (file symlinks need Developer Mode;
-  hard links break on `git pull`). `settings.json` is compared at the
+  `hooks/`, `rules/`, and `skills/`, and mirrors `global/CLAUDE.md`
+  (→ `~/.claude/CLAUDE.md`) and `settings.json` as plain copies (file
+  symlinks need Developer Mode; hard links break on `git pull`). The
+  repo-root `CLAUDE.md` is project-scope and never deployed. `settings.json` is compared at the
   key level — Claude Code adds runtime keys (like the model pin) to
   the live copy, and those are ignored; only repo keys must match.
   Idempotent — re-run any time, including after moving or renaming
