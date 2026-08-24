@@ -68,7 +68,9 @@ stats-cache.json
 .DS_Store
 Thumbs.db
 desktop.ini
-.vscode/
+# .vscode is ignored except the committed MCP workspace config
+.vscode/*
+!.vscode/mcp.json
 .idea/
 *.swp
 *~
