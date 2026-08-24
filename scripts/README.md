@@ -17,11 +17,13 @@ Helper scripts for repo maintenance and observability.
   Creates directory junctions (no elevation needed) for `agents/`,
   `hooks/`, `rules/`, and `skills/`, and mirrors `CLAUDE.md` and
   `settings.json` as plain copies (file symlinks need Developer Mode;
-  hard links break on `git pull`). Idempotent — re-run any time,
-  including after moving or renaming the repo folder (stale junctions
-  are re-pointed automatically). Never overwrites a drifted mirror
-  copy or deletes a real directory without `-Force`; exits 1 when
-  anything needs attention.
+  hard links break on `git pull`). `settings.json` is compared at the
+  key level — Claude Code adds runtime keys (like the model pin) to
+  the live copy, and those are ignored; only repo keys must match.
+  Idempotent — re-run any time, including after moving or renaming
+  the repo folder (stale junctions are re-pointed automatically).
+  Never overwrites a drifted mirror copy or deletes a real directory
+  without `-Force`; exits 1 when anything needs attention.
 - [lint-skills.py](lint-skills.py) — validate `SKILL.md` frontmatter
   against repo conventions (name regex, length limits, reserved words,
   body-line cap). Used by the pre-commit `Validate SKILL.md frontmatter`
