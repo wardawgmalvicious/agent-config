@@ -12,6 +12,16 @@ Helper scripts for repo maintenance and observability.
   [InstructionsLoaded hook log](../hooks/log-instructions-loaded.sh).
   Subcommands: `today`, `reasons`, `paths`, `tail`. Requires
   [jq](https://jqlang.org) for the JSON-parsing subcommands.
+- [link-claude.ps1](link-claude.ps1) — link this repo into `~/.claude`
+  so Claude Code loads its config from a clone living anywhere on disk.
+  Creates directory junctions (no elevation needed) for `agents/`,
+  `hooks/`, `rules/`, and `skills/`, and mirrors `CLAUDE.md` and
+  `settings.json` as plain copies (file symlinks need Developer Mode;
+  hard links break on `git pull`). Idempotent — re-run any time,
+  including after moving or renaming the repo folder (stale junctions
+  are re-pointed automatically). Never overwrites a drifted mirror
+  copy or deletes a real directory without `-Force`; exits 1 when
+  anything needs attention.
 - [lint-skills.py](lint-skills.py) — validate `SKILL.md` frontmatter
   against repo conventions (name regex, length limits, reserved words,
   body-line cap). Used by the pre-commit `Validate SKILL.md frontmatter`
