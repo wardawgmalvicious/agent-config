@@ -93,6 +93,9 @@ unproven, even by `personal` standards:
   by [AGENTS.md](AGENTS.md) — same content, generically named, for
   tools that read `AGENTS.md` instead of `CLAUDE.md`; kept in sync by
   hand.
+- [.github/copilot-instructions.md](.github/copilot-instructions.md) —
+  Repository-wide custom instructions for GitHub Copilot (architecture,
+  build/lint/test, conventions).
 - [settings.json](settings.json) — Claude Code settings (hook registry,
   enabled plugins, effort level, update channel). Deployed to
   `~/.claude/settings.json` by the link script, which compares it at
