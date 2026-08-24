@@ -63,7 +63,7 @@ happen only when explicitly requested, never as follow-through.
 
 Before the first commit in a repo containing `*.{ItemType}` folders:
 check `git config core.autocrlf` and whether `.gitattributes` pins the
-item folders (per the CLAUDE.md serialization rules). Whitespace-only
+item folders (per `rules/fabric-git-serialization.md`). Whitespace-only
 diffs (EOF newline, CR-stripping) in portal-owned files are
 translation artifacts — do not commit them as "cleanup"; flag them and
 fix the `.gitattributes` instead.
