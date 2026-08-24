@@ -84,9 +84,15 @@ unproven, even by `personal` standards:
   [Handoff discipline](#handoff-discipline)).
 - [global/CLAUDE.md](global/CLAUDE.md) — User-scope instructions
   loaded in every session (machine environment, pointers to rules).
-  Deployed to `~/.claude/CLAUDE.md` by the link script.
+  Deployed to `~/.claude/CLAUDE.md` by the link script. Mirrored by
+  [global/AGENTS.md](global/AGENTS.md) for tools that read `AGENTS.md`
+  instead — same content, kept in sync by hand, no deploy script (no
+  single well-known global path exists across `AGENTS.md`-aware tools).
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
-  this repo (sync model, authoring conventions). Not deployed.
+  this repo (sync model, authoring conventions). Not deployed. Mirrored
+  by [AGENTS.md](AGENTS.md) — same content, generically named, for
+  tools that read `AGENTS.md` instead of `CLAUDE.md`; kept in sync by
+  hand.
 - [settings.json](settings.json) — Claude Code settings (hook registry,
   enabled plugins, effort level, update channel). Deployed to
   `~/.claude/settings.json` by the link script, which compares it at
@@ -113,9 +119,21 @@ stay separable:
   cross-tool; only the config file shape differs per tool).
 - **Claude Code-specific** — [settings.json](settings.json), the hook
   event wiring in [hooks/](hooks/), the subagent frontmatter in
-  [agents/](agents/), the `CLAUDE.md` filename, and the `paths:`
-  auto-load frontmatter on rules (GitHub Copilot's `.instructions.md`
-  `applyTo:` globs are the direct analog).
+  [agents/](agents/), and the `paths:` auto-load frontmatter on rules
+  (GitHub Copilot's `.instructions.md` `applyTo:` globs are the direct
+  analog).
+- **`CLAUDE.md` / `AGENTS.md` — a deliberate duplicate, not a
+  redundancy.** GitHub Copilot (CLI, VS Code, cloud agent) already
+  treats a root `CLAUDE.md` as equivalent to `AGENTS.md` for its "Agent
+  instructions" tier, so Copilot alone wouldn't need both. The two
+  files exist anyway (root [AGENTS.md](AGENTS.md) mirrors
+  [CLAUDE.md](CLAUDE.md); [global/AGENTS.md](global/AGENTS.md) mirrors
+  [global/CLAUDE.md](global/CLAUDE.md)) so the *content* reaches
+  non-Microsoft agent tools (Codex, Jules, OpenCode, and similar) that
+  look for `AGENTS.md` by name and don't know the `CLAUDE.md`
+  convention — in keeping with this repo's goal of being cherry-picked
+  by any agentic tool. The trade-off is accepted: each pair must be
+  kept in sync by hand when either file changes.
 - **GitHub Copilot** — consumes the skills via per-skill links into
   `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)),
   plus a workspace `.vscode/mcp.json` for MCP servers (see
