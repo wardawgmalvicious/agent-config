@@ -72,7 +72,8 @@ unproven, even by `personal` standards:
 - [hooks/](hooks/) — InstructionsLoaded logger and a security-reviewer
   memory-scope guard.
 - [mcp/](mcp/) — Starter templates for global (user-scope) and project-
-  scope MCP server configs.
+  scope Claude Code MCP server configs, plus a workspace-scope template
+  for VS Code / GitHub Copilot.
 - [scripts/](scripts/) — link scripts (see [Install](#install)),
   pre-commit bootstrap, instructions-log query helper, SKILL.md
   frontmatter linter.
@@ -116,8 +117,10 @@ stay separable:
   auto-load frontmatter on rules (GitHub Copilot's `.instructions.md`
   `applyTo:` globs are the direct analog).
 - **GitHub Copilot** — consumes the skills via per-skill links into
-  `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)).
-  Rules, hooks, and settings are not wired into Copilot.
+  `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)),
+  plus a workspace `.vscode/mcp.json` for MCP servers (see
+  [mcp/README.md](mcp/README.md)). Rules, hooks, and settings are not
+  wired into Copilot.
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
