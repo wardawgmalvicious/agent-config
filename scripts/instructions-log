@@ -10,6 +10,7 @@
 #   instructions-log today      Today's loads, pretty-printed JSON
 #   instructions-log reasons    Count loads by load_reason
 #   instructions-log paths      Files loaded via path_glob_match
+#   instructions-log csv        Dump the log as CSV (stdout)
 #   instructions-log tail       Follow the log live (Ctrl-C to stop)
 #   instructions-log            Print this usage message
 #
@@ -59,6 +60,12 @@ case "${1:-}" in
     require_log "$LOG"
     require_jq
     grep 'path_glob_match' "$LOG" | jq -r .file_path | sort | uniq -c | sort -rn
+    ;;
+  csv)
+    require_log "$LOG"
+    require_jq
+    echo 'ts,load_reason,memory_type,file_path,cwd,session_id'
+    jq -r '[.ts, .load_reason, .memory_type, .file_path, .cwd, .session_id] | @csv' "$LOG"
     ;;
   tail)
     require_log "$LOG"
