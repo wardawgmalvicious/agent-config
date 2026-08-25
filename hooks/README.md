@@ -12,6 +12,16 @@ start, before/after tool use, on stop, etc.).
   pure-JSONL line (a `ts` timestamp folded into the event JSON) to
   `~/.claude/logs/instructions-loaded.log` for later inspection.
   Pure observability; does not block.
+- [log-skill-invocations.sh](log-skill-invocations.sh) — fires on
+  `PostToolUse` with matcher `Skill` (every skill invocation, whether
+  the model triggered it or the user typed `/<name>`; the
+  `InstructionsLoaded` event never sees skills — they load through
+  the Skill tool). Extracts `ts` / `session_id` / `cwd` / `skill` /
+  `args` only — the full payload carries the skill's entire content
+  in `tool_response` — and appends pure JSONL to
+  `~/.claude/logs/skills-invoked.log`. Pure observability; does not
+  block. Requires [jq](https://jqlang.org) (without it, a stub line
+  is logged and the event details are dropped).
 - [security-reviewer-memory-scope.sh](security-reviewer-memory-scope.sh)
   — fires on `PreToolUse` with matcher `Edit|Write`. If the current
   agent is `security-reviewer`, enforces that the target `file_path`
@@ -19,16 +29,16 @@ start, before/after tool use, on stop, etc.).
   exits 0 (allow). Other callers (main session, other subagents) pass
   through unchanged. Requires [jq](https://jqlang.org).
 
-## Querying the log
+## Querying the logs
 
-The InstructionsLoaded log feeds [scripts/instructions-log](../scripts/instructions-log)
+Both logs feed [scripts/instructions-log](../scripts/instructions-log)
 — quick queries like `instructions-log today`, `instructions-log paths`,
-`instructions-log reasons`, `instructions-log csv`, or
-`instructions-log tail`.
+`instructions-log reasons`, `instructions-log csv`,
+`instructions-log skills`, or `instructions-log tail`.
 
 ## Wiring
 
-Hooks must be registered in `settings.json` to fire. Both hooks here
+Hooks must be registered in `settings.json` to fire. All hooks here
 are wired in this repo's [settings.json](../settings.json) under the
 `hooks` key. The committed commands resolve via `$HOME/.claude/...` —
 [scripts/link-claude.ps1](../scripts/link-claude.ps1) junctions this

@@ -72,7 +72,11 @@ are not wired into Copilot.
   [log-instructions-loaded.sh](../hooks/log-instructions-loaded.sh) on
   `InstructionsLoaded` (pure observability, appends JSONL to
   `~/.claude/logs/instructions-loaded.log`, queried via
-  [scripts/instructions-log](../scripts/instructions-log)); and
+  [scripts/instructions-log](../scripts/instructions-log));
+  [log-skill-invocations.sh](../hooks/log-skill-invocations.sh) on
+  `PostToolUse` matched `Skill` (pure observability, appends JSONL to
+  `~/.claude/logs/skills-invoked.log` — skills load through the Skill
+  tool, which `InstructionsLoaded` never sees); and
   [security-reviewer-memory-scope.sh](../hooks/security-reviewer-memory-scope.sh)
   on `PreToolUse` matched `Edit|Write` — reads `agent_type` from the
   hook's stdin JSON and, only when it's `security-reviewer`, blocks
