@@ -23,7 +23,8 @@ start, before/after tool use, on stop, etc.).
 
 The InstructionsLoaded log feeds [scripts/instructions-log](../scripts/instructions-log)
 — quick queries like `instructions-log today`, `instructions-log paths`,
-`instructions-log reasons`, or `instructions-log tail`.
+`instructions-log reasons`, `instructions-log csv`, or
+`instructions-log tail`.
 
 ## Wiring
 
