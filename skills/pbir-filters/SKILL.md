@@ -164,21 +164,42 @@ Current period start:
 
 ### TopN
 
+The ranking subquery must be declared as a **`From` source** (`"Type": 2`) and
+referenced by alias from `In.Table.SourceRef` — the only shape Desktop
+serializes (verified against microsoft/BCApps PBIR sources + live repro,
+2026-08). Do **not** inline the `Subquery` under `In.Table`, and do not author
+a bare `VisualTopN` condition: those forms pass PBIR schema validation but the
+filter **matches nothing** (the visual renders empty) and the service editor
+**freezes on save-edits** trying to rebuild the filter card from it.
+
 ```json
 "type": "TopN",
 "filter": {
   "Version": 2,
-  "From": [{"Name": "c", "Entity": "Customers", "Type": 0}],
-  "Where": [{"Condition": {"VisualTopN": {
-    "Expression": {"Column": {"Expression": {"SourceRef": {"Source": "c"}}, "Property": "Customer Name"}},
-    "Count": {"Literal": {"Value": "10L"}},
-    "OrderBy": {"Measure": {"Expression": {"SourceRef": {"Entity": "Sales"}}, "Property": "Revenue"}},
-    "IsAscending": false
+  "From": [
+    {"Name": "subquery", "Expression": {"Subquery": {"Query": {
+      "Version": 2,
+      "From": [
+        {"Name": "c", "Entity": "Customer", "Type": 0},
+        {"Name": "s", "Entity": "Sales", "Type": 0}
+      ],
+      "Select": [{"Column": {"Expression": {"SourceRef": {"Source": "c"}}, "Property": "Customer Name"}, "Name": "field"}],
+      "OrderBy": [{"Direction": 2, "Expression": {"Measure": {"Expression": {"SourceRef": {"Source": "s"}}, "Property": "Revenue"}}}],
+      "Top": 10
+    }}}, "Type": 2},
+    {"Name": "c", "Entity": "Customer", "Type": 0}
+  ],
+  "Where": [{"Condition": {"In": {
+    "Expressions": [{"Column": {"Expression": {"SourceRef": {"Source": "c"}}, "Property": "Customer Name"}}],
+    "Table": {"SourceRef": {"Source": "subquery"}}
   }}}]
 }
 ```
 
-`IsAscending: false` = Top N. `true` = Bottom N.
+`OrderBy` `Direction: 2` = descending (Top N); `1` = ascending (Bottom N).
+Desktop emits `Select[].Name` as the literal `"field"`. The subquery evaluates
+inside the visual's filter context, so page/report filters and slicers scope
+the ranking.
 
 ### Compound — And / Or
 
@@ -203,7 +224,7 @@ Current period start:
 | `StartsWith` | String prefix |
 | `DateSpan` | Relative period |
 | `DateAdd` | Offset date expression |
-| `VisualTopN` | Top/bottom N |
+| `In` + `Subquery` From source | Top/bottom N — see TopN section; never author a bare `VisualTopN` condition |
 | `Now` | Current datetime — inside DateSpan/DateAdd |
 
 ### Contains / StartsWith — Minimal Shape
@@ -260,6 +281,7 @@ pbir model "Report.Report" -q "EVALUATE DISTINCT('Date'[Calendar Year (ie 2021)]
 | Issue | Cause | Fix |
 |---|---|---|
 | Filter silently ignored | `SourceRef.Entity` in `Where` instead of `SourceRef.Source` | Reference alias defined in `From[]` |
+| Top-N visual empty AND service editor freezes on save | Subquery inlined in `In.Table` (or bare `VisualTopN`) — schema-valid but not engine-valid | Declare subquery as a `From` source (`Type: 2`), reference via `In.Table.SourceRef` — see TopN section |
 | Filter values not selected | Values not double-wrapped | Each value is its own array: `[[{v1}], [{v2}]]` |
 | Deploy error on report filter pane styling | Styling in `report.json` outspacePane | Move to theme `visualStyles["*"]["*"].outspacePane` |
 | Inverted filter still shows selected values | Missing `isInvertedSelectionMode: true` | Set it alongside the `Not`→`In` Where |

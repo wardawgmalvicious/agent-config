@@ -79,6 +79,7 @@ See references/REFERENCE.md § Discovery and references/REFERENCE.md § Schema f
 | "Report not found" | Missing `.Report` type suffix | Paths require `Name.Report`, `Name.Page`, `Name.Visual` |
 | `set` fails with "unknown property" | Property not discovered first | Run `pbir schema describe <type>.<container>` |
 | Publish fails after local edits | Structure invalid | Run `pbir validate` before publish |
+| `pbir validate` floods `SCHEMA_DEGRADED` warnings | Declared visualContainer schema version isn't bundled with the CLI; a fallback schema was used | Cosmetic, one per file — only errors block. Note schema-valid ≠ engine-valid: verify hand-authored SQExpr shapes against Desktop-serialized reports (e.g. microsoft/BCApps); see `pbir-filters` § TopN |
 | UnicodeEncodeError on Windows | cp1252 stdout encoding | Set `PYTHONIOENCODING=utf-8` |
 | Theme changes not applied per visual | Visual has inline override | `pbir visuals clear-formatting --only-containers -f` |
 | `pbir download` fails | fab CLI not authenticated | Run `fab auth login` first |
