@@ -154,6 +154,13 @@ model Model
 
 - `dataType: binary` columns are NOT supported in Direct Lake
 - Columns map directly via `sourceColumn` — no transforms
+- **Cross-environment rebinding (deployment pipelines):** Direct Lake on OneLake does **not**
+  support data source rules — the dropdowns are simply greyed out. Only the [Direct Lake
+  overview limitations table](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)
+  says so; the create-rules page doesn't. Instead, declare the workspace/lakehouse GUIDs as
+  `IsParameterQuery` Text expressions and build the URL from them — concatenation works
+  (`AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/" & WorkspaceId & "/" & LakehouseId, ...)`)
+  — then rebind each target stage with **parameter rules** (verified live 2026-08-24).
 
 
 ---
@@ -175,6 +182,7 @@ model Model
 | `INFO.ROLES()` returns stale/missing data | Known DAX surface unreliability | Query membership via REST API |
 | Calendar name collision | Name unique per-table but not per-model | Calendar names must be globally unique across the model |
 | Direct Lake partition errors | `binary` column in source | Cast away in upstream Lakehouse/Warehouse; drop the column |
+| `...transformations that can't be used for DirectQuery` refreshing a parameterized Direct Lake model | Model-page ribbon **schema-and-data** refresh re-evaluates the M; fires on any parameterized source shape | False alarm — data-only, workspace-page, scheduled, and pipeline refreshes just reframe and work (observed 2026-08-24, undocumented) |
 | Perspective appears empty in Power BI | No `perspectiveTable` children | Add at least one table + column/measure, or `includeAll` on a table |
 | `model.bim` and `definition/` both present | Forgot to delete `.bim` after TMDL conversion | Remove `model.bim`; they are mutually exclusive |
 | TMDL conversion fails | Old `Microsoft.AnalysisServices.retail.amd64` | Upgrade NuGet package for `TmdlSerializer` |
