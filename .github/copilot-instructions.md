@@ -70,7 +70,7 @@ are not wired into Copilot.
 - **Hooks** (`hooks/*.sh`) fire on events registered in
   [settings.json](../settings.json):
   [log-instructions-loaded.sh](../hooks/log-instructions-loaded.sh) on
-  `InstructionsLoaded` (pure observability, appends to
+  `InstructionsLoaded` (pure observability, appends JSONL to
   `~/.claude/logs/instructions-loaded.log`, queried via
   [scripts/instructions-log](../scripts/instructions-log)); and
   [security-reviewer-memory-scope.sh](../hooks/security-reviewer-memory-scope.sh)

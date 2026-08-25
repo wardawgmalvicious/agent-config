@@ -8,8 +8,9 @@ start, before/after tool use, on stop, etc.).
 
 - [log-instructions-loaded.sh](log-instructions-loaded.sh) — fires on
   the `InstructionsLoaded` event (whenever a CLAUDE.md or rules
-  `coding-*.md` file is loaded into context). Appends the JSON event
-  to `~/.claude/logs/instructions-loaded.log` for later inspection.
+  `coding-*.md` file is loaded into context). Appends the event as a
+  pure-JSONL line (a `ts` timestamp folded into the event JSON) to
+  `~/.claude/logs/instructions-loaded.log` for later inspection.
   Pure observability; does not block.
 - [security-reviewer-memory-scope.sh](security-reviewer-memory-scope.sh)
   — fires on `PreToolUse` with matcher `Edit|Write`. If the current

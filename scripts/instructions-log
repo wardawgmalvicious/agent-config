@@ -2,8 +2,9 @@
 # instructions-log — query the InstructionsLoaded hook log.
 #
 # The InstructionsLoaded hook fires whenever a CLAUDE.md or .claude/rules/*.md
-# file is loaded into context. This script provides convenience queries over
-# the resulting log for diagnosing what loaded, when, and why.
+# file is loaded into context. The log is pure JSONL (one JSON object per
+# line, with a `ts` timestamp field). This script provides convenience
+# queries over it for diagnosing what loaded, when, and why.
 #
 # Usage:
 #   instructions-log today      Today's loads, pretty-printed JSON
@@ -12,8 +13,7 @@
 #   instructions-log tail       Follow the log live (Ctrl-C to stop)
 #   instructions-log            Print this usage message
 #
-# Requires: jq (https://jqlang.org) for the today / reasons / paths / tail
-#   subcommands. Install on Windows via:
+# Requires: jq (https://jqlang.org). Install on Windows via:
 #     curl -L -o /mingw64/bin/jq.exe \
 #       https://github.com/jqlang/jq/releases/latest/download/jq-windows-amd64.exe
 #
@@ -24,16 +24,15 @@
 set -euo pipefail
 
 LOG="$HOME/.claude/logs/instructions-loaded.log"
-STRIP_TIMESTAMP='s/^\[[^]]*\] //'
 
 usage() {
   sed -n '3,/^$/p' "$0" | sed 's/^# \{0,1\}//'
 }
 
 require_log() {
-  if [[ ! -f "$LOG" ]]; then
-    echo "Log not found: $LOG" >&2
-    echo "Check that the InstructionsLoaded hook is configured in ~/.claude/settings.json" >&2
+  if [[ ! -f "$1" ]]; then
+    echo "Log not found: $1" >&2
+    echo "Check that the hooks are configured in ~/.claude/settings.json" >&2
     exit 1
   fi
 }
@@ -47,24 +46,24 @@ require_jq() {
 
 case "${1:-}" in
   today)
-    require_log
+    require_log "$LOG"
     require_jq
-    grep "$(date -I)" "$LOG" | sed "$STRIP_TIMESTAMP" | jq .
+    grep "\"ts\":\"$(date -I)" "$LOG" | jq .
     ;;
   reasons)
-    require_log
+    require_log "$LOG"
     require_jq
-    sed "$STRIP_TIMESTAMP" "$LOG" | jq -r .load_reason | sort | uniq -c | sort -rn
+    jq -r .load_reason "$LOG" | sort | uniq -c | sort -rn
     ;;
   paths)
-    require_log
+    require_log "$LOG"
     require_jq
-    grep 'path_glob_match' "$LOG" | sed "$STRIP_TIMESTAMP" | jq -r .file_path | sort | uniq -c | sort -rn
+    grep 'path_glob_match' "$LOG" | jq -r .file_path | sort | uniq -c | sort -rn
     ;;
   tail)
-    require_log
+    require_log "$LOG"
     require_jq
-    tail -f "$LOG" | sed -u "$STRIP_TIMESTAMP" | while IFS= read -r line; do
+    tail -f "$LOG" | while IFS= read -r line; do
       echo "$line" | jq . 2>/dev/null || echo "$line"
     done
     ;;
