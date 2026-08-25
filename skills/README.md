@@ -94,7 +94,7 @@ Naming convention: behavioral skills are named as the verb you invoke
   PowerBIEntityNotFound, snapshot conflicts, plus a MUST/PREFER/AVOID
   best-practices summary.
 
-## Power BI Desktop / Reports (10)
+## Power BI Desktop / Reports (12)
 
 - [pbid-tom-live/](pbid-tom-live/) — script an open Power BI Desktop
   model via its localhost `msmdsrv` Analysis Services proxy: TOM for
@@ -110,6 +110,17 @@ Naming convention: behavioral skills are named as the verb you invoke
   discovery, scaffold, 3-30-300 visual hierarchy, layout math, sort,
   filters, conditional formatting, validation, publish, then
   service-side visual verification via the `exportToFile` PNG API.
+- [powerbi-report-authoring/](powerbi-report-authoring/) — **vendored**
+  from [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
+  (v0.3.13, MIT): PBIR mechanics with the `powerbi-report-author`
+  CLI (offline validate, visual-role/formatting catalogs), ~50-row
+  anti-pattern table, deep per-visual-type references. Desktop Bridge
+  sections present but skipped locally — see its vendoring note.
+- [powerbi-report-design/](powerbi-report-design/) — **vendored**
+  from microsoft/skills-for-fabric (v0.3.13, MIT): report design
+  system — tone catalog, 5 page archetypes, chart selection, visual
+  cookbook, WCAG accessibility, anti-patterns, Design Brief YAML
+  contract, curated base theme JSON.
 - [pbir-pages/](pbir-pages/) — pages.
 - [pbir-bookmarks/](pbir-bookmarks/) — bookmarks.
 - [pbir-filters/](pbir-filters/) — report and page filters.
