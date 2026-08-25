@@ -105,10 +105,11 @@ Naming convention: behavioral skills are named as the verb you invoke
 - [pbir-cli/](pbir-cli/) — `pbir` CLI for inspecting and editing
   PBIR reports (verb/noun groups: report, page, visual, filter,
   bookmark, theme, dax, fields, schema, etc.).
-- [pbir-report-workflow/](pbir-report-workflow/) — 10-step end-to-end
+- [pbir-report-workflow/](pbir-report-workflow/) — end-to-end
   report build: KPI/filter/granularity requirements, model field
   discovery, scaffold, 3-30-300 visual hierarchy, layout math, sort,
-  filters, conditional formatting, validation, publish.
+  filters, conditional formatting, validation, publish, then
+  service-side visual verification via the `exportToFile` PNG API.
 - [pbir-pages/](pbir-pages/) — pages.
 - [pbir-bookmarks/](pbir-bookmarks/) — bookmarks.
 - [pbir-filters/](pbir-filters/) — report and page filters.

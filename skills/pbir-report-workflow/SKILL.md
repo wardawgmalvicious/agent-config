@@ -1,6 +1,6 @@
 ---
 name: pbir-report-workflow
-description: Use when scaffolding or building a new Power BI report end-to-end from a published semantic model using the pbir CLI. Covers the 10-step workflow — KPI / filter / granularity requirements, model field discovery via pbir model, pbir new report scaffold, renaming the default Page 1 instead of adding a new one, 3-30-300 visual hierarchy for three viewing distances (glance / scan / investigate), layout math with margin/gap constants (always inspect the scaffolded page first), row-by-row visual placement with explicit coordinates, explicit sort after bind, report vs page filters, extension-measure conditional formatting with theme tokens like good/bad, time-granularity inference from the active date filter, pbir validate + publish. Invoke when user says 'build a report', 'scaffold a dashboard', or 'lay out a KPI page'.
+description: Use when scaffolding or building a new Power BI report end-to-end from a published semantic model using the pbir CLI. Covers the 10-step workflow — KPI / filter / granularity requirements, model field discovery via pbir model, pbir new report scaffold, renaming the default Page 1 instead of adding a new one, 3-30-300 visual hierarchy for three viewing distances (glance / scan / investigate), layout math with margin/gap constants (always inspect the scaffolded page first), row-by-row visual placement with explicit coordinates, explicit sort after bind, report vs page filters, extension-measure conditional formatting with theme tokens like good/bad, time-granularity inference from the active date filter, pbir validate + publish, then service-side visual verification — render the published report to PNG via the Power BI exportToFile REST API and review the images (no Power BI Desktop needed). Invoke when user says 'build a report', 'scaffold a dashboard', or 'lay out a KPI page'.
 ---
 
 ## PBIR Report Workflow
@@ -239,6 +239,52 @@ pbir tree     "Sales.Report" -v
 pbir publish  "Sales.Report" "MyWorkspace.Workspace/Sales.Report" -o     # Publish + open
 pbir open     "Sales.Report"                                             # Local in Desktop
 ```
+
+> Skip `pbir open` for Direct Lake models — opening the PBIP forces Desktop
+> into remote modeling and offers to overwrite the live workspace model.
+> Use the service-side check below instead.
+
+### Step 12 — Visual Verification (Service-Side PNG Export)
+
+After publishing, render the report server-side and review the PNGs — this is
+the visual feedback loop, no Power BI Desktop involved. Uses the Power BI
+`exportToFile` API.
+
+Prerequisites: workspace on Fabric/Premium capacity; for PNG the tenant
+setting **"Export reports as image files"** must be enabled (off by default —
+fall back to `PDF`, which is on by default). Token audience is the Power BI
+API, not Fabric.
+
+```bash
+TOKEN=$(az account get-access-token --resource https://analysis.windows.net/powerbi/api --query accessToken -o tsv)
+BASE="https://api.powerbi.com/v1.0/myorg/groups/<workspaceId>/reports/<reportId>"
+
+# 1. Start the export job (202 Accepted)
+EXPORT_ID=$(curl -s -X POST "$BASE/ExportTo" -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" -d '{"format":"PNG"}' | jq -r '.id')
+
+# 2. Poll until status == "Succeeded" (percentComplete shows progress)
+curl -s "$BASE/exports/$EXPORT_ID" -H "Authorization: Bearer $TOKEN" | jq '.status'
+
+# 3. Fetch the file — multi-page reports return a .zip with one PNG per page
+curl -s "$BASE/exports/$EXPORT_ID/file" -H "Authorization: Bearer $TOKEN" -o report.zip
+unzip -o report.zip -d report-pages/
+```
+
+Then read each PNG (the agent can view images), check against the layout plan
+— overlaps, truncated titles, sort order, empty visuals, theme colors — and
+iterate: edit PBIR → `pbir validate` → `pbir publish` → re-export.
+
+Notes:
+
+- Page file names match the `Get Pages` API names (`ReportSection...`), not
+  display names — map via `GET $BASE/pages`.
+- A specific page or a bookmark state can be exported via the
+  `powerBIReportConfiguration` body (`pages`, `defaultBookmark`).
+- Empty visuals in the export usually mean a binding mismatch — see
+  fabric-gotchas (byConnection rebind / TMDL binding diff).
+- If a `scripts/data/report-png.sh` wrapper is deployed in the repo
+  (internal-tooling local-cli template), prefer it over raw curl.
 
 ### Common Page Sizes
 
