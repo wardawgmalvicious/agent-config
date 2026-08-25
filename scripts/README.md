@@ -8,10 +8,12 @@ Helper scripts for repo maintenance and observability.
   [pre-commit](https://pre-commit.com/) framework via
   [uv](https://docs.astral.sh/uv/) and wire git hooks for this repo.
   Idempotent; safe to re-run. Run on a fresh clone before committing.
-- [instructions-log](instructions-log) — query the pure-JSONL
-  [InstructionsLoaded hook log](../hooks/log-instructions-loaded.sh).
-  Subcommands: `today`, `reasons`, `paths`, `csv` (dump the log as
-  CSV for quick consumption), `tail`. Requires
+- [instructions-log](instructions-log) — query the hook observability
+  logs: the [InstructionsLoaded log](../hooks/log-instructions-loaded.sh)
+  and the [skill-invocation log](../hooks/log-skill-invocations.sh),
+  both pure JSONL. Subcommands: `today`, `reasons`, `paths`, `csv`
+  (dump the instruction log as CSV for quick consumption), `skills`
+  (count skill invocations by name), `tail`. Requires
   [jq](https://jqlang.org).
 - [link-claude.ps1](link-claude.ps1) — link this repo into `~/.claude`
   so Claude Code loads its config from a clone living anywhere on disk.
