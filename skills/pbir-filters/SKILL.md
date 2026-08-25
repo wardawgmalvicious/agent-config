@@ -282,6 +282,7 @@ pbir model "Report.Report" -q "EVALUATE DISTINCT('Date'[Calendar Year (ie 2021)]
 |---|---|---|
 | Filter silently ignored | `SourceRef.Entity` in `Where` instead of `SourceRef.Source` | Reference alias defined in `From[]` |
 | Top-N visual empty AND service editor freezes on save | Subquery inlined in `In.Table` (or bare `VisualTopN`) — schema-valid but not engine-valid | Declare subquery as a `From` source (`Type: 2`), reference via `In.Table.SourceRef` — see TopN section |
+| "Cleanup" report-level filter silently shrinks totals | Report filters remove matching rows from every visual, not just from slicers/legends | Quantify the excluded members' measure impact first (DAX); scope cosmetic exclusions to the slicer/visual level |
 | Filter values not selected | Values not double-wrapped | Each value is its own array: `[[{v1}], [{v2}]]` |
 | Deploy error on report filter pane styling | Styling in `report.json` outspacePane | Move to theme `visualStyles["*"]["*"].outspacePane` |
 | Inverted filter still shows selected values | Missing `isInvertedSelectionMode: true` | Set it alongside the `Not`→`In` Where |
