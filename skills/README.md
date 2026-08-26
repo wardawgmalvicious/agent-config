@@ -64,6 +64,10 @@ internal cross-references stay intact.
 - [fabric-database/](fabric-database/) — Fabric SQL database.
 - [fabric-eventhouse/](fabric-eventhouse/) — Fabric Eventhouse + KQL.
 - [fabric-eventstream/](fabric-eventstream/) — Fabric Eventstream.
+- [fabric-realtime-dashboard/](fabric-realtime-dashboard/) — Real-Time
+  Dashboard (KQLDashboard) JSON authoring: baseQueries wiring,
+  load-time validation rules, 24-column grid, visual options,
+  display-edge formatting in KQL.
 - [fabric-graph/](fabric-graph/) — GraphModel item: GQL queries and
   graph-type DDL over OneLake Delta tables, executeQuery REST API.
 - [fabric-mlv/](fabric-mlv/) — Materialized Lake Views: `CREATE
