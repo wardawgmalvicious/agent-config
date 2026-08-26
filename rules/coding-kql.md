@@ -157,6 +157,25 @@ RecentEvent | summarize count() by Account
 - Explain *why* — particularly around any threshold, lookback, or
   filter that encodes a business or security definition.
 
+## Type-conversion pitfalls
+
+- `round()` always returns `real`, including for `decimal` input. Two
+  consequences: `coalesce(round(x, 2), decimal(0))` fails with "case:
+  return types are not compatible ... R64, Decimal", and sums of
+  pre-rounded values accumulate float noise (`48255.63999...`). For
+  money, keep `todecimal()` end-to-end and round or format once at
+  the display edge.
+- `toint("150.00000000")` returns null **silently** — decimal-formatted
+  strings need `toint(todecimal(x))`. Bites hardest on all-string
+  bronze tables where quantities serialize with trailing decimals.
+- There is no `format_number()`, and RE2 regex has no lookahead, so
+  thousands separators can't be regexed in — hand-roll a formatting
+  lambda (case/substring) when a visual needs `"$1,234,567.89"`
+  strings. (Verified live 2026-08.)
+- `summarize` aggregates with no `by` over empty input return one row
+  (`count()` = 0, `sum()` = 0), not an empty result — dashboard stat
+  tiles show 0 rather than "no data" without extra coalescing.
+
 ## Anti-patterns
 
 - `where` after `summarize` when the filter could have run before —
