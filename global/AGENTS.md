@@ -19,6 +19,14 @@ Python is **not** on `PATH` on this machine. Always go through `uv`:
 Never invoke bare `python`, `python3`, or `pip` — they will fail with
 "command not found", not with a useful error.
 
+## Agent config source
+
+`~/.claude/agents`, `hooks`, `mcp`, `rules`, and `skills` are directory
+junctions into `C:\GitHub\Personal\agent-config` — a file under either
+path is the same file, and edits are committed from that repo.
+`~/.claude/CLAUDE.md` and `settings.json` are plain copies: edit the
+repo versions and re-run `scripts/link-claude.ps1 -Force`.
+
 ## Coding conventions
 
 Per-language conventions live in this repo's `rules/coding-<lang>.md`
