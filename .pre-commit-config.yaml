@@ -26,11 +26,14 @@ repos:
         types: [markdown]
 
       # link-codex.ps1 validates required keys in agent TOMLs but never
-      # parses them — a syntax error would still deploy. tomllib needs
-      # Python 3.11+.
+      # parses them — a syntax error would still deploy. tomllib is
+      # stdlib only from Python 3.11; tomli is the identical-API
+      # fallback so the hook can't die with ImportError on whatever
+      # interpreter pre-commit resolves.
       - id: lint-codex-toml
         name: Validate Codex TOML parses
-        entry: python -c "import sys, tomllib; [tomllib.load(open(p, 'rb')) for p in sys.argv[1:]]"
+        entry: python -c "import sys; toml = __import__('tomllib' if sys.version_info >= (3, 11) else 'tomli'); [toml.load(open(p, 'rb')) for p in sys.argv[1:]]"
         language: python
+        additional_dependencies: [tomli]
         files: '^codex/.*\.toml$'
         types: [toml]
