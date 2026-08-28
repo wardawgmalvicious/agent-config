@@ -185,22 +185,18 @@ No build step. Lint and validation:
   conventions for editing *other* Fabric Git-synced repos, not this
   one — this repo's own [.gitattributes](../.gitattributes) pins
   `* text=auto eol=lf` and the rule explicitly disclaims itself here.
-- **`global/CLAUDE.md`/`global/AGENTS.md` is a deliberately-duplicated
-  pair, not a pointer relationship.** GitHub Copilot's docs list
-  `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` as interchangeable "Agent
-  instructions" — Copilot CLI, VS Code, and the cloud agent already
-  read this repo's `CLAUDE.md` files for that tier, so Copilot alone
-  wouldn't need `AGENTS.md` at all. It exists anyway, as a full content
-  mirror, so non-Microsoft agent tools (Codex, Jules, OpenCode) that
-  look for that filename specifically and don't know the `CLAUDE.md`
-  convention get the same guidance — this repo's explicit goal is to be
-  cherry-picked by any agentic tool. **When editing either member of
-  the pair, mirror the change into its counterpart** — nothing
-  automates this sync; see the reminders in
-  [global/AGENTS.md](../global/AGENTS.md) and the `learn` skill's
-  destination table ([skills/learn/SKILL.md](../skills/learn/SKILL.md)).
-  Root [CLAUDE.md](../CLAUDE.md) has no `AGENTS.md` twin — it describes
-  working *on* this repo, not portable payload.
+- **There are no `AGENTS.md` files here, deliberately — do not add
+  one.** Copilot's docs list `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` as
+  interchangeable "Agent instructions", and Copilot CLI, VS Code, and
+  the cloud agent all read this repo's `CLAUDE.md` files for that tier,
+  so the filename buys nothing. Hand-synced `AGENTS.md` twins of root
+  [CLAUDE.md](../CLAUDE.md) and [global/CLAUDE.md](../global/CLAUDE.md)
+  did exist and were removed: both originals must be edited before they
+  serve anyone else (one covers working *on* this repo; the other
+  hardcodes a clone path and this machine's `uv`-only Python setup), so
+  a tool wanting that filename copies and adapts one file rather than
+  reading a mirror that drifts. Nothing in this repo now carries a
+  hand-sync obligation.
 - **Three MCP templates, two tools, two schemas** — see
   [mcp/README.md](../mcp/README.md). Claude Code reads a `mcpServers`
   key (`~/.claude.json` user scope, or project-scope `<repo>/.mcp.json`);

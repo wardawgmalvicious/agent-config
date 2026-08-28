@@ -7,12 +7,10 @@ written to be cherry-picked by any agentic tool, not only the ones the
 user personally runs day to day (Claude Code and GitHub Copilot).
 
 This file describes conventions for working *on* this repo itself, not
-its deployed content. [global/CLAUDE.md](global/CLAUDE.md) — the
-portable, machine-wide instructions payload — is mirrored by
-[global/AGENTS.md](global/AGENTS.md) for tools that read `AGENTS.md`
-instead. **Keep that pair in sync by hand**: when editing either
-member, mirror the change into its counterpart — nothing automates
-this. Root `CLAUDE.md` has no `AGENTS.md` twin.
+its deployed content; [global/CLAUDE.md](global/CLAUDE.md) is the
+machine-wide instructions payload. Neither has an `AGENTS.md` mirror —
+a tool that wants that filename copies and adapts one of these, which
+is work a hand-synced twin never saved anyone.
 
 ## How this repo is structured
 
@@ -50,7 +48,7 @@ deployed anywhere and loads only in sessions inside this repo.
   guidance has a narrower trigger (a file type, a product area),
   prefer a path-scoped rule or a skill instead. After editing it,
   re-run `scripts/link-claude.ps1 -Force` to push it to
-  `~/.claude/CLAUDE.md`, and mirror the edit into `global/AGENTS.md`.
+  `~/.claude/CLAUDE.md`.
 - Capturing a session learning into skills/rules: use `/learn`.
   Committing: use `/commit`.
 

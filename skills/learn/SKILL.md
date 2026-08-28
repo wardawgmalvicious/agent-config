@@ -61,7 +61,7 @@ Output a short table: `learning → owning skill/rule → section`.
 | Domain procedure, API shape, syntax, gotcha for one product area | `skills/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<name>/references/REFERENCE.md` |
 | Cross-product troubleshooting symptom (error text → cause) | `skills/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `rules/coding-<lang>.md` (path-scoped via `paths:`) |
-| Environment or machine-wide constraint for every session | `global/CLAUDE.md` (then re-run `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`, it is a copy, not a junction) **and** mirror the same edit into `global/AGENTS.md` — the two are a deliberate duplicate, kept in sync by hand, not a junction |
+| Environment or machine-wide constraint for every session | `global/CLAUDE.md` (then re-run `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md` — it is a copy, not a junction) |
 | Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars, see `scripts/lint-skills.py`) |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
 
@@ -75,7 +75,7 @@ reader finds it where they'd look.
 Before writing anything:
 
 ```
-grep -rn -i "<key term>" skills/ rules/ CLAUDE.md global/CLAUDE.md global/AGENTS.md
+grep -rn -i "<key term>" skills/ rules/ CLAUDE.md global/CLAUDE.md
 ```
 
 - Already covered correctly → nothing to do; say so.
@@ -132,11 +132,9 @@ commit yourself). Suggested subject shape:
 - `feat(rules): add KQL materialize() guidance`
 
 If `global/CLAUDE.md` changed, remind the user to re-run
-`scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`,
-**and** to mirror the same edit into `global/AGENTS.md` (the two are a
-deliberate duplicate for tool-agnostic reach — see
-[README.md](../../README.md) — kept in sync by hand, not a junction).
-Root `CLAUDE.md` has no `AGENTS.md` twin; nothing to mirror there.
+`scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`
+(it is a copy, not a junction). Nothing in this repo has an
+`AGENTS.md` mirror, so there is never a hand-sync step.
 
 ## Example (illustrative — not a real fabric-cicd fact)
 

@@ -84,14 +84,14 @@ unproven, even by `personal` standards:
   [Handoff discipline](#handoff-discipline)).
 - [global/CLAUDE.md](global/CLAUDE.md) — User-scope instructions
   loaded in every session (machine environment, pointers to rules).
-  Deployed to `~/.claude/CLAUDE.md` by the link script. Mirrored by
-  [global/AGENTS.md](global/AGENTS.md) for tools that read `AGENTS.md`
-  instead — same content, kept in sync by hand, no deploy script (no
-  single well-known global path exists across `AGENTS.md`-aware tools).
+  Deployed to `~/.claude/CLAUDE.md` by the link script. On an
+  `AGENTS.md`-based tool, copy it to wherever that tool reads a
+  personal, cross-repo instructions file — it is machine-specific (a
+  hardcoded clone path, a `uv`-only Python setup), so adapt it rather
+  than taking it verbatim.
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
-  this repo (sync model, authoring conventions). Not deployed, and not
-  mirrored to `AGENTS.md` — it covers this repo's own editing
-  conventions, which nothing outside the repo consumes.
+  this repo (sync model, authoring conventions). Not deployed; loads
+  only in sessions inside this repo.
 - [.github/copilot-instructions.md](.github/copilot-instructions.md) —
   Repository-wide custom instructions for GitHub Copilot (architecture,
   build/lint/test, conventions).
@@ -124,19 +124,16 @@ stay separable:
   [agents/](agents/), and the `paths:` auto-load frontmatter on rules
   (GitHub Copilot's `.instructions.md` `applyTo:` globs are the direct
   analog).
-- **`global/CLAUDE.md` / `global/AGENTS.md` — a deliberate duplicate,
-  not a redundancy.** GitHub Copilot (CLI, VS Code, cloud agent)
-  already treats a `CLAUDE.md` as equivalent to `AGENTS.md` for its
-  "Agent instructions" tier, so Copilot alone wouldn't need both.
-  [global/AGENTS.md](global/AGENTS.md) exists anyway so the *portable*
-  payload reaches non-Microsoft agent tools (Codex, Jules, OpenCode,
-  and similar) that look for `AGENTS.md` by name and don't know the
-  `CLAUDE.md` convention — in keeping with this repo's goal of being
-  cherry-picked by any agentic tool. The trade-off is accepted: the
-  pair must be kept in sync by hand when either file changes. Root
-  [CLAUDE.md](CLAUDE.md) has no `AGENTS.md` twin — it describes working
-  *on* this repo, the least portable content here, and anyone adapting
-  the repo to another tool can read it directly.
+- **No `AGENTS.md` mirrors — deliberately.** GitHub Copilot (CLI, VS
+  Code, cloud agent) already treats a `CLAUDE.md` as equivalent to
+  `AGENTS.md` for its "Agent instructions" tier, so the filename buys
+  nothing there. For every other tool, both instruction files here need
+  editing before they'd serve anyone else anyway: root
+  [CLAUDE.md](CLAUDE.md) describes working *on* this repo, and
+  [global/CLAUDE.md](global/CLAUDE.md) hardcodes a clone path and this
+  machine's Python setup. A tool that wants `AGENTS.md` by name is one
+  `cp` away, and the copy has to be adapted regardless — so hand-synced
+  twins bought nothing but drift. Copy either file and make it yours.
 - **GitHub Copilot** — consumes the skills via per-skill links into
   `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)),
   plus a workspace `.vscode/mcp.json` for MCP servers (see
