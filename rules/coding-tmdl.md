@@ -1,7 +1,6 @@
 ---
 paths:
   - "**/*.tmdl"
-  - "**/SemanticModel/**/*.tmd"
   - "**/definition/**/model.bim"
 ---
 
