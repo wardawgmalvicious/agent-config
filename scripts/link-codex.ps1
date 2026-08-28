@@ -243,7 +243,12 @@ function Initialize-ManagedDirectory {
         return $true
     }
 
-    if (-not $item) {
+    if ($item) {
+        # Already a real directory. Report it so an unchanged run still
+        # accounts for every managed path instead of going quiet.
+        Write-Host "OK      $DisplayName directory"
+    }
+    else {
         New-Item -ItemType Directory -Path $Path | Out-Null
         Write-Host "Created $Path"
     }
