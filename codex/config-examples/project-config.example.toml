@@ -1,0 +1,23 @@
+# Example project-scoped Codex config — reference only, never deployed.
+# Destination when used: <repo-root>/.codex/config.toml
+# Project .codex layers load only for trusted projects.
+
+# Keep project config narrow. Put personal defaults in
+# ~/.codex/config.toml.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+# If a repo has a legacy instruction filename, add it here.
+# project_doc_fallback_filenames = ["TEAM_GUIDE.md", ".agents.md"]
+
+[agents]
+max_threads = 6
+max_depth = 1
+
+# Example project MCP server. Replace placeholders before use.
+# [mcp_servers.project_sql]
+# command = "dab"
+# args = ["start", "--mcp-stdio"]
+# cwd = "C:\\path\\to\\repo"
+# env_vars = ["DAB_CONNECTION_STRING"]
+# enabled = true
