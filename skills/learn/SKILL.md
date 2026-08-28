@@ -115,6 +115,14 @@ Keep the addition as short as a reader needs: typically 1–6 lines in
 voice and formatting. If a `description` is edited, state the new
 length.
 
+**Check `description` headroom before proposing a trigger phrase.** Many
+skills here sit within a few characters of the 1,024-char cap, so a new
+phrase usually has to displace an existing one rather than extend the
+line. Measure the current length first — `lint-skills.py` only reports
+the overflow after the edit is written. If the budget is tight, name
+what to cut; if nothing can go, say so and leave the description alone
+rather than silently dropping a trigger that already earns its place.
+
 Wait for approval. Apply only what is approved, using `Edit` so the
 rest of the file is untouched. Then run:
 
