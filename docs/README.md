@@ -9,6 +9,9 @@ Internal documentation for the repo's authoring workflow.
   subagents. See
   [Handoff discipline](../README.md#handoff-discipline) in the
   top-level README for context.
+- [repo-AGENTS-template.md](repo-AGENTS-template.md) — fill-in starter
+  for a project-level `AGENTS.md` in client/project repos (AGENTS.md
+  is a cross-tool convention; this is not tied to Codex).
 
 A second directory, `project-instructions/`, holds the author's
 personal Claude Desktop project instructions (easier to edit here and
