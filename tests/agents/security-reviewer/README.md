@@ -64,10 +64,12 @@ false-positives list.
 
 ## Running the validation
 
-Open a Claude Code session at the repo root or the fixtures directory:
+Open a Claude Code session at the repo root or the fixtures directory
+(repo-relative — this repo is cloned outside any tool's config
+directory):
 
 ```bash
-cd ~/.claude/tests/agents/security-reviewer/fixtures
+cd tests/agents/security-reviewer/fixtures
 claude
 ```
 
@@ -151,7 +153,7 @@ version upgrades that touch agent loading or hook semantics, **not**
 required for routine re-runs:
 
 ```bash
-cd ~/.claude
+# from the repo root
 git checkout -b test/security-reviewer-fixtures
 # Stage fixtures as if they were new branch changes
 git checkout main -- tests/agents/security-reviewer/fixtures/
@@ -193,7 +195,7 @@ vice-versa) is observation-worthy but not a hard fail — record in
 Confirm clean working tree:
 
 ```bash
-cd ~/.claude/tests/agents/security-reviewer/fixtures
+cd tests/agents/security-reviewer/fixtures
 git status
 ```
 
@@ -219,7 +221,7 @@ approval prompt was accepted.
 `config.py` contains synthetic-but-pattern-matching values for an
 Azure storage connection string and a GitHub PAT. Both are detection
 targets for the agent and for `gitleaks`. The `tests/` subtree is
-allowlisted in `~/.claude/.gitleaks.toml` (broad allowlist scoped to
+allowlisted in the repo's `.gitleaks.toml` (broad allowlist scoped to
 all tests). If the allowlist scope is narrowed in the future, re-add
 fixture paths before committing.
 
@@ -228,9 +230,10 @@ fixture paths before committing.
 - Agent: `~/.claude/agents/security-reviewer.md`
 - Agent memory: `~/.claude/agent-memory/security-reviewer/MEMORY.md`
 - Cheat sheets: `expected_findings.md` (this directory)
-- Documented behaviors:
-  - `~/.claude/docs/claude-ai-project-instructions.md` →
+- Documented behaviors (personal, gitignored — absent from a fresh
+  clone):
+  - `docs/project-instructions/claude-ai-project-instructions.md` →
     `Repo discipline → fixture tests`
-  - `~/.claude/docs/claude-ai-project-instructions.md` →
+  - `docs/project-instructions/claude-ai-project-instructions.md` →
     `Verified platform behaviors → Skill gotchas` (skill scope and
     enforcement — analogous reasoning applies to subagents)
