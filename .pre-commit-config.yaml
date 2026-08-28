@@ -24,3 +24,13 @@ repos:
         additional_dependencies: [pyyaml]
         files: '^rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]
+
+      # link-codex.ps1 validates required keys in agent TOMLs but never
+      # parses them — a syntax error would still deploy. tomllib needs
+      # Python 3.11+.
+      - id: lint-codex-toml
+        name: Validate Codex TOML parses
+        entry: python -c "import sys, tomllib; [tomllib.load(open(p, 'rb')) for p in sys.argv[1:]]"
+        language: python
+        files: '^codex/.*\.toml$'
+        types: [toml]
