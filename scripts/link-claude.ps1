@@ -112,7 +112,11 @@ foreach ($name in $LinkDirs) {
     $link   = Join-Path $ClaudeDir $name
 
     if (-not (Test-Path $target)) {
+        # Counts as drift: any existing ~/.claude junction still points
+        # at the vanished path, so rules and skills silently stop
+        # loading and the hooks in settings.json stop firing.
         Write-Warning "Repo directory missing, skipped: $target"
+        $script:DriftCount++
         continue
     }
 
@@ -151,7 +155,10 @@ foreach ($mirror in $MirrorFiles) {
     $name = $mirror.Dest
 
     if (-not (Test-Path $src)) {
+        # Counts as drift so a mistyped or half-completed rename fails
+        # loudly instead of leaving the home copy silently stale.
         Write-Warning "Repo file missing, skipped: $src"
+        $script:DriftCount++
         continue
     }
     if (-not (Test-Path $dst)) {
