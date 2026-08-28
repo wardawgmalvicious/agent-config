@@ -1,5 +1,14 @@
-# Normalize all text to LF in repo and on checkout, regardless of any
-# machine's core.autocrlf. This is a plain config repo — the Fabric
-# portal-serialization `-text` rule (see rules/fabric-git-serialization.md)
-# does NOT apply here.
-* text=auto eol=lf
+# Normalize all text files to LF in the repo. Files already committed with
+# CRLF are left alone until an explicit `git add --renormalize .`.
+* text=auto
+
+# Windows-native scripts: pin CRLF in the working tree. cmd.exe mis-parses
+# LF-only batch files (goto/label resolution), and CRLF is the safe default
+# for scripts that legacy PowerShell hosts or double-click execution touch.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# POSIX shell scripts: pin LF. A bash script that picks up CRLF fails with
+# cryptic "\r: command not found" errors.
+*.sh text eol=lf
