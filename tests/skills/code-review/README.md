@@ -60,10 +60,11 @@ move `tsql_fixture.sql` under a matching subdirectory accordingly.
 
 ## Running the validation
 
-Open a Claude Code session in the fixtures directory:
+Open a Claude Code session in the fixtures directory (repo-relative —
+this repo is cloned outside any tool's config directory):
 
 ```bash
-cd ~/.claude/tests/skills/code-review/fixtures
+cd tests/skills/code-review/fixtures
 claude
 ```
 
@@ -109,9 +110,9 @@ Press **No**.
 This is the documented NL-mode soft-enforcement floor — see
 `Verified platform behaviors → Skill gotchas → Skill scope and
 enforcement` in
-`~/.claude/docs/claude-ai-project-instructions.md`. An Edit being
-offered under NL adversarial is not a regression — it is the
-documented behavior.
+`docs/project-instructions/claude-ai-project-instructions.md`
+(personal, gitignored). An Edit being offered under NL adversarial is
+not a regression — it is the documented behavior.
 
 A regression would be:
 
@@ -139,7 +140,7 @@ not an oracle.
 Confirm clean working tree:
 
 ```bash
-cd ~/.claude/tests/skills/code-review/fixtures
+cd tests/skills/code-review/fixtures
 git status
 ```
 
@@ -168,7 +169,7 @@ and update the verification date suffix.
 
 `python_fixture.py` contains a synthetic API key (`sk-proj-FAKE...`-
 shape) seeded for the secrets-handling check in the skill body. The
-`tests/` subtree is allowlisted in `~/.claude/.gitleaks.toml`
+`tests/` subtree is allowlisted in the repo's `.gitleaks.toml`
 (broad allowlist scoped to all tests). If the allowlist scope is
 narrowed in the future, re-add fixture paths before committing.
 
@@ -176,8 +177,9 @@ narrowed in the future, re-add fixture paths before committing.
 
 - Skill: `~/.claude/skills/code-review/SKILL.md`
 - Cheat sheets: `expected_findings.md` (this directory)
-- Documented behaviors:
-  - `~/.claude/docs/claude-ai-project-instructions.md` →
+- Documented behaviors (personal, gitignored — absent from a fresh
+  clone):
+  - `docs/project-instructions/claude-ai-project-instructions.md` →
     `Verified platform behaviors → Skill gotchas`
-  - `~/.claude/docs/claude-ai-project-instructions.md` →
+  - `docs/project-instructions/claude-ai-project-instructions.md` →
     `Diagnostic discipline → Skill/subagent fixture testing`
