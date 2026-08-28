@@ -12,7 +12,7 @@ junctions under `~/.agents/skills` (same script).
 
 | Path | Deployed to | Notes |
 | --- | --- | --- |
-| [AGENTS.md](AGENTS.md) | `CODEX_HOME/AGENTS.md` | Codex's user-scope global instructions. |
+| [AGENTS.md](AGENTS.md) | `CODEX_HOME/AGENTS.md` | Codex's user-scope global instructions (the analog of `claude/CLAUDE.md`). Not a mirror of the repo-root `AGENTS.md`, which is project-scope and never deployed. |
 | [agents/](agents/) | `CODEX_HOME/agents/*.toml` | Custom agents (`code_reviewer`, `security_reviewer`). Validated for required keys before copying; home-only agents are preserved. |
 | [prompts/](prompts/) | `CODEX_HOME/prompts/*.md` | Custom prompts (`fabric-task`, `repo-instructions-audit`). Home-only prompts are preserved. |
 | [mcp/](mcp/) | not deployed | Codex `[mcp_servers]` TOML examples mirroring the JSON templates in [mcp/](../mcp/); copy blocks into `config.toml` by hand. |

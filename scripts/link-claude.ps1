@@ -20,7 +20,7 @@
     before forcing — the home copy may hold edits the repo lacks.
 
     ~/.claude/CLAUDE.md (user scope, all projects) is sourced from the
-    repo's global/CLAUDE.md — NOT the repo-root CLAUDE.md, which is
+    repo's claude/CLAUDE.md — NOT the repo-root CLAUDE.md, which is
     project-scope instructions for working on this repo and is never
     deployed.
 
@@ -59,7 +59,7 @@ $LinkDirs  = 'agents', 'hooks', 'mcp', 'rules', 'skills'
 # Repo-relative source -> filename under $ClaudeDir. Root CLAUDE.md is
 # project-scope for this repo and deliberately absent here.
 $MirrorFiles = @(
-    @{ Source = 'global/CLAUDE.md'; Dest = 'CLAUDE.md' }
+    @{ Source = 'claude/CLAUDE.md'; Dest = 'CLAUDE.md' }
     @{ Source = 'settings.json';    Dest = 'settings.json' }
 )
 $script:DriftCount = 0
