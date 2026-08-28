@@ -6,13 +6,13 @@ settings) — see [README.md](README.md) for the full picture. It's
 written to be cherry-picked by any agentic tool, not only the ones the
 user personally runs day to day (Claude Code and GitHub Copilot).
 
-This file mirrors root [AGENTS.md](AGENTS.md) — both describe
-conventions for working *on* this repo itself, not its deployed
-content. [global/CLAUDE.md](global/CLAUDE.md) — the portable,
-machine-wide instructions payload — is similarly mirrored by
-[global/AGENTS.md](global/AGENTS.md). **Keep each pair in sync by
-hand**: when editing either member of a pair, mirror the change into
-its counterpart — nothing automates this.
+This file describes conventions for working *on* this repo itself, not
+its deployed content. [global/CLAUDE.md](global/CLAUDE.md) — the
+portable, machine-wide instructions payload — is mirrored by
+[global/AGENTS.md](global/AGENTS.md) for tools that read `AGENTS.md`
+instead. **Keep that pair in sync by hand**: when editing either
+member, mirror the change into its counterpart — nothing automates
+this. Root `CLAUDE.md` has no `AGENTS.md` twin.
 
 ## How this repo is structured
 

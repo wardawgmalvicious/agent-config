@@ -75,7 +75,7 @@ reader finds it where they'd look.
 Before writing anything:
 
 ```
-grep -rn -i "<key term>" skills/ rules/ CLAUDE.md AGENTS.md global/CLAUDE.md global/AGENTS.md
+grep -rn -i "<key term>" skills/ rules/ CLAUDE.md global/CLAUDE.md global/AGENTS.md
 ```
 
 - Already covered correctly → nothing to do; say so.
@@ -135,9 +135,8 @@ If `global/CLAUDE.md` changed, remind the user to re-run
 `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`,
 **and** to mirror the same edit into `global/AGENTS.md` (the two are a
 deliberate duplicate for tool-agnostic reach — see
-[AGENTS.md](../../AGENTS.md) — kept in sync by hand, not a junction).
-If root `CLAUDE.md` changed (this repo's own editing conventions),
-mirror that into root `AGENTS.md` too.
+[README.md](../../README.md) — kept in sync by hand, not a junction).
+Root `CLAUDE.md` has no `AGENTS.md` twin; nothing to mirror there.
 
 ## Example (illustrative — not a real fabric-cicd fact)
 
