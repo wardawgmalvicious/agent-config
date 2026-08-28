@@ -95,8 +95,14 @@ are not wired into Copilot.
 
 No build step. Lint and validation:
 
-- **SKILL.md frontmatter lint** —
-  [scripts/lint-skills.py](../scripts/lint-skills.py) checks `name`
+- **Frontmatter lint** —
+  [scripts/lint-frontmatter.py](../scripts/lint-frontmatter.py) lints both
+  `skills/*/SKILL.md` and `rules/*.md`, inferring the kind from the path.
+  A rule needs `paths:` and is exempt from `name`/`description`; a wrong
+  glob has no error path (the rule just never loads), so `paths:` entries
+  are also checked for a backslash separator, a leading `/`, a bare
+  `*.ext` with no `/` (root-only), duplicates, and stray whitespace.
+  For a skill it checks `name`
   (lowercase/digits/hyphens, ≤64 chars, must not contain `claude` or
   `anthropic`), `description` (required, ≤1024 chars — this is the
   trigger text, so put trigger phrases here, not in the body), `paths:`
@@ -106,13 +112,13 @@ No build step. Lint and validation:
 
   ```powershell
   # single file
-  uv run --with pyyaml scripts/lint-skills.py skills/commit/SKILL.md
+  uv run --with pyyaml scripts/lint-frontmatter.py skills/commit/SKILL.md
 
   # whole repo — PowerShell does NOT glob-expand args for external
   # commands, so `skills/*/SKILL.md` passes through literally and
   # fails with "not a file". Expand explicitly first:
   $files = Get-ChildItem skills -Filter SKILL.md -Recurse | % FullName
-  uv run --with pyyaml scripts/lint-skills.py @files
+  uv run --with pyyaml scripts/lint-frontmatter.py @files
   ```
 
 - **Secret scan** — [gitleaks](https://github.com/gitleaks/gitleaks),
@@ -124,7 +130,8 @@ No build step. Lint and validation:
   `scripts/bootstrap-pre-commit` (requires `uv` on PATH; installs
   pre-commit, wires `.git/hooks/pre-commit`, runs once repo-wide).
   Re-run everything: `pre-commit run --all-files`. Run one hook:
-  `pre-commit run lint-skills` or `pre-commit run gitleaks`. CI
+  `pre-commit run lint-skills`, `pre-commit run lint-rules`, or
+  `pre-commit run gitleaks`. CI
   ([.github/workflows/pre-commit.yml](../.github/workflows/pre-commit.yml))
   runs the same config on every push/PR to `main`.
 - **No automated test suite.** [tests/](../tests) holds synthetic

@@ -107,8 +107,8 @@ unproven, even by `personal` standards:
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
 - [.pre-commit-config.yaml](.pre-commit-config.yaml) and [.gitleaks.toml](.gitleaks.toml)
-  — pre-commit framework config (gitleaks + the SKILL.md frontmatter
-  linter at [scripts/lint-skills.py](scripts/lint-skills.py)).
+  — pre-commit framework config (gitleaks + the SKILL.md and rules
+  frontmatter linter at [scripts/lint-frontmatter.py](scripts/lint-frontmatter.py)).
 
 ## Tool support
 
@@ -189,7 +189,7 @@ content is written for and validated with Claude Code first.
     ```
 
 5. (Optional) Add the repo's `scripts/` directory to `PATH` so the
-   helpers (`instructions-log`, `lint-skills.py`) are callable by name.
+   helpers (`instructions-log`, `lint-frontmatter.py`) are callable by name.
 
 **Notes:**
 

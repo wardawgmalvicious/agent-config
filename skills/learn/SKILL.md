@@ -62,7 +62,7 @@ Output a short table: `learning → owning skill/rule → section`.
 | Cross-product troubleshooting symptom (error text → cause) | `skills/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `rules/coding-<lang>.md` (path-scoped via `paths:`) |
 | Environment or machine-wide constraint for every session | `global/CLAUDE.md` (then re-run `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md` — it is a copy, not a junction) |
-| Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars, see `scripts/lint-skills.py`) |
+| Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars, see `scripts/lint-frontmatter.py`) |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
 
 Weave the learning into the existing structure. Do **not** append a
@@ -118,7 +118,7 @@ length.
 **Check `description` headroom before proposing a trigger phrase.** Many
 skills here sit within a few characters of the 1,024-char cap, so a new
 phrase usually has to displace an existing one rather than extend the
-line. Measure the current length first — `lint-skills.py` only reports
+line. Measure the current length first — `lint-frontmatter.py` only reports
 the overflow after the edit is written. If the budget is tight, name
 what to cut; if nothing can go, say so and leave the description alone
 rather than silently dropping a trigger that already earns its place.
@@ -127,7 +127,7 @@ Wait for approval. Apply only what is approved, using `Edit` so the
 rest of the file is untouched. Then run:
 
 ```
-uv run --with pyyaml scripts/lint-skills.py skills/<name>/SKILL.md
+uv run --with pyyaml scripts/lint-frontmatter.py skills/<name>/SKILL.md
 ```
 
 ## Step 7 — Hand off

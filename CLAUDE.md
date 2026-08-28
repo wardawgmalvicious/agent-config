@@ -34,7 +34,7 @@ deployed anywhere and loads only in sessions inside this repo.
 ## Editing conventions
 
 - **Skills** — frontmatter `description` ≤ 1024 chars; lint with
-  `uv run --with pyyaml scripts/lint-skills.py skills/<name>/SKILL.md`
+  `uv run --with pyyaml scripts/lint-frontmatter.py skills/<name>/SKILL.md`
   (pre-commit runs it too). Long detail goes in
   `skills/<name>/references/`, not SKILL.md. Skill edits don't
   reliably reload mid-session on Windows — restart the session to
@@ -43,6 +43,13 @@ deployed anywhere and loads only in sessions inside this repo.
   fires when a matching file enters session scope (GitHub Copilot's
   `.instructions.md` `applyTo:` globs are the direct analog). Client
   repos can override any rule with `.claude/rules/<same-name>.md`.
+  Lint with
+  `uv run --with pyyaml scripts/lint-frontmatter.py rules/<name>.md`
+  (pre-commit runs it too). A wrong glob has no error path — the rule
+  just never loads — so the linter rejects the mistakes that silently
+  narrow a pattern: a backslash separator, a leading `/`, and a bare
+  `*.ext` with no `/` (which matches only repo-root files; `**/*.ext`
+  matches those *and* nested ones).
 - **`global/CLAUDE.md`** — loaded into *every* session on this
   machine. Keep it lean: machine environment and pointers only. If
   guidance has a narrower trigger (a file type, a product area),
