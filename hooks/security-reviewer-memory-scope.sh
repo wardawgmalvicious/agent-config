@@ -14,11 +14,21 @@
 
 set -euo pipefail
 
+# Bound jq's lifetime. jq reads stdin, so if this hook's shell dies mid-pipeline
+# jq is left blocking on a stdin that never closes and holds the session's cwd
+# indefinitely -- enough to block a rename of any ancestor directory. This hook
+# fires on every Edit/Write, so it is the highest-frequency jq call here.
+# A timeout trips errexit and the hook exits non-zero, which Claude Code reports
+# as a hook error and allows the call -- the same fail-open path any other jq
+# failure already takes today, but bounded instead of hanging forever.
+JQ=(jq)
+if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
+
 # Read JSON input from stdin
 INPUT=$(cat)
 
 # Agent-type guard — only enforce when running under security-reviewer
-AGENT_TYPE=$(echo "$INPUT" | jq -r '.agent_type // empty')
+AGENT_TYPE=$(echo "$INPUT" | "${JQ[@]}" -r '.agent_type // empty')
 
 if [ "$AGENT_TYPE" != "security-reviewer" ]; then
   # Not our subagent (could be main session, or a different subagent)
@@ -27,7 +37,7 @@ if [ "$AGENT_TYPE" != "security-reviewer" ]; then
 fi
 
 # Extract file_path from tool_input
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE_PATH=$(echo "$INPUT" | "${JQ[@]}" -r '.tool_input.file_path // empty')
 
 # If no file_path, allow (defensive — shouldn't happen for Edit/Write)
 if [ -z "$FILE_PATH" ]; then
