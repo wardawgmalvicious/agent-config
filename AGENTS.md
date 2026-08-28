@@ -6,24 +6,27 @@ This is an agent-configuration repository, not an application; it has no
 runtime or build artifact. Add reusable guidance under
 `skills/<name>/SKILL.md`, with supporting detail in `references/`, `scripts/`,
 or `assets/`. Path-scoped language conventions live in `rules/`; Claude
-subagents and lifecycle hooks live in `agents/` and `hooks/`. Maintenance and
-linking utilities are in `scripts/`, while MCP templates and handoff guidance
-are in `mcp/` and `docs/`. Manual behavioral fixtures live under
-`tests/skills/` and `tests/agents/`.
+subagents and lifecycle hooks live in `agents/` and `hooks/`. Per-tool
+copy-deployed payloads live in `claude/` (user-scope CLAUDE.md) and `codex/`
+(user-scope AGENTS.md, custom-agent TOML, prompts, reference examples).
+Maintenance and linking utilities are in `scripts/`, while MCP templates and
+handoff guidance are in `mcp/` and `docs/`. Manual behavioral fixtures live
+under `tests/skills/` and `tests/agents/`.
 
 ## Setup, Lint, and Development Commands
 
 - `scripts/bootstrap-pre-commit` — from Git Bash, install pre-commit with
   `uv`, wire the Git hook, and validate the repository.
-- `pre-commit run --all-files` — run frontmatter validation and gitleaks.
-- `pre-commit run lint-skills` or `pre-commit run lint-rules` — run one local
-  validator while iterating.
+- `pre-commit run --all-files` — run frontmatter validation, the Codex TOML
+  parse check, and gitleaks.
+- `pre-commit run lint-skills`, `pre-commit run lint-rules`, or
+  `pre-commit run lint-codex-toml` — run one local validator while iterating.
 - `uv run --with pyyaml scripts/lint-frontmatter.py skills/commit/SKILL.md`
   — lint one file directly.
 - `./scripts/link-claude.ps1`, `./scripts/link-codex.ps1`, and
   `./scripts/link-copilot.ps1` — verify tool-specific wiring. The Codex
   linker keeps `CODEX_HOME` real and manages only shared skill junctions
-  plus optional copied instructions and custom-agent TOML.
+  plus copied instructions, custom-agent TOML, and prompts from `codex/`.
 
 ## Coding Style & Naming Conventions
 

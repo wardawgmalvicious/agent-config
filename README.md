@@ -1,9 +1,9 @@
 # Agent Config
 
 Personal configuration for coding agents: skills, subagents, coding
-rules, hooks, MCP templates, and settings. Clone it anywhere; link
-scripts wire it into each tool's config directory — Claude Code via
-`~/.claude`, GitHub Copilot via `~/.agents`.
+rules, hooks, MCP templates, and settings. Clone it anywhere; scoped
+link scripts wire durable content into Claude Code, Codex, and GitHub
+Copilot without putting any tool's runtime directory under Git.
 
 ## What this is
 
@@ -82,16 +82,18 @@ unproven, even by `personal` standards:
 - [docs/handoff-briefs/](docs/handoff-briefs/) — Templates and worked
   examples for the brief-before-draft pattern (see
   [Handoff discipline](#handoff-discipline)).
-- [global/CLAUDE.md](global/CLAUDE.md) — User-scope instructions
+- [claude/CLAUDE.md](claude/CLAUDE.md) — User-scope instructions
   loaded in every session (machine environment, pointers to rules).
-  Deployed to `~/.claude/CLAUDE.md` by the link script. On an
-  `AGENTS.md`-based tool, copy it to wherever that tool reads a
-  personal, cross-repo instructions file — it is machine-specific (a
-  hardcoded clone path, a `uv`-only Python setup), so adapt it rather
-  than taking it verbatim.
+  Deployed to `~/.claude/CLAUDE.md` by the Claude link script.
+- [codex/](codex/) — Codex payloads: the user-scope
+  [AGENTS.md](codex/AGENTS.md), custom agents (TOML), custom prompts,
+  plus reference-only MCP and `config.toml` examples. See
+  [codex/README.md](codex/README.md).
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
   this repo (sync model, authoring conventions). Not deployed; loads
   only in sessions inside this repo.
+- [AGENTS.md](AGENTS.md) — Concise, independent contributor guide for
+  this repo. It is project-scoped and is never deployed to user scope.
 - [.github/copilot-instructions.md](.github/copilot-instructions.md) —
   Repository-wide custom instructions for GitHub Copilot (architecture,
   build/lint/test, conventions).
@@ -107,8 +109,9 @@ unproven, even by `personal` standards:
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
 - [.pre-commit-config.yaml](.pre-commit-config.yaml) and [.gitleaks.toml](.gitleaks.toml)
-  — pre-commit framework config (gitleaks + the SKILL.md and rules
-  frontmatter linter at [scripts/lint-frontmatter.py](scripts/lint-frontmatter.py)).
+  — pre-commit framework config (gitleaks, the SKILL.md and rules
+  frontmatter linter at [scripts/lint-frontmatter.py](scripts/lint-frontmatter.py),
+  and a parse check for `codex/**/*.toml`).
 
 ## Tool support
 
@@ -124,16 +127,18 @@ stay separable:
   [agents/](agents/), and the `paths:` auto-load frontmatter on rules
   (GitHub Copilot's `.instructions.md` `applyTo:` globs are the direct
   analog).
-- **No `AGENTS.md` mirrors — deliberately.** GitHub Copilot (CLI, VS
-  Code, cloud agent) already treats a `CLAUDE.md` as equivalent to
-  `AGENTS.md` for its "Agent instructions" tier, so the filename buys
-  nothing there. For every other tool, both instruction files here need
-  editing before they'd serve anyone else anyway: root
-  [CLAUDE.md](CLAUDE.md) describes working *on* this repo, and
-  [global/CLAUDE.md](global/CLAUDE.md) hardcodes a clone path and this
-  machine's Python setup. A tool that wants `AGENTS.md` by name is one
-  `cp` away, and the copy has to be adapted regardless — so hand-synced
-  twins bought nothing but drift. Copy either file and make it yours.
+- **Codex** — consumes skills through per-skill junctions under
+  `~/.agents/skills`. [scripts/link-codex.ps1](scripts/link-codex.ps1)
+  keeps `CODEX_HOME` real and home-owned; when present, it copies
+  `codex/AGENTS.md`, `codex/agents/*.toml`, and `codex/prompts/*.md`
+  into their Codex user-scope locations. It never manages
+  `config.toml`, credentials, sessions, caches, plugins, or system
+  skills.
+- **Instruction files are independent.** Root [AGENTS.md](AGENTS.md)
+  is repository-scoped and is never deployed.
+  [codex/AGENTS.md](codex/AGENTS.md) is a separate Codex payload
+  rather than a mirror of root `AGENTS.md`, root
+  [CLAUDE.md](CLAUDE.md), or [claude/CLAUDE.md](claude/CLAUDE.md).
 - **GitHub Copilot** — consumes the skills via per-skill links into
   `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)),
   plus a workspace `.vscode/mcp.json` for MCP servers (see
@@ -162,7 +167,7 @@ content is written for and validated with Claude Code first.
 
 2. Link into Claude Code. Creates directory junctions (no elevation
    needed) for `agents/`, `hooks/`, `mcp/`, `rules/`, and `skills/`
-   under `~/.claude`, and mirrors `global/CLAUDE.md` (→ `~/.claude/CLAUDE.md`)
+   under `~/.claude`, and mirrors `claude/CLAUDE.md` (→ `~/.claude/CLAUDE.md`)
    and `settings.json` as plain copies. **Back up first if you already have a `~/.claude`** — the
    script refuses to replace real directories or drifted files without
    `-Force`, but review its warnings before forcing anything.
@@ -171,15 +176,25 @@ content is written for and validated with Claude Code first.
     ./scripts/link-claude.ps1
     ```
 
-3. (Optional) Link skills into GitHub Copilot's `~/.agents/skills`,
+3. Wire durable content into Codex without redirecting `CODEX_HOME`.
+   The script intentionally refuses a linked or Git-backed Codex home,
+   preserves Codex-owned runtime state, and links repo skills one at a
+   time into the shared `~/.agents/skills` directory.
+
+    ```powershell
+    ./scripts/link-codex.ps1
+    ```
+
+4. (Optional) Link skills into GitHub Copilot's `~/.agents/skills`,
    one junction per skill, alongside any skills other providers have
-   installed there:
+   installed there. This is idempotent with the Codex linker because
+   both tools use the same user-scope skill location:
 
     ```powershell
     ./scripts/link-copilot.ps1
     ```
 
-4. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
+5. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
    it once across all files). **Requires
    [uv](https://docs.astral.sh/uv/) on PATH.** Skip this step if you
    only intend to read, not commit.
@@ -188,15 +203,14 @@ content is written for and validated with Claude Code first.
     cd agent-config && scripts/bootstrap-pre-commit
     ```
 
-5. (Optional) Add the repo's `scripts/` directory to `PATH` so the
+6. (Optional) Add the repo's `scripts/` directory to `PATH` so the
    helpers (`instructions-log`, `lint-frontmatter.py`) are callable by name.
 
 **Notes:**
 
-- Plugins, agent memory, and Claude Code runtime state live in
-  `~/.claude`, not in this repo — nothing to gitignore away, nothing
-  to leak into commits. That separation is the point of linking
-  instead of cloning into the config directory.
+- Plugins, credentials, sessions, memory, caches, and other runtime
+  state remain in each tool's real home directory, not in this repo.
+  That separation is the point of scoped linking.
 - This config is Windows-targeted (junctions, PowerShell link scripts,
   Git Bash for the shell hooks). Hook commands resolve via `$HOME` so
   they're portable across users on Windows, but Linux / macOS users
@@ -209,10 +223,13 @@ Edit files in place and commit like any other repo. Changes to the
 junctioned directories (`agents/`, `hooks/`, `mcp/`, `rules/`,
 `skills/`) are
 live immediately — the tools read the same files. Changes to
-`global/CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1`
+`claude/CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1`
 re-run to reach the live copies (the script also verifies everything else and
 exits non-zero if any link or mirror needs attention — including after
 moving or renaming the repo folder, which it repairs automatically).
+`codex/AGENTS.md`, `codex/agents/*.toml`, or `codex/prompts/*.md`
+changes require a `scripts/link-codex.ps1` re-run; use `-Force` only
+after reviewing reported drift.
 
 Skill edits don't reliably take effect mid-session under Git Bash on
 Windows — restart the Claude Code session after editing a SKILL.md to

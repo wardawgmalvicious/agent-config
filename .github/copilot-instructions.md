@@ -4,8 +4,9 @@
 
 A personal AI coding-agent configuration repo: skills, a subagent,
 path-scoped coding rules, hooks, MCP server templates, and settings —
-primarily for Claude Code, secondarily for GitHub Copilot. **It is not
-an application** — there is no runtime, no build, no server to run.
+primarily for Claude Code, with portable content also wired into Codex
+and GitHub Copilot. **It is not an application** — there is no runtime,
+no build, no server to run.
 Content focuses on Microsoft Fabric, Power BI/TMDL, and Azure.
 
 Every artifact carries a reuse-readiness tag: `personal` (works for
@@ -15,7 +16,7 @@ in this repo). **All current artifacts are tagged `personal`** — treat
 content as reference, not a hardened recommendation, and expect drift
 as the Fabric/Power BI/Azure platforms move.
 
-## Architecture: deployment is by junction, not by copy
+## Architecture: deploy only explicit durable artifacts
 
 This repo is cloned somewhere arbitrary and then *linked* into each
 tool's real config directory — it is not cloned directly into
@@ -25,19 +26,27 @@ tool's real config directory — it is not cloned directly into
   junctions for `agents/`, `hooks/`, `mcp/`, `rules/`, `skills/` under
   `~/.claude` (Claude Code doesn't read `~/.claude/mcp` itself — that
   junction gives the template-copy commands in
-  [mcp/README.md](../mcp/README.md) a stable path), and mirrors [global/CLAUDE.md](../global/CLAUDE.md) →
+  [mcp/README.md](../mcp/README.md) a stable path), and mirrors [claude/CLAUDE.md](../claude/CLAUDE.md) →
   `~/.claude/CLAUDE.md` plus [settings.json](../settings.json) as
   plain-copy files (`settings.json` is compared key-by-key, since
   Claude Code writes runtime keys like the model pin into the live
   copy). Root [CLAUDE.md](../CLAUDE.md) is a different, never-deployed
   file — see Key conventions below. Editing a file inside a junctioned
-  directory takes effect immediately; editing `global/CLAUDE.md` or
+  directory takes effect immediately; editing `claude/CLAUDE.md` or
   `settings.json` needs a script re-run to reach the live copy.
 - [scripts/link-copilot.ps1](../scripts/link-copilot.ps1) junctions each
   skill *individually* into `~/.agents/skills`, because that directory
   is shared with other providers' skills (e.g. Copilot for Azure) and
   can't be junctioned wholesale.
-- Both scripts are idempotent, resolve the repo location from their own
+- [scripts/link-codex.ps1](../scripts/link-codex.ps1) keeps
+  `CODEX_HOME` real and Codex-owned. It creates the same per-skill
+  junctions under `~/.agents/skills` and, when repo sources exist,
+  copies `codex/AGENTS.md`, `codex/agents/*.toml`, and
+  `codex/prompts/*.md` into user scope. It refuses linked or Git-backed
+  Codex homes and never manages `config.toml`, credentials, sessions,
+  caches, plugins, or system skills. `codex/mcp/` and
+  `codex/config-examples/` are reference-only, never deployed.
+- All three scripts are idempotent, resolve the repo location from their own
   path (so moving/renaming the clone self-heals), and refuse to
   overwrite a real directory or drifted mirror file without `-Force`.
 
@@ -130,8 +139,9 @@ No build step. Lint and validation:
   `scripts/bootstrap-pre-commit` (requires `uv` on PATH; installs
   pre-commit, wires `.git/hooks/pre-commit`, runs once repo-wide).
   Re-run everything: `pre-commit run --all-files`. Run one hook:
-  `pre-commit run lint-skills`, `pre-commit run lint-rules`, or
-  `pre-commit run gitleaks`. CI
+  `pre-commit run lint-skills`, `pre-commit run lint-rules`,
+  `pre-commit run lint-codex-toml` (parse-checks `codex/**/*.toml`),
+  or `pre-commit run gitleaks`. CI
   ([.github/workflows/pre-commit.yml](../.github/workflows/pre-commit.yml))
   runs the same config on every push/PR to `main`.
 - **No automated test suite.** [tests/](../tests) holds synthetic
@@ -175,12 +185,12 @@ No build step. Lint and validation:
   reproduction) before encoding a claim, always proposes a diff for
   approval instead of editing silently, and hands off committing to the
   `commit` skill.
-- **Root `CLAUDE.md` vs. `global/CLAUDE.md` — don't confuse the two.**
+- **Root `CLAUDE.md` vs. `claude/CLAUDE.md` — don't confuse the two.**
   Root [CLAUDE.md](../CLAUDE.md) is project-scope: a sync-model table
   (which repo path deploys where, by what mechanism, and when it goes
   live) plus editing conventions for *this repo's own* skills/rules/
   CLAUDE.md content. It is never deployed anywhere and only loads in
-  sessions opened inside this repo. [global/CLAUDE.md](../global/CLAUDE.md)
+  sessions opened inside this repo. [claude/CLAUDE.md](../claude/CLAUDE.md)
   is the deployment payload — loaded into *every* Claude Code session
   on the machine regardless of repo, mirrored to `~/.claude/CLAUDE.md`
   by [scripts/link-claude.ps1](../scripts/link-claude.ps1) — and is
@@ -190,20 +200,14 @@ No build step. Lint and validation:
   [rules/fabric-git-serialization.md](../rules/fabric-git-serialization.md)
   (triggered by `.platform` / `*.{ItemType}` folder globs), describing
   conventions for editing *other* Fabric Git-synced repos, not this
-  one — this repo's own [.gitattributes](../.gitattributes) pins
-  `* text=auto eol=lf` and the rule explicitly disclaims itself here.
-- **There are no `AGENTS.md` files here, deliberately — do not add
-  one.** Copilot's docs list `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` as
-  interchangeable "Agent instructions", and Copilot CLI, VS Code, and
-  the cloud agent all read this repo's `CLAUDE.md` files for that tier,
-  so the filename buys nothing. Hand-synced `AGENTS.md` twins of root
-  [CLAUDE.md](../CLAUDE.md) and [global/CLAUDE.md](../global/CLAUDE.md)
-  did exist and were removed: both originals must be edited before they
-  serve anyone else (one covers working *on* this repo; the other
-  hardcodes a clone path and this machine's `uv`-only Python setup), so
-  a tool wanting that filename copies and adapts one file rather than
-  reading a mirror that drifts. Nothing in this repo now carries a
-  hand-sync obligation.
+  one — this repo's own [.gitattributes](../.gitattributes) auto-normalizes
+  text, pins Windows scripts to CRLF, pins shell scripts to LF, and the
+  rule explicitly disclaims itself here.
+- **Root `AGENTS.md` is repository-scoped, not a mirror.** It is a
+  concise contributor guide and is never deployed to user scope.
+  [codex/AGENTS.md](../codex/AGENTS.md) is the separately authored
+  Codex payload copied by `link-codex.ps1`; do not substitute or
+  deploy the root file.
 - **Three MCP templates, two tools, two schemas** — see
   [mcp/README.md](../mcp/README.md). Claude Code reads a `mcpServers`
   key (`~/.claude.json` user scope, or project-scope `<repo>/.mcp.json`);
