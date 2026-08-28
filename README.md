@@ -65,8 +65,8 @@ unproven, even by `personal` standards:
 - [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and
   behavioral (code-review, drift-audit). See [skills/README.md](skills/README.md).
 - [agents/](agents/) — 1 subagent ([security-reviewer](agents/security-reviewer.md)).
-- [rules/](rules/) — 9 path-scoped coding conventions (T-SQL, Spark SQL,
-  Python/PySpark, PowerShell, KQL, DAX, M, TMDL, Fabric pipeline
+- [rules/](rules/) — 10 path-scoped coding conventions (T-SQL, Spark SQL,
+  Python/PySpark, PowerShell, Bash, KQL, DAX, M, TMDL, Fabric pipeline
   expressions) plus a Fabric Git-serialization rule; auto-load via
   `paths:` globs when matching files enter session scope.
 - [hooks/](hooks/) — InstructionsLoaded logger and a security-reviewer

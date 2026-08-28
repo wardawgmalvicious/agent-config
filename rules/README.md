@@ -24,6 +24,8 @@ conformance checking.
 - [coding-python.md](coding-python.md) — Python and PySpark
 - [coding-powershell.md](coding-powershell.md) — PowerShell (`pwsh` 7+):
   bootstrap and automation scripts, machine-state tooling
+- [coding-bash.md](coding-bash.md) — Bash (Git Bash on Windows): CLI
+  wrapper scripts and Claude Code hooks
 - [coding-kql.md](coding-kql.md) — KQL (Eventhouse, Log Analytics, ADX)
 - [coding-dax.md](coding-dax.md) — DAX (Power BI / Fabric semantic
   models)
