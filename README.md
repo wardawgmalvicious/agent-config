@@ -69,8 +69,8 @@ unproven, even by `personal` standards:
   Python/PySpark, PowerShell, Bash, KQL, DAX, M, TMDL, Fabric pipeline
   expressions) plus a Fabric Git-serialization rule; auto-load via
   `paths:` globs when matching files enter session scope.
-- [hooks/](hooks/) — InstructionsLoaded logger and a security-reviewer
-  memory-scope guard.
+- [hooks/](hooks/) — InstructionsLoaded and Skill-invocation loggers,
+  and a security-reviewer memory-scope guard.
 - [mcp/](mcp/) — Starter templates for global (user-scope) and project-
   scope Claude Code MCP server configs, plus a workspace-scope template
   for VS Code / GitHub Copilot.
