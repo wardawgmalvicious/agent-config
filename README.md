@@ -89,10 +89,9 @@ unproven, even by `personal` standards:
   instead — same content, kept in sync by hand, no deploy script (no
   single well-known global path exists across `AGENTS.md`-aware tools).
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
-  this repo (sync model, authoring conventions). Not deployed. Mirrored
-  by [AGENTS.md](AGENTS.md) — same content, generically named, for
-  tools that read `AGENTS.md` instead of `CLAUDE.md`; kept in sync by
-  hand.
+  this repo (sync model, authoring conventions). Not deployed, and not
+  mirrored to `AGENTS.md` — it covers this repo's own editing
+  conventions, which nothing outside the repo consumes.
 - [.github/copilot-instructions.md](.github/copilot-instructions.md) —
   Repository-wide custom instructions for GitHub Copilot (architecture,
   build/lint/test, conventions).
@@ -125,18 +124,19 @@ stay separable:
   [agents/](agents/), and the `paths:` auto-load frontmatter on rules
   (GitHub Copilot's `.instructions.md` `applyTo:` globs are the direct
   analog).
-- **`CLAUDE.md` / `AGENTS.md` — a deliberate duplicate, not a
-  redundancy.** GitHub Copilot (CLI, VS Code, cloud agent) already
-  treats a root `CLAUDE.md` as equivalent to `AGENTS.md` for its "Agent
-  instructions" tier, so Copilot alone wouldn't need both. The two
-  files exist anyway (root [AGENTS.md](AGENTS.md) mirrors
-  [CLAUDE.md](CLAUDE.md); [global/AGENTS.md](global/AGENTS.md) mirrors
-  [global/CLAUDE.md](global/CLAUDE.md)) so the *content* reaches
-  non-Microsoft agent tools (Codex, Jules, OpenCode, and similar) that
-  look for `AGENTS.md` by name and don't know the `CLAUDE.md`
-  convention — in keeping with this repo's goal of being cherry-picked
-  by any agentic tool. The trade-off is accepted: each pair must be
-  kept in sync by hand when either file changes.
+- **`global/CLAUDE.md` / `global/AGENTS.md` — a deliberate duplicate,
+  not a redundancy.** GitHub Copilot (CLI, VS Code, cloud agent)
+  already treats a `CLAUDE.md` as equivalent to `AGENTS.md` for its
+  "Agent instructions" tier, so Copilot alone wouldn't need both.
+  [global/AGENTS.md](global/AGENTS.md) exists anyway so the *portable*
+  payload reaches non-Microsoft agent tools (Codex, Jules, OpenCode,
+  and similar) that look for `AGENTS.md` by name and don't know the
+  `CLAUDE.md` convention — in keeping with this repo's goal of being
+  cherry-picked by any agentic tool. The trade-off is accepted: the
+  pair must be kept in sync by hand when either file changes. Root
+  [CLAUDE.md](CLAUDE.md) has no `AGENTS.md` twin — it describes working
+  *on* this repo, the least portable content here, and anyone adapting
+  the repo to another tool can read it directly.
 - **GitHub Copilot** — consumes the skills via per-skill links into
   `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)),
   plus a workspace `.vscode/mcp.json` for MCP servers (see

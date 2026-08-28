@@ -185,21 +185,22 @@ No build step. Lint and validation:
   conventions for editing *other* Fabric Git-synced repos, not this
   one — this repo's own [.gitattributes](../.gitattributes) pins
   `* text=auto eol=lf` and the rule explicitly disclaims itself here.
-- **`CLAUDE.md`/`AGENTS.md` and `global/CLAUDE.md`/`global/AGENTS.md`
-  are two deliberately-duplicated pairs, not a pointer relationship.**
-  GitHub Copilot's docs list `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` as
-  interchangeable "Agent instructions" — Copilot CLI, VS Code, and the
-  cloud agent already read this repo's `CLAUDE.md` files for that tier,
-  so Copilot alone wouldn't need `AGENTS.md` at all. It exists anyway,
-  as a full content mirror, so non-Microsoft agent tools (Codex, Jules,
-  OpenCode) that look for that filename specifically and don't know the
-  `CLAUDE.md` convention get the same guidance — this repo's explicit
-  goal is to be cherry-picked by any agentic tool. **When editing either
-  member of a pair, mirror the change into its counterpart** — nothing
+- **`global/CLAUDE.md`/`global/AGENTS.md` is a deliberately-duplicated
+  pair, not a pointer relationship.** GitHub Copilot's docs list
+  `AGENTS.md`/`CLAUDE.md`/`GEMINI.md` as interchangeable "Agent
+  instructions" — Copilot CLI, VS Code, and the cloud agent already
+  read this repo's `CLAUDE.md` files for that tier, so Copilot alone
+  wouldn't need `AGENTS.md` at all. It exists anyway, as a full content
+  mirror, so non-Microsoft agent tools (Codex, Jules, OpenCode) that
+  look for that filename specifically and don't know the `CLAUDE.md`
+  convention get the same guidance — this repo's explicit goal is to be
+  cherry-picked by any agentic tool. **When editing either member of
+  the pair, mirror the change into its counterpart** — nothing
   automates this sync; see the reminders in
-  [AGENTS.md](../AGENTS.md), [global/AGENTS.md](../global/AGENTS.md),
-  and the `learn` skill's destination table
-  ([skills/learn/SKILL.md](../skills/learn/SKILL.md)).
+  [global/AGENTS.md](../global/AGENTS.md) and the `learn` skill's
+  destination table ([skills/learn/SKILL.md](../skills/learn/SKILL.md)).
+  Root [CLAUDE.md](../CLAUDE.md) has no `AGENTS.md` twin — it describes
+  working *on* this repo, not portable payload.
 - **Three MCP templates, two tools, two schemas** — see
   [mcp/README.md](../mcp/README.md). Claude Code reads a `mcpServers`
   key (`~/.claude.json` user scope, or project-scope `<repo>/.mcp.json`);
