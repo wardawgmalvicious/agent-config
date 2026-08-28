@@ -19,6 +19,17 @@ Python is **not** on `PATH` on this machine. Always go through `uv`:
 Never invoke bare `python`, `python3`, or `pip` — they will fail with
 "command not found", not with a useful error.
 
+### Writing files that contain Windows paths
+
+The Bash tool strips backslashes from command text. A Windows path
+inside a `sed` or `perl -e` expression arrives with `\R`, `\G` and the
+like silently removed, so the edit lands but the backslashes are gone —
+no error, just wrong output. Write such content through a **quoted
+heredoc** (`cat > file <<'EOF'`), which passes through literally, and
+verify the result. PowerShell here-strings (`@'...'@`) cannot be used
+inline in the Bash tool at all; put them in a `.ps1` written by a quoted
+heredoc and run that file instead.
+
 ## Agent config source
 
 `~/.claude/agents`, `hooks`, `mcp`, `rules`, and `skills` are directory
