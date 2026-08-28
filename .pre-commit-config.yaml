@@ -9,8 +9,18 @@ repos:
     hooks:
       - id: lint-skills
         name: Validate SKILL.md frontmatter
-        entry: python scripts/lint-skills.py
+        entry: python scripts/lint-frontmatter.py
         language: python
         additional_dependencies: [pyyaml]
         files: '^skills/[^/]+/SKILL\.md$'
+        types: [markdown]
+
+      # README.md is documentation, not a rule — excluded so it isn't
+      # required to carry `paths:` frontmatter.
+      - id: lint-rules
+        name: Validate rules frontmatter
+        entry: python scripts/lint-frontmatter.py
+        language: python
+        additional_dependencies: [pyyaml]
+        files: '^rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]

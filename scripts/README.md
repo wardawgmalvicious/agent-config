@@ -36,10 +36,14 @@ Helper scripts for repo maintenance and observability.
   move/rename, prunes broken junctions left by deleted or renamed
   skills, and never touches other providers' directories. Same
   `-Force` / exit-code semantics as `link-claude.ps1`.
-- [lint-skills.py](lint-skills.py) — validate `SKILL.md` frontmatter
-  against repo conventions (name regex, length limits, reserved words,
-  body-line cap). Used by the pre-commit `Validate SKILL.md frontmatter`
-  hook; can also run manually as `python scripts/lint-skills.py <path>...`.
+- [lint-frontmatter.py](lint-frontmatter.py) — validate `SKILL.md` and
+  `rules/*.md` frontmatter against repo conventions. Kind is inferred from
+  the path: files under `rules/` need `paths:` and are exempt from
+  `name`/`description`; everything else is linted as a skill (name regex,
+  length limits, reserved words). Both get body-line cap, UTF-8/BOM, and
+  glob checks. Used by the pre-commit `Validate SKILL.md frontmatter` and
+  `Validate rules frontmatter` hooks; can also run manually as
+  `python scripts/lint-frontmatter.py <path>...`.
 
 ## Pre-commit
 
