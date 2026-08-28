@@ -1,61 +1,56 @@
 # ==============================================================
-# Nested project-scope .claude/ — Claude Code creates a project-level
-# .claude/ (with settings.local.json, etc.) when launched inside any
-# directory. Because this repo IS ~/.claude/, that nested .claude/
-# lives at ~/.claude/.claude/ and would otherwise get committed. The
-# project-scope settings inside it are per-machine and not portable.
+# Root-anchored runtime-state guards. These date from the era when
+# this repo WAS ~/.claude and Claude Code wrote runtime state into
+# the working tree; they're kept in case the repo is ever cloned
+# there again. Anchored to the repo root (leading /) so same-named
+# directories under per-tool payload dirs are NOT swallowed: a
+# pattern with no slash before its trailing one (`sessions/`,
+# `cache/`) matches at ANY depth — e.g. `sessions/` would silently
+# ignore a committed codex/sessions/. (Patterns with a middle slash,
+# like `prompts/*`, were already anchored to this directory; the
+# leading / just makes the anchoring uniform and explicit.)
 # ==============================================================
-.claude/*
+
+# Nested project-scope .claude/ (settings.local.json etc.) that
+# Claude Code creates when launched inside this directory.
+/.claude/*
+
+# Personal Claude Desktop project instructions — not portable, may
+# contain sensitive information.
+/docs/project-instructions/*
+
+# Runtime prompt/log/memory state.
+/prompts/*
+/logs/*
+/agent-memory/*
+/agent-memory-local/*
+
+# Claude Code runtime state — not portable, not backup-worthy.
+/cache/
+/backups/
+/file-history/
+/shell-snapshots/
+/sessions/
+/session-env/
+/projects/
+/todos/
+/statsig/
+/telemetry/
+/ide/
+/debug/
+/downloads/
+/plugins/
+/.last-cleanup
+/history.jsonl
+/mcp-needs-auth-cache.json
+/stats-cache.json
 
 # ==============================================================
-# Ignore the docs directory, which may contain user-generated content that is not portable and may include sensitive information.
-# ==============================================================
-docs/project-instructions/*
-
-# ==============================================================
-# Ignore the prompts directory, which may contain user-generated content that is not portable and may include sensitive information.
-# ==============================================================
-prompts/*
-
-# ==============================================================
-# Ignore the logs directory, which may contain runtime logs that are not portable and may include sensitive information.
-# ==============================================================
-logs/*
-
-
-# ==============================================================
-# Ignore the memory directory, which may contain runtime state and user interactions that are not portable and may include sensitive information.
-# ==============================================================
-agent-memory/*
-agent-memory-local/*
-
-# ==============================================================
-# Claude Code runtime state — not portable, not backup-worthy
-# ==============================================================
-cache/
-backups/
-file-history/
-shell-snapshots/
-sessions/
-session-env/
-projects/
-todos/
-statsig/
-telemetry/
-ide/
-debug/
-downloads/
-plugins/
-.last-cleanup
-
-# ==============================================================
-# Secrets and local-only overrides — never commit
+# Secrets and local-only overrides — never commit, at any depth
+# (deliberately unanchored: these are name-based safety nets).
 # ==============================================================
 .credentials.json
 settings.local.json
-history.jsonl
-mcp-needs-auth-cache.json
-stats-cache.json
 *.key
 *.pem
 .env
@@ -69,8 +64,8 @@ stats-cache.json
 Thumbs.db
 desktop.ini
 # .vscode is ignored except the committed MCP workspace config
-.vscode/*
-!.vscode/mcp.json
+/.vscode/*
+!/.vscode/mcp.json
 .idea/
 *.swp
 *~
