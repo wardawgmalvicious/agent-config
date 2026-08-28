@@ -12,7 +12,7 @@ next session never has to rediscover it.
 This skill **proposes**; it does not commit. Edits land only after the
 user approves the diff, and committing is handed to `/commit`.
 
-This repo lives at `C:\GitHub\Personal\agent-config`; `~/.claude/skills`
+This repo lives at `C:\Repos\Personal\agent-config`; `~/.claude/skills`
 etc. are junctions into it, so `/learn` may fire from a session in any
 repo. All repo-relative paths and commands below (grep, the lint
 script, `/commit`) run from that repo root, not the session's cwd.

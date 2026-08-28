@@ -22,7 +22,7 @@ Never invoke bare `python`, `python3`, or `pip` — they will fail with
 ## Agent config source
 
 `~/.claude/agents`, `hooks`, `mcp`, `rules`, and `skills` are directory
-junctions into `C:\GitHub\Personal\agent-config` — a file under either
+junctions into `C:\Repos\Personal\agent-config` — a file under either
 path is the same file, and edits are committed from that repo.
 `~/.claude/CLAUDE.md` and `settings.json` are plain copies: edit the
 repo versions and re-run `scripts/link-claude.ps1 -Force`.
