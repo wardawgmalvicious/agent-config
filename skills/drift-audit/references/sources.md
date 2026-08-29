@@ -86,7 +86,14 @@ claims to a date you have checked, not to a version you have inferred.
 VS Code ships monthly — faster than the Fabric cadence — and moves these
 pages (they were under `docs/copilot/customization/` until the 2026
 reorg), so a 404 on the path means find the new one, not that the source
-is gone. This repo also squashes a whole release branch into one commit,
+is gone. `list_commits` does not follow renames, so a window that
+straddles a move resolves its prior ref against the *old* path: filtering
+`docs/agent-customization/` with `until:` a 2026-06-01 floor returns
+nothing at all, and the directory reads as newly created rather than
+renamed. The pre-reorg state is under `docs/copilot/customization/`
+(`b9731d7c` is its last commit before that floor). Diff across the two
+paths rather than reading the empty listing as "no prior state."
+This repo also squashes a whole release branch into one commit,
 so its commit *messages* run to thousands of characters — list with
 `fields: ["sha"]` and let SKILL.md § 4a's sizing and escape-hatch steps
 pick the strategy, because the commit count here says nothing about the
@@ -178,13 +185,16 @@ What "an entry" means for the diff, per shape.
   Changelogs append at the top, so diff them from commit patches, never
   from two full-file fetches (SKILL.md § 4a).
 
-**Only `table` has been exercised.** The two What's New sources are
-table-driven; `vscode-agent` is the first `prose` entry and `claude-code`
-the first `changelog` one, and neither has been run yet. `prose` and
-`changelog` are specified so a non-table source is a registry entry plus a
-validated run, not a skill rewrite — but treat the first run against
-either as unproven and check the extracted entries against the live page
-by hand before trusting the report.
+**`table` and `prose` have been exercised; `changelog` has not.** The two
+What's New sources are table-driven. `vscode-agent` exercised `prose` on
+2026-08-29 against a 2026-06-01 floor — four heading-structured pages,
+both refs fetched whole, entries diffed at paragraph granularity — and
+the findings held up against the live pages, so that contract is no
+longer theoretical. `claude-code` is the first `changelog` entry and has
+not been run. `prose` and `changelog` are specified so a non-table source
+is a registry entry plus a validated run, not a skill rewrite — but treat
+the first `changelog` run as unproven and check the extracted entries
+against the live file by hand before trusting the report.
 
 ## Adding a source
 
