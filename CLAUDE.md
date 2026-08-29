@@ -85,11 +85,12 @@ ones default to on. Each one Copilot should see needs an explicit
 takes **folders only** — pointing it at `~/.claude/CLAUDE.md` is
 silently inert, and the file loads anyway via `chat.useClaudeMdFile`,
 which makes the dead setting look like it worked. And a skills route
-through `~/.agents/skills` is no longer needed: `~/.claude/skills` has
-been a first-class `chat.agentSkillsLocations` location since VS Code
-1.135, so a `scripts/link-copilot.ps1` that junctioned skills into the
-shared `~/.agents/skills` one-by-one was deleted rather than kept
-working. That directory is shared with other providers (Copilot for
+through `~/.agents/skills` is not needed and never was: `~/.claude/skills`
+has been a documented `chat.agentSkillsLocations` location since at least
+2026-06-26, so a `scripts/link-copilot.ps1` that junctioned skills into
+the shared `~/.agents/skills` one-by-one was deleted rather than kept
+working. It was written on a premise that was already false. That
+directory is shared with other providers (Copilot for
 Azure ships ~28 skills there), so disabling it to avoid duplicates
 turns theirs off too.
 

@@ -42,14 +42,14 @@ Helper scripts for repo maintenance and observability.
   `python scripts/lint-frontmatter.py <path>...`.
 
 There is deliberately **no `link-copilot.ps1`**. It existed to junction
-skills one-by-one into the shared `~/.agents/skills`, back when
-`chat.agentSkillsLocations` had no entry for `~/.claude/skills`. VS Code
-1.135 made `~/.claude/skills` a first-class location, so every artifact
-Copilot needs now reaches it through the `~/.claude` paths
-`link-claude.ps1` already creates — rules, hooks, subagents, skills, and
-user-scope instructions alike. Enabling them is a `chat.*Locations`
-settings decision; see the Tool support section of the
-[root README](../README.md#tool-support).
+skills one-by-one into the shared `~/.agents/skills`, on the premise that
+`chat.agentSkillsLocations` had no entry for `~/.claude/skills` — which
+was already false when it was written. That location has been documented
+since at least 2026-06-26, so every artifact Copilot needs reaches it
+through the `~/.claude` paths `link-claude.ps1` already creates — rules,
+hooks, subagents, skills, and user-scope instructions alike. Enabling
+them is a `chat.*Locations` settings decision; see the Tool support
+section of the [root README](../README.md#tool-support).
 
 ## Pre-commit
 

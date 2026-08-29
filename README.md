@@ -164,7 +164,7 @@ stay separable:
   instructions — all of which `link-claude.ps1` already populates.
   That is why there is no `copilot/` payload directory: Copilot is a
   second consumer of the Claude-format payload, not a separate one.
-  Turning them on is purely a settings decision (VS Code 1.135+):
+  Turning them on is purely a settings decision:
 
     ```jsonc
     // Every ~/ location defaults to OFF. Workspace-scope ones default to on.
