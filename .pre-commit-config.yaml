@@ -22,7 +22,7 @@ repos:
         entry: python scripts/lint-frontmatter.py
         language: python
         additional_dependencies: [pyyaml]
-        files: '^rules/(?!README\.md$)[^/]+\.md$'
+        files: '^claude/rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]
 
       # link-codex.ps1 validates required keys in agent TOMLs but never
