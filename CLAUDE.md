@@ -10,13 +10,21 @@ Root `CLAUDE.md` and root `AGENTS.md` are independent project-scope
 instructions and are never deployed. [claude/CLAUDE.md](claude/CLAUDE.md)
 is Claude's user-scope payload.
 
-Layout convention: **top-level directories hold content more than one
-tool consumes** (`skills/`, linked to Claude and shared to Copilot via
-`~/.agents/skills`; `mcp/`, whose templates cover Claude Code and VS
-Code / Copilot). **A `<tool>/` directory holds that tool's payload and
-nothing else** — only `claude/` today, a new one per harness added
-later. A `codex/` payload lived here until Codex went unused; it is in
-the history if it is ever wanted back. `scripts/`, `docs/`, and `tests/` are the
+Layout convention: **`<tool>/` names the payload's *format*, not its
+only consumer.** `claude/` holds everything written in Claude Code's
+formats — subagent frontmatter, `paths:`-scoped rules, hook event
+wiring, user-scope `CLAUDE.md` and `settings.json`. GitHub Copilot
+reads most of it too (see below), so "Claude-only" would be wrong;
+"Claude-format" is the useful line. Top-level directories hold content
+in formats no single tool owns: `skills/` (the open Agent Skills
+format) and `mcp/` (whose templates cover both Claude Code and VS Code
+/ Copilot schemas). A `codex/` payload lived here until Codex went
+unused; it is in the history if it is ever wanted back.
+
+`claude/CLAUDE.md` is also why the payload cannot simply live at the
+repo root: root `CLAUDE.md` is already this file, project scope. Two
+files want that name, so at least one needs a directory — and once one
+does, keeping the whole payload together is the consistent choice. `scripts/`, `docs/`, and `tests/` are the
 shared mechanism and supporting material.
 
 Being a `<tool>/` payload says nothing about *how* it deploys: within
@@ -61,6 +69,37 @@ wholesale.
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
 deployed anywhere and loads only in sessions inside this repo.
+
+## How the pieces trigger
+
+Absorbed from a former `.github/copilot-instructions.md`, which
+duplicated this file and `AGENTS.md` and was deleted rather than kept
+in sync a third time.
+
+- **Skills** (`skills/<name>/SKILL.md`) trigger three ways:
+  model-invoked (the frontmatter `description` is the *entire* trigger
+  mechanism — the model matches context against it), user-invoked
+  (`/<name>`), or path-scoped (a `paths:` glob in frontmatter).
+  Behavioral, cross-domain skills are named as the verb you invoke
+  (`commit`, `learn`, `code-review`, `drift-audit`); platform skills
+  carry a `fabric-`, `pbir-`, or `pbid-` namespace prefix.
+- **Rules** (`claude/rules/*.md`) have no `name` or `description`, only
+  `paths:` — they auto-load when a matching file enters session scope.
+- **Hooks** (`claude/hooks/*.sh`) fire on events registered in
+  `claude/settings.json`. Their commands are hardcoded to
+  `$HOME/.claude/...` and only resolve because the link script
+  junctions this repo there — **don't rewrite them to be
+  repo-relative.**
+- The `security-reviewer` subagent is scoped by an explicit tool
+  allowlist plus the `PreToolUse` hook, which blocks any Edit/Write
+  outside `~/.claude/agent-memory/security-reviewer/`.
+
+Linting gotchas worth keeping: PowerShell does **not** glob-expand args
+for external commands, so `skills/*/SKILL.md` passes through literally
+and fails — expand first with
+`$files = Get-ChildItem skills -Filter SKILL.md -Recurse | % FullName`.
+`tests/` and `docs/` are gitleaks-allowlisted because fixtures
+intentionally contain fake credential-shaped strings.
 
 ## Editing conventions
 
