@@ -17,7 +17,7 @@ Audit the source markdown of registered upstream docs pages against the local Cl
 
 The audit input is a **registry**, not a fixed pair of pages. `Read` [references/sources.md](references/sources.md) at the start of every run and drive the pipeline from it. Never hardcode a repo, path, section heading, or doc host into the run — if something needed for a source isn't in its registry entry, the entry is incomplete and that is the finding.
 
-Each entry carries an `id` (what `--sources` matches), its GitHub repo / branch / path or plain `url`, a `shape` (`table` / `prose` / `changelog`) that drives extraction, `sections` for the WebFetch fallback, a `drill` block (host, mechanism, anchor-strip patterns) for Phase 3, and the `artifacts` classes it can produce findings against. The registry's Shape contracts section defines what "an entry" means per shape; its Adding a source checklist is the procedure for widening the audit.
+Each entry carries an `id` (what `--sources` matches), its GitHub repo / branch / path (plus `files`, when that path is a directory) or plain `url`, a `shape` (`table` / `prose` / `changelog`) that drives extraction, `sections` for the WebFetch fallback, a `drill` block (host, mechanism, anchor-strip patterns) for Phase 3, and the `artifacts` classes it can produce findings against. The registry's Shape contracts section defines what "an entry" means per shape; its Adding a source checklist is the procedure for widening the audit.
 
 As registered today: `fabric` and `powerbi` (`table`), `vscode-agent` (`prose`), and `claude-code` (`changelog`). All four are public and fetchable anonymously, but `claude-code` is a ~590 KB file with no `sections` list, so in practice only the `github-mcp` path can read it.
 
@@ -56,7 +56,7 @@ Available when the `github-mcp` tools are present in the session. Returns exact 
 2. **List commits in window** — `list_commits` with the same path filter and `since: <floor-date>T00:00:00Z`. If zero commits, mark the source "no changes" and move on (it still gets an audit-window line and a Next-run entry).
 3. **Get the changes** — two strategies, by commit count:
    - **5 or fewer in-window commits** — `get_commit` per SHA and read the unified patch for the source's `path`. Added and removed lines come straight from the patch; no side-by-side reconstruction.
-   - **More than 5** — `get_file_contents` at the prior ref and again at `<head-sha>`, then diff the two versions as in step 4c. Cheaper than a patch per commit once the count climbs.
+   - **More than 5** — `get_file_contents` at the prior ref and again at `<head-sha>`, then diff the two versions as in step 4c. Cheaper than a patch per commit once the count climbs. Where the source's `path` is a **directory**, `get_file_contents` on it returns a listing rather than content — fetch each name in the entry's `files` list instead, at both refs.
    - **Exception — `changelog` shape** — always read per-commit patches, whatever the count. A changelog appends at the top, so every patch is a small block of new lines, while the two full-file fetches the ">5" branch would trigger are the entire file twice. `claude-code`'s `CHANGELOG.md` is ~590 KB and takes ~29 commits in a 35-day window; the patches are the cheap read, not the expensive one.
 4. Skip 4b entirely.
 
@@ -64,7 +64,7 @@ Available when the `github-mcp` tools are present in the session. Returns exact 
 
 Used when `github-mcp` is unavailable. Keeps the skill working for anyone cherry-picking it into a plain `~/.claude/`.
 
-- Raw markdown at any ref: `https://raw.githubusercontent.com/<repo>/<sha-or-branch>/<path>`
+- Raw markdown at any ref: `https://raw.githubusercontent.com/<repo>/<sha-or-branch>/<path>` — one URL per name in `files` when `path` is a directory
 - Commits list: `https://api.github.com/repos/<repo>/commits?path=<path>&per_page=<n>` with optional `&sha=<ref>` or `&since=<ISO-date>`
 
 GitHub anonymous API limit is 60 requests/hour and this path is unauthenticated. Budget ~3 calls per source (commits list, raw at prior ref, raw at HEAD), plus one re-fetch per section when the completeness check below trips. The four registered sources fit; a registry past roughly six does not, and that is the point at which the `github-mcp` path stops being optional. A source the registry marks github-mcp-only — `claude-code` today — is not attempted on this path at all: name it in the report's skipped list rather than diffing a summary of it.

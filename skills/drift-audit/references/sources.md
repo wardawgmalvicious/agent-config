@@ -12,7 +12,8 @@ Each `id` below is what `--sources` accepts.
 | --- | --- |
 | `id` | Slug. What `--sources` matches on. Lowercase, no spaces. |
 | `label` | Human name for the report's audit-window section. |
-| `repo` / `branch` / `path` | GitHub-hosted markdown. Enables the github-mcp fetch path and raw-URL fallback. |
+| `repo` / `branch` / `path` | GitHub-hosted markdown. Enables the github-mcp fetch path and raw-URL fallback. `path` may be a single file or a directory. |
+| `files` | Optional; meaningful only when `path` is a directory. The filenames under it worth fetching. `path` drives the `list_commits` filter, `files` drives `get_file_contents` — which returns a directory listing, not content, if handed the directory. |
 | `url` | Non-GitHub source. WebFetch only; no commit list, so the window is resolved by the page's own dated entries. |
 | `shape` | `table`, `prose`, or `changelog`. Drives extraction — see Shape contracts. |
 | `columns` | `table` shape only: which columns carry the feature name, the description, and the preview/GA status. |
@@ -63,10 +64,13 @@ into this source. Don't search for one.
 - `repo`: `microsoft/vscode-docs`
 - `branch`: `main`
 - `path`: `docs/agent-customization/`
-- `shape`: `prose`
-- `sections`: `custom-instructions.md`, `agent-skills.md`, `custom-agents.md`,
+- `files`: `custom-instructions.md`, `agent-skills.md`, `custom-agents.md`,
   `hooks.md` — the four pages describing where VS Code looks for each
   artifact class
+- `shape`: `prose`
+- `sections`: none — the four pages are individually small, so the fetch
+  unit is the whole file (see `files`), and there is no heading worth
+  re-fetching by name.
 - `drill.host`: `code.visualstudio.com`
 - `drill.via`: `webfetch`
 - `artifacts`: `README.md`, root `CLAUDE.md`, `scripts/README.md`,
@@ -84,11 +88,12 @@ pages (they were under `docs/copilot/customization/` until the 2026
 reorg), so a 404 on the path means find the new one, not that the source
 is gone.
 
-Two schema stretches, both deliberate. `path` is a **directory**, not a
-single file, because the four pages change independently and the useful
-unit is "did any of them move." And `artifacts` names repo files instead
-of an artifact class, which keeps Phase 2 off a full skill sweep this
-source rarely earns.
+One schema stretch, deliberate: `artifacts` names repo files instead of
+an artifact class, which keeps Phase 2 off a full skill sweep this source
+rarely earns. The **directory** `path` is not a stretch but the reason
+`files` exists — the four pages change independently, the useful unit is
+"did any of them move," and a directory is what `list_commits` wants
+while `files` is what `get_file_contents` wants.
 
 That narrowness is a scope choice, not a claim about reach. This source
 *can* surface findings that bear on skills — the 2026-08-29 run turned up
@@ -184,7 +189,9 @@ by hand before trusting the report.
 2. Add the entry above with every field filled. A missing `drill.via`
    defaults to `webfetch`; a missing `sections` list means the WebFetch
    fallback cannot do targeted re-fetch, so the source is github-mcp-only
-   in practice for pages over ~40 KB.
+   in practice for pages over ~40 KB. If `path` is a directory, `files` is
+   not optional in practice — without it, content fetches return a listing
+   and the audit has nothing to diff.
 3. If the page carries more entries per window than a report can usefully
    hold, write a `filter`. A source with no filter and hundreds of entries
    per run produces a report nobody reads, which is the same as no audit.
