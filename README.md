@@ -83,6 +83,13 @@ rearranging the root.
   scope.
 - [claude/hooks/](claude/hooks/) — InstructionsLoaded and
   Skill-invocation loggers, and a security-reviewer memory-scope guard.
+- [claude/mcp/](claude/mcp/) — MCP server templates in Claude's
+  `mcpServers` schema, one per shareable scope: user (`~/.claude.json`)
+  and project (a repo's `.mcp.json`). Both carry only servers that
+  actually connect from Claude Code. See
+  [claude/mcp/README.md](claude/mcp/README.md) for which scope a server
+  belongs in — the test is whether it is bound to a workload, not how
+  often you use it.
 - [claude/CLAUDE.md](claude/CLAUDE.md) — User-scope instructions
   loaded in every session (machine environment, pointers to rules).
   Deployed to `~/.claude/CLAUDE.md` by the Claude link script.
@@ -125,8 +132,10 @@ stay separable:
 
 - **Portable content** — [skills/](skills/) (the Agent Skills format is
   an open spec other tools are adopting), [claude/rules/](claude/rules/)
-  bodies, [docs/](docs/), [tests/](tests/), and the MCP templates (MCP
-  is cross-tool; only the config file shape differs per tool).
+  bodies, [docs/](docs/), and [tests/](tests/). The MCP templates are
+  the edge case: the protocol is cross-tool but the config schemas are
+  not, so each template lives with the payload whose schema it is
+  written in.
 - **Claude Code-specific** — everything under [claude/](claude/):
   [settings.json](claude/settings.json), the hook event wiring in
   [claude/hooks/](claude/hooks/), the subagent frontmatter in

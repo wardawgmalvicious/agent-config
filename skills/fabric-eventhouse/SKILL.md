@@ -315,7 +315,8 @@ A hosted, HTTP-transport MCP server lets Copilot, GitHub Copilot CLI, and custom
 - **Find URL**: Fabric portal → workspace → KQL database → **Database details** > **Overview** > **Copy URI** next to **MCP Server URI**.
 - **Transport**: `http`.
 - **Auth**: caller needs **Read** or **Query** permission on the KQL database. Schema discovery additionally requires **Copilot in Fabric** to be enabled at the tenant; without it, the server can only execute KQL — no schema introspection, no NL→KQL.
-- **Per-database scoping** means the URL is workspace+item-specific; do not put it in a global MCP template (e.g. `~/.claude/mcp/.mcp.global.template.json`). Add it to a per-project template (`~/.claude/mcp/.mcp.project.template.json` carries this entry with `<WorkspaceId>` / `<KqlDatabaseId>` placeholders) or a per-IDE config such as `.vscode/mcp.json`.
+- **Per-database scoping** means the URL is workspace+item-specific, so it never belongs in a user-scope MCP config.
+- **Claude Code cannot connect to it.** Every `api.fabric.microsoft.com/v1/mcp/*` endpoint requires OAuth Dynamic Client Registration that Claude Code doesn't support; the server appears in the config and then fails to connect. Neither Claude template carries it. Its working home is `.vscode/mcp.json` for VS Code Copilot / GitHub Copilot CLI, which use first-party client IDs — the agent-config repo ships `.vscode/mcp.template.json` with this entry and its `<WorkspaceId>` / `<KqlDatabaseId>` placeholders. From Claude Code, use the local `fabric-rti-mcp` (`uvx microsoft-fabric-rti-mcp`) instead; it covers KQL query and Eventhouse management without the hosted endpoint.
 
 ```json
 {

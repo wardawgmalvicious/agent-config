@@ -1,5 +1,46 @@
 {
     "mcpServers": {
+        "powerbi-modeling-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@microsoft/powerbi-modeling-mcp@latest",
+                "--start"
+            ]
+        },
+        "microsoft-fabric-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@microsoft/fabric-mcp@latest",
+                "server",
+                "start",
+                "--mode",
+                "all"
+            ]
+        },
+        "fabric-rti-mcp": {
+            "type": "stdio",
+            "command": "uvx",
+            "args": [
+                "microsoft-fabric-rti-mcp"
+            ]
+        },
+        "fabric-data-factory-mcp": {
+            "type": "stdio",
+            "command": "dnx",
+            "args": [
+                "Microsoft.DataFactory.MCP",
+                "--prerelease",
+                "--yes"
+            ]
+        },
         "sql-mcp": {
             "type": "stdio",
             "command": "dab",
@@ -27,18 +68,6 @@
                 "<OrgName>",
                 "<ProjectName>"
             ]
-        },
-        "eventhouse-remote-mcp": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<KqlDatabaseId>/kqlEndpoint"
-        },
-        "warehouse-remote-mcp": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<WarehouseId>/sqlEndpoint"
-        },
-        "activator-remote-mcp": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>"
         }
     }
 }
