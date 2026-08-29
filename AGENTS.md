@@ -27,11 +27,10 @@ handoff guidance is in `docs/`. Manual behavioral fixtures live under
   local validator while iterating.
 - `uv run --with pyyaml scripts/lint-frontmatter.py skills/commit/SKILL.md`
   — lint one file directly.
-- `./scripts/link-claude.ps1` and `./scripts/link-copilot.ps1` — verify
-  tool-specific wiring. The Copilot linker manages only the shared skill
-  junctions; everything else reaches Copilot through the `~/.claude`
-  paths the Claude linker creates, enabled via VS Code's
-  `chat.*Locations` settings.
+- `./scripts/link-claude.ps1` — verify tool-specific wiring. It is the
+  only linker: GitHub Copilot reads the same `~/.claude` paths it
+  creates, enabled via VS Code's `chat.*Locations` settings, so Copilot
+  needs no script of its own.
 
 ## Coding Style & Naming Conventions
 
