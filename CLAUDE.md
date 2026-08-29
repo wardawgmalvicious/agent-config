@@ -93,6 +93,20 @@ explicit `chat.agentFilesLocations` entry. Setting the others
 explicitly is harmless and self-documenting, but it is belt-and-braces,
 not wiring that has to exist.
 
+Sessions that run on **Agent Host** read user-level customizations from
+harness-agnostic folders — `~/.copilot/instructions`, `~/.claude/rules`,
+`~/.copilot/agents` — rather than from VS Code profile user data, which
+is what removed the "or your user data" fallback from both location
+tables in mid-2026. It makes the `~/.claude` route the durable one.
+
+Copilot parses Claude's hook format but not its semantics: matchers are
+read and **ignored**, so a matcher-scoped hook fires on every tool call
+there; tool input properties are camelCase (`tool_input.filePath`, not
+`tool_input.file_path`); and tool names differ (`create_file`,
+`replace_string_in_file` rather than `Write`, `Edit`). The
+`security-reviewer` write guard is matcher-scoped, so under Copilot it
+runs far wider than it does under Claude Code.
+
 Two traps are worth remembering. `chat.instructionsFilesLocations`
 takes **folders only** — pointing it at `~/.claude/CLAUDE.md` is
 silently inert, and the file loads anyway via `chat.useClaudeMdFile`,
