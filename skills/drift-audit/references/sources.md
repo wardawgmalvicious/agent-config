@@ -86,7 +86,11 @@ claims to a date you have checked, not to a version you have inferred.
 VS Code ships monthly — faster than the Fabric cadence — and moves these
 pages (they were under `docs/copilot/customization/` until the 2026
 reorg), so a 404 on the path means find the new one, not that the source
-is gone.
+is gone. This repo also squashes a whole release branch into one commit,
+so its commit *messages* run to thousands of characters — list with
+`fields: ["sha"]` and let SKILL.md § 4a's sizing and escape-hatch steps
+pick the strategy, because the commit count here says nothing about the
+volume.
 
 One schema stretch, deliberate: `artifacts` names repo files instead of
 an artifact class, which keeps Phase 2 off a full skill sweep this source
