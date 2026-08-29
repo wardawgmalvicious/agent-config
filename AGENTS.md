@@ -5,12 +5,15 @@
 This is an agent-configuration repository, not an application; it has no
 runtime or build artifact. Add reusable guidance under
 `skills/<name>/SKILL.md`, with supporting detail in `references/`, `scripts/`,
-or `assets/`. Path-scoped language conventions live in `rules/`; Claude
-subagents and lifecycle hooks live in `agents/` and `hooks/`. Per-tool
-copy-deployed payloads live in `claude/` (user-scope CLAUDE.md) and `codex/`
-(user-scope AGENTS.md, custom-agent TOML, prompts, reference examples).
-Maintenance and linking utilities are in `scripts/`, while MCP templates and
-handoff guidance are in `mcp/` and `docs/`. Manual behavioral fixtures live
+or `assets/`. The top level splits by audience: a directory sits at the
+root when more than one tool consumes it (`skills/`, `mcp/`) and under
+`<tool>/` when only that tool does. Everything Claude Code reads is under
+`claude/` — path-scoped language conventions in `claude/rules/`, subagents
+in `claude/agents/`, lifecycle hooks in `claude/hooks/`, plus user-scope
+`claude/CLAUDE.md` and `claude/settings.json`. `codex/` is the Codex
+equivalent (user-scope AGENTS.md, custom-agent TOML, prompts, reference
+examples). Maintenance and linking utilities are in `scripts/`, while MCP
+templates and handoff guidance are in `mcp/` and `docs/`. Manual behavioral fixtures live
 under `tests/skills/` and `tests/agents/`.
 
 ## Setup, Lint, and Development Commands

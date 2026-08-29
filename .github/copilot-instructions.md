@@ -23,17 +23,20 @@ tool's real config directory — it is not cloned directly into
 `~/.claude`:
 
 - [scripts/link-claude.ps1](../scripts/link-claude.ps1) creates directory
-  junctions for `agents/`, `hooks/`, `mcp/`, `rules/`, `skills/` under
-  `~/.claude` (Claude Code doesn't read `~/.claude/mcp` itself — that
-  junction gives the template-copy commands in
-  [mcp/README.md](../mcp/README.md) a stable path), and mirrors [claude/CLAUDE.md](../claude/CLAUDE.md) →
-  `~/.claude/CLAUDE.md` plus [settings.json](../settings.json) as
+  junctions at `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
+  `claude/agents`, `claude/hooks`, `claude/rules` and the root `mcp/`
+  and `skills/` — the deployed names are fixed by Claude Code, so the
+  repo side can be rearranged freely (Claude Code doesn't read
+  `~/.claude/mcp` itself — that junction gives the template-copy
+  commands in [mcp/README.md](../mcp/README.md) a stable path). It also
+  mirrors [claude/CLAUDE.md](../claude/CLAUDE.md) →
+  `~/.claude/CLAUDE.md` plus [claude/settings.json](../claude/settings.json) as
   plain-copy files (`settings.json` is compared key-by-key, since
   Claude Code writes runtime keys like the model pin into the live
   copy). Root [CLAUDE.md](../CLAUDE.md) is a different, never-deployed
   file — see Key conventions below. Editing a file inside a junctioned
   directory takes effect immediately; editing `claude/CLAUDE.md` or
-  `settings.json` needs a script re-run to reach the live copy.
+  `claude/settings.json` needs a script re-run to reach the live copy.
 - [scripts/link-copilot.ps1](../scripts/link-copilot.ps1) junctions each
   skill *individually* into `~/.agents/skills`, because that directory
   is shared with other providers' skills (e.g. Copilot for Azure) and
@@ -50,11 +53,14 @@ tool's real config directory — it is not cloned directly into
   path (so moving/renaming the clone self-heals), and refuse to
   overwrite a real directory or drifted mirror file without `-Force`.
 
-This split also defines what's portable vs. tool-specific:
-[skills/](../skills), rule *bodies*, [docs/](../docs), [tests/](../tests),
-and the [mcp/](../mcp) templates are agnostic; `settings.json`, the hook
-event wiring in [hooks/](../hooks), and subagent frontmatter in
-[agents/](../agents) are Claude Code-specific. GitHub Copilot consumes `skills/` (per-skill links into
+The directory layout encodes this: a directory sits at the repo root
+when more than one tool consumes it, and under `<tool>/` when only that
+tool does. [skills/](../skills), rule *bodies*, [docs/](../docs),
+[tests/](../tests), and the [mcp/](../mcp) templates are agnostic;
+everything under [claude/](../claude) is Claude Code-specific —
+`claude/settings.json`, the hook event wiring in
+[claude/hooks/](../claude/hooks), and subagent frontmatter in
+[claude/agents/](../claude/agents). GitHub Copilot consumes `skills/` (per-skill links into
 `~/.agents/skills`) and, for MCP, a workspace `.vscode/mcp.json` — see
 [mcp/README.md](../mcp/README.md). Rules, hooks, and `settings.json`
 are not wired into Copilot.
@@ -71,22 +77,22 @@ are not wired into Copilot.
   `fabric-`, `pbir-`, or `pbid-` namespace prefix. See
   [skills/README.md](../skills/README.md) for the full catalog.
 - **Rules** (`rules/coding-<lang>.md`, plus
-  [fabric-git-serialization.md](../rules/fabric-git-serialization.md))
+  [fabric-git-serialization.md](../claude/rules/fabric-git-serialization.md))
   auto-load by a `paths:` glob when a matching file enters session
   scope — they have no `name` or `description`, only `paths:`. A
   project repo can override any one with its own
   `.claude/rules/<same-name>.md`.
-- **Hooks** (`hooks/*.sh`) fire on events registered in
-  [settings.json](../settings.json):
-  [log-instructions-loaded.sh](../hooks/log-instructions-loaded.sh) on
+- **Hooks** (`claude/hooks/*.sh`) fire on events registered in
+  [claude/settings.json](../claude/settings.json):
+  [log-instructions-loaded.sh](../claude/hooks/log-instructions-loaded.sh) on
   `InstructionsLoaded` (pure observability, appends JSONL to
   `~/.claude/logs/instructions-loaded.log`, queried via
   [scripts/instructions-log](../scripts/instructions-log));
-  [log-skill-invocations.sh](../hooks/log-skill-invocations.sh) on
+  [log-skill-invocations.sh](../claude/hooks/log-skill-invocations.sh) on
   `PostToolUse` matched `Skill` (pure observability, appends JSONL to
   `~/.claude/logs/skills-invoked.log` — skills load through the Skill
   tool, which `InstructionsLoaded` never sees); and
-  [security-reviewer-memory-scope.sh](../hooks/security-reviewer-memory-scope.sh)
+  [security-reviewer-memory-scope.sh](../claude/hooks/security-reviewer-memory-scope.sh)
   on `PreToolUse` matched `Edit|Write` — reads `agent_type` from the
   hook's stdin JSON and, only when it's `security-reviewer`, blocks
   (exit 2) any Edit/Write whose `file_path` falls outside
@@ -94,7 +100,7 @@ are not wired into Copilot.
   hardcoded to `$HOME/.claude/...`; this only resolves correctly
   because the link script junctions this repo there — don't rewrite
   them to be repo-relative.
-- The [security-reviewer](../agents/security-reviewer.md) subagent is
+- The [security-reviewer](../claude/agents/security-reviewer.md) subagent is
   scoped by an explicit tool allowlist (`Read, Grep, Glob, Bash`) plus
   the hook above. It reports findings only, never edits code, and has a
   required memory-hygiene protocol: read `MEMORY.md` before scanning,
@@ -197,7 +203,7 @@ No build step. Lint and validation:
   kept lean (environment notes, pointers to rules/skills) by design.
   The Fabric portal-serialization guidance formerly inline in
   `CLAUDE.md` now lives in its own path-scoped rule,
-  [rules/fabric-git-serialization.md](../rules/fabric-git-serialization.md)
+  [claude/rules/fabric-git-serialization.md](../claude/rules/fabric-git-serialization.md)
   (triggered by `.platform` / `*.{ItemType}` folder globs), describing
   conventions for editing *other* Fabric Git-synced repos, not this
   one — this repo's own [.gitattributes](../.gitattributes) auto-normalizes

@@ -9,7 +9,7 @@ received to draft the artifact in question.
 - [code-review-skill.example.md](code-review-skill.example.md) — brief
   for [skills/code-review/](../../../skills/code-review/SKILL.md).
 - [security-reviewer-agent.example.md](security-reviewer-agent.example.md)
-  — brief for [agents/security-reviewer.md](../../../agents/security-reviewer.md).
+  — brief for [claude/agents/security-reviewer.md](../../../claude/agents/security-reviewer.md).
 
 ## How to use them
 

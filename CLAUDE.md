@@ -11,10 +11,19 @@ instructions and are never deployed. [claude/CLAUDE.md](claude/CLAUDE.md)
 is Claude's user-scope payload; [codex/AGENTS.md](codex/AGENTS.md) is
 the separate Codex user-scope payload.
 
-Layout convention: flat top-level directories are the `~/.claude`
-mirror (with `skills/` additionally shared to Codex and Copilot via
-`~/.agents/skills`); `claude/` and `codex/` hold copy-deployed
-per-tool payloads; `scripts/` is the shared mechanism.
+Layout convention: **top-level directories hold content more than one
+tool consumes** (`skills/`, linked to Claude and shared to Codex and
+Copilot via `~/.agents/skills`; `mcp/`, whose templates cover Claude
+Code and VS Code / Copilot). **A `<tool>/` directory holds that tool's
+payload and nothing else** — `claude/` and `codex/` today, a new one
+per harness added later. `scripts/`, `docs/`, and `tests/` are the
+shared mechanism and supporting material.
+
+Being a `<tool>/` payload says nothing about *how* it deploys: within
+`claude/`, `agents/`, `hooks/`, and `rules/` are junctioned while
+`CLAUDE.md` and `settings.json` are copied. Deployment mechanism is the
+table below; directory placement is only about which tool consumes the
+content.
 
 ## How this repo is structured
 
@@ -23,9 +32,10 @@ lands determines when it goes live:
 
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
-| `agents/`, `hooks/`, `mcp/`, `rules/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `mcp/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
-| `settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
+| `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
 | `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-codex.ps1` or `scripts/link-copilot.ps1`) | immediately |
 | `codex/AGENTS.md` | `$CODEX_HOME/AGENTS.md` | plain copy (`scripts/link-codex.ps1`) | after script run; `-Force` for drift |
 | `codex/agents/*.toml` | `$CODEX_HOME/agents/*.toml` | individual plain copies (`scripts/link-codex.ps1`) | after script run; `-Force` for drift |
@@ -35,6 +45,13 @@ lands determines when it goes live:
 so the template-copy commands in [mcp/README.md](mcp/README.md) resolve
 from a stable path. `codex/mcp/` and `codex/config-examples/` are
 reference-only and never deployed.)
+
+The deployed names on the right are fixed by each tool and never
+change, so repo-side moves are cheap: relocating payload under
+`claude/` only changes a junction *target*, which
+`scripts/link-claude.ps1` repairs on its next run with no `-Force`.
+Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
+they are unaffected by repo layout entirely.
 
 `scripts/link-codex.ps1` deliberately leaves `CODEX_HOME` real,
 non-Git, and Codex-owned; runtime state and machine-local configuration
@@ -56,12 +73,17 @@ deployed anywhere and loads only in sessions inside this repo.
   `.instructions.md` `applyTo:` globs are the direct analog). Client
   repos can override any rule with `.claude/rules/<same-name>.md`.
   Lint with
-  `uv run --with pyyaml scripts/lint-frontmatter.py rules/<name>.md`
+  `uv run --with pyyaml scripts/lint-frontmatter.py claude/rules/<name>.md`
   (pre-commit runs it too). A wrong glob has no error path — the rule
   just never loads — so the linter rejects the mistakes that silently
   narrow a pattern: a backslash separator, a leading `/`, and a bare
   `*.ext` with no `/` (which matches only repo-root files; `**/*.ext`
   matches those *and* nested ones).
+- **Adding a harness** — create `<tool>/` and put every artifact only
+  that tool reads inside it. Promote something to the repo root only
+  when a second tool actually consumes it. Wire the deployment in a
+  `scripts/link-<tool>.ps1` that, like the others, leaves the tool's
+  home directory real and tool-owned.
 - **`claude/CLAUDE.md`** — loaded into *every* session on this
   machine. Keep it lean: machine environment and pointers only. If
   guidance has a narrower trigger (a file type, a product area),
@@ -76,5 +98,5 @@ deployed anywhere and loads only in sessions inside this repo.
 This repo auto-normalizes text and pins Windows scripts to CRLF and
 shell scripts to LF in `.gitattributes`. The Fabric
 portal-serialization guidance in
-`rules/fabric-git-serialization.md` applies to Fabric Git-synced
+`claude/rules/fabric-git-serialization.md` applies to Fabric Git-synced
 repos, **not** to this one.

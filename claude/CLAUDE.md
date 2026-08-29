@@ -34,9 +34,13 @@ heredoc and run that file instead.
 
 `~/.claude/agents`, `hooks`, `mcp`, `rules`, and `skills` are directory
 junctions into `C:\Repos\Personal\agent-config` — a file under either
-path is the same file, and edits are committed from that repo.
-`~/.claude/CLAUDE.md` and `settings.json` are plain copies: edit the
-repo versions and re-run `scripts/link-claude.ps1 -Force`.
+path is the same file, and edits are committed from that repo. The
+repo side is **not** flat: `agents`, `hooks`, and `rules` live under
+`agent-config/claude/`, while `mcp` and `skills` sit at the repo root
+(root = consumed by more than one tool; `<tool>/` = that tool only).
+`~/.claude/CLAUDE.md` and `settings.json` are plain copies of
+`claude/CLAUDE.md` and `claude/settings.json`: edit the repo versions
+and re-run `scripts/link-claude.ps1 -Force`.
 
 ## Coding conventions
 
