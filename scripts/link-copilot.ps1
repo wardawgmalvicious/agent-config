@@ -16,9 +16,10 @@
        Unlike ~/.claude, the whole directory cannot be junctioned:
        ~/.agents/skills is shared with skills from other providers (e.g.
        Copilot for Azure), so this repo's skills are linked individually
-       alongside them. This path also serves Codex, which is why it stays
-       even though Copilot would additionally see the skills through
-       ~/.claude/skills.
+       alongside them. This is the path VS Code actually reads by default:
+       chat.agentSkillsLocations enables ~/.agents/skills and leaves
+       ~/.claude/skills off, so the junctions here are load-bearing rather
+       than a duplicate of what link-claude.ps1 already provides.
 
     2. Subagents -> ~/.copilot/agents, as plain file copies. VS Code reads
        the Claude sub-agent format (name / description / tools frontmatter,
@@ -29,9 +30,9 @@
        and hard links break when git replaces a file by rename.
 
     ~/.copilot is Copilot's own runtime home (session databases, config,
-    logs, installed plugins), so it is treated like CODEX_HOME: only the
-    named leaf files are managed, and the script refuses to operate when
-    ~/.copilot is itself a reparse point or a Git working-tree root.
+    logs, installed plugins), so only the named leaf files are managed and
+    the script refuses to operate when ~/.copilot is itself a reparse point
+    or a Git working-tree root.
 
     Junctions already pointing at the right target are left alone;
     junctions pointing elsewhere (e.g. after the repo folder moved or
@@ -175,8 +176,8 @@ else {
 if ($repoAgents.Count -gt 0) {
     # ~/.copilot holds Copilot's own runtime state (session databases,
     # config, logs). Refuse to touch it when it is a link or a Git working
-    # tree — the same guard link-codex.ps1 applies to CODEX_HOME — so this
-    # script can never redirect or commit a tool's runtime directory.
+    # tree, so this script can never redirect or commit a tool's runtime
+    # directory.
     $copilotExisting = Get-Item $CopilotDir -Force -ErrorAction SilentlyContinue
     if ($copilotExisting -and
         ($copilotExisting.Attributes -band [IO.FileAttributes]::ReparsePoint)) {

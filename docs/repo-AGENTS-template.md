@@ -1,4 +1,4 @@
-# Repository Codex Instructions
+# Repository Agent Instructions
 
 Use this as a starting point for a project-level `AGENTS.md`.
 

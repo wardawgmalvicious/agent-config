@@ -32,14 +32,6 @@ Helper scripts for repo maintenance and observability.
   `claude/` (stale junctions are re-pointed automatically, no `-Force`).
   Never overwrites a drifted mirror copy or deletes a real directory
   without `-Force`; exits 1 when anything needs attention.
-- [link-codex.ps1](link-codex.ps1) — wire durable Codex content without
-  linking `CODEX_HOME` itself. Creates one junction per repo skill under
-  shared `~/.agents/skills`; when present, copies `codex/AGENTS.md` to
-  `CODEX_HOME/AGENTS.md`, `codex/agents/*.toml` to `CODEX_HOME/agents/`,
-  and `codex/prompts/*.md` to `CODEX_HOME/prompts/`. Refuses a linked
-  or Git-backed Codex home and never manages `config.toml`,
-  credentials, sessions, caches, plugins, or `CODEX_HOME/skills`. Home-only content is preserved; `-Force`
-  replaces only named collisions or drifted managed copies.
 - [link-copilot.ps1](link-copilot.ps1) — link this repo's skills into
   `~/.agents/skills` and copy its subagents into `~/.copilot/agents`
   for GitHub Copilot (the VS Code agents surface). Only these two need
