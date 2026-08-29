@@ -6,16 +6,17 @@
     Creates directory junctions (no elevation or Developer Mode needed) for
     agents/, hooks/, mcp/, rules/, and skills/ under ~/.claude, pointing
     back into this repo. The repo-side sources are NOT all at the repo
-    root: Claude-only payload lives under claude/ (claude/agents,
-    claude/hooks, claude/rules), while skills/ and mcp/ stay at the root
-    because more than one tool consumes them. See $LinkDirs for the
-    mapping. (Claude Code itself doesn't read ~/.claude/mcp; the junction
-    exists so the template-copy commands documented in mcp/README.md
-    resolve from a stable path.) Junctions already pointing at the right
-    target are left alone; junctions pointing elsewhere (e.g. after the
-    repo folder moved, was renamed, or after payload moved under claude/)
-    are replaced. A real directory occupying a link path is never removed
-    unless -Force is passed.
+    root: content written in Claude Code's own formats lives under
+    claude/ (claude/agents, claude/hooks, claude/rules, claude/mcp),
+    while skills/ stays at the root in the tool-neutral Agent Skills
+    format. See $LinkDirs for the mapping. (Claude Code itself doesn't
+    read ~/.claude/mcp; the junction exists so the template-copy commands
+    documented in claude/mcp/README.md resolve from a stable path.)
+    Junctions already pointing at the right target are left alone;
+    junctions pointing elsewhere (e.g. after the repo folder moved, was
+    renamed, or after payload moved under claude/) are replaced. A real
+    directory occupying a link path is never removed unless -Force is
+    passed.
 
     CLAUDE.md and settings.json cannot be junctioned (file symlinks require
     elevation or Developer Mode, and hard links silently break when git
@@ -61,16 +62,16 @@ $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 # Repo-relative source -> directory name under $ClaudeDir. The source and
-# the destination differ because the repo groups Claude-only payload under
-# claude/, while skills/ and mcp/ stay at the repo root — more than one
-# tool consumes those. The destination names are what Claude Code expects
+# the destination differ because the repo groups Claude-format payload
+# under claude/, while skills/ stays at the repo root in the tool-neutral
+# Agent Skills format. The destination names are what Claude Code expects
 # and never change, so hook commands in settings.json ($HOME/.claude/...)
 # stay valid no matter how the repo side is arranged.
 $LinkDirs = @(
     @{ Source = 'claude/agents'; Dest = 'agents' }
     @{ Source = 'claude/hooks';  Dest = 'hooks' }
     @{ Source = 'claude/rules';  Dest = 'rules' }
-    @{ Source = 'mcp';           Dest = 'mcp' }
+    @{ Source = 'claude/mcp';    Dest = 'mcp' }
     @{ Source = 'skills';        Dest = 'skills' }
 )
 # Repo-relative source -> filename under $ClaudeDir. Root CLAUDE.md is
