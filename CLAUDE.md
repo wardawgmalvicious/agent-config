@@ -54,7 +54,6 @@ lands determines when it goes live:
 | `skills/` | `~/.claude/skills` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
-| `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-copilot.ps1`) | immediately |
 
 (Claude Code doesn't read `~/.claude/mcp` itself — that junction exists
 so the template-copy commands in
@@ -68,15 +67,31 @@ change, so repo-side moves are cheap: relocating payload under
 Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
 they are unaffected by repo layout entirely.
 
-GitHub Copilot needs no payload of its own. The VS Code agent surface
-reads `~/.claude/rules`, `~/.claude/CLAUDE.md`, `~/.claude/agents`, and
-`~/.claude/settings.json` (Claude's hook format) directly — which of
-them are live is a `chat.*Locations` settings decision, not a file
-placement one. `scripts/link-copilot.ps1` therefore handles only
-skills, which cannot be reached that way: `chat.agentSkillsLocations`
-enables `~/.agents/skills` and leaves `~/.claude/skills` off, and that
-directory is shared with other providers so it cannot be junctioned
-wholesale.
+GitHub Copilot needs no payload of its own, and no linker either. The
+VS Code agent surface treats Claude's user-scope paths as built-in
+locations and reads `~/.claude/rules`, `~/.claude/agents`,
+`~/.claude/skills`, and `~/.claude/settings.json` (Claude's hook
+format) directly, plus `~/.claude/CLAUDE.md` as always-on
+instructions. Which of them are live is purely a settings decision —
+`chat.instructionsFilesLocations`, `chat.agentFilesLocations`,
+`chat.agentSkillsLocations`, `chat.hookFilesLocations`, and
+`chat.useClaudeMdFile` — so the junctions `scripts/link-claude.ps1`
+already creates serve Copilot as-is, with nothing copied or
+duplicated.
+
+Every user-scope (`~/`) location defaults to **off**; workspace-scope
+ones default to on. Each one Copilot should see needs an explicit
+`true`. Two traps are worth remembering. `chat.instructionsFilesLocations`
+takes **folders only** — pointing it at `~/.claude/CLAUDE.md` is
+silently inert, and the file loads anyway via `chat.useClaudeMdFile`,
+which makes the dead setting look like it worked. And a skills route
+through `~/.agents/skills` is no longer needed: `~/.claude/skills` has
+been a first-class `chat.agentSkillsLocations` location since VS Code
+1.135, so a `scripts/link-copilot.ps1` that junctioned skills into the
+shared `~/.agents/skills` one-by-one was deleted rather than kept
+working. That directory is shared with other providers (Copilot for
+Azure ships ~28 skills there), so disabling it to avoid duplicates
+turns theirs off too.
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
 deployed anywhere and loads only in sessions inside this repo.

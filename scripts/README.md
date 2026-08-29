@@ -32,18 +32,6 @@ Helper scripts for repo maintenance and observability.
   `claude/` (stale junctions are re-pointed automatically, no `-Force`).
   Never overwrites a drifted mirror copy or deletes a real directory
   without `-Force`; exits 1 when anything needs attention.
-- [link-copilot.ps1](link-copilot.ps1) — link this repo's skills into
-  `~/.agents/skills` for GitHub Copilot (the VS Code agents surface).
-  Skills are the only artifact needing a script: rules, hooks,
-  subagents, and user-scope instructions reach Copilot through the
-  `~/.claude` paths `link-claude.ps1` populates, once enabled in the
-  `chat.*Locations` settings.
-  One junction per skill, because `~/.agents/skills` is shared with
-  other providers' skills (e.g. Copilot for Azure) and can't be
-  junctioned wholesale. Re-points stale junctions after a repo
-  move/rename, prunes broken junctions left by deleted or renamed
-  skills, and never touches other providers' directories. Same
-  `-Force` / exit-code semantics as `link-claude.ps1`.
 - [lint-frontmatter.py](lint-frontmatter.py) — validate `SKILL.md` and
   `rules/*.md` frontmatter against repo conventions. Kind is inferred from
   the path: files under `rules/` need `paths:` and are exempt from
@@ -52,6 +40,16 @@ Helper scripts for repo maintenance and observability.
   glob checks. Used by the pre-commit `Validate SKILL.md frontmatter` and
   `Validate rules frontmatter` hooks; can also run manually as
   `python scripts/lint-frontmatter.py <path>...`.
+
+There is deliberately **no `link-copilot.ps1`**. It existed to junction
+skills one-by-one into the shared `~/.agents/skills`, back when
+`chat.agentSkillsLocations` had no entry for `~/.claude/skills`. VS Code
+1.135 made `~/.claude/skills` a first-class location, so every artifact
+Copilot needs now reaches it through the `~/.claude` paths
+`link-claude.ps1` already creates — rules, hooks, subagents, skills, and
+user-scope instructions alike. Enabling them is a `chat.*Locations`
+settings decision; see the Tool support section of the
+[root README](../README.md#tool-support).
 
 ## Pre-commit
 

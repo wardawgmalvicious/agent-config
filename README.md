@@ -72,6 +72,7 @@ rearranging the root.
 - [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and
   behavioral (code-review, drift-audit). Consumed by Claude Code and
   GitHub Copilot. See [skills/README.md](skills/README.md).
+
 ### [claude/](claude/) — Claude Code payload
 
 - [claude/agents/](claude/agents/) — 1 subagent
@@ -151,25 +152,33 @@ stay separable:
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads
   `SKILL.md` can consume [skills/](skills/) directly.
-- **GitHub Copilot** — consumes most of this repo with no extra
-  wiring. The VS Code agent surface reads Claude's user-scope paths as
-  harness-agnostic defaults: `~/.claude/rules` for instructions,
-  `~/.claude/CLAUDE.md` for always-on instructions,
-  `~/.claude/settings.json` for hooks (it parses Claude Code's hook
-  format), and `~/.claude/skills` for personal skills — all of which
-  `link-claude.ps1` already populates. That is why there is no
-  `copilot/` payload directory: Copilot is a second consumer of the
-  Claude-format payload, not a separate one. Which paths are live is a
-  settings decision — enable them under `chat.instructionsFilesLocations`,
-  `chat.hookFilesLocations`, and `chat.agentFilesLocations`
-  (`"~/.claude/agents": true` is what makes subagents work; a copy into
-  `~/.copilot/agents` is *not* needed and only invites drift).
-  [scripts/link-copilot.ps1](scripts/link-copilot.ps1) covers the one
-  artifact that cannot be handled by settings: skills, into the shared
-  `~/.agents/skills`, because `chat.agentSkillsLocations` leaves
-  `~/.claude/skills` off and that directory holds other providers'
-  skills. MCP is a workspace `.vscode/mcp.json` (see
-  [.vscode/README.md](.vscode/README.md)).
+- **GitHub Copilot** — consumes this repo with **no extra wiring and
+  no linker of its own**. The VS Code agent surface treats Claude's
+  user-scope paths as built-in locations: `~/.claude/rules` for
+  instructions, `~/.claude/agents` for subagents, `~/.claude/skills`
+  for personal skills, `~/.claude/settings.json` for hooks (it parses
+  Claude Code's hook format), and `~/.claude/CLAUDE.md` for always-on
+  instructions — all of which `link-claude.ps1` already populates.
+  That is why there is no `copilot/` payload directory: Copilot is a
+  second consumer of the Claude-format payload, not a separate one.
+  Turning them on is purely a settings decision (VS Code 1.135+):
+
+    ```jsonc
+    // Every ~/ location defaults to OFF. Workspace-scope ones default to on.
+    "chat.instructionsFilesLocations": { "~/.claude/rules": true },
+    "chat.agentFilesLocations":        { "~/.claude/agents": true },
+    "chat.agentSkillsLocations":       { "~/.claude/skills": true },
+    "chat.hookFilesLocations":         { "~/.claude/settings.json": true },
+    "chat.useClaudeMdFile": true
+    ```
+
+    Two traps. `chat.instructionsFilesLocations` accepts **folders
+    only** — an entry for `~/.claude/CLAUDE.md` is silently ignored,
+    and because `chat.useClaudeMdFile` loads that file anyway, the dead
+    setting looks like it worked. And no copy into `~/.copilot/agents`
+    or `~/.agents/skills` is needed; both only invite drift. MCP is a
+    workspace `.vscode/mcp.json` (see
+    [.vscode/README.md](.vscode/README.md)).
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
@@ -204,16 +213,10 @@ content is written for and validated with Claude Code first.
     ./scripts/link-claude.ps1
     ```
 
-3. Link skills into `~/.agents/skills` for GitHub Copilot, one
-   junction per skill alongside any skills other providers have
-   installed there. Skills are the only artifact needing this;
-   everything else reaches Copilot through the `~/.claude` paths step 2
-   created, once enabled in VS Code settings (see
-   [Tool support](#tool-support)):
-
-    ```powershell
-    ./scripts/link-copilot.ps1
-    ```
+3. Using GitHub Copilot too? There is nothing to link — enable the
+   `~/.claude` paths step 2 created in your VS Code settings. Every
+   one of them defaults to off; see [Tool support](#tool-support) for
+   the block to paste.
 
 4. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
    it once across all files). **Requires
