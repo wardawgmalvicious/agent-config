@@ -57,6 +57,35 @@ into this source. Don't search for one.
 - `drill.strip`: `#post-NNNN-_TocNNNN`, any `#post-...`
 - `artifacts`: skills, rules, `CLAUDE.md`, MCP templates
 
+### `vscode-agent` — VS Code agent customization surface
+
+- `repo`: `microsoft/vscode-docs`
+- `branch`: `main`
+- `path`: `docs/agent-customization/`
+- `shape`: `prose`
+- `sections`: `custom-instructions.md`, `agent-skills.md`, `custom-agents.md`,
+  `hooks.md` — the four pages describing where VS Code looks for each
+  artifact class
+- `drill.host`: `code.visualstudio.com`
+- `drill.via`: `webfetch`
+- `artifacts`: `README.md`, root `CLAUDE.md`, `scripts/README.md`,
+  `scripts/link-claude.ps1`
+
+Governs how this repo's `~/.claude` payload reaches GitHub Copilot, so its
+findings land on the repo's own deployment docs rather than on skills and
+rules. Claims about this surface are version-pinned and go stale silently:
+`~/.claude/skills` became a first-class `chat.agentSkillsLocations` entry
+in VS Code 1.135, which retired a whole linker script whose docstring had
+been quietly wrong for months. VS Code ships monthly — faster than the
+Fabric cadence — and moves these pages (they were under
+`docs/copilot/customization/` until the 2026 reorg), so a 404 on the path
+means find the new one, not that the source is gone.
+
+Two schema stretches, both deliberate. `path` is a **directory**, not a
+single file, because the four pages change independently and the useful
+unit is "did any of them move." And `artifacts` names repo files instead
+of an artifact class, because this source cannot affect a skill or a rule.
+
 ## Shape contracts
 
 What "an entry" means for the diff, per shape.
@@ -75,11 +104,12 @@ What "an entry" means for the diff, per shape.
   the version string is the entry's provenance instead of a section
   heading.
 
-**Only `table` has been exercised.** Both registered sources are
-table-driven. `prose` and `changelog` are specified so the first non-table
-source is a registry entry plus a validated run, not a skill rewrite — but
-treat the first run against either as unproven and check the extracted
-entries against the live page by hand before trusting the report.
+**Only `table` has been exercised.** The two What's New sources are
+table-driven; `vscode-agent` is the first `prose` entry and has not been
+run yet. `prose` and `changelog` are specified so a non-table source is a
+registry entry plus a validated run, not a skill rewrite — but treat the
+first run against either as unproven and check the extracted entries
+against the live page by hand before trusting the report.
 
 ## Adding a source
 
