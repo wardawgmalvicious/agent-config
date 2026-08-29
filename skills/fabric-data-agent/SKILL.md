@@ -1,6 +1,6 @@
 ---
 name: fabric-data-agent
-description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A built on Azure OpenAI Assistant APIs over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / Microsoft Graph (≤5 sources per agent). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, the governance precedence chain (organizational → role-based → developer → user intent), best practices (right-layer scoping, iterate on real questions, version control), and key limitations (read-only, structured data only, English only, 25-row/25-column response cap, no example queries on semantic model sources). The Creator Agent ('Build agent with AI', SQL/Eventhouse only), M365 Copilot Agent Store + Copilot-in-Power-BI, Python SDK, Copilot Studio, Azure AI Foundry / Agent Service, and service-principal auth (not Foundry/Copilot or KQL) all remain in preview."
+description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / MS Graph (≤5 sources per agent), consumed in-product or via the agent's MCP endpoint (Assistants API and Copilot-in-Power-BI paths retired 2026-08-26). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, governance precedence (organizational → role-based → developer → user), best practices (right-layer scoping, iteration, version control), and key limitations (read-only, structured data only, English only, 25-row/25-col response cap, no example queries on semantic models). The Creator Agent ('Build agent with AI', SQL/Eventhouse only), MCP endpoint, M365 Copilot Agent Store, Python SDK, Copilot Studio, Azure AI Foundry, and service-principal auth (not Foundry/Copilot or KQL) remain in preview."
 paths:
   - "**/*.DataAgent/**"
 ---
@@ -13,9 +13,14 @@ A practical, reusable guide for configuring a Fabric Data Agent so it returns ac
 
 ## What a Data Agent is
 
-A Fabric Data Agent is a conversational Q&A interface built on Azure OpenAI Assistant APIs. It accepts natural-language questions, routes them to the right data source, generates a query (SQL / DAX / KQL / Microsoft Graph), validates it, executes it read-only, and returns a human-readable answer.
+A Fabric Data Agent is a conversational Q&A interface. It accepts natural-language questions, routes them to the right data source, generates a query (SQL / DAX / KQL / Microsoft Graph), validates it, executes it read-only, and returns a human-readable answer.
 
-**Status — Generally Available as of March 2026.** The core agent (create / configure / publish / share), built-in diagnostics, and end-to-end lifecycle management via Git integration + deployment pipelines are all GA. Treat as a production surface. The following companion features are still in **preview** at GA and should be gated accordingly: the **Creator Agent** ("Build agent with AI") for AI-assisted authoring of the four configuration layers, consumption from **Microsoft 365 Copilot** (Agent Store) and **Copilot in Power BI**, the **Fabric Data Agent Python SDK** (including programmatic `evaluate_few_shots` and ground-truth evaluation), **Microsoft Copilot Studio integration**, **Azure AI Foundry / Azure AI Agent Service integration**, and the **external Python client SDK** (interactive-browser auth pattern for embedding in custom apps).
+**Status — Generally Available as of March 2026.** The core agent (create / configure / publish / share), built-in diagnostics, and end-to-end lifecycle management via Git integration + deployment pipelines are all GA. Treat as a production surface. The following companion features are still in **preview** at GA and should be gated accordingly: the **Creator Agent** ("Build agent with AI") for AI-assisted authoring of the four configuration layers, the **MCP server endpoint** (the programmatic query surface — see below), consumption from **Microsoft 365 Copilot** (Agent Store), the **Fabric Data Agent Python SDK** (including programmatic `evaluate_few_shots` and ground-truth evaluation), **Microsoft Copilot Studio integration**, **Azure AI Foundry / Azure AI Agent Service integration**, and the **external Python client SDK** (interactive-browser auth pattern for embedding in custom apps).
+
+**Retired 2026-08-26** — two integration paths no longer exist. Do not build against either:
+
+- **Azure OpenAI Assistants API.** Data agents were historically described as "built on Azure OpenAI Assistant APIs", and the Python SDK queried them through the OpenAI Assistants API. Direct Assistants API integrations had to migrate to the **data agent MCP endpoint** before 2026-08-26. Within the SDK, the equivalent move is from the Fabric OpenAI client to the Fabric OpenAI **Responses** client (migration path opened 2026-08-11). Only *querying* code was affected — create / configure / publish are unchanged.
+- **Copilot in Power BI.** The Fabric data agent integration in Copilot in Power BI retired on the same date; move those workflows to a supported surface (in-product chat, M365 Copilot, Copilot Studio, Foundry, or the MCP endpoint).
 
 Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power BI Semantic Model, Fabric SQL Database, Mirrored Database, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**.
 
@@ -27,7 +32,8 @@ Read-only by design — it never generates create/update/delete queries.
 
 How a caller authenticates depends on the consumption surface:
 
-- **In-product chat (GA)** — runs under your signed-in Microsoft Entra **user** identity and your workspace/data permissions. No token or key to supply; Fabric uses a Microsoft-managed Azure OpenAI Assistant and handles auth for you.
+- **In-product chat (GA)** — runs under your signed-in Microsoft Entra **user** identity and your workspace/data permissions. No token or key to supply; Fabric brokers the model call on a Microsoft-managed service and handles auth for you.
+- **MCP server endpoint (preview)** — every request carries an Entra bearer token in the `Authorization` header, requested for the **`https://api.fabric.microsoft.com/.default`** scope. The token may represent a **user** or a **service principal**; it needs permission on the workspace and the data agent. Note this is a *different* scope from the SPN query endpoint below — match the scope to the endpoint you are calling. The MCP server does **not** support dynamic client registration, so the client acquires the token through its own auth flow.
 - **Foundry / Copilot Studio integration (preview)** — identity passthrough (On-Behalf-Of): the integration runs under the **end user's** identity. Service principal auth is **not** supported on these surfaces — each end user needs access to the agent and its underlying data sources.
 - **Service principal (SPN) auth — preview** — call the *published data agent query endpoint* directly from automation, background services, custom apps, and CI/CD without a signed-in user. The SPN authenticates to Entra via the **client-credentials flow**, requests a token for the Fabric resource (`https://analysis.windows.net/powerbi/api/.default`), and passes it as a bearer token. This endpoint is for asking natural-language questions only — **not** for managing or configuring the agent.
 
@@ -137,6 +143,8 @@ For a semantic model data source, most of this content already lives in the mode
 
 ### 3. Data source descriptions
 
+**Data source routing is GA as of August 2026** — the agent selects the most relevant lakehouse / warehouse / semantic model / KQL database per question, using schema metadata, source descriptions, example queries, and routing rules. Everything you write in this layer feeds that decision.
+
 A short summary the agent uses to **decide which source to route a question to**. One or two sentences focused on:
 
 - What's in the source
@@ -225,11 +233,18 @@ Recommended loop: **Explore** (schema exploration) → **Learn** (query-history 
 
 ## Consumption surfaces
 
-Beyond in-product chat (GA), a published data agent can be consumed from several surfaces — **all in preview** at the time of writing:
+Beyond in-product chat (GA), a published data agent can be consumed from several surfaces — every surviving one is **preview**; one retired on 2026-08-26:
 
 - **Microsoft 365 Copilot (Agent Store) — preview.** At publish time, choose **Publish to Agent Store** to make the agent available in M365 Copilot. Users chat with it directly or `@`-mention it from the main Copilot chat in Teams, share it via link (1:1, group, or channel), and use the **code interpreter** to visualize results. Requires a paid **F2+** (or P1+ with Fabric enabled) capacity, an **M365 Copilot license** (or Office 365 commercial subscription) plus per-user licenses, the **cross-geo processing and cross-geo storing for AI** tenant settings enabled, and the agent + Copilot on the **same tenant / same account**. The publish **description** becomes the `description_for_model` that steers the M365 orchestrator — you can instruct it to return the agent's output as-is, but the orchestrator still reasons over the grounding data, so some rephrasing is inevitable. RLS/CLS and underlying-source access are fully enforced per the calling user. **Compliance note:** responses may leave Fabric's compliance boundary / geographic region and be processed or stored under M365's data-handling policies.
-- **Copilot in Power BI — preview.** Add the agent via **Add items for better results → Data agents**, or let Copilot search rank it alongside semantic models and reports. RLS/CLS enforced.
-- **Copilot Studio / Azure AI Foundry (Agent Service) — preview.** Identity passthrough (On-Behalf-Of); see the authentication section above.
+- **MCP server endpoint — preview.** The programmatic query surface, and the replacement for the retired Assistants API path. A published agent exposes **exactly one MCP tool**: send a question, get a grounded answer. Endpoint (streamable HTTP):
+
+  ```http
+  https://api.fabric.microsoft.com/v1/mcp/workspaces/{WorkspaceId}/dataagents/{DataAgentId}/agent
+  ```
+
+  Copy it from **Settings → Model Context Protocol** on the published agent (that tab also gives the tool name, tool description, and a downloadable `mcp.json`), or build it from the two IDs. **It only works after publish** — an unpublished agent returns an error even with a correct URL. Any MCP client works provided it speaks MCP over streamable HTTP and attaches a Fabric bearer token; a plain REST call that skips the `initialize` → `tools/list` → `tools/call` flow will not. Don't hard-code the tool name or its argument — discover them from `tools/list` and the tool's input schema. The **publish description becomes the tool description** the server advertises, so it is what an orchestrator reads to decide whether to call the agent: write it for that audience. Same compliance caveat as M365 Copilot — responses may leave Fabric's compliance boundary and be handled under the MCP client's policies.
+- **Copilot Studio / Azure AI Foundry (Agent Service) — preview.** Identity passthrough (On-Behalf-Of); see the authentication section above. Foundry now connects through MCP.
+- ~~**Copilot in Power BI**~~ — **retired 2026-08-26.** Was: add the agent via **Add items for better results → Data agents**, or let Copilot search rank it alongside semantic models and reports. If you have an existing wiring here, it is gone; move it to one of the surfaces above. (The Learn page still stands and still reads as preview — the retirement is announced through the Fabric What's New / Fabric Updates blog, so trust the date, not the page.)
 
 ---
 
@@ -314,9 +329,11 @@ See [assets/example-retail-agent.md](assets/example-retail-agent.md) for a compl
 - Microsoft Learn: [Use service principal authentication with Fabric data agent (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-service-principal)
 - Microsoft Learn: [Creator agent for data agent (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-creator-agent-overview)
 - Microsoft Learn: [Consume Fabric data agent in Microsoft 365 Copilot (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-microsoft-365-copilot)
-- Microsoft Learn: [Consume a Fabric data agent from Copilot in Power BI (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-copilot-powerbi)
+- Microsoft Learn: [Data agent as a Model Context Protocol server (preview)](https://learn.microsoft.com/fabric/data-science/data-agent-mcp-server)
+- Microsoft Learn: [Fabric data agent Python SDK (preview)](https://learn.microsoft.com/fabric/data-science/fabric-data-agent-sdk) — management plane; querying moved to the MCP endpoint
+- Microsoft Learn: [Consume a Fabric data agent from Copilot in Power BI](https://learn.microsoft.com/fabric/data-science/data-agent-copilot-powerbi) — **integration retired 2026-08-26**; page kept for reference only
 - Comprehensive MS Learn link bundle (create / consume / Foundry / governance): [references/REFERENCE.md](references/REFERENCE.md)
 
 ---
 
-Last updated: 2026-07-01
+Last updated: 2026-08-29
