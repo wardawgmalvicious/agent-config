@@ -11,7 +11,7 @@ context: inline
 
 Turn a completed `/drift-audit` report into files on disk: the report itself, plus one brief per recommended action, each self-contained enough for a later session to pick up cold.
 
-`/drift-audit` is read-only by contract and writes nothing — its findings live only in the conversation that produced them. This skill is the write half of that pair, split deliberately so the turn doing the analysis has no write capability and the turn doing the writing has no analysis pressure.
+`/drift-audit` is read-only by contract and writes nothing — its findings live only in the conversation that produced them. This skill is the write half of that pair, split deliberately so the turn doing the analysis has no write capability and the turn doing the writing has no analysis pressure. Executing what gets written is a third turn again, `/drift-update`, and belongs to a later session.
 
 **Transcribe decisions already made; do not re-open them.** If a finding looks wrong while writing it up, say so in chat and leave the brief faithful to the report.
 
@@ -100,6 +100,6 @@ docs/drift-audit/2026-08-29/vscode-agent/
 
 Then the deliberate omissions from step 6. Then stop.
 
-Do **not** start the work the briefs describe. That is the next session's task, and doing it here re-merges the two halves the split separated.
+Do **not** start the work the briefs describe. That is `/drift-update`'s job — preferably from a fresh session, which is what proves the briefs are readable cold. Doing it here re-merges the two halves the split separated.
 
 Hand off to `/commit` only if something **tracked** changed. `docs/drift-audit/` is gitignored, so a normal run leaves the tree clean and nothing to commit — say so rather than invoking `/commit` against an empty diff. A run worth keeping is copied into `docs/handoff-briefs/examples/` as a tracked example; that copy is a separate, explicit request.
