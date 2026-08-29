@@ -26,10 +26,10 @@ fixtures live under `tests/skills/` and `tests/agents/`.
 - `uv run --with pyyaml scripts/lint-frontmatter.py skills/commit/SKILL.md`
   — lint one file directly.
 - `./scripts/link-claude.ps1` and `./scripts/link-copilot.ps1` — verify
-  tool-specific wiring. The Copilot linker keeps `~/.copilot` real and
-  manages only shared skill junctions plus copied subagents; everything
-  else reaches Copilot through the `~/.claude` paths the Claude linker
-  creates.
+  tool-specific wiring. The Copilot linker manages only the shared skill
+  junctions; everything else reaches Copilot through the `~/.claude`
+  paths the Claude linker creates, enabled via VS Code's
+  `chat.*Locations` settings.
 
 ## Coding Style & Naming Conventions
 

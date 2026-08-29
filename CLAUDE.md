@@ -37,7 +37,6 @@ lands determines when it goes live:
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
 | `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-copilot.ps1`) | immediately |
-| `claude/agents/*.md` | `~/.copilot/agents/*.md` | individual plain copies (`scripts/link-copilot.ps1`) | after script run; `-Force` for drift |
 
 (Claude Code doesn't read `~/.claude/mcp` itself — that junction exists
 so the template-copy commands in [mcp/README.md](mcp/README.md) resolve
@@ -50,10 +49,15 @@ change, so repo-side moves are cheap: relocating payload under
 Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
 they are unaffected by repo layout entirely.
 
-`scripts/link-copilot.ps1` deliberately leaves `~/.copilot` real,
-non-Git, and Copilot-owned, managing only the named agent files;
-runtime state and machine-local configuration never flow into this
-repository.
+GitHub Copilot needs no payload of its own. The VS Code agent surface
+reads `~/.claude/rules`, `~/.claude/CLAUDE.md`, `~/.claude/agents`, and
+`~/.claude/settings.json` (Claude's hook format) directly — which of
+them are live is a `chat.*Locations` settings decision, not a file
+placement one. `scripts/link-copilot.ps1` therefore handles only
+skills, which cannot be reached that way: `chat.agentSkillsLocations`
+enables `~/.agents/skills` and leaves `~/.claude/skills` off, and that
+directory is shared with other providers so it cannot be junctioned
+wholesale.
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
 deployed anywhere and loads only in sessions inside this repo.

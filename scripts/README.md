@@ -33,13 +33,11 @@ Helper scripts for repo maintenance and observability.
   Never overwrites a drifted mirror copy or deletes a real directory
   without `-Force`; exits 1 when anything needs attention.
 - [link-copilot.ps1](link-copilot.ps1) — link this repo's skills into
-  `~/.agents/skills` and copy its subagents into `~/.copilot/agents`
-  for GitHub Copilot (the VS Code agents surface). Only these two need
-  Copilot-specific placement; rules, hooks, and user-scope instructions
-  reach Copilot through the `~/.claude` paths `link-claude.ps1` already
-  populates. `~/.copilot` is Copilot's runtime home, so only the named
-  agent files are managed and the script refuses a linked or Git-backed
-  Copilot home.
+  `~/.agents/skills` for GitHub Copilot (the VS Code agents surface).
+  Skills are the only artifact needing a script: rules, hooks,
+  subagents, and user-scope instructions reach Copilot through the
+  `~/.claude` paths `link-claude.ps1` populates, once enabled in the
+  `chat.*Locations` settings.
   One junction per skill, because `~/.agents/skills` is shared with
   other providers' skills (e.g. Copilot for Azure) and can't be
   junctioned wholesale. Re-points stale junctions after a repo
