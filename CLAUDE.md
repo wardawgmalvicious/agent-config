@@ -6,9 +6,9 @@ settings) — see [README.md](README.md) for the full picture. It's
 written to be cherry-picked by any agentic tool, not only the ones the
 user personally runs day to day (Claude Code and GitHub Copilot).
 
-Root `CLAUDE.md` and root `AGENTS.md` are independent project-scope
-instructions and are never deployed. [claude/CLAUDE.md](claude/CLAUDE.md)
-is Claude's user-scope payload.
+Root `CLAUDE.md` is project-scope instruction and is never deployed.
+[claude/CLAUDE.md](claude/CLAUDE.md) is Claude's user-scope payload.
+They share a name and nothing else — neither is a mirror of the other.
 
 Layout convention: **`<tool>/` names the payload's *format*, not its
 only consumer.** `claude/` holds everything written in Claude Code's
@@ -99,8 +99,10 @@ deployed anywhere and loads only in sessions inside this repo.
 ## How the pieces trigger
 
 Absorbed from a former `.github/copilot-instructions.md`, which
-duplicated this file and `AGENTS.md` and was deleted rather than kept
-in sync a third time.
+duplicated this file and a root `AGENTS.md` and was deleted rather than
+kept in sync a third time. `AGENTS.md` later went the same way — three
+project-scope instruction files, each drifting against the others, is
+the recurring failure mode here. This file is the only one now.
 
 - **Skills** (`skills/<name>/SKILL.md`) trigger three ways:
   model-invoked (the frontmatter `description` is the *entire* trigger
@@ -159,6 +161,27 @@ intentionally contain fake credential-shaped strings.
   `~/.claude/CLAUDE.md`.
 - Capturing a session learning into skills/rules: use `/learn`.
   Committing: use `/commit`.
+
+## Validating a change
+
+There is no automated test suite here — `pre-commit` covers frontmatter
+and secrets, and nothing else is machine-checkable. Behavior is verified
+by hand against the fixtures in `tests/`.
+
+After changing a skill, rule, subagent, or enforcement hook, follow the
+procedure in [tests/skills/code-review/README.md](tests/skills/code-review/README.md)
+or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/README.md):
+
+- Run in a **fresh** agent session. Skill edits don't reliably reload
+  mid-session on Windows, so a same-session run validates the old copy.
+- Compare against `expected_findings.md` rather than judging the output
+  on its own — the fixtures encode what should be caught *and* what
+  should not be.
+- Exercise both the documented invocation and the refusal modes. A
+  subagent that does the right thing but ignores its scope guard has
+  failed.
+- Confirm the fixtures are unmodified afterwards with `git status`. A
+  run that edits its own inputs invalidates every later comparison.
 
 ## Line endings
 
