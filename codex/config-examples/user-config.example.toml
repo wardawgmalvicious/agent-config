@@ -12,6 +12,10 @@ model_reasoning_effort = "ultra"
 approval_policy = "on-request"
 sandbox_mode = "workspace-write"
 
+# Hooks are enabled by default and are deployed separately from
+# codex/hooks.json. Add a `[features]` table with `hooks = false` only when you
+# intentionally want to disable every user, project, and plugin hook.
+
 # Keep spawned shell commands from inheriting broad secret-heavy
 # environments.
 [shell_environment_policy]

@@ -48,6 +48,14 @@ repo). Prefer that content over training-data answers when both exist;
 when unsure whether a relevant skill exists, check there before
 fabricating specifics.
 
+## Agent config source
+
+`CODEX_HOME/AGENTS.md`, `agents/*.toml`, `hooks.json`, `hooks/*.ps1`, and
+`prompts/*.md` are plain copies sourced from this repo's `codex/` directory.
+Edit the repo versions and re-run `scripts/link-codex.ps1 -Force` after
+reviewing drift. `config.toml`, credentials, sessions, plugins, logs, and
+`CODEX_HOME/rules/` remain Codex- or user-owned runtime state.
+
 ## Coding standards (summary)
 
 - Python and PySpark: `lower_snake_case` variables, functions, and
@@ -64,9 +72,11 @@ fabricating specifics.
 - SQL, KQL, M, TMDL, semantic-model object aliases, pipeline
   parameters, and activity names use `PascalCase` where appropriate.
 
-Full per-language conventions live in the agent-config repo's
-`rules/coding-<lang>.md` files (authored for Claude Code's path-scoped
-auto-load; read them directly when working heavily in one language).
+Full per-language conventions live under
+`C:\Repos\Personal\agent-config\claude\rules\coding-<lang>.md`. They are
+authored for Claude Code's path-scoped auto-load; Codex has no equivalent
+file-glob instruction loader, so read the relevant file directly when working
+heavily in one language.
 
 ## Review behavior
 

@@ -12,19 +12,22 @@
       source exists.
     - codex/agents/*.toml -> CODEX_HOME/agents/*.toml as plain copies, when
       repo sources exist.
+    - codex/hooks.json -> CODEX_HOME/hooks.json and codex/hooks/*.ps1 ->
+      CODEX_HOME/hooks/*.ps1 as plain copies, when repo sources exist.
     - codex/prompts/*.md -> CODEX_HOME/prompts/*.md as plain copies, when
       repo sources exist.
 
     The script deliberately never links or copies config.toml, auth.json,
-    sessions, databases, caches, plugins, CODEX_HOME/skills, or any other
-    Codex-managed state. It refuses to operate when CODEX_HOME itself is a
-    reparse point or a Git working-tree root.
+    sessions, databases, caches, plugins, CODEX_HOME/skills,
+    CODEX_HOME/rules, or any other Codex-managed state. It refuses to operate
+    when CODEX_HOME itself is a reparse point or a Git working-tree root.
 
     Existing correct skill junctions and equal mirror files are left alone.
     Stale per-skill junctions are repaired. Real items at managed paths and
     drifted mirror files are reported unless -Force is passed. Home-only
-    skills and custom agents are preserved; removed repo items are not pruned
-    because ownership cannot be proven safely without a manifest.
+    skills, custom agents, hook scripts, and prompts are preserved; removed
+    repo items are not pruned because ownership cannot be proven safely
+    without a manifest.
 
 .PARAMETER Force
     Replace real items that collide with repo skill names and overwrite
@@ -71,6 +74,8 @@ $skillsSource = Join-Path $repoRoot 'skills'
 $skillsDestination = Join-Path $AgentsDir 'skills'
 $globalAgentsSource = Join-Path $repoRoot 'codex\AGENTS.md'
 $codexAgentsSource = Join-Path $repoRoot 'codex\agents'
+$codexHooksConfigSource = Join-Path $repoRoot 'codex\hooks.json'
+$codexHooksSource = Join-Path $repoRoot 'codex\hooks'
 $codexPromptsSource = Join-Path $repoRoot 'codex\prompts'
 $script:DriftCount = 0
 $script:ManagedCopyCount = 0
@@ -192,6 +197,43 @@ function Test-CodexAgentFile {
         if ($content -notmatch "(?m)^\s*$escapedKey\s*=") {
             throw "Codex agent is missing required key '$requiredKey': $Path"
         }
+    }
+}
+
+function Test-CodexHooksFile {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $hookConfig = Get-Content -Raw -LiteralPath $Path |
+        ConvertFrom-Json -AsHashtable
+    if ($hookConfig -isnot [Collections.IDictionary] -or
+        -not $hookConfig.ContainsKey('hooks') -or
+        $hookConfig['hooks'] -isnot [Collections.IDictionary] -or
+        $hookConfig['hooks'].Count -eq 0) {
+        throw "Codex hooks file must contain a non-empty 'hooks' object: $Path"
+    }
+}
+
+function Test-PowerShellFile {
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)]
+        [string]$Path
+    )
+
+    $tokens = $null
+    $parseErrors = $null
+    $null = [System.Management.Automation.Language.Parser]::ParseFile(
+        $Path,
+        [ref]$tokens,
+        [ref]$parseErrors
+    )
+    if ($parseErrors.Count -gt 0) {
+        $details = ($parseErrors | ForEach-Object { $_.Message }) -join '; '
+        throw "PowerShell hook failed to parse: $Path ($details)"
     }
 }
 
@@ -411,6 +453,7 @@ else {
 
 Write-Host 'SKIP    config.toml and Codex runtime state (home-owned)'
 Write-Host 'SKIP    CODEX_HOME/skills (Codex system-managed)'
+Write-Host 'SKIP    CODEX_HOME/rules (user and TUI-owned command policy)'
 
 # Codex and GitHub Copilot both discover personal skills under
 # ~/.agents/skills. Keep that shared root real and link each repo skill
@@ -529,6 +572,57 @@ else {
             Copy-ManagedFile -Source $agentFile.FullName `
                 -Destination (Join-Path $codexAgentsDestination $agentFile.Name) `
                 -DisplayName "agent $($agentFile.Name)"
+        }
+    }
+}
+
+# User-scope lifecycle hooks use hooks.json plus separately deployed command
+# scripts. Validate and copy scripts first so a new manifest never points at a
+# missing or syntactically invalid managed script.
+$repoHookFiles = @()
+if (Test-Path -LiteralPath $codexHooksSource -PathType Container) {
+    $repoHookFiles = @(Get-ChildItem -LiteralPath $codexHooksSource -Filter '*.ps1' -File)
+}
+
+if (-not (Test-Path -LiteralPath $codexHooksConfigSource -PathType Leaf)) {
+    Write-Host 'SKIP    Codex lifecycle hooks (codex/hooks.json is not present)'
+}
+elseif ($repoHookFiles.Count -eq 0) {
+    throw 'Codex hooks manifest exists, but codex/hooks/*.ps1 is not present.'
+}
+else {
+    Test-CodexHooksFile -Path $codexHooksConfigSource
+    foreach ($hookFile in $repoHookFiles) {
+        Test-PowerShellFile -Path $hookFile.FullName
+    }
+
+    $codexHooksDestination = Join-Path $CodexDir 'hooks'
+    if (Initialize-ManagedDirectory -Path $codexHooksDestination -DisplayName 'hooks') {
+        foreach ($hookFile in $repoHookFiles) {
+            Copy-ManagedFile -Source $hookFile.FullName `
+                -Destination (Join-Path $codexHooksDestination $hookFile.Name) `
+                -DisplayName "hook $($hookFile.Name)"
+        }
+
+        $hooksReady = $true
+        foreach ($hookFile in $repoHookFiles) {
+            $deployedHook = Join-Path $codexHooksDestination $hookFile.Name
+            if (-not (Test-Path -LiteralPath $deployedHook -PathType Leaf) -or
+                (Get-FileHash -LiteralPath $hookFile.FullName).Hash -ne
+                (Get-FileHash -LiteralPath $deployedHook).Hash) {
+                $hooksReady = $false
+                break
+            }
+        }
+
+        if ($hooksReady) {
+            Copy-ManagedFile -Source $codexHooksConfigSource `
+                -Destination (Join-Path $CodexDir 'hooks.json') `
+                -DisplayName 'hooks.json'
+        }
+        else {
+            Write-Warning ('hooks.json was not deployed because one or more ' +
+                'managed hook scripts are not in sync.')
         }
     }
 }
