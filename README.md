@@ -192,6 +192,20 @@ stay separable:
     both only invite drift. MCP is a workspace `.vscode/mcp.json` (see
     [.vscode/README.md](.vscode/README.md)).
 
+    Copilot parses the Claude hook format, not its semantics. Matchers
+    are read and **ignored**, so a matcher-scoped hook fires on every
+    tool call; tool input properties are camelCase
+    (`tool_input.filePath`, not `tool_input.file_path`); and tool names
+    differ (`create_file`, `replace_string_in_file`). The
+    `security-reviewer` write guard is matcher-scoped, so under Copilot
+    it runs far wider than it does under Claude Code.
+
+    Sessions on **Agent Host** read user-level instructions and agents
+    from harness-agnostic folders (`~/.copilot/instructions`,
+    `~/.claude/rules`, `~/.copilot/agents`) instead of VS Code profile
+    user data — the change that removed the "or your user data"
+    fallback from both location tables in mid-2026.
+
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
 
