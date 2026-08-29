@@ -1,6 +1,8 @@
-# Repository Agent Instructions
+# Project Instructions
 
-Use this as a starting point for a project-level `AGENTS.md`.
+Use this as a starting point for a project-scope `CLAUDE.md` at the root
+of a client or project repo. The content is tool-neutral — drop it in as
+`AGENTS.md` instead if that is what the repo's tooling reads.
 
 ## Project Context
 
