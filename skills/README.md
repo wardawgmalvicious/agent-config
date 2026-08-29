@@ -39,7 +39,10 @@ internal cross-references stay intact.
   registry ([references/sources.md](drift-audit/references/sources.md)),
   not a hardcoded list — Fabric and Power BI What's New today, and
   widening the audit to another domain is an entry there plus a
-  validated run.
+  validated run. Named for the job, not the target: it audits rules,
+  `CLAUDE.md`, and the MCP templates too, so `skill-audit` would name a
+  quarter of its scope and would collide with a plausible future skill
+  that actually audits skill quality.
 - [learn/](learn/) — "learn!": capture a session learning into the
   skill / rule / CLAUDE.md that should have covered it. Auto-detects
   which guidance was in use, checks existing coverage, verifies against
