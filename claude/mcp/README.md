@@ -30,20 +30,12 @@ The Fabric and Power BI servers sit in the project template for exactly this rea
 
 ### Prerequisites (user scope)
 
-- **Hosted http endpoints** (`microsoft-learn-mcp`, `github-mcp`) need no local runtime. `microsoft-learn-mcp` needs no credential either. `github-mcp` needs a token in `GITHUB_PAT` — see below.
+- **Hosted http endpoints** (`microsoft-learn-mcp`) need no local runtime and no credential.
 - **Docker MCP Gateway servers** (`azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view. When Docker Desktop isn't running these fail to connect, and Claude Code reports it at session start.
 
 Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows username before merging. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
 
-#### `github-mcp` auth — PAT, not OAuth
-
-GitHub's hosted server is reached at `https://api.githubcopilot.com/mcp/`. Claude Code **cannot** complete its OAuth flow — the same Dynamic Client Registration gap that blocks the Fabric endpoints, reported as `Incompatible auth server: does not support dynamic client registration`. A bearer token sidesteps the flow entirely and the server accepts it, so the template sends one:
-
-```json
-"headers": { "Authorization": "Bearer ${GITHUB_PAT}" }
-```
-
-Set `GITHUB_PAT` in your environment before starting Claude Code. Prefer a real PAT (classic or fine-grained) over `gh auth token` — the `gho_` token the `gh` CLI holds is rotated, so a value copied from it goes stale. If you would rather not manage a token, the Docker MCP Gateway carries a `github-official` server that reuses your local `gh` credentials; it is what this template used before, and it is still a valid substitute for anyone already running Docker Desktop.
+> **`github-mcp` is not here.** It is in the project template instead, because on a machine with more than one GitHub account the token *is* workload-bound — see [GitHub and multiple accounts](#github-and-multiple-accounts) below.
 
 ### Install (user scope)
 
@@ -54,7 +46,6 @@ Merge the `mcpServers` object from the template into the **top level** of `~/.cl
     // ...existing top-level fields...
     "mcpServers": {
         "microsoft-learn-mcp": { /* from template */ },
-        "github-mcp":          { /* from template */ },
         "azure-mcp":           { /* from template */ },
         "dockerhub-mcp":       { /* from template */ }
     },
@@ -75,7 +66,6 @@ claude mcp add --scope user microsoft-learn-mcp --transport http https://learn.m
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `microsoft-learn-mcp` | http (`learn.microsoft.com/api/mcp`) | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). Zero-dependency and useful in any repo — the clearest user-scope case in the set. |
-| `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth via `GITHUB_PAT`; no local runtime, so it works without Docker Desktop. |
 | `azure-mcp` | stdio (Docker MCP Gateway → `azure`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. |
 | `dockerhub-mcp` | stdio (Docker MCP Gateway → `dockerhub`) | Docker Hub repos, tags, namespaces, search; useful for image discovery and registry housekeeping. The most droppable entry here — keep it only if you actually manage images. |
 
@@ -114,6 +104,7 @@ Three runtimes, needed only for the servers you keep:
     | `<your-database>` | Initial catalog / database name. |
     | `<OrgName>` | Azure DevOps organization. |
     | `<ProjectName>` | Azure DevOps project. |
+    | `<GITHUB_PAT_VAR>` | Name of the environment variable holding this repo's GitHub token — see below. Note this is a variable *name*, not the token. |
 
 3. Commit `.mcp.json` to version control.
 
@@ -129,6 +120,7 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 
 | Server | Runtime | Purpose |
 | --- | --- | --- |
+| `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Local Power BI Desktop / TOM operations — tables, measures, relationships, partitions, DAX query execution against an open model. Needs Power BI Desktop running with a model loaded. |
 | `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. The working Claude Code alternative to the DCR-blocked hosted Fabric Core endpoint. |
 | `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Covers most RTI workflows without the hosted KQL endpoints, which don't connect from Claude Code. |
@@ -137,6 +129,42 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | `azure-devops-mcp` | stdio (`npx @azure-devops/mcp`) | Azure DevOps work items, repos, pipelines scoped to the configured org + project. |
 
 > `ASPNETCORE_URLS=http://127.0.0.1:0` forces DAB to pick a free loopback port so multiple Claude sessions or a running dev server don't collide.
+
+---
+
+### GitHub and multiple accounts
+
+GitHub's hosted server is reached at `https://api.githubcopilot.com/mcp/`. Claude Code **cannot** complete its OAuth flow — the same Dynamic Client Registration gap that blocks the Fabric endpoints, reported as `Incompatible auth server: does not support dynamic client registration`. A bearer token sidesteps the flow entirely and the server accepts it, so the template sends one:
+
+```json
+"headers": { "Authorization": "Bearer ${<GITHUB_PAT_VAR>}" }
+```
+
+This entry is **project scope, not user scope**, and on a single-account machine that looks like overkill. It isn't, as soon as there are two accounts. The token decides which identity every GitHub tool call runs as, so the server becomes workload-bound by the same test the rest of this file applies — a work token is the wrong tool in a personal repo, and nothing about the failure is loud.
+
+So give each account its own variable and let each repo name the one it needs:
+
+| Repo location | Variable | Account |
+| --- | --- | --- |
+| personal repos | `GITHUB_PAT_PERSONAL` | personal |
+| work repos | `GITHUB_PAT_<ORG>` | work |
+
+**Deliberately do not define a bare `GITHUB_PAT`.** An undefined variable fails visibly at session start; a default silently authenticates as the wrong account and the mistake surfaces later, attributed to the wrong identity. This mirrors the `user.useConfigOnly = true` reasoning in a two-identity `.gitconfig`: on a machine with two identities, a wrong default is worse than no default.
+
+Set them as Windows **user** environment variables, without putting the token into shell history:
+
+```powershell
+$t = Read-Host 'Personal GitHub PAT' -AsSecureString
+[Environment]::SetEnvironmentVariable('GITHUB_PAT_PERSONAL',
+    [Runtime.InteropServices.Marshal]::PtrToStringAuto(
+        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($t)), 'User')
+```
+
+Then **fully restart VS Code** — processes inherit the environment when they spawn, so a reload window is not enough.
+
+Prefer a real PAT (classic or fine-grained) over `gh auth token`: the `gho_` token the `gh` CLI holds is rotated, so a value copied out of it goes stale. Scope it to what the MCP tools actually need — `repo` and `read:org` cover issues, PRs, and code search.
+
+If you would rather not manage tokens, the Docker MCP Gateway's `github-official` server reuses your local `gh` credentials instead. It works, and it is what this repo used before, but it makes GitHub access depend on Docker Desktop and it authenticates as whichever single account `gh` is currently logged into — which is the multi-account problem again, just less visible.
 
 ---
 
