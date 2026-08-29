@@ -4,13 +4,6 @@
             "type": "http",
             "url": "https://learn.microsoft.com/api/mcp"
         },
-        "github-mcp": {
-            "type": "http",
-            "url": "https://api.githubcopilot.com/mcp/",
-            "headers": {
-                "Authorization": "Bearer ${GITHUB_PAT}"
-            }
-        },
         "azure-mcp": {
             "command": "docker",
             "args": [
