@@ -1,6 +1,9 @@
 {
     "permissions": {
         "allow": [
+            "mcp__github-mcp__get_commit",
+            "mcp__github-mcp__get_file_contents",
+            "mcp__github-mcp__list_commits",
             "mcp__microsoft-learn-mcp__microsoft_docs_fetch",
             "mcp__microsoft-learn-mcp__microsoft_docs_search"
         ]
