@@ -169,15 +169,19 @@ stay separable:
     "chat.agentFilesLocations":        { "~/.claude/agents": true },
     "chat.agentSkillsLocations":       { "~/.claude/skills": true },
     "chat.hookFilesLocations":         { "~/.claude/settings.json": true },
-    "chat.useClaudeMdFile": true
+    // chat.useClaudeMdFile governs ~/.claude/CLAUDE.md and already
+    // defaults to true — no entry needed.
     ```
 
-    Two traps. `chat.instructionsFilesLocations` accepts **folders
+    Three traps. `chat.instructionsFilesLocations` accepts **folders
     only** — an entry for `~/.claude/CLAUDE.md` is silently ignored,
     and because `chat.useClaudeMdFile` loads that file anyway, the dead
-    setting looks like it worked. And no copy into `~/.copilot/agents`
-    or `~/.agents/skills` is needed; both only invite drift. MCP is a
-    workspace `.vscode/mcp.json` (see
+    setting looks like it worked. VS Code also **omits any setting left
+    at its default** when it writes `settings.json`, so
+    `chat.useClaudeMdFile` vanishes from the file when set to `true` and
+    only appears when set to `false` — absent means on, not unset. And
+    no copy into `~/.copilot/agents` or `~/.agents/skills` is needed;
+    both only invite drift. MCP is a workspace `.vscode/mcp.json` (see
     [.vscode/README.md](.vscode/README.md)).
 
 "Agnostic" here means *structured so other tools can consume it* — the
