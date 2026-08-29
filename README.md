@@ -115,9 +115,6 @@ rearranging the root.
   only in sessions inside this repo.
 - [AGENTS.md](AGENTS.md) — Concise, independent contributor guide for
   this repo. It is project-scoped and is never deployed to user scope.
-- [.github/copilot-instructions.md](.github/copilot-instructions.md) —
-  Repository-wide custom instructions for GitHub Copilot (architecture,
-  build/lint/test, conventions).
 - [LICENSE](LICENSE) — MIT.
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
