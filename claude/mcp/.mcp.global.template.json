@@ -5,18 +5,10 @@
             "url": "https://learn.microsoft.com/api/mcp"
         },
         "github-mcp": {
-            "command": "docker",
-            "args": [
-                "mcp",
-                "gateway",
-                "run",
-                "--servers",
-                "github-official"
-            ],
-            "env": {
-                "LOCALAPPDATA": "C:\\Users\\<USER>\\AppData\\Local",
-                "ProgramData": "C:\\ProgramData",
-                "ProgramFiles": "C:\\Program Files"
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp/",
+            "headers": {
+                "Authorization": "Bearer ${GITHUB_PAT}"
             }
         },
         "azure-mcp": {
