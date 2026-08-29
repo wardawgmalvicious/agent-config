@@ -39,7 +39,12 @@ Each `id` below is what `--sources` accepts.
   Data Warehouse, Databases, OneLake, Fabric platform)
 - `drill.host`: `learn.microsoft.com`
 - `drill.via`: `microsoft-learn-mcp`
-- `drill.strip`: `#post-NNNN-_TocNNNN`, any `#post-...`
+- `drill.strip`: `#post-NNNN-_TocNNNN`, any `#post-...`, and `#toc-hId-<signed-int>`
+  — the community-blog table-of-contents form. **The integer is signed**, so the
+  hyphen doubles on negatives (`#toc-hId-1329740083` *and* `#toc-hId--1208717068`);
+  a pattern anchored on one hyphen misses roughly half. At 2026-08-29 the page
+  carried 37 of these against 14 `#post-...`, so both forms are live — the
+  `#post-...` patterns are incomplete, not superseded.
 - `artifacts`: skills, rules, `CLAUDE.md`, MCP templates
 
 Real-Time Intelligence has no separate What's New page — RTI updates fold
@@ -56,7 +61,11 @@ into this source. Don't search for one.
   `Power BI updates`
 - `drill.host`: `learn.microsoft.com`
 - `drill.via`: `microsoft-learn-mcp`
-- `drill.strip`: `#post-NNNN-_TocNNNN`, any `#post-...`
+- `drill.strip`: `#post-NNNN-_TocNNNN`, any `#post-...` — deliberately **not**
+  the `#toc-hId-*` form the `fabric` entry strips. Checked 2026-08-29: this page
+  carried zero of them (it is a single-month document with two unanchored
+  community-blog links). Don't copy the pattern across on the assumption that
+  the two pages render alike; re-check if that ever changes.
 - `artifacts`: skills, rules, `CLAUDE.md`, MCP templates
 
 ### `vscode-agent` — VS Code agent customization surface
