@@ -2,8 +2,8 @@
 
 Personal configuration for coding agents: skills, subagents, coding
 rules, hooks, MCP templates, and settings. Clone it anywhere; scoped
-link scripts wire durable content into Claude Code, Codex, and GitHub
-Copilot without putting any tool's runtime directory under Git.
+link scripts wire durable content into Claude Code and GitHub Copilot
+without putting any tool's runtime directory under Git.
 
 ## What this is
 
@@ -70,12 +70,11 @@ rearranging the root.
 ### Shared content
 
 - [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and
-  behavioral (code-review, drift-audit). Consumed by Claude Code,
-  Codex, and GitHub Copilot. See [skills/README.md](skills/README.md).
+  behavioral (code-review, drift-audit). Consumed by Claude Code and
+  GitHub Copilot. See [skills/README.md](skills/README.md).
 - [mcp/](mcp/) — Starter templates for global (user-scope) and project-
   scope Claude Code MCP server configs, plus a workspace-scope template
-  for VS Code / GitHub Copilot. (Codex's TOML analog lives in
-  [codex/mcp/](codex/mcp/).)
+  for VS Code / GitHub Copilot.
 
 ### [claude/](claude/) — Claude Code payload
 
@@ -101,12 +100,6 @@ rearranging the root.
   `permissions` entries live in `settings.local.json` (gitignored) —
   add your own there.
 
-### [codex/](codex/) — Codex payload
-
-The user-scope [AGENTS.md](codex/AGENTS.md), custom agents (TOML),
-custom prompts, plus reference-only MCP and `config.toml` examples. See
-[codex/README.md](codex/README.md).
-
 ### Mechanism and supporting material
 
 - [scripts/](scripts/) — link scripts (see [Install](#install)),
@@ -129,9 +122,8 @@ custom prompts, plus reference-only MCP and `config.toml` examples. See
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
 - [.pre-commit-config.yaml](.pre-commit-config.yaml) and [.gitleaks.toml](.gitleaks.toml)
-  — pre-commit framework config (gitleaks, the SKILL.md and rules
-  frontmatter linter at [scripts/lint-frontmatter.py](scripts/lint-frontmatter.py),
-  and a parse check for `codex/**/*.toml`).
+  — pre-commit framework config (gitleaks and the SKILL.md / rules
+  frontmatter linter at [scripts/lint-frontmatter.py](scripts/lint-frontmatter.py)).
 
 ## Tool support
 
@@ -150,18 +142,13 @@ stay separable:
   globs are the direct analog). Note the split: a rule's *body* is
   portable prose, but the file as it sits on disk is a Claude artifact,
   which is why it lives under `claude/`.
-- **Codex** — consumes skills through per-skill junctions under
-  `~/.agents/skills`. [scripts/link-codex.ps1](scripts/link-codex.ps1)
-  keeps `CODEX_HOME` real and home-owned; when present, it copies
-  `codex/AGENTS.md`, `codex/agents/*.toml`, and `codex/prompts/*.md`
-  into their Codex user-scope locations. It never manages
-  `config.toml`, credentials, sessions, caches, plugins, or system
-  skills.
 - **Instruction files are independent.** Root [AGENTS.md](AGENTS.md)
-  is repository-scoped and is never deployed.
-  [codex/AGENTS.md](codex/AGENTS.md) is a separate Codex payload
-  rather than a mirror of root `AGENTS.md`, root
-  [CLAUDE.md](CLAUDE.md), or [claude/CLAUDE.md](claude/CLAUDE.md).
+  is repository-scoped and is never deployed, and is not a mirror of
+  root [CLAUDE.md](CLAUDE.md) or [claude/CLAUDE.md](claude/CLAUDE.md).
+- **Other tools** — the repo carried a Codex payload and linker until
+  it went unused; see the history around `codex/` if you want it back.
+  Skills use the open Agent Skills format, so any tool that reads
+  `SKILL.md` can consume [skills/](skills/) directly.
 - **GitHub Copilot** — consumes most of this repo with no extra
   wiring. The VS Code agent surface reads Claude's user-scope paths as
   harness-agnostic defaults: `~/.claude/rules` for instructions,
@@ -173,7 +160,7 @@ stay separable:
   Claude-format payload, not a separate one.
   [scripts/link-copilot.ps1](scripts/link-copilot.ps1) covers only the
   two artifacts needing Copilot-specific placement — skills into the
-  shared `~/.agents/skills` (which also serves Codex), and subagents
+  shared `~/.agents/skills`, and subagents
   into `~/.copilot/agents`, since VS Code reads the Claude sub-agent
   format from `.claude/agents` at workspace scope but from
   `~/.copilot/agents` at user scope. MCP is a workspace
@@ -212,25 +199,17 @@ content is written for and validated with Claude Code first.
     ./scripts/link-claude.ps1
     ```
 
-3. Wire durable content into Codex without redirecting `CODEX_HOME`.
-   The script intentionally refuses a linked or Git-backed Codex home,
-   preserves Codex-owned runtime state, and links repo skills one at a
-   time into the shared `~/.agents/skills` directory.
-
-    ```powershell
-    ./scripts/link-codex.ps1
-    ```
-
-4. (Optional) Link skills into GitHub Copilot's `~/.agents/skills`,
-   one junction per skill, alongside any skills other providers have
-   installed there. This is idempotent with the Codex linker because
-   both tools use the same user-scope skill location:
+3. Wire the two artifacts GitHub Copilot needs placed for it: skills
+   into `~/.agents/skills`, one junction per skill alongside any skills
+   other providers have installed there, and subagents into
+   `~/.copilot/agents`. Everything else already reaches Copilot through
+   the `~/.claude` paths step 2 created:
 
     ```powershell
     ./scripts/link-copilot.ps1
     ```
 
-5. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
+4. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
    it once across all files). **Requires
    [uv](https://docs.astral.sh/uv/) on PATH.** Skip this step if you
    only intend to read, not commit.
@@ -239,7 +218,7 @@ content is written for and validated with Claude Code first.
     cd agent-config && scripts/bootstrap-pre-commit
     ```
 
-6. (Optional) Add the repo's `scripts/` directory to `PATH` so the
+5. (Optional) Add the repo's `scripts/` directory to `PATH` so the
    helpers (`instructions-log`, `lint-frontmatter.py`) are callable by name.
 
 **Notes:**
@@ -263,10 +242,6 @@ live immediately — the tools read the same files. Changes to
 `scripts/link-claude.ps1` re-run to reach the live copies (the script also verifies everything else and
 exits non-zero if any link or mirror needs attention — including after
 moving or renaming the repo folder, which it repairs automatically).
-`codex/AGENTS.md`, `codex/agents/*.toml`, or `codex/prompts/*.md`
-changes require a `scripts/link-codex.ps1` re-run; use `-Force` only
-after reviewing reported drift.
-
 Skill edits don't reliably take effect mid-session under Git Bash on
 Windows — restart the Claude Code session after editing a SKILL.md to
 be safe.

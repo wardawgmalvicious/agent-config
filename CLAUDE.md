@@ -4,19 +4,19 @@ This repo is the source for the user's coding-agent configuration
 (skills, a subagent, coding rules, hooks, MCP server templates,
 settings) — see [README.md](README.md) for the full picture. It's
 written to be cherry-picked by any agentic tool, not only the ones the
-user personally runs day to day (Claude Code, Codex, and GitHub Copilot).
+user personally runs day to day (Claude Code and GitHub Copilot).
 
 Root `CLAUDE.md` and root `AGENTS.md` are independent project-scope
 instructions and are never deployed. [claude/CLAUDE.md](claude/CLAUDE.md)
-is Claude's user-scope payload; [codex/AGENTS.md](codex/AGENTS.md) is
-the separate Codex user-scope payload.
+is Claude's user-scope payload.
 
 Layout convention: **top-level directories hold content more than one
-tool consumes** (`skills/`, linked to Claude and shared to Codex and
-Copilot via `~/.agents/skills`; `mcp/`, whose templates cover Claude
-Code and VS Code / Copilot). **A `<tool>/` directory holds that tool's
-payload and nothing else** — `claude/` and `codex/` today, a new one
-per harness added later. `scripts/`, `docs/`, and `tests/` are the
+tool consumes** (`skills/`, linked to Claude and shared to Copilot via
+`~/.agents/skills`; `mcp/`, whose templates cover Claude Code and VS
+Code / Copilot). **A `<tool>/` directory holds that tool's payload and
+nothing else** — only `claude/` today, a new one per harness added
+later. A `codex/` payload lived here until Codex went unused; it is in
+the history if it is ever wanted back. `scripts/`, `docs/`, and `tests/` are the
 shared mechanism and supporting material.
 
 Being a `<tool>/` payload says nothing about *how* it deploys: within
@@ -36,15 +36,12 @@ lands determines when it goes live:
 | `mcp/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
-| `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-codex.ps1` or `scripts/link-copilot.ps1`) | immediately |
-| `codex/AGENTS.md` | `$CODEX_HOME/AGENTS.md` | plain copy (`scripts/link-codex.ps1`) | after script run; `-Force` for drift |
-| `codex/agents/*.toml` | `$CODEX_HOME/agents/*.toml` | individual plain copies (`scripts/link-codex.ps1`) | after script run; `-Force` for drift |
-| `codex/prompts/*.md` | `$CODEX_HOME/prompts/*.md` | individual plain copies (`scripts/link-codex.ps1`) | after script run; `-Force` for drift |
+| `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-copilot.ps1`) | immediately |
+| `claude/agents/*.md` | `~/.copilot/agents/*.md` | individual plain copies (`scripts/link-copilot.ps1`) | after script run; `-Force` for drift |
 
 (Claude Code doesn't read `~/.claude/mcp` itself — that junction exists
 so the template-copy commands in [mcp/README.md](mcp/README.md) resolve
-from a stable path. `codex/mcp/` and `codex/config-examples/` are
-reference-only and never deployed.)
+from a stable path.)
 
 The deployed names on the right are fixed by each tool and never
 change, so repo-side moves are cheap: relocating payload under
@@ -53,9 +50,10 @@ change, so repo-side moves are cheap: relocating payload under
 Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
 they are unaffected by repo layout entirely.
 
-`scripts/link-codex.ps1` deliberately leaves `CODEX_HOME` real,
-non-Git, and Codex-owned; runtime state and machine-local configuration
-never flow into this repository.
+`scripts/link-copilot.ps1` deliberately leaves `~/.copilot` real,
+non-Git, and Copilot-owned, managing only the named agent files;
+runtime state and machine-local configuration never flow into this
+repository.
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
 deployed anywhere and loads only in sessions inside this repo.

@@ -1,6 +1,6 @@
 # MCP Templates
 
-Three starter configurations for Model Context Protocol (MCP) servers, covering Claude Code and VS Code / GitHub Copilot. (For Codex, the same servers are expressed as `[mcp_servers]` TOML in `config.toml` — see [codex/mcp/](../codex/mcp/) for the TOML analog of these templates.)
+Three starter configurations for Model Context Protocol (MCP) servers, covering Claude Code and VS Code / GitHub Copilot.
 
 | File | Scope | Tool | Destination | Shared? |
 | --- | --- | --- | --- | --- |

@@ -4,8 +4,8 @@
 
 A personal AI coding-agent configuration repo: skills, a subagent,
 path-scoped coding rules, hooks, MCP server templates, and settings —
-primarily for Claude Code, with portable content also wired into Codex
-and GitHub Copilot. **It is not an application** — there is no runtime,
+primarily for Claude Code, with the same payload also consumed by
+GitHub Copilot. **It is not an application** — there is no runtime,
 no build, no server to run.
 Content focuses on Microsoft Fabric, Power BI/TMDL, and Azure.
 
@@ -41,15 +41,10 @@ tool's real config directory — it is not cloned directly into
   skill *individually* into `~/.agents/skills`, because that directory
   is shared with other providers' skills (e.g. Copilot for Azure) and
   can't be junctioned wholesale.
-- [scripts/link-codex.ps1](../scripts/link-codex.ps1) keeps
-  `CODEX_HOME` real and Codex-owned. It creates the same per-skill
-  junctions under `~/.agents/skills` and, when repo sources exist,
-  copies `codex/AGENTS.md`, `codex/agents/*.toml`, and
-  `codex/prompts/*.md` into user scope. It refuses linked or Git-backed
-  Codex homes and never manages `config.toml`, credentials, sessions,
-  caches, plugins, or system skills. `codex/mcp/` and
-  `codex/config-examples/` are reference-only, never deployed.
-- All three scripts are idempotent, resolve the repo location from their own
+  It also copies subagents into `~/.copilot/agents`, which is where VS
+  Code reads the Claude sub-agent format at user scope, and refuses to
+  write when `~/.copilot` is a link or a Git working tree.
+- Both scripts are idempotent, resolve the repo location from their own
   path (so moving/renaming the clone self-heals), and refuse to
   overwrite a real directory or drifted mirror file without `-Force`.
 
@@ -150,7 +145,6 @@ No build step. Lint and validation:
   pre-commit, wires `.git/hooks/pre-commit`, runs once repo-wide).
   Re-run everything: `pre-commit run --all-files`. Run one hook:
   `pre-commit run lint-skills`, `pre-commit run lint-rules`,
-  `pre-commit run lint-codex-toml` (parse-checks `codex/**/*.toml`),
   or `pre-commit run gitleaks`. CI
   ([.github/workflows/pre-commit.yml](../.github/workflows/pre-commit.yml))
   runs the same config on every push/PR to `main`.
@@ -214,10 +208,8 @@ No build step. Lint and validation:
   text, pins Windows scripts to CRLF, pins shell scripts to LF, and the
   rule explicitly disclaims itself here.
 - **Root `AGENTS.md` is repository-scoped, not a mirror.** It is a
-  concise contributor guide and is never deployed to user scope.
-  [codex/AGENTS.md](../codex/AGENTS.md) is the separately authored
-  Codex payload copied by `link-codex.ps1`; do not substitute or
-  deploy the root file.
+  concise contributor guide and is never deployed to user scope; do
+  not substitute or deploy it as a user-scope instruction file.
 - **Three MCP templates, two tools, two schemas** — see
   [mcp/README.md](../mcp/README.md). Claude Code reads a `mcpServers`
   key (`~/.claude.json` user scope, or project-scope `<repo>/.mcp.json`);

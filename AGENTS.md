@@ -10,37 +10,37 @@ root when more than one tool consumes it (`skills/`, `mcp/`) and under
 `<tool>/` when only that tool does. Everything Claude Code reads is under
 `claude/` — path-scoped language conventions in `claude/rules/`, subagents
 in `claude/agents/`, lifecycle hooks in `claude/hooks/`, plus user-scope
-`claude/CLAUDE.md` and `claude/settings.json`. `codex/` is the Codex
-equivalent (user-scope AGENTS.md, custom-agent TOML, prompts, reference
-examples). Maintenance and linking utilities are in `scripts/`, while MCP
-templates and handoff guidance are in `mcp/` and `docs/`. Manual behavioral fixtures live
-under `tests/skills/` and `tests/agents/`.
+`claude/CLAUDE.md` and `claude/settings.json`. GitHub Copilot consumes that
+same payload through its own VS Code settings and so has no payload directory
+of its own. Maintenance and linking utilities are in `scripts/`, while MCP
+templates and handoff guidance are in `mcp/` and `docs/`. Manual behavioral
+fixtures live under `tests/skills/` and `tests/agents/`.
 
 ## Setup, Lint, and Development Commands
 
 - `scripts/bootstrap-pre-commit` — from Git Bash, install pre-commit with
   `uv`, wire the Git hook, and validate the repository.
-- `pre-commit run --all-files` — run frontmatter validation, the Codex TOML
-  parse check, and gitleaks.
-- `pre-commit run lint-skills`, `pre-commit run lint-rules`, or
-  `pre-commit run lint-codex-toml` — run one local validator while iterating.
+- `pre-commit run --all-files` — run frontmatter validation and gitleaks.
+- `pre-commit run lint-skills` or `pre-commit run lint-rules` — run one
+  local validator while iterating.
 - `uv run --with pyyaml scripts/lint-frontmatter.py skills/commit/SKILL.md`
   — lint one file directly.
-- `./scripts/link-claude.ps1`, `./scripts/link-codex.ps1`, and
-  `./scripts/link-copilot.ps1` — verify tool-specific wiring. The Codex
-  linker keeps `CODEX_HOME` real and manages only shared skill junctions
-  plus copied instructions, custom-agent TOML, and prompts from `codex/`.
+- `./scripts/link-claude.ps1` and `./scripts/link-copilot.ps1` — verify
+  tool-specific wiring. The Copilot linker keeps `~/.copilot` real and
+  manages only shared skill junctions plus copied subagents; everything
+  else reaches Copilot through the `~/.claude` paths the Claude linker
+  creates.
 
 ## Coding Style & Naming Conventions
 
-Follow the applicable `rules/coding-<language>.md`. Python, PowerShell, and
-Bash use four-space indentation and an approximately 100-column soft limit.
-PowerShell functions use approved `Verb-Noun` names; Python uses
-`lower_snake_case` and type hints. Name skills with lowercase kebab-case
-(`fabric-auth`, `code-review`) and rules as `coding-<language>.md`. Keep YAML
-frontmatter valid and concise; move long skill detail into `references/`.
-Respect `.gitattributes`: PowerShell/batch files use CRLF, while shell scripts
-use LF.
+Follow the applicable `claude/rules/coding-<language>.md`. Python,
+PowerShell, and Bash use four-space indentation and an approximately
+100-column soft limit. PowerShell functions use approved `Verb-Noun` names;
+Python uses `lower_snake_case` and type hints. Name skills with lowercase
+kebab-case (`fabric-auth`, `code-review`) and rules as
+`coding-<language>.md`. Keep YAML frontmatter valid and concise; move long
+skill detail into `references/`. Respect `.gitattributes`: PowerShell/batch
+files use CRLF, while shell scripts use LF.
 
 ## Testing Guidelines
 

@@ -6,7 +6,7 @@
 # directories under per-tool payload dirs are NOT swallowed: a
 # pattern with no slash before its trailing one (`sessions/`,
 # `cache/`) matches at ANY depth — e.g. `sessions/` would silently
-# ignore a committed codex/sessions/. (Patterns with a middle slash,
+# ignore a committed <tool>/sessions/. (Patterns with a middle slash,
 # like `prompts/*`, were already anchored to this directory; the
 # leading / just makes the anchoring uniform and explicit.)
 # ==============================================================
