@@ -50,6 +50,15 @@ internal cross-references stay intact.
   the analysis has no write capability; runs inline because it reads the
   report out of the current conversation. Only recommended actions
   become briefs — everything else stays conversational.
+- [drift-update/](drift-update/) — the third turn: execute the briefs
+  `/drift-handoff` left on disk. Walks them in numbered order with a
+  checkpoint each — confirm the quoted evidence still exists, apply,
+  run the brief's own verification, stamp an execution log — and stops
+  on the first failure. Briefs whose `Kind` is a decision rather than
+  an edit are escalated, never executed. Reads briefs from disk and
+  never from the conversation, which is what keeps `drift-handoff`'s
+  cold-read contract honest: a brief that can't be executed without
+  opening the audit report is reported as a brief-format defect.
 - [learn/](learn/) — "learn!": capture a session learning into the
   skill / rule / CLAUDE.md that should have covered it. Auto-detects
   which guidance was in use, checks existing coverage, verifies against
