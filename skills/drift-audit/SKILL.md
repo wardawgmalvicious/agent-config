@@ -78,7 +78,7 @@ For each diff entry, decide its bucket. Use these scans:
 - **Skill match** — `Glob ~/.claude/skills/*/SKILL.md` for directory-name keyword hits; `Grep` skill descriptions and bodies for feature-name and syntax keywords.
 - **Rule match** — `Grep ~/.claude/rules/coding-*.md` for per-language overlap (a new T-SQL keyword lands on `coding-tsql.md`, a new DAX function on `coding-dax.md`, etc.).
 - **CLAUDE.md match** — `Read ~/.claude/CLAUDE.md`; check whether a current instruction line is invalidated or extended by the entry.
-- **MCP match** — `Read ~/.claude/mcp/.mcp.global.template.json` **and** `~/.claude/mcp/.mcp.project.template.json` for the current server inventory across both global and per-project scopes; identify whether the entry adds, removes, or changes a server. A finding can land in either template: globally-applicable stdio servers go in the global template; per-workspace remote servers requiring workspace/item IDs go in the project template.
+- **MCP match** — `Read ~/.claude/mcp/.mcp.global.template.json` **and** `~/.claude/mcp/.mcp.project.template.json` for the current server inventory across both global and per-project scopes; identify whether the entry adds, removes, or changes a server. Placing a finding is a two-step test. First, does it work from Claude Code at all? The Fabric-hosted `api.fabric.microsoft.com/v1/mcp/*` endpoints do not (OAuth DCR unsupported) and belong only in the VS Code workspace template, `.vscode/mcp.template.json` in the agent-config repo. Second, if it does work: is it bound to a workload (needs a workspace ID, database, connection string, or a running desktop app) or not? Workload-bound goes in the project template; cross-workload — docs, source control, cloud control plane — goes in the global one. Transport is not the test; a stdio server can be workload-bound and an http server can be universal.
 
 Classify each diff entry into exactly one bucket:
 
@@ -129,7 +129,7 @@ Emit one markdown report to the conversation, sections in this exact order. If a
 
 - **<server or CLI name>** — <what's new>
   - MS Learn: <URL or "endpoint TBD — verify">
-  - Proposed action: <add to ~/.claude/mcp/.mcp.global.template.json | CLAUDE.md note | flag>
+  - Proposed action: <add to ~/.claude/mcp/.mcp.global.template.json | ~/.claude/mcp/.mcp.project.template.json | .vscode/mcp.template.json | CLAUDE.md note | flag>
 
 ## No-op
 
