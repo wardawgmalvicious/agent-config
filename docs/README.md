@@ -4,9 +4,10 @@ Internal documentation for the repo's authoring workflow.
 
 ## Layout
 
-- [handoff-briefs/](handoff-briefs/) — templates and worked examples
-  for the brief-before-draft pattern used to author skills and
-  subagents. See
+- [handoff-briefs/](handoff-briefs/) — templates, worked examples, and
+  pending briefs for the brief-before-draft pattern used to author
+  skills and subagents. A filled brief lives here until the work lands,
+  then is deleted. See
   [Handoff discipline](../README.md#handoff-discipline) in the
   top-level README for context.
 - [project-CLAUDE-template.md](project-CLAUDE-template.md) — fill-in
