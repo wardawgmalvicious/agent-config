@@ -1,0 +1,12 @@
+{
+    "mcpServers": {
+        "microsoft-learn-mcp": {
+            "type": "http",
+            "url": "https://learn.microsoft.com/api/mcp"
+        },
+        "github-mcp": {
+            "type": "http",
+            "url": "https://api.githubcopilot.com/mcp/"
+        }
+    }
+}
