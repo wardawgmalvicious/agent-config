@@ -35,12 +35,8 @@ top-level README for additional context.
   artifacts in the repo. See [examples/README.md](examples/README.md).
 
 Open briefs — work scoped but not yet done — sit at this level alongside
-the templates, and are deleted once the change lands:
-
-- [drift-audit-generalization.md](drift-audit-generalization.md) —
-  widen `drift-audit` past its two hardcoded Microsoft doc sources so
-  skills in other domains get a staleness check too. Records the
-  rejected `skill-audit` rename.
+the templates, and are deleted once the change lands. None are open
+right now.
 
 ## For consumers cherry-picking from this repo
 
