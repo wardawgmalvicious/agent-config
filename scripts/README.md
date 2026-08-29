@@ -19,8 +19,8 @@ Helper scripts for repo maintenance and observability.
   so Claude Code loads its config from a clone living anywhere on disk.
   Creates directory junctions (no elevation needed) at
   `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
-  `claude/agents`, `claude/hooks`, `claude/rules` and the root `mcp/`
-  and `skills/` — see `$LinkDirs` in the script for the mapping. Mirrors
+  `claude/agents`, `claude/hooks`, `claude/rules`, `claude/mcp` and the
+  root `skills/` — see `$LinkDirs` in the script for the mapping. Mirrors
   `claude/CLAUDE.md` (→ `~/.claude/CLAUDE.md`) and
   `claude/settings.json` as plain copies (file
   symlinks need Developer Mode; hard links break on `git pull`). The

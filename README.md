@@ -72,10 +72,6 @@ rearranging the root.
 - [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and
   behavioral (code-review, drift-audit). Consumed by Claude Code and
   GitHub Copilot. See [skills/README.md](skills/README.md).
-- [mcp/](mcp/) — Starter templates for global (user-scope) and project-
-  scope Claude Code MCP server configs, plus a workspace-scope template
-  for VS Code / GitHub Copilot.
-
 ### [claude/](claude/) — Claude Code payload
 
 - [claude/agents/](claude/agents/) — 1 subagent
@@ -164,7 +160,7 @@ stay separable:
   `~/.agents/skills`, because `chat.agentSkillsLocations` leaves
   `~/.claude/skills` off and that directory holds other providers'
   skills. MCP is a workspace `.vscode/mcp.json` (see
-  [mcp/README.md](mcp/README.md)).
+  [.vscode/README.md](.vscode/README.md)).
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
@@ -188,8 +184,8 @@ content is written for and validated with Claude Code first.
 
 2. Link into Claude Code. Creates directory junctions (no elevation
    needed) at `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
-   `claude/agents`, `claude/hooks`, `claude/rules`, and the root
-   `mcp/` and `skills/`. Mirrors `claude/CLAUDE.md`
+   `claude/agents`, `claude/hooks`, `claude/rules`, `claude/mcp`, and
+   the root `skills/`. Mirrors `claude/CLAUDE.md`
    (→ `~/.claude/CLAUDE.md`) and `claude/settings.json` as plain copies.
    **Back up first if you already have a `~/.claude`** — the
    script refuses to replace real directories or drifted files without
@@ -237,7 +233,7 @@ content is written for and validated with Claude Code first.
 
 Edit files in place and commit like any other repo. Changes to the
 junctioned directories (`claude/agents/`, `claude/hooks/`,
-`claude/rules/`, `mcp/`, `skills/`) are
+`claude/rules/`, `claude/mcp/`, `skills/`) are
 live immediately — the tools read the same files. Changes to
 `claude/CLAUDE.md` or `claude/settings.json` need a
 `scripts/link-claude.ps1` re-run to reach the live copies (the script also verifies everything else and

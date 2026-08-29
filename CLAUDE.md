@@ -13,13 +13,22 @@ is Claude's user-scope payload.
 Layout convention: **`<tool>/` names the payload's *format*, not its
 only consumer.** `claude/` holds everything written in Claude Code's
 formats — subagent frontmatter, `paths:`-scoped rules, hook event
-wiring, user-scope `CLAUDE.md` and `settings.json`. GitHub Copilot
-reads most of it too (see below), so "Claude-only" would be wrong;
-"Claude-format" is the useful line. Top-level directories hold content
-in formats no single tool owns: `skills/` (the open Agent Skills
-format) and `mcp/` (whose templates cover both Claude Code and VS Code
-/ Copilot schemas). A `codex/` payload lived here until Codex went
-unused; it is in the history if it is ever wanted back.
+wiring, user-scope `CLAUDE.md` and `settings.json`, and the MCP
+templates in Claude's `mcpServers` schema. GitHub Copilot reads most of
+it too (see below), so "Claude-only" would be wrong; "Claude-format" is
+the useful line. `skills/` is the only payload at the top level,
+because the Agent Skills format belongs to no single tool. A `codex/`
+payload lived here until Codex went unused; it is in the history if it
+is ever wanted back.
+
+Config for *this* repo is a third category, and lives where each tool
+expects to find it rather than under a payload directory: `.mcp.json`,
+`.claude/settings.json`, and `.vscode/mcp.json` describe the servers
+and permissions used when editing this repo. Templates describe other
+repos; live config describes this one. The VS Code template is the one
+deliberate exception — it sits in `.vscode/` next to the live file
+because that is exactly where it deploys, and because there is no
+`copilot/` payload directory for it to live in.
 
 `claude/CLAUDE.md` is also why the payload cannot simply live at the
 repo root: root `CLAUDE.md` is already this file, project scope. Two
@@ -41,14 +50,16 @@ lands determines when it goes live:
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
 | `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
-| `mcp/`, `skills/` | `~/.claude/<same>` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `claude/mcp/` | `~/.claude/mcp` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `skills/` | `~/.claude/skills` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
 | `skills/<name>/` | `~/.agents/skills/<name>` | per-skill junction (`scripts/link-copilot.ps1`) | immediately |
 
 (Claude Code doesn't read `~/.claude/mcp` itself — that junction exists
-so the template-copy commands in [mcp/README.md](mcp/README.md) resolve
-from a stable path.)
+so the template-copy commands in
+[claude/mcp/README.md](claude/mcp/README.md) resolve from a stable
+path.)
 
 The deployed names on the right are fixed by each tool and never
 change, so repo-side moves are cheap: relocating payload under

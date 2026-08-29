@@ -6,15 +6,17 @@ This is an agent-configuration repository, not an application; it has no
 runtime or build artifact. Add reusable guidance under
 `skills/<name>/SKILL.md`, with supporting detail in `references/`, `scripts/`,
 or `assets/`. The top level splits by audience: a directory sits at the
-root when more than one tool consumes it (`skills/`, `mcp/`) and under
-`<tool>/` when only that tool does. Everything Claude Code reads is under
+root when its format belongs to no single tool (`skills/`) and under
+`<tool>/` when the format is that tool's. Everything Claude Code reads is under
 `claude/` — path-scoped language conventions in `claude/rules/`, subagents
 in `claude/agents/`, lifecycle hooks in `claude/hooks/`, plus user-scope
-`claude/CLAUDE.md` and `claude/settings.json`. GitHub Copilot consumes that
-same payload through its own VS Code settings and so has no payload directory
-of its own. Maintenance and linking utilities are in `scripts/`, while MCP
-templates and handoff guidance are in `mcp/` and `docs/`. Manual behavioral
-fixtures live under `tests/skills/` and `tests/agents/`.
+`claude/CLAUDE.md`, `claude/settings.json`, and the Claude-schema MCP
+templates in `claude/mcp/`. GitHub Copilot consumes that same payload through
+its own VS Code settings and so has no payload directory of its own; the one
+Copilot-schema artifact, an MCP workspace template, sits in `.vscode/` next to
+where it deploys. Maintenance and linking utilities are in `scripts/`, and
+handoff guidance is in `docs/`. Manual behavioral fixtures live under
+`tests/skills/` and `tests/agents/`.
 
 ## Setup, Lint, and Development Commands
 
