@@ -1,6 +1,6 @@
 ---
 name: fabric-warehouse
-description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename April 2025+, IDENTITY preview, transactional ALTER TABLE GA April 2026, CTAS workaround for type changes), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/explicit columns/variables), COPY INTO with AUTO_CREATE_TABLE (PARQUET/CSV/JSONL) + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry pattern), DDL inside transactions (Sch-M lock blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA, REST/portal not T-SQL), sp_get_table_health_metrics (SQLEP), source control/CI-CD (preview), pipeline calls via Script activity (NOT Stored Procedure)."
+description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename, IDENTITY GA Aug 2026 (bigint, RESEED), transactional ALTER TABLE GA April 2026, CTAS workaround), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/variables), COPY INTO with AUTO_CREATE_TABLE + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry), DDL in transactions (Sch-M blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA, REST/portal), sp_get_table_health_metrics (SQLEP), GPU query acceleration (preview), Recycle-bin recovery, source control/CI-CD (preview, incl. SQLEP), pipeline calls via Script activity (NOT Stored Procedure)."
 paths:
   - "**/*.Warehouse/**/*.sql"
 ---
@@ -96,7 +96,9 @@ CTAS workaround **destroys time-travel history and security (GRANT/DENY)** on th
 
 **Cross-engine caveat:** widening surfaces as Delta **type widening** at the storage layer — external engines reading the same Delta tables must support Delta type-widening reads. To strip type widening from the schema, rebuild with CTAS.
 
-## IDENTITY Columns (Preview)
+## IDENTITY Columns
+
+**GA August 2026.**
 
 ```sql
 CREATE TABLE dbo.DimProduct (
@@ -105,9 +107,34 @@ CREATE TABLE dbo.DimProduct (
 );
 ```
 
-- Data type must be `bigint`. Cannot be added via `ALTER TABLE` — use CTAS.
-- Values not guaranteed sequential (gaps after rolled-back transactions). Surrogate keys only.
-- `SET IDENTITY_INSERT` supported. CTAS / SELECT INTO preserve the IDENTITY property.
+- Data type must be `bigint` — anything else errors. Cannot be added to an existing table via `ALTER TABLE` — use CTAS or `SELECT ... INTO`. The identity column doesn't have to be first in the table definition.
+- **No custom seed or increment.** The system manages values internally and always produces positive integers.
+- **Values are unique but not sequential, and gaps are normal.** The cause is the distributed engine, *not* rolled-back transactions: `IDENTITY` scales range allocation out across compute nodes to keep load parallel, so two ingestion tasks — even sequential, even both successful — get non-contiguous ranges. Uniqueness holds for the life of the table as long as `IDENTITY_INSERT` isn't used; a used value is never reissued. Surrogate keys only — never treat the value as an ordering or a row count.
+- CTAS / `SELECT ... INTO` preserve the IDENTITY property on the target column.
+
+### IDENTITY_INSERT and reseeding
+
+```sql
+SET IDENTITY_INSERT dbo.DimCustomer ON;
+INSERT INTO dbo.DimCustomer (CustomerKey, CustomerName, Email)
+VALUES (-1, 'Unknown', NULL);          -- sentinel row
+SET IDENTITY_INSERT dbo.DimCustomer OFF;
+
+DBCC CHECKIDENT('dbo.DimCustomer', RESEED);   -- required, not optional
+```
+
+- While `IDENTITY_INSERT` is `ON`: a **column list is required** on the `INSERT`, and **only one table per session** can have it on.
+- **Reseed after turning it off.** `RESEED` scans used and reserved ranges across the compute nodes to work out the correct next values; skip it and you risk key collisions.
+- `DBCC CHECKIDENT` supports **only `RESEED`** here — no custom reseed value, and `NORESEED` is not supported.
+- `COPY INTO` has its own `IDENTITY_INSERT = 'ON'` option, and it **overrides the session-level setting**:
+
+  ```sql
+  COPY INTO dbo.Employees (EmployeeID 1, FirstName 2, LastName 3)
+  FROM 'https://myaccount.blob.core.windows.net/myblobcontainer/folder1/'
+  WITH (FILE_TYPE = 'CSV', IDENTITY_INSERT = 'ON');
+  ```
+
+- **`sys.identity_columns` lies here.** `seed_value` and `increment_value` are always `NULL` and never updated; `last_value` is `NULL` until the first identity insert, then flips **permanently to `-1`**. Don't read it for a high-water mark — use `MAX()` on the column.
 
 ## Capability Matrix
 
@@ -118,7 +145,10 @@ CREATE TABLE dbo.DimProduct (
 | COPY INTO, OPENROWSET (read + ingest) | ✅ |
 | `bcp` bulk copy utility | 🔶 Preview (`BULK LOAD` / `BULK INSERT` T-SQL not supported) |
 | Transactions | ✅ (snapshot isolation only) |
-| Time travel (`OPTION (FOR TIMESTAMP AS OF ...)`) | ✅ (1–120 day retention, default 30) |
+| `IDENTITY` columns (`bigint` only) | ✅ (**GA Aug 2026**) |
+| Time travel (`OPTION (FOR TIMESTAMP AS OF ...)`) | ✅ (1–120 day **table-history** retention, default 30) |
+| Dropped-warehouse recovery (workspace Recycle bin) | ✅ (GA July 2026 — 7–90 day **item** retention, default 7; different window from time travel) |
+| GPU query acceleration | 🔶 Limited preview (registration form; workspace-level toggle) |
 | Time travel on **SQL analytics endpoint** | 🔶 Preview (June 2026 — New metadata sync only) |
 | Warehouse Snapshots | ✅ (GA — created via REST API / portal, not T-SQL) |
 | `sys.sp_get_table_health_metrics` (SQLEP, Lakehouse tables) | ✅ (GA June 2026) |
@@ -224,6 +254,23 @@ Time travel extended to the **SQL analytics endpoint** in June 2026 (preview) �
 - Up to 30 days retention; zero-copy (reference existing Parquet files); atomically refreshable to a new point in time.
 - Use cases: financial close (lock KPIs), audit comparisons, stable Power BI reporting during ETL, data recovery.
 
+### Dropped warehouse recovery (GA July 2026)
+
+A **dropped** warehouse is recoverable from the **workspace Recycle bin** — a different mechanism from time travel, and worth keeping straight:
+
+| | Time travel | Warehouse Snapshots | Recycle bin recovery |
+|---|---|---|---|
+| Recovers | a past state of tables in a **live** warehouse | a named point-in-time view of a live warehouse | the **whole deleted item** |
+| Window | **1–120 days**, default 30 (warehouse `data-retention`) | up to 30 days | **7–90 days**, default 7 (**Item Recovery** tenant setting) |
+| Set by | warehouse setting | snapshot definition | tenant admin |
+
+- Restores table schemas, data, snapshots, permissions, views, and stored procedures — the item comes back with its properties and permissions intact.
+- **Workspace Contributor** or above can restore; **Workspace Admin** is needed to permanently delete during the window.
+- Portal: workspace → **Recycle bin** → select → **Restore**. REST: `POST /v1/workspaces/{workspaceId}/recoverableItems/{itemId}/recover` (`DELETE` on the same path purges it).
+- With the **Item Recovery** tenant setting **off**, deleting an item retains nothing.
+- Recovery **fails if a new item now has the same name** in that workspace — rename the new one, then retry.
+- After a permanent delete, OneLake holds the data 7 more days but nothing can restore it.
+
 ## Table Health Metrics — `sys.sp_get_table_health_metrics` (GA June 2026)
 
 Built-in system stored procedure that returns file-level storage health for a **Lakehouse Delta table**, exposed on the **SQL analytics endpoint** (read-only). Use it to drive *check-then-act* maintenance — run `OPTIMIZE` only when the table actually needs it, instead of on a blind schedule.
@@ -244,6 +291,17 @@ EXEC sys.sp_get_table_health_metrics 'sales.SalesOrderFacts';
 
 **Pipeline pattern**: call it from a **Script activity** (not the Stored Procedure activity — only Script exposes the structured JSON result set for a downstream **If Condition** on `PotentialAnomalyType > 0`), then branch into a notebook that runs `OPTIMIZE`. Note before `VACUUM`: removing old files permanently shortens the time-travel window.
 
+## Query Acceleration — GPU (Preview)
+
+GPU co-processing for eligible T-SQL. No query rewrites, no schema changes, no data movement — Fabric splits the plan and offloads eligible operators (scans, joins, aggregations) to a GPU engine sitting alongside the CPUs in the same compute node.
+
+**The blast radius is the workspace, not the item.** The toggle lives in **Workspace settings → Fabric Warehouse → Query Acceleration**, and once on it applies to **every warehouse and SQL analytics endpoint in that workspace**. Toggling it either way **cancels every query currently running in the workspace** — do it in a quiet window.
+
+- **Limited preview** — access is granted per tenant via a [registration form](https://aka.ms/GPU-FabricDW), first-come first-served, and the capacity must sit in a supported region (East US, East US 2, South Central US, South East Asia, Germany West Central at time of writing).
+- **Billed on a separate, higher-rate CU meter.** Once enabled, *all* queries in the workspace bill through it — not just accelerated ones.
+- **Eligibility is per query, and two things commonly disqualify one**: `nvarchar` (limited support — prefer `varchar(8000)`, which you want in Fabric Warehouse anyway) and case-insensitive collations (prefer the default binary/CS collation). Write operations never accelerate; read-heavy scans/joins/aggregations over up to ~1 TB benefit most, especially under concurrency.
+- **Verify rather than assume it applied**: `queryinsights.exec_requests_history.is_accelerated` (1/0), `number_of_accelerated_runs` in `long_running_queries` and `frequently_run_queries`, the **Query Acceleration** column in portal Query history, or the **Query Acceleration** operator in an SSMS graphical plan. `is_accelerated = 0` means either disabled *or* ineligible — the column doesn't distinguish them.
+
 ## Source Control and CI/CD (Preview)
 
 Source control for Fabric Warehouse is a **preview** feature — both Git integration and deployment pipelines.
@@ -252,6 +310,7 @@ Source control for Fabric Warehouse is a **preview** feature — both Git integr
 - **Deployment pipelines**: promote across Dev → Test → Prod stages.
 - **IDE / local**: VS Code with **DacFx** (SQL database projects) for schema management, **SSMS** for interactive dev; external CI/CD via **SQLPackage CLI**, DacFx tasks, and REST APIs.
 - Use SQL database projects + Git for incremental object-level change and history; use deployment pipelines for environment promotion.
+- **SQL analytics endpoint CI/CD** — separate, newer preview (Aug 2026): a SQLEP's *definition* (the schemas, views, procedures and functions you add on top of the auto-generated tables) can be managed as a **DacFx database project** in Git alongside other Fabric items, and promoted as incremental schema changes through deployment pipelines. Previously the endpoint was a deployment side-effect of its parent item, not a versioned artifact. Evidence so far is the What's New row only — there is no dedicated Learn page — so treat the mechanics as unconfirmed and check before designing a release process around it.
 - **Collation-mismatch gotcha**: promoting/branching/merging when source and target warehouses were created with different collations is **not supported** — deployment may succeed but dataset collation isn't reconciled. Fix with the `dw-collation-error-update-tmsl` script in the Fabric toolbox.
 
 ## Default Collation
@@ -268,6 +327,9 @@ Source control for Fabric Warehouse is a **preview** feature — both Git integr
 - Microsoft Learn: [What is Fabric Data Warehouse?](https://learn.microsoft.com/fabric/data-warehouse/data-warehousing)
 - Microsoft Learn: [Performance guidelines](https://learn.microsoft.com/fabric/data-warehouse/guidelines-warehouse-performance)
 - Microsoft Learn: [Secure your Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/security)
+- Microsoft Learn: [IDENTITY columns in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/identity)
+- Microsoft Learn: [Query acceleration (preview)](https://learn.microsoft.com/fabric/data-warehouse/query-acceleration)
+- Microsoft Learn: [Recover or permanently delete items](https://learn.microsoft.com/fabric/admin/item-recovery)
 - Comprehensive MS Learn link bundle (concept / connect / tables / ingestion / performance / monitoring / security / backup-restore / source control & CI/CD): [references/REFERENCE.md](references/REFERENCE.md)
 
 ## See also
