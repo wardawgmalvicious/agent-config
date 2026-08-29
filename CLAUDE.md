@@ -68,20 +68,32 @@ Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
 they are unaffected by repo layout entirely.
 
 GitHub Copilot needs no payload of its own, and no linker either. The
-VS Code agent surface treats Claude's user-scope paths as built-in
-locations and reads `~/.claude/rules`, `~/.claude/agents`,
-`~/.claude/skills`, and `~/.claude/settings.json` (Claude's hook
-format) directly, plus `~/.claude/CLAUDE.md` as always-on
-instructions. Which of them are live is purely a settings decision —
+VS Code agent surface reads Claude's user-scope paths directly:
+`~/.claude/rules` for instructions, `~/.claude/skills` for personal
+skills, `~/.claude/settings.json` for hooks (Claude's own format),
+`~/.claude/CLAUDE.md` for always-on instructions, and `~/.claude/agents`
+for subagents once it is pointed there. The governing settings are
 `chat.instructionsFilesLocations`, `chat.agentFilesLocations`,
 `chat.agentSkillsLocations`, `chat.hookFilesLocations`, and
 `chat.useClaudeMdFile` — so the junctions `scripts/link-claude.ps1`
 already creates serve Copilot as-is, with nothing copied or
 duplicated.
 
-Every user-scope (`~/`) location defaults to **off**; workspace-scope
-ones default to on. Each one Copilot should see needs an explicit
-`true`. Two traps are worth remembering. `chat.instructionsFilesLocations`
+Checked 2026-08-29 against `microsoft/vscode-docs@28f76f5f`: most of
+those user-scope locations are **on by default**, which is the reverse
+of what this file claimed before. `chat.hookFilesLocations` prints
+`"~/.claude/settings.json": true` inside its own documented default
+value; `~/.claude/rules` is a listed default location for user-profile
+instructions; `~/.claude/skills` is a listed default location for
+personal skills; and `chat.useClaudeMdFile` defaults to on. The one
+exception is **`~/.claude/agents`** — the custom-agent docs give
+`~/.copilot/agents` as the only user-profile default and list
+`.claude/agents` at *workspace* scope only, so that path does need an
+explicit `chat.agentFilesLocations` entry. Setting the others
+explicitly is harmless and self-documenting, but it is belt-and-braces,
+not wiring that has to exist.
+
+Two traps are worth remembering. `chat.instructionsFilesLocations`
 takes **folders only** — pointing it at `~/.claude/CLAUDE.md` is
 silently inert, and the file loads anyway via `chat.useClaudeMdFile`,
 which makes the dead setting look like it worked. And a skills route
