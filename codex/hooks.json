@@ -1,0 +1,19 @@
+{
+  "description": "User-scope observability hooks managed by agent-config.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh -NoProfile -File \"${CODEX_HOME:-$HOME/.codex}/hooks/log-session-start.ps1\"",
+            "commandWindows": "pwsh -NoProfile -File \"$(if ([string]::IsNullOrWhiteSpace($env:CODEX_HOME)) { Join-Path $HOME '.codex\\hooks\\log-session-start.ps1' } else { Join-Path $env:CODEX_HOME 'hooks\\log-session-start.ps1' })\"",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ]
+  }
+}
