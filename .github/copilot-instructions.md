@@ -63,7 +63,11 @@ everything under [claude/](../claude) is Claude Code-specific —
 [claude/agents/](../claude/agents). GitHub Copilot consumes `skills/` (per-skill links into
 `~/.agents/skills`) and, for MCP, a workspace `.vscode/mcp.json` — see
 [mcp/README.md](../mcp/README.md). Rules, hooks, and `settings.json`
-are not wired into Copilot.
+need no Copilot-specific wiring: the VS Code agent surface reads
+`~/.claude/rules`, `~/.claude/CLAUDE.md`, and `~/.claude/settings.json`
+(Claude's hook format) as harness-agnostic user-scope defaults, so the
+`link-claude.ps1` junctions already serve Copilot. Only subagents need
+placing separately, at `~/.copilot/agents`.
 
 ## How the pieces trigger
 
