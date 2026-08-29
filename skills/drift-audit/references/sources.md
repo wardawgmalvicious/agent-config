@@ -74,13 +74,15 @@ into this source. Don't search for one.
 
 Governs how this repo's `~/.claude` payload reaches GitHub Copilot, so its
 findings land on the repo's own deployment docs rather than on skills and
-rules. Claims about this surface are version-pinned and go stale silently:
-`~/.claude/skills` became a first-class `chat.agentSkillsLocations` entry
-in VS Code 1.135, which retired a whole linker script whose docstring had
-been quietly wrong for months. VS Code ships monthly — faster than the
-Fabric cadence — and moves these pages (they were under
-`docs/copilot/customization/` until the 2026 reorg), so a 404 on the path
-means find the new one, not that the source is gone.
+rules. Claims about this surface go stale silently, and are as often wrong
+on arrival: `scripts/link-copilot.ps1` was written to work around a
+`chat.agentSkillsLocations` gap that had already been closed for two
+months, and the audit that retired the script is what caught it. Pin such
+claims to a date you have checked, not to a version you have inferred.
+VS Code ships monthly — faster than the Fabric cadence — and moves these
+pages (they were under `docs/copilot/customization/` until the 2026
+reorg), so a 404 on the path means find the new one, not that the source
+is gone.
 
 Two schema stretches, both deliberate. `path` is a **directory**, not a
 single file, because the four pages change independently and the useful
