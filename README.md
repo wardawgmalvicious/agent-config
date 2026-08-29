@@ -117,8 +117,6 @@ rearranging the root.
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
   this repo (sync model, authoring conventions). Not deployed; loads
   only in sessions inside this repo.
-- [AGENTS.md](AGENTS.md) — Concise, independent contributor guide for
-  this repo. It is project-scoped and is never deployed to user scope.
 - [LICENSE](LICENSE) — MIT.
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
@@ -145,9 +143,14 @@ stay separable:
   globs are the direct analog). Note the split: a rule's *body* is
   portable prose, but the file as it sits on disk is a Claude artifact,
   which is why it lives under `claude/`.
-- **Instruction files are independent.** Root [AGENTS.md](AGENTS.md)
-  is repository-scoped and is never deployed, and is not a mirror of
-  root [CLAUDE.md](CLAUDE.md) or [claude/CLAUDE.md](claude/CLAUDE.md).
+- **One instruction file per scope.** Root [CLAUDE.md](CLAUDE.md) is
+  project scope and never deployed; [claude/CLAUDE.md](claude/CLAUDE.md)
+  is the user-scope payload. They are not mirrors of each other. A root
+  `AGENTS.md` was carried alongside them until it went unread — Codex
+  was dropped and VS Code's `chat.useAgentsMdFile` is off — and its one
+  unique section, the fixture-validation procedure, now lives in root
+  `CLAUDE.md`. Reinstate it from history if a tool that reads
+  `AGENTS.md` comes back; the content is not Claude-specific.
 - **Other tools** — the repo carried a Codex payload and linker until
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads

@@ -141,8 +141,9 @@ commit yourself). Suggested subject shape:
 
 If `claude/CLAUDE.md` changed, remind the user to re-run
 `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`
-(it is a copy, not a junction). Nothing in this repo has an
-`AGENTS.md` mirror, so there is never a hand-sync step.
+(it is a copy, not a junction). Root `CLAUDE.md` is the repo's only
+project-scope instruction file — there is no `AGENTS.md` mirror — so
+there is never a hand-sync step.
 
 ## Example (illustrative — not a real fabric-cicd fact)
 
