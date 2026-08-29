@@ -193,7 +193,7 @@ Report rules:
 
 After emitting the report, restate the read-only contract briefly so any follow-up turn in the same conversation lands cleanly:
 
-> Audit complete. Read-only contract: no skill / rule / `CLAUDE.md` / MCP-template edits this turn. To capture the recommended actions as handoff briefs on disk, run `/drift-handoff` now — it reads this report from the conversation, so it has to run before the context is lost. To act on a finding directly instead, start a new request naming the specific artifact and the action.
+> Audit complete. Read-only contract: no skill / rule / `CLAUDE.md` / MCP-template edits this turn. To capture the recommended actions as handoff briefs on disk, run `/drift-handoff` now — it reads this report from the conversation, so it has to run before the context is lost. A later session then executes those briefs with `/drift-update`. To act on a finding directly instead, start a new request naming the specific artifact and the action.
 
 Constraints to honour throughout the turn:
 
