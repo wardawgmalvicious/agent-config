@@ -30,10 +30,20 @@ The Fabric and Power BI servers sit in the project template for exactly this rea
 
 ### Prerequisites (user scope)
 
-- **Hosted http endpoints** (`microsoft-learn-mcp`) need no local runtime.
-- **Docker MCP Gateway servers** (`github-mcp`, `azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view. When Docker Desktop isn't running these three fail to connect, and Claude Code reports it at session start.
+- **Hosted http endpoints** (`microsoft-learn-mcp`, `github-mcp`) need no local runtime. `microsoft-learn-mcp` needs no credential either. `github-mcp` needs a token in `GITHUB_PAT` — see below.
+- **Docker MCP Gateway servers** (`azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view. When Docker Desktop isn't running these fail to connect, and Claude Code reports it at session start.
 
 Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows username before merging. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
+
+#### `github-mcp` auth — PAT, not OAuth
+
+GitHub's hosted server is reached at `https://api.githubcopilot.com/mcp/`. Claude Code **cannot** complete its OAuth flow — the same Dynamic Client Registration gap that blocks the Fabric endpoints, reported as `Incompatible auth server: does not support dynamic client registration`. A bearer token sidesteps the flow entirely and the server accepts it, so the template sends one:
+
+```json
+"headers": { "Authorization": "Bearer ${GITHUB_PAT}" }
+```
+
+Set `GITHUB_PAT` in your environment before starting Claude Code. Prefer a real PAT (classic or fine-grained) over `gh auth token` — the `gho_` token the `gh` CLI holds is rotated, so a value copied from it goes stale. If you would rather not manage a token, the Docker MCP Gateway carries a `github-official` server that reuses your local `gh` credentials; it is what this template used before, and it is still a valid substitute for anyone already running Docker Desktop.
 
 ### Install (user scope)
 
@@ -65,7 +75,7 @@ claude mcp add --scope user microsoft-learn-mcp --transport http https://learn.m
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `microsoft-learn-mcp` | http (`learn.microsoft.com/api/mcp`) | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). Zero-dependency and useful in any repo — the clearest user-scope case in the set. |
-| `github-mcp` | stdio (Docker MCP Gateway → `github-official`) | GitHub repos, issues, PRs, releases, code search; uses your local gh / GitHub credentials via the gateway. |
+| `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth via `GITHUB_PAT`; no local runtime, so it works without Docker Desktop. |
 | `azure-mcp` | stdio (Docker MCP Gateway → `azure`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. |
 | `dockerhub-mcp` | stdio (Docker MCP Gateway → `dockerhub`) | Docker Hub repos, tags, namespaces, search; useful for image discovery and registry housekeeping. The most droppable entry here — keep it only if you actually manage images. |
 
@@ -136,7 +146,7 @@ JSON files don't support comments, so substitution instructions live here.
 
 ### `<USER>` placeholder (global template)
 
-[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the three Docker MCP Gateway servers (`github-mcp`, `azure-mcp`, `dockerhub-mcp`). Replace each occurrence with your **Windows profile name** before merging the template into `~/.claude.json`.
+[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the two Docker MCP Gateway servers (`azure-mcp`, `dockerhub-mcp`). Replace each occurrence with your **Windows profile name** before merging the template into `~/.claude.json`.
 
 To see the value:
 
