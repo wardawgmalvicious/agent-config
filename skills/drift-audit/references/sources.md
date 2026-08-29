@@ -87,7 +87,16 @@ is gone.
 Two schema stretches, both deliberate. `path` is a **directory**, not a
 single file, because the four pages change independently and the useful
 unit is "did any of them move." And `artifacts` names repo files instead
-of an artifact class, because this source cannot affect a skill or a rule.
+of an artifact class, which keeps Phase 2 off a full skill sweep this
+source rarely earns.
+
+That narrowness is a scope choice, not a claim about reach. This source
+*can* surface findings that bear on skills — the 2026-08-29 run turned up
+forked skill context (`context: fork` in `SKILL.md` frontmatter, gated by
+`github.copilot.chat.skillTool.enabled`, landed `eea0ec7e`) — but VS
+Code's skill features are not Claude Code's, so the payoff does not
+justify sweeping every skill on every run. Report findings like that as
+bucket (c) tooling notes rather than mapped drift.
 
 ### `claude-code` — Claude Code releases
 
