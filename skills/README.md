@@ -33,9 +33,13 @@ internal cross-references stay intact.
   self-consistent commits: splitting rules, conventional-commit
   messages with motivation in the body, explicit-path staging,
   never-push/amend rails, Fabric Git-synced repo checks.
-- [drift-audit/](drift-audit/) — audit Microsoft monthly feature blogs
-  / release notes for skill staleness, drift in existing skills, new-
-  skill candidates, and MCP/tooling additions. Findings only — no edits.
+- [drift-audit/](drift-audit/) — audit registered upstream docs sources
+  for skill staleness, drift in existing skills, new-skill candidates,
+  and MCP/tooling additions. Findings only — no edits. Sources are a
+  registry ([references/sources.md](drift-audit/references/sources.md)),
+  not a hardcoded list — Fabric and Power BI What's New today, and
+  widening the audit to another domain is an entry there plus a
+  validated run.
 - [learn/](learn/) — "learn!": capture a session learning into the
   skill / rule / CLAUDE.md that should have covered it. Auto-detects
   which guidance was in use, checks existing coverage, verifies against
