@@ -1,0 +1,8 @@
+{
+    "permissions": {
+        "allow": [
+            "mcp__microsoft-learn-mcp__microsoft_docs_fetch",
+            "mcp__microsoft-learn-mcp__microsoft_docs_search"
+        ]
+    }
+}

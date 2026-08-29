@@ -11,9 +11,12 @@
 # leading / just makes the anchoring uniform and explicit.)
 # ==============================================================
 
-# Nested project-scope .claude/ (settings.local.json etc.) that
-# Claude Code creates when launched inside this directory.
+# Nested project-scope .claude/ that Claude Code creates when
+# launched inside this directory. settings.json is this repo's own
+# shared project config and IS tracked; settings.local.json (personal
+# permissions) stays ignored by the name-based rule further down.
 /.claude/*
+!/.claude/settings.json
 
 # Personal Claude Desktop project instructions — not portable, may
 # contain sensitive information.
@@ -63,9 +66,12 @@ settings.local.json
 .DS_Store
 Thumbs.db
 desktop.ini
-# .vscode is ignored except the committed MCP workspace config
+# .vscode is ignored except the committed workspace MCP config, the
+# VS Code / Copilot MCP template this repo publishes, and their README.
 /.vscode/*
 !/.vscode/mcp.json
+!/.vscode/mcp.template.json
+!/.vscode/README.md
 .idea/
 *.swp
 *~
