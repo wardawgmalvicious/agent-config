@@ -1,6 +1,6 @@
 ---
 name: fabric-mlv
-description: "Use for Fabric Materialized Lake Views (MLVs) — `CREATE MATERIALIZED LAKE VIEW` Spark SQL (GA March 2026) + still-preview `@fmlv.materialized_lake_view` PySpark decorator on a schema-enabled lakehouse (Runtime 1.3). Covers CREATE / SHOW / ALTER RENAME / DROP / REFRESH FULL syntax, `CONSTRAINT ... CHECK ... ON MISMATCH DROP|FAIL` data quality rules, partitioning + TBLPROPERTIES, optimal refresh (skip / incremental / full) and CDF prerequisite, the supported-SQL-constructs table for incremental-vs-full fallback, lineage-driven dependency ordering, `RefreshMaterializedLakeViews` REST job-type (schedule + on-demand), run history (25 runs / 7 days; Success / Failed / Skipped / Canceled), data quality report, and gotchas: no ALTER definition only RENAME, no DML / UDF / temp views / time-travel, all-uppercase schemas rejected, names lowercased, `spark.conf.set` ignored on refresh, PySpark always full-refresh + lineage-schedule-only + no variables in `@fmlv` args, deleting defining notebook breaks PySpark refresh."
+description: "Use for Fabric Materialized Lake Views (MLVs) — `CREATE MATERIALIZED LAKE VIEW` Spark SQL (GA March 2026) + still-preview `@fmlv.materialized_lake_view` PySpark decorator on a schema-enabled lakehouse (Runtime 1.3). Covers CREATE / SHOW / ALTER RENAME / DROP / REFRESH FULL syntax, `CONSTRAINT ... CHECK ... ON MISMATCH DROP|FAIL` data quality rules, partitioning/TBLPROPERTIES, optimal refresh (skip/incremental/full) + CDF prerequisite, the supported-SQL-constructs table, lineage-driven dependency ordering, scheduling (time-based vs event-triggered Preview, per-schedule Spark environment, Extended lineage across lakehouses/workspaces), `RefreshMaterializedLakeViews` REST job-type, run history (25 runs / 7 days), data quality report, gotchas: no ALTER definition only RENAME, no DML/UDF/temp views/time-travel, all-uppercase schemas rejected, names lowercased, `spark.conf.set` ignored on refresh, 24-hour run cap, overlapping refreshes skipped, PySpark always full-refresh, deleting defining notebook breaks refresh."
 ---
 
 # Fabric Materialized Lake Views (MLV)
@@ -113,7 +113,7 @@ Optimal refresh is on by default. Per-run, Fabric picks one of three strategies 
 | **Incremental** | New commits + query uses only the supported-construct subset + all sources have CDF enabled + append-only |
 | **Full** | Source has updates/deletes, unsupported constructs, non-Delta source, or PySpark-defined MLV |
 
-Toggle: lakehouse → **Materialized lake views** → **Manage** → **Optimal refresh**. Off = every scheduled run does a full rebuild.
+Toggle: lakehouse → **Materialized lake views** → **Manage** → **Optimal refresh**. Off = every scheduled run does a full rebuild. A **schedule can override it** under its own **Advanced settings**; per-schedule settings beat lakehouse defaults, which beat system defaults.
 
 ### What blocks incremental refresh
 
@@ -131,9 +131,49 @@ Unsupported constructs **don't block creation** — they just downgrade to full 
 
 ## Lineage and scheduling
 
-When an MLV references another MLV or table, Fabric builds a dependency DAG (the **lineage view**). A single schedule runs the whole DAG in the right order — you don't write orchestration. Currently **one active schedule per lineage** per lakehouse.
+When an MLV references another MLV or table, Fabric builds a dependency DAG (the **lineage view**). A schedule runs its scope in dependency order — you don't write orchestration. Multiple schedules can coexist on one lakehouse and **each runs independently**, so give separate lineages their own cadence rather than forcing everything onto one.
 
-UI path: lakehouse → **Materialized lake views** → **Manage** → **Schedule** → **New schedule**.
+UI path: lakehouse → **Materialized lake views** → **Manage** → **Manage schedules** → **New schedule**. Each schedule takes a name, an optional description, and a scope: **Refresh all materialized lake views** or **Refresh selected materialized lake view(s)** (any level of the lineage; selected views get a dashed border in the graph).
+
+### Refresh type
+
+| Type | Detail |
+|---|---|
+| **Time-based** | Repeat by minute / hourly / daily / weekly / monthly, one or more time slots, start date, end date, time zone. |
+| **Event-triggered** (**Preview**) | Fires on an event instead of a clock. Event source type is **Job events** (Fabric Notebook or ADF pipeline completion) or **OneLake events** (ingestion into OneLake); then pick the event type and configure the source. |
+
+Use event-triggered when source arrival is unpredictable — a fixed cadence either wastes compute on no-op runs or lags the data.
+
+**Event-triggered gotchas.** Only OneLake events and Notebook / Pipeline job events are supported as sources. **Private Link is out of preview scope.** The mechanism depends on an auto-created **"FMLV Refresh" Notebook and Activator** pair in the workspace — they look like stray auto-generated items and they are load-bearing. Modifying or deleting them can silently stop event-triggered refreshes.
+
+### Advanced settings
+
+| Setting | Detail | Default |
+|---|---|---|
+| **Spark environment** | Any Spark environment you have access to **within the same capacity**, including one in a different workspace. Changes apply on the next refresh. Lose access to it and you lose the **Schedule** and **Run** actions; delete it and the dropdown errors until you pick an accessible one. | Workspace default |
+| **Optimal refresh** | Per-schedule override of the lakehouse toggle. | On |
+
+Priority order: per-schedule → lakehouse-level → system defaults.
+
+### Cross-lakehouse: Extended lineage
+
+MLV chains **can** span lakehouses, and workspaces. Turn on the **Extended lineage** toggle in the schedule configuration and a tree of every upstream lakehouse discovered through lineage appears; check the ones to include. **Leaving all of them unselected includes every lakehouse in the extended lineage** — the permissive default, not a no-op. The current lakehouse is always included implicitly.
+
+Fabric refreshes upstream views first, then downstream, across every included lakehouse; independent branches run in parallel; Recent runs shows a **single** run entry for the whole thing. So a Bronze → Silver → Gold flow across three lakehouses is one schedule defined in Gold, not three coordinated ones.
+
+Ad-hoc equivalent: **Run** on the lineage toolbar → **On demand lineage refresh**, then pick an execution mode — *Refresh without dependant lineage* (selected views only), *Refresh with dependant lineage* (plus upstream within the current lakehouse), or *Refresh with extended lineage* (plus upstream lakehouses, same tree).
+
+| Requirement | Detail |
+|---|---|
+| View an upstream lakehouse | `ReadAll` on it. With OneLake-based permissions enabled: `Read` on the required tables/MLVs. |
+| Include a lakehouse in the refresh | `ReadWrite` on it. With OneLake-based permissions enabled: `ReadWrite` on the required MLVs. |
+| Spark environment | Any you can access within the same capacity. |
+| Inaccessible dependencies | Show as **faulted nodes**. **Any faulted node blocks the whole lineage refresh** — it won't run at all. |
+| Maximum run duration | 24 hours, same as a standard run. |
+
+### Run behavior
+
+A run **fails if it exceeds 24 hours**. If a refresh starts while another is still in progress, **Fabric skips the later one** — it is not queued. A schedule that "didn't run" is usually this.
 
 Run history retention: **last 25 runs OR last 7 days, whichever comes first**.
 
@@ -202,7 +242,11 @@ Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. La
 | Run shows as `Canceled` in Monitor hub but `Skipped` in lineage | Monitor hub maps Skipped → Canceled | Trust the lineage view's status |
 | Data quality report fails to generate | Workspace/lakehouse name has spaces or special characters | Rename, or generate the report against a clean-named lakehouse |
 | Data quality report missing rows | DirectQuery 1M-row cap on non-premium | Use premium capacity, or recreate the report after pruning history |
-| Cross-lakehouse MLV chain doesn't work | Cross-lakehouse lineage and execution not supported | Keep MLV chains within a single lakehouse |
+| Cross-lakehouse MLV chain doesn't refresh | **Supported now** (it wasn't originally) — but only via **Extended lineage**; a plain schedule stops at the current lakehouse | Turn on Extended lineage; `ReadAll` to see an upstream lakehouse, `ReadWrite` to include it |
+| Cross-lakehouse refresh won't start at all | A faulted node in the lineage graph — an upstream dependency you can't access | Grant `ReadAll`/`Read` on it, or drop that lakehouse from the schedule's scope |
+| Scheduled refresh appears not to have run | Another refresh was in progress; Fabric **skips** the later run rather than queueing it | Space schedules beyond the longest run, or consolidate into one schedule |
+| Long-running refresh dies around the day mark | Hard **24-hour** cap on a run, standard or cross-lakehouse | Split the lineage across schedules, or fix what makes the run take a day |
+| Event-triggered refreshes silently stopped | The auto-created **"FMLV Refresh" Notebook / Activator** items were edited or deleted | Don't touch them; recreate the event-triggered schedule to regenerate |
 
 ## Reference
 

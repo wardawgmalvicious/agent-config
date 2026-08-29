@@ -29,6 +29,7 @@ The 3 highest-leverage entry points (concept overview, Spark SQL reference, opti
 ## Lineage and scheduling
 
 - [Manage Fabric materialized lake views lineage](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/view-lineage) — the lineage view, dependency graph, custom Spark environment, the auto-refresh-every-2-minutes UI behavior, the deleted-environment fallback.
+- [Schedule a materialized lake view refresh](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/schedule-lineage-run) — the **Manage schedules** pane and independent per-schedule runs, refresh scope (all vs selected views), **Time-based vs Event-triggered (Preview)** refresh types (Job events / OneLake events, the Private-Link exclusion, the load-bearing auto-created "FMLV Refresh" Notebook + Activator), Advanced settings (per-schedule Spark environment across the same capacity, per-schedule Optimal refresh, the schedule → lakehouse → system priority order), **Extended lineage** for cross-lakehouse and cross-workspace chains (lakehouse tree, unselected-means-all default, upstream-first ordering with parallel branches, single Recent-runs entry, `ReadAll`/`ReadWrite` permissions, faulted nodes blocking the run), the **On demand lineage refresh** execution modes, and the 24-hour run cap plus the skip-if-already-running behavior.
 - [Recent runs of materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/run-history) — the **last 25 runs OR last 7 days, whichever comes first** retention rule, the run-state semantics (In progress / Success / Failed / Skipped / Canceled), the "child views auto-marked Skipped if parent fails" behavior.
 - [Monitor materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/monitor-materialized-lake-views) — Monitor hub for `RefreshMaterializedLakeViews` job-type runs, sort/filter/search, view-detail and cancel actions, the `MLV_LakehouseName_JobInstanceID` activity-name pattern.
 
@@ -57,7 +58,7 @@ The 3 highest-leverage entry points (concept overview, Spark SQL reference, opti
 ## Comparison points
 
 - [Materialized views in KQL (Eventhouse)](https://learn.microsoft.com/kusto/management/materialized-views/materialized-view-overview?view=microsoft-fabric) — the analogous KQL feature in Eventhouse; not the same engine, similar concept. Useful when a user is choosing between Lakehouse + MLV and Eventhouse + KQL MV.
-- [Schedule refreshes in Databricks SQL (`SCHEDULE` / `TRIGGER ON UPDATE`)](https://learn.microsoft.com/azure/databricks/ldp/dbsql/schedule-refreshes) — the Databricks materialized-view counterpart. Fabric's MLVs do not currently support a SQL-clause-level `SCHEDULE` (scheduling is lakehouse-level, lineage-wide).
+- [Schedule refreshes in Databricks SQL (`SCHEDULE` / `TRIGGER ON UPDATE`)](https://learn.microsoft.com/azure/databricks/ldp/dbsql/schedule-refreshes) — the Databricks materialized-view counterpart. Fabric's MLVs do not currently support a SQL-clause-level `SCHEDULE` — schedules are separate objects on the lakehouse, scoped to all views, selected views, or (with Extended lineage) upstream lakehouses.
 
 ## See also (this repo)
 
