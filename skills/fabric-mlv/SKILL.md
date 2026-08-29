@@ -14,7 +14,7 @@ Use MLVs for medallion bronze→silver→gold pipelines, frequently-queried aggr
 ## Prerequisites
 
 - **Schema-enabled lakehouse** — required. `enableSchemas` is immutable per lakehouse; you can't retrofit it.
-- **Fabric Runtime 1.3** — earlier runtimes can't author MLVs.
+- **Fabric Runtime 1.3** — earlier runtimes can't author MLVs. Upstream still names 1.3 exactly (checked 2026-08-29), and **has not** extended the prerequisite to **Runtime 2.0** (GA Aug 2026 — Spark 4.1, Delta Lake 4.2, Python 3.13), so treat 2.0 as unverified for MLV authoring rather than assumed. This has a deadline: 2.0 is planned to become the default for new workspaces and environment items in **late September 2026**, at which point a new workspace stops defaulting to a runtime MLVs are documented against. Re-check the prerequisite then.
 - **Region** — not available in South Central US (as of 2026-04).
 - **CDF on source tables** — required for incremental refresh: `ALTER TABLE bronze.x SET TBLPROPERTIES (delta.enableChangeDataFeed = true)`. Without it, optimal refresh degrades to skip-or-full only.
 

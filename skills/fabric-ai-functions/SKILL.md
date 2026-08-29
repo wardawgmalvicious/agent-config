@@ -16,7 +16,12 @@ Skip them when you need **low-level control** over a single prompt/response, cus
 ## Prerequisites
 
 - **Paid capacity** — F2 or higher, or any P edition. Not available on trial/Free.
-- **Fabric Runtime 1.3+** — earlier runtimes can't run AI Functions.
+- **Fabric Runtime 1.3+** — earlier runtimes can't run AI Functions. The `+` is upstream's own wording and it does cover **Runtime 2.0** (GA Aug 2026 — Spark 4.1, Delta Lake 4.2, Python 3.13), which becomes the default for new workspaces and environment items around **late September 2026**. One catch comes with it: **pandas** AI Functions on Runtime 2.0 need a temporary compatibility patch, because 2.0 ships `nest_asyncio2` rather than `nest_asyncio`.
+
+  ```python
+  # Runtime 2.0 only — temporary, per upstream; PySpark AI Functions need nothing.
+  %pip install -q nest_asyncio 2>/dev/null
+  ```
 - **Tenant switch** — an admin must enable *Copilot and other features powered by Azure OpenAI*. Depending on region you may also need the **cross-geo processing** tenant setting (the built-in endpoint isn't in every region).
 - Prompts, input data, and outputs are **not logged or stored** by AI Functions.
 

@@ -155,6 +155,7 @@ aifunc.default_conf.set_api_type("chat_completions")   # required for non-OpenAI
 - Per-function PySpark docs: https://learn.microsoft.com/fabric/data-science/ai-functions/pyspark/ (same set)
 - AI Functions in Warehouse/SQL (`ai_*` T-SQL): https://learn.microsoft.com/fabric/data-warehouse/ai-functions
 - AI Prompt in Dataflow Gen2: https://learn.microsoft.com/fabric/data-factory/dataflow-gen2-ai-functions
-- Fabric Runtime 1.3: https://learn.microsoft.com/fabric/data-engineering/runtime-1-3
+- Fabric Runtime 1.3: https://learn.microsoft.com/fabric/data-engineering/runtime-1-3 — the documented floor ("Runtime 1.3 and later")
+- Fabric Runtime 2.0 (GA Aug 2026): https://learn.microsoft.com/fabric/data-engineering/runtime-2-0 — Spark 4.1 / Delta Lake 4.2 / Python 3.13; default for new workspaces and environment items planned for late September 2026. The per-runtime dependency table on the AI Functions overview is where the pandas `nest_asyncio` patch for 2.0 is documented.
 - Starter notebooks: https://aka.ms/fabric-aifunctions-starter-notebooks
 - Eval notebooks: https://aka.ms/fabric-aifunctions-eval-notebooks
