@@ -47,7 +47,8 @@ The 3 highest-leverage entry points (concept overview, Spark SQL reference, opti
 ## Lakehouse prerequisites
 
 - [Lakehouse schemas (Public preview)](https://learn.microsoft.com/fabric/data-engineering/lakehouse-schemas) — the `enableSchemas` toggle that's required for MLVs and is **immutable per lakehouse** (you can't add schemas to an existing non-schema lakehouse without recreating).
-- [Fabric Runtime 1.3](https://learn.microsoft.com/fabric/data-engineering/runtime-1-3) — the runtime version MLV authoring requires.
+- [Fabric Runtime 1.3](https://learn.microsoft.com/fabric/data-engineering/runtime-1-3) — the runtime version MLV authoring requires. The MLV get-started page still names 1.3 exactly as of 2026-08-29.
+- [Fabric Runtime 2.0 (GA Aug 2026)](https://learn.microsoft.com/fabric/data-engineering/runtime-2-0) — Spark 4.1 / Delta Lake 4.2 / Python 3.13 / Java 21 / Scala 2.13 / R 4.5.2 / Azure Linux 3.0. **Not** currently named in the MLV prerequisites; opt-in today, planned default for new workspaces and environment items in late September 2026. Also carries the environment-republish breaking change indexed in `fabric-gotchas`.
 - [Spark views in lakehouses](https://learn.microsoft.com/fabric/data-engineering/lakehouse-spark-views) — the lightweight (non-persisted) alternative for cases where you don't need MLV materialization.
 
 ## Delta Lake (the storage layer MLVs persist into)
