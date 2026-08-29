@@ -157,14 +157,17 @@ stay separable:
   format), and `~/.claude/skills` for personal skills — all of which
   `link-claude.ps1` already populates. That is why there is no
   `copilot/` payload directory: Copilot is a second consumer of the
-  Claude-format payload, not a separate one.
-  [scripts/link-copilot.ps1](scripts/link-copilot.ps1) covers only the
-  two artifacts needing Copilot-specific placement — skills into the
-  shared `~/.agents/skills`, and subagents
-  into `~/.copilot/agents`, since VS Code reads the Claude sub-agent
-  format from `.claude/agents` at workspace scope but from
-  `~/.copilot/agents` at user scope. MCP is a workspace
-  `.vscode/mcp.json` (see [mcp/README.md](mcp/README.md)).
+  Claude-format payload, not a separate one. Which paths are live is a
+  settings decision — enable them under `chat.instructionsFilesLocations`,
+  `chat.hookFilesLocations`, and `chat.agentFilesLocations`
+  (`"~/.claude/agents": true` is what makes subagents work; a copy into
+  `~/.copilot/agents` is *not* needed and only invites drift).
+  [scripts/link-copilot.ps1](scripts/link-copilot.ps1) covers the one
+  artifact that cannot be handled by settings: skills, into the shared
+  `~/.agents/skills`, because `chat.agentSkillsLocations` leaves
+  `~/.claude/skills` off and that directory holds other providers'
+  skills. MCP is a workspace `.vscode/mcp.json` (see
+  [mcp/README.md](mcp/README.md)).
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
@@ -199,11 +202,12 @@ content is written for and validated with Claude Code first.
     ./scripts/link-claude.ps1
     ```
 
-3. Wire the two artifacts GitHub Copilot needs placed for it: skills
-   into `~/.agents/skills`, one junction per skill alongside any skills
-   other providers have installed there, and subagents into
-   `~/.copilot/agents`. Everything else already reaches Copilot through
-   the `~/.claude` paths step 2 created:
+3. Link skills into `~/.agents/skills` for GitHub Copilot, one
+   junction per skill alongside any skills other providers have
+   installed there. Skills are the only artifact needing this;
+   everything else reaches Copilot through the `~/.claude` paths step 2
+   created, once enabled in VS Code settings (see
+   [Tool support](#tool-support)):
 
     ```powershell
     ./scripts/link-copilot.ps1
