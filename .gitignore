@@ -22,6 +22,13 @@
 # contain sensitive information.
 /docs/project-instructions/*
 
+# Generated drift-audit output, one directory per run:
+# docs/drift-audit/<audit-date>/<source-id>/. These are working notes
+# with a short half-life — consumed by a follow-up task, then stale.
+# A run worth keeping gets copied into docs/handoff-briefs/examples/
+# as a tracked example rather than un-ignoring anything here.
+/docs/drift-audit/*
+
 # Runtime prompt/log/memory state.
 /prompts/*
 /logs/*
