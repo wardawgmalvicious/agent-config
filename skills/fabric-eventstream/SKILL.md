@@ -1,6 +1,6 @@
 ---
 name: fabric-eventstream
-description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and producing events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC, Activator destination + `Set Alert` flow, workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`), mTLS Key Vault on Kafka, custom-endpoint CloudEvents producer format (binary mode, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath, SAS policy), schema-registry URL anatomy, and gotchas (republish required, ~6h status lag, filter by ArtifactId not name, CloudEventPropertyMissingException)."
+description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and producing events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC, Activator destination + `Set Alert` flow, workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`), mTLS Key Vault on Kafka, Event Hubs workspace-identity auth, custom-endpoint CloudEvents producer format (binary mode, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath, SAS policy), schema-registry URL anatomy, and gotchas (republish required, ~6h status lag, filter by ArtifactId not name, CloudEventPropertyMissingException)."
 paths:
   - "**/*.Eventstream/**"
 ---
@@ -34,8 +34,8 @@ For real-time analytics on the resulting events, pair an Eventstream with `fabri
 | **MongoDB CDC (preview)** | Specify collections to monitor; initial snapshot + tail |
 | **Azure Cosmos DB CDC** | Container-level change feed |
 | **Mirrored Database Delta CDF (preview, April 2026)** | New: stream row-level inserts/updates/deletes from a Mirrored Database's Delta Change Data Feed into Eventstream. Toggle via Mirrored DB config dashboard → **Delta table management** → **Enable delta change data feed**, or via `enableDeltaChangeDataFeed` in the [Mirrored DB REST API](https://learn.microsoft.com/fabric/mirroring/mirrored-database-rest-api#enable-delta-change-data-feed-for-a-mirrored-database). Connector reference: [extended capabilities](https://learn.microsoft.com/fabric/mirroring/extended-capabilities). |
-| **Azure Event Hubs / IoT Hub** | Native sources — no CDC layer |
-| **Apache Kafka / Amazon MSK / Confluent Cloud Kafka** | Kafka-protocol sources — base connector **GA (June 2026)**; SASL_SSL / SASL_PLAINTEXT / Microsoft Entra auth. Custom-CA / mTLS is still preview — see below |
+| **Azure Event Hubs / IoT Hub** | Native sources — no CDC layer. Event Hubs auth is **Shared Access Key** in both the basic and extended-features pivots; **workspace identity** (Entra ID) instead of shared access keys is in **preview (Aug 2026)** — announced in What's New, but not yet on the connector's Learn page, so expect the UI to lead the docs |
+| **Apache Kafka / Amazon MSK / Confluent Cloud Kafka** | Kafka-protocol sources — base connector **GA (June 2026)**; SASL_SSL / SASL_PLAINTEXT / Microsoft Entra auth. Custom-CA / mTLS also **GA (July 2026)** — see below |
 | **Amazon Kinesis Data Streams** | Single-shard or multi-shard |
 | **Azure Service Bus** | Queue or topic subscription — **GA (June 2026)** |
 | **Google Cloud Pub/Sub** | |
@@ -128,9 +128,30 @@ EventStreamErrorMetrics
 
 For ad-hoc per-node visualizations during authoring, the **Data insights** tab on the lower pane of the Eventstream editor surfaces metrics directly — works without workspace monitoring enabled but is per-node and not historical.
 
-## Custom CA / mTLS for Kafka connectors (preview)
+## Custom CA / mTLS for Kafka connectors
 
-For Kafka, Amazon MSK, and Confluent Cloud Kafka sources, you can specify a **custom CA certificate** and a **client certificate** sourced from **Azure Key Vault** to enforce TLS / mTLS. Configured in the source connection step. Use when the broker is behind a private CA or requires client-cert auth.
+**GA July 2026.** For Kafka, Amazon MSK, and Confluent Cloud Kafka sources, you can specify a **custom CA certificate** and a **client certificate** sourced from **Azure Key Vault** to enforce TLS / mTLS. Configured in the source connection step under **TLS/mTLS settings**. Use when the broker is behind a private CA or requires client-cert auth.
+
+The What's New row phrases this as "Eventstream **connectors**", but as documented it is still the Kafka-protocol connectors: the Azure Event Hubs source's connection UI has no TLS/mTLS block at all. Don't read GA as having widened the connector set.
+
+Which **Security protocol** you pick decides what you must supply:
+
+| Protocol | When | Certificates |
+|---|---|---|
+| `SASL_SSL` | SASL-based auth. The broker cert must be signed by a CA on Fabric's [trusted CA list](https://github.com/microsoft/fabric-event-streams/blob/main/References/certificate-authority-list/trusted-ca-list.txt) | Only if the cluster uses a **custom CA** — then set **Trust CA certificate** |
+| `SSL (mTLS)` | The cluster requires mTLS | **Both** a custom server CA certificate and a client certificate + key |
+
+If you only use mTLS for authentication, the connection wizard still demands an **API Key** — put any string in the Key field.
+
+**Certificate gotchas** (all cause silent-ish failures, and the first blocks data preview rather than the stream):
+
+- The user configuring the source **and previewing data** needs Key Vault access to the certs — *Key Vault Certificate User* or *Key Vault Administrator*. Without it, preview fails from this source.
+- Upload as **PEM**, not PKCS#12/PFX, with `contentType: application/x-pem-file`. The bundle is certificate **and** private key concatenated in one file — a cert without its key won't work.
+- `keySize` in the import policy must match the **actual** key size (4096 for the CA, 2048 for server/client certs). Declaring 2048 for a 4096-bit key fails.
+- `issuerParameters.name` is `"Unknown"` for externally signed certs, not `"Self"`.
+- PEM files need **LF** line endings. CRLF breaks them — relevant on Windows, and this repo's `.gitattributes` won't save you outside it.
+- The server certificate's **SAN** must carry the broker's FQDN *and* IP, or hostname verification (`ssl.endpoint.identification.algorithm=https`) rejects it.
+- Private-network sources: the Key Vault must be reachable from the streaming VNet data gateway's virtual network (private endpoint).
 
 ## Producing to a schema-associated custom endpoint (CloudEvents)
 
