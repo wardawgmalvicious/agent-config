@@ -31,7 +31,7 @@ start, before/after tool use, on stop, etc.).
 
 ## Querying the logs
 
-Both logs feed [scripts/instructions-log](../scripts/instructions-log)
+Both logs feed [scripts/instructions-log](../../scripts/instructions-log)
 — quick queries like `instructions-log today`, `instructions-log paths`,
 `instructions-log reasons`, `instructions-log csv`,
 `instructions-log skills`, or `instructions-log tail`.
@@ -41,7 +41,7 @@ Both logs feed [scripts/instructions-log](../scripts/instructions-log)
 Hooks must be registered in `settings.json` to fire. All hooks here
 are wired in this repo's [settings.json](../settings.json) under the
 `hooks` key. The committed commands resolve via `$HOME/.claude/...` —
-[scripts/link-claude.ps1](../scripts/link-claude.ps1) junctions this
+[scripts/link-claude.ps1](../../scripts/link-claude.ps1) junctions this
 `hooks/` directory into `~/.claude/hooks/` and mirrors `settings.json`
 there, so the paths work for any user regardless of where the repo is
 cloned. If you keep your Claude Code config somewhere other than
