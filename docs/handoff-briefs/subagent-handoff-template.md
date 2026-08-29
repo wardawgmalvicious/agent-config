@@ -89,7 +89,7 @@ initialPrompt: {{}}  # optional; auto-submitted first turn when agent runs as ma
 1. Re-verify frontmatter fields against current docs before writing — the subagent surface is still moving (notably `memory:`, `skills:`, `initialPrompt:`).
 2. Re-count description chars after drafting (Windows + Edit-tool fragility).
 3. `cat` the full agent file after any edit (YAML hygiene rule).
-4. Confirm the agent file lives directly under `agents/` (no subdirectories — the directory is flat).
+4. Confirm the agent file lives directly under `claude/agents/` (no subdirectories — the directory is flat).
 5. If routing via description, read the filled description aloud to check it's specific enough to distinguish from bundled agents.
 
 ## Notes

@@ -62,18 +62,53 @@ unproven, even by `personal` standards:
 
 ## Contents
 
+The top level splits by *audience*: a directory sits at the root when
+more than one tool consumes it, and under `<tool>/` when only that tool
+does. Adding a harness means adding one `<tool>/` directory, not
+rearranging the root.
+
+### Shared content
+
 - [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and
-  behavioral (code-review, drift-audit). See [skills/README.md](skills/README.md).
-- [agents/](agents/) — 1 subagent ([security-reviewer](agents/security-reviewer.md)).
-- [rules/](rules/) — 10 path-scoped coding conventions (T-SQL, Spark SQL,
-  Python/PySpark, PowerShell, Bash, KQL, DAX, M, TMDL, Fabric pipeline
-  expressions) plus a Fabric Git-serialization rule; auto-load via
-  `paths:` globs when matching files enter session scope.
-- [hooks/](hooks/) — InstructionsLoaded and Skill-invocation loggers,
-  and a security-reviewer memory-scope guard.
+  behavioral (code-review, drift-audit). Consumed by Claude Code,
+  Codex, and GitHub Copilot. See [skills/README.md](skills/README.md).
 - [mcp/](mcp/) — Starter templates for global (user-scope) and project-
   scope Claude Code MCP server configs, plus a workspace-scope template
-  for VS Code / GitHub Copilot.
+  for VS Code / GitHub Copilot. (Codex's TOML analog lives in
+  [codex/mcp/](codex/mcp/).)
+
+### [claude/](claude/) — Claude Code payload
+
+- [claude/agents/](claude/agents/) — 1 subagent
+  ([security-reviewer](claude/agents/security-reviewer.md)).
+- [claude/rules/](claude/rules/) — 10 path-scoped coding conventions
+  (T-SQL, Spark SQL, Python/PySpark, PowerShell, Bash, KQL, DAX, M,
+  TMDL, Fabric pipeline expressions) plus a Fabric Git-serialization
+  rule; auto-load via `paths:` globs when matching files enter session
+  scope.
+- [claude/hooks/](claude/hooks/) — InstructionsLoaded and
+  Skill-invocation loggers, and a security-reviewer memory-scope guard.
+- [claude/CLAUDE.md](claude/CLAUDE.md) — User-scope instructions
+  loaded in every session (machine environment, pointers to rules).
+  Deployed to `~/.claude/CLAUDE.md` by the Claude link script.
+- [claude/settings.json](claude/settings.json) — Claude Code settings
+  (hook registry, enabled plugins, effort level, update channel).
+  Deployed to `~/.claude/settings.json` by the link script, which
+  compares it at the key level — runtime keys Claude Code writes to the
+  live copy (like the model pin) stay untracked. Hook commands resolve
+  via `$HOME/.claude/...`, which the junctions provide regardless of
+  where the repo is cloned or how the repo side is arranged. Personal
+  `permissions` entries live in `settings.local.json` (gitignored) —
+  add your own there.
+
+### [codex/](codex/) — Codex payload
+
+The user-scope [AGENTS.md](codex/AGENTS.md), custom agents (TOML),
+custom prompts, plus reference-only MCP and `config.toml` examples. See
+[codex/README.md](codex/README.md).
+
+### Mechanism and supporting material
+
 - [scripts/](scripts/) — link scripts (see [Install](#install)),
   pre-commit bootstrap, instructions-log query helper, SKILL.md
   frontmatter linter.
@@ -82,13 +117,6 @@ unproven, even by `personal` standards:
 - [docs/handoff-briefs/](docs/handoff-briefs/) — Templates and worked
   examples for the brief-before-draft pattern (see
   [Handoff discipline](#handoff-discipline)).
-- [claude/CLAUDE.md](claude/CLAUDE.md) — User-scope instructions
-  loaded in every session (machine environment, pointers to rules).
-  Deployed to `~/.claude/CLAUDE.md` by the Claude link script.
-- [codex/](codex/) — Codex payloads: the user-scope
-  [AGENTS.md](codex/AGENTS.md), custom agents (TOML), custom prompts,
-  plus reference-only MCP and `config.toml` examples. See
-  [codex/README.md](codex/README.md).
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
   this repo (sync model, authoring conventions). Not deployed; loads
   only in sessions inside this repo.
@@ -97,14 +125,6 @@ unproven, even by `personal` standards:
 - [.github/copilot-instructions.md](.github/copilot-instructions.md) —
   Repository-wide custom instructions for GitHub Copilot (architecture,
   build/lint/test, conventions).
-- [settings.json](settings.json) — Claude Code settings (hook registry,
-  enabled plugins, effort level, update channel). Deployed to
-  `~/.claude/settings.json` by the link script, which compares it at
-  the key level — runtime keys Claude Code writes to the live copy
-  (like the model pin) stay untracked. Hook commands resolve via
-  `$HOME/.claude/...`, which the junctions provide regardless of where
-  the repo is cloned. Personal `permissions` entries live in
-  `settings.local.json` (gitignored) — add your own there.
 - [LICENSE](LICENSE) — MIT.
 - [SECURITY.md](SECURITY.md) — security-issue reporting policy.
 - [.gitignore](.gitignore) — runtime state, plugin install, secrets.
@@ -119,14 +139,17 @@ The repo is structured so agnostic content and tool-specific wiring
 stay separable:
 
 - **Portable content** — [skills/](skills/) (the Agent Skills format is
-  an open spec other tools are adopting), [rules/](rules/) bodies,
-  [docs/](docs/), [tests/](tests/), and the MCP templates (MCP is
-  cross-tool; only the config file shape differs per tool).
-- **Claude Code-specific** — [settings.json](settings.json), the hook
-  event wiring in [hooks/](hooks/), the subagent frontmatter in
-  [agents/](agents/), and the `paths:` auto-load frontmatter on rules
-  (GitHub Copilot's `.instructions.md` `applyTo:` globs are the direct
-  analog).
+  an open spec other tools are adopting), [claude/rules/](claude/rules/)
+  bodies, [docs/](docs/), [tests/](tests/), and the MCP templates (MCP
+  is cross-tool; only the config file shape differs per tool).
+- **Claude Code-specific** — everything under [claude/](claude/):
+  [settings.json](claude/settings.json), the hook event wiring in
+  [claude/hooks/](claude/hooks/), the subagent frontmatter in
+  [claude/agents/](claude/agents/), and the `paths:` auto-load
+  frontmatter on rules (GitHub Copilot's `.instructions.md` `applyTo:`
+  globs are the direct analog). Note the split: a rule's *body* is
+  portable prose, but the file as it sits on disk is a Claude artifact,
+  which is why it lives under `claude/`.
 - **Codex** — consumes skills through per-skill junctions under
   `~/.agents/skills`. [scripts/link-codex.ps1](scripts/link-codex.ps1)
   keeps `CODEX_HOME` real and home-owned; when present, it copies
@@ -166,9 +189,11 @@ content is written for and validated with Claude Code first.
     ```
 
 2. Link into Claude Code. Creates directory junctions (no elevation
-   needed) for `agents/`, `hooks/`, `mcp/`, `rules/`, and `skills/`
-   under `~/.claude`, and mirrors `claude/CLAUDE.md` (→ `~/.claude/CLAUDE.md`)
-   and `settings.json` as plain copies. **Back up first if you already have a `~/.claude`** — the
+   needed) at `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
+   `claude/agents`, `claude/hooks`, `claude/rules`, and the root
+   `mcp/` and `skills/`. Mirrors `claude/CLAUDE.md`
+   (→ `~/.claude/CLAUDE.md`) and `claude/settings.json` as plain copies.
+   **Back up first if you already have a `~/.claude`** — the
    script refuses to replace real directories or drifted files without
    `-Force`, but review its warnings before forcing anything.
 
@@ -220,11 +245,11 @@ content is written for and validated with Claude Code first.
 ## Ongoing workflow
 
 Edit files in place and commit like any other repo. Changes to the
-junctioned directories (`agents/`, `hooks/`, `mcp/`, `rules/`,
-`skills/`) are
+junctioned directories (`claude/agents/`, `claude/hooks/`,
+`claude/rules/`, `mcp/`, `skills/`) are
 live immediately — the tools read the same files. Changes to
-`claude/CLAUDE.md` or `settings.json` need a `scripts/link-claude.ps1`
-re-run to reach the live copies (the script also verifies everything else and
+`claude/CLAUDE.md` or `claude/settings.json` need a
+`scripts/link-claude.ps1` re-run to reach the live copies (the script also verifies everything else and
 exits non-zero if any link or mirror needs attention — including after
 moving or renaming the repo folder, which it repairs automatically).
 `codex/AGENTS.md`, `codex/agents/*.toml`, or `codex/prompts/*.md`

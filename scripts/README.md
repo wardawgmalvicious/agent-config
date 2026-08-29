@@ -9,23 +9,27 @@ Helper scripts for repo maintenance and observability.
   [uv](https://docs.astral.sh/uv/) and wire git hooks for this repo.
   Idempotent; safe to re-run. Run on a fresh clone before committing.
 - [instructions-log](instructions-log) — query the hook observability
-  logs: the [InstructionsLoaded log](../hooks/log-instructions-loaded.sh)
-  and the [skill-invocation log](../hooks/log-skill-invocations.sh),
+  logs: the [InstructionsLoaded log](../claude/hooks/log-instructions-loaded.sh)
+  and the [skill-invocation log](../claude/hooks/log-skill-invocations.sh),
   both pure JSONL. Subcommands: `today`, `reasons`, `paths`, `csv`
   (dump the instruction log as CSV for quick consumption), `skills`
   (count skill invocations by name), `tail`. Requires
   [jq](https://jqlang.org).
 - [link-claude.ps1](link-claude.ps1) — link this repo into `~/.claude`
   so Claude Code loads its config from a clone living anywhere on disk.
-  Creates directory junctions (no elevation needed) for `agents/`,
-  `hooks/`, `mcp/`, `rules/`, and `skills/`, and mirrors `claude/CLAUDE.md`
-  (→ `~/.claude/CLAUDE.md`) and `settings.json` as plain copies (file
+  Creates directory junctions (no elevation needed) at
+  `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
+  `claude/agents`, `claude/hooks`, `claude/rules` and the root `mcp/`
+  and `skills/` — see `$LinkDirs` in the script for the mapping. Mirrors
+  `claude/CLAUDE.md` (→ `~/.claude/CLAUDE.md`) and
+  `claude/settings.json` as plain copies (file
   symlinks need Developer Mode; hard links break on `git pull`). The
   repo-root `CLAUDE.md` is project-scope and never deployed. `settings.json` is compared at the
   key level — Claude Code adds runtime keys (like the model pin) to
   the live copy, and those are ignored; only repo keys must match.
   Idempotent — re-run any time, including after moving or renaming
-  the repo folder (stale junctions are re-pointed automatically).
+  the repo folder, or after payload moves between the root and
+  `claude/` (stale junctions are re-pointed automatically, no `-Force`).
   Never overwrites a drifted mirror copy or deletes a real directory
   without `-Force`; exits 1 when anything needs attention.
 - [link-codex.ps1](link-codex.ps1) — wire durable Codex content without

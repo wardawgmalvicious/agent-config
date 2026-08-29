@@ -12,7 +12,7 @@ Run manually; not wired into CI.
   paired entry in [expected_findings.md](skills/code-review/expected_findings.md)
   describing what the skill should catch.
 - [agents/security-reviewer/](agents/security-reviewer/) — fixtures
-  for the [security-reviewer agent](../agents/security-reviewer.md).
+  for the [security-reviewer agent](../claude/agents/security-reviewer.md).
   Synthetic files with seeded credential exposure, injection, and
   recon patterns matching the agent's sweep categories.
 
