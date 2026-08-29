@@ -15,6 +15,13 @@ Internal documentation for the repo's authoring workflow.
   The content is tool-neutral, so it serves equally as an `AGENTS.md`
   for a repo whose tooling reads that instead.
 
-A second directory, `project-instructions/`, holds the author's
-personal Claude Desktop project instructions (easier to edit here and
-paste into Desktop). It is gitignored and not part of the public repo.
+Two further directories are gitignored and not part of the public repo:
+
+- `project-instructions/` — the author's personal Claude Desktop project
+  instructions (easier to edit here and paste into Desktop).
+- `drift-audit/` — generated `/drift-audit` output, one directory per
+  run at `drift-audit/<audit-date>/<source-id>/`, holding the audit
+  report plus a brief per recommended action. Working notes with a short
+  half-life: consumed by a follow-up task, then stale. A run worth
+  keeping gets copied into `handoff-briefs/examples/` rather than
+  un-ignored in place.

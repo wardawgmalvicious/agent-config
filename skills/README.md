@@ -43,6 +43,13 @@ internal cross-references stay intact.
   `CLAUDE.md`, and the MCP templates too, so `skill-audit` would name a
   quarter of its scope and would collide with a plausible future skill
   that actually audits skill quality.
+- [drift-handoff/](drift-handoff/) — the write half of `/drift-audit`:
+  turn its report into `docs/drift-audit/<date>/<source-id>/`, holding
+  the report verbatim plus one brief per recommended action, grouped by
+  shared verification steps. Split from `drift-audit` so the turn doing
+  the analysis has no write capability; runs inline because it reads the
+  report out of the current conversation. Only recommended actions
+  become briefs — everything else stays conversational.
 - [learn/](learn/) — "learn!": capture a session learning into the
   skill / rule / CLAUDE.md that should have covered it. Auto-detects
   which guidance was in use, checks existing coverage, verifies against
