@@ -1,6 +1,6 @@
 ---
 name: drift-audit
-description: "Audit registered upstream docs sources for drift since a prior commit SHA or date — detect new GA / preview features, syntax additions, deprecations, and tooling changes that affect existing skills, rules, CLAUDE.md, or the MCP templates. Sources live in a registry (references/sources.md) covering Microsoft Fabric (incl. RTI) and Power BI What's New, plus the VS Code agent customization docs that govern how this config reaches GitHub Copilot; RTI folds into the Fabric source. Use when running a monthly Fabric / Power BI staleness check, evaluating recent Microsoft data-platform features, checking whether VS Code moved the chat.*Locations wiring, or auditing what changed on the registered pages between two points in time. Narrow a run with --sources <id,id>. Prefers github-mcp for exact file bytes and commit patches, falling back to WebFetch on raw.githubusercontent.com. Findings only — no edits."
+description: "Audit registered upstream docs sources for drift since a prior commit SHA or date — detect new GA / preview features, syntax additions, deprecations, and harness or tooling changes that affect existing skills, rules, CLAUDE.md, settings.json, hooks, or the MCP templates. Sources live in a registry (references/sources.md): Microsoft Fabric (incl. RTI) and Power BI What's New, the VS Code agent-customization docs behind the GitHub Copilot wiring, and the anthropics/claude-code CHANGELOG — the harness the rest runs inside. RTI folds into the Fabric source. Use when running a monthly Fabric / Power BI staleness check, checking whether VS Code moved the chat.*Locations settings, checking whether a Claude Code release renamed a hook event or moved a ~/.claude path, or auditing what changed on the registered pages between two points in time. Narrow a run with --sources <id,id>. Prefers github-mcp for exact bytes and commit patches, falling back to WebFetch. Findings only — no edits."
 argument-hint: "[prior-sha-or-date] [--sources id,id]"
 arguments: prior_ref
 allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__microsoft-learn-mcp__microsoft_docs_fetch
@@ -19,7 +19,7 @@ The audit input is a **registry**, not a fixed pair of pages. `Read` [references
 
 Each entry carries an `id` (what `--sources` matches), its GitHub repo / branch / path or plain `url`, a `shape` (`table` / `prose` / `changelog`) that drives extraction, `sections` for the WebFetch fallback, a `drill` block (host, mechanism, anchor-strip patterns) for Phase 3, and the `artifacts` classes it can produce findings against. The registry's Shape contracts section defines what "an entry" means per shape; its Adding a source checklist is the procedure for widening the audit.
 
-As registered today: `fabric` and `powerbi`, both `table` shape, both public and fetchable anonymously.
+As registered today: `fabric` and `powerbi` (`table`), `vscode-agent` (`prose`), and `claude-code` (`changelog`). All four are public and fetchable anonymously, but `claude-code` is a ~590 KB file with no `sections` list, so in practice only the `github-mcp` path can read it.
 
 ## 2. Argument parsing
 
@@ -57,6 +57,7 @@ Available when the `github-mcp` tools are present in the session. Returns exact 
 3. **Get the changes** — two strategies, by commit count:
    - **5 or fewer in-window commits** — `get_commit` per SHA and read the unified patch for the source's `path`. Added and removed lines come straight from the patch; no side-by-side reconstruction.
    - **More than 5** — `get_file_contents` at the prior ref and again at `<head-sha>`, then diff the two versions as in step 4c. Cheaper than a patch per commit once the count climbs.
+   - **Exception — `changelog` shape** — always read per-commit patches, whatever the count. A changelog appends at the top, so every patch is a small block of new lines, while the two full-file fetches the ">5" branch would trigger are the entire file twice. `claude-code`'s `CHANGELOG.md` is ~590 KB and takes ~29 commits in a 35-day window; the patches are the cheap read, not the expensive one.
 4. Skip 4b entirely.
 
 ### 4b. Fallback path — `WebFetch`
@@ -66,7 +67,7 @@ Used when `github-mcp` is unavailable. Keeps the skill working for anyone cherry
 - Raw markdown at any ref: `https://raw.githubusercontent.com/<repo>/<sha-or-branch>/<path>`
 - Commits list: `https://api.github.com/repos/<repo>/commits?path=<path>&per_page=<n>` with optional `&sha=<ref>` or `&since=<ISO-date>`
 
-GitHub anonymous API limit is 60 requests/hour and this path is unauthenticated. Budget ~3 calls per source (commits list, raw at prior ref, raw at HEAD), plus one re-fetch per section when the completeness check below trips. Two sources fit comfortably; a registry past roughly six sources does not, and that is the point at which the `github-mcp` path stops being optional.
+GitHub anonymous API limit is 60 requests/hour and this path is unauthenticated. Budget ~3 calls per source (commits list, raw at prior ref, raw at HEAD), plus one re-fetch per section when the completeness check below trips. The four registered sources fit; a registry past roughly six does not, and that is the point at which the `github-mcp` path stops being optional. A source the registry marks github-mcp-only — `claude-code` today — is not attempted on this path at all: name it in the report's skipped list rather than diffing a summary of it.
 
 Resolve the diff base the same way: if the user supplied a date, use the parent of the oldest in-window commit; if a SHA whose repo matches this source, use that SHA directly; if a SHA from another source's repo, fall back to the date-based resolution.
 
@@ -83,6 +84,9 @@ Walk prior and HEAD, splitting into entries per the registry's Shape contracts (
 - Any link into the source's `drill.host`. **Strip the anchor patterns named in `drill.strip`** before storing — unstable anchors break across page revisions and pollute downstream diffing.
 - Code or syntax examples — T-SQL, Spark SQL, KQL, DAX, M, TMDL, REST endpoints, CLI flags.
 - MCP-related entries: new MCP servers, new tools on existing servers, transport / URL / authentication changes.
+- Harness entries: hook events and their JSON fields, `settings.json` keys, frontmatter fields on skills / subagents / rules, `~/.claude/` path changes, `permissions` rule syntax, plugin and marketplace layout.
+
+Apply the source's `filter` first if it has one. A filtered-out entry is bucket (d) — record it as a count, not a bullet, and never drill it.
 
 Also capture **removed entries** as a separate set — a removal usually signals GA promotion (status cleared, row moved between tables) or a deprecation. Flag both kinds; preview-to-GA is high-value drift signal because skills often hedge on preview status.
 
@@ -96,6 +100,7 @@ For each diff entry, decide its bucket. Scan only the artifact classes the sourc
 - **Rule match** — `Grep ~/.claude/rules/coding-*.md` for per-language overlap (a new T-SQL keyword lands on `coding-tsql.md`, a new DAX function on `coding-dax.md`, etc.).
 - **CLAUDE.md match** — `Read ~/.claude/CLAUDE.md`; check whether a current instruction line is invalidated or extended by the entry.
 - **MCP match** — `Read ~/.claude/mcp/.mcp.global.template.json` **and** `~/.claude/mcp/.mcp.project.template.json` for the current server inventory across both global and per-project scopes; identify whether the entry adds, removes, or changes a server. Placing a finding is a two-step test. First, does it work from Claude Code at all? The Fabric-hosted `api.fabric.microsoft.com/v1/mcp/*` endpoints do not (OAuth DCR unsupported) and belong only in the VS Code workspace template, `.vscode/mcp.template.json` in the agent-config repo. Second, if it does work: is it bound to a workload (needs a workspace ID, database, connection string, or a running desktop app) or not? Workload-bound goes in the project template; cross-workload — docs, source control, cloud control plane — goes in the global one. Transport is not the test; a stdio server can be workload-bound and an http server can be universal.
+- **Harness match** — `Read ~/.claude/settings.json` for the hook event wiring, permissions, and env keys currently in use; `Glob ~/.claude/hooks/*` and `Grep` them for event names and hook JSON fields; `Grep` skill / subagent / rule frontmatter for the fields the entry touches (`allowed-tools`, `paths`, `model`, `argument-hint`). A renamed hook event or a moved `~/.claude` path breaks the deployed payload silently — there is no error path, so this scan is the only detection. Findings here land on the repo files the source's `artifacts` names, including `scripts/link-claude.ps1` when a deployed location moves.
 
 Classify each diff entry into exactly one bucket:
 

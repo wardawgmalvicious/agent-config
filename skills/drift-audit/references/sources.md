@@ -17,6 +17,7 @@ Each `id` below is what `--sources` accepts.
 | `shape` | `table`, `prose`, or `changelog`. Drives extraction — see Shape contracts. |
 | `columns` | `table` shape only: which columns carry the feature name, the description, and the preview/GA status. |
 | `sections` | H2 / H3 headings used for targeted re-fetch when the WebFetch fallback summarizes the page. Ignored on the github-mcp path. |
+| `filter` | Optional. Which entries are worth reporting, for sources whose volume would otherwise swamp the report. Entries it excludes go straight to bucket (d) undrilled. |
 | `drill.host` | Doc host the source's rows link into. |
 | `drill.via` | `microsoft-learn-mcp` or `webfetch`. How Phase 3 opens a linked page. |
 | `drill.strip` | Unstable anchor patterns to remove from every URL before it reaches the report. |
@@ -86,6 +87,56 @@ single file, because the four pages change independently and the useful
 unit is "did any of them move." And `artifacts` names repo files instead
 of an artifact class, because this source cannot affect a skill or a rule.
 
+### `claude-code` — Claude Code releases
+
+- `repo`: `anthropics/claude-code`
+- `branch`: `main`
+- `path`: `CHANGELOG.md`
+- `shape`: `changelog`
+- `sections`: none — the file is ~590 KB, far past the WebFetch
+  summarization threshold, and there is no heading set worth re-fetching
+  by name. This source is **github-mcp-only** in practice.
+- `filter`: keep a bullet only if it names the config surface this repo
+  owns — a `settings.json` key, a hook event or hook JSON field, skill /
+  subagent / rule frontmatter, a `~/.claude/` path, a `permissions` rule,
+  MCP config schema, plugin or marketplace layout, or a `claude` CLI flag
+  the scripts and docs here reference. Everything else is bucket (d), and
+  is not drilled.
+- `drill.host`: `code.claude.com` (paths under `/docs/en/`) — **not**
+  `docs.claude.com`
+- `drill.via`: `webfetch`
+- `drill.strip`: none — anchors here are stable heading slugs, so keep them
+- `artifacts`: `claude/settings.json`, `claude/hooks/`, `claude/agents/`,
+  skill and rule frontmatter, `claude/mcp/`, `claude/CLAUDE.md`, root
+  `CLAUDE.md`, `scripts/link-claude.ps1`
+
+This is the harness the rest of the config runs inside, so it is the one
+source that can invalidate an artifact's *mechanism* rather than its
+content — a renamed hook event or a moved `~/.claude` path breaks the
+payload silently, exactly like the `vscode-agent` case.
+
+Anthropic publishes no git-backed mirror of `code.claude.com/docs`, so
+`CHANGELOG.md` is the only diffable surface for this product; the docs
+pages are Phase 3 drill targets only. `feed.xml` in the same repo is the
+same content as RSS and is not a better source. `examples/settings/`,
+`examples/hooks/`, and `examples/mdm/` are small and directly relevant,
+but they are illustrations rather than spec — the changelog announces
+every change they would eventually reflect.
+
+Two measured facts drive the fields above, both of which stress the
+pipeline harder than the What's New sources do:
+
+- **Volume.** ~29 commits and ~550 bullets in a 35-day window, of which
+  roughly two thirds are `Fixed` TUI or platform bugs. Without `filter`
+  the report is unreadable. Do not filter on the leading verb alone,
+  though — `Fixed Grep and Glob not applying Read(...) deny rules to files
+  reached through a symlinked search path` is a permissions-model finding
+  wearing a bugfix prefix.
+- **Size.** 587 KB, 380 version sections. This is why SKILL.md § 4a
+  exempts `changelog` sources from the ">5 commits → diff two full files"
+  rule; here that rule would pull ~1.2 MB to learn what ~29 small
+  append-at-top patches already say.
+
 ## Shape contracts
 
 What "an entry" means for the diff, per shape.
@@ -102,27 +153,34 @@ What "an entry" means for the diff, per shape.
 - **`changelog`** — the page is version-stamped release notes. The unit is
   a **version section**; each bullet under a new version is one entry, and
   the version string is the entry's provenance instead of a section
-  heading.
+  heading. Apply the entry's `filter`, if it has one, per bullet before
+  anything else — an excluded bullet is bucket (d) and is never drilled.
+  Changelogs append at the top, so diff them from commit patches, never
+  from two full-file fetches (SKILL.md § 4a).
 
 **Only `table` has been exercised.** The two What's New sources are
-table-driven; `vscode-agent` is the first `prose` entry and has not been
-run yet. `prose` and `changelog` are specified so a non-table source is a
-registry entry plus a validated run, not a skill rewrite — but treat the
-first run against either as unproven and check the extracted entries
-against the live page by hand before trusting the report.
+table-driven; `vscode-agent` is the first `prose` entry and `claude-code`
+the first `changelog` one, and neither has been run yet. `prose` and
+`changelog` are specified so a non-table source is a registry entry plus a
+validated run, not a skill rewrite — but treat the first run against
+either as unproven and check the extracted entries against the live page
+by hand before trusting the report.
 
 ## Adding a source
 
 1. Open the real page and confirm which shape it is. Do not assume `table`
-   because both current sources are.
+   because the What's New sources are.
 2. Add the entry above with every field filled. A missing `drill.via`
    defaults to `webfetch`; a missing `sections` list means the WebFetch
    fallback cannot do targeted re-fetch, so the source is github-mcp-only
    in practice for pages over ~40 KB.
-3. Confirm `artifacts` is honest. A source that can only ever affect one
+3. If the page carries more entries per window than a report can usefully
+   hold, write a `filter`. A source with no filter and hundreds of entries
+   per run produces a report nobody reads, which is the same as no audit.
+4. Confirm `artifacts` is honest. A source that can only ever affect one
    rule shouldn't trigger a full skill sweep on every run.
-4. Run `/drift-audit --sources <new-id>` against a window you already know
+5. Run `/drift-audit --sources <new-id>` against a window you already know
    the answer for, and check the extracted entries against the page.
-5. If the source pushed the frontmatter `description` past its promise of
+6. If the source pushed the frontmatter `description` past its promise of
    what the skill covers, update it — the description is the entire
    model-invoked trigger mechanism.
