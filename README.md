@@ -162,11 +162,22 @@ stay separable:
   [codex/AGENTS.md](codex/AGENTS.md) is a separate Codex payload
   rather than a mirror of root `AGENTS.md`, root
   [CLAUDE.md](CLAUDE.md), or [claude/CLAUDE.md](claude/CLAUDE.md).
-- **GitHub Copilot** — consumes the skills via per-skill links into
-  `~/.agents/skills` (see [scripts/link-copilot.ps1](scripts/link-copilot.ps1)),
-  plus a workspace `.vscode/mcp.json` for MCP servers (see
-  [mcp/README.md](mcp/README.md)). Rules, hooks, and settings are not
-  wired into Copilot.
+- **GitHub Copilot** — consumes most of this repo with no extra
+  wiring. The VS Code agent surface reads Claude's user-scope paths as
+  harness-agnostic defaults: `~/.claude/rules` for instructions,
+  `~/.claude/CLAUDE.md` for always-on instructions,
+  `~/.claude/settings.json` for hooks (it parses Claude Code's hook
+  format), and `~/.claude/skills` for personal skills — all of which
+  `link-claude.ps1` already populates. That is why there is no
+  `copilot/` payload directory: Copilot is a second consumer of the
+  Claude-format payload, not a separate one.
+  [scripts/link-copilot.ps1](scripts/link-copilot.ps1) covers only the
+  two artifacts needing Copilot-specific placement — skills into the
+  shared `~/.agents/skills` (which also serves Codex), and subagents
+  into `~/.copilot/agents`, since VS Code reads the Claude sub-agent
+  format from `.claude/agents` at workspace scope but from
+  `~/.copilot/agents` at user scope. MCP is a workspace
+  `.vscode/mcp.json` (see [mcp/README.md](mcp/README.md)).
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
