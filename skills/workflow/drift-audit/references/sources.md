@@ -207,8 +207,11 @@ What "an entry" means for the diff, per shape.
   the version string is the entry's provenance instead of a section
   heading. Apply the entry's `filter`, if it has one, per bullet before
   anything else — an excluded bullet is bucket (d) and is never drilled.
-  Changelogs append at the top, so diff them from commit patches, never
-  from two full-file fetches (SKILL.md § 4a).
+  Changelogs append at the top, so a commit patch is a small block of new
+  lines. At or below the ">5" commit count, diff them from patches; above
+  it a two-ref diff is fine **provided both refs are diffed on disk and
+  only the new region enters context** — never let two full files into the
+  conversation (SKILL.md § 4a).
 
 **`table` and `prose` have been exercised; `changelog` has not.** The two
 What's New sources are table-driven. `vscode-agent` exercised `prose` on
