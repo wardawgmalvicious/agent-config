@@ -12,7 +12,7 @@ rule is loaded into context.
 
 The rules don't enforce style — they tell the model the conventions to
 follow when generating or reviewing code in that language. Pair with
-the [code-review skill](../../skills/code-review/SKILL.md) for explicit
+the [code-review skill](../../skills/workflow/code-review/SKILL.md) for explicit
 conformance checking.
 
 ## What's here

@@ -51,7 +51,7 @@ lands determines when it goes live:
 | --- | --- | --- | --- |
 | `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `claude/mcp/` | `~/.claude/mcp` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
-| `skills/` | `~/.claude/skills` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
+| `skills/<group>/` | `~/.claude/skills/<name>` | one junction per skill (`scripts/link-claude.ps1`) | immediately — same files |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
 
@@ -131,7 +131,7 @@ kept in sync a third time. `AGENTS.md` later went the same way — three
 project-scope instruction files, each drifting against the others, is
 the recurring failure mode here. This file is the only one now.
 
-- **Skills** (`skills/<name>/SKILL.md`) trigger three ways:
+- **Skills** (`skills/<group>/<name>/SKILL.md`) trigger three ways:
   model-invoked (the frontmatter `description` is the *entire* trigger
   mechanism — the model matches context against it), user-invoked
   (`/<name>`), or path-scoped (a `paths:` glob in frontmatter).
@@ -150,7 +150,7 @@ the recurring failure mode here. This file is the only one now.
   outside `~/.claude/agent-memory/security-reviewer/`.
 
 Linting gotchas worth keeping: PowerShell does **not** glob-expand args
-for external commands, so `skills/*/SKILL.md` passes through literally
+for external commands, so `skills/*/*/SKILL.md` passes through literally
 and fails — expand first with
 `$files = Get-ChildItem skills -Filter SKILL.md -Recurse | % FullName`.
 `tests/` and `docs/` are gitleaks-allowlisted because fixtures
@@ -159,9 +159,9 @@ intentionally contain fake credential-shaped strings.
 ## Editing conventions
 
 - **Skills** — frontmatter `description` ≤ 1024 chars; lint with
-  `uv run --with pyyaml scripts/lint-frontmatter.py skills/<name>/SKILL.md`
+  `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`
   (pre-commit runs it too). Long detail goes in
-  `skills/<name>/references/`, not SKILL.md. Skill edits don't
+  `skills/<group>/<name>/references/`, not SKILL.md. Skill edits don't
   reliably reload mid-session on Windows — restart the session to
   test a changed SKILL.md.
 - **Rules** — `paths:` frontmatter globs control auto-load; a rule

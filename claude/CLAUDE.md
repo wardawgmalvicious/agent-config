@@ -46,14 +46,19 @@ heredoc and run that file instead.
 
 ## Agent config source
 
-`~/.claude/agents`, `hooks`, `mcp`, `rules`, and `skills` are directory
+`~/.claude/agents`, `hooks`, `mcp`, and `rules` are directory
 junctions into `C:\Repos\Personal\agent-config` — a file under either
 path is the same file, and edits are committed from that repo. The
 repo side is **not** flat: `agents`, `hooks`, `mcp`, and `rules` live
 under `agent-config/claude/`, because they are written in Claude Code's
 own formats. Only `skills` sits at the repo root, in the tool-neutral
-Agent Skills format. The deployed names above never change, so a
-repo-side move only ever changes a junction target.
+Agent Skills format, grouped by domain (`fabric/`, `powerbi/`,
+`workflow/`). Claude Code discovers a skill one level down only, so
+`~/.claude/skills` is a real directory holding one junction per skill
+rather than a single junction; `-SkillGroups` chooses which groups
+deploy, and `-ClaudeDir` can target a project instead of home. The
+deployed names above never change, so a repo-side move only ever
+changes a junction target.
 `~/.claude/CLAUDE.md` and `settings.json` are plain copies of
 `claude/CLAUDE.md` and `claude/settings.json`: edit the repo versions
 and re-run `scripts/link-claude.ps1 -Force`.
