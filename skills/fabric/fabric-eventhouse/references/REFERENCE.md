@@ -82,3 +82,31 @@ The 3 highest-leverage entry points (Eventhouse overview, KQL string-operator be
 
 - [Kusto query REST API](https://learn.microsoft.com/kusto/api/rest/request?view=microsoft-fabric) — `POST {clusterUri}/v1/rest/query` body shape (`{"db": ..., "csl": ...}`), response Tables/Rows shape. Reference for the `az rest` temp-file pattern in the parent skill.
 - [Storage connection strings (Kusto)](https://learn.microsoft.com/kusto/api/connection-strings/storage-connection-strings?view=microsoft-fabric) — `;impersonate`, `;managed_identity=...` URI suffixes for ADLS / OneLake ingestion.
+
+## Materialized-view supported aggregations
+
+**Supported aggregations**: `count()`, `sum()`, `min()`, `max()`, `dcount()`, `avg()`, `countif()`, `sumif()`, `arg_max()`, `arg_min()`, `make_set()`, `make_list()`, `percentile()`, `take_any()`.
+
+## Stored function declaration
+
+```kql
+// Stored function — supports docstring, folder, default param values
+.create-or-alter function with (
+    docstring = "Get events for a user in time range",
+    folder = "Analytics"
+) GetUserEvents(userId: string, lookback: timespan = 1d) {
+    Events | where Timestamp > ago(lookback) and UserId == userId
+}
+```
+
+## Query-behaviour gotchas
+
+Symptom index for behaviour the Query Patterns and string-matching tables in
+`SKILL.md` describe as guidance.
+
+| Issue | Cause | Fix |
+|---|---|---|
+| Query timeout | No time filter, scanning too much | Add `where Timestamp > ago(...)` |
+| `has` returns unexpected results | Whole-term match, not substring | Use `contains` for substring (slower) |
+| `==` misses rows | Case-sensitive on strings | Use `=~` for case-insensitive |
+| `render` not showing in CLI | `render` is a client-side hint | Use Real-Time Intelligence portal or export data |
