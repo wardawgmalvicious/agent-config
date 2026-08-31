@@ -5,9 +5,8 @@ paths:
   - "**/*.pbip"
   - "**/*.pbir"
   - "**/*.pbism"
-  - "**/.platform"
-  - "**/*.Report/**"
-  - "**/*.SemanticModel/**"
+  - "**/*.Report/.platform"
+  - "**/*.SemanticModel/.platform"
 ---
 
 ## PBIP Project Structure
