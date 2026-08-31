@@ -3,8 +3,11 @@
 - **Written**: 2026-08-31, immediately after the cap raise (`e49bc25`)
 - **Kind**: policy + mechanical frontmatter pass. Policy decisions go to the
   user as a table BEFORE any edit; the edits themselves are small.
-- **Status**: open brief — delete (or promote to `examples/`) once the pass
-  lands, per the README convention.
+- **Status**: open brief, **partially executed and partially retracted**
+  (2026-08-31). Steps 1 and 5 are closed; step 4 is partially applied. Read
+  [skill-listing-field-evidence.md](skill-listing-field-evidence.md) first —
+  it retracts this brief's listing-budget premise. Delete (or promote to
+  `examples/`) once the rest lands, per the README convention.
 - **Run in**: a fresh session. This brief is the context; nothing else from
   the authoring session is needed.
 
@@ -19,13 +22,20 @@ sessions, 46% at >150k context, 24% from subagents labeled
    `/commit` first ("would probably be fine with a lower model").
 2. Leverage `when_to_use` where it is high-leverage for triggering.
 
-And one repo-side problem found while scoping: the deployed listing is
-over budget (numbers below), so long descriptions are probably already
-being silently shortened in most sessions.
+A third motivation stated here originally — "the deployed listing is over
+budget, so long descriptions are probably already being silently shortened"
+— **was measured and retracted on 2026-08-31**. There is no overflow. See
+step 5 and [skill-listing-field-evidence.md](skill-listing-field-evidence.md).
+Ignore any claim below that assumes truncation is live.
 
 ## Measured facts (2026-08-31, this repo)
 
-- 44 skills; **36,830 total description chars (~9.2k tokens)**. Zero use
+- 44 skills; **36,830 total description chars**. (The "~9.2k tokens" figure
+  originally here was a chars/4 estimate — wrong by ~46% for this content,
+  which tokenizes at ~2.7 chars/token. It also counted the 19 conditional
+  skills, which cost zero listing tokens until activated. The listing that
+  actually loads is the 25 unconditional skills: 20,080 chars ≈ 7,437
+  tokens.) Zero use
   `when_to_use`, `effort`, `disable-model-invocation`, or `context: fork`.
   Five workflow skills set `model: inherit` + `allowed-tools`; `commit` and
   `learn` have bare name+description frontmatter.
@@ -36,7 +46,11 @@ being silently shortened in most sessions.
   drift-update 894, author-skill 931.
 - Skill-tool invocation log (`scripts/instructions-log skills`): commit 14,
   learn 5, pbir-filters 2, drift-audit 2, powerbi-report-design 1 — nothing
-  else has ever fired through the Skill tool.
+  else has ever fired through the Skill tool. **This is a Skill-tool-only
+  table and understates real use**; it reads as "how often the model chose
+  the skill unprompted". Total usage comes from `skillUsage` in
+  `~/.claude.json`: commit 54, init 14, drift-update 9, learn 8,
+  drift-audit 5.
 - `claude/agents/security-reviewer.md` has `model: inherit`, so scans run on
   whatever the session runs.
 - `claude/settings.json` sets no `skillListing*` keys today.
@@ -78,10 +92,13 @@ being silently shortened in most sessions.
 
 ## The work, in order
 
-1. **Measure before touching anything.** `/doctor` (listing cost +
-   contributors) and `/context` (Skills row) in the fresh session. Record
-   the numbers in this brief. This settles whether truncation is live and
-   how bad, and the budget's char-vs-token unit.
+1. ~~**Measure before touching anything.**~~ **DONE 2026-08-31.** Numbers
+   are in [skill-listing-field-evidence.md](skill-listing-field-evidence.md);
+   don't re-run this. Two corrections for whoever repeats it later: CLI
+   `claude doctor` reports installation health only, *not* listing cost —
+   use `claude -p ... --debug-file` and grep for `conditional|unique
+   skills|getSkills|via attachment`. And measure on the model you actually
+   run: the budget is a fraction of *that model's* context window.
 2. **Linter: measure the combined length.** `scripts/lint-frontmatter.py`
    checks `len(description)` alone; the upstream cap is
    `description + when_to_use` combined. Zero skills use `when_to_use`
@@ -106,6 +123,9 @@ being silently shortened in most sessions.
 
    Use model aliases (`sonnet`), not dated IDs.
 4. **Apply the approved rows.** Frontmatter edits only; bodies untouched.
+   **Partially done**: `commit` got `model: sonnet` (`56e00bc`). Its DMI row
+   is still open and the evidence now cuts against it — see Open questions.
+   Every other row is untouched.
 5. **Listing budget decision — SETTLED 2026-08-31: do not raise the
    fraction.** Measured in ACME via `--debug-file`: there is no listing
    overflow. The 19 skills previously believed dropped are the 19 carrying
@@ -134,7 +154,7 @@ being silently shortened in most sessions.
    `pre-commit run --all-files`; fresh-session checks — (a) run `/commit`
    and confirm the pinned model in the status line, (b) ask naturally for a
    DMI'd skill's work and expect the suggestion to run `/name` rather than
-   silent execution, (c) `/doctor` before/after numbers recorded here.
+   silent execution. (Step 1's measurement is done — do not re-run it.)
    Trigger-relevant description edits: restart before trusting (in-place
    description hot-reload is the one unverified case). `tests/` untouched;
    `git status` clean; finish with `/commit`.
