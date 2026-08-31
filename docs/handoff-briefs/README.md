@@ -37,14 +37,27 @@ top-level README for additional context.
 - [examples/](examples/) — reference briefs derived from validated
   artifacts in the repo. See [examples/README.md](examples/README.md).
 
-Open briefs — work scoped but not yet done — sit at this level alongside
-the templates, and are deleted once the change lands. Open right now:
-[author-skill.md](author-skill.md) and
-[fabric-mirroring.md](fabric-mirroring.md). Also sitting here:
-[drift-handoff-skill.md](drift-handoff-skill.md), whose change has
-already landed — it is pending deletion or promotion into
-[examples/](examples/), and is the standing evidence that the
-delete-once-landed rule does not enforce itself.
+Open briefs — work scoped but not yet done — wait in
+[execute/](execute/). Queued right now:
+[skill-optimization-pass.md](execute/skill-optimization-pass.md).
+
+**Once the change lands, the brief is deleted.** Git history is the
+archive — the brief was committed when it was written, so
+`git log --diff-filter=D -- 'docs/handoff-briefs/**/<name>.md'` finds the
+deleting commit and `git show <sha>^:<path>` recovers it in full. A
+retained copy only competes with the artifact it produced.
+
+This is *not* the `docs/drift-audit/` rule, which gitignores its output
+outright. That output is regenerable — re-run the audit and it comes
+back. A brief is hand-derived: the measurements and doc citations in it
+cost a research session, so it is committed when written and deleted
+when spent, rather than never committed at all.
+
+The one exception is a brief that is still *referenced* — cited by a
+skill, or worth lifting as design source. That one gets promoted into
+[examples/](examples/) under the `.example.md` name, and the citation
+updated to the new path. Promotion is the deliberate keep-path; there is
+no third "completed" state.
 
 ## For consumers cherry-picking from this repo
 
