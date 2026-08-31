@@ -5,7 +5,9 @@
 - **Kind**: policy + content pass. The three workstreams below are ordered by
   risk, cheapest and safest first. **Workstream C changes skill names** and
   must not start before A and B land.
-- **Status**: open brief.
+- **Status**: open brief. **A1 applied 2026-08-31** (in refined form — see
+  below); A2, B and C remain open. All measurements in the tables below are
+  **pre-A1** unless labelled otherwise.
 - **Run in**: a fresh session. This brief plus the field-evidence brief are the
   whole context; nothing else from the authoring session is needed.
 
@@ -78,8 +80,8 @@ description text). Treat as relative weights, not billing figures.
 Narrowing an over-broad `paths:` glob removes a whole body from activations it
 never should have joined. Zero content risk: the skill is unchanged.
 
-**A1. `pbip-project-structure` — the single biggest win.**
-Current globs match 148 of 295 files:
+**A1. `pbip-project-structure` — the single biggest win. APPLIED 2026-08-31.**
+Globs matched 148 of 295 files:
 
 ```yaml
 paths:
@@ -92,14 +94,43 @@ paths:
 ```
 
 The last two turn an orientation skill ("how a PBIP project is laid out") into
-a passenger on nearly every Power BI file touch. The first four already match
-the files that *are* the project structure. **Proposal: drop the last two.**
-Re-measure the match count afterwards; expect ~40 rather than 148.
+a passenger on nearly every Power BI file touch.
 
-Judgment call for the user: dropping them means the skill no longer fires when
-someone opens a report file deep inside a project without touching a
-`.platform` / `.pbip` manifest. Whether project-structure orientation is
-wanted in that case is the actual question.
+**But `**/.platform` is the worse offender, and the original draft of this
+brief missed it.** `.platform` is a *Fabric* item marker, not a PBIP one.
+Dropping only the last two globs leaves 38 matches, of which **31 are
+`.platform` files in non-Power-BI items** — every Notebook, Eventstream,
+Lakehouse, Warehouse, KQL database and DataPipeline in ACME. That merely
+relocates the problem: the new worst case becomes an Eventstream `.platform`
+file at **9,220 tokens**, a Power BI project-structure skill co-loading with
+`fabric-eventstream`. Same bug class as the `fabric-tmdl` `**/definition/**`
+fix in `a31c150`; it hid because it does not look like an over-broad
+directory glob.
+
+**Applied instead** — drop the two `**` directory globs *and* narrow
+`.platform` to the two PBIP item types:
+
+```yaml
+paths:
+  - "**/*.pbip"
+  - "**/*.pbir"
+  - "**/*.pbism"
+  - "**/*.Report/.platform"
+  - "**/*.SemanticModel/.platform"
+```
+
+Re-measured against ACME (295 files):
+
+| | matches | worst single file | total activation, all touches |
+| --- | --- | --- | --- |
+| before | 148 | 11,923 tok (4 skills) | 1,919,257 |
+| drop 2 globs only | 38 | 9,220 tok (an Eventstream) | — |
+| **applied** | **4** | **9,086 tok** (3 skills) | **1,510,729** (−21%) |
+
+The skill now fires only on the four manifest files that *are* the project
+structure. Accepted trade: it no longer fires when someone opens a report file
+deep inside a project without touching a manifest — which was the point, since
+that co-activation was the dominant term in the whole table above.
 
 **A2. Audit the other 18 the same way.** `fabric-tmdl` already had this exact
 bug fixed in `a31c150` (`**/definition/**` matched 84 report JSON files). Use
@@ -131,13 +162,25 @@ Keep in the body: triggers, the decision rules, the gotchas that must be known
 lists, long worked examples, API payload shapes. `fabric-tmdl` is the existing
 model to copy — 22.4 KB of references against a ~2,759-token body.
 
-Set a target body size and hold to it. **Suggested: ~1,500 tokens** (~5,250
-chars); nine of the 19 already sit under it.
+Set a target body size and hold to it. The original draft said "~1,500 tokens;
+nine of the 19 already sit under it" — those two numbers contradict each other.
+Only **two** skills are under 1,500 (`fabric-database` 608,
+`fabric-error-handling` 1,390); nine sit under **~2,900**. Pick one before
+starting, since it is the definition of done. **Suggested: ~2,900 tokens**
+(~10,150 chars) as a cap the existing corpus already demonstrates is
+achievable, with ~1,500 as the aspiration for new skills.
 
 ## Workstream C — merges (do last; renames skills)
 
 Only justified where globs are identical or near-identical, so the skills can
 never fire independently anyway.
+
+**Read this first: a merge on its own saves almost nothing.** Merging three
+skills does not delete their content — the merged body still carries all of it.
+A merge saves one frontmatter block and some duplicated preamble. The real
+saving comes from pushing detail into `references/`, which is Workstream B and
+needs no rename at all. So B subsumes most of C's value at none of its risk,
+and the figures below are *co-activation* totals, not merge savings.
 
 **C1. `fabric-spark` + `fabric-error-handling`** — **identical** globs
 (`**/*.Notebook/**`), 36 ACME files each, always co-fire, ~4,418 tokens
@@ -146,8 +189,9 @@ merge case in the repo.
 
 **C2. The `pbir-*` visual cluster** — `pbir-visual-json` (73 files),
 `pbir-conditional-formatting` (73), `pbir-filters` (82). Overlapping but not
-identical: `pbir-filters` also covers `report.json` and `page.json`. ~9,085
-tokens combined. Merging all three into one visual-authoring skill with three
+identical: `pbir-filters` also covers `report.json` and `page.json`. ~9,086
+tokens combined — and post-A1 this is now the repo's worst activation, since
+`pbip-project-structure` has dropped out of the cluster. Merging all three into one visual-authoring skill with three
 `references/` files is the obvious shape, but it is also the most opinionated
 change in this brief — confirm with the user before doing it.
 
