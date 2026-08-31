@@ -11,21 +11,20 @@ KQL management and query patterns specific to Fabric Eventhouse. Assumes familia
 
 ## Connection
 
-- **Cluster URI**: each KQL Database has a unique `queryServiceUri` of the form `https://<cluster>.kusto.fabric.microsoft.com`. Discover via Fabric REST: `GET /v1/workspaces/{wsId}/kqlDatabases` (returns `queryServiceUri` and `databaseName` per item).
-- **Token audience**: `https://kusto.kusto.windows.net/.default` for all direct access.
-- **Query endpoint**: `POST {clusterUri}/v1/rest/query` with body `{"db":"<dbName>", "csl":"<KQL>"}`.
-- **KQL `|` breaks shell escaping** — write the JSON body to a temp file and use `--body @<file>` (bash) or `@$env:TEMP\kql_body.json` (PowerShell).
+- **Cluster URI**: each KQL Database has its own `queryServiceUri`,
+  `https://<cluster>.kusto.fabric.microsoft.com`. Discover with
+  `GET /v1/workspaces/{wsId}/kqlDatabases` (returns `queryServiceUri` +
+  `databaseName` per item).
+- **Token audience**: `https://kusto.kusto.windows.net/.default` for all direct
+  access. A wrong audience surfaces as a 401 *"Request is invalid and cannot be
+  processed"*, not an auth error.
+- **Query endpoint**: `POST {clusterUri}/v1/rest/query`, body
+  `{"db":"<dbName>", "csl":"<KQL>"}`.
+- **KQL `|` breaks shell escaping** — write the JSON body to a temp file and pass
+  `--body @<file>`, never inline.
 
-```bash
-cat > /tmp/kql_body.json << 'EOF'
-{"db":"MyDB","csl":"MyTable | take 10"}
-EOF
-az rest --method POST \
-  --url "${CLUSTER_URI}/v1/rest/query" \
-  --resource "https://kusto.kusto.windows.net" \
-  --body @/tmp/kql_body.json \
-  | jq '.Tables[0].Rows'
-```
+Worked `az rest` invocation and the REST item-definition envelope:
+[references/programmatic-access.md](references/programmatic-access.md).
 
 ## Schema Discovery
 
@@ -47,65 +46,30 @@ az rest --method POST \
 - `.drop table T ifexists` — guarded drop.
 - **Atomic blue-green swap** via `.rename tables A=B, B=C, C=A` (single command, atomic).
 
-### With OneLake availability ON
-
-When OneLake availability is enabled on the database or table, the supported schema-evolution surface narrows:
-
-| Operation | Allowed with availability ON |
-|---|---|
-| Add column | ✅ (April 2026+) |
-| Delete column | ✅ (April 2026+) |
-| Alter column type | ❌ |
-| Rename table | ❌ |
-| Apply Row-Level Security | ❌ |
-| Delete / truncate / purge data | ❌ |
-
-Pre-April 2026 behavior required disabling availability for *any* schema change. For unsupported ops (type change, rename, RLS, data deletes) the workaround is still: turn OneLake availability **off**, perform the change, turn it back on. Toggling off soft-deletes the OneLake mirror; toggling back on backfills.
+**With OneLake availability ON the surface narrows**: adding and deleting
+columns work (April 2026+), but altering a column type, renaming a table,
+applying RLS, and deleting/truncating/purging data do **not** — toggle
+availability off, change, toggle back on. Full matrix:
+[references/onelake-availability.md](references/onelake-availability.md).
 
 ## Ingestion
 
-```kql
-// Inline (small data / testing)
-.ingest inline into table Events <|
-2026-04-27T10:00:00Z,Login,user1,{},0.5
+| Command | Use for |
+|---|---|
+| `.ingest inline into table T <\|` | Small data / testing |
+| `.set-or-append T <\|` | Append KQL query results |
+| `.set-or-replace T <\|` | Replace table contents from a query |
+| `.ingest into table T (h'abfss://...;impersonate')` | Blob / ADLS / OneLake files — **the `;impersonate` suffix is required** |
 
-// Append KQL query results
-.set-or-append Events <|
-    OtherTable | where Timestamp > ago(1d)
+**Streaming ingestion is per-table and must be enabled first**:
+`.alter table Events policy streamingingestion enable`.
 
-// Replace table contents with KQL query results
-.set-or-replace Events <| StagingEvents | where IsValid == true
+> **Schema-associated Eventstream destinations** auto-create one table per schema
+> named `{CloudEventType}_{CloudEventSchemaVersion}` (e.g. `Orders_v1`) — don't
+> create these by hand. See `fabric-eventstream`.
 
-// From Blob / ADLS / OneLake (note `;impersonate` on the URI)
-.ingest into table Events (
-    h'abfss://workspace@onelake.dfs.fabric.microsoft.com/lakehouse.Lakehouse/Files/events.parquet;impersonate'
-) with (format="parquet")
-```
-
-**Streaming ingestion** must be enabled per-table first:
-
-```kql
-.alter table Events policy streamingingestion enable
-```
-
-> **Schema-associated Eventstream destinations** auto-create one table per schema named `{CloudEventType}_{CloudEventSchemaVersion}` (e.g. `Orders_v1`) — you don't create these by hand. The producer's `cloudEvents:type` and `dataschema` version drive the table name; see `fabric-eventstream` → *Producing to a schema-associated custom endpoint*.
-
-## Data Mappings
-
-```kql
-// CSV — by ordinal
-.create table Events ingestion csv mapping "EventsCsvMapping"
-'[{"column":"Timestamp","datatype":"datetime","ordinal":0},
-  {"column":"EventType","datatype":"string","ordinal":1}]'
-
-// JSON — by JSONPath
-.create table Events ingestion json mapping "EventsJsonMapping"
-'[{"column":"Timestamp","path":"$.timestamp","datatype":"datetime"},
-  {"column":"EventType","path":"$.eventType","datatype":"string"}]'
-
-.show table Events ingestion csv mappings
-.show table Events ingestion json mappings
-```
+Full command syntax and CSV/JSON mapping definitions:
+[references/ingestion.md](references/ingestion.md).
 
 ## Policies
 
@@ -136,20 +100,15 @@ Database-level policies (`.alter database MyDB policy ...`) act as defaults; tab
 materialized_view("EventCounts") | where EventType == "Login"
 ```
 
-**Supported aggregations**: `count()`, `sum()`, `min()`, `max()`, `dcount()`, `avg()`, `countif()`, `sumif()`, `arg_max()`, `arg_min()`, `make_set()`, `make_list()`, `percentile()`, `take_any()`.
 
 ## Stored Functions and Update Policies
 
-```kql
-// Stored function — supports docstring, folder, default param values
-.create-or-alter function with (
-    docstring = "Get events for a user in time range",
-    folder = "Analytics"
-) GetUserEvents(userId: string, lookback: timespan = 1d) {
-    Events | where Timestamp > ago(lookback) and UserId == userId
-}
+`.create-or-alter function` takes `docstring`, `folder`, and default parameter
+values — see [references/REFERENCE.md](references/REFERENCE.md). The Fabric-specific
+piece is wiring one as an **update policy**, an automatic transform applied on
+ingestion into the source table:
 
-// Update policy — automatic transform on ingestion to source table
+```kql
 .create-or-alter function ParseRawEvents() {
     RawEvents
     | extend Parsed = parse_json(RawData)
@@ -234,46 +193,22 @@ Layered with **Fabric workspace roles** (Admin/Member/Contributor/Viewer). `rest
 database("OtherDB").OtherTable | take 10
 ```
 
-## Graph semantics (KQL graph operators)
+## Graph semantics
 
-KQL can do graph analysis **inside the KQL engine** — this is a different thing from the standalone **Fabric GraphModel** item (a separate workload using GQL / ISO-39075; see the **fabric-graph** skill). Same word "graph", different engine: here a graph is built from KQL tabular data (or a stored snapshot) and queried with KQL graph operators, not GQL.
+KQL can do graph analysis **inside the KQL engine** — `make-graph` for a
+transient graph, `graph()` over a persistent snapshot, then `graph-match` /
+`graph-shortest-paths`. This is **not** the standalone Fabric **GraphModel**
+item, which is a separate workload using GQL / ISO-39075 (see `fabric-graph`).
+Same word, different engine.
 
-**Transient graph** — built in-memory per query with `make-graph`, then matched. `make-graph` must be followed by a graph operator.
-
-```kql
-edges
-| make-graph Source --> Destination with nodes on name   // or: with_node_id=name
-| graph-match (mallory)-[attacks]->(victim)-[hasPermission]->(trent)
-    where mallory.name == "Mallory" and trent.name == "Trent"
-    project Attacker = mallory.name, Compromised = victim.name, System = trent.name
-```
-
-**Persistent graph** (preview) — materialize a snapshot once, query repeatedly via the `graph()` function.
-
-```kql
-.create-or-alter graph_model OrgGraph
-// model is a JSON doc: "Schema" { Nodes, Edges } + "Definition" { Steps: AddNodes / AddEdges }
-.make graph_snapshot OrgGraph_v1 from OrgGraph
-
-graph("OrgGraph")                            // latest snapshot; graph("OrgGraph","OrgGraph_v1") for a specific one
-| graph-match (mgr)<-[reports*1..3]-(emp)    // variable-length edges: *min..max ; <- reverses direction
-    where mgr.name == "Alice"
-    project employee = emp.name, levels = array_length(reports)
-```
-
-- **Operators**: `make-graph` (build transient), `graph()` (reference a persistent snapshot; `graph("M", true)` builds a transient graph from the model), `graph-match` (pattern search; supports `cycles=none`, variable-length `[e*1..n]`), `graph-shortest-paths`, `graph-to-table`, `graph-mark-components`.
-- **Snapshot management**: `.make graph_snapshot`, `.show graph_snapshots`, `.drop graph_snapshot`, `.drop graph_model`. Limits: max **5,000** snapshots/DB (500 on a free virtual cluster); snapshot build capped at **1 hour**.
-- **openCypher / GQL over KQL graphs** (preview): set client request properties as separate directives before the query — `#crp query_language=opencypher` (or `gql`), `#crp query_graph_reference=G()`, and `#crp query_graph_label_name=lbl` to enable labels. This is still the KQL engine, not the GraphModel item.
-- `make-graph ... partitioned-by <col> ( <graphOperator> )` runs the operator per partition value (multitenant) — the partition column must exist in both edges and nodes tables.
+Operators, snapshot management and limits, and the openCypher/GQL-over-KQL
+preview: [references/graph-operators.md](references/graph-operators.md).
 
 ## Gotchas
 
 | Issue | Cause | Fix |
 |---|---|---|
 | `Request is invalid and cannot be processed` (401) | Wrong token audience | Use `https://kusto.kusto.windows.net/.default` |
-| Query timeout | No time filter, scanning too much | Add `where Timestamp > ago(...)` |
-| `has` returns unexpected results | Whole-term match, not substring | Use `contains` for substring (slower) |
-| `==` misses rows | Case-sensitive on strings | Use `=~` for case-insensitive |
 | `dynamic` column shows as string | Stored as string, not dynamic | Wrap with `parse_json(col)` or `todynamic()` |
 | `Forbidden (403)` on management commands | Insufficient role | Need `admin` or `ingestor` database role |
 | OneLake / ADLS ingest auth fails | Missing `;impersonate` on URI | Append `;impersonate` to the storage URI |
@@ -283,59 +218,22 @@ graph("OrgGraph")                            // latest snapshot; graph("OrgGraph
 | External table returns no data | Path / format / schema mismatch | Verify `abfss://` path, `dataformat=`, and column types match source |
 | Retention deleting data too soon | Table-level policy overrides DB default | `.show table T policy retention` |
 | `dcount()` returns approximate value | HyperLogLog by design | `dcount(col, 4)` for higher accuracy (costly), or `T \| distinct col \| count` for exact |
-| `render` not showing in CLI | `render` is a client-side hint | Use Real-Time Intelligence portal or export data |
-
-## Item definition envelope (REST)
-
-For programmatic create/update via Fabric REST (see fabric-rest-api skill for the envelope):
-
-| Item | Format | Required parts |
-|---|---|---|
-| **Eventhouse** | `JSON` | `EventhouseProperties.json` (currently empty: `{}`) |
-| **KQLDatabase** | `JSON` | `DatabaseProperties.json` (+ optional `DatabaseSchema.kql`) |
-
-`DatabaseProperties.json` schema:
-
-```json
-{
-  "databaseType": "ReadWrite",
-  "parentEventhouseItemId": "<eventhouse-item-id>",
-  "oneLakeCachingPeriod": "P36500D",
-  "oneLakeStandardStoragePeriod": "P365000D"
-}
-```
-
-`DatabaseSchema.kql` is an optional KQLDatabase part — KQL management commands run at deploy time. Use to seed tables, materialized views, functions, and ingestion mappings as part of the definition (e.g. `.create-merge table MyLogs (...)` blocks).
 
 ## Remote MCP server (preview)
 
-A hosted, HTTP-transport MCP server lets Copilot, GitHub Copilot CLI, and custom agents discover the KQL schema, generate KQL from natural language, execute queries, and sample data — without local install.
-
-- **URL pattern**: `https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/{workspaceId}/items/{kqlDatabaseId}/kqlEndpoint` — **per KQL database**, not workspace-wide.
-- **Find URL**: Fabric portal → workspace → KQL database → **Database details** > **Overview** > **Copy URI** next to **MCP Server URI**.
-- **Transport**: `http`.
-- **Auth**: caller needs **Read** or **Query** permission on the KQL database. Schema discovery additionally requires **Copilot in Fabric** to be enabled at the tenant; without it, the server can only execute KQL — no schema introspection, no NL→KQL.
-- **Per-database scoping** means the URL is workspace+item-specific, so it never belongs in a user-scope MCP config.
-- **Claude Code cannot connect to it.** Every `api.fabric.microsoft.com/v1/mcp/*` endpoint requires OAuth Dynamic Client Registration that Claude Code doesn't support; the server appears in the config and then fails to connect. Neither Claude template carries it. Its working home is `.vscode/mcp.json` for VS Code Copilot / GitHub Copilot CLI, which use first-party client IDs — the agent-config repo ships `.vscode/mcp.template.json` with this entry and its `<WorkspaceId>` / `<KqlDatabaseId>` placeholders. From Claude Code, use the local `fabric-rti-mcp` (`uvx microsoft-fabric-rti-mcp`) instead; it covers KQL query and Eventhouse management without the hosted endpoint.
-
-```json
-{
-  "mcpServers": {
-    "eventhouse-remote-mcp": {
-      "type": "http",
-      "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<KqlDatabaseId>/kqlEndpoint"
-    }
-  }
-}
-```
+A hosted HTTP MCP server per KQL database gives schema discovery, NL→KQL, and
+query execution. **Claude Code cannot connect to it** — the
+`api.fabric.microsoft.com/v1/mcp/*` endpoints require OAuth Dynamic Client
+Registration it doesn't support, so it appears in config and silently fails to
+connect. From Claude Code use the local `fabric-rti-mcp`
+(`uvx microsoft-fabric-rti-mcp`); the hosted server's working home is
+`.vscode/mcp.json` for VS Code Copilot. URL pattern, auth requirements, and the
+config block: [references/remote-mcp.md](references/remote-mcp.md).
 
 ## Reference
 
 - Microsoft Learn: [Eventhouse overview](https://learn.microsoft.com/fabric/real-time-intelligence/eventhouse)
-- Microsoft Learn: [KQL string operators (has vs contains, term index)](https://learn.microsoft.com/kusto/query/datatypes-string-operators?view=microsoft-fabric)
-- Microsoft Learn: [Eventhouse OneLake availability](https://learn.microsoft.com/fabric/real-time-intelligence/event-house-onelake-availability)
-- Microsoft Learn: [Get started with the remote MCP server for Eventhouse](https://learn.microsoft.com/fabric/real-time-intelligence/mcp-remote-eventhouse)
-- Comprehensive MS Learn link bundle (KQL management commands / ingestion / mappings / materialized views / update policies / monitoring / REST query API): [references/REFERENCE.md](references/REFERENCE.md)
+- Full MS Learn link bundle (KQL management commands / ingestion / mappings / materialized views / update policies / monitoring / REST query API): [references/REFERENCE.md](references/REFERENCE.md)
 
 ## See also
 
