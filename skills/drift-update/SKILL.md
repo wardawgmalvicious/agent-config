@@ -183,7 +183,9 @@ Two adjustments to the repo's standard gates:
   any skill or rule file it touched.
 - `pre-commit run --all-files` — run **once at the end of the whole run**, not
   per brief. It is repo-wide and slow, and per-brief runs tell you nothing
-  extra.
+  extra. Skip it altogether when the run wrote nothing: a brief set that came
+  back wholly already-stamped or already-applied leaves no diff for it to
+  check, and running it anyway is a slow repo-wide no-op.
 
 A failed verification stops the run. Report the command, its output, and the
 state of the tree; leave the edits in place rather than reverting, so the user
@@ -255,12 +257,15 @@ Close with:
    supposed to be sufficient cold; every fallback to the report is evidence
    that `/drift-handoff` under-specified one, and this is the only place that
    failure is observable.
-6. `pre-commit run --all-files` result.
+6. `pre-commit run --all-files` result — or that it was skipped because the
+   run made no edits.
 
 Then hand off to `/commit`. Unlike `/drift-handoff`, this skill changes tracked
 files, so there is a real diff — and `/commit` splits it logically, which is
 why this skill does not commit per brief. If the run stopped early, say plainly
-which edits are applied and uncommitted before handing over.
+which edits are applied and uncommitted before handing over. A run that wrote
+nothing has nothing to hand over: report the clean tree and stop, rather than
+invoking `/commit` against an empty diff.
 
 Do **not** start the work an escalated decision implies, and do not begin the
 next source's briefs. Both are separate, deliberate invocations.
