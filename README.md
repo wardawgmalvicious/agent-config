@@ -55,10 +55,10 @@ requires content review, not just a tag flip.
 The following four skills haven't been real-use tested yet — extra
 unproven, even by `personal` standards:
 
-- [fabric-eventhouse](skills/fabric-eventhouse/)
-- [fabric-eventstream](skills/fabric-eventstream/)
-- [fabric-mlv](skills/fabric-mlv/)
-- [fabric-variable-library](skills/fabric-variable-library/)
+- [fabric-eventhouse](skills/fabric/fabric-eventhouse/)
+- [fabric-eventstream](skills/fabric/fabric-eventstream/)
+- [fabric-mlv](skills/fabric/fabric-mlv/)
+- [fabric-variable-library](skills/fabric/fabric-variable-library/)
 
 ## Contents
 

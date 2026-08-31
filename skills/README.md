@@ -46,7 +46,7 @@ internal cross-references stay intact.
 - [drift-audit/](workflow/drift-audit/) — audit registered upstream docs sources
   for skill staleness, drift in existing skills, new-skill candidates,
   and MCP/tooling additions. Findings only — no edits. Sources are a
-  registry ([references/sources.md](drift-audit/references/sources.md)),
+  registry ([references/sources.md](workflow/drift-audit/references/sources.md)),
   not a hardcoded list — Fabric and Power BI What's New today, and
   widening the audit to another domain is an entry there plus a
   validated run. Named for the job, not the target: it audits rules,

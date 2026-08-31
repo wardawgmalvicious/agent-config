@@ -6,7 +6,7 @@ Run manually; not wired into CI.
 ## Layout
 
 - [skills/code-review/](skills/code-review/) — fixtures for the
-  [code-review skill](../skills/code-review/SKILL.md). Synthetic files
+  [code-review skill](../skills/workflow/code-review/SKILL.md). Synthetic files
   with seeded issues across Python, PySpark, T-SQL, Spark SQL, KQL,
   DAX, TMDL, and Fabric pipeline expressions. Each fixture has a
   paired entry in [expected_findings.md](skills/code-review/expected_findings.md)
