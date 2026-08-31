@@ -205,6 +205,30 @@ the recurring failure mode here. This file is the only one now.
   allowlist plus the `PreToolUse` hook, which blocks any Edit/Write
   outside `~/.claude/agent-memory/security-reviewer/`.
 
+## Working on this repo
+
+The workflow skills in `skills/workflow/` are this repo's own operating
+procedure, not generic helpers:
+
+- `/author-skill` — new skill end to end: coverage check, naming, doc
+  drilling, a filled brief in `docs/handoff-briefs/`, then the draft
+  and post-draft checks. Stops at a linted draft; writes no fixtures
+  and does not commit.
+- `/learn` — fold a session learning into guidance that already
+  exists (a `SKILL.md`, a rule, `claude/CLAUDE.md`).
+- `/drift-audit` → `/drift-handoff` → `/drift-update` → `/commit` —
+  the upstream-staleness pipeline. The audit is findings-only; the
+  handoff writes briefs to `docs/drift-audit/<date>/<source-id>/`; the
+  update executes them in numbered order and stamps each done.
+- `/commit` — split the working tree into logical commits.
+
+`docs/drift-audit/` is **gitignored generated output** with a short
+half-life: working notes consumed by a follow-up run, then stale. A run
+worth keeping is copied into `docs/handoff-briefs/examples/`, not
+un-ignored in place. Briefs there may quote paths from before a repo
+reorganization — confirm a brief's evidence still exists before acting
+on it.
+
 ## Editing conventions
 
 - **Skills** — frontmatter `description` ≤ 1024 chars; lint with
@@ -240,8 +264,6 @@ the recurring failure mode here. This file is the only one now.
   prefer a path-scoped rule or a skill instead. After editing it,
   re-run `scripts/link-claude.ps1 -Force` to push it to
   `~/.claude/CLAUDE.md`.
-- Capturing a session learning into skills/rules: use `/learn`.
-  Committing: use `/commit`.
 
 ## Validating a change
 
