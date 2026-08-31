@@ -29,7 +29,7 @@ argument-hint: {{[arg-hint]}}  # optional; autocomplete display hint shown in / 
 arguments: {{arg1 arg2}}  # optional; space-separated string or YAML list; enables $name substitution in skill body
 disable-model-invocation: {{false}}  # optional; true = manual-only (/commit-style): the description leaves context entirely; also blocks subagent preloading and scheduled-task prompts
 user-invocable: {{true}}  # optional; false hides from / menu for background-knowledge skills; description stays in context
-allowed-tools: {{Bash(git add *) Bash(git commit *) Read Grep}}  # optional; permission pre-approval for the invoking turn only (clears on the next user message); does NOT restrict other tools; space/comma string or YAML list
+allowed-tools: {{Bash(git add *) Bash(git commit *) Read Grep}}  # optional; permission pre-approval for the invoking turn only (clears on the next user message); does NOT restrict other tools; space/comma string or YAML list; write each Bash specifier in space form — `Bash(git diff *)`, never `Bash(git diff*)`, which word-boundaries differently
 disallowed-tools: {{AskUserQuestion}}  # optional; removes tools from the pool while the skill is active; clears on the next user message
 model: {{inherit}}  # optional; sonnet / opus / haiku / full model ID / inherit; turn-scoped — the session model resumes on the next prompt; with context: fork, sets the subagent's model instead
 effort: {{medium}}  # optional; low / medium / high / xhigh / max; overrides session effort while the skill is active; availability model-dependent
