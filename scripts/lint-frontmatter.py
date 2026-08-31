@@ -29,7 +29,10 @@ NAME_RE = re.compile(r"^[a-z0-9-]+$")
 NAME_CHAR_RE = re.compile(r"[a-z0-9-]")
 RESERVED_WORDS = ("anthropic", "claude")
 NAME_MAX = 64
-DESCRIPTION_MAX = 1024
+# Claude Code truncates the combined `description` + `when_to_use` text at
+# 1,536 chars in the skill listing. Gate at the truncation point so a
+# description that would silently lose its tail fails the lint instead.
+DESCRIPTION_MAX = 1536
 BODY_MAX_LINES = 500
 FRONTMATTER_SCAN_LINES = 50
 BOM = codecs.BOM_UTF8
