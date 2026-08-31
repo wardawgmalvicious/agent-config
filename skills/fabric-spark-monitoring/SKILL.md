@@ -1,6 +1,6 @@
 ---
 name: fabric-spark-monitoring
-description: "Use for diagnosing Fabric Spark performance through the monitoring REST APIs — listing Livy sessions (/workspaces/{ws}/spark/livySessions with queuedDuration/runningDuration, HC_ session naming), pulling the Spark History Server mirror (.../notebooks/{nb}/livySessions/{livy}/applications/{appId}/jobs) for job timelines and gap analysis, attributing notebook wall-clock to queue/boot/work/teardown phases, and verifying high-concurrency session reuse (sessionSource created vs reused)."
+description: "Use for diagnosing Fabric Spark performance through the monitoring REST APIs — listing Livy sessions (/workspaces/{ws}/spark/livySessions with queuedDuration/runningDuration, HC_ session naming), pulling the Spark History Server mirror (notebooks, sparkJobDefinitions or lakehouses → .../livySessions/{livy}/applications/{appId}/jobs, plus /stages, /executors, /sql) for job timelines and gap analysis, attributing notebook wall-clock to queue/boot/work/teardown phases, verifying high-concurrency session reuse (sessionSource created vs reused), and the sibling log and resourceUsage routes (coreEfficiency, idleTime, Livy/driver/executor logs)."
 ---
 
 # Fabric Spark monitoring APIs
@@ -29,8 +29,10 @@ audience table and 401 debugging: **fabric-auth** skill.
 ## Listing Livy sessions
 
 ```
-GET /workspaces/{workspaceId}/spark/livySessions?maxResults=N     # workspace-wide
-GET /workspaces/{workspaceId}/notebooks/{notebookId}/livySessions # per-item
+GET /workspaces/{wsId}/spark/livySessions?maxResults=N            # workspace-wide
+GET /workspaces/{wsId}/notebooks/{itemId}/livySessions            # per-item
+GET /workspaces/{wsId}/sparkJobDefinitions/{itemId}/livySessions  #   "
+GET /workspaces/{wsId}/lakehouses/{itemId}/livySessions           #   "
 ```
 
 Field guide for the session objects:
@@ -51,19 +53,34 @@ capacity/queueing, not the notebook.
 
 ## Drilling into one application
 
+All three item types work here, not just notebooks, and an optional
+`{attemptId}` (int) may follow `{appId}` — omit it and the last
+attempt is used.
+
 ```
-GET .../notebooks/{nbId}/livySessions/{livyId}/applications/{appId}       # attempt start/end
-GET .../notebooks/{nbId}/livySessions/{livyId}/applications/{appId}/jobs  # SHS jobs array
+GET .../{notebooks|sparkJobDefinitions|lakehouses}/{itemId}/livySessions/{livyId}/applications/{appId}[/{attemptId}]
+GET .../applications/{appId}/jobs        # SHS jobs array
+GET .../applications/{appId}/jobs/{id}   # one job
+GET .../applications/{appId}/sql/{id}?details=false
 ```
 
 The jobs array mirrors the Spark History Server: `jobId`, `name`,
-`description`, `submissionTime`, `completionTime`. The `description`
-embeds the originating notebook statement — that is how jobs map back
-to cells.
+`description`, `submissionTime`, `completionTime`, `status`,
+`stageIds`, and the `num*Tasks` / `num*Stages` counters. The
+`description` embeds the originating notebook statement — that is how
+jobs map back to cells.
 
-**404 trap:** `.../livySessions/{livyId}/applications` without an
-`{appId}` returns 404 — there is no "list applications" form. Get
-`sparkApplicationId` from the session listing first.
+**`/jobs` is not the only sub-resource.** These are the open-source
+Spark History Server APIs — same structure, query parameters and
+contract as Spark's own monitoring REST API — so `/stages`, `/tasks`,
+`/executors`, `/storage`, `/sql` and `/logs` are all served.
+(Doc-verified 2026-08-30, not exercised.)
+
+**404 trap:** exactly two OSS endpoints are withheld — `/applications`
+(list all) and `/version`. That is why
+`.../livySessions/{livyId}/applications` with no `{appId}` returns
+404: there is no "list applications" form, by design. Get
+`sparkApplicationId` from a session listing instead.
 
 ## The attribution recipe
 
@@ -102,6 +119,25 @@ for j in jobs:
     prev_end = end if prev_end is None else max(prev_end, end)
 ```
 
+## Logs and resource usage
+
+Two more sibling routes hang off `.../applications/{appId}/`:
+
+- **`/logs?type=livy|driver|rollingdriver|executor`** — Livy,
+  driver (single and rolling) and per-executor log metadata and
+  content.
+- **`/resourceUsage`** — `coreEfficiency`, `idleTime` and a
+  per-timestamp core / executor / job timeline. It reports directly
+  what the recipe above infers by subtraction, so reach for it before
+  hand-rolling gap analysis.
+
+Route table, query parameters, response fields and the traps (the
+literal `applications/none` Livy-log form, `capacityExceeded`
+emptying the payload, driver-log `offset` being ignored once the
+application stops) are in
+[references/REFERENCE.md](references/REFERENCE.md). Doc-verified
+2026-08-30, not exercised.
+
 ## High-concurrency session semantics
 
 The reuse verdict lives in the pipeline Notebook activity's run
@@ -127,15 +163,6 @@ still alive, and ≤ 5 notebooks already attached to the session.
   path instead.
 - **Preview-era surface** — these monitoring APIs predate a stable GA
   contract; verify response shapes before relying on them.
-
-## Unverified adjacent surface
-
-Presumed to exist but **not exercised** (as of 2026-08-17) — verify
-before use:
-
-- SHS sub-endpoints beyond `/jobs`: `/stages`, `/executors`, `/sql`
-- Item scoping via `sparkJobDefinitions/{id}/livySessions` (the
-  Spark-job-definition analogue of the notebook-scoped routes)
 
 ## See also
 
