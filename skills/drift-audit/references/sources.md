@@ -173,6 +173,22 @@ pipeline harder than the What's New sources do:
   rule; here that rule would pull ~1.2 MB to learn what ~29 small
   append-at-top patches already say.
 
+**This source never produces a new-skill candidate, and that is deliberate.**
+The harness ships live coverage of itself — the `claude-code-guide` subagent
+plus first-party `update-config`, `keybindings-help`, and `plugin-dev:*`
+skills — all refreshing faster than a monthly audit can. A repo-authored
+reference skill would compete for the same triggers against always-current
+content and lose *silently*, because a skill's `description` is the entire
+trigger mechanism. What is repo-specific here is not "how Claude Code works"
+but "how this payload is wired into it": the junction-vs-copy split, why
+`settings.json` is copied, the fixture procedure. Those belong in root
+`CLAUDE.md` (sessions editing this repo), `README.md` (cherry-pickers), and
+this audit's own `docs/drift-audit/<date>/claude-code/` ledger (dated
+evidence). Findings land on the `artifacts` above; bucket (b) stays empty.
+Checked 2026-08-30 — the 2026-08-29 run's 418 filtered bullets across 89 days
+produced zero new-skill candidates, which is the expected result, not a thin
+one.
+
 ## Shape contracts
 
 What "an entry" means for the diff, per shape.
