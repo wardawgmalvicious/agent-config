@@ -171,8 +171,10 @@ never deletion.
 filling the template, not content, and a brief that keeps them reads as
 half-finished. Exactly two blocks are reproduced verbatim: the guidance
 note directly under the title, and Claude Code's post-draft checklist.
-`docs/handoff-briefs/author-skill.md` is the reference — two guidance
-blocks in the finished brief, not one per heading.
+`docs/handoff-briefs/examples/author-skill.example.md` is the reference
+— two guidance blocks in the finished brief, not one per heading. The
+other two examples predate this convention and strip both; follow the
+`author-skill` one.
 
 Fill `Last verified` with today's date.
 

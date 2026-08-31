@@ -10,6 +10,12 @@ received to draft the artifact in question.
   for [skills/code-review/](../../../skills/workflow/code-review/SKILL.md).
 - [security-reviewer-agent.example.md](security-reviewer-agent.example.md)
   — brief for [claude/agents/security-reviewer.md](../../../claude/agents/security-reviewer.md).
+- [author-skill.example.md](author-skill.example.md) — brief for
+  [skills/workflow/author-skill/](../../../skills/workflow/author-skill/SKILL.md).
+  Promoted rather than deleted because the skill cites it as the
+  reference for brief *form*: it is the only brief here that keeps the
+  two surviving `> Guidance:` blocks (title note and post-draft
+  checklist). The other two strip all of them and predate that rule.
 
 ## How to use them
 
