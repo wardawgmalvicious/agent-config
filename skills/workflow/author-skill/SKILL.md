@@ -52,7 +52,7 @@ as deliberate rather than as something nobody noticed.
 
 If the user wants a *subagent* rather than a skill, this is the wrong
 skill: the artifact lives in `claude/agents/` and uses
-`subagent-handoff-template.md`. Stop and say so.
+`templates/subagent-handoff.md`. Stop and say so.
 
 ## 2. Check for existing coverage
 
@@ -148,7 +148,7 @@ source list is exhausted.
 ## 5. Write the handoff brief
 
 The target is `docs/handoff-briefs/<name>.md`, built from
-`docs/handoff-briefs/skill-handoff-template.md`.
+`docs/handoff-briefs/templates/skill-handoff.md`.
 
 **Check whether that path is already occupied before writing a byte.**
 A `/drift-update` escalation leaves its scoping input at exactly this

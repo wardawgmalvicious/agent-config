@@ -30,9 +30,9 @@ top-level README for additional context.
 
 ## What's here
 
-- [skill-handoff-template.md](skill-handoff-template.md) — fill-in
+- [templates/skill-handoff.md](templates/skill-handoff.md) — fill-in
   template for new skills.
-- [subagent-handoff-template.md](subagent-handoff-template.md) — fill-in
+- [templates/subagent-handoff.md](templates/subagent-handoff.md) — fill-in
   template for new subagents.
 - [examples/](examples/) — reference briefs derived from validated
   artifacts in the repo. See [examples/README.md](examples/README.md).

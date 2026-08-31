@@ -146,7 +146,7 @@ being silently shortened in most sessions.
 
 ## What was already done in the authoring session (2026-08-31)
 
-- `docs/handoff-briefs/skill-handoff-template.md` synced to the current
+- `docs/handoff-briefs/templates/skill-handoff.md` synced to the current
   frontmatter reference: added `disallowed-tools`, `background`,
   `metadata` (+ a note on `license`/`compatibility`), corrected `model`
   (turn-scoped), `context: fork` (background by default), `allowed-tools`
