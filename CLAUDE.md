@@ -161,9 +161,14 @@ intentionally contain fake credential-shaped strings.
 - **Skills** — frontmatter `description` ≤ 1024 chars; lint with
   `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`
   (pre-commit runs it too). Long detail goes in
-  `skills/<group>/<name>/references/`, not SKILL.md. Skill edits don't
-  reliably reload mid-session on Windows — restart the session to
-  test a changed SKILL.md.
+  `skills/<group>/<name>/references/`, not SKILL.md. Skills
+  **hot-reload**: Claude Code watches skill directories and picks up
+  changes in-session, and this works through this repo's junctions —
+  verified 2026-08-31 on Claude Code 2.1.251 for skill add, skill
+  removal, and `skillOverrides`. An in-place `description` edit is the
+  one case not yet confirmed here, so restart before trusting a changed
+  *trigger*. (Upstream fixed in-session skill reload in 2.1.216; this
+  file previously claimed the opposite.)
 - **Rules** — `paths:` frontmatter globs control auto-load; a rule
   fires when a matching file enters session scope (GitHub Copilot's
   `.instructions.md` `applyTo:` globs are the direct analog). Client
@@ -199,8 +204,10 @@ After changing a skill, rule, subagent, or enforcement hook, follow the
 procedure in [tests/skills/code-review/README.md](tests/skills/code-review/README.md)
 or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/README.md):
 
-- Run in a **fresh** agent session. Skill edits don't reliably reload
-  mid-session on Windows, so a same-session run validates the old copy.
+- Run in a **fresh** agent session — for context hygiene (accumulated
+  context can mask a co-load failure), and because subagents, commands,
+  and rules are not watched the way skills are. Skills themselves do
+  hot-reload; that is no longer the reason for the cold start.
 - Compare against `expected_findings.md` rather than judging the output
   on its own — the fixtures encode what should be caught *and* what
   should not be.
