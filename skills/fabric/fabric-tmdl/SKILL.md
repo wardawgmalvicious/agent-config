@@ -4,7 +4,6 @@ description: TMDL (Tabular Model Definition Language) authoring rules for Fabric
 paths:
   - "**/*.tmdl"
   - "**/*.SemanticModel/**"
-  - "**/definition/**"
 ---
 
 ## TMDL Authoring Rules
