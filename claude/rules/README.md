@@ -1,7 +1,17 @@
+---
+paths:
+  - "claude/rules/*.md"
+---
+
 # Coding rules
 
 Path-scoped coding conventions auto-loaded by Claude Code when a matching
 file enters session scope.
+
+This README carries a `paths:` scope of its own for one reason: a rules
+file with no `paths:` loads into **every** session on the machine, and
+documentation doesn't earn that. Scoped to the rules directory, it loads
+exactly when the rules themselves are being worked on.
 
 ## How they trigger
 
