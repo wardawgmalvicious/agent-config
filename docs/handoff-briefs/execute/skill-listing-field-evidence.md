@@ -111,13 +111,18 @@ their globs overlap, so they fire in clusters:
 
 | Cluster | Trigger | Bodies loaded |
 | --- | --- | --- |
-| `pbir-visual-json` + `pbir-conditional-formatting` + `pbir-filters` | one `visual.json` | **~9,085 tokens** |
+| `pbip-project-structure` + `pbir-visual-json` + `pbir-conditional-formatting` + `pbir-filters` | one `visual.json` | **~11,922 tokens** |
 | `fabric-spark` + `fabric-error-handling` | identical `**/*.Notebook/**` globs | ~4,418 tokens |
-| `fabric-tmdl` + `fabric-semantic-model-ai-instructions` | semantic model work | ~6,460 tokens |
+| `fabric-tmdl` + `pbip-project-structure` | any `.SemanticModel/` file | ~5,596 tokens |
 
-Touching a single report visual in ACME loaded ~9.1k tokens of skill bodies —
-and, before the glob fix, ~11.9k with `fabric-tmdl` dragged in. That is more
-than the entire listing budget, from opening one file.
+Touching a single report visual in ACME loads **~11,922 tokens** of skill
+bodies — more than the entire listing budget, from opening one file. Before
+the `fabric-tmdl` glob fix it was ~14,682 across five skills.
+
+The dominant term is `pbip-project-structure`, which matches **148 of 295**
+tracked files (its globs include `**/*.Report/**` and `**/*.SemanticModel/**`)
+and so co-activates with nearly everything — a ~2,837-token body on half of
+all file touches in the repo.
 
 `fabric-spark` and `fabric-error-handling` have **identical** `paths:` globs
 and can never fire independently.
