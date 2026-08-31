@@ -147,7 +147,7 @@ source list is exhausted.
 
 ## 5. Write the handoff brief
 
-The target is `docs/handoff-briefs/<name>.md`, built from
+The target is `docs/handoff-briefs/execute/<name>.md`, built from
 `docs/handoff-briefs/templates/skill-handoff.md`.
 
 **Check whether that path is already occupied before writing a byte.**
@@ -275,19 +275,19 @@ Report:
    it. Name the specific queries it should fire on, so the fresh-session
    test is runnable rather than aspirational.
 
-Then **sweep `docs/handoff-briefs/`** for briefs whose work has landed.
-The convention is that open briefs sit at that level and are deleted
-once the change lands, or promoted into `examples/` when they are worth
-keeping as design source. That convention has already failed once
-unattended, which is why the sweep is a step here instead of a habit.
+Then **sweep `docs/handoff-briefs/execute/`** for briefs whose work has
+landed. A queued brief is deleted once its change lands, or promoted
+into `examples/` in the one case where something cites it. That
+convention has already failed once unattended, which is why the sweep is
+a step here instead of a habit.
 
-- The brief written at step 5 **stays open**. `examples/` holds briefs
-  derived from *validated* artifacts, and nothing is validated until the
-  fresh-session test has run.
+- The brief written at step 5 **stays queued**. Nothing is validated
+  until the fresh-session test has run.
 - For any other brief whose skill or subagent now exists, **propose**
-  deletion or promotion and name which. Do not delete anything without
-  the user saying so — a brief is cheap to keep and impossible to
-  recover.
+  deletion or promotion and name which. Propose rather than act: you
+  can see that an artifact exists, but not whether the user considers
+  the work landed. Deletion itself is safe — briefs are committed when
+  written, so the deleting commit and its content stay recoverable.
 
 Hand off to `/commit`. Do not commit here.
 
