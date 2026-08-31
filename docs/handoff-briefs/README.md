@@ -38,11 +38,13 @@ top-level README for additional context.
   artifacts in the repo. See [examples/README.md](examples/README.md).
 
 Open briefs — work scoped but not yet done — sit at this level alongside
-the templates, and are deleted once the change lands, or promoted into
-[examples/](examples/) when they are worth keeping as design source.
-[drift-handoff-skill.md](drift-handoff-skill.md) is sitting here with
-its change already landed — pending deletion or promotion, and standing
-evidence that the delete-once-landed rule does not enforce itself.
+the templates, and are deleted once the change lands. Open right now:
+[author-skill.md](author-skill.md) and
+[fabric-mirroring.md](fabric-mirroring.md). Also sitting here:
+[drift-handoff-skill.md](drift-handoff-skill.md), whose change has
+already landed — it is pending deletion or promotion into
+[examples/](examples/), and is the standing evidence that the
+delete-once-landed rule does not enforce itself.
 
 ## For consumers cherry-picking from this repo
 
