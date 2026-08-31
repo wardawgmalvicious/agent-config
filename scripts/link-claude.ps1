@@ -93,6 +93,10 @@
     pruned from ~/.claude/skills.
 
 .EXAMPLE
+    ./scripts/link-claude.ps1 -SkillGroups workflow -Force
+    Same as above example but pushes drifted CLAUDE.md / settings.json to the target.
+
+.EXAMPLE
     ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric,powerbi -SkillsOnly
     Give a client repo the platform skills and nothing else.
 #>
