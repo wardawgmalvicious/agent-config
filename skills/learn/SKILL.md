@@ -12,6 +12,11 @@ next session never has to rediscover it.
 This skill **proposes**; it does not commit. Edits land only after the
 user approves the diff, and committing is handed to `/commit`.
 
+The inverse skill is `/author-skill`: `/learn` folds a learning into
+guidance that already exists, `/author-skill` creates guidance that has
+no home yet. If the right destination for a learning turns out to be a
+skill this repo does not have, that is an `/author-skill` job.
+
 This repo lives at `C:\Repos\Personal\agent-config`; `~/.claude/skills`
 etc. are junctions into it, so `/learn` may fire from a session in any
 repo. All repo-relative paths and commands below (grep, the lint
