@@ -74,7 +74,7 @@ internal cross-references stay intact.
   which guidance was in use, checks existing coverage, verifies against
   docs, proposes a diff for approval, hands off to `/commit`.
 
-## Microsoft Fabric platform (23)
+## Microsoft Fabric platform (24)
 
 - [fabric-auth/](fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -92,6 +92,13 @@ internal cross-references stay intact.
 - [fabric-copy-job/](fabric-copy-job/) — Copy job item: full vs
   incremental modes, watermark vs CDC incremental, JSON definition,
   REST + on-demand runs, Activator invocation.
+- [fabric-mirroring/](fabric-mirroring/) — Mirroring: the three kinds
+  (database replication, metadata-over-shortcuts, open mirroring's landing
+  zone), which kind each source uses, the `MirroredDatabase` REST surface,
+  and the limits. Named for the capability rather than the item because
+  metadata mirroring creates a mirrored *catalog*, not a mirrored database.
+  The boundary against `fabric-copy-job` — both are pitched as "no
+  pipeline" — is drawn in its description.
 - [fabric-warehouse/](fabric-warehouse/) — Fabric Warehouse T-SQL,
   unsupported types, MERGE constraints, COPY INTO auth.
 - [fabric-database/](fabric-database/) — Fabric SQL database.
