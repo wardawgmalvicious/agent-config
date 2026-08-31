@@ -19,12 +19,19 @@ Python is **not** on `PATH` on this machine. Always go through `uv`:
 Never invoke bare `python`, `python3`, or `pip` — they will fail with
 "command not found", not with a useful error.
 
-Never feed a script to the interpreter through stdin — `uv run python -`,
-or a heredoc piped into `python`. The Bash tool attaches stdin to the null
-device, so the interpreter starts an interactive REPL instead, and on
-Windows that REPL loops on console-handle errors (`WinError 6`/`123`) until
-the tool timeout: a two-minute stall and thousands of lines of traceback,
-not a clean failure. Use `uv run script.py`, or `uv run python -c "..."`.
+Never run `python -` with nothing on stdin. The Bash tool hands children a
+character-device stdin, and Windows `isatty()` returns True for any
+character device, so Python starts the interactive PyREPL: it either
+blocks silently until the tool timeout, or — if stdin is `NUL` — loops on
+`WinError 6`/`123` emitting ~50k tracebacks. A heredoc
+(`uv run python - <<'PYEOF'`) or a pipe is fine: it makes stdin a real
+file, `isatty()` goes False, and the script runs.
+
+The same stdin reaches anything that prompts — `git rebase -i`, `fab`
+without `-f`, `Read-Host`. Expect a block until the tool timeout rather
+than a clean failure, and note that `Read-Host` under `pwsh
+-NonInteractive` errors yet still exits 0, so a script wrapping it
+reports success having done nothing. Pass the non-interactive flag.
 
 ### Writing files that contain Windows paths
 
