@@ -42,6 +42,62 @@ Being a `<tool>/` payload says nothing about *how* it deploys: within
 table below; directory placement is only about which tool consumes the
 content.
 
+## Commands
+
+```bash
+# Lint frontmatter (skills need name/description; rules need paths:)
+uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
+uv run --with pyyaml scripts/lint-frontmatter.py claude/rules/<name>.md
+
+# All checks, the way CI runs them (gitleaks + both frontmatter linters)
+pre-commit run --all-files
+pre-commit run lint-skills --all-files     # one hook only
+
+# Fresh clone: install pre-commit via uv and wire .git/hooks
+scripts/bootstrap-pre-commit
+
+# Query the hook observability logs (needs jq)
+scripts/instructions-log today|reasons|paths|csv|skills|tail
+```
+
+```powershell
+# Re-link into ~/.claude. Idempotent; repairs stale junctions with no -Force.
+./scripts/link-claude.ps1
+
+# Required after editing claude/CLAUDE.md or claude/settings.json — those
+# two are copies, not junctions, and -Force is what pushes them.
+./scripts/link-claude.ps1 -Force
+
+# Partial payload: push only the Fabric skills into a client repo's .claude,
+# without this machine's agents, hooks, or rules.
+./scripts/link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric
+```
+
+`-SkillGroups` **prunes**: a group not listed is removed from the target
+on the next run. Pruning only ever deletes a junction resolving inside
+this repo's `skills/`, so a skill authored directly in the target is
+left alone.
+
+`.github/workflows/pre-commit.yml` runs `pre-commit` on every push and
+PR to `main`, so frontmatter and secrets *are* machine-checked — the
+fixture tests in `tests/` are not.
+
+Linting gotchas worth keeping:
+
+- PowerShell does **not** glob-expand args for external commands, so
+  `skills/*/*/SKILL.md` passes through literally and fails — expand
+  first with
+  `$files = Get-ChildItem skills -Filter SKILL.md -Recurse | % FullName`.
+- The pre-commit hooks are **depth-pinned**. The skills hook matches
+  `^skills/[^/]+/[^/]+/SKILL\.md$` — that is
+  `skills/<group>/<name>/SKILL.md` and nothing else. A skill placed
+  flat at `skills/<name>/SKILL.md`, or nested a level deeper, is
+  silently skipped by the linter *and* invisible to Claude Code's
+  one-level discovery — two silent failures from one misplacement. The
+  rules hook is flat in the same way and won't see a nested rule.
+- `tests/` and `docs/` are gitleaks-allowlisted because fixtures
+  intentionally contain fake credential-shaped strings.
+
 ## How this repo is structured
 
 Files here are synced into tool config directories; where an edit
@@ -148,13 +204,6 @@ the recurring failure mode here. This file is the only one now.
 - The `security-reviewer` subagent is scoped by an explicit tool
   allowlist plus the `PreToolUse` hook, which blocks any Edit/Write
   outside `~/.claude/agent-memory/security-reviewer/`.
-
-Linting gotchas worth keeping: PowerShell does **not** glob-expand args
-for external commands, so `skills/*/*/SKILL.md` passes through literally
-and fails — expand first with
-`$files = Get-ChildItem skills -Filter SKILL.md -Recurse | % FullName`.
-`tests/` and `docs/` are gitleaks-allowlisted because fixtures
-intentionally contain fake credential-shaped strings.
 
 ## Editing conventions
 
