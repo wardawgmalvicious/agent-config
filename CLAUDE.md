@@ -192,7 +192,15 @@ on it.
 
 ## Editing conventions
 
-- **Skills** — frontmatter `description` ≤ 1024 chars; lint with
+- **Skills** — frontmatter `description` ≤ 1536 chars, matching where
+  Claude Code truncates the combined `description` + `when_to_use` text
+  in the skill listing (configurable via `skillListingMaxDescChars`).
+  Truncation is silent, so the linter gates at that point rather than
+  below it. Keep this number and `DESCRIPTION_MAX` in
+  `scripts/lint-frontmatter.py` identical. Note this is *past* the
+  1024-char Agent Skills spec limit — a deliberate trade of format
+  portability for trigger headroom, since the payload targets Claude
+  Code and Copilot reads the same `~/.claude` paths. Lint with
   `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`
   (pre-commit runs it too). Long detail goes in
   `skills/<group>/<name>/references/`, not SKILL.md. Skills
