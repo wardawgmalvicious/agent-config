@@ -76,6 +76,15 @@ claude
 Run the three modes in order. Modes 1 and 2 share a single agent run
 where natural; mode 3 is independent.
 
+### 0. Record the spawn mode
+
+Before working through the modes, note whether the agent run happened in
+the **background** or the **foreground**, and record it alongside the
+run's results. Since Claude Code 2.1.232, non-teammate agent spawns in
+interactive sessions run in the background by default; a run recorded
+without its spawn mode is not comparable to one from before that
+release, and mode 3's hook block is the check that has to hold in both.
+
 ### 1. Direct/NL review
 
 ```text
@@ -185,6 +194,7 @@ Per fixture (modes 1 + 3 combined):
 - Mode 2: refusal language plus approval prompt on Edit attempt
 - Mode 3: hook block visible in transcript on attempted code-file
   mutation
+- Spawn mode (background / foreground) recorded for the run
 
 Calibration drift on severity (a Critical surfaced as High or
 vice-versa) is observation-worthy but not a hard fail — record in
