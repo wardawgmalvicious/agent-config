@@ -7,7 +7,7 @@ received to draft the artifact in question.
 ## What's here
 
 - [code-review-skill.example.md](code-review-skill.example.md) — brief
-  for [skills/code-review/](../../../skills/code-review/SKILL.md).
+  for [skills/code-review/](../../../skills/workflow/code-review/SKILL.md).
 - [security-reviewer-agent.example.md](security-reviewer-agent.example.md)
   — brief for [claude/agents/security-reviewer.md](../../../claude/agents/security-reviewer.md).
 
