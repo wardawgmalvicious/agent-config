@@ -22,29 +22,38 @@ Last verified: {{YYYY-MM-DD}}
 
 ```yaml
 ---
-name: {{skill-name}}  # required; max 64 chars; lowercase letters/numbers/hyphens; forbidden words "anthropic"/"claude"
-description: {{one-sentence trigger description}}  # required; keep under 1,024 chars for Agent Skills portability; Claude Code caps description + when_to_use combined at 1,536 chars in skill listing
-when_to_use: {{when-to-use guidance}}  # optional; counts toward combined 1,536 Claude Code cap with description
+name: {{skill-name}}  # repo linter requires it; upstream optional — display label only, the /command comes from the directory name; max 64 chars; lowercase/digits/hyphens; no "anthropic"/"claude"
+description: {{one-sentence trigger description}}  # repo linter requires it (upstream: recommended); combined with when_to_use, the listing truncates at 1,536 chars — the linter gates there
+when_to_use: {{when-to-use guidance}}  # optional; appended to description in the skill listing; counts toward the combined 1,536 cap
 argument-hint: {{[arg-hint]}}  # optional; autocomplete display hint shown in / menu, e.g. [issue-number]
 arguments: {{arg1 arg2}}  # optional; space-separated string or YAML list; enables $name substitution in skill body
-disable-model-invocation: {{false}}  # optional; set true for destructive/manual-only skills
-user-invocable: {{true}}  # optional; set false to hide from / menu for reference-only skills
-allowed-tools: {{Bash(git add *) Bash(git commit *) Read Grep}}  # optional; space-separated items; each Bash specifier uses space form inside parens; YAML list form also accepted
-model: {{inherit}}  # optional; sonnet / opus / haiku / full model ID / inherit
-effort: {{medium}}  # optional; low / medium / high / xhigh / max; availability model-dependent
-context: {{inline}}  # optional; "fork" runs in a subagent, otherwise inline in current session
-agent: {{general-purpose}}  # optional; only meaningful when context: fork; Explore / Plan / general-purpose / custom subagent name
-hooks: {{null}}  # optional; skill-scoped lifecycle hooks
+disable-model-invocation: {{false}}  # optional; true = manual-only (/commit-style): the description leaves context entirely; also blocks subagent preloading and scheduled-task prompts
+user-invocable: {{true}}  # optional; false hides from / menu for background-knowledge skills; description stays in context
+allowed-tools: {{Bash(git add *) Bash(git commit *) Read Grep}}  # optional; permission pre-approval for the invoking turn only (clears on the next user message); does NOT restrict other tools; space/comma string or YAML list
+disallowed-tools: {{AskUserQuestion}}  # optional; removes tools from the pool while the skill is active; clears on the next user message
+model: {{inherit}}  # optional; sonnet / opus / haiku / full model ID / inherit; turn-scoped — the session model resumes on the next prompt; with context: fork, sets the subagent's model instead
+effort: {{medium}}  # optional; low / medium / high / xhigh / max; overrides session effort while the skill is active; availability model-dependent
+context: {{inline}}  # optional; "fork" runs the skill body as a subagent's prompt — in the background by default, with the narrower background toolset, and /rewind won't undo its edits
+background: {{true}}  # optional; fork only; false waits for the fork's result in the invoking turn
+agent: {{general-purpose}}  # optional; fork only; Explore / Plan / general-purpose (default) / custom subagent name — Explore and Plan skip CLAUDE.md
+hooks: {{null}}  # optional; registered at invocation, persist for the rest of the session; `once` supported
 paths: {{src/**/*.ts}}  # optional; comma-separated string or YAML list; glob patterns for path-scoped auto-activation
-shell: {{bash}}  # optional; "bash" (default) or "powershell"; powershell requires CLAUDE_CODE_USE_POWERSHELL_TOOL=1
+shell: {{bash}}  # optional; "bash" (default) or "powershell" for !`cmd` blocks; the PowerShell tool is on by default on Windows; elsewhere needs CLAUDE_CODE_USE_POWERSHELL_TOOL=1
+metadata: {{null}}  # optional; free-form YAML map for your own tooling; Claude Code ignores the contents (repo precedent: powerbi-report-authoring)
 ---
 ```
 
+Claude Code also accepts `license` and `compatibility` (Agent Skills
+spec fields) without acting on them. They matter only on the claude.ai
+upload / Skills API path, which allows exactly six fields — `name`,
+`description`, `license`, `compatibility`, `metadata`, `allowed-tools` —
+and hard-fails on any other key.
+
 ## Description char count
 
-> Guidance: State the count explicitly so Claude Code can re-check after draft. Pick the cap that matches your Tag (section below): publishable/open-standard → 1,024; personal/Claude Code-only → 1,536 combined.
+> Guidance: State the count explicitly so Claude Code can re-check after draft. Repo default is 1,536 combined (`description` + `when_to_use`) — the linter gates there, matching Claude Code's listing truncation. The 1,024 spec cap matters only if the skill will go through the claude.ai upload path. Also mind the aggregate: all deployed skills share one listing character budget (default ~1% of the context window, `skillListingBudgetFraction`), and an over-budget listing gets least-invoked descriptions shortened first — put the key use case in the first sentence.
 
-{{N}} / {{1,024 portable cap | 1,536 Claude Code combined cap}}
+{{N}} / {{1,536 repo combined cap | 1,024 claude.ai-upload cap}}
 
 ## Body structure outline
 
