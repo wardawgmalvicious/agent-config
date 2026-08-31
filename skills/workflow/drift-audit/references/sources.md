@@ -162,16 +162,23 @@ every change they would eventually reflect.
 Two measured facts drive the fields above, both of which stress the
 pipeline harder than the What's New sources do:
 
-- **Volume.** ~29 commits and ~550 bullets in a 35-day window, of which
-  roughly two thirds are `Fixed` TUI or platform bugs. Without `filter`
-  the report is unreadable. Do not filter on the leading verb alone,
-  though — `Fixed Grep and Glob not applying Read(...) deny rules to files
-  reached through a symlinked search path` is a permissions-model finding
-  wearing a bugfix prefix.
-- **Size.** 587 KB, 380 version sections. This is why SKILL.md § 4a
-  exempts `changelog` sources from the ">5 commits → diff two full files"
-  rule; here that rule would pull ~1.2 MB to learn what ~29 small
-  append-at-top patches already say.
+- **Volume, per window length.** Two measured samples, not one operating
+  range: ~29 commits and ~550 bullets across 35 days, and 85 commits,
+  77 version sections and 1713 bullets across 89 days. That is roughly
+  **0.95 commits/day and ~19 bullets/day** — scale by the window rather
+  than reading the 35-day figures as the source's steady state. Roughly
+  two thirds of bullets are `Fixed` TUI or platform bugs, so without
+  `filter` the report is unreadable; the 89-day run passed 418 of 1713
+  bullets, which is the evidence the filter earns its place. Do not filter
+  on the leading verb alone, though — `Fixed Grep and Glob not applying
+  Read(...) deny rules to files reached through a symlinked search path`
+  is a permissions-model finding wearing a bugfix prefix.
+- **Size.** ~590 KB, 380+ version sections, and it only grows. This is why
+  SKILL.md § 4a treats `changelog` sources specially: letting two full
+  files into context to diff them would pull ~1.2 MB to learn what a small
+  append-at-top region already says. The bound is not "always patch" — it
+  is to keep the full files out of the conversation, by per-commit patch
+  on short windows and by an on-disk two-ref diff on long ones.
 
 **This source never produces a new-skill candidate, and that is deliberate.**
 The harness ships live coverage of itself — the `claude-code-guide` subagent
@@ -213,16 +220,20 @@ What "an entry" means for the diff, per shape.
   only the new region enters context** — never let two full files into the
   conversation (SKILL.md § 4a).
 
-**`table` and `prose` have been exercised; `changelog` has not.** The two
-What's New sources are table-driven. `vscode-agent` exercised `prose` on
-2026-08-29 against a 2026-06-01 floor — four heading-structured pages,
-both refs fetched whole, entries diffed at paragraph granularity — and
-the findings held up against the live pages, so that contract is no
-longer theoretical. `claude-code` is the first `changelog` entry and has
-not been run. `prose` and `changelog` are specified so a non-table source
-is a registry entry plus a validated run, not a skill rewrite — but treat
-the first `changelog` run as unproven and check the extracted entries
-against the live file by hand before trusting the report.
+**All three contracts have now been exercised.** The two What's New
+sources are table-driven. `vscode-agent` exercised `prose` on 2026-08-29
+against a 2026-06-01 floor — four heading-structured pages, both refs
+fetched whole, entries diffed at paragraph granularity — and the findings
+held up against the live pages, so that contract is no longer
+theoretical. `claude-code` exercised `changelog` on the same date against
+the same floor — 85 commits over 89 days, 77 version sections and 1713
+bullets, diffed by downloading `CHANGELOG.md` at two pinned refs and
+comparing on disk — and the extracted entries checked out against the live
+file, confirming it is a strict prepend. That run also established that
+§ 4a's unbounded "always patch" exemption inverts on a long window, which
+is why the rule above is now stated as a mechanism rather than an
+absolute. `prose` and `changelog` are specified so a non-table source is a
+registry entry plus a validated run, not a skill rewrite.
 
 ## Adding a source
 
