@@ -22,42 +22,28 @@ For real-time analytics on the resulting events, pair an Eventstream with `fabri
 - **Permissions**: workspace **Contributor** or higher to author; **Viewer** can read **Data insights** monitoring on a published stream.
 - **Virtual-network injection** (private-network sources): use Eventstream connector VNet injection for sources behind a firewall — see Microsoft Learn.
 
-## Source connectors
+## Sources
 
-| Source | Notes |
-|---|---|
-| **Azure SQL DB CDC** | Requires `sys.sp_cdc_enable_db`; do NOT also enable Mirroring on the same DB |
-| **Azure SQL Managed Instance CDC** | Same shape as Azure SQL DB CDC |
-| **SQL Server on VM CDC** | Public-net or VNet-injected |
-| **PostgreSQL CDC** | Azure DB for PostgreSQL, Amazon RDS / Aurora PostgreSQL, GCP Cloud SQL — logical replication required |
-| **MySQL DB CDC** | Azure DB for MySQL |
-| **MongoDB CDC (preview)** | Specify collections to monitor; initial snapshot + tail |
-| **Azure Cosmos DB CDC** | Container-level change feed |
-| **Mirrored Database Delta CDF (preview, April 2026)** | New: stream row-level inserts/updates/deletes from a Mirrored Database's Delta Change Data Feed into Eventstream. Toggle via Mirrored DB config dashboard → **Delta table management** → **Enable delta change data feed**, or via `enableDeltaChangeDataFeed` in the [Mirrored DB REST API](https://learn.microsoft.com/fabric/mirroring/mirrored-database-rest-api#enable-delta-change-data-feed-for-a-mirrored-database). Connector reference: [extended capabilities](https://learn.microsoft.com/fabric/mirroring/extended-capabilities). |
-| **Azure Event Hubs / IoT Hub** | Native sources — no CDC layer. Event Hubs auth is **Shared Access Key** in both the basic and extended-features pivots; **workspace identity** (Entra ID) instead of shared access keys is in **preview (Aug 2026)** — announced in What's New, but not yet on the connector's Learn page, so expect the UI to lead the docs |
-| **Apache Kafka / Amazon MSK / Confluent Cloud Kafka** | Kafka-protocol sources — base connector **GA (June 2026)**; SASL_SSL / SASL_PLAINTEXT / Microsoft Entra auth. Custom-CA / mTLS also **GA (July 2026)** — see below |
-| **Amazon Kinesis Data Streams** | Single-shard or multi-shard |
-| **Azure Service Bus** | Queue or topic subscription — **GA (June 2026)** |
-| **Google Cloud Pub/Sub** | |
-| **Solace PubSub+** | |
-| **MQTT (preview)** | |
-| **HTTP (preview)** | Stream from external platforms via standard HTTP requests; predefined public feeds available |
-| **Real-time weather** | Fabric-hosted demo source |
-| **Azure Data Explorer** | Pull from an existing ADX table |
+Grouped by what you have to get right, not by vendor. Full connector table with
+per-source notes: [references/source-connectors.md](references/source-connectors.md).
 
-## DeltaFlow — analytics-ready CDC events (preview)
+| Family | Connectors | The thing that bites |
+|---|---|---|
+| **Database CDC** | Azure SQL, SQL MI, SQL Server on VM, PostgreSQL, MySQL, MongoDB (preview), Cosmos DB | Azure SQL needs `sys.sp_cdc_enable_db`; you cannot enable Mirroring **and** Eventstream CDC on the same database |
+| **Mirrored DB Delta CDF** | Mirrored Database (preview, April 2026) | Row-level CDC off a Mirrored DB's Delta Change Data Feed — opt in per database |
+| **Native Azure** | Event Hubs, IoT Hub | Auth is **Shared Access Key**; workspace-identity auth is preview (Aug 2026) and the UI leads the docs |
+| **Kafka protocol** | Apache Kafka, Amazon MSK, Confluent Cloud | GA June 2026. Custom CA / mTLS GA July 2026 — Kafka-family only |
+| **Other cloud / broker** | Kinesis, Service Bus, Google Pub/Sub, Solace PubSub+ | Service Bus GA June 2026 |
+| **Protocol / pull** | MQTT (preview), HTTP (preview), Azure Data Explorer, Real-time weather | HTTP ships predefined public feeds for testing |
 
-Available on **Azure SQL CDC**, **Azure SQL MI CDC**, **SQL Server on VM CDC**, and **PostgreSQL CDC**. When the schema-handling step is set to **Analytics-ready events & auto-updated schema**, DeltaFlow transforms raw Debezium CDC events into a tabular shape mirroring the source table, enriched with:
+**DeltaFlow** (preview) is the schema-handling mode that turns raw Debezium CDC
+into a tabular shape mirroring the source table, plus an `Op` column, automatic
+destination-table creation, and schema evolution. Available on **Azure SQL / SQL
+MI / SQL Server on VM / PostgreSQL CDC** only; every other CDC source hands you
+raw Debezium envelopes to flatten yourself.
 
-- `Op` / change-type column: `insert` / `update` / `delete`
-- Event-timestamp column
-
-Extras you get for free:
-
-- **Automatic destination table management** — when routing to a supported destination (e.g. an Eventhouse), tables are auto-created matching the source schema.
-- **Schema evolution** — new source columns and new tables propagate to registered schemas and destination tables without manual intervention.
-
-Without DeltaFlow you receive raw Debezium envelopes and have to flatten them yourself.
+Sources behind a firewall need [Eventstream connector VNet
+injection](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/streaming-connector-private-network-support-guide).
 
 ## Destinations
 
@@ -69,164 +55,67 @@ Without DeltaFlow you receive raw Debezium envelopes and have to flatten them yo
 | **Derived stream** | Chain a downstream Eventstream — useful for fan-out and reusable transforms |
 | **Custom endpoint** | Push to an external Event Hubs / Kafka / AMQP-compatible system |
 
-## Activator destination — set alert directly in Eventstream (preview)
+## Activator destination (preview)
 
-Configure rules in-place without leaving Eventstream. Add an Activator destination, then select the **alert icon** on it to open the **Rules** pane:
+Add an Activator destination, then use the **alert icon** on it to view, add,
+edit, and stop/start rules without leaving Eventstream. Conditions fire **on
+each event**, **on each event when** (single-field condition), or **on each
+event grouped by** a field. Actions: Teams, email, webhook, Power Automate,
+custom. **Republish after wiring the destination or no rule fires.**
 
-- **View** all rules linked to this Eventstream's Activator item
-- **Stop / start** a rule with the toggle
-- **Edit / delete** via the `…` menu
-- **Add rule** at the bottom of the pane
-- **Open in Activator** to manage activation history and test notifications
+Pane walkthrough and condition detail:
+[references/activator-destination.md](references/activator-destination.md).
 
-Rule condition shapes:
+## Workspace monitoring (preview)
 
-| `Check` value | When the action fires |
-|---|---|
-| **on each event** | Every event flowing through the stream |
-| **On each event when** | Events matching a single-field condition (e.g. `No_Empty_Docs == 0`) |
-| **On each event grouped by** | Same condition, evaluated per group on a chosen field (e.g. `Neighborhood`) |
-
-Actions: Teams message, email, webhook, Power Automate, custom action.
-
-## Workspace monitoring (preview) — KQL tables
-
-Enable workspace monitoring (Workspace settings → **Monitoring** → **Log workspace activity**) and Fabric auto-creates a monitoring Eventhouse with three Eventstream-specific tables. Republish any Eventstream that existed *before* monitoring was enabled — pre-existing streams emit nothing until they're republished.
+Workspace settings → **Monitoring** → **Log workspace activity** auto-creates a
+monitoring Eventhouse with three Eventstream tables. **Republish any Eventstream
+that existed before monitoring was enabled** — pre-existing streams emit nothing
+until republished.
 
 | Table | Cadence | What it tells you |
 |---|---|---|
 | `EventStreamNodeStatus` | ~6 hours | Each node's running / paused / failed state |
-| `EventStreamMetrics` | 1 minute | Incoming / outgoing message counts, bytes, watermark delay, backlog |
+| `EventStreamMetrics` | 1 minute | Incoming / outgoing counts, bytes, watermark delay, backlog |
 | `EventStreamErrorMetrics` | 1 minute | Error counts by type (runtime, deserialization, conversion) |
 
-All three tables share base dimensions: `Timestamp`, `ArtifactId`, `ArtifactName`, `WorkspaceId`, `WorkspaceName`, `CustomerTenantId`, `Level`, `OperationId`, `PremiumCapacityId`, `PlatformMonitoringCategory`, `PlatformMonitoringTableName`, `LogAnalyticsResourceId`. **Filter by `ArtifactId` / `WorkspaceId`** — name columns can lag after rename / move.
+**Filter by `ArtifactId` / `WorkspaceId`, never the name columns** — those cache
+at emission time and go stale after a rename or move. For live per-node numbers
+during authoring, the editor's **Data insights** tab needs no monitoring setup.
 
-```kql
-// Most-recent status per node in one Eventstream
-EventStreamNodeStatus
-| where ArtifactId == "<eventstream-artifact-id>"
-| summarize arg_max(Timestamp, *) by NodeId
-| project Timestamp, NodeName, NodeDirection, NodeType, NodeStatus
-| order by NodeDirection asc
+Worked KQL queries and the full shared-dimension list:
+[references/monitoring.md](references/monitoring.md).
 
-// Incoming vs outgoing in 5-minute windows
-EventStreamMetrics
-| where ArtifactId == "<eventstream-artifact-id>"
-| where MetricsName in ("Incoming Messages", "Outgoing Messages")
-| summarize TotalMessages = sum(Value)
-    by TimeWindow = bin(Timestamp, 5m), MetricsName
-| order by TimeWindow asc
+## Kafka custom CA / mTLS
 
-// Recent errors grouped by type
-EventStreamErrorMetrics
-| where ArtifactId == "<eventstream-artifact-id>"
-| where Timestamp > ago(24h) and Value > 0
-| summarize TotalErrors = sum(Value)
-    by TimeWindow = bin(Timestamp, 5m), MetricsName, NodeDirection
-| order by TimeWindow desc
-```
+Kafka, Amazon MSK, and Confluent Cloud sources can take a custom CA certificate
+and a client certificate from **Azure Key Vault** (GA July 2026), under the
+source connection's **TLS/mTLS settings**. `SASL_SSL` needs a CA cert only when
+the cluster uses a private CA; `SSL (mTLS)` needs both CA and client cert + key.
 
-For ad-hoc per-node visualizations during authoring, the **Data insights** tab on the lower pane of the Eventstream editor surfaces metrics directly — works without workspace monitoring enabled but is per-node and not historical.
+Certificates must be **PEM with LF line endings**, cert and private key
+concatenated, `contentType: application/x-pem-file`, with `keySize` matching the
+real key size — and whoever previews data needs Key Vault read access on them.
+Full setup, the trusted-CA list, and seven failure modes:
+[references/kafka-mtls.md](references/kafka-mtls.md).
 
-## Custom CA / mTLS for Kafka connectors
+## Producing to a schema-associated custom endpoint
 
-**GA July 2026.** For Kafka, Amazon MSK, and Confluent Cloud Kafka sources, you can specify a **custom CA certificate** and a **client certificate** sourced from **Azure Key Vault** to enforce TLS / mTLS. Configured in the source connection step under **TLS/mTLS settings**. Use when the broker is behind a private CA or requires client-cert auth.
+Only relevant when pushing events *into* a custom endpoint that has an
+associated schema. Two facts decide whether it works at all:
 
-The What's New row phrases this as "Eventstream **connectors**", but as documented it is still the Kafka-protocol connectors: the Azure Event Hubs source's connection UI has no TLS/mTLS block at all. Don't read GA as having widened the connector set.
+- **CloudEvents binary mode is required.** Attributes go in the Event Hub
+  message's application properties as `cloudEvents:*`; the body is the payload
+  JSON alone. Structured mode is silently dropped with
+  `CloudEventPropertyMissingException`.
+- **Schema support is a creation-time flag** — it cannot be turned on for an
+  existing eventstream, and schema-enabled eventstreams don't survive deployment
+  pipelines with registries intact. Plan workspaces before you build.
 
-Which **Security protocol** you pick decides what you must supply:
-
-| Protocol | When | Certificates |
-|---|---|---|
-| `SASL_SSL` | SASL-based auth. The broker cert must be signed by a CA on Fabric's [trusted CA list](https://github.com/microsoft/fabric-event-streams/blob/main/References/certificate-authority-list/trusted-ca-list.txt) | Only if the cluster uses a **custom CA** — then set **Trust CA certificate** |
-| `SSL (mTLS)` | The cluster requires mTLS | **Both** a custom server CA certificate and a client certificate + key |
-
-If you only use mTLS for authentication, the connection wizard still demands an **API Key** — put any string in the Key field.
-
-**Certificate gotchas** (all cause silent-ish failures, and the first blocks data preview rather than the stream):
-
-- The user configuring the source **and previewing data** needs Key Vault access to the certs — *Key Vault Certificate User* or *Key Vault Administrator*. Without it, preview fails from this source.
-- Upload as **PEM**, not PKCS#12/PFX, with `contentType: application/x-pem-file`. The bundle is certificate **and** private key concatenated in one file — a cert without its key won't work.
-- `keySize` in the import policy must match the **actual** key size (4096 for the CA, 2048 for server/client certs). Declaring 2048 for a 4096-bit key fails.
-- `issuerParameters.name` is `"Unknown"` for externally signed certs, not `"Self"`.
-- PEM files need **LF** line endings. CRLF breaks them — relevant on Windows, and this repo's `.gitattributes` won't save you outside it.
-- The server certificate's **SAN** must carry the broker's FQDN *and* IP, or hostname verification (`ssl.endpoint.identification.algorithm=https`) rejects it.
-- Private-network sources: the Key Vault must be reachable from the streaming VNet data gateway's virtual network (private endpoint).
-
-## Producing to a schema-associated custom endpoint (CloudEvents)
-
-This is the **producer** side — how an *external* app must format events it pushes to a custom-endpoint source. The Eventstream authoring side (adding the source, wiring destinations) is above; this section is what the sending code has to get right. Applies only when the custom endpoint has an **associated schema** (a schema group / EventDefinition set). The portal's authoritative reference is the endpoint's **Show sample code → Event Hub tab**, which emits `CloudNative.CloudEvents` SDK code.
-
-Verified end-to-end (2026-07-07) by pushing records and reading them back via Kusto; this wire format is **not** documented on Microsoft Learn (the extended-features docs describe the UI, not the format).
-
-### Binary content mode is required — not structured
-
-The endpoint's Azure Stream Analytics EventHub input adapter reads CloudEvents attributes from the Event Hub message's **application properties** (CloudEvents AMQP **binary** content mode), *not* from the JSON body. Structured mode — the whole CloudEvent in the body with `ContentType=application/cloudevents+json` — is **silently ignored**: the adapter still hunts for a `type` property, doesn't find it, and drops the event with:
-
-```
-Microsoft.Streaming.AzureStreamAnalytics.Adapters.Input.EventHub.Exceptions.CloudEventPropertyMissingException: CloudEvent property type is missing.
-```
-
-### Correct per-event shape (`Azure.Messaging.EventHubs.EventData`)
-
-- **Body** = the data payload JSON *only* (just the record fields — not a wrapped CloudEvent).
-- **ContentType** = `application/json`.
-- **Application properties**, each prefixed `cloudEvents:` (the CloudEvents AMQP binding convention):
-
-| Property | Value | Notes |
-|---|---|---|
-| `cloudEvents:specversion` | `1.0` | |
-| `cloudEvents:type` | schema name, e.g. `Orders` | **Selects the schema** — must exactly match a schema id in the associated set (**case-sensitive**) |
-| `cloudEvents:source` | any non-empty URI | Value unconstrained by the schema envelope |
-| `cloudEvents:id` | fresh GUID per event | CloudEvents requires `source`+`id` unique |
-| `cloudEvents:dataschema` | `https://<host>.<region>.messagingcatalog.azure.net/schemagroups/<schema-set itemId>/schemas/<type>/versions/<vN>` | **Required to route to a table** — the `/versions/vN` segment supplies `{CloudEventSchemaVersion}` |
-
-The portal sample copies the attributes generically:
-
-```csharp
-foreach (var attr in cloudEvent.GetPopulatedAttributes())
-    eventData.Properties[$"cloudEvents:{attr.Key}"] = attr.Value?.ToString();
-```
-
-### Where the schema-group base URI comes from
-
-Anatomy of the base: `https://<host>.<region>.messagingcatalog.azure.net/schemagroups/<groupId>` — the producer appends `/schemas/{type}/versions/{vN}` itself.
-
-- **`<groupId>` = the Event Schema Set's runtime item id** (verified 2026-08-06 across three schema sets: the group GUID in each working `dataschema` equals the schema set's item id). The group half IS therefore derivable — store an ItemReference to the schema set (e.g. in a Variable Library) and use its `itemId`.
-- **`<host>` (`rthprod…` label) is service-generated and per schema set** — three schema sets in one tenant + region produced three different hosts (verified 2026-08-06). It is NOT tenant- or region-stable: never share it across environments; capture it per schema set. `rth` = Real-Time hub, `prod` = service ring; the rest is an opaque scale-unit/instance label.
-- The host is the **Fabric-auto-provisioned Azure Schema Registry** ("messaging catalog") endpoint. It's **not surfaced in the Fabric portal UI** except inside the custom endpoint's **Show sample code → Event Hub tab** — copy it from there (verified 2026-07-08).
-- **Not present in the git-synced Eventstream definition** either: the `.Eventstream` folder (`eventstream.json`, `eventstreamProperties.json`, `.platform`) carries `schemaMode` and the `{CloudEventType}_{CloudEventSchemaVersion}` table template but **no `messagingcatalog` host** (verified 2026-07-08). The CustomEndpoint source's `properties` is `{}`.
-
-### Two independent gates
-
-1. **Envelope gate** — the adapter finds `type` in the application properties. Fails with `CloudEventPropertyMissingException` if attributes are in the body or not `cloudEvents:`-prefixed.
-2. **Schema-validation gate** — the body fields must match the Avro schema types. All-string schemas pass easily; non-string fields (Avro `bytes` / `boolean`) reject mismatched JSON values. A failure here shows a generic *"dropped per schema registry error policy"* diagnostic (not the envelope exception).
-
-### Destination table naming (Eventhouse)
-
-A schema-associated eventstream → Eventhouse (processed ingestion) **auto-creates one table per schema**, named `{CloudEventType}_{CloudEventSchemaVersion}` — e.g. `Orders_v1`, `Products_v2`. The version comes from the `dataschema` `/versions/vN` segment.
-
-### Version-bump gotcha
-
-**Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
-
-Reference C# implementation: `edgebridge.core/Helpers/AzureEventHubPusher.cs` (`SendBatch` sets the `cloudEvents:*` props; `ExportToAzureEventHub` is the SDK path) and `edgebridge.core/Models/Job/JobOutput.cs` (`BuildDataSchema`).
-
-### Custom endpoint connection anatomy (Event Hub mode)
-
-Everything in a custom endpoint's connection string except the key follows service-generated naming conventions (verified 2026-08-06 against three real endpoints):
-
-```
-Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=key_<guid>;SharedAccessKey=<secret>;EntityPath=<namespace>_eh
-```
-
-- **Namespace**: `eseh<random>` (e.g. `esehexampleabcdefgh123`) — the portal labels it "Event hub name".
-- **EntityPath** (the hub — `eventhub_name` in SDKs): always **`<namespace>_eh`**. Derive it; don't store it separately.
-- **SAS policy name**: `key_<guid>` — not secret. Only `SharedAccessKey` is secret material.
-
-This enables a **parts-built connection string**: namespace + key name in per-environment config (Variable Library), only the key in Key Vault, assembled at run time — see `fabric-variable-library` (blank-parameter resolution pattern). Caveat: these are observed service conventions, not documented contracts; if the `_eh` suffix ever changes, the failure mode is an Event Hubs entity-not-found at send time.
-
-Schema support itself is a **creation-time flag**: it cannot be enabled on an existing eventstream, and schema-enabled eventstreams don't survive deployment pipelines with their registries intact — plan workspaces accordingly (e.g. one shared multi-environment workspace for the schema-enabled ingestion edge, one endpoint + schema set per environment).
+The wire format, the `dataschema` URI anatomy, version-bump behaviour, table
+naming, and the custom-endpoint connection-string conventions are all in
+[references/cloudevents-producer.md](references/cloudevents-producer.md). None
+of it is on Microsoft Learn.
 
 ## Gotchas
 
@@ -242,21 +131,15 @@ Schema support itself is a **creation-time flag**: it cannot be enabled on an ex
 | New Activator rule doesn't fire | Eventstream wasn't republished after adding the destination | Republish the Eventstream after wiring the destination |
 | Connector behind firewall fails | Source not publicly reachable | Use [Eventstream connector VNet injection](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/streaming-connector-private-network-support-guide) |
 | DeltaFlow not available on a CDC source | Currently scoped to Azure SQL / SQL MI / SQL Server VM / PostgreSQL CDC | Use raw mode for other CDC sources and flatten Debezium yourself |
-| `CloudEventPropertyMissingException: ...type is missing` when pushing to a schema-associated custom endpoint | Attributes sent in the body / structured mode | Use CloudEvents **binary** mode: `cloudEvents:`-prefixed application properties (esp. `cloudEvents:type`), body = payload JSON only. See *Producing to a schema-associated custom endpoint* above |
-| Event associates in **Data preview** but no table is written | Missing / wrong `cloudEvents:dataschema` | Set `dataschema` to the current schema version URI (`/versions/vN`) — it's what routes to a table |
-| Event dropped after editing a schema | The schema edit bumped the version | Update `dataschema` `/versions/vN` to the new current version; versions can differ per schema in the same set |
-| Events rejected / missing after copying producer config to another environment | Schema-registry host or group id reused across environments | Host and group are **per schema set** — capture `<host>`, `<region>`, and the schema set's itemId per environment |
+| Events pushed to a schema-associated custom endpoint are dropped | Wrong CloudEvents envelope, `dataschema` version, or per-environment registry host | See [references/cloudevents-producer.md](references/cloudevents-producer.md) — four distinct failure modes |
 
 ## Reference
 
+Detail lives in [references/](references/) — each section above links the file
+that carries its full version.
+
 - Microsoft Learn: [Add and manage an event source](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/add-manage-eventstream-sources)
 - Microsoft Learn: [Set alert on an Eventstream with Activator destination](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/set-alerts-event-stream)
-- Microsoft Learn: [Eventstream workspace monitoring overview](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/fabric-workspace-monitoring)
-- Microsoft Learn: [Eventstream monitoring tables](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/fabric-workspace-monitoring-tables)
-- Microsoft Learn: [Query Eventstream monitoring data](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/query-fabric-workspace-monitoring-data)
-- Microsoft Learn: [Workspace monitoring known limitations](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/fabric-workspace-monitoring-known-limitations)
-- Microsoft Learn: [Mirroring extended capabilities — Delta CDF](https://learn.microsoft.com/fabric/mirroring/extended-capabilities)
-- Microsoft Learn: [Monitor the status and performance of an Eventstream](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/monitor)
 
 ## See also
 
