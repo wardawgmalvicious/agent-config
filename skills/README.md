@@ -25,6 +25,16 @@ Naming convention: behavioral skills are named as the verb you invoke
 and keep Microsoft's upstream naming so re-sync diffs and their
 internal cross-references stay intact.
 
+- [author-skill/](author-skill/) — author a new skill for this repo end
+  to end: coverage check, name and namespace, doc drilling, a filled
+  handoff brief in [docs/handoff-briefs/](../docs/handoff-briefs/), then
+  the `SKILL.md` draft and the post-draft checks. Ends at a linted draft
+  plus a fresh-session test plan — no fixtures, no commit. Deliberately
+  overlaps the loaded `skill-creator` and `plugin-dev:skill-development`
+  plugin skills, which know the Agent Skills format but not this repo's
+  naming rules, `references/` split, lint command, or brief-before-draft
+  discipline. Named for the verb you invoke, like the rest of this
+  section, and kept distinct from `skill-creator` in trigger matching.
 - [code-review/](code-review/) — review code for quality, naming,
   error handling, security, and scaling. Multi-language: Python,
   PySpark, T-SQL, Spark SQL, KQL, DAX, TMDL, Fabric pipeline
