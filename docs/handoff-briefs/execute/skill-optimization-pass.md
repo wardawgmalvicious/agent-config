@@ -106,12 +106,20 @@ being silently shortened in most sessions.
 
    Use model aliases (`sonnet`), not dated IDs.
 4. **Apply the approved rows.** Frontmatter edits only; bodies untouched.
-5. **Listing budget decision** (after step 1's numbers): raise
-   `skillListingBudgetFraction` in `claude/settings.json` (needs
-   `./scripts/link-claude.ps1 -Force` to deploy) vs. trim the longest
-   platform descriptions vs. `skillOverrides: name-only` for never-invoked
-   skills. Note DMI on ~5 workflow skills already frees ~4.2k chars of
-   listing. Present the trade; don't pick silently.
+5. **Listing budget decision — SETTLED 2026-08-31: do not raise the
+   fraction.** Measured in ACME via `--debug-file`: there is no listing
+   overflow. The 19 skills previously believed dropped are the 19 carrying
+   `paths:` frontmatter, withheld by design until a matching file enters
+   scope. No budget warning is emitted; nothing is truncated on `opus[1m]`.
+   See [skill-listing-field-evidence.md](skill-listing-field-evidence.md)
+   for the full retraction and the replacement findings.
+
+   What survives as real work: **trim the 25 unconditional descriptions**
+   (~7,437 tokens of a ~9,900-token listing; the binding case is 200k-window
+   sessions, where 1% = 2,000 tokens), and **reduce activation cost** for the
+   conditional skills, whose overlapping globs load ~9.1k tokens of bodies
+   from touching one `visual.json`. Consolidation is scoped to its own fresh
+   session.
 6. **`when_to_use` adoption — narrow, evidence-led.** Only for platform
    skills with demonstrated trigger misses (source:
    `scripts/instructions-log reasons|paths|skills` over time, and the
@@ -133,16 +141,28 @@ being silently shortened in most sessions.
 
 ## Open questions to settle in-session
 
+**Settled 2026-08-31** (see
+[skill-listing-field-evidence.md](skill-listing-field-evidence.md)):
+
+- *Does the invocation log capture user-typed `/slash` runs?* No — Skill-tool
+  calls only. `skillUsage` in `~/.claude.json` counts both, and is the
+  total-usage source: `commit` 54, `init` 14, `drift-update` 9, `learn` 8.
+- *Budget unit — chars or tokens?* Tokens, at 1% of the model's context
+  window. But the listing is not currently over budget, so the question is
+  moot for `opus[1m]` and decisive only for 200k-window sessions.
+
+Still open:
+
 - **What is `workflow-subagent`?** 24% of the limit-day usage. Hypothesis:
   agents spawned by the Workflow tool (multi-agent runs), since no skill
   here uses `context: fork` and the repo's only custom agent is
   `security-reviewer`. If workflows are the driver, the fix is usage
   discipline / cheaper workflow agent models, not skill frontmatter.
-- Does the invocation log capture user-typed `/slash` runs, or only
-  Skill-tool calls? (`log-skill-invocations.sh` hooks the `Skill` matcher.)
-  Determines how to read the frequency table above.
-- Budget unit: "character budget ... 1% of the model's context window" —
-  chars or tokens? Step 1 settles it empirically.
+- Whether `disable-model-invocation` on `commit` is worth it. The evidence
+  cuts against the brief's assumption: of 23 observed invocations in the
+  transcript scan, 15 were typed and **8 were the model choosing the skill**.
+  DMI converts those 8 into "suggest `/commit`" turns for ~245 tokens of
+  listing saved.
 
 ## What was already done in the authoring session (2026-08-31)
 
