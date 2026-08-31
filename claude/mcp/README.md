@@ -200,6 +200,17 @@ See the [Install (project scope)](#install-project-scope) table above.
 
 The VS Code / Copilot workspace template has its own placeholder table in [.vscode/README.md](../../.vscode/README.md).
 
+### Per-server timeout — deliberately absent
+
+Neither template sets a timeout. Two upstream sources disagree about the field and only one is right:
+
+- **`timeout`** (milliseconds) is the real key. It is accepted on every transport and is what `claude mcp get <name>` echoes back as `Timeout:`.
+- **`request_timeout_ms`** — named in the 2.1.206 changelog — is an internal remote-transport hint, declared in the bundle as `@internal CCR backend wire hint; folded into timeout at parse`. On an `http` / `sse` / `ws` server it folds into `timeout`, capped at 300000 ms. On a **stdio** server it is not in the schema at all and is **silently dropped**. Never put it in a template.
+
+`timeout` is left out too, because the default is not 60 seconds. Claude Code overrides the MCP SDK's 60s default with `timeout ?? MCP_TOOL_TIMEOUT ?? 1e8` — roughly **27.8 hours** — so the docker-gateway servers' container start has no deadline worth raising. What does bite is unrelated and unreachable from here: a call running past `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (default 120000) moves to a background task without being aborted, and no `timeout` value changes that.
+
+Verified against Claude Code **2.1.251** (2026-08-31) by reading the shipped config schema and round-tripping a scratch `.mcp.json` through `claude mcp get`. Re-check on a major version bump.
+
 ---
 
 ## Verifying the setup
