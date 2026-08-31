@@ -285,12 +285,18 @@ be safe.
 ## Handoff discipline
 
 Skills and subagents in this repo are authored via a brief-before-draft
-pattern: a chat-Claude session produces a structured handoff brief
-covering frontmatter specs, body outline, portability caveats, and
-post-draft validation steps; Claude Code then drafts the artifact from
-the brief. The two surfaces specialize — chat-Claude has more context
-and is better at structural proposal; Claude Code has filesystem access
-and is better at drafting + iterating.
+pattern: a structured handoff brief — frontmatter specs, body outline,
+portability caveats, post-draft validation steps — is written and
+settled before any artifact is drafted from it.
+
+Which surface writes the brief is not part of the pattern. It was
+originally split across two, a chat session proposing structure and
+Claude Code drafting from it, because only the latter had filesystem
+access and only the former could drill sources at length. Claude Code
+does both now, and the two steps routinely happen in one session. What
+survives the collapse is the artifact: the brief is the record of what
+was decided and what was deliberately left out, and the excluded set is
+what bounds the draft.
 
 The pattern earns its place when an artifact has non-trivial behavioral
 contracts — refusal patterns, severity rubrics, scope-enforced read-only

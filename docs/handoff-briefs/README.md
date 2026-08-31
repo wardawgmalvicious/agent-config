@@ -7,17 +7,20 @@ author skills and subagents in this repo.
 
 Skills and subagents with non-trivial behavioral contracts — refusal
 patterns, severity rubrics, scope-enforced read-only or destructive
-guards — are authored across two surfaces:
+guards — are authored brief first:
 
-1. A chat-Claude session produces a structured handoff brief covering
-   frontmatter specs, body outline, portability caveats, and post-draft
-   validation steps.
-2. Claude Code drafts the artifact from the brief, then runs the
-   post-draft checklist.
+1. A structured handoff brief is written, covering frontmatter specs,
+   body outline, portability caveats, and post-draft validation steps.
+2. The artifact is drafted from the brief, then the post-draft
+   checklist is run.
 
-The two surfaces specialize: chat-Claude has more context window and is
-better at structural proposal; Claude Code has filesystem access and is
-better at drafting and iterating.
+The brief is the unit that matters, not the surface that types it. The
+two steps were originally split across a chat session and Claude Code,
+because only one had filesystem access and only the other could drill
+sources at length; Claude Code does both now, and the steps routinely
+happen in one session. The brief is still worth writing — it is the
+record of what was decided and what was deliberately left out, and the
+excluded set is what bounds the draft.
 
 For pure reference skills (canonical-answer content, no enforcement
 contract), the pattern is overkill — real-use validation suffices.
@@ -35,8 +38,11 @@ top-level README for additional context.
   artifacts in the repo. See [examples/README.md](examples/README.md).
 
 Open briefs — work scoped but not yet done — sit at this level alongside
-the templates, and are deleted once the change lands. None are open
-right now.
+the templates, and are deleted once the change lands, or promoted into
+[examples/](examples/) when they are worth keeping as design source.
+[drift-handoff-skill.md](drift-handoff-skill.md) is sitting here with
+its change already landed — pending deletion or promotion, and standing
+evidence that the delete-once-landed rule does not enforce itself.
 
 ## For consumers cherry-picking from this repo
 
