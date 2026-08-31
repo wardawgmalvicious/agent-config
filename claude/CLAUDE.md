@@ -19,6 +19,13 @@ Python is **not** on `PATH` on this machine. Always go through `uv`:
 Never invoke bare `python`, `python3`, or `pip` — they will fail with
 "command not found", not with a useful error.
 
+Never feed a script to the interpreter through stdin — `uv run python -`,
+or a heredoc piped into `python`. The Bash tool attaches stdin to the null
+device, so the interpreter starts an interactive REPL instead, and on
+Windows that REPL loops on console-handle errors (`WinError 6`/`123`) until
+the tool timeout: a two-minute stall and thousands of lines of traceback,
+not a clean failure. Use `uv run script.py`, or `uv run python -c "..."`.
+
 ### Writing files that contain Windows paths
 
 The Bash tool strips backslashes from command text. A Windows path
