@@ -122,6 +122,15 @@ change, so repo-side moves are cheap: relocating payload under
 Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
 they are unaffected by repo layout entirely.
 
+`CLAUDE.md` and `settings.json` are copies rather than links **on
+purpose** — don't "simplify" them into junctions for consistency. A
+symlinked `~/.claude/settings.json` broke three times upstream in
+mid-2026, once destructively: 2.1.247 had the Bash sandbox's
+after-command cleanup *delete* a dotfile-managed symlink at that path.
+The junctioned *directories* are a different story — their symlink-path
+bugs (2.1.178, 2.1.198, 2.1.239) were fixed rather than being arguments
+against junctions. The narrow claim is about the `settings.json` file.
+
 GitHub Copilot needs no payload and no linker: the VS Code agent
 surface reads the same `~/.claude` paths this repo already populates
 (`rules`, `skills`, `settings.json`, `CLAUDE.md`, and `agents` once
@@ -231,6 +240,12 @@ or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/REA
   context can mask a co-load failure), and because subagents, commands,
   and rules are not watched the way skills are. Skills themselves do
   hot-reload; that is no longer the reason for the cold start.
+- Establish the baseline with `claude --safe-mode`, which starts with
+  this entire payload off — `CLAUDE.md`, skills, plugins, hooks, MCP
+  servers, commands, agents. It is the control condition: it separates
+  behavior the payload produces from behavior the base model produces.
+  A flag you type, never something to wire into `settings.json` or a
+  script — that would disable the payload it is meant to isolate.
 - Compare against `expected_findings.md` rather than judging the output
   on its own — the fixtures encode what should be caught *and* what
   should not be.
