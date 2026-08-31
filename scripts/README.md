@@ -62,3 +62,32 @@ scripts/bootstrap-pre-commit
 That installs `pre-commit` via `uv tool install`, then runs `pre-commit install`
 to wire `.git/hooks/pre-commit`. The configured hooks live in
 [.pre-commit-config.yaml](../.pre-commit-config.yaml).
+
+### `claude plugin validate` — evaluated 2026-08-31, declined
+
+Claude Code 2.1.233 taught `claude plugin validate` to check a bare
+`.claude/skills` directory rather than requiring a `plugin.json`, which
+made it applicable here for the first time. It was evaluated against
+`lint-frontmatter.py` on 2.1.251 and **not** wired in. Two reasons, in
+order of weight:
+
+- **It reads neither of this repo's layouts.** Pointed at repo `skills/`
+  it finds nothing, because that is `skills/<group>/<name>/SKILL.md` and
+  the command looks exactly one level down — a scratch copy of the same
+  shape holding two deliberately broken skills exited 0 with no findings.
+  Pointed at `~/.claude/skills` it reports `7 entries here are symlinks
+  and were not read`, so the deployed junctions are skipped too. Both
+  failure modes are silent passes.
+- **What it does catch is a strict subset.** On flat fixtures it flags
+  unparseable YAML frontmatter (error) and a missing `description`
+  (warning). `lint-frontmatter.py` catches both, plus the length caps and
+  the `paths:` glob shape — the leading-`/` and backslash-separator
+  checks that have no upstream error path at all. Nothing was found that
+  only the upstream tool catches.
+
+To its credit it is not noisy: `--strict` over a flattened copy of all 44
+real skills passed clean, so `paths:` and other repo-specific frontmatter
+fields draw no false positives. That is why this is "declined", not
+"rejected" — if the skills layout ever flattens, re-evaluate. It does not
+replace `lint-frontmatter.py` in any case; the repo-specific checks above
+are the whole reason that script exists.
