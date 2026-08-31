@@ -20,7 +20,7 @@ Authors a new skill for this repo end to end. Input is a **topic**, not a
 brief: the skill checks for existing coverage, decides the name and
 namespace, drills the official documentation behind the topic, writes a
 filled handoff brief to `docs/handoff-briefs/<name>.md` using
-`skill-handoff-template.md`, drafts the `SKILL.md` from that brief, runs
+`templates/skill-handoff.md`, drafts the `SKILL.md` from that brief, runs
 the post-draft checks, and adds the skill's entry to `skills/README.md`.
 It ends at a linted draft plus a fresh-session test plan. It does not
 write test fixtures and does not commit.
@@ -100,7 +100,7 @@ triggering — and move it into the body.
    what bounds the draft, and drift brief 07 is the worked example of why
    that matters.
 5. **Write the filled brief** to `docs/handoff-briefs/<name>.md` from
-   `skill-handoff-template.md`. Every template heading survives; sections
+   `templates/skill-handoff.md`. Every template heading survives; sections
    that do not apply get `N/A — <reason>`. The brief records what was
    decided and what was deliberately excluded, which is the part that
    outlives the draft.
@@ -184,7 +184,7 @@ No Claude Code-only frontmatter is relied on. `argument-hint` and
   worth remembering: root `CLAUDE.md` names drifting project-scope
   instruction files as this repo's recurring failure mode, and this
   brief originally listed only the first of the two.
-- `docs/handoff-briefs/skill-handoff-template.md` — (a) already
+- `docs/handoff-briefs/templates/skill-handoff.md` — (a) already
   converted. Consumed as-is; this brief does not propose changing it.
 
 > Verbatim — do not edit. Brief-specific observations belong in the
@@ -213,7 +213,7 @@ is the argument for `/author-skill` performing the promotion-or-deletion
 itself at step 9 instead of trusting the convention to hold.
 
 **This brief is its own first dogfood.** It was written by hand against
-`skill-handoff-template.md`, which is exactly what the skill will
+`templates/skill-handoff.md`, which is exactly what the skill will
 automate at step 5. If the skill's generated briefs do not look like this
 one, that is a finding about the skill, not about this brief.
 

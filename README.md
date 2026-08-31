@@ -305,9 +305,9 @@ content), the pattern is overkill; real-use validation suffices.
 
 Templates and worked examples live in [docs/handoff-briefs/](docs/handoff-briefs/):
 
-- [skill-handoff-template.md](docs/handoff-briefs/skill-handoff-template.md)
+- [templates/skill-handoff.md](docs/handoff-briefs/templates/skill-handoff.md)
   — fill-in template for new skills
-- [subagent-handoff-template.md](docs/handoff-briefs/subagent-handoff-template.md)
+- [templates/subagent-handoff.md](docs/handoff-briefs/templates/subagent-handoff.md)
   — fill-in template for new subagents
 - [examples/](docs/handoff-briefs/examples/) — reference briefs derived
   from validated artifacts
