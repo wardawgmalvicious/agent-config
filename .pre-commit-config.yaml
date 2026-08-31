@@ -12,7 +12,7 @@ repos:
         entry: python scripts/lint-frontmatter.py
         language: python
         additional_dependencies: [pyyaml]
-        files: '^skills/[^/]+/SKILL\.md$'
+        files: '^skills/[^/]+/[^/]+/SKILL\.md$'
         types: [markdown]
 
       # README.md is documentation, not a rule — excluded so it isn't
