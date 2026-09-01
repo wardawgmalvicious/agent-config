@@ -116,26 +116,27 @@ set) and the picture changes. Measured 2026-08-31:
 
 | Fixture file | Rules |
 | --- | --- |
-| every item file except `control/` and the five `SampleGraph.GraphModel/*.json` | `fabric-git-serialization` |
+| every item file except `control/notes.md` | `fabric-git-serialization` |
 | `SampleNB.Notebook/notebook-content.py` | + `coding-python` |
 | `…/SampleKDB.KQLDatabase/DatabaseSchema.kql` | + `coding-kql` |
 | `SamplePL.DataPipeline/pipeline-content.json` | + `coding-expressions` |
 | `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
 | `SampleSparkNB.Notebook/notebook-content.sql` | + `coding-sparksql`, `coding-tsql` |
-| the five `SampleGraph.GraphModel/*.json` definition parts | **none** |
 
-Re-measured 2026-08-31. One of the three findings that run produced is
-now closed:
+Re-measured 2026-08-31 after the `rule-glob-gaps.md` fixes landed. Two of
+the three findings that run produced are now closed:
 
+- `fabric-git-serialization` was missing `**/*.GraphModel/**`, so the five
+  GraphModel definition parts got **no rule at all**. Added, along with
+  `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` — both
+  confirmed as real `metadata.type` values against public exports.
 - `coding-sparksql` globbed `**/notebooks/**/*.sql`, a directory shape
   Fabric never emits, so a Spark SQL notebook silently got **T-SQL**
   conventions from `coding-tsql`'s bare `**/*.sql`. `SampleSparkNB` is
   the regression fixture for the fix.
 
-Both still open, filed as `docs/handoff-briefs/execute/rule-glob-gaps.md`:
+Still open, deliberately — it is a judgement call, not a typo:
 
-- `fabric-git-serialization` lists `**/*.GraphQLApi/**` but not
-  `**/*.GraphModel/**`, so a GraphModel definition file gets no rule.
 - `coding-kql` reaches `DatabaseSchema.kql` and none of the three JSON
   files that actually hold queries.
 
