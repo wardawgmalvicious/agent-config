@@ -60,6 +60,8 @@ an apparent one.
 | `…/draft/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
 | `…/draft/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
 | `…/Files/Config/published/…` — 3 files, mirrors `draft/` | `fabric-data-agent` | 3,071 |
+| `SampleMD.MirroredDatabase/.platform` | `fabric-mirroring` | 4,659 |
+| `SampleMD.MirroredDatabase/mirroring.json` | `fabric-mirroring` | 4,659 |
 | `SampleCJ.CopyJob/.platform` | `fabric-copy-job` | 2,776 |
 | `SampleCJ.CopyJob/copyjob-content.json` | `fabric-copy-job` | 2,776 |
 | `SamplePL.DataPipeline/.platform` | *(none)* | 0 |
@@ -71,8 +73,8 @@ an apparent one.
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 
-Together with `../pbip-triggers/`, all **20** conditional skills in the
-payload are now covered — 9 there, 11 here.
+Together with `../pbip-triggers/`, all **21** conditional skills in the
+payload are now covered — 9 there, 12 here.
 
 ## Assertions that carry weight
 
