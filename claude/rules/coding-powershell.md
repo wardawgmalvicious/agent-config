@@ -17,7 +17,11 @@ supersedes this one.
 
 ## Baseline
 
-- 4-space indent. No tabs. UTF-8 **without** BOM (pwsh 7 default).
+- 4-space indent. No tabs. UTF-8 **without** BOM (pwsh 7 default) —
+  but PSScriptAnalyzer's `PSUseBOMForUnicodeEncodedFile` fires on any
+  file containing non-ASCII bytes, so one em dash or arrow in a comment
+  forces `utf8BOM` to lint clean. Keep comments ASCII and stay BOM-free.
+  (Verified Aug 2026, PSSA 1.25.0.)
 - ~100 column soft limit.
 - **No aliases in scripts.** `Get-ChildItem`, not `ls` / `gci` / `dir`.
   Aliases are for the interactive prompt only.
