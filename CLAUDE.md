@@ -268,18 +268,24 @@ filename has to stay stable and the ordering lives in the queue file.
   — `code-review`, `drift-audit`, `author-skill`, `learn`,
   `drift-update`, `drift-handoff` — `xhigh` on `commit`, and left
   commented on all 37 platform skills, which therefore inherit `max`.
-  Note what that means **today**: with the session already at `max`,
-  only `commit` changes behaviour. The six `max` pins are a *floor*
-  — written down so that tier survives a later drop in the session
-  default, which is the change they were originally made for. Platform skills stay unpinned **on purpose**: they
-  auto-trigger alongside your real work, so an effort pin there governs
-  your Fabric/Power BI turn rather than any discrete skill run. Four
-  things to know before changing one. `model:` is **turn-scoped** — it
-  applies while the skill is active and the session model resumes on the
-  next prompt. `effort:` has **no `inherit` value**; omitting the field
-  *is* the inherit, which is why it is carried as a commented
-  placeholder rather than a written-out default, and an unsupported
-  level silently falls back to the highest supported one at or below it.
+  Note what that means: *while the session actually sits at* `max`,
+  only `commit` changes behaviour. But the session level is **live
+  state, not the file** — it can be changed mid-session, nothing
+  warns when it drifts, and the transcript is the only place the real
+  value shows (observed 2026-09-01: both copies of `settings.json`
+  read `max` while the session ran at `xhigh`, switched by accident
+  while browsing the level list). Whenever it sits below `max` the six
+  pins start *raising* effort rather than matching it, which is
+  exactly the *floor* they were written for. Platform skills stay
+  unpinned **on purpose**: they auto-trigger alongside your real work,
+  so an effort pin there governs your Fabric/Power BI turn rather than
+  any discrete skill run. Four things to know before changing one.
+  `model:` is **turn-scoped** — it applies while the skill is active
+  and the session model resumes on the next prompt. `effort:` has **no
+  `inherit` value**; omitting the field *is* the inherit, which is why
+  it is carried as a commented placeholder rather than a written-out
+  default, and an unsupported level silently falls back to the highest
+  supported one at or below it.
   `disable-model-invocation: true` removes that skill's description from
   the listing **in every session on this machine** and blocks subagent
   preloading and scheduled-task firing — so it is a listing-cost change
