@@ -12,3 +12,21 @@
 # POSIX shell scripts: pin LF. A bash script that picks up CRLF fails with
 # cryptic "\r: command not found" errors.
 *.sh text eol=lf
+
+# Extensionless bash scripts, pinned BY NAME because the *.sh rule above
+# cannot see them. Both are run directly, so a CRLF checkout breaks them the
+# same way.
+#
+# The pin is load-bearing, not belt-and-braces, and the mechanism is not the
+# obvious one: `* text=auto` marks these files text, and git checks out a text
+# file using core.eol precisely WHEN core.autocrlf is false -- which is the
+# setting on this machine. core.eol is unset, so it defaults to `native`, i.e.
+# CRLF on Windows. They are LF in the working tree today only because nothing
+# has re-checked them out since; `git diff` already warns "LF will be replaced
+# by CRLF the next time Git touches it" for every unpinned text file here.
+# Verified 2026-09-01.
+#
+# There is no glob for "file with a shebang": a new extensionless script needs
+# its own line here.
+scripts/instructions-log text eol=lf
+scripts/bootstrap-pre-commit text eol=lf
