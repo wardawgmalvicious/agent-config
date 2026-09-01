@@ -8,6 +8,8 @@
 - **Run in**: a fresh session (frontmatter is a trigger surface).
 - **Priority**: bug 1 first. It is the only one that loads *actively wrong*
   guidance rather than merely loading nothing.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## How these were found
 

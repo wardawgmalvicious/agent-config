@@ -6,6 +6,8 @@
   three item-type gaps the fixtures surfaced.
 - **Run in**: a fresh session. Start with `/author-skill` if the decision
   below holds after you check the overlap in step 1.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## The gap
 

@@ -13,6 +13,8 @@
   `disable-model-invocation` removes a skill's description from the listing
   entirely, so applying it is also a listing-cost change — if you set DMI on a
   skill, note it there.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## Why this exists
 

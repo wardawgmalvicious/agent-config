@@ -16,6 +16,8 @@
   subject; no overlap. One shared edge: DMI removes a skill's description from
   the listing, so it is also a listing-cost lever — if that brief applies DMI to
   a skill, re-measure here.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## Provenance — read if a claim here looks unsupported
 

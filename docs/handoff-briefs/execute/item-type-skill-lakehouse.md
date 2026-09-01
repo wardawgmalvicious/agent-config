@@ -7,6 +7,8 @@
   rather than a new file.** See "What changed my read" below; the user's
   instinct was right but the file is more interesting than it looks.
 - **Run in**: a fresh session.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## The user's framing, which is correct
 
