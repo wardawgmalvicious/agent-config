@@ -1,8 +1,8 @@
 # Open briefs — execution order
 
-Five briefs are open. Three waves are spent as of 2026-08-31 (struck
-through below) and their briefs are deleted, so the struck rows name files
-that no longer exist — git history is the archive. This file is the
+Four briefs are open. Four waves are spent (struck through below) and
+their briefs are deleted, so the struck rows name files that no longer
+exist — git history is the archive. This file is the
 **only** place the order lives; each brief carries its own dependencies but
 not its position.
 
@@ -16,8 +16,8 @@ cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
 deleted **individually** as each is spent, and heavily cross-linked — 10
-links between the current 5 files. Numbering the filenames would mean
-rewriting those 21 links now, and again on every deletion, choosing each
+links between the current 4 files. Numbering the filenames would mean
+rewriting those 17 links now, and again on every deletion, choosing each
 time between renumber-and-relink churn or a queue that reads `01, 04, 06,
 08`. The filename is the link target, so it has to be the stable thing.
 
@@ -37,11 +37,12 @@ rest would only invalidate every reference to a wave elsewhere.
 | --- | --- | --- |
 | ~~**1**~~ | ~~`rule-glob-gaps.md` — bugs 1, 1b~~ | **Done 2026-08-31.** `coding-sparksql.md` now matches `**/*.Notebook/notebook-content.sql`; the `coding-tsql` overlap is resolved by a precedence section in each rule, keyed on the notebook kernel. Bug 1b was not a contradiction — recorded as a scope carve-out. |
 | ~~**2**~~ | ~~`item-type-skill-kqlqueryset.md` + `rule-glob-gaps.md`~~ | **Done 2026-08-31.** Decided together, as one call. **No KQLQueryset skill** — there is no procedure to encode, only KQL authoring conventions that already existed and were correct. Fixed the rule instead: `coding-kql.md` gained three narrow item-specific globs for the JSON envelopes that hold queries, so it now reaches an actual query and not just schema DDL. Reasoning and the reconsider-if condition are recorded in `tests/skills/fabric-triggers/expected_activations.md`, which also gained the regression rows. |
-| **3** | [skill-model-policy.md](skill-model-policy.md) | Independent of every other brief. Addresses actual pain (weekly limits), and its biggest item — the unexplained `workflow-subagent` 24% — is a diagnostic that may be worth more than every frontmatter edit combined. Cheap to run. |
+| ~~**3**~~ | ~~`skill-model-policy.md`~~ | **Done 2026-09-01.** `model`, `effort` and `disable-model-invocation` are written out on all 44 skills so each flip point is visible in the file. Only `commit` changes behaviour (`model: sonnet`, `effort: high`); the six workflow skills pin `effort: max` as a floor under the unchanged `max` session default; DMI was declined repo-wide and is `false` everywhere. The `workflow-subagent` 24% was identified — it is the Workflow tool's fan-out agents, and a rare spike rather than a structural cost (three runs ever, 0% on 31 of 33 days). **Two items outlived the brief — see wave 8.** |
 | **4** | [skill-context-cost.md](skill-context-cost.md) workstreams C + E, folding in [item-type-skill-lakehouse.md](item-type-skill-lakehouse.md) | The big pass. Lakehouse **is** an E row — its recommended fix is a `paths:` glob on `fabric-variable-library` — so run them together or E gets made twice. E's `paths:` candidates must be measured against confirmed item-type names — see the sources pinned in `tests/skills/fabric-triggers/README.md`, and add the fixture in the same commit as the glob. |
 | **5** | [item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) | The only "yes, author it" in the queue, and the largest single chunk of work. Nothing blocks it — it is late because it is expensive, not because it is stuck. Do it earlier if the pipeline surface is what you are actually working on. |
 | ~~**6**~~ | ~~`rule-glob-gaps.md` — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
+| **8** | *No brief — this row is the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model | **Needs a fresh session**: the session that wrote the frontmatter cannot verify it, and a changed `description` is a changed *trigger*. Three things. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is still `model: inherit` — wave 3 deliberately skipped `claude/agents/`. It is a fair `sonnet` candidate (it greps and reports), but unlike the skill pins it changes behaviour the moment it lands, so run the fixtures in [`../../../tests/agents/security-reviewer/README.md`](../../../tests/agents/security-reviewer/README.md) against `expected_findings.md` both before and after, and keep the pin only if the caught/not-caught sets are unchanged. **(b)** Confirm `/commit` actually picks up `model: sonnet` **and** `effort: high`. **(c)** Confirm a plain-English commit request still auto-triggers the skill — it must, since DMI is `false` everywhere. |
 
 [skill-context-cost.md](skill-context-cost.md) workstream **D**
 (`when_to_use`) sits outside the waves: it is blocked on a
@@ -58,7 +59,8 @@ improvement and judgement work.
 would otherwise make the same call twice — the failure mode that forced
 the 2026-08-31 consolidation of four briefs into two.
 
-**Cheap and independent before expensive.** Wave 3 before 4 and 5.
+**Cheap and independent before expensive.** Wave 3 ran before 4 and 5 and
+is done; wave 8 is what it left behind.
 
 ## Two briefs are decisions, not edits
 
