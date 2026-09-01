@@ -118,6 +118,13 @@ Compare against [expected_activations.md](expected_activations.md). Point
 it at `../pbip-triggers/fixtures` to check the other half; the union of the
 two runs must cover all 19 conditional skills.
 
+**Run it a second time over `claude/rules/*.md`** — same code, swap the
+`skills/*/*/SKILL.md` glob for `claude/rules/*.md` and key on `p.stem`.
+Rules carry `paths:` globs too and load on these same files, so a file with
+no *skill* may still pull a rule. Doing only the skills pass is how the
+first version of this fixture set reported "activates nothing" for files
+that load `fabric-git-serialization`.
+
 ### Real path — does the harness agree?
 
 The static check tests the globs. It does **not** test that Claude Code
