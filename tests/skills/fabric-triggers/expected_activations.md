@@ -69,12 +69,12 @@ an apparent one.
 | `SampleLH.Lakehouse/.platform` | *(none)* | 0 |
 | `SampleLH.Lakehouse/lakehouse.metadata.json` | *(none)* | 0 |
 | `SampleLH.Lakehouse/alm.settings.json` | *(none)* | 0 |
-| **`SampleLH.Lakehouse/shortcuts.metadata.json`** | `fabric-variable-library` | 2,693 |
+| `SampleLH.Lakehouse/shortcuts.metadata.json` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 
-Together with `../pbip-triggers/`, all **23** conditional skills in the
-payload are now covered — 10 there, 13 here.
+Together with `../pbip-triggers/`, all **24** conditional skills in the
+payload are now covered — 10 there, 14 here.
 
 ## Assertions that carry weight
 
@@ -135,19 +135,33 @@ whole workstream is built on.
 that item type verified against a real export and a fixture added in the
 same commit; ACME has none, and neither does this set.
 
-**4. A Lakehouse activates a skill on exactly one of its four files.**
-`shortcuts.metadata.json` pulls `fabric-variable-library`, because a
-shortcut target can bind to a variable through the
-`$(/**/Lib/Var)` reference-path form — the same syntax that skill already
-owns for notebooks. The other three files stay *(none)*: `.platform` and
-`lakehouse.metadata.json` carry no procedure, and `alm.settings.json` is a
-**deliberate** zero, not a gap. It was considered for a `fabric-cicd` glob
-and declined — that skill documents the *Python library*, not the portal's
-Git-sync control surface, and it is cross-cutting enough that making it
-conditional would cost more reach than the 367 listing tokens it saves.
-The shortcut section in `fabric-variable-library` covers what
-`alm.settings.json` does instead. Reopen only if a Fabric-ALM procedure
-appears that genuinely has no owner.
+**4. A Lakehouse activates nothing, on all four files.** All four zeros
+are **deliberate**, and each was tried against a real candidate before
+being left empty — this is the most-examined *(none)* block in either
+fixture set.
+
+- `.platform` and `lakehouse.metadata.json` carry no procedure at all.
+- `alm.settings.json` was considered for a `fabric-cicd` glob and
+  declined: that skill documents the *Python library*, not the portal's
+  Git-sync control surface, and it is cross-cutting enough that making it
+  conditional would cost more reach than the 367 listing tokens it saves.
+- `shortcuts.metadata.json` was given a `fabric-variable-library` glob on
+  2026-09-01 and **reverted the same day.** A shortcut target *can* bind
+  to a variable through the `$(/**/Lib/Var)` form, and ACME's happen to,
+  but that is a choice the author made rather than what a shortcuts file
+  is. Most shortcuts carry a plain `workspaceId`/`itemId` pair, so the
+  glob pulled the skill into every Lakehouse whether or not any variable
+  was involved — the same over-broad shape A1 had to narrow out of
+  `pbip-project-structure`. The discriminator is `$(...)` *inside* the
+  file, and no glob can see it.
+
+This fixture is the regression: `sample_holidays` uses the VL form and
+`sample_static` does not, so a glob that cannot tell them apart is visible
+here. The syntax stays documented in `fabric-variable-library`'s body,
+reachable from a `.VariableLibrary` folder and by `/fabric-variable-library`.
+
+**A Lakehouse therefore has no skill, and that is the finding**, not a gap
+waiting to be filled — a Git-synced Lakehouse is four files and no data.
 
 **5. `control/notes.md` activates nothing.** If it does, the observation
 method is wrong. Check this before believing any other row.

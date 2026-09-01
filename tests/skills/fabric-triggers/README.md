@@ -5,8 +5,8 @@ Minimal but structurally real Fabric Git-synced item folders, used to test
 enters session scope.
 
 Companion to [`../pbip-triggers/`](../pbip-triggers/), which covers the
-Power BI half. Same contract, same method, disjoint skills: 10 there, 13
-here, and that is all 23 conditional skills in the payload.
+Power BI half. Same contract, same method, disjoint skills: 10 there, 14
+here, and that is all 24 conditional skills in the payload.
 
 ## Why this exists
 
@@ -68,9 +68,8 @@ tests/skills/fabric-triggers/fixtures/
 └── control/notes.md                (matches nothing — negative control)
 ```
 
-`DataPipeline`, `Lakehouse` and `KQLQueryset` have **no skill of their
-own in the payload** (a Lakehouse `shortcuts.metadata.json` pulls
-`fabric-variable-library`, but nothing owns the item type). They are here as
+`DataPipeline`, `Lakehouse` and `KQLQueryset` have **no skill in the
+payload**. They are here as
 negative controls and to make that coverage gap visible — see
 [expected_activations.md](expected_activations.md).
 
