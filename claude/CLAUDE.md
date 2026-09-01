@@ -4,7 +4,31 @@ When the user asks about Power BI / Fabric / TMDL topics, prefer skill content o
 
 ## Local environment
 
-Python is **not** on `PATH` on this machine. Always go through `uv`:
+Windows 11. Two shells, each spawned fresh and non-interactive per tool
+call: PowerShell 7.6 (`pwsh`) and Git Bash (mingw64). Both profiles print
+a two-line banner (`Profile and functions loaded…`) ahead of your
+command's output — that is the profile, not your command.
+`C:\Repos\Personal\machine-config` is the source of truth for what is
+installed here and how it is configured.
+
+### Python
+
+There is no system Python — but the names still resolve, so the failure
+does not look like one:
+
+- `python` / `python3` are the Windows Store execution-alias stubs in
+  `%LOCALAPPDATA%\Microsoft\WindowsApps`. **With** arguments they print
+  `Python was not found; run without arguments to install from the
+  Microsoft Store` and exit **49** — not "command not found". With *no*
+  arguments they open the Store.
+- `pip` is genuinely absent.
+- `C:\Python314\` and `C:\Python314\Scripts\` are on the machine PATH but
+  that directory no longer exists. Dead entries; ignore them.
+- `python3.13` **does** work — it is uv's shim for the primary
+  interpreter at `~/.local/bin/python3.13.exe`. Fine for a throwaway
+  one-liner; anything with a dependency goes through `uv run`.
+
+Always go through `uv`:
 
 | Intent | Command |
 | --- | --- |
@@ -16,12 +40,13 @@ Python is **not** on `PATH` on this machine. Always go through `uv`:
 | Install a CLI tool | `uv tool install <tool>` |
 | Project dependencies | `uv add <pkg>` / `uv sync` |
 
-Never invoke bare `python`, `python3`, or `pip` — they will fail with
-"command not found", not with a useful error.
+Globally installed uv tools: `fab` (package `ms-fabric-cli`), `pbir`
+(`pbir-cli`), `ruff`, `sqlfluff`, `pre-commit`, `git-filter-repo`. For the
+first two the command is not the package name.
 
-Never run `python -` with nothing on stdin. The Bash tool hands children a
-character-device stdin, and Windows `isatty()` returns True for any
-character device, so Python starts the interactive PyREPL: it either
+Never run `uv run python -` with nothing on stdin. The Bash tool hands
+children a character-device stdin, and Windows `isatty()` returns True for
+any character device, so Python starts the interactive PyREPL: it either
 blocks silently until the tool timeout, or — if stdin is `NUL` — loops on
 `WinError 6`/`123` emitting ~50k tracebacks. A heredoc
 (`uv run python - <<'PYEOF'`) or a pipe is fine: it makes stdin a real
@@ -43,6 +68,46 @@ heredoc** (`cat > file <<'EOF'`), which passes through literally, and
 verify the result. PowerShell here-strings (`@'...'@`) cannot be used
 inline in the Bash tool at all; put them in a `.ps1` written by a quoted
 heredoc and run that file instead.
+
+### Command-line tooling
+
+Present, on `PATH` in both shells, and safe to reach for: `git`, `gh`,
+`az`, `node`/`npm`, `docker` (daemon running) and `wsl`; `jq`, `yq`,
+`mlr` (Miller), `duckdb`; `bat`, `delta`, `difft`, `hyperfine`; `xh`
+(HTTP), `sops` + `age`, `gitleaks`, `shellcheck`, `shfmt`; `sqlcmd`,
+`sqlpackage`, `dab`, `TabularEditor.exe`; `fzf`, `zoxide`, `lazygit`.
+`~/scripts` (machine-config's utility scripts) is on `PATH` too.
+
+**Not installed — don't reach for them and don't offer them as if they
+were there:** `rg` (ripgrep) and `fd`. Use the Grep and Glob tools, or
+`grep`/`find` in Git Bash. Also absent despite being wired into the shell
+profiles or `machine-config/setup.ps1`: `starship`, `hurl`, and `es`
+(Everything CLI) — admin-scope winget packages that a non-admin bootstrap
+defers.
+
+PowerShell modules available: `Az`, `MicrosoftPowerBIMgmt`, `SqlServer`,
+`Microsoft.Graph`, `ImportExcel`, `powershell-yaml`, `Pester`,
+`PSScriptAnalyzer`, `Microsoft.PowerShell.SecretManagement` +
+`SecretStore`, `PSFzf`. Windows bundles Pester 3.4.0 *alongside* the
+installed 6.1.0 — import with `-MinimumVersion 5.0` or every `Should`
+fails with syntax errors that look nothing like a version problem.
+
+`az account clear` runs in interactive shells only: both profiles skip it
+when `CLAUDECODE` is set, so an existing `az login` survives across tool
+calls. Check `az account show` before assuming a login is needed — and
+before assuming one exists.
+
+### Git identity is folder-scoped
+
+`~/.gitconfig` declares **no** identity and sets `user.useConfigOnly =
+true`. Identity arrives through `includeIf gitdir:` — personal under
+`C:/Repos/Personal/`, work under `C:/Repos/ACME/`. In a repo outside both
+roots `git commit` fails with *"Please tell me who you are"*, which is
+deliberate: without `useConfigOnly`, git silently invents an author from
+the domain-joined machine's AD record, i.e. the corporate email. Set one
+explicitly there with `git config --local user.email …` rather than
+touching the global config. `core.autocrlf` is `false` globally on
+purpose; line-ending policy is per repo via a committed `.gitattributes`.
 
 ## Agent config source
 
