@@ -1,0 +1,44 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/graphInstance/definition/graphDefinition/1.0.0/schema.json",
+  "nodeTables": [
+    {
+      "nodeTypeAlias": "1001",
+      "id": "00000000-0000-0000-0000-00000000c001",
+      "dataSourceName": "00000000-0000-0000-0000-000000000000_dim_customer",
+      "propertyMappings": [
+        {
+          "propertyName": "CustomerId",
+          "sourceColumn": "customer_id"
+        },
+        {
+          "propertyName": "CustomerName",
+          "sourceColumn": "customer_name"
+        }
+      ]
+    }
+  ],
+  "edgeTables": [
+    {
+      "edgeTypeAlias": "2001",
+      "id": "00000000-0000-0000-0000-00000000c002",
+      "edgeIdMapping": null,
+      "dataSourceName": "00000000-0000-0000-0000-000000000000_rel_customer_order",
+      "sourceNodeKeyColumns": [
+        "customer_id"
+      ],
+      "propertyMappings": [
+        {
+          "propertyName": "customer_id",
+          "sourceColumn": "customer_id"
+        },
+        {
+          "propertyName": "order_id",
+          "sourceColumn": "order_id"
+        }
+      ],
+      "destinationNodeKeyColumns": [
+        "order_id"
+      ]
+    }
+  ]
+}

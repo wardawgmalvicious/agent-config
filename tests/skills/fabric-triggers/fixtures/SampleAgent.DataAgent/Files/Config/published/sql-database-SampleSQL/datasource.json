@@ -1,0 +1,66 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/dataAgent/definition/dataSource/1.0.0/schema.json",
+  "artifactId": "00000000-0000-0000-0000-000000000009",
+  "workspaceId": "00000000-0000-0000-0000-000000000000",
+  "dataSourceInstructions": null,
+  "displayName": "SampleSQL",
+  "type": "sql_database",
+  "userDescription": null,
+  "metadata": null,
+  "elements": [
+    {
+      "id": "00000000-0000-0000-0000-00000000a001",
+      "is_selected": false,
+      "display_name": "Schemas",
+      "type": "schema_grouping",
+      "description": null,
+      "children": [
+        {
+          "id": "00000000-0000-0000-0000-00000000a002",
+          "is_selected": false,
+          "display_name": "dbo",
+          "type": "sql_database.schema",
+          "description": null,
+          "children": [
+            {
+              "id": "00000000-0000-0000-0000-00000000a003",
+              "is_selected": false,
+              "display_name": "Tables",
+              "type": "table_grouping",
+              "description": null,
+              "children": [
+                {
+                  "id": "00000000-0000-0000-0000-00000000a004",
+                  "is_selected": true,
+                  "display_name": "Customer",
+                  "type": "sql_database.table",
+                  "description": null,
+                  "children": [
+                    {
+                      "id": "00000000-0000-0000-0000-00000000a005",
+                      "is_selected": true,
+                      "display_name": "CustomerId",
+                      "type": "sql_database.column",
+                      "data_type": "int",
+                      "description": null,
+                      "children": []
+                    },
+                    {
+                      "id": "00000000-0000-0000-0000-00000000a006",
+                      "is_selected": true,
+                      "display_name": "Name",
+                      "type": "sql_database.column",
+                      "data_type": "nvarchar",
+                      "description": null,
+                      "children": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

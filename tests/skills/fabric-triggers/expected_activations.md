@@ -1,11 +1,12 @@
 # Expected activations
 
-Measured 2026-08-31 against the payload at commit `ee0a8f5`, using the
+Measured 2026-08-31 against the payload at commit `a5b9a02`, using the
 static glob check in [README.md](README.md). Token figures are body size
 at ~3.5 chars/token — relative weights, not billing figures.
 
-Shapes are modelled on `C:\Repos\ACME\fabric-acme`, except the three noted
-under "Fixtures built on an unverified shape" in the README.
+Shapes are modelled on `C:\Repos\ACME\fabric-acme`, except `GraphModel`,
+`SQLDatabase` and `DataAgent`, which are modelled on the public Git-synced
+exports pinned in the README. No fixture here rests on an unverified shape.
 
 **This table lists skills only.** Rules in `claude/rules/` have `paths:`
 globs of their own and load on the same files — `fabric-git-serialization`
@@ -41,12 +42,22 @@ an apparent one.
 | `SampleWH.Warehouse/ingest/Tables/Control.sql` | `fabric-warehouse` | 2,975 |
 | `SampleWH.Warehouse/ingest/Views/vw_LatestRun.sql` | `fabric-warehouse` | 2,975 |
 | `SampleSQL.SQLDatabase/.platform` | *(none)* | 0 |
+| `SampleSQL.SQLDatabase/.gitignore` | *(none)* | 0 |
 | `SampleSQL.SQLDatabase/SampleSQL.sqlproj` | *(none)* | 0 |
 | `SampleSQL.SQLDatabase/dbo/Tables/Customer.sql` | `fabric-database` | 608 |
 | `SampleGraph.GraphModel/.platform` | `fabric-graph` | 2,662 |
-| `SampleGraph.GraphModel/graphmodel.json` | `fabric-graph` | 2,662 |
+| `SampleGraph.GraphModel/dataSources.json` | `fabric-graph` | 2,662 |
+| `SampleGraph.GraphModel/graphDefinition.json` | `fabric-graph` | 2,662 |
+| `SampleGraph.GraphModel/graphSettings.json` | `fabric-graph` | 2,662 |
+| `SampleGraph.GraphModel/graphType.json` | `fabric-graph` | 2,662 |
+| `SampleGraph.GraphModel/stylingConfiguration.json` | `fabric-graph` | 2,662 |
 | `SampleAgent.DataAgent/.platform` | `fabric-data-agent` | 3,071 |
-| `SampleAgent.DataAgent/SHAPE-UNKNOWN.md` | `fabric-data-agent` | 3,071 |
+| `SampleAgent.DataAgent/Files/Config/data_agent.json` | `fabric-data-agent` | 3,071 |
+| `SampleAgent.DataAgent/Files/Config/publish_info.json` | `fabric-data-agent` | 3,071 |
+| `…/Files/Config/draft/stage_config.json` | `fabric-data-agent` | 3,071 |
+| `…/draft/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
+| `…/draft/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
+| `…/Files/Config/published/…` — 3 files, mirrors `draft/` | `fabric-data-agent` | 3,071 |
 | `SamplePL.DataPipeline/.platform` | *(none)* | 0 |
 | `SamplePL.DataPipeline/pipeline-content.json` | *(none)* | 0 |
 | `SampleLH.Lakehouse/.platform` | *(none)* | 0 |
@@ -72,11 +83,19 @@ correct. Three means the bare glob is back.
 Every other `.platform` here is a second witness to the same fix.
 
 **2. A Warehouse activates nothing until you open a `.sql` file.**
-`fabric-warehouse` globs `**/*.Warehouse/**/*.sql`, so `.platform` and
-`.sqlproj` get no guidance. Same for `fabric-database`. This is the glob
-as written, deliberately narrow — recorded here so a later widening is a
-visible decision rather than a silent one, and so the zero rows are not
-read as a fixture defect.
+`fabric-warehouse` globs `**/*.Warehouse/**/*.sql`, so `.platform`,
+`.gitignore` and `.sqlproj` get no guidance. Same for `fabric-database`.
+This is the glob as written, deliberately narrow — recorded here so a later
+widening is a visible decision rather than a silent one, and so the zero
+rows are not read as a fixture defect.
+
+What that glob does **not** do is require a directory between the item
+folder and the `.sql` file. `**` matches *zero* or more segments, so
+`Foo.SQLDatabase/Bar.sql` matches `**/*.SQLDatabase/**/*.sql` just as
+`Foo.SQLDatabase/dbo/Tables/Bar.sql` does — verified with the same wcmatch
+call the static check uses. A flat SQL project would still activate. This
+is written down because the opposite was believed for a while and filed as
+a live bug risk; it is not one.
 
 **3. `fabric-spark` and `fabric-error-handling` are inseparable.** Both
 glob `**/*.Notebook/**`, so every Notebook file pulls 4,418 tokens of two
@@ -95,12 +114,12 @@ set) and the picture changes. Measured 2026-08-31:
 
 | Fixture file | Rules |
 | --- | --- |
-| every item file except `control/` and `SampleGraph.GraphModel/graphmodel.json` | `fabric-git-serialization` |
+| every item file except `control/` and the five `SampleGraph.GraphModel/*.json` | `fabric-git-serialization` |
 | `SampleNB.Notebook/notebook-content.py` | + `coding-python` |
 | `…/SampleKDB.KQLDatabase/DatabaseSchema.kql` | + `coding-kql` |
 | `SamplePL.DataPipeline/pipeline-content.json` | + `coding-expressions` |
 | `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
-| `SampleGraph.GraphModel/graphmodel.json` | **none** |
+| the five `SampleGraph.GraphModel/*.json` definition parts | **none** |
 
 Two findings came out of running that, both filed as
 `docs/handoff-briefs/execute/rule-glob-gaps.md`:
@@ -127,8 +146,6 @@ negative controls — a glob that starts matching them is over-broad.
 
 ## Known gaps
 
-- **Three shapes are unverified** — `GraphModel`, `SQLDatabase`,
-  `DataAgent`. See the README section of that name.
 - **No `Environment`, `Reflex`, `MirroredDatabase`, `CopyJob` or
   `SparkJobDefinition` fixture.** None has a conditional skill today.
   Several are candidates for a `paths:` glob under Workstream E in

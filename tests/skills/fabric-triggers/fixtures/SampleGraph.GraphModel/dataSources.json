@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/graphInstance/definition/dataSources/1.0.0/schema.json",
+  "dataSources": [
+    {
+      "name": "00000000-0000-0000-0000-000000000000_dim_customer",
+      "type": "DeltaTable",
+      "properties": {
+        "path": "abfss://00000000-0000-0000-0000-000000000000@onelake.dfs.fabric.microsoft.com/00000000-0000-0000-0000-000000000000/Tables/dim_customer"
+      }
+    },
+    {
+      "name": "00000000-0000-0000-0000-000000000000_rel_customer_order",
+      "type": "DeltaTable",
+      "properties": {
+        "path": "abfss://00000000-0000-0000-0000-000000000000@onelake.dfs.fabric.microsoft.com/00000000-0000-0000-0000-000000000000/Tables/rel_customer_order"
+      }
+    }
+  ]
+}

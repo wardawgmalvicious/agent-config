@@ -42,10 +42,18 @@ tests/skills/fabric-triggers/fixtures/
 ├── SampleWH.Warehouse/             .platform, SampleWH.sqlproj,
 │                                   ingest/Tables/Control.sql,
 │                                   ingest/Views/vw_LatestRun.sql
-├── SampleSQL.SQLDatabase/          .platform, SampleSQL.sqlproj,
+├── SampleSQL.SQLDatabase/          .platform, .gitignore,
+│                                   SampleSQL.sqlproj,
 │                                   dbo/Tables/Customer.sql
-├── SampleGraph.GraphModel/         .platform, graphmodel.json
-├── SampleAgent.DataAgent/          .platform, SHAPE-UNKNOWN.md
+├── SampleGraph.GraphModel/         .platform, dataSources.json,
+│                                   graphDefinition.json, graphSettings.json,
+│                                   graphType.json, stylingConfiguration.json
+├── SampleAgent.DataAgent/          .platform
+│   └── Files/Config/               data_agent.json, publish_info.json
+│       ├── draft/                  stage_config.json,
+│       │                           sql-database-SampleSQL/datasource.json,
+│       │                           sql-database-SampleSQL/fewshots.json
+│       └── published/              (mirrors draft/)
 ├── SamplePL.DataPipeline/          .platform, pipeline-content.json
 ├── SampleLH.Lakehouse/             .platform, lakehouse.metadata.json
 ├── SampleQS.KQLQueryset/           .platform, RealTimeQueryset.json
@@ -58,32 +66,54 @@ negative controls and to make that coverage gap visible — see
 
 ## What these fixtures are modelled on
 
-All shapes are taken from real item folders in `C:\Repos\ACME\fabric-acme`:
+Most shapes are taken from real item folders in `C:\Repos\ACME\fabric-acme`:
 folder naming, the `.platform` schema and `metadata.type` value, the
 `.children/` nesting a KQLDatabase sits in under its Eventhouse, the
 `# META` comment blocks in `notebook-content.py`, the Warehouse
 `ingest/{Tables,Views}/*.sql` split.
 
-**Contents are synthetic.** No file is copied from ACME. Every GUID is
-`00000000-…`, every URI is a schema URL, and nothing carries a workspace
-name, cluster URI, or key-vault reference. Keep it that way — `tests/` is
+`GraphModel`, `SQLDatabase` and `DataAgent` do not exist in ACME. They are
+modelled instead on **public Git-synced exports on GitHub**, pinned here so
+a later reader can re-check them rather than take this file's word:
+
+| Fixture | Modelled on | Corroborated by |
+| --- | --- | --- |
+| `SampleAgent.DataAgent/` | `microsoft/unified-data-foundation-with-fabric-solution-accelerator` @ `167c308`, `Azure-Samples/agentic-app-with-fabric` @ `5e48120` | the `Files/Config/{draft,published}` layout in [Source control for Fabric data agent](https://learn.microsoft.com/fabric/data-science/data-agent-source-control) |
+| `SampleGraph.GraphModel/` | `frkim/NovaSteel3` @ `8a1efa7`, `rasgiza/RTI-Hackathon-Demo` @ `39eebf3` | the definition parts in the REST [Graph Model definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/graph-model-definition) reference |
+| `SampleSQL.SQLDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace`, `ProdataSQL/DWA` @ `Workspaces/DWA` | `<name>.SQLDatabase` and the `dbo/Tables/*.sql` layout in [SQL database source control](https://learn.microsoft.com/fabric/database/sql/source-control) |
+
+The three `metadata.type` values were checked directly rather than assumed.
+A GitHub code search for `"type": "DataAgent"` inside `.platform` files
+returns 78 real exports; `"type": "GraphModel"` returns two (plus this
+fixture set); `"type": "AISkill"` — the legacy name still carried in
+fabric-cli's `ItemType` enum and in the portal's `/aiskills/` URL — returns
+**none**. The portal name did not follow the item type into Git.
+
+Two deliberate deviations from those sources. The real `.SQLDatabase`
+`.gitignore` is the full ~480-line `dotnet new gitignore`; the fixture
+carries a three-line stand-in that says so in its own header. And every
+other byte is synthetic content laid on the observed structure — GUIDs
+zeroed, and the one non-schema URI in the set (the `abfss://` Delta path in
+`dataSources.json`) zeroed on both its workspace and item GUID.
+
+**Contents are synthetic.** No file is copied from an export, ACME's or
+GitHub's. Every GUID is `00000000-…`, every URI is a schema URL bar the one
+zeroed `abfss://` path noted above, and nothing carries a workspace name,
+cluster URI, or key-vault reference. Keep it that way — `tests/` is
 gitleaks-allowlisted precisely because fixtures contain credential-*shaped*
 strings, so the allowlist cannot catch a real one that lands here.
 
 ### Fixtures built on an unverified shape
 
-`GraphModel`, `SQLDatabase` and `DataAgent` do not exist in ACME, so no
-export was available. Their folder names come from their own skills'
-claims — `fabric-graph` cites the fabric-cli `.GraphModel` suffix and the
-`/GraphModels` REST collection; `fabric-database` cites the standard
-`.sqlproj` layout. **If that name is wrong, the skill's glob is wrong in
-the same way and this fixture will agree with it.** These three rows test
-that the glob and the assumed path agree; they cannot test that the
-assumption is right. Replace them with real exports when any is available
-— `SampleAgent.DataAgent/SHAPE-UNKNOWN.md` is a stub with no shape claim
-at all.
+None, as of 2026-08-31. Three of these were, until then: their folder names
+came from their own skills' claims, so the fixture could only prove that
+the glob and the assumed path agreed with each other — never that the
+assumption was right, which is the thing that fails silently. A wrong
+item-type name has no error path; the skill just never fires, in every
+client repo, forever.
 
-Everything else is verified against a live Git-synced repo.
+If you add a fixture for an item type nobody here has an export of, name it
+in this section. A glob must not be allowed to vouch for itself.
 
 ## Running the test
 

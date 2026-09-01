@@ -1,0 +1,6 @@
+# Trigger fixture. Fabric writes a full `dotnet new gitignore` (~480 lines)
+# into every *.SQLDatabase item folder; this is a three-line stand-in that
+# keeps the dotfile in the shape without the bulk. It exists so the trigger
+# tests see the dotfile a real export has, not to ignore anything here.
+bin/
+obj/
