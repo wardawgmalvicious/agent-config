@@ -31,8 +31,8 @@ Not drilled: {{deliberate-omissions-and-why}}
 ```yaml
 ---
 name: {{skill-name}}  # repo linter requires it; upstream optional — display label only, the /command comes from the directory name; max 64 chars; lowercase/digits/hyphens; no "anthropic"/"claude"
-description: {{one-sentence trigger description}}  # repo linter requires it (upstream: recommended); the linter measures this field alone and gates at 1,536 — see Description char count
-when_to_use: {{when-to-use guidance}}  # optional; appended to description in the skill listing and counts toward the same 1,536 truncation point, but the linter does NOT measure it — budget it by hand
+description: {{one-sentence trigger description}}  # repo linter requires it (upstream: recommended); gated at 1,024, the Agent Skills spec cap — see Description char count
+when_to_use: {{when-to-use guidance}}  # optional; appended to description in the skill listing; gated separately at 512, the Claude-Code-only remainder of the 1,536 truncation point. NOT one of the spec's six fields — a skill using it hard-fails the claude.ai upload path
 argument-hint: {{[arg-hint]}}  # optional; autocomplete display hint shown in / menu, e.g. [issue-number]
 arguments: {{arg1 arg2}}  # optional; space-separated string or YAML list; enables $name substitution in skill body
 disable-model-invocation: {{false}}  # ALWAYS PRESENT; true = manual-only (/commit-style): the description leaves context entirely; also blocks subagent preloading and scheduled-task prompts. Repo policy: false everywhere
@@ -59,10 +59,10 @@ and hard-fails on any other key.
 
 ## Description char count
 
-> Guidance: State the counts explicitly so Claude Code can re-check after draft. `scripts/lint-frontmatter.py` measures `description` **alone** against `DESCRIPTION_MAX = 1536`; the listing truncates `description` + `when_to_use` combined at that same point, so a long `when_to_use` passes lint and is silently truncated anyway. Give both numbers whenever `when_to_use` is set. House practice targets ≤ 1,024 for the description — the Agent Skills spec cap, and where every skill in the repo sits today — treating the 1,536 gate as headroom rather than a target; the spec cap is hard only on the claude.ai upload path. Also mind the aggregate: all deployed skills share one listing character budget (default ~1% of the context window, `skillListingBudgetFraction`), and an over-budget listing gets least-invoked descriptions shortened first — put the key use case in the first sentence.
+> Guidance: State the counts explicitly so Claude Code can re-check after draft. The 1,536 listing truncation point is **split into a fixed budget per field**, each enforced separately by `scripts/lint-frontmatter.py`: `description` ≤ 1,024 (`DESCRIPTION_MAX`, the Agent Skills spec cap, the portable half) and `when_to_use` ≤ 512 (`WHEN_TO_USE_MAX`, the Claude-Code-only remainder). They sum to 1,536 exactly, so neither field can overflow the other and a failure names the field to cut. Also mind the aggregate: all deployed skills share one listing character budget (default ~1% of the context window, `skillListingBudgetFraction`), and an over-budget listing gets least-invoked descriptions shortened first — put the key use case in the first sentence. The per-field caps bound one skill; the budget bounds all of them together, and for an unconditional skill the budget is the binding constraint.
 
-- `description`: {{N}} / 1,024 house target (1,536 linter gate)
-- `when_to_use`: {{N | N/A — not set}}; combined {{N}} against the 1,536 listing truncation
+- `description`: {{N}} / 1,024
+- `when_to_use`: {{N / 512 | N/A — not set}}
 
 ## Body structure outline
 
