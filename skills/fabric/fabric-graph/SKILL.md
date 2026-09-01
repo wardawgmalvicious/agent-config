@@ -9,7 +9,7 @@ paths:
 
 Graph in Fabric models a **labeled property graph** directly over **OneLake Delta tables** — no ETL, no data duplication. You define node/edge types and map them to columns; on save, Fabric ingests the tables and builds a read-optimized queryable graph. Query it with **GQL** (the ISO/IEC 39075 standard) via UI, REST, or NL2GQL.
 
-**Item type name: `GraphModel`** (this is the fabric-cli `.GraphModel` suffix and the REST collection `/GraphModels`). New item → *Analyze and train data* → *Graph model*.
+**Item type name: `GraphModel`** — the `metadata.type` a Git-synced export writes into `.platform`, so the folder serializes as `<name>.GraphModel`; also the REST collection `/GraphModels` and the Catalog Search filter `Type eq 'GraphModel'`. fabric-cli knows the name only for `fab find`: its `ItemType` enum has no GraphModel entry, so `fab` cannot create or address one. New item → *Analyze and train data* → *Graph model*.
 
 ## Three things that catch people out
 
