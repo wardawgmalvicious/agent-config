@@ -272,15 +272,23 @@ content is written for and validated with Claude Code first.
 
 Edit files in place and commit like any other repo. Changes to the
 junctioned directories (`claude/agents/`, `claude/hooks/`,
-`claude/rules/`, `claude/mcp/`, `skills/`) are
-live immediately — the tools read the same files. Changes to
+`claude/rules/`, `claude/mcp/`, `skills/`) need no deploy step — the
+tools read the same files. Changes to
 `claude/CLAUDE.md` or `claude/settings.json` need a
 `scripts/link-claude.ps1` re-run to reach the live copies (the script also verifies everything else and
 exits non-zero if any link or mirror needs attention — including after
 moving or renaming the repo folder, which it repairs automatically).
-Skill edits don't reliably take effect mid-session under Git Bash on
-Windows — restart the Claude Code session after editing a SKILL.md to
-be safe.
+
+Needing no deploy step is not the same as being picked up by a running
+session, and the two differ by payload type. **Skills hot-reload**:
+Claude Code watches skill directories and re-reads them in-session,
+and that works through these junctions — verified on 2.1.251 for skill
+add, skill removal, and `skillOverrides` (upstream fixed in-session
+skill reload in 2.1.216; this file previously said the opposite).
+Editing a `description` in place is the one case not confirmed here,
+and a `description` *is* the trigger, so restart before trusting a
+changed trigger. **Subagents, commands, and rules are not watched** —
+restart after editing those.
 
 ## Handoff discipline
 
