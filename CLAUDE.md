@@ -266,7 +266,7 @@ filename has to stay stable and the ordering lives in the queue file.
   this repo). `model: inherit` everywhere except `commit` (`sonnet`).
   `effort` is `max` on the six workflow skills that drive this repo
   — `code-review`, `drift-audit`, `author-skill`, `learn`,
-  `drift-update`, `drift-handoff` — `high` on `commit`, and left
+  `drift-update`, `drift-handoff` — `xhigh` on `commit`, and left
   commented on all 37 platform skills, which therefore inherit `max`.
   Note what that means **today**: with the session already at `max`,
   only `commit` changes behaviour. The six `max` pins are a *floor*
