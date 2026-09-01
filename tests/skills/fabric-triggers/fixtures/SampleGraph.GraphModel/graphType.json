@@ -1,0 +1,67 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/graphInstance/definition/graphType/1.0.0/schema.json",
+  "nodeTypes": [
+    {
+      "primaryKeyProperties": [
+        "CustomerId"
+      ],
+      "alias": "1001",
+      "labels": [
+        "Customer"
+      ],
+      "properties": [
+        {
+          "name": "CustomerId",
+          "type": "STRING"
+        },
+        {
+          "name": "CustomerName",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "primaryKeyProperties": [
+        "OrderId"
+      ],
+      "alias": "1002",
+      "labels": [
+        "Order"
+      ],
+      "properties": [
+        {
+          "name": "OrderId",
+          "type": "STRING"
+        },
+        {
+          "name": "OrderTotal",
+          "type": "FLOAT"
+        }
+      ]
+    }
+  ],
+  "edgeTypes": [
+    {
+      "sourceNodeType": {
+        "alias": "1001"
+      },
+      "alias": "2001",
+      "destinationNodeType": {
+        "alias": "1002"
+      },
+      "labels": [
+        "placed"
+      ],
+      "properties": [
+        {
+          "name": "customer_id",
+          "type": "STRING"
+        },
+        {
+          "name": "order_id",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}
