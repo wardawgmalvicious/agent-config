@@ -89,7 +89,8 @@ platform skills and silently undoes the prune. There is no error and no
 output line that reads as wrong: the run reports `Linked` 37 times and
 ends `Done. All links verified.` This happened on 2026-08-31, and the
 only visible symptom was 18 platform skills reappearing in the session's
-skill listing.
+skill listing. Confirm the prune held with `ls ~/.claude/skills`: it
+should list the seven workflow skills and nothing else.
 
 `-SkillGroups` **prunes**: a group not listed is removed from the target
 on the next run. Pruning only ever deletes a junction resolving inside
