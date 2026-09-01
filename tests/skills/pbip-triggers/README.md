@@ -164,7 +164,8 @@ riding along on nearly every Power BI file touch. If it reappears on
 ## Cost note
 
 These files are inert until opened. Reading
-`visuals/Visual1/visual.json` pulls ~9,086 tokens of skill bodies into
-the session — that is the fixture working as designed, and it is the
-repo's worst single-file activation. Don't leave it open while doing
-unrelated work.
+`visuals/Visual1/visual.json` activates three skills at once — the most in
+either fixture set, and the fixture working as designed. Activation itself
+is cheap: three listing entries. What makes this the repo's worst single
+file is the **ceiling** behind it, ~9,086 tokens of bodies if all three are
+then invoked. Don't leave it open while doing unrelated work.
