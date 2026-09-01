@@ -290,6 +290,14 @@ and a `description` *is* the trigger, so restart before trusting a
 changed trigger. **Subagents, commands, and rules are not watched** —
 restart after editing those.
 
+One caveat that only bites during a repo reorganization: moving a
+payload directory leaves `~/.claude/<name>` pointing at the vacated
+path until `scripts/link-claude.ps1` runs again. Files are simply
+absent in that window, and a hook that cannot be found **fails open**
+rather than blocking — so re-link before relying on an enforcement
+hook again. This is not hypothetical: the `claude/` regrouping produced
+exactly four such failures before the re-link.
+
 ## Handoff discipline
 
 Skills and subagents in this repo are authored via a brief-before-draft
