@@ -68,16 +68,26 @@ what 41 entries cost, not evidence of saturation.
 
 ## Why
 
-Two different costs were conflated in earlier work. Separating them:
+**There are three costs, not two.** Earlier work conflated the first two;
+this brief then conflated the last two, and every figure below written
+before 2026-09-01 prices activation as though it loaded a body. Corrected:
 
-| Cost | Paid by | Size | Fixed by |
-| --- | --- | --- | --- |
-| **Listing** | the 25 **unconditional** skills, every session | ~7,438 tokens, of which **3,340 is never-invoked skills** | **Workstream E**, here |
-| **Activation** | the 19 **conditional** skills, when a `paths:` glob matches | was ~64,116 tokens of bodies; **now ~50,412** | this brief |
+| Cost | Paid by | When | Size | Fixed by |
+| --- | --- | --- | --- | --- |
+| **Listing** | the **unconditional** skills (was 25, now 20) | every session | ~7,438 tokens, of which **3,340 was never-invoked skills** | **Workstream E** — done |
+| **Activation** | the **conditional** skills (was 19, now 24) | a `paths:` glob matches | **one listing entry per skill** — a name, plus its description where `skillOverrides` is not set | A and C — glob hygiene, not size |
+| **Invocation** | whichever skill is actually used | the model invokes it | the **body**, ~50,412 tokens across all 24 conditional skills | **Workstream B** — done |
 
-Conditional skills cost **zero** listing tokens until they fire, so A through D
-are not about the skill listing at all — they are about what lands in context
-the moment a file is opened. Measured in `C:\Repos\ACME\fabric-acme` (295 tracked
+Conditional skills cost **zero** listing tokens until they fire, so A
+through D are not about the skill listing at all.
+
+**What a `paths:` match actually injects** is a `skill_listing` attachment
+carrying the entry, measured 2026-09-01 against a cold-session transcript.
+The body loads only on invocation. So the ACME totals below are an **upper
+bound on invocation cost** — what you would pay if every activated skill
+were then used — and not a per-file toll. They stay useful as relative
+weights and as the ceiling A and B were pushing down; they are not tokens
+anyone was billed. Measured in `C:\Repos\ACME\fabric-acme` (295 tracked
 files).
 
 **Workstream E is the exception, and was added later** at the user's direction:
@@ -101,8 +111,16 @@ came first, and both are now done.
 | `b4cde33` | B — `fabric-eventhouse` → `references/` | ~4,788 → ~2,952 tok |
 | `6d6dbb8` | B — `fabric-data-agent` → `references/` | ~7,128 → ~3,071 tok |
 
-**Totals: ACME activation 1,919,257 → 1,215,862 tok (−36.6%). Conditional body
-total 64,116 → 50,412 tok (−21%).** Worst single file 11,923 → 9,086 tok.
+**Totals: ACME worst-case invocation 1,919,257 → 1,215,862 tok (−36.6%).
+Conditional body total 64,116 → 50,412 tok (−21%).** Worst single file
+11,923 → 9,086 tok.
+
+Read those as an **upper bound**, not as spend. They were written as
+"activation" cost on the premise that a body loads on a glob match; it does
+not, so the reduction is in what an *invocation* costs. B's value is
+undiminished — a slimmer body is a cheaper invocation, and the four
+refactors stand — but the saving is realised only when a skill is used,
+not every time a file is opened.
 
 Every B refactor was verified with a content-preservation check (URL set
 diff + non-verbatim line diff against `HEAD`) before commit. **That check is
@@ -269,9 +287,16 @@ A2 unless a glob changes.**
 
 ## Workstream B — body slimming — COMPLETE for the four named targets
 
-`SKILL.md` **body** loads in full on activation. Files under `references/` load
-only when the model chooses to read one. Moving detail from body to
-`references/` cuts activation cost directly, with no merging and no rename.
+`SKILL.md` **body** loads in full on **invocation** — not on activation, as
+this section said until 2026-09-01. A `paths:` match injects only the
+skill's listing entry. Files under `references/` load only when the model
+chooses to read one, so moving detail from body to `references/` cuts what
+an invocation costs, with no merging and no rename.
+
+That makes B a smaller win than it was scored as, and a differently-shaped
+one: it is paid back per *use* of a skill rather than per file opened. It
+is still the cheapest lever that touches body size, and the four refactors
+stand.
 
 All four targets are done (see the executed table above). The pattern that
 worked, for anyone extending this to a fifth skill:

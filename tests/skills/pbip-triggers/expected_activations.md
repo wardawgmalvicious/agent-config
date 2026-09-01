@@ -1,8 +1,15 @@
 # Expected activations
 
-Measured 2026-08-31 against the payload at commit `871ebe9`, using the
-static glob check in [README.md](README.md). Token figures are body size
-at ~3.5 chars/token — relative weights, not billing figures.
+Skill lists measured against the payload at commit `871ebe9` and refreshed
+2026-09-01, using the static glob check in [README.md](README.md).
+
+**The `Tokens` column is a ceiling, not a toll.** A `paths:` match injects
+each skill's **listing entry** — a name, plus its description where
+`skillOverrides` does not collapse it — and nothing more. The figures below
+are *body* size at ~3.5 chars/token: what you would pay if every skill in
+the row were then **invoked**. Treat them as relative weights and as the
+worst case, never as the cost of opening the file. (Corrected 2026-09-01;
+this table previously read as though a match loaded the bodies.)
 
 | Fixture file | Activates | Tokens |
 | --- | --- | --- |
