@@ -204,6 +204,15 @@ un-ignored in place. Briefs there may quote paths from before a repo
 reorganization — confirm a brief's evidence still exists before acting
 on it.
 
+Work that is scoped but not yet done lives in
+`docs/handoff-briefs/execute/`, and
+**[execute/README.md](docs/handoff-briefs/execute/README.md) is the
+queue** — the only place the execution order lives, so read it before
+starting a session here. Those briefs are *not* numbered the way
+`/drift-handoff` numbers its output: they are committed, deleted
+individually as each is spent, and cross-linked by filename, so the
+filename has to stay stable and the ordering lives in the queue file.
+
 ## Editing conventions
 
 - **Skills** — frontmatter `description` ≤ 1536 chars, matching where
