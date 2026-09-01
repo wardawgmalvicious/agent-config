@@ -5,8 +5,8 @@ Minimal but structurally real Fabric Git-synced item folders, used to test
 enters session scope.
 
 Companion to [`../pbip-triggers/`](../pbip-triggers/), which covers the
-Power BI half. Same contract, same method, disjoint skills: 9 there, 10
-here, and that is all 19 conditional skills in the payload.
+Power BI half. Same contract, same method, disjoint skills: 9 there, 11
+here, and that is all 20 conditional skills in the payload.
 
 ## Why this exists
 
@@ -56,13 +56,18 @@ tests/skills/fabric-triggers/fixtures/
 │       │                           sql-database-SampleSQL/datasource.json,
 │       │                           sql-database-SampleSQL/fewshots.json
 │       └── published/              (mirrors draft/)
+├── SampleCJ.CopyJob/               .platform, copyjob-content.json
 ├── SamplePL.DataPipeline/          .platform, pipeline-content.json
-├── SampleLH.Lakehouse/             .platform, lakehouse.metadata.json
+├── SampleLH.Lakehouse/             .platform, lakehouse.metadata.json,
+│                                   shortcuts.metadata.json,
+│                                   alm.settings.json
 ├── SampleQS.KQLQueryset/           .platform, RealTimeQueryset.json
 └── control/notes.md                (matches nothing — negative control)
 ```
 
-The last four item types have **no skill in the payload**. They are here as
+`DataPipeline`, `Lakehouse` and `KQLQueryset` have **no skill of their
+own in the payload** (a Lakehouse `shortcuts.metadata.json` pulls
+`fabric-variable-library`, but nothing owns the item type). They are here as
 negative controls and to make that coverage gap visible — see
 [expected_activations.md](expected_activations.md).
 
@@ -84,6 +89,7 @@ a later reader can re-check them rather than take this file's word:
 | `SampleGraph.GraphModel/` | `frkim/NovaSteel3` @ `8a1efa7`, `rasgiza/RTI-Hackathon-Demo` @ `39eebf3` | the definition parts in the REST [Graph Model definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/graph-model-definition) reference |
 | `SampleSQL.SQLDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace`, `ProdataSQL/DWA` @ `Workspaces/DWA` | `<name>.SQLDatabase` and the `dbo/Tables/*.sql` layout in [SQL database source control](https://learn.microsoft.com/fabric/database/sql/source-control) |
 | `SampleSparkNB.Notebook/` | `edkreuk/FMD_FRAMEWORK` @ `ebe97d4` | the `sqldatawarehouse` counterpart in `LanreAdetola/wwi_fabric_dw` @ `493bea1`, which fixes the `-- META` header as the only dialect discriminator |
+| `SampleCJ.CopyJob/` | `microsoft/fabric-cicd` @ `sample/workspace` | 89 public exports carry `"type": "CopyJob"` inside a `.platform`; the two-part `.platform` + `copyjob-content.json` shape is the whole item |
 
 The three `metadata.type` values were checked directly rather than assumed.
 A GitHub code search for `"type": "DataAgent"` inside `.platform` files

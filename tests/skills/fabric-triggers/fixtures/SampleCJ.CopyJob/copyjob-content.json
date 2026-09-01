@@ -1,0 +1,61 @@
+{
+  "properties": {
+    "jobMode": "Batch",
+    "source": {
+      "type": "Parquet",
+      "connectionSettings": {
+        "type": "AzureBlobStorage",
+        "typeProperties": {
+          "containerUri": "https://example.blob.core.windows.net/samples"
+        }
+      }
+    },
+    "destination": {
+      "type": "LakehouseTable",
+      "connectionSettings": {
+        "type": "Lakehouse",
+        "typeProperties": {
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "artifactId": "00000000-0000-0000-0000-000000000000",
+          "rootFolder": "Tables"
+        }
+      }
+    },
+    "policy": {
+      "timeout": "0.12:00:00",
+      "retry": 0
+    }
+  },
+  "activities": [
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "properties": {
+        "source": {
+          "datasetSettings": {
+            "location": {
+              "type": "AzureBlobStorageLocation",
+              "folderPath": "sample",
+              "container": "samples"
+            },
+            "compressionCodec": "snappy"
+          },
+          "storeSettings": {
+            "recursive": false,
+            "wildcardFileName": "*.parquet"
+          }
+        },
+        "destination": {
+          "writeBehavior": "Append",
+          "datasetSettings": {
+            "table": "__parquet"
+          },
+          "applyVOrder": false
+        },
+        "enableStaging": false,
+        "translator": {
+          "type": "TabularTranslator"
+        }
+      }
+    }
+  ]
+}
