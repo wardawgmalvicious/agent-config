@@ -73,8 +73,8 @@ an apparent one.
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 
-Together with `../pbip-triggers/`, all **22** conditional skills in the
-payload are now covered — 9 there, 13 here.
+Together with `../pbip-triggers/`, all **23** conditional skills in the
+payload are now covered — 10 there, 13 here.
 
 ## Assertions that carry weight
 

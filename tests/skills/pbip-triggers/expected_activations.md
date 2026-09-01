@@ -18,10 +18,10 @@ at ~3.5 chars/token — relative weights, not billing figures.
 | `…/pages/Page1/bookmarks/Bookmark1.bookmark.json` | `pbir-bookmarks` | 2,097 |
 | **`…/pages/Page1/visuals/Visual1/visual.json`** | `pbir-conditional-formatting`, `pbir-filters`, `pbir-visual-json` | **9,086** |
 | `SampleReport.Report/StaticResources/RegisteredResources/theme.json` | `pbir-themes` | 2,913 |
-| `SampleModel.SemanticModel/.platform` | `fabric-tmdl`, `pbip-project-structure` | 5,596 |
-| `SampleModel.SemanticModel/definition.pbism` | `fabric-tmdl`, `pbip-project-structure` | 5,596 |
-| `SampleModel.SemanticModel/definition/model.tmdl` | `fabric-tmdl` | 2,759 |
-| `SampleModel.SemanticModel/definition/cultures/en-US.tmdl` | `fabric-semantic-model-ai-instructions`, `fabric-tmdl` | 6,460 |
+| `SampleModel.SemanticModel/.platform` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 6,642 |
+| `SampleModel.SemanticModel/definition.pbism` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 6,642 |
+| `SampleModel.SemanticModel/definition/model.tmdl` | `fabric-tmdl`, `fabric-tmdl-api` | 3,805 |
+| `SampleModel.SemanticModel/definition/cultures/en-US.tmdl` | `fabric-semantic-model-ai-instructions`, `fabric-tmdl`, `fabric-tmdl-api` | 7,506 |
 
 ## Assertions that carry weight
 
@@ -47,12 +47,22 @@ method is wrong. Check this before believing any other row.
 be separated by path — that is the standing case for Workstream C2 in
 `docs/handoff-briefs/execute/skill-context-cost.md`.
 
+**5. Every `.SemanticModel` file carries `fabric-tmdl-api` as well as
+`fabric-tmdl`.** Added 2026-09-01 by Workstream E, which took the skill
+out of the session listing (244 tokens) in exchange for firing here. The
+pair is complementary and was checked before the glob went in:
+`fabric-tmdl` governs *authoring* TMDL, `fabric-tmdl-api` governs
+*shipping* it — `updateDefinition` deleting any part you omit, never
+sending `.platform`, base64 + LRO. The second is load-bearing exactly
+while editing the parts the first one writes. `**/*.SemanticModel/**` and
+not the sibling's `**/*.tmdl`, because the API operates on the whole item
+definition including `definition.pbism`, which is not TMDL.
+
 ## Known gaps
 
-The ten Fabric item-type skills are covered by
-[`../fabric-triggers/`](../fabric-triggers/), which also carries that
-set's own gaps (three unverified item shapes). Nothing in the Power BI
-half is untested.
+The thirteen Fabric item-type skills are covered by
+[`../fabric-triggers/`](../fabric-triggers/), which carries that set's own
+gaps. Nothing in the Power BI half is untested.
 
 ## Refreshing this table
 

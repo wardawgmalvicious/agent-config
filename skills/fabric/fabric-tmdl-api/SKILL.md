@@ -1,6 +1,8 @@
 ---
 name: fabric-tmdl-api
 description: "Use for the Fabric Semantic Model Definition API — createItemWithDefinition / getDefinition / updateDefinition. Covers the two-audience rule (Fabric API for definitions, Power BI API for refresh/data sources/permissions), why updateDefinition MUST include ALL parts (modified and unmodified) or they're deleted, why you NEVER include .platform in definition payloads, base64 encoding requirement, LRO polling, required TMDL parts (definition.pbism, database.tmdl, model.tmdl, tables/*.tmdl), the `database` declaration requirement in database.tmdl, and Direct Lake partition configuration (EntityPartitionSource, named expression with AzureStorage.DataLake)."
+paths:
+  - "**/*.SemanticModel/**"
 model: inherit
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
