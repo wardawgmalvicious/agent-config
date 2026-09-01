@@ -1,6 +1,9 @@
 ---
 name: fabric-gotchas
 description: "Use when troubleshooting Microsoft Fabric — common errors: 401 (wrong token audience), 403 on Power BI API (Viewer role), 404 EntityNotFound (permissions masquerading), PowerBIEntityNotFound (logicalId vs runtime ID), Login failed (wrong Initial Catalog), 24556/24706 snapshot conflict, nvarchar/datetime/money errors (Warehouse unsupported types), COPY INTO auth, MERGE/ALTER COLUMN failures, TMDL validation (tabs vs spaces, /// comments), DefaultJob jobType mistake, sqlcmd version, slow SQLEP (small files), notebook `400 exceptionCulprit:1` (bare-string cell source), Variable Library `InvalidContent (ValueMismatch)` (stale override / empty value), greyed-out deployment-rule dropdowns (Direct Lake), DirectQuery-transformations refresh error, PBIR-Legacy format, MissingDefinitionParts, empty visuals after publish (byConnection rebind), empty Top-N visuals + frozen save (bad TopN filter), RTDB `baseQueryId` error, Runtime 2.0 `LibraryManagementError` (republish environment), plus MUST/PREFER/AVOID summary."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Common gotchas & troubleshooting

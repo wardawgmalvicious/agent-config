@@ -1,6 +1,9 @@
 ---
 name: fabric-mirroring
 description: "Use for Mirroring in Fabric — the `MirroredDatabase` item that brings an external database or catalog into OneLake with no ETL pipeline. Three kinds, and which each source uses: database mirroring (continuous replication to Delta — Azure SQL DB/MI, SQL Server, Cosmos DB, PostgreSQL, MySQL, Oracle, SAP, BigQuery), metadata mirroring (catalog sync over OneLake shortcuts, data never moves — Snowflake, Databricks, Dremio, AWS Glue, Azure Monitor), open mirroring (you write change files to a landing zone). REST surface (`mirroring.json`, `mountedTables`, `retentionInDays`, startMirroring/getTablesMirroringStatus), landing-zone protocol (`_metadata.json` keyColumns, `__rowMarker__`), extended capabilities (change data feed, mirroring views), and gotchas: 1,000-table cap, 1 TB/day throttle, no views, DDL and capacity-pause reseeds, varchar truncation, RLS/DDM not propagated. For many-source→many-destination ingestion use fabric-copy-job."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Mirroring in Fabric

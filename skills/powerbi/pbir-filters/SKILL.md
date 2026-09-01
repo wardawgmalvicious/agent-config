@@ -5,6 +5,9 @@ paths:
   - "**/report.json"
   - "**/pages/**/page.json"
   - "**/visuals/**/visual.json"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR Filters Reference

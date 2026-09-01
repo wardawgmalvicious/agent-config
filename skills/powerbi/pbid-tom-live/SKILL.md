@@ -1,6 +1,9 @@
 ---
 name: pbid-tom-live
 description: Use for scripting an open Power BI Desktop model via its localhost msmdsrv.exe Analysis Services proxy — TOM (Microsoft.AnalysisServices.Tabular) for metadata, ADOMD.NET (AdomdConnection) for DAX. Covers PowerShell setup with retail.amd64 AMO/TOM + ADOMD NuGet DLLs, discovering the msmdsrv port (msmdsrv.port.txt / netstat), connecting via server Databases Model, SaveChanges / UndoLocalChanges, ExecuteReader for EVALUATE, DAX validation pre-save, TMSL refresh types (full / calculate / automatic / dataOnly / clearValues / defragment), VertiPaq DMVs ($SYSTEM.DISCOVER_STORAGE_TABLE_COLUMN_SEGMENTS, TMSCHEMA_*), query listener via DISCOVER_SESSIONS, EVALUATEANDLOG trace events (DAXEvaluationLog), FE-vs-SE Server Timings profiling, DAXLib UDF packages (CL 1702+), Calendar Column Groups (CL 1604+). Invoke when user mentions TOM, ADOMD, msmdsrv, VertiPaq, DMV, EVALUATEANDLOG, Server Timings, daxlib.
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## Power BI Desktop — Live TOM / ADOMD Operations

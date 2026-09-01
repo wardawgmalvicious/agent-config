@@ -1,6 +1,9 @@
 ---
 name: fabric-mlv
 description: "Use for Fabric Materialized Lake Views (MLVs) — `CREATE MATERIALIZED LAKE VIEW` Spark SQL (GA March 2026) + still-preview `@fmlv.materialized_lake_view` PySpark decorator on a schema-enabled lakehouse (Runtime 1.3). Covers CREATE / SHOW / ALTER RENAME / DROP / REFRESH FULL syntax, `CONSTRAINT ... CHECK ... ON MISMATCH DROP|FAIL` data quality rules, partitioning/TBLPROPERTIES, optimal refresh (skip/incremental/full) + CDF prerequisite, the supported-SQL-constructs table, lineage-driven dependency ordering, scheduling (time-based vs event-triggered Preview, per-schedule Spark environment, Extended lineage across lakehouses/workspaces), `RefreshMaterializedLakeViews` REST job-type, run history (25 runs / 7 days), data quality report, gotchas: no ALTER definition only RENAME, no DML/UDF/temp views/time-travel, all-uppercase schemas rejected, names lowercased, `spark.conf.set` ignored on refresh, 24-hour run cap, overlapping refreshes skipped, PySpark always full-refresh, deleting defining notebook breaks refresh."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric Materialized Lake Views (MLV)

@@ -7,6 +7,9 @@ paths:
   - "**/*.pbism"
   - "**/*.Report/.platform"
   - "**/*.SemanticModel/.platform"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIP Project Structure

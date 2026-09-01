@@ -4,6 +4,9 @@ description: TMDL (Tabular Model Definition Language) authoring rules for Fabric
 paths:
   - "**/*.tmdl"
   - "**/*.SemanticModel/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## TMDL Authoring Rules

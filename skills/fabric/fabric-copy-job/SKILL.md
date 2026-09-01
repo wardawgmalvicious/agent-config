@@ -1,6 +1,9 @@
 ---
 name: fabric-copy-job
 description: "Use for Fabric Data Factory Copy job — the no-pipeline data-movement item (`CopyJob`) for many-source→many-destination ingestion. Covers copy modes (full vs incremental), watermark-based incremental (GA: ROWVERSION/datetime/int columns) vs CDC-based incremental (Preview: captures inserts/updates/deletes, SCD Type 2, Merge default), the CDC-vs-watermark rubric, switching full↔incremental via `jobMode` and resetting to full, the JSON definition (`copyjob-content.json`, base64 getDefinition/updateDefinition — replaces all parts), REST surface + on-demand run (`?jobType=Execute` gotcha) + fabric-data-factory-mcp tools, event-driven invocation via Activator (Preview — no parameters) and Job events alerting, plus gotchas (change-retention window, net-change-only, CDC+non-CDC table demotion, Lakehouse CDF undetectable) and CU pricing (full 1.5 / incremental 3 CU-hr). For continuous whole-database replication into OneLake, use fabric-mirroring."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric Copy job (Data Factory)

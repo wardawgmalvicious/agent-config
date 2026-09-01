@@ -3,6 +3,9 @@ name: fabric-error-handling
 description: "Use when writing error handling in Fabric notebooks — the Tier 1 (setup, preconditions, hard-fail, raise immediately) vs Tier 2 (bulk operations, soft-fail, track per-item, print summary) convention. Covers the canonical `results = {succeeded, skipped, failed}` shape, the STRICT=False default for scheduled runs, STRICT=True for CI/orchestration, per-item metrics with a parallel per_item list, boundary rules (Tier 1 helpers may be called inside Tier 2 loops; don't wrap Tier 1 in try/except at the notebook level), and anti-patterns to avoid (silent continue, parallel bookkeeping lists)."
 paths:
   - "**/*.Notebook/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Error handling convention (Fabric notebooks)

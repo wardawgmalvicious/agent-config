@@ -1,6 +1,9 @@
 ---
 name: fabric-cicd
 description: "Use for the fabric-cicd Python library (`pip install fabric-cicd`, v1.3 Aug 2026, Python 3.9–3.13) — Microsoft's official code-first CI/CD library for Fabric workspaces: `FabricWorkspace`, `publish_all_items`, `unpublish_all_orphan_items`, `deploy_with_config` + config.yml, and `parameter.yml` (find_replace, key_value_replace, spark_pool, semantic_model_binding, $workspace/$items dynamic vars, $ENV:, _ALL_, regex, extend). Covers the explicit-TokenCredential requirement (v1.0 breaking change), feature flags (enable_lakehouse_unpublish, enable_bulk_publish, enable_shortcut_publish, enable_hard_delete, include/exclude), per-item-type caveats (Warehouse/SQL DB, Lakehouse, Variable Library), Azure DevOps / GitHub Actions + OIDC, Fabric notebook usage, and troubleshooting (change_log_level, FABRIC_CICD_FILE_LOGGING_ENABLED, configure_fabric_fqdn). Invoke when the user mentions fabric-cicd, FabricWorkspace, publish_all_items, parameter.yml, or code-first Fabric deployment from Git."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # fabric-cicd (Python deployment library)

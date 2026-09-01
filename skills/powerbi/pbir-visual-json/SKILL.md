@@ -3,6 +3,9 @@ name: pbir-visual-json
 description: Use when editing visual.json inside a Power BI PBIR report's visuals/ folder. Covers top-level structure (name, position, visual vs visualGroup mutually exclusive, filterConfig sibling NOT child of visual, root-level isHidden for bookmark toggles), expression literal suffixes — string 'text', double 14D, integer 14L, decimal 2.4M, hex '#FF0000', datetime literal, null — with exceptions (transparency uses L inside dropShadow, labelPrecision L, labelDisplayUnits D, triple-quoted font fallback chains), field reference patterns (Column, Measure, Aggregation, HierarchyLevel, SparklineData), visual-type to query-role map (card, tableEx, pivotTable, slicer, lineChart, barChart, kpi, scatterChart), objects vs visualContainerObjects split, sortDefinition, slicer default values via objects.general.properties.filter, visual groups, table column widths. Invoke when user edits visual.json, sets a visual property, debugs silently-ignored container props, or writes SQExpr literals.
 paths:
   - "**/visuals/**/visual.json"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR visual.json Reference

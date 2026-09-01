@@ -1,6 +1,9 @@
 ---
 name: fabric-ai-functions
 description: "Use for Microsoft Fabric AI Functions (Data Science) — one-line LLM transformations on pandas and PySpark DataFrames in Fabric notebooks: `ai.analyze_sentiment`, `ai.classify`, `ai.extract`, `ai.embed`, `ai.summarize`, `ai.translate`, `ai.fix_grammar`, `ai.generate_response`, `ai.similarity`. Covers the two import paths (`synapse.ml.aifunc` pandas single-node vs `synapse.ml.spark.aifunc` PySpark distributed), pandas Series-accessor vs PySpark `df.ai` DataFrame-accessor shapes, GA defaults (`gpt-5-mini` + `reasoning_effort=low`, `openai` no longer required), pandas `aifunc.Conf` vs PySpark `OpenAIDefaults` config (concurrency, temperature/top_p/verbosity/seed), `gpt-5.1` opt-in and gpt-4.1→gpt-5.1 migration, custom Azure OpenAI/Foundry endpoints, `ExtractLabel` schema extract, PySpark chaining, `ai.stats` + Exception/Filter/CapacityExceeded results, multimodal `column_type=path`, prerequisites (F2+, Runtime 1.3+, Copilot tenant switch), and Copilot-&-AI billing. Also in SQL/Warehouse and Dataflow Gen2."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric AI Functions
