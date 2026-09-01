@@ -8,6 +8,10 @@
             "mcp__microsoft-learn-mcp__microsoft_docs_search"
         ]
     },
+    "enabledMcpjsonServers": [
+        "microsoft-learn-mcp",
+        "github-mcp"
+    ],
     "skillOverrides": {
         "fabric-ai-functions": "name-only",
         "fabric-auth": "name-only",
