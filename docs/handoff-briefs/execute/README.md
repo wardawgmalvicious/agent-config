@@ -1,7 +1,7 @@
 # Open briefs — execution order
 
-Five briefs are open. Six waves are spent (struck through below). Where a
-spent wave had a brief, that brief is deleted, so those struck rows name
+Four briefs are open. Seven waves are spent (struck through below). Where
+a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
 order lives; each brief carries its own dependencies but not its position.
@@ -15,8 +15,8 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 16
-links across the current 6 files, counting this queue. Numbering the
+deleted **individually** as each is spent, and heavily cross-linked — 12
+links across the current 5 files, counting this queue. Numbering the
 filenames would mean rewriting those links now, and again on every
 deletion, choosing each time between renumber-and-relink churn or a queue
 that reads `05, 07, 09, 10`. The filename is the link target, so it has to
@@ -49,8 +49,8 @@ rest would only invalidate every reference to a wave elsewhere.
 | ~~**6**~~ | ~~`rule-glob-gaps.md` — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
 | ~~**8**~~ | ~~*No brief — this row was the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model~~ | **Done 2026-09-01**, fresh session, Claude Code 2.1.252. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is now `model: sonnet`. Baseline (`inherit` → `claude-opus-5`) and candidate (`claude-sonnet-5`) each scanned the fixtures from an identical cold memory state, and the caught/not-caught sets were **identical**: 4/4 seeded findings at the expected severities (2 Critical at `config.py:2,3`, 1 High at `queries.py:3`, 1 Low at `notes.md:1`), no false positives, five-field format intact, all four closing-summary components present, memory seeded, and neither run read `expected_findings.md`. Fixtures unmodified after. Mode 3 on sonnet took the **preferred** branch — refused outright, never attempted the `Edit` — so the hook had nothing to block; it was verified separately as a direct unit test over four cases (in-scope write allowed, out-of-scope write blocked with exit 2, a different `agent_type` unaffected, `../` traversal out of the memory dir blocked). Both runs **foreground**. The **frontmatter** pin — which those two runs could not exercise, since sonnet was forced by an Agent-tool override and a subagent is not hot-reloaded into the session that edits it — was confirmed separately the same day from a fresh session (`83089e9f`, started 25 minutes after the pin landed): an un-overridden spawn ran `claude-sonnet-5` while its parent session sat on Opus. **Wave 8(a) is fully closed.** **(b)** ~~Confirm `/commit` picks up its pins.~~ **Closed** — `e3cae240` shows three `commit` runs at `claude-sonnet-5 xhigh`, each bracketed by `claude-opus-5 high`, so both pins fire at the *current* values and turn-scoping holds. **(c)** **Confirmed** — a plain-English request does auto-trigger `commit`; see the invocation-path finding below, which is how it was measured. |
-| **9** | [activation-cleanroom-null.md](activation-cleanroom-null.md) | Investigation, cheap, and **blocks wave 10's design**. A scratch directory outside this repo activated no conditional skill and loaded no rule, with the same payload that works in-repo — so the natural place to build an automated trigger test is the one place it silently reports nothing. Small enough to fold into another session. |
-| **10** | [activation-test-harness.md](activation-test-harness.md) | Script the real-path activation test that was run by hand for the first time on 2026-09-01. Blocked on wave 9 for *where* it may run; its own open question — whether an activation is a per-session delta or per-file — is what decides whether a full run costs 2 sessions or 50, and is answerable in one. |
+| ~~**9**~~ | ~~`activation-cleanroom-null.md`~~ | **Done 2026-09-01.** The clean room was never the variable — **the `Read` tool is**. Activation is keyed to file access through `Read`; a Bash `cat` or a `Grep` over the same file activates nothing, and this machine defaults every session to auto mode, which prefers `cat`. Measured as a 2x2 (Read/`cat` x in-repo/scratch): `Read` activated the same 3 skills and loaded the same rule in **both** directories, `cat` in **neither**. The original report's correlation was luck — all 8 clean-room probes chose `cat`, both in-repo controls chose `Read`; re-reading those transcripts confirms it retroactively. Every directory hypothesis is ruled out by its own probe: git repo, `AppData/Local/Temp`, missing `.claude/settings.json`, 8.3 short path, and fixture depth. Negative control clean. Written into root [`CLAUDE.md`](../../../CLAUDE.md) and both trigger READMEs. **Wave 10 is unblocked** — it may run anywhere, and must pin `--allowedTools Read --disallowedTools Bash …` and fail on a non-`Read` tool call. |
+| **10** | [activation-test-harness.md](activation-test-harness.md) | Script the real-path activation test that was run by hand for the first time on 2026-09-01. **Unblocked** — wave 9 answered *where* (anywhere) and added the trap it must handle (pin the tools to `Read`). Its own open question — whether an activation is a per-session delta or per-file — is what decides whether a full run costs 2 sessions or 50, and is answerable in one. |
 
 `skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
 half and E all landed, and C was declined, so nothing in it remained open.
@@ -191,12 +191,15 @@ the 2026-08-31 consolidation of four briefs into two.
 **Cheap and independent before expensive.** Wave 3 ran before 4 and 5 and
 is done; wave 8 was what it left behind, and is now spent too. Waves 9 and
 10 are what wave 4 left behind, in the same way — closing A1 by hand
-surfaced both, and neither was in scope to fix while doing it.
+surfaced both, and neither was in scope to fix while doing it. 9 is now
+spent as well, and it paid for itself: the thing it found was not a
+property of any directory but a false negative in the measurement method
+that both trigger READMEs documented.
 
-**Waves are not a priority order past this point.** 9 is cheap and
-unblocks 10; 5 is the biggest single piece of work in the queue and is
-late only because it is expensive. Take 9 whenever there is a session with
-room in it.
+**Waves are not a priority order past this point.** 9 is spent and 10 is
+unblocked; 5 is the biggest single piece of work in the queue and is late
+only because it is expensive. Nothing in the queue now blocks anything
+else — take whichever fits the session you have.
 
 ## One brief is a decision, not edits
 

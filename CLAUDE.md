@@ -379,6 +379,33 @@ record is the startup listing and says nothing about any file. Confirmed
 `Sending N skills via attachment (initial)` lines are both emitted before
 any Read runs, so neither can show a file-triggered activation.
 
+**Activation is keyed to the `Read` tool, not to the file.** Reading a
+matching file with `cat` through Bash — or with `Grep` — activates
+**nothing**: no skill, no rule, no attachment. That matters here because
+`claude/settings.json` sets `permissions.defaultMode` to `auto` at user
+scope, so every session on this machine starts in auto mode, which
+prefers `cat` for reading files. A `paths:`-scoped skill or rule is
+therefore *live but dormant* through a whole session that only ever
+`cat`s. Nothing is broken when this happens and nothing says so — the
+file is read, the answer is right, the guidance simply never loads. Pin
+`--allowedTools Read --disallowedTools Bash …` on any probe that is
+*measuring* activation, and assert the `tool_use` block really was a
+`Read`. Measured 2026-09-01 on 2.1.252 as a 2x2 (Read/Bash x in-repo/
+scratch): `Read` activated in both directories, `cat` in neither.
+
+**Directory properties do not affect it.** A scratch directory outside
+any repo activates exactly as this repo does, with the same payload —
+ruled out individually: not being a git repo, living under
+`AppData/Local/Temp`, having no `.claude/settings.json`, the 8.3 short
+path, and the fixture's depth below the project root. So a trigger
+harness may run anywhere; what it must control is the tool.
+
+`~/.claude/logs/instructions-loaded.log` is **not** a reliable witness
+for rule loading in short `claude -p` sessions — its `InstructionsLoaded`
+hook missed two of four confirmed loads on 2026-09-01. The transcript saw
+all four, as `nested_memory` attachments naming the rule file. Rule
+absence in that log proves nothing; use the transcript for both.
+
 What a match injects is the skill's **listing entry, not its body** — the
 body loads only on invocation. Cost models that price an activation at
 body size are wrong by an order of magnitude.
