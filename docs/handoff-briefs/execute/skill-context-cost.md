@@ -112,22 +112,53 @@ matching with an assertion, never substring.
 
 ## Still-open verification
 
-**A1 changed `paths:` frontmatter, which is a *trigger* change.** Root
-`CLAUDE.md` is explicit that in-place frontmatter hot-reload is the one case
-unverified on this machine. **In a fresh session**, confirm
-`pbip-project-structure` still fires on a `.pbip` / `.pbir` / `.pbism` manifest
-and no longer fires on a report file deep inside a project. This is the only
-outstanding item from A and B.
+**CLOSED 2026-09-01.** A1 changed `paths:` frontmatter, which is a
+*trigger* change, and the harness half was the last outstanding item from A
+and B. Two cold `claude -p` probes, ground-truthed against the session
+transcript rather than a counter or the model's self-report:
 
-**The glob half of this is now closed.** `tests/skills/pbip-triggers/` and
-`tests/skills/fabric-triggers/` cover all 19 conditional skills between them,
+| Probe | `skill_listing` attachment, `isInitial: false` |
+| --- | --- |
+| `SampleReport.Report/definition.pbir` | `['pbip-project-structure']` |
+| `.../visuals/Visual1/visual.json` | `['pbir-conditional-formatting', 'pbir-filters', 'pbir-visual-json']` |
+
+Fires on the manifest, does not fire on the deep report file. Both rows
+match `expected_activations.md` exactly. A1 is confirmed end to end.
+
+**Running it needed a detour worth recording.** The platform skills are not
+deployed on this machine — `~/.claude/skills` holds the seven workflow
+skills only, because `-SkillGroups workflow` prunes the rest — so the
+obvious version of this test reports "nothing loaded" for every fixture and
+proves nothing. Neither is that visible: it looks identical to a broken
+glob. The probes above ran against a **project-scope** deploy
+(`link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups
+powerbi`), which is gitignored, leaves the user-scope prune untouched, and
+was removed afterwards. Anyone re-running this must deploy the group
+somewhere first, or they are measuring an empty skills directory.
+
+**Two findings came out of it, both larger than the assertion.** The
+session transcript *does* record conditional activation — `CLAUDE.md` and
+both trigger READMEs said nothing did, and are corrected. And an activation
+injects the skill's **listing entry, not its body**, which is what makes
+Workstream E's `fabric-spark-monitoring` row flip from "probably a bad
+trade" to a good one.
+
+One control stayed unexplained: a clean room outside this repo, with the
+same skills deployed and the same fixtures, produced **no** activation at
+all — and no rule load either. Ruled out: `skillOverrides`, git-vs-not, and
+the 8.3 short path. Not chased further, since the in-repo positive is what
+the assertion needed. Worth knowing before trusting a null from a scratch
+directory.
+
+**The glob half was already closed.** `tests/skills/pbip-triggers/` and
+`tests/skills/fabric-triggers/` cover all 23 conditional skills between them,
 and their static check confirms both halves of A1: `visual.json` pulls three
 skills without `pbip-project-structure`, and eleven non-PBIP `.platform` files
-pull it zero times. What remains is narrower than it was — not "do the globs
-say the right thing" but "does the harness load on a match at all". Read one
-fixture in a cold session and look at what is in context; do **not** read a
-counter, because none of the three logs on this machine records a conditional
-activation.
+pull it zero times. That left only "does the harness load on a match at
+all", which is what the probes above answered. Grep the transcript for a
+`skill_listing` attachment with `isInitial: false`; do **not** read a
+counter, and do not ask the session what it can see — both were tried and
+neither works.
 
 Also usable as an A/B on a live payload edit: run the static check, change a
 glob, run it again, diff. That is cheaper than a session and catches the
