@@ -33,6 +33,16 @@ repos; live config describes this one. The VS Code template is the one
 deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
+`.claude/settings.json` holds more than servers and permissions: a
+`skillOverrides` block collapses all 37 platform skill descriptions to
+`name-only` in sessions here. That is deliberate, and it stays even
+though the workflow-only prune already keeps those skills out of
+`~/.claude/skills` — it keeps them auditable from this repo and holds
+the shape ready for a future edit. Remember it when reasoning about
+triggers *while working here*: a `description` is the entire trigger
+mechanism, and in this repo the platform ones are not in the listing to
+be matched against.
+
 Being a `<tool>/` payload says nothing about *how* it deploys: within
 `claude/`, `agents/`, `hooks/`, and `rules/` are junctioned while
 `CLAUDE.md` and `settings.json` are copied. Deployment mechanism is the
