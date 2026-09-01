@@ -114,10 +114,31 @@ the table above to the free side, which can change its answer from MOVE to
 ADD. Running the unconditional half of this brief *before* wave 4 means
 writing text that wave 4 may invalidate.
 
-**Recommendation: split this brief's execution in two.** Run the 19
-conditional skills now — nothing blocks them and they are free. Hold the 25
-unconditional ones until wave 4 has settled which of them still exist and
-which have become conditional.
+**Recommendation: run the whole brief after wave 4, not half of it.**
+
+An earlier draft of this brief said to run the 19 conditional skills
+immediately, on the grounds that only the unconditional 25 are affected by
+workstream E. That was wrong, and the reason is workstream **C**, not E.
+C's merge candidates are **conditional** skills — `fabric-spark` +
+`fabric-error-handling` (C1) and the `pbir-visual-json` /
+`pbir-conditional-formatting` / `pbir-filters` trio (C2) — so five of the 19
+are candidates for being renamed or merged out of existence.
+
+The `pbir-*` trio is the sharp case: it is exactly where `when_to_use`
+disambiguation looks most valuable, and C2's proposal is to merge all three
+into **one** skill, which would make that disambiguation moot rather than
+merely rewritten. Writing three careful `when_to_use` blocks and then
+merging their skills is the worst available order.
+
+So both halves wait for wave 4:
+
+- **C** settles which conditional skills still exist and under what names.
+- **E** settles which unconditional skills survive, and which have gained a
+  `paths:` glob — moving them from the expensive column to the free one and
+  potentially changing a MOVE into an ADD.
+
+Wave 4 also *enlarges* the cheap set, so running after it means one pass over
+a settled corpus instead of two passes over a moving one.
 
 ## What counts as evidence for a trigger miss
 
