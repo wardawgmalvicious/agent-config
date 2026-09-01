@@ -527,15 +527,20 @@ read conditional withholding as budget-driven dropping. **A skill that gets a
 `paths:` glob in this workstream will stop incrementing its counter — do not
 later read that as death.**
 
-### One hole in the A2 audit
+### The one hole in the A2 audit — closed 2026-08-31
 
-A2 concluded all 19 conditional globs were sound. Three of them name item
-types that **no live export has confirmed** — `.DataAgent`, `.SQLDatabase`,
-`.GraphModel` — because the names came from the skills' own claims. The
+A2 concluded all 19 conditional globs were sound, but three of them named
+item types that no export had confirmed — `.DataAgent`, `.SQLDatabase`,
+`.GraphModel` — because the names came from the skills' own claims, and a
 fixture built on such a name agrees with a wrong glob rather than catching
-it. Tracked in
-[fixture-shape-capture.md](fixture-shape-capture.md); until that lands,
-read A2 as "16 verified, 3 assumed".
+it. So A2 really read "16 verified, 3 assumed".
+
+All three are now verified against real Git-synced exports (sources pinned
+in `tests/skills/fabric-triggers/README.md`), and all three were **right**:
+no glob changed. A2 reads 19/19. The lesson survives the finding — an
+item-type name a skill asserts about itself is not evidence, and E's
+`paths:` candidates below should be checked against an export before they
+are written, not after.
 
 ### Do not touch
 
