@@ -45,9 +45,18 @@ rest would only invalidate every reference to a wave elsewhere.
 | **8** | *No brief — this row is the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model | **Needs a fresh session**: the session that wrote the frontmatter cannot verify it, and a changed `description` is a changed *trigger*. Three things. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is still `model: inherit` — wave 3 deliberately skipped `claude/agents/`. It is a fair `sonnet` candidate (it greps and reports), but unlike the skill pins it changes behaviour the moment it lands, so run the fixtures in [`../../../tests/agents/security-reviewer/README.md`](../../../tests/agents/security-reviewer/README.md) against `expected_findings.md` both before and after, and keep the pin only if the caught/not-caught sets are unchanged. **(b)** ~~Confirm `/commit` actually picks up `model: sonnet` **and** `effort: high`.~~ **Answered 2026-09-01 — both fired.** The session transcripts at `~/.claude/projects/<project>/<session>.jsonl` carry `effort` and `attributionSkill` on every assistant message, which settles this without a behavioural proxy: a `/commit` run showed 22 consecutive messages at `model=claude-sonnet-5 effort=high skill=commit`, bracketed by `claude-opus-5 effort=max` immediately before and after — so the pins apply *and* are turn-scoped, as [`../../../CLAUDE.md`](../../../CLAUDE.md) claims. Re-check any run with `jq -r 'select(.type=="assistant") \| "\(.message.model) \(.effort) \(.attributionSkill // "-")"' <transcript> \| uniq -c`. **Caveat:** the pin has since moved to `effort: xhigh` (c7caa5d), so that exact value is unverified — the *mechanism* is proven, not the new number. One run of the jq line above closes it. **(c)** Confirm a plain-English commit request still auto-triggers the skill — it must, since DMI is `false` everywhere. |
 
 [skill-context-cost.md](skill-context-cost.md) workstream **D**
-(`when_to_use`) sits outside the waves: it is blocked on a
-`scripts/lint-frontmatter.py` fix for combined-length checking. Do it
-whenever that lands.
+(`when_to_use`) sits outside the waves. It was blocked on a
+`scripts/lint-frontmatter.py` fix for combined-length checking; **updated
+2026-09-01**, that is no longer a blocker so much as an output. D now carries a
+split-cap proposal — give `description` and `when_to_use` a fixed budget each
+instead of one shared 1,536 pool — with three candidate splits, a
+recommendation (1,024 / 512), and the corpus measurement showing the
+recommended split is a no-op on all 44 skills today. What the linter should
+enforce depends on which split is chosen, so **the decision and the linter
+change land together**; writing a combined-only check first would only mean
+writing it twice. One thing must be verified before either: that `when_to_use`
+reaches the skill listing at all. No skill has ever set it, and the brief says
+where to confirm it.
 
 ## What this order is optimising for
 

@@ -8,7 +8,10 @@
   land — both now have.
 - **Status**: **A and B are complete.** C, D and E are open. D (`when_to_use`)
   and E (is the skill necessary at all? — scoped to the **unconditional**
-  skills) were added on the update and have not been started.
+  skills) were added on the update and have not been started. **D gained a
+  split-cap proposal on 2026-09-01** — three candidate splits, a
+  recommendation, and the corpus measurement behind it. It needs a decision,
+  not more research; the linter change follows from whichever split is chosen.
 - **Run in**: a fresh session. **This brief is self-contained** — it is the only
   document needed for the context-cost work.
 - **Sibling brief**: `skill-model-policy.md` covered
@@ -334,6 +337,70 @@ today so nothing is broken yet — **but this must land before the first adoptio
 or the silent-truncation gap reopens.** Truncation has no error path. This is
 inherited from the retired optimization-pass brief, and this brief now owns
 it. Do it first.
+
+**The fix is now specified — see the split-cap proposal below (2026-09-01).**
+It is up to three `len()` checks rather than one, and *which* constants they
+carry is an open decision. Land the decision and the linter change together: a
+combined-only check written today would have to be rewritten if the split is
+adopted.
+
+### The split-cap proposal (added 2026-09-01, undecided)
+
+Stop treating 1,536 as one pool the two fields compete for, and give each field
+its own budget: **an explicit cap on `description`, with the remainder as the
+cap on `when_to_use`.** The attraction is decoupling. Under a single combined
+cap, a skill that adopts `when_to_use` silently changes how much room its
+`description` has, so a later description edit can push the pair over a limit
+that neither field's own text explains. Under a split, an edit to one field can
+never overflow the other, and a lint failure names the field to cut.
+
+**The corpus says the split costs nothing to adopt.** Measured 2026-09-01
+across all 44 skills:
+
+| | n | min | median | mean | max | ≥ 1,000 |
+| --- | --- | --- | --- | --- | --- | --- |
+| Conditional (`paths:`) | 19 | 457 | 981 | 881 | **1,024** | 7 |
+| Unconditional | 25 | 266 | 822 | 803 | **1,024** | 3 |
+
+`when_to_use` is set on **0 of 44**. The longest description in the repo is
+exactly 1,024 — the Agent Skills spec cap — in *both* halves, which says
+authors have been targeting the spec cap all along and the 1,536 gate has never
+once been used as headroom.
+
+| Split | `description` | `when_to_use` | What it costs |
+| --- | --- | --- | --- |
+| **A (recommended)** | 1,024 | 512 | Nothing today — every skill already fits, so the tightening is a no-op on the corpus. Buys back the spec cap, keeping descriptions portable to the claude.ai upload path. **But it reverses a documented decision**: root `CLAUDE.md` set the gate at 1,536 as "a deliberate trade of format portability for trigger headroom". That sentence has to be rewritten to say the *combined* cap is 1,536 while `description` keeps the 1,024 spec cap. |
+| **B** | 1,280 | 256 | Keeps description headroom past the spec cap, honouring the original trade. 256 chars is about two sentences — enough for a genuine trigger clause, not enough for the "move trigger phrases out of `description`" pattern below. |
+| **C (status quo intent)** | — | — | 1,536 combined, no per-field split — implement the linter fix and stop. Maximum flexibility, and keeps the coupling, including the failure mode where a description edit overflows a pair the author was not looking at. |
+
+**Recommendation: A.** The headroom B preserves has never been used by any of
+the 44 skills, and headroom whose only practical effect is to be silently
+consumed by a second field is worth less than an explicit second budget. A also
+makes both numbers mean something a reader can act on: 1,024 is "the spec cap,
+still portable", 512 is "a trigger clause, not a second description". Note that
+under A the combined check is *implied* — 1,024 + 512 = 1,536 — so the linter
+needs only the two per-field checks; under C the combined check is the only
+one there is.
+
+**A does not weaken the aggregate case.** Per-field caps bound one skill; the
+listing budget bounds all of them together, and that is the binding constraint
+for the 25 unconditional skills (see the asymmetry table below). The split is a
+*hygiene* fix — it makes overflow legible and non-interacting — not a
+substitute for the narrow, evidence-led target selection this workstream
+already requires.
+
+### Verify this before adopting any of it
+
+Every number above rests on a claim this repo has never observed: that
+`when_to_use` is appended to `description` in the skill listing and counts
+toward the same truncation point. **Zero skills set it**, so nothing here has
+been seen to happen — the claim is currently carried by root `CLAUDE.md`, the
+handoff template, and this brief, all asserting each other. Confirm it against
+the Claude Code documentation or changelog — `anthropics/claude-code` is
+already a registered `/drift-audit` source — before the first adoption and
+before the linter constants are chosen. If `when_to_use` turns out to be
+surfaced on invocation rather than in the listing, the cost model in this
+workstream inverts and the split cap is unnecessary.
 
 ### The asymmetry that should drive the policy
 
