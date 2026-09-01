@@ -79,16 +79,13 @@ initialPrompt: {{}}  # optional; auto-submitted first turn when agent runs as ma
 
 {{dependencies-or-na}}
 
-> Verbatim — do not edit. Brief-specific observations belong in the
-> Notes section above.
-
 ## Claude Code's post-draft checklist
 
-> Guidance: Reproduced verbatim in every filled brief as standing reminders. Do not edit per-brief.
+> Guidance: Reproduced verbatim in every filled brief as standing reminders. Do not edit per-brief; brief-specific observations belong in Notes below.
 
 1. Re-verify frontmatter fields against current docs before writing — the subagent surface is still moving (notably `memory:`, `skills:`, `initialPrompt:`).
 2. Re-count description chars after drafting (Windows + Edit-tool fragility).
-3. `cat` the full agent file after any edit (YAML hygiene rule).
+3. `cat` the full agent file after any edit — an edit landing inside the frontmatter can leave YAML that still parses, into the wrong shape, with nothing warning.
 4. Confirm the agent file lives directly under `claude/agents/` (no subdirectories — the directory is flat).
 5. If routing via description, read the filled description aloud to check it's specific enough to distinguish from bundled agents.
 
