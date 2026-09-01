@@ -216,13 +216,54 @@ Per root `CLAUDE.md`:
   machine.
 - `tests/` untouched; `git status` clean; finish with `/commit`.
 
-## Unrelated open bug, carried forward so it is not lost
+## Unrelated open bug — CLOSED 2026-09-01, it was a misdiagnosis
 
-**`security-reviewer-memory-scope.sh` errors on every run** — 4 runs, 4
-`hook_non_blocking_error`, 0 successes, per `scripts/instructions-log`. Nothing
-to do with skills or models; it surfaced during the measurement work and had no
-other home once the field-evidence brief was deleted. Fix it or file it, but
-don't lose it again.
+This brief carried **"`security-reviewer-memory-scope.sh` errors on every
+run — 4 runs, 4 `hook_non_blocking_error`, 0 successes"** as an open bug.
+The hook is fine. Both halves of that sentence were wrong.
+
+**Not "every run" — one 22-second window, once.** A scan of every transcript
+under `~/.claude/projects` finds exactly four records whose attachment type is
+`hook_non_blocking_error`, in all of recorded history. All four are this hook,
+all `PreToolUse:Edit`, all on 2026-08-28 between 22:14:37Z and 22:14:59Z, all
+with the identical stderr:
+
+```
+bash: /c/Users/exampleuser/.claude/hooks/security-reviewer-memory-scope.sh:
+No such file or directory
+```
+
+The script was **absent**, not failing. That window sits inside the working
+tree of `ec975df` *"refactor: group Claude-only payload under claude/"*
+(committed 20:40 EDT the same evening), which moved `hooks/` to
+`claude/hooks/`. Between the move and the next `scripts/link-claude.ps1` run,
+`~/.claude/hooks` was a junction to a path that no longer existed. The re-link
+repaired the target and it has never recurred — zero occurrences in the three
+days since, across every project.
+
+**"0 successes" is what a working PreToolUse hook looks like.** It exits 0
+silently on the allow path and writes to no log, so only failures are ever
+recorded. A success count of zero is unobtainable evidence, not a symptom.
+(The count was also attributed to `scripts/instructions-log`, which reads the
+`InstructionsLoaded` log and never sees `PreToolUse` at all.)
+
+**Behaviour re-verified 2026-09-01** by feeding the script payloads directly.
+Six cases, all correct: blocks a `security-reviewer` write outside the memory
+dir (exit 2 with the rejection text); allows one inside it; allows a
+non-`security-reviewer` caller anywhere; allows a `/c/...` msys-style path;
+and fails **closed** on both escape attempts — `..` traversal (because
+`cygpath -u` normalizes the path before the prefix test) and the
+`security-reviewer-evil/` sibling-prefix (because the trailing slash on
+`ALLOWED_UNIX` is load-bearing — do not remove it). The `.agent_type` payload
+field the guard reads was separately confirmed unchanged by the 2026-08-29
+drift audit.
+
+**What was real, and is worth keeping:** a payload directory move leaves its
+junction dangling until the link script runs again, and a hook that cannot be
+found **fails open** — Claude Code reports the error and allows the call. So
+the write guard was off for those four Edits. Recorded in the
+[repo README](../../../README.md) under Ongoing workflow, since it is a property
+of the junction deployment model rather than of this hook.
 
 ## Constraints
 
