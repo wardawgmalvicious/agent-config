@@ -37,6 +37,8 @@ tests/skills/fabric-triggers/fixtures/
 ├── SampleDash.KQLDashboard/        .platform, RealTimeDashboard.json
 ├── SampleNB.Notebook/              .platform, notebook-content.py,
 │                                   notebook-settings.json
+├── SampleSparkNB.Notebook/         .platform, notebook-content.sql
+│                                   (synapse_pyspark kernel - Spark SQL)
 ├── SampleVL.VariableLibrary/       .platform, settings.json, variables.json,
 │                                   valueSets/ENV-3P.json
 ├── SampleWH.Warehouse/             .platform, SampleWH.sqlproj,
@@ -81,6 +83,7 @@ a later reader can re-check them rather than take this file's word:
 | `SampleAgent.DataAgent/` | `microsoft/unified-data-foundation-with-fabric-solution-accelerator` @ `167c308`, `Azure-Samples/agentic-app-with-fabric` @ `5e48120` | the `Files/Config/{draft,published}` layout in [Source control for Fabric data agent](https://learn.microsoft.com/fabric/data-science/data-agent-source-control) |
 | `SampleGraph.GraphModel/` | `frkim/NovaSteel3` @ `8a1efa7`, `rasgiza/RTI-Hackathon-Demo` @ `39eebf3` | the definition parts in the REST [Graph Model definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/graph-model-definition) reference |
 | `SampleSQL.SQLDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace`, `ProdataSQL/DWA` @ `Workspaces/DWA` | `<name>.SQLDatabase` and the `dbo/Tables/*.sql` layout in [SQL database source control](https://learn.microsoft.com/fabric/database/sql/source-control) |
+| `SampleSparkNB.Notebook/` | `edkreuk/FMD_FRAMEWORK` @ `ebe97d4` | the `sqldatawarehouse` counterpart in `LanreAdetola/wwi_fabric_dw` @ `493bea1`, which fixes the `-- META` header as the only dialect discriminator |
 
 The three `metadata.type` values were checked directly rather than assumed.
 A GitHub code search for `"type": "DataAgent"` inside `.platform` files
@@ -184,7 +187,9 @@ than the globs.
 
 ## Cost note
 
-These files are inert until opened. Reading anything under
-`SampleNB.Notebook/` pulls ~4,418 tokens of skill bodies — the worst
-activation in this set, and two skills no path can separate. Don't leave a
-fixture open while doing unrelated work.
+These files are inert until opened. Reading anything under either
+`*.Notebook/` folder pulls ~4,418 tokens of skill bodies — the worst
+activation in this set, and two skills no path can separate.
+`SampleSparkNB.Notebook/notebook-content.sql` is dearer still: it adds
+`coding-sparksql` and `coding-tsql` on top. Don't leave a fixture open
+while doing unrelated work.
