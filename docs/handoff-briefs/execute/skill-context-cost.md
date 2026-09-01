@@ -327,7 +327,11 @@ message so the history stays traceable.
 The user wants to explore adding `when_to_use` to some skills. This section is
 the grounding for that work; it has not been started.
 
-### Blocking prerequisite
+### Blocking prerequisite — CLEARED 2026-09-01
+
+> The linter gap described below is fixed. `scripts/lint-frontmatter.py` now
+> gates `description` at 1,024 and `when_to_use` at 512 separately. Kept for
+> the reasoning, not as an instruction.
 
 **`scripts/lint-frontmatter.py` measures `len(description)` alone**
 ([line 180](../../../scripts/lint-frontmatter.py)), but the upstream 1,536 cap
@@ -344,7 +348,37 @@ carry is an open decision. Land the decision and the linter change together: a
 combined-only check written today would have to be rewritten if the split is
 adopted.
 
-### The split-cap proposal (added 2026-09-01, undecided)
+### DECIDED 2026-09-01 — split A, and the premise is confirmed
+
+**Split A is adopted: `description` ≤ 1,024, `when_to_use` ≤ 512.**
+`scripts/lint-frontmatter.py` enforces both separately (`DESCRIPTION_MAX`,
+`WHEN_TO_USE_MAX`, plus a `LISTING_MAX` sum assertion that can only fire if
+the two are edited apart), and root `CLAUDE.md`, the handoff template, and
+`author-skill` step 7 were reworded to match. All 44 skills passed the
+tightened gate unchanged, as the corpus measurement predicted.
+
+**The blocking premise is no longer unverified.**
+`code.claude.com/docs/en/skills` states it three times: `when_to_use` is
+"appended to `description` in the skill listing and counts toward the
+1,536-character cap"; the `description` row says "the combined
+`description` and `when_to_use` text is truncated at 1,536 characters in the
+skill listing"; and the listing-budget section says "each entry's combined
+text is capped at 1,536 characters regardless of budget". The cost model in
+this workstream stands as written — it does not invert.
+
+**One fact the drill added, which sharpened the split.** `when_to_use` is
+**not** one of the six fields the claude.ai upload path accepts (`name`,
+`description`, `license`, `compatibility`, `metadata`, `allowed-tools`); an
+unexpected key there is a hard failure, not an ignored field. So the split
+is not an arbitrary partition of 1,536: it puts the portable half in the
+spec field that has to stay portable, and spends the remainder in a field
+that is already Claude Code-only.
+
+What remains open in D is **adoption** — which skills get a `when_to_use`
+and what each one says. That is now its own brief:
+[when-to-use-adoption.md](when-to-use-adoption.md).
+
+### The split-cap proposal (as put on 2026-09-01, now decided)
 
 Stop treating 1,536 as one pool the two fields compete for, and give each field
 its own budget: **an explicit cap on `description`, with the remainder as the

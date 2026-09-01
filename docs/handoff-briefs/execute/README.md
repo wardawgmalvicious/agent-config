@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Four briefs are open. Four waves are spent (struck through below) and
+Five briefs are open. Four waves are spent (struck through below) and
 their briefs are deleted, so the struck rows name files that no longer
 exist — git history is the archive. This file is the
 **only** place the order lives; each brief carries its own dependencies but
@@ -15,9 +15,9 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 10
-links between the current 4 files. Numbering the filenames would mean
-rewriting those 17 links now, and again on every deletion, choosing each
+deleted **individually** as each is spent, and heavily cross-linked — 8
+links between the current 5 files. Numbering the filenames would mean
+rewriting those 16 links now, and again on every deletion, choosing each
 time between renumber-and-relink churn or a queue that reads `01, 04, 06,
 08`. The filename is the link target, so it has to be the stable thing.
 
@@ -45,18 +45,23 @@ rest would only invalidate every reference to a wave elsewhere.
 | **8** | *No brief — this row is the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model | **Needs a fresh session**: the session that wrote the frontmatter cannot verify it, and a changed `description` is a changed *trigger*. Three things. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is still `model: inherit` — wave 3 deliberately skipped `claude/agents/`. It is a fair `sonnet` candidate (it greps and reports), but unlike the skill pins it changes behaviour the moment it lands, so run the fixtures in [`../../../tests/agents/security-reviewer/README.md`](../../../tests/agents/security-reviewer/README.md) against `expected_findings.md` both before and after, and keep the pin only if the caught/not-caught sets are unchanged. **(b)** ~~Confirm `/commit` actually picks up `model: sonnet` **and** `effort: high`.~~ **Answered 2026-09-01 — both fired.** The session transcripts at `~/.claude/projects/<project>/<session>.jsonl` carry `effort` and `attributionSkill` on every assistant message, which settles this without a behavioural proxy: a `/commit` run showed 22 consecutive messages at `model=claude-sonnet-5 effort=high skill=commit`, bracketed by `claude-opus-5 effort=max` immediately before and after — so the pins apply *and* are turn-scoped, as [`../../../CLAUDE.md`](../../../CLAUDE.md) claims. Re-check any run with `jq -r 'select(.type=="assistant") \| "\(.message.model) \(.effort) \(.attributionSkill // "-")"' <transcript> \| uniq -c`. **Caveat:** the pin has since moved to `effort: xhigh` (c7caa5d), so that exact value is unverified — the *mechanism* is proven, not the new number. One run of the jq line above closes it. **(c)** Confirm a plain-English commit request still auto-triggers the skill — it must, since DMI is `false` everywhere. |
 
 [skill-context-cost.md](skill-context-cost.md) workstream **D**
-(`when_to_use`) sits outside the waves. It was blocked on a
-`scripts/lint-frontmatter.py` fix for combined-length checking; **updated
-2026-09-01**, that is no longer a blocker so much as an output. D now carries a
-split-cap proposal — give `description` and `when_to_use` a fixed budget each
-instead of one shared 1,536 pool — with three candidate splits, a
-recommendation (1,024 / 512), and the corpus measurement showing the
-recommended split is a no-op on all 44 skills today. What the linter should
-enforce depends on which split is chosen, so **the decision and the linter
-change land together**; writing a combined-only check first would only mean
-writing it twice. One thing must be verified before either: that `when_to_use`
-reaches the skill listing at all. No skill has ever set it, and the brief says
-where to confirm it.
+(`when_to_use`) is **half done as of 2026-09-01.** The policy half landed:
+split **A** — `description` ≤ 1,024, `when_to_use` ≤ 512, enforced separately
+in `scripts/lint-frontmatter.py`, with root `CLAUDE.md`, the handoff
+template and `author-skill` reworded to match. All 44 skills passed the
+tightened gate unchanged. The premise the cost model rested on was drilled
+and holds: `when_to_use` really is appended to `description` in the listing
+and shares its 1,536 truncation point.
+
+The adoption half — which skills get the field, and what each says — is now
+its own brief, [when-to-use-adoption.md](when-to-use-adoption.md), and it
+has a dependency worth respecting. It splits in two: the **19 conditional
+skills are free and unblocked**, while the **25 unconditional ones should
+wait for wave 4**, because workstream E moves skills between those two
+columns and can flip a skill's answer. Adding the field to all 25 would put
+~4,700 tokens onto a listing already sitting at ~9,900 against a
+~10,000-token budget, so that half is net-neutral-or-nothing rather than a
+blanket pass.
 
 ## What this order is optimising for
 
