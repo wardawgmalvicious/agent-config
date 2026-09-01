@@ -126,7 +126,9 @@ set) and the picture changes. Measured 2026-08-31:
 | `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
 | `SampleSparkNB.Notebook/notebook-content.sql` | + `coding-sparksql`, `coding-tsql` |
 
-Re-measured 2026-08-31 after the `rule-glob-gaps.md` fixes landed. All
+Re-measured 2026-08-31 after the glob fixes landed (brief
+`rule-glob-gaps.md`, since spent and deleted — git history is the
+archive). All
 three findings that run produced are now closed:
 
 - `fabric-git-serialization` was missing `**/*.GraphModel/**`, so the five
@@ -188,10 +190,11 @@ Three fixtures below are real Fabric item types that the payload has no
 skill for: `DataPipeline`, `Lakehouse`, `KQLQueryset`. That is the
 *current* truth rather than a target, and all three are common in
 `fabric-acme`. Each now has a brief in `docs/handoff-briefs/execute/`
-(`item-type-skill-datapipeline.md`, `-lakehouse.md`, `-kqlqueryset.md`);
-the recommendation is "yes" for only one of them.
+(`item-type-skill-datapipeline.md`, `-lakehouse.md`); the recommendation
+is "yes" for only one of them.
 
-`KQLQueryset` is **decided: no skill**, 2026-08-31. There is no
+`KQLQueryset` is **decided: no skill**, 2026-08-31, and its brief is
+spent. There is no
 KQLQueryset procedure — no ordering, no refusal conditions, no lifecycle.
 What the file needs is KQL authoring conventions, which already existed
 and were correct; only the glob failed to reach it. A skill would
@@ -210,6 +213,16 @@ negative controls — a glob that starts matching them is over-broad.
   Several are candidates for a `paths:` glob under Workstream E in
   `docs/handoff-briefs/execute/skill-context-cost.md`; add the fixture
   *with* the glob, in the same commit.
+- **`fabric-git-serialization`'s item-type list is only partly verified.**
+  Carried forward from `rule-glob-gaps.md` when that brief was deleted:
+  three names (`GraphModel`, `UserDataFunction`, `ApacheAirflowJob`) were
+  confirmed against real Git-synced exports and added, and `Dataflow` was
+  checked and is **correct** — 246 public exports use `<name>.Dataflow`,
+  while `DataflowGen2` is a portal name that never reaches Git. The rest
+  of the list was never re-verified, and nothing keeps it current as
+  Fabric ships item types. A full pass is cheap: one `filename:.platform`
+  code search per candidate name. A missing entry here means an item type
+  gets **no rule at all**, which is how the `GraphModel` gap was found.
 
 ## Refreshing this table
 
