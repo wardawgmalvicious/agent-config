@@ -111,6 +111,20 @@ unverified on this machine. **In a fresh session**, confirm
 and no longer fires on a report file deep inside a project. This is the only
 outstanding item from A and B.
 
+**The glob half of this is now closed.** `tests/skills/pbip-triggers/` and
+`tests/skills/fabric-triggers/` cover all 19 conditional skills between them,
+and their static check confirms both halves of A1: `visual.json` pulls three
+skills without `pbip-project-structure`, and eleven non-PBIP `.platform` files
+pull it zero times. What remains is narrower than it was — not "do the globs
+say the right thing" but "does the harness load on a match at all". Read one
+fixture in a cold session and look at what is in context; do **not** read a
+counter, because none of the three logs on this machine records a conditional
+activation.
+
+Also usable as an A/B on a live payload edit: run the static check, change a
+glob, run it again, diff. That is cheaper than a session and catches the
+mistakes that have actually happened here.
+
 ## Measured facts (2026-08-31, ACME, post-A and post-B)
 
 Worst observed single file — one report visual, now 3 skills, **~9,086 tokens**:
@@ -265,6 +279,8 @@ and the figures below are *co-activation* totals, not merge savings.
 ~4,418 tokens combined. There is no scenario where one is wanted and not the
 other. Strongest merge case in the repo — but per the caveat above, worth only
 a few hundred tokens. Consider it cleanup, not a lever.
+Fixture: `tests/skills/fabric-triggers/fixtures/SampleNB.Notebook/` — all
+three of its files pull exactly this pair, and no path separates them.
 
 **C2. The `pbir-*` visual cluster** — `pbir-visual-json` (73 files),
 `pbir-conditional-formatting` (73), `pbir-filters` (82). Overlapping but not

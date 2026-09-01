@@ -10,9 +10,9 @@ Every other fixture set here tests what a skill *does once invoked*. This
 one tests whether it fires at all, which is a different contract and the
 one that fails silently.
 
-Before this fixture, the Power BI half of the payload — eight
-`pbip-`/`pbir-` skills — could only be trigger-tested against a real
-client repo. Worse, **there is no observability for conditional skill
+Before this fixture, the Power BI half of the payload — the `pbip-` and
+`pbir-` skills — could only be trigger-tested against a real client repo.
+Worse, **there is no observability for conditional skill
 activation on this machine**, so "it didn't seem to fire" was not a
 usable signal:
 
@@ -56,9 +56,10 @@ tests/skills/pbip-triggers/
     └── control/notes.md         (matches nothing — negative control)
 ```
 
-Ten of the repo's 19 conditional skills are covered. The remaining nine
+Nine of the repo's 19 conditional skills are covered here. The other ten
 are keyed to Fabric item types (`.Eventstream`, `.Warehouse`,
-`.Notebook`, …) and would need their own fixture tree.
+`.Notebook`, …) and live in [`../fabric-triggers/`](../fabric-triggers/).
+Together the two sets cover all 19.
 
 ## Running the test
 

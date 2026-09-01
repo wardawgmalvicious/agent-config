@@ -1,0 +1,13 @@
+{
+  "queryset": {
+    "version": "1.0.0",
+    "dataSources": [],
+    "tabs": [
+      {
+        "id": "00000000-0000-0000-0000-0000000000c1",
+        "content": "SampleEvents_v1 | count",
+        "displayName": "Tab 1"
+      }
+    ]
+  }
+}

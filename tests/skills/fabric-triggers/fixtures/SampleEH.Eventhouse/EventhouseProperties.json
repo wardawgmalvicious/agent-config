@@ -1,0 +1,4 @@
+{
+  "minimumConsumerComputeSize": null,
+  "queryServiceUriSuffix": "kusto.fabric.microsoft.com"
+}

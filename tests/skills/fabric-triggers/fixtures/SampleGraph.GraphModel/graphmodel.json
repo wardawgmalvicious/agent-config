@@ -1,0 +1,5 @@
+{
+  "_comment": "SHAPE UNVERIFIED - see README. The glob is **/*.GraphModel/** so any filename matches; this file exists only to give it a target.",
+  "nodes": [ { "name": "Customer", "source": { "type": "Lakehouse", "table": "dim_customer" } } ],
+  "edges": [ { "name": "PLACED", "from": "Customer", "to": "Order" } ]
+}

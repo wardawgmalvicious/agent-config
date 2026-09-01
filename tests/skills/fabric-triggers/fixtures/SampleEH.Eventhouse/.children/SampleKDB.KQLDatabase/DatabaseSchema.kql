@@ -1,0 +1,8 @@
+// KQL script
+// Use management commands in this script to configure your database items.
+
+.create-merge table SampleEvents_v1 (eventTime:datetime, source:string, payload:dynamic)
+
+.create-or-alter materialized-view SampleLatest_v1 on table SampleEvents_v1 {
+    SampleEvents_v1 | summarize arg_max(eventTime, *) by source
+}

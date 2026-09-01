@@ -33,8 +33,11 @@ means the over-broad `**/*.Report/**` glob is back.
 **2. `.Report/.platform` activates `pbip-project-structure`, but a
 `.platform` in any *other* item type must not.** A1's second half
 narrowed a bare `**/.platform` — a Fabric item marker, not a PBIP one —
-to the two PBIP item types. This fixture has no Notebook or Eventstream
-to prove the negative; add one before trusting that half.
+to the two PBIP item types. The positive half is the two rows above; the
+negative half is proved in
+[`../fabric-triggers/`](../fabric-triggers/expected_activations.md),
+whose eleven non-PBIP `.platform` files pull no `pbip-project-structure`
+between them.
 
 **3. `control/notes.md` activates nothing.** If it does, the observation
 method is wrong. Check this before believing any other row.
@@ -46,16 +49,10 @@ be separated by path — that is the standing case for Workstream C2 in
 
 ## Known gaps
 
-- **Nine conditional skills are untested here** — `fabric-eventstream`,
-  `fabric-eventhouse`, `fabric-warehouse`, `fabric-spark`,
-  `fabric-error-handling`, `fabric-variable-library`,
-  `fabric-realtime-dashboard`, `fabric-data-agent`, `fabric-graph`,
-  `fabric-database`. Each keys off a Fabric item-type folder and needs
-  its own fixture tree.
-- **`fabric-spark` and `fabric-error-handling` have identical globs**, so
-  a Notebook fixture would activate both and could not distinguish them.
-  That is the point of C1, not a fixture defect.
-- **No negative fixture for the `.platform` narrowing** (assertion 2).
+The ten Fabric item-type skills are covered by
+[`../fabric-triggers/`](../fabric-triggers/), which also carries that
+set's own gaps (three unverified item shapes). Nothing in the Power BI
+half is untested.
 
 ## Refreshing this table
 

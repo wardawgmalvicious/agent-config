@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
+  "variables": [
+    {
+      "name": "SampleLakehouseId",
+      "note": "Fixture value. Not a real item id.",
+      "type": "Guid",
+      "value": "00000000-0000-0000-0000-000000000012"
+    },
+    {
+      "name": "SampleEnvironmentSuffix",
+      "note": "Fixture value.",
+      "type": "String",
+      "value": "1d"
+    }
+  ]
+}
