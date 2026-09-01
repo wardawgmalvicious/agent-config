@@ -33,6 +33,8 @@ an apparent one.
 | **`SampleNB.Notebook/.platform`** | `fabric-error-handling`, `fabric-spark` | **4,418** |
 | `SampleNB.Notebook/notebook-content.py` | `fabric-error-handling`, `fabric-spark` | 4,418 |
 | `SampleNB.Notebook/notebook-settings.json` | `fabric-error-handling`, `fabric-spark` | 4,418 |
+| `SampleSparkNB.Notebook/.platform` | `fabric-error-handling`, `fabric-spark` | 4,418 |
+| `SampleSparkNB.Notebook/notebook-content.sql` | `fabric-error-handling`, `fabric-spark` | 4,418 |
 | `SampleVL.VariableLibrary/.platform` | `fabric-variable-library` | 2,693 |
 | `SampleVL.VariableLibrary/settings.json` | `fabric-variable-library` | 2,693 |
 | `SampleVL.VariableLibrary/variables.json` | `fabric-variable-library` | 2,693 |
@@ -119,15 +121,42 @@ set) and the picture changes. Measured 2026-08-31:
 | `…/SampleKDB.KQLDatabase/DatabaseSchema.kql` | + `coding-kql` |
 | `SamplePL.DataPipeline/pipeline-content.json` | + `coding-expressions` |
 | `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
+| `SampleSparkNB.Notebook/notebook-content.sql` | + `coding-sparksql`, `coding-tsql` |
 | the five `SampleGraph.GraphModel/*.json` definition parts | **none** |
 
-Two findings came out of running that, both filed as
-`docs/handoff-briefs/execute/rule-glob-gaps.md`:
+Re-measured 2026-08-31. One of the three findings that run produced is
+now closed:
+
+- `coding-sparksql` globbed `**/notebooks/**/*.sql`, a directory shape
+  Fabric never emits, so a Spark SQL notebook silently got **T-SQL**
+  conventions from `coding-tsql`'s bare `**/*.sql`. `SampleSparkNB` is
+  the regression fixture for the fix.
+
+Both still open, filed as `docs/handoff-briefs/execute/rule-glob-gaps.md`:
 
 - `fabric-git-serialization` lists `**/*.GraphQLApi/**` but not
   `**/*.GraphModel/**`, so a GraphModel definition file gets no rule.
 - `coding-kql` reaches `DatabaseSchema.kql` and none of the three JSON
   files that actually hold queries.
+
+### The `coding-sparksql` + `coding-tsql` overlap is expected
+
+Both rules matching `notebook-content.sql` is **not** a bug to fix by
+narrowing a glob. Fabric emits that one file name for two dialects, and
+the discriminator — `kernel_info.name` in the `-- META` header — lives
+*inside* the file where no glob can reach it:
+
+| `kernel_info.name` | Cell `language` | Dialect | Rule that wins |
+| --- | --- | --- | --- |
+| `synapse_pyspark` | `sparksql` | Spark SQL | `coding-sparksql` |
+| `sqldatawarehouse` | `sql` | T-SQL on a Warehouse | `coding-tsql` |
+
+Both shapes are confirmed against public Git-synced exports
+(`edkreuk/FMD_FRAMEWORK` @ `ebe97d4`, `LanreAdetola/wwi_fabric_dw` @
+`493bea1`). Each rule carries a precedence section naming the other, so
+the co-load resolves in prose. There is deliberately **no** second
+fixture for the `sqldatawarehouse` variant: it is glob-identical to this
+one, so it would test nothing the static check can see.
 
 **Whenever you judge a *(none)* row, run the rules pass too.** A skill gap
 and a total gap are different problems.

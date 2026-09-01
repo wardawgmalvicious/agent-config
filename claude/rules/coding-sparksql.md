@@ -1,5 +1,7 @@
 ---
 paths:
+  - "**/*.Notebook/notebook-content.sql"
+  - "**/*.SparkJobDefinition/**/*.sql"
   - "**/notebooks/**/*.sql"
   - "**/lakehouse/**/*.sql"
   - "**/spark/**/*.sql"
@@ -12,6 +14,33 @@ or `spark.sql()` blocks in notebooks.
 
 If a project-scope `.claude/rules/coding-sparksql.md` exists, that
 file supersedes this one.
+
+## Precedence over `coding-tsql.md` — read the kernel first
+
+`coding-tsql.md` globs a bare `**/*.sql`, so it co-loads on every file
+this rule matches. The two contradict — brackets vs backticks, `ISNULL`
+vs `COALESCE`, three-part `dbo.` naming vs catalog/schema paths — so one
+of them has to win, and on `notebook-content.sql` **the file name does
+not tell you which.** Fabric emits that exact name for two different
+dialects; the discriminator is the `META` header, not the extension:
+
+| `kernel_info.name` | Cell `language` | Dialect | Rule that wins |
+| --- | --- | --- | --- |
+| `synapse_pyspark` | `sparksql` | Spark SQL | **this file** |
+| `sqldatawarehouse` | `sql` | T-SQL on a Warehouse | `coding-tsql.md` |
+
+So: **read the `-- META` block before applying either rule.** On a
+`synapse_pyspark` notebook and on any `.SparkJobDefinition` script, this
+rule wins and T-SQL conventions do not apply — ignore `coding-tsql.md`
+rather than blending the two. On a `sqldatawarehouse` notebook, defer to
+`coding-tsql.md`; that engine really does want `[brackets]` and `dbo.`
+qualification.
+
+A `paths:` glob cannot make this call, because the kernel lives inside
+the file. That is also why the overlap is resolved in prose rather than
+by narrowing `coding-tsql.md`'s glob — and narrowing it would break the
+T-SQL rule in ordinary non-Fabric SQL repos, which is what that wide
+glob is for.
 
 ## Casing
 

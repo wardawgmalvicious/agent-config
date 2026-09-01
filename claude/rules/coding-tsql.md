@@ -11,6 +11,31 @@ and Synapse dedicated/serverless SQL pools.
 If a project-scope `.claude/rules/coding-tsql.md` exists, that file
 supersedes this one.
 
+## Where this rule does not apply
+
+The `**/*.sql` glob is deliberately wide — it is what makes this rule
+work in ordinary SQL repos with no predictable directory layout. The
+cost is that it also matches SQL that is not T-SQL. Two carve-outs:
+
+- **Spark SQL** — a `<Name>.SparkJobDefinition/**/*.sql` is Spark SQL,
+  never T-SQL. A Fabric `<Name>.Notebook/notebook-content.sql` may be
+  **either**: the file name is the same for both dialects, and the
+  discriminator is the `-- META` header at the top. `kernel_info.name`
+  of `synapse_pyspark` (cell `language: sparksql`) is Spark SQL — defer
+  to `coding-sparksql.md`, which co-loads and wins, and drop the
+  bracket/`dbo.`/NULL-handling guidance below entirely. `kernel_info.name`
+  of `sqldatawarehouse` (cell `language: sql`) is T-SQL against a
+  Warehouse — **this rule applies normally**, Warehouse sections and all.
+  Read the header before choosing; do not infer the dialect from `.sql`.
+- **Fabric SQL Database** — a `<Name>.SQLDatabase/**/*.sql` *is* Azure
+  SQL, so the style guidance below applies normally. What does **not**
+  apply is the two Fabric Warehouse sections at the end of this file:
+  the ANSI string operators (`||`, `EDIT_DISTANCE`, `UNISTR`) and
+  `OPTION (FOR TIMESTAMP AS OF ...)` are Warehouse and SQL analytics
+  endpoint features. Equally, the Warehouse's T-SQL *restrictions* do
+  not apply there — see the `fabric-database` skill, which co-loads on
+  those files.
+
 ## Casing
 
 - **Keywords**: UPPERCASE — `SELECT`, `FROM`, `INNER JOIN`, `WHERE`,
