@@ -1,6 +1,9 @@
 # Open briefs — execution order
 
-Seven briefs are open. This file is the **only** place the order lives;
+Seven briefs are open. Two waves are spent as of 2026-08-31 (struck
+through below); `rule-glob-gaps.md` survives them because one of its four
+findings was a decision rather than an edit, and it has been trimmed to
+that. This file is the **only** place the order lives;
 each brief carries its own dependencies but not its position.
 
 ## Why these are not numbered like drift briefs
@@ -32,12 +35,12 @@ rest would only invalidate every reference to a wave elsewhere.
 
 | # | Brief | Why here |
 | --- | --- | --- |
-| **1** | [rule-glob-gaps.md](rule-glob-gaps.md) — bugs 1, 1b | **The only live bug in the queue.** `coding-sparksql.md` has never fired on a Fabric notebook and `coding-tsql.md` matches instead, so Spark SQL is getting T-SQL conventions today. Everything else here is an improvement; this is wrong output. |
-| **2** | [item-type-skill-kqlqueryset.md](item-type-skill-kqlqueryset.md) + [rule-glob-gaps.md](rule-glob-gaps.md) bug 2 | One decision in two files — whether KQL conventions should reach the JSON files that hold queries. Doing them apart means deciding twice. |
+| ~~**1**~~ | ~~[rule-glob-gaps.md](rule-glob-gaps.md) — bugs 1, 1b~~ | **Done 2026-08-31.** `coding-sparksql.md` now matches `**/*.Notebook/notebook-content.sql`; the `coding-tsql` overlap is resolved by a precedence section in each rule, keyed on the notebook kernel. Bug 1b was not a contradiction — recorded as a scope carve-out. |
+| **2** | [item-type-skill-kqlqueryset.md](item-type-skill-kqlqueryset.md) + [rule-glob-gaps.md](rule-glob-gaps.md) | One decision in two files — whether KQL conventions should reach the JSON files that hold queries. Doing them apart means deciding twice. |
 | **3** | [skill-model-policy.md](skill-model-policy.md) | Independent of every other brief. Addresses actual pain (weekly limits), and its biggest item — the unexplained `workflow-subagent` 24% — is a diagnostic that may be worth more than every frontmatter edit combined. Cheap to run. |
 | **4** | [skill-context-cost.md](skill-context-cost.md) workstreams C + E, folding in [item-type-skill-lakehouse.md](item-type-skill-lakehouse.md) | The big pass. Lakehouse **is** an E row — its recommended fix is a `paths:` glob on `fabric-variable-library` — so run them together or E gets made twice. E's `paths:` candidates must be measured against confirmed item-type names — see the sources pinned in `tests/skills/fabric-triggers/README.md`, and add the fixture in the same commit as the glob. |
 | **5** | [item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) | The only "yes, author it" in the queue, and the largest single chunk of work. Nothing blocks it — it is late because it is expensive, not because it is stuck. Do it earlier if the pipeline surface is what you are actually working on. |
-| **6** | [rule-glob-gaps.md](rule-glob-gaps.md) — bug 3 | **Unblocked 2026-08-31.** `.GraphModel` was unverified, so adding `**/*.GraphModel/**` to `fabric-git-serialization.md` risked propagating a wrong name into a second file. The name is now confirmed against real exports; apply the fix. |
+| ~~**6**~~ | ~~[rule-glob-gaps.md](rule-glob-gaps.md) — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
 
 [skill-context-cost.md](skill-context-cost.md) workstream **D**
@@ -47,8 +50,9 @@ whenever that lands.
 
 ## What this order is optimising for
 
-**Bugs before improvements.** Wave 1 is the only thing in the queue
-producing wrong behaviour right now.
+**Bugs before improvements.** Wave 1 was the only thing in the queue
+producing wrong behaviour; it landed 2026-08-31, so what remains is all
+improvement and judgement work.
 
 **Paired decisions in one sitting.** Waves 2 and 4 each merge briefs that
 would otherwise make the same call twice — the failure mode that forced
@@ -56,13 +60,14 @@ the 2026-08-31 consolidation of four briefs into two.
 
 **Cheap and independent before expensive.** Wave 3 before 4 and 5.
 
-## Three briefs are decisions, not edits
+## Four briefs are decisions, not edits
 
 [item-type-skill-lakehouse.md](item-type-skill-lakehouse.md),
-[item-type-skill-kqlqueryset.md](item-type-skill-kqlqueryset.md) and
-[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) each
-open with a recommendation, and two of them recommend **not** building the
-thing. `/drift-update` treats a decision-kind brief as something to put
+[item-type-skill-kqlqueryset.md](item-type-skill-kqlqueryset.md),
+[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) and —
+since its edit findings landed —
+[rule-glob-gaps.md](rule-glob-gaps.md) each open with a recommendation,
+and two of them recommend **not** building the thing. `/drift-update` treats a decision-kind brief as something to put
 back to the user rather than execute; the same applies here. Landing a
 "no" is a real outcome — record the reasoning in the commit that deletes
 the brief, or the empty column gets re-opened by whoever notices it next.
