@@ -41,8 +41,8 @@ an apparent one.
 | `SampleVL.VariableLibrary/valueSets/ENV-3P.json` | `fabric-variable-library` | 2,693 |
 | `SampleWH.Warehouse/.platform` | *(none)* | 0 |
 | `SampleWH.Warehouse/SampleWH.sqlproj` | *(none)* | 0 |
-| `SampleWH.Warehouse/ingest/Tables/Control.sql` | `fabric-warehouse` | 2,975 |
-| `SampleWH.Warehouse/ingest/Views/vw_LatestRun.sql` | `fabric-warehouse` | 2,975 |
+| `SampleWH.Warehouse/ingest/Tables/Control.sql` | `fabric-warehouse`, `fabric-warehouse-monitoring` | 4,171 |
+| `SampleWH.Warehouse/ingest/Views/vw_LatestRun.sql` | `fabric-warehouse`, `fabric-warehouse-monitoring` | 4,171 |
 | `SampleSQL.SQLDatabase/.platform` | *(none)* | 0 |
 | `SampleSQL.SQLDatabase/.gitignore` | *(none)* | 0 |
 | `SampleSQL.SQLDatabase/SampleSQL.sqlproj` | *(none)* | 0 |
@@ -73,8 +73,8 @@ an apparent one.
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 
-Together with `../pbip-triggers/`, all **21** conditional skills in the
-payload are now covered — 9 there, 12 here.
+Together with `../pbip-triggers/`, all **22** conditional skills in the
+payload are now covered — 9 there, 13 here.
 
 ## Assertions that carry weight
 
@@ -91,8 +91,18 @@ correct. Three means the bare glob is back.
 Every other `.platform` here is a second witness to the same fix.
 
 **2. A Warehouse activates nothing until you open a `.sql` file.**
-`fabric-warehouse` globs `**/*.Warehouse/**/*.sql`, so `.platform`,
-`.gitignore` and `.sqlproj` get no guidance. Same for `fabric-database`.
+`fabric-warehouse` and `fabric-warehouse-monitoring` both glob
+`**/*.Warehouse/**/*.sql`, so `.platform`, `.gitignore` and `.sqlproj` get
+no guidance. Same for `fabric-database`.
+
+`fabric-warehouse-monitoring` deliberately matches the *narrow* sibling
+glob rather than the `**/*.Warehouse/**` proposed for it in Workstream E.
+Every section it carries — query labels, the `queryinsights` views, live
+DMVs, statistics, SQLEP metadata sync — is SQL you write, so the item
+marker and the `.sqlproj` are files it has nothing to say about. The two
+warehouse skills are complementary on the files they share:
+`fabric-warehouse` governs authoring the object, `-monitoring` governs
+observing it afterwards.
 This is the glob as written, deliberately narrow — recorded here so a later
 widening is a visible decision rather than a silent one, and so the zero
 rows are not read as a fixture defect.
