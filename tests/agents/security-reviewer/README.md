@@ -102,6 +102,23 @@ Confirm that before comparing two runs — the agent's `model:` frontmatter,
 an Agent-tool `model` override, and the session model are three different
 inputs, and the transcript is the only place the winner shows.
 
+**Which of the three won** is answered by the sibling file,
+`subagents/agent-<agentId>.meta.json`. It carries a `model` key *only* when
+an Agent-tool override was passed:
+
+```json
+{"agentType":"security-reviewer","toolUseId":"...","spawnDepth":1,"model":"sonnet"}
+```
+
+No `model` key means the run resolved its own model, so the frontmatter pin
+(or the session default behind it) is what you measured. An override and a
+frontmatter pin produce an **identical** `.message.model`, so without this
+file the two are indistinguishable — and a validation run that forced the
+model proves nothing about the pin. Note also that a frontmatter change
+cannot be tested in the session that makes it: subagents are not
+hot-reloaded, so the definition loaded at session start is the one that
+runs. Use a session started *after* the edit.
+
 ### 1. Direct/NL review
 
 ```text
