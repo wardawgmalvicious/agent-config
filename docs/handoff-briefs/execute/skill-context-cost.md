@@ -454,13 +454,30 @@ Obvious glob candidates among the never-invoked, by item type:
 | --- | --- | --- |
 | `fabric-copy-job` | `**/*.CopyJob/**` | 352 |
 | `fabric-mirroring` | `**/*.MirroredDatabase/**` | 350 |
-| `fabric-spark-monitoring` | `**/*.Notebook/**` (already 2 skills there — see C1) | 239 |
+| `fabric-spark-monitoring` | `**/*.Notebook/**` — **measured: makes it the third skill on every Notebook file, 4,418 → ~6,448 tok activation.** Saves 239 listing tokens once per session and costs ~2,030 every Notebook touch. Probably a bad trade; see C1 | 239 |
 | `fabric-warehouse-monitoring` | `**/*.Warehouse/**` | 170 |
 | `fabric-tmdl-api` | `**/*.SemanticModel/**` or `**/*.tmdl` | 244 |
 | `pbid-tom-live` | `**/*.pbix`, `**/*.pbid`? — **verify the item type exists** | 335 |
+| `fabric-cicd` | `**/*.Lakehouse/alm.settings.json` + others | 367 |
+| `fabric-variable-library` (already conditional) | add `**/*.Lakehouse/shortcuts.metadata.json` | 0 |
+| `fabric-mlv` | `**/*.Lakehouse/**`? — **confirm where MLV definitions serialize first**; they may live in the creating Notebook | 379 |
 
 That is **~1,690 listing tokens for six frontmatter edits and no content
-changes** — the highest ratio of saving to risk left in the repo. **Every glob
+changes** — the highest ratio of saving to risk left in the repo.
+
+**Two corrections from the fixture work (`9d49302`), applied above.**
+First, a `paths:` glob is not free: it trades a once-per-session listing
+cost for a per-file-touch activation cost, and the `fabric-spark-monitoring`
+row is a case where that trade is probably bad. Weigh both sides per row
+rather than treating the glob as strictly better. Second, the last three
+rows come from
+[item-type-skill-lakehouse.md](item-type-skill-lakehouse.md) — the Lakehouse
+decision and this table are the same decision made twice, so make it once.
+
+**Measure every candidate glob with the static check in
+`tests/skills/fabric-triggers/README.md` before committing it.** Run the
+rules pass too — several of these globs land on files that already carry a
+rule, and the co-loaded pair is the real cost. **Every glob
 must be measured against a real repo before committing** (harness below); a
 wrong glob has no error path, and this is exactly how `fabric-tmdl` and
 `pbip-project-structure` got their bugs.
@@ -507,6 +524,16 @@ This is the same class of error the field-evidence brief had to retract when it
 read conditional withholding as budget-driven dropping. **A skill that gets a
 `paths:` glob in this workstream will stop incrementing its counter — do not
 later read that as death.**
+
+### One hole in the A2 audit
+
+A2 concluded all 19 conditional globs were sound. Three of them name item
+types that **no live export has confirmed** — `.DataAgent`, `.SQLDatabase`,
+`.GraphModel` — because the names came from the skills' own claims. The
+fixture built on such a name agrees with a wrong glob rather than catching
+it. Tracked in
+[fixture-shape-capture.md](fixture-shape-capture.md); until that lands,
+read A2 as "16 verified, 3 assumed".
 
 ### Do not touch
 
