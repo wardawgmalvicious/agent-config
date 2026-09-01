@@ -4,7 +4,7 @@ description: "Execute the handoff briefs a /drift-handoff run wrote to docs/drif
 argument-hint: "[audit-date | source-id | path] [brief-number]"
 allowed-tools: Read Edit Write Glob Grep Bash
 model: inherit
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+effort: max
 disable-model-invocation: false
 context: inline
 ---

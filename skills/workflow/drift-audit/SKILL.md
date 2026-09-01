@@ -5,7 +5,7 @@ argument-hint: "[prior-sha-or-date] [--sources id,id]"
 arguments: prior_ref
 allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__microsoft-learn-mcp__microsoft_docs_fetch
 model: inherit
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+effort: max
 disable-model-invocation: false
 ---
 

@@ -4,7 +4,7 @@ description: "Author a new skill for this repo end to end — take a topic, chec
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 model: inherit
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+effort: max
 disable-model-invocation: false
 context: inline
 ---
