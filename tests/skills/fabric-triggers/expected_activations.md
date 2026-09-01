@@ -194,10 +194,10 @@ skill for: `DataPipeline`, `Lakehouse`, `KQLQueryset`. That is the
 is "yes" for only one of them.
 
 `KQLQueryset` is **decided: no skill**, 2026-08-31, and its brief is
-spent. There is no
-KQLQueryset procedure — no ordering, no refusal conditions, no lifecycle.
-What the file needs is KQL authoring conventions, which already existed
-and were correct; only the glob failed to reach it. A skill would
+spent. There is no KQLQueryset procedure — no ordering, no refusal
+conditions, no lifecycle. What the file needs is KQL authoring
+conventions, which already existed and were correct; only the glob failed
+to reach it. A skill would
 have duplicated a rule. Reconsider only if a genuine procedure appears —
 queryset-to-dashboard promotion, or cross-environment `dataSources`
 rebinding — and even then that content belongs in `fabric-cicd` or
