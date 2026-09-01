@@ -54,14 +54,18 @@ and holds: `when_to_use` really is appended to `description` in the listing
 and shares its 1,536 truncation point.
 
 The adoption half — which skills get the field, and what each says — is now
-its own brief, [when-to-use-adoption.md](when-to-use-adoption.md), and it
-has a dependency worth respecting. It splits in two: the **19 conditional
-skills are free and unblocked**, while the **25 unconditional ones should
-wait for wave 4**, because workstream E moves skills between those two
-columns and can flip a skill's answer. Adding the field to all 25 would put
-~4,700 tokens onto a listing already sitting at ~9,900 against a
-~10,000-token budget, so that half is net-neutral-or-nothing rather than a
-blanket pass.
+its own brief, [when-to-use-adoption.md](when-to-use-adoption.md), and **it
+runs after wave 4 in full.** Both of wave 4's workstreams churn the corpus it
+would edit: **C** merges or renames conditional skills (the `pbir-*` trio is
+a C2 candidate, and it is precisely where `when_to_use` disambiguation looks
+most valuable), and **E** can give an unconditional skill a `paths:` glob,
+moving it from the expensive column to the free one. Running adoption first
+means writing text for skills that wave 4 renames, merges, or deletes.
+
+Cost is the other half of why: adding the field to all 25 unconditional
+skills would put ~4,700 tokens onto a listing already sitting at ~9,900
+against a ~10,000-token budget, so that half is net-neutral-or-nothing
+rather than a blanket pass.
 
 ## What this order is optimising for
 
