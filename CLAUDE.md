@@ -52,7 +52,8 @@ pre-commit run lint-skills --all-files     # one hook only
 # Fresh clone: install pre-commit via uv and wire .git/hooks
 scripts/bootstrap-pre-commit
 
-# Query the hook observability logs (needs jq)
+# Query the hook observability logs (needs jq). These record rules and
+# skill *invocations* only — never conditional (`paths:`) activation.
 scripts/instructions-log today|reasons|paths|csv|skills|tail
 ```
 
@@ -316,6 +317,22 @@ or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/REA
   failed.
 - Confirm the fixtures are unmodified afterwards with `git status`. A
   run that edits its own inputs invalidates every later comparison.
+
+Changing a `paths:` glob changes *whether a skill fires at all*, which
+none of the fixtures above test. That contract belongs to
+[tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
+[tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) — 9
+skills and 10, disjoint, which is all 19 conditional skills in the
+payload. Assertions live in each set's `expected_activations.md`.
+
+**No log on this machine records conditional activation.**
+`instructions-loaded.log` sees rules only; `skills-invoked.log` and
+`skillUsage` count *invocations*, and a path-triggered skill is
+*loaded*, never invoked. A zero in any of them says nothing about
+whether a glob matched — verify by observing what is in context. The
+cheap regression is the static glob check in either trigger README,
+which needs no session at all; a cold session only proves the harness
+agrees with the globs.
 
 ## Line endings
 
