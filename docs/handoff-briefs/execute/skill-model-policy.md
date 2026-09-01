@@ -4,9 +4,15 @@
   renamed 2026-08-31**, stripped to the work that actually remains.
 - **Kind**: policy pass. The decisions go to the user as a table **before** any
   edit; the edits themselves are small frontmatter changes.
-- **Status**: open. One row applied (`commit` → `model: sonnet`, `56e00bc`);
-  every other row untouched. The largest open item is a *diagnostic* question,
-  not an edit — see "The unexplained 24%".
+- **Status**: step 1 applied 2026-08-31. The frontmatter *shape* is now
+  explicit on all 44 skills: `model`, `effort` and `disable-model-invocation`
+  are written out rather than left to defaults, so the flip point for each is
+  visible in the file. Live values: `commit` keeps `model: sonnet`
+  (`56e00bc`) and pins `effort: high`; the six workflow skills pin
+  `effort: max`, which matches the unchanged `max` session default and so
+  acts as a floor. The 37 platform skills remain written-out defaults. The step 3 diagnostic is also answered:
+  `workflow-subagent` is the Workflow tool, and it is a rare spike rather
+  than a structural cost. Nothing in this brief is now blocking.
 - **Run in**: a fresh session. This brief is self-contained.
 - **Sibling brief**: [skill-context-cost.md](skill-context-cost.md) covers
   listing and activation **context** cost. Different subject. One shared edge:
@@ -18,8 +24,11 @@
 
 ## Why this exists
 
-The user hit Max-plan weekly limits running Fable [1m] at high effort.
-Usage-panel stats from the limit day:
+The user hit Max-plan weekly limits running Fable [1m] at **max** effort.
+(An earlier revision of this brief said *high*; corrected 2026-08-31 by the
+user. The difference matters: it is why pinning a mechanical skill to `high`
+is a real reduction rather than a no-op.) Usage-panel stats from the limit
+day:
 
 | Share | Source |
 | --- | --- |
@@ -55,9 +64,13 @@ were corrected".
 - **`model`** — turn-scoped override while the skill is active; the session
   model resumes on the next prompt. Accepts `/model` values or `inherit`. With
   `context: fork` it sets the forked subagent's model instead.
-- **`effort`** — same shape: low / medium / high / xhigh / max, model-dependent.
-  **No skill in this repo sets it.** It is the cheaper half of the spend lever
-  and has never been tried — worth a row in the table below.
+- **`effort`** — low / medium / high / xhigh / max, model-dependent. **There
+  is no `effort: inherit`** — the field has no pass-through value, and omitting
+  it *is* the inherit ("Default: inherits from session"). An unsupported level
+  degrades silently: "Claude Code falls back to the highest supported level at
+  or below the one you set." Sonnet 5 and Opus 5 support all five. Since the
+  shape pass, every skill carries a commented `# effort:` placeholder except
+  `commit`, which sets `high`.
 - **`disable-model-invocation: true`** — the docs' own example is `/commit`.
   Per the invocation table: *"Description not in context, full skill loads when
   you invoke."* So each skill it is set on **leaves the listing entirely, in
@@ -76,39 +89,60 @@ were corrected".
 
 ## The work
 
-### 1. Draft the policy table and present it for approval
+### 1. Policy table — DECIDED and applied 2026-08-31
 
-One row per skill; **the user decides each row.** Proposed starting point:
+The user's call was **shape first, values second**: write all three fields out
+explicitly on every skill so the flip point is visible in the file, but leave
+almost every value at its default.
 
-| skill | DMI | model | effort | rationale / open point |
-| --- | --- | --- | --- | --- |
-| `commit` | **open** | sonnet ✅ | — | Docs' poster child for DMI, but the evidence cuts against it — see below. Model pin already applied. |
-| `learn` | **false** | inherit | — | "learn!" as a spoken trigger is the documented interface; DMI would kill it. Judgment-heavy — keep the session model. |
-| `code-review` | user call | inherit | — | Review quality is the point; don't cheapen. Check the bundled `/code-review` name collision while in there. |
-| `drift-audit` | true | inherit | — | Always typed; research quality matters. |
-| `drift-handoff` | true | sonnet | — | Mechanical brief-writing from existing findings. |
-| `drift-update` | true | user call | — | Executes briefs and edits guidance — some judgment. sonnet defensible, inherit safer. |
-| `author-skill` | true | inherit | — | Doc-drilling and writing quality. |
-| `security-reviewer` (agent) | n/a | user call | — | Currently `model: inherit`, so scans run on whatever the session runs. Grep-shaped work; findings judgment is not. `sonnet` plausible. |
-| platform skills (`fabric/`, `powerbi/`) | **false** | n/a | n/a | Auto-trigger is their whole point. No DMI, no model pins. |
+| field | what landed | live? |
+| --- | --- | --- |
+| `disable-model-invocation` | `false` on all 44 skills | no — DMI is not used anywhere in this repo |
+| `model` | `inherit` on 43; `sonnet` on `commit` (`56e00bc`) | only `commit` |
+| `effort` | `max` on 6 workflow skills; `high` on `commit`; commented on 37 platform skills | only `commit` bites — session default stayed `max` |
 
-Use model aliases (`sonnet`), not dated IDs.
+`effort` is a placeholder rather than a written-out default because the field
+has **no `inherit` value** — see Upstream facts. A commented line is the only
+way to carry the shape without changing behaviour.
 
-**Consider `effort` before `model` on anything mechanical.** Dropping effort on
-a skill that is essentially bookkeeping may capture most of the saving without
-changing model at all, and it is the less disruptive of the two knobs. No row
-above has been tried this way.
+**Second pass, same day.** The six workflow skills that drive this repo pin
+`effort: max`: `code-review`, `drift-audit`, `author-skill`, `learn`,
+`drift-update`, `drift-handoff`. `commit` stays `high`.
 
-### 2. The `commit` DMI question — evidence, then decide
+The session default was dropped to `xhigh` and then **reverted to `max`** the
+same day, so platform skills keep inheriting `max`. Net effect as it stands:
+only `commit` actually changes behaviour, and the six `max` pins are a stated
+floor rather than a live change — they take effect if the session default
+ever drops. Recorded because a later reader will otherwise measure no
+difference and conclude the pins do nothing.
 
-The original brief assumed `commit` was always typed. It isn't: of 23 observed
-invocations in a transcript scan, **15 were typed and 8 were the model choosing
-the skill.** `skillUsage` puts its lifetime total at 60, far ahead of anything
-else in the repo.
+The user first asked for `ultracode` on four of those. **There is no such
+effort value** — the docs state it "is not a distinct level and reports as
+`xhigh`", i.e. *below* `max`. It is a session orchestration mode with no
+per-skill frontmatter field, so all six collapsed onto `max`.
 
-DMI converts those 8 into "suggest `/commit`" turns, in exchange for ~245
-tokens of listing. That is a real trade in both directions and needs the user's
-call, not a default.
+The 37 platform skills stay unpinned deliberately. Their effort would govern
+the surrounding Fabric/Power BI turn, not a discrete skill run, so pinning
+them either direction moves the wrong thing. `drift-handoff` was pinned `max`
+against a `medium` recommendation — the user's call, recorded so the next
+pass does not silently "fix" it.
+
+Still open from the original table: the **`security-reviewer` agent**, which
+remains `model: inherit`. Agents take `model`, and the shape pass deliberately
+did not touch `claude/agents/`.
+
+### 2. The `commit` DMI question — CLOSED, answered "no"
+
+The evidence, kept because it is the reason the docs' own recommendation was
+rejected: of 23 observed invocations in a transcript scan, **15 were typed and
+8 were the model choosing the skill.** `skillUsage` puts its lifetime total at
+60, far ahead of anything else in the repo.
+
+Setting DMI would have converted those 8 into "suggest `/commit`" turns to save
+~245 tokens of listing. Declined — the auto-trigger is worth more than the
+listing. `disable-model-invocation: false` is now written out on `commit` (and
+everywhere else) so this decision is legible in the file rather than implied by
+an absent field.
 
 ### 3. The unexplained 24% — ANSWERED 2026-08-31
 
@@ -155,11 +189,15 @@ If a workflow is run again, the cheap fix is a per-agent model in the script
 identical scoring prompt** on fable-5, which is the pattern worth pricing
 before repeating.
 
-### 4. Root `CLAUDE.md` touch-up
+### 4. Root `CLAUDE.md` touch-up — DONE 2026-08-31
 
-One or two sentences under Editing conventions: DMI removes a description from
-every session's listing; `model:` is turn-scoped. Keep it lean — that file
-loads in every session on the machine.
+Added as a **Skill invocation and spend fields** bullet under Editing
+conventions: the shape and current policy, plus the three facts worth knowing
+before changing one — `model:` is turn-scoped, `effort:` has no `inherit`
+and degrades silently, and DMI removes a description from every session's
+listing. (Note the original instruction's reasoning was off: root `CLAUDE.md`
+is *project* scope and loads only in this repo. `claude/CLAUDE.md` is the one
+that loads in every session on the machine, and it was not touched.)
 
 ### 5. Validate
 
@@ -169,8 +207,10 @@ Per root `CLAUDE.md`:
   `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`
 - `pre-commit run --all-files`
 - Fresh-session checks: **(a)** run `/commit` and confirm the pinned model
-  appears in the status line; **(b)** ask naturally for a DMI'd skill's work and
-  expect a suggestion to run `/name` rather than silent execution.
+  *and* `effort: high` take hold; **(b)** confirm a natural-language commit
+  request still auto-triggers the skill — it must, since DMI is `false`
+  everywhere. The original **(b)** tested for a DMI'd skill; none exists, so
+  the check is inverted rather than dropped.
 - Frontmatter is a *trigger* surface — **restart before trusting a changed
   trigger.** In-place description hot-reload is the one case unverified on this
   machine.
