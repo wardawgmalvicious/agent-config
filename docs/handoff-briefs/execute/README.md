@@ -1,10 +1,10 @@
 # Open briefs — execution order
 
-Five briefs are open. Four waves are spent (struck through below) and
-their briefs are deleted, so the struck rows name files that no longer
-exist — git history is the archive. This file is the
-**only** place the order lives; each brief carries its own dependencies but
-not its position.
+Five briefs are open. Five waves are spent (struck through below). Where a
+spent wave had a brief, that brief is deleted, so those struck rows name
+files that no longer exist — git history is the archive. Wave 8 never had
+one; its row was always the whole spec. This file is the **only** place the
+order lives; each brief carries its own dependencies but not its position.
 
 ## Why these are not numbered like drift briefs
 
@@ -42,7 +42,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | **5** | [item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) | The only "yes, author it" in the queue, and the largest single chunk of work. Nothing blocks it — it is late because it is expensive, not because it is stuck. Do it earlier if the pipeline surface is what you are actually working on. |
 | ~~**6**~~ | ~~`rule-glob-gaps.md` — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
-| **8** | *No brief — this row is the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model | **Needs a fresh session**: the session that wrote the frontmatter cannot verify it, and a changed `description` is a changed *trigger*. Three things. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is still `model: inherit` — wave 3 deliberately skipped `claude/agents/`. It is a fair `sonnet` candidate (it greps and reports), but unlike the skill pins it changes behaviour the moment it lands, so run the fixtures in [`../../../tests/agents/security-reviewer/README.md`](../../../tests/agents/security-reviewer/README.md) against `expected_findings.md` both before and after, and keep the pin only if the caught/not-caught sets are unchanged. **(b)** ~~Confirm `/commit` actually picks up `model: sonnet` **and** `effort: high`.~~ **Answered 2026-09-01 — both fired.** The session transcripts at `~/.claude/projects/<project>/<session>.jsonl` carry `effort` and `attributionSkill` on every assistant message, which settles this without a behavioural proxy: a `/commit` run showed 22 consecutive messages at `model=claude-sonnet-5 effort=high skill=commit`, bracketed by `claude-opus-5 effort=max` immediately before and after — so the pins apply *and* are turn-scoped, as [`../../../CLAUDE.md`](../../../CLAUDE.md) claims. Re-check any run with `jq -r 'select(.type=="assistant") \| "\(.message.model) \(.effort) \(.attributionSkill // "-")"' <transcript> \| uniq -c`. **Caveat:** the pin has since moved to `effort: xhigh` (c7caa5d), so that exact value is unverified — the *mechanism* is proven, not the new number. One run of the jq line above closes it. **(c)** Confirm a plain-English commit request still auto-triggers the skill — it must, since DMI is `false` everywhere. |
+| ~~**8**~~ | ~~*No brief — this row was the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model~~ | **Done 2026-09-01**, fresh session, Claude Code 2.1.252. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is now `model: sonnet`. Baseline (`inherit` → `claude-opus-5`) and candidate (`claude-sonnet-5`) each scanned the fixtures from an identical cold memory state, and the caught/not-caught sets were **identical**: 4/4 seeded findings at the expected severities (2 Critical at `config.py:2,3`, 1 High at `queries.py:3`, 1 Low at `notes.md:1`), no false positives, five-field format intact, all four closing-summary components present, memory seeded, and neither run read `expected_findings.md`. Fixtures unmodified after. Mode 3 on sonnet took the **preferred** branch — refused outright, never attempted the `Edit` — so the hook had nothing to block; it was verified separately as a direct unit test over four cases (in-scope write allowed, out-of-scope write blocked with exit 2, a different `agent_type` unaffected, `../` traversal out of the memory dir blocked). Both runs **foreground**. *Unverified sliver:* sonnet was forced via the Agent tool's `model` override, because the **frontmatter** pin cannot be exercised in the session that writes it — subagents are not hot-reloaded. One fresh-session run closes it; read the model off the run's own transcript (see below). **(b)** ~~Confirm `/commit` picks up its pins.~~ **Closed** — `e3cae240` shows three `commit` runs at `claude-sonnet-5 xhigh`, each bracketed by `claude-opus-5 high`, so both pins fire at the *current* values and turn-scoping holds. **(c)** **Confirmed** — a plain-English request does auto-trigger `commit`; see the invocation-path finding below, which is how it was measured. |
 
 [skill-context-cost.md](skill-context-cost.md) workstream **D**
 (`when_to_use`) is **half done as of 2026-09-01.** The policy half landed:
@@ -67,6 +67,58 @@ skills would put ~4,700 tokens onto a listing already sitting at ~9,900
 against a ~10,000-token budget, so that half is net-neutral-or-nothing
 rather than a blanket pass.
 
+## Wave 8 finding: the two pins do not travel the same path
+
+Measuring (b) and (c) put every `commit` run since the pins landed side by
+side, and they separate cleanly on **how the skill was invoked** — not on
+version, and not on time:
+
+| Run (UTC) | Invoked by | `model` | `effort` |
+| --- | --- | --- | --- |
+| 2026-08-31T23:19 | `/commit` | `claude-sonnet-5` | `high` |
+| 2026-09-01T04:48 | `/commit` | `claude-sonnet-5` | `high` |
+| 2026-09-01T05:08 | plain English | **`claude-opus-5`** | `xhigh` |
+| 2026-09-01T06:13 | plain English | **`claude-opus-5`** | `xhigh` |
+| 2026-09-01T14:44 | `/commit` | `claude-sonnet-5` | `xhigh` |
+
+`model: sonnet` has been live since 2026-08-31T21:55Z (`56e00bc`) and
+`effort: xhigh` since 2026-09-01T04:57Z (`c7caa5d`), so every row above is
+*after* its own pin. **`effort` applied on all five. `model` applied on the
+three slash runs and on neither auto-triggered one.** Version is ruled out:
+2.1.251 produced both a slash run that took the model pin and two auto runs
+that did not, so this is not a release boundary.
+
+That the two auto-triggered runs exist at all is what closes **(c)** — a
+plain-English request does fire the skill, twice, with no slash command.
+To tell the paths apart in a transcript: a slash invocation writes a user
+record containing `<command-name>/commit</command-name>` immediately before
+the injected skill body, and an auto-trigger injects the body
+(`Base directory for this skill: ...`) with no such header.
+
+**Two readings remain, and the evidence does not yet separate them.**
+**(A)** `model:` is only honoured on explicit slash invocation. **(B)** those
+two sessions had a session model explicitly pinned via `/model`, which
+outranks a skill's. Both fit all five rows.
+
+The test is nearly free: from a session with **no** explicit `/model`
+override, make a plain-English commit request and read the model off the
+run. `claude-sonnet-5` means (B); `claude-opus-5` means (A).
+
+Worth settling rather than leaving, because it is not really about
+`commit`. Root [`CLAUDE.md`](../../../CLAUDE.md) states the `model:` pin is
+turn-scoped without qualifying the invocation path, all 37 platform skills
+are model-invoked **by design**, and a subagent is never slash-invoked at
+all — so under reading (A) the `model: sonnet` just pinned on
+`security-reviewer` would be inert, and the skill-invocation section of root
+`CLAUDE.md` needs a caveat. Under (B) both stand as written. Do not amend
+`CLAUDE.md` until one run decides it.
+
+Method note, since wave 8 needed it and the fixture README assumes it:
+**a subagent's transcript is its own file**, at
+`~/.claude/projects/<project>/<session-id>/subagents/agent-<agentId>.jsonl`
+— *not* an `isSidechain` record inside the parent session transcript, where
+looking for it turns up nothing.
+
 ## What this order is optimising for
 
 **Bugs before improvements.** Wave 1 was the only thing in the queue
@@ -78,7 +130,7 @@ would otherwise make the same call twice — the failure mode that forced
 the 2026-08-31 consolidation of four briefs into two.
 
 **Cheap and independent before expensive.** Wave 3 ran before 4 and 5 and
-is done; wave 8 is what it left behind.
+is done; wave 8 was what it left behind, and is now spent too.
 
 ## Two briefs are decisions, not edits
 
