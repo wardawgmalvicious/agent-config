@@ -1,0 +1,6 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/1.0.0/schema.json",
+  "name": "Bookmark1",
+  "displayName": "Default view",
+  "explorationState": { "activeSection": "Page1", "sections": { "Page1": { "visualContainers": {} } } }
+}

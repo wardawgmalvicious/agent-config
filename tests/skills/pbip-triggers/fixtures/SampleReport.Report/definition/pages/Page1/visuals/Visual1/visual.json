@@ -1,0 +1,14 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "Visual1",
+  "position": { "x": 0, "y": 0, "z": 0, "height": 300, "width": 400 },
+  "visual": {
+    "visualType": "columnChart",
+    "query": { "queryState": { "Category": { "projections": [ { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "Region" } }, "queryRef": "Sales.Region" } ] } } },
+    "objects": {
+      "dataPoint": [
+        { "properties": { "fill": { "solid": { "color": { "expr": { "Conditional": { "Cases": [ { "Condition": { "Comparison": { "ComparisonKind": 1, "Left": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "Total Sales" } }, "Right": { "Literal": { "Value": "1000L" } } } }, "Value": { "Literal": { "Value": "'#FF0000'" } } } ] } } } } } } }
+      ]
+    }
+  }
+}

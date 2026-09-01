@@ -1,0 +1,12 @@
+cultureInfo en-US
+
+	linguisticMetadata =
+			{
+			  "Version": "1.0.0",
+			  "Language": "en-US",
+			  "DynamicImprovement": "HighConfidence"
+			}
+		contentType: json
+
+	/// AI instructions: prefer 'Total Sales' for revenue questions. Region is
+	/// the only geography column; do not infer geography from other fields.
