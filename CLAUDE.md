@@ -227,15 +227,22 @@ filename has to stay stable and the ordering lives in the queue file.
 
 ## Editing conventions
 
-- **Skills** — frontmatter `description` ≤ 1536 chars, matching where
-  Claude Code truncates the combined `description` + `when_to_use` text
-  in the skill listing (configurable via `skillListingMaxDescChars`).
-  Truncation is silent, so the linter gates at that point rather than
-  below it. Keep this number and `DESCRIPTION_MAX` in
-  `scripts/lint-frontmatter.py` identical. Note this is *past* the
-  1024-char Agent Skills spec limit — a deliberate trade of format
-  portability for trigger headroom, since the payload targets Claude
-  Code and Copilot reads the same `~/.claude` paths. Lint with
+- **Skills** — Claude Code truncates the combined `description` +
+  `when_to_use` text at 1536 chars in the skill listing (configurable
+  via `skillListingMaxDescChars`), and truncation is silent. That 1536
+  is **split into a fixed budget per field** rather than left as one
+  shared pool: `description` ≤ 1024, `when_to_use` ≤ 512, enforced
+  separately by `DESCRIPTION_MAX` and `WHEN_TO_USE_MAX` in
+  `scripts/lint-frontmatter.py`. The split is what stops an edit to one
+  field silently overflowing the other, and it makes a lint failure name
+  the field to cut. 1024 is the Agent Skills spec cap and `description`
+  is one of the six fields the claude.ai upload path accepts, so that
+  half stays portable; `when_to_use` is a Claude Code extension the spec
+  does not carry, so the remainder is spent where it is already
+  non-portable. `LISTING_MAX` re-checks the sum and can only fire if the
+  two constants are edited apart. Decided 2026-09-01; the field
+  semantics are confirmed against `code.claude.com/docs/en/skills`.
+  Lint with
   `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`
   (pre-commit runs it too). Long detail goes in
   `skills/<group>/<name>/references/`, not SKILL.md. Skills
