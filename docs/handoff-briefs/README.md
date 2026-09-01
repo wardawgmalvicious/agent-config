@@ -38,46 +38,25 @@ top-level README for additional context.
   artifacts in the repo. See [examples/README.md](examples/README.md).
 
 Open briefs — work scoped but not yet done — wait in
-[execute/](execute/). Queued right now:
+[execute/](execute/). **[execute/README.md](execute/README.md) is the
+queue**: what is open, what order to run it in, and what blocks what. It is
+the only place the order lives, so it is the file to read before starting a
+session — not this one.
 
-- [skill-context-cost.md](execute/skill-context-cost.md) — listing and
-  activation cost of the skill payload. Workstreams A and B are done;
-  C (merges), D (`when_to_use`) and E (unconditional-skill cleanup) are open.
-- [skill-model-policy.md](execute/skill-model-policy.md) — invocation control
-  and model/effort pins. Spend, not context.
-- [skill-effectiveness-telemetry.md](execute/skill-effectiveness-telemetry.md)
-  — scoping for a post-session telemetry capability. Stands alone.
+Briefs there are **not** numbered the way `/drift-handoff` numbers its
+output. A `docs/drift-audit/` directory is a disposable whole whose briefs
+do not cite each other; `execute/` briefs are committed, deleted
+individually, and cross-linked by filename. The filename is the link
+target, so it stays stable and the ordering lives in the queue file. The
+reasoning is in [execute/README.md](execute/README.md).
 
-Those three came from consolidating four briefs into two on 2026-08-31,
-because two of them had begun to contradict each other and a retracted
-finding from one had already propagated into a third. **Briefs on the same
-subject belong in one file** — a split that outlives its reason is how the
-contradiction got in.
-
-Five more were added on 2026-08-31 from the trigger-fixture work
-(`ee0a8f5`, `9d49302`), which measured `paths:` activation for the first
-time. Each is a separate file because each resolves independently and gets
-deleted on its own:
-
-- [rule-glob-gaps.md](execute/rule-glob-gaps.md) — **three rule `paths:`
-  globs that never match what they target.** Take this one first:
-  `coding-sparksql.md` has never fired on a Fabric notebook, and
-  `coding-tsql.md` matches instead, so Spark SQL gets T-SQL conventions.
-- [item-type-skill-datapipeline.md](execute/item-type-skill-datapipeline.md)
-  — recommendation: **yes, author it.**
-- [item-type-skill-lakehouse.md](execute/item-type-skill-lakehouse.md) —
-  recommendation: a `paths:` glob on an existing skill, not a new one.
-  Overlaps Workstream E in `skill-context-cost.md`; decide once.
-- [item-type-skill-kqlqueryset.md](execute/item-type-skill-kqlqueryset.md)
-  — recommendation: **no skill**; it is a rule-glob fix. Pairs with
-  `rule-glob-gaps.md` bug 2.
-- [fixture-shape-capture.md](execute/fixture-shape-capture.md) — capture
-  real `.DataAgent` / `.SQLDatabase` / `.GraphModel` exports. Blocks
-  `rule-glob-gaps.md` bug 3, and is a known hole in A2.
-
-That is eight open briefs, which is more than this queue has held before.
-They are not equal: `rule-glob-gaps.md` is a live wrong-guidance bug, and
-the rest are scoped improvements.
+Two conventions there worth knowing before writing a new one. **Briefs on
+the same subject belong in one file** — four were consolidated into two on
+2026-08-31 because two had begun to contradict each other and a retracted
+finding from one had propagated into a third. But **briefs that resolve
+independently belong in separate files**, because that is the unit of
+deletion; the five added from the trigger-fixture work are separate for
+that reason. Subject, not lineage, decides.
 
 **Once the change lands, the brief is deleted.** Git history is the
 archive — the brief was committed when it was written, so

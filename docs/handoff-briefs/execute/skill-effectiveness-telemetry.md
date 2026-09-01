@@ -14,6 +14,8 @@
   later retracted (see "One motivating example was wrong", below). The core
   case survives; one of the three blind spots did not.
 - **Run in**: a fresh session in `agent-config`. Everything needed is on disk.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## The gap, stated precisely
 

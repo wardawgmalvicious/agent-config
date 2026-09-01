@@ -7,6 +7,8 @@
   exists to record the reasoning so the empty column is not re-opened.
 - **Run in**: whichever session takes `rule-glob-gaps.md`. These two are
   one decision.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## The gap
 

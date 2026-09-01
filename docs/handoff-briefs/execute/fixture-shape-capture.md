@@ -6,6 +6,8 @@
 - **Status**: open. The user offered to spin up both items; this brief is
   the reminder and the acceptance criteria.
 - **Run in**: any session, once an export exists.
+- **Queue**: [README.md](README.md) has the execution order and what
+  blocks what. This brief does not carry its own position.
 
 ## Why this matters more than it looks
 
