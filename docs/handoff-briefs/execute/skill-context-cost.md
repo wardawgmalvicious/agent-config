@@ -507,9 +507,13 @@ unresolved and belongs to whoever picks up D.
 
 ## Workstream E — is the skill necessary at all? — COMPLETE 2026-09-01
 
-**Outcome: six `paths:` globs, ~1,355 listing tokens saved in every
+**Outcome: five `paths:` globs, ~1,355 listing tokens saved in every
 session on this machine and in every client repo the payload deploys
 into. No skill was demoted to `docs/`, and no body was rewritten.**
+
+A sixth was written and reverted the same day — see the Lakehouse note
+below. It saved nothing (the skill was already conditional), so the
+token figure is unaffected.
 
 | Skill | Glob written | Saved | Commit |
 | --- | --- | --- | --- |
@@ -518,7 +522,6 @@ into. No skill was demoted to `docs/`, and no body was rewritten.**
 | `fabric-tmdl-api` | `**/*.SemanticModel/**` | 244 | `ff74c7b` |
 | `fabric-spark-monitoring` | `**/*.Notebook/**` | 239 | `839f92e` |
 | `fabric-warehouse-monitoring` | `**/*.Warehouse/**/*.sql` | 170 | `9c62d0c` |
-| `fabric-variable-library` | `+ **/*.Lakehouse/shortcuts.metadata.json` | 0 (already conditional) | `20bd78b` |
 
 **Declined, with reasons recorded in `expected_activations.md` so the
 empty column is not reopened:**
@@ -530,6 +533,17 @@ empty column is not reopened:**
 - `pbid-tom-live` (335) — drives a live `msmdsrv` process over
   TOM/ADOMD. No file trigger exists; `**/*.pbix` / `**/*.pbid` as
   proposed below is not a real item type. Still a demotion candidate.
+- `fabric-variable-library` — the proposed
+  `**/*.Lakehouse/shortcuts.metadata.json` was written (`20bd78b`) and
+  **reverted**. Binding a shortcut target to a variable is one option, not
+  what a shortcuts file is: most carry a plain `workspaceId`/`itemId`
+  pair, so the glob pulled the skill into every Lakehouse whether a
+  variable was involved or not. ACME's shortcuts all use the VL form, which
+  made the glob look better than it is — that is a property of how this
+  workspace was authored, not of the item type. The discriminator is
+  `$(...)` *inside* the file, unreachable by any glob, so there is no
+  narrower version. The syntax stays documented in the skill's body.
+  **A Lakehouse now activates nothing, and that is the finding.**
 - `fabric-mlv` (379) — the proposed `**/*.Lakehouse/**` is **wrong**.
   Materialized lake views serialize inside
   `<name>.Notebook/notebook-content.py` (confirmed: 4 public exports;

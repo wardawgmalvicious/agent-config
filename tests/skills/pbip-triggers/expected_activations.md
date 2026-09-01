@@ -60,7 +60,7 @@ definition including `definition.pbism`, which is not TMDL.
 
 ## Known gaps
 
-The thirteen Fabric item-type skills are covered by
+The fourteen Fabric item-type skills are covered by
 [`../fabric-triggers/`](../fabric-triggers/), which carries that set's own
 gaps. Nothing in the Power BI half is untested.
 
