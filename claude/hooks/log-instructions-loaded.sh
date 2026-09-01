@@ -3,6 +3,16 @@
 # Fires at session start for eagerly-loaded CLAUDE.md / rules files,
 # and during a session for lazy-loaded (nested or path-matched) files.
 # Pure observability: cannot block, exit code is ignored.
+#
+# Appends are NOT atomic here. Git Bash has no flock, and MSYS does not
+# guarantee an atomic O_APPEND write on Windows, so two events firing at the
+# same instant can tear a record — one log line holding a truncated object
+# spliced into a whole one. Observed once in 1703 lines (2026-09-01). A lock
+# is not worth it in a hook that fires dozens of times per session start and
+# would wedge all logging if a lockdir ever went stale, so the tolerance
+# lives in the READER instead: scripts/instructions-log parses line-at-a-time
+# and drops what will not parse. Keep that reader-side guard if you change
+# this writer.
 
 INPUT=$(cat)
 LOG="$HOME/.claude/logs/instructions-loaded.log"

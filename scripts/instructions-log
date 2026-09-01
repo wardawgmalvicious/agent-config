@@ -50,32 +50,48 @@ require_jq() {
   fi
 }
 
+# Stream a log as one JSON object per line, silently dropping any line that
+# will not parse.
+#
+# The hook appends with `>>`, and MSYS on Windows does not make that write
+# atomic, so two hook invocations firing at the same instant can tear a
+# record: one line ends up holding a truncated object spliced into a whole
+# one. It is rare (1 line in 1703 on 2026-09-01) and unrecoverable after the
+# fact — but a single bad line makes a whole-file `jq` abort with
+# "Invalid escape ..." and, under `set -o pipefail`, takes the entire query
+# down with it. That failure reads like a broken script rather than one bad
+# line, which is exactly how it was mis-diagnosed. Reading line-at-a-time
+# with `fromjson?` confines the damage to the torn record.
+valid_lines() {
+  jq -R -c 'fromjson? // empty' "$1"
+}
+
 case "${1:-}" in
   today)
     require_log "$LOG"
     require_jq
-    grep "\"ts\":\"$(date -I)" "$LOG" | jq .
+    valid_lines "$LOG" | grep "\"ts\":\"$(date -I)" | jq .
     ;;
   reasons)
     require_log "$LOG"
     require_jq
-    jq -r .load_reason "$LOG" | sort | uniq -c | sort -rn
+    valid_lines "$LOG" | jq -r .load_reason | sort | uniq -c | sort -rn
     ;;
   paths)
     require_log "$LOG"
     require_jq
-    grep 'path_glob_match' "$LOG" | jq -r .file_path | sort | uniq -c | sort -rn
+    valid_lines "$LOG" | grep 'path_glob_match' | jq -r .file_path | sort | uniq -c | sort -rn
     ;;
   csv)
     require_log "$LOG"
     require_jq
     echo 'ts,load_reason,memory_type,file_path,cwd,session_id'
-    jq -r '[.ts, .load_reason, .memory_type, .file_path, .cwd, .session_id] | @csv' "$LOG"
+    valid_lines "$LOG" | jq -r '[.ts, .load_reason, .memory_type, .file_path, .cwd, .session_id] | @csv'
     ;;
   skills)
     require_log "$SKILLS_LOG"
     require_jq
-    jq -r .skill "$SKILLS_LOG" | sort | uniq -c | sort -rn
+    valid_lines "$SKILLS_LOG" | jq -r .skill | sort | uniq -c | sort -rn
     ;;
   tail)
     require_log "$LOG"
