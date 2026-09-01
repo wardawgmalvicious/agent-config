@@ -236,6 +236,37 @@ on it.
   narrow a pattern: a backslash separator, a leading `/`, and a bare
   `*.ext` with no `/` (which matches only repo-root files; `**/*.ext`
   matches those *and* nested ones).
+- **Skill invocation and spend fields** — every `SKILL.md` carries
+  `model`, `effort` and `disable-model-invocation` **explicitly**, even
+  where the value is the default. The point is that the flip point for
+  each lever is visible in the file instead of being an absent field.
+  Current policy: the session default is `"effortLevel": "max"` in
+  `claude/settings.json`. DMI is `false` everywhere (it is not used in
+  this repo). `model: inherit` everywhere except `commit` (`sonnet`).
+  `effort` is `max` on the six workflow skills that drive this repo
+  — `code-review`, `drift-audit`, `author-skill`, `learn`,
+  `drift-update`, `drift-handoff` — `high` on `commit`, and left
+  commented on all 37 platform skills, which therefore inherit `max`.
+  Note what that means **today**: with the session already at `max`,
+  only `commit` changes behaviour. The six `max` pins are a *floor*
+  — written down so that tier survives a later drop in the session
+  default, which is the change they were originally made for. Platform skills stay unpinned **on purpose**: they
+  auto-trigger alongside your real work, so an effort pin there governs
+  your Fabric/Power BI turn rather than any discrete skill run. Four
+  things to know before changing one. `model:` is **turn-scoped** — it
+  applies while the skill is active and the session model resumes on the
+  next prompt. `effort:` has **no `inherit` value**; omitting the field
+  *is* the inherit, which is why it is carried as a commented
+  placeholder rather than a written-out default, and an unsupported
+  level silently falls back to the highest supported one at or below it.
+  `disable-model-invocation: true` removes that skill's description from
+  the listing **in every session on this machine** and blocks subagent
+  preloading and scheduled-task firing — so it is a listing-cost change
+  as much as an invocation one. And **`ultracode` is not an effort
+  value**: the docs note it "is not a distinct level and reports as
+  `xhigh`". It is a session orchestration mode with no frontmatter
+  field, so the highest pin available is `max`.
+
 - **Adding a harness** — create `<tool>/` and put every artifact only
   that tool reads inside it. Promote something to the repo root only
   when a second tool actually consumes it. Wire the deployment in a
