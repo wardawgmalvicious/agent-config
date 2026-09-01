@@ -3,7 +3,7 @@ name: code-review
 description: "Review code for correctness, naming conventions, style, error handling, security, and scaling concerns. Use when reviewing code, checking a diff, auditing a function, or asking about code quality. Covers Python, PySpark, SQL, KQL, DAX, and data-engineering patterns."
 allowed-tools: Bash(git diff *) Bash(git status *) Bash(git log *) Read Grep Glob
 model: inherit
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+effort: max
 disable-model-invocation: false
 ---
 

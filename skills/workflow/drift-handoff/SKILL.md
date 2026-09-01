@@ -4,7 +4,7 @@ description: "Turn a completed drift-audit report into handoff briefs on disk. U
 argument-hint: "[source-id]"
 allowed-tools: Read Write Glob Grep
 model: inherit
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+effort: max
 disable-model-invocation: false
 context: inline
 ---
