@@ -12,7 +12,7 @@
   work, it is not consumed by an existing pass.
 - **Corrected 2026-08-31**: this brief was written citing a finding that was
   later retracted (see "One motivating example was wrong", below). The core
-  case survives; one of the three blind spots did not.
+  case survives; one of the original three blind spots did not.
 - **Run in**: a fresh session in `agent-config`. Everything needed is on disk.
 - **Queue**: [README.md](README.md) has the execution order and what
   blocks what. This brief does not carry its own position.
@@ -79,7 +79,7 @@ There is no equivalent field for skills.
 aggregation built on that log alone will understate usage badly. `skillUsage`
 counts both; transcripts distinguish them. Use all three or the numbers lie.
 
-## The three blind spots
+## The four blind spots
 
 1. **Listed but not chosen.** No record exists of skills that were in the
    listing and passed over. This is the single highest-value signal for
@@ -91,9 +91,30 @@ counts both; transcripts distinguish them. Use all three or the numbers lie.
 3. **Fired but ineffective.** No outcome linkage. Approximations are possible
    (did the session continue down the skill's path? was it re-invoked? did the
    user correct immediately after?) — all inferential, none clean.
+4. **Invoked but never logged.** *(added 2026-09-01)* `skills-invoked.log`
+   misses a slash invocation that the harness expands inline instead of
+   routing through the `Skill` tool. Measured: a `/commit` run carried
+   `attributionSkill=commit` on all 22 of its assistant messages in the
+   session transcript and wrote **zero** rows to the log, because the
+   `PostToolUse` matcher `Skill` never fired — there was no `Skill` tool call
+   to match. A comparable `/commit` earlier the same evening (session
+   `ca10585c`) *did* route through the tool — 1 `Skill` tool_use block — and
+   *was* logged. So the same user-visible invocation is recorded or not
+   depending on an expansion path the hook cannot observe, and
+   `skills-invoked.log` counts are a **floor, not a total**.
 
 Blind spot 2 is mechanically solvable today. Blind spot 1 needs a new capture
 point. Blind spot 3 may not be worth chasing.
+
+Blind spot 4 is already solved by a data source this brief did not know about.
+The per-session transcripts at `~/.claude/projects/<project>/<session>.jsonl`
+carry `attributionSkill`, `effort` and `message.model` on **every** assistant
+message — strictly more than the hook can see, with no new capture point
+needed, and they distinguish *which* skill was active per message rather than
+counting one row per invocation. Anything built here should read those instead
+of `skills-invoked.log`, or read both and treat the gap between them as its own
+signal. This also revises the "Data that already exists" section below, which
+was measured before the transcripts were known to carry these fields.
 
 ## Proposed shape — recommendation, not a decision
 
