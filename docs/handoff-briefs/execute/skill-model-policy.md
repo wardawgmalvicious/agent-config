@@ -110,18 +110,50 @@ DMI converts those 8 into "suggest `/commit`" turns, in exchange for ~245
 tokens of listing. That is a real trade in both directions and needs the user's
 call, not a default.
 
-### 3. The unexplained 24% — diagnose before optimizing
+### 3. The unexplained 24% — ANSWERED 2026-08-31
 
-**`workflow-subagent` accounted for 24% of limit-day usage and nobody knows
-what it is.** Hypothesis: agents spawned by the Workflow tool, since no skill
-here sets `context: fork` and the repo's only custom agent is
-`security-reviewer`.
+`workflow-subagent` is the **Workflow tool's fan-out agents**. The hypothesis
+in the original brief was right. Proof, not inference: every such transcript
+sits at
+`~/.claude/projects/<proj>/<session>/subagents/workflows/wf_<id>/agent-<id>.jsonl`
+beside a `.meta.json` reading exactly
+`{"agentType":"workflow-subagent","spawnDepth":1}` — the panel label is that
+field verbatim.
 
-This is the single largest identified block of spend in the brief, and **none
-of the frontmatter edits above touch it.** If workflows are the driver, the fix
-is usage discipline or cheaper workflow-agent models — not skill frontmatter.
-Settle this before assuming the table above is the answer; it may be worth more
-than every other row combined.
+**But it is not a recurring cost, and not the structural driver.** Three runs,
+ever, all on `claude-fable-5`:
+
+| date | workflow | agents | project |
+| --- | --- | --- | --- |
+| 2026-08-03 | `edgebridge-dependency-assessment` | 4 | fabric-acme |
+| 2026-08-28 | `per-tool-restructure-assessment` | 7 | agent-config |
+| 2026-08-28 | `verify-blite-and-codex-migration` | 3 | agent-config |
+
+Across 33 days with recorded usage, workflows appear on **two**. Every other
+day is 0% — including the two heaviest days in the window, 2026-08-29 and
+2026-08-31, which are entirely main-session.
+
+Share, cost-weighted (input 1x, cache-write 1.25x, cache-read 0.1x, output 5x):
+
+- workflow agents as a share of **2026-08-28**: **14.9%**
+- the whole session that ran them, week-to-date through 08-28: **17.2%**
+- workflow agents as a share of the **full week** 08-25..08-31: **2.8%**
+
+None is exactly 24%. The panel's weighting is not published, so treat 24% as
+the same phenomenon measured differently rather than a fourth figure to
+reconcile — the identification does not depend on the arithmetic.
+
+**So the brief's framing was half right.** Correct that no frontmatter edit
+touches this. *Incorrect* that it is "the single largest identified block of
+spend": workflows are a rare spike, and ordinary main-session work is 100% of
+spend on 31 of 33 days. The lever that matters is this brief's *other* stat
+— sessions at >150k context running at **max** effort — which belongs to
+[skill-context-cost.md](skill-context-cost.md), not here.
+
+If a workflow is run again, the cheap fix is a per-agent model in the script
+(`agent(prompt, {model: 'sonnet'})`). The 08-28 run fanned **7 agents over one
+identical scoring prompt** on fable-5, which is the pattern worth pricing
+before repeating.
 
 ### 4. Root `CLAUDE.md` touch-up
 
