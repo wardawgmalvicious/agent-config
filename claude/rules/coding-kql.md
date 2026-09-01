@@ -2,6 +2,11 @@
 paths:
   - "**/*.kql"
   - "**/*.csl"
+  # RTI query surfaces: KQL lives as strings inside these JSON envelopes,
+  # so a *.kql glob alone reaches schema DDL and not one written query.
+  - "**/*.KQLQueryset/RealTimeQueryset.json"
+  - "**/*.KQLDatabase/EmbeddedRealTimeQueryset.json"
+  - "**/*.KQLDashboard/RealTimeDashboard.json"
 ---
 
 # KQL Coding Conventions
