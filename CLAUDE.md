@@ -57,22 +57,36 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 ```
 
 ```powershell
-# Re-link into ~/.claude. Idempotent; repairs stale junctions with no -Force.
-./scripts/link-claude.ps1
+# THIS MACHINE'S DEFAULT — always use this form. Deploys the workflow
+# skills only; fabric and powerbi are PRUNED from ~/.claude/skills.
+# -Force also pushes claude/CLAUDE.md and claude/settings.json, which
+# deploy by copy rather than junction.
+./scripts/link-claude.ps1 -SkillGroups workflow -Force
 
-# Required after editing claude/CLAUDE.md or claude/settings.json — those
-# two are copies, not junctions, and -Force is what pushes them.
-./scripts/link-claude.ps1 -Force
+# Same, when neither copied file has changed.
+./scripts/link-claude.ps1 -SkillGroups workflow
 
 # Partial payload: push only the Fabric skills into a client repo's .claude,
 # without this machine's agents, hooks, or rules.
 ./scripts/link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric
 ```
 
+**Never run the script bare on this machine** — neither
+`./scripts/link-claude.ps1` nor `./scripts/link-claude.ps1 -Force`.
+Omitting `-SkillGroups` deploys *every* group, which re-links the 37
+platform skills and silently undoes the prune. There is no error and no
+output line that reads as wrong: the run reports `Linked` 37 times and
+ends `Done. All links verified.` This happened on 2026-08-31, and the
+only visible symptom was 18 platform skills reappearing in the session's
+skill listing.
+
 `-SkillGroups` **prunes**: a group not listed is removed from the target
 on the next run. Pruning only ever deletes a junction resolving inside
 this repo's `skills/`, so a skill authored directly in the target is
-left alone.
+left alone. The prune is **user scope** — `~/.claude/skills` serves
+every session on this machine, so workflow-only holds in client repos
+too, not just here. Restoring a group is therefore a deliberate act, not
+something to do in passing.
 
 `.github/workflows/pre-commit.yml` runs `pre-commit` on every push and
 PR to `main`, so frontmatter and secrets *are* machine-checked — the
