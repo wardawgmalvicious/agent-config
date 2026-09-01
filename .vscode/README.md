@@ -1,6 +1,6 @@
 # VS Code workspace config
 
-Two files, easy to mix up:
+The two MCP files are easy to mix up:
 
 | File | Role |
 | --- | --- |
@@ -9,13 +9,29 @@ Two files, easy to mix up:
 
 The template sits here rather than in a templates directory because this is
 exactly where it deploys — copy it next to the live file and drop the
-`.template` from the name. Everything else in `.vscode/` is gitignored; these
-two plus this README are explicitly un-ignored.
+`.template` from the name.
 
 The live file is deliberately thin. This repo is markdown, PowerShell, and
 Python — it has no Fabric workspace, so it lists only Microsoft Learn. The
 Fabric endpoints that used to sit here now live in the template, where they
 describe repos that actually have a workspace.
+
+The rest of the directory is ordinary workspace config, live for this repo
+only:
+
+| File | Role |
+| --- | --- |
+| [settings.json](settings.json) | Schema binding for `claude/settings.json`, fixture file associations, markdown link validation. |
+| [tasks.json](tasks.json) | The commands from [CLAUDE.md](../CLAUDE.md#commands), in their safe form — notably `link-claude.ps1` with `-SkillGroups workflow`, never bare. |
+| [extensions.json](extensions.json) | Extension recommendations matched to the file types actually in the repo. |
+
+Everything else in `.vscode/` is gitignored; the six files above are
+explicitly un-ignored in [.gitignore](../.gitignore).
+
+Line endings are **not** configured here — [.gitattributes](../.gitattributes)
+is authoritative at commit time and root [.editorconfig](../.editorconfig)
+covers the editor side, so `files.eol` is deliberately absent from
+[settings.json](settings.json).
 
 ## Why VS Code needs its own file at all
 

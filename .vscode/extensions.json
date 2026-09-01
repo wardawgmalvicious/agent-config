@@ -1,0 +1,16 @@
+{
+    // Matched to what is actually in this repo, not a generic set.
+    "recommendations": [
+        "editorconfig.editorconfig",     // supplies the line endings in ../.editorconfig
+        "redhat.vscode-yaml",            // .pre-commit-config.yaml, 3 workflow .yml
+        "ms-vscode.powershell",          // link-claude.ps1 + the payload .ps1 files
+        "charliermarsh.ruff",            // 6 .py; ruff is already a uv tool here
+        "tamasfe.even-better-toml",      // .gitleaks.toml (SchemaStore-backed)
+        "github.vscode-github-actions"   // .github/workflows/pre-commit.yml
+    ]
+
+    // markdownlint is deliberately absent. On 191 hand-wrapped,
+    // table-heavy documents it warns immediately and there is no CI hook
+    // to make those warnings mean anything. Add it together with a
+    // .markdownlint.json and a pre-commit hook, or not at all.
+}

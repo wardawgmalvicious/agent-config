@@ -1,0 +1,20 @@
+# Editor-side line-ending policy, mirroring .gitattributes.
+#
+# .gitattributes is authoritative at commit time; this file is what stops
+# a NEW file being authored with the wrong endings in the first place.
+# VS Code's files.eol default is "auto" (CRLF on Windows), so without
+# this a new *.sh -- or a new extensionless script under scripts/ --
+# starts life CRLF and fails with "\r: command not found".
+#
+# Read by any EditorConfig-aware editor and by shfmt. .vscode/settings.json
+# deliberately does NOT restate these; see the comment at the top of it.
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+
+# Windows-native scripts: cmd.exe mis-parses LF-only batch files, and CRLF
+# is the safe default for anything a legacy PowerShell host executes.
+[*.{ps1,bat,cmd}]
+end_of_line = crlf

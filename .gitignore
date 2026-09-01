@@ -73,12 +73,18 @@ settings.local.json
 .DS_Store
 Thumbs.db
 desktop.ini
-# .vscode is ignored except the committed workspace MCP config, the
-# VS Code / Copilot MCP template this repo publishes, and their README.
+# .vscode is ignored except the files this repo deliberately shares:
+# the committed workspace MCP config, the VS Code / Copilot MCP template
+# this repo publishes, their README, and the workspace editor config
+# (settings, tasks, extension recommendations). settings.local.json is
+# still caught by the name-based rule above, at any depth.
 /.vscode/*
 !/.vscode/mcp.json
 !/.vscode/mcp.template.json
 !/.vscode/README.md
+!/.vscode/settings.json
+!/.vscode/tasks.json
+!/.vscode/extensions.json
 .idea/
 *.swp
 *~
