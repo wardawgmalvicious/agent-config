@@ -239,17 +239,21 @@ Run all four. Each catches something the others do not.
 uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
 ```
 
-**Re-count the description.** The linter gates at 1,536 and measures
-`description` alone, so it says nothing about the 1,024 house target and
-nothing at all about a long `when_to_use` — which shares the same
-listing truncation point and is silently cut:
+**Re-count the description.** The linter gates `description` at 1,024
+and `when_to_use` at 512 — the two halves of the 1,536 listing
+truncation point — but it reports overflow only after the fact and
+never warns on a near miss:
 
 ```
 uv run --with pyyaml python -c "import sys,yaml; print(len(yaml.safe_load(open(sys.argv[1],encoding='utf-8').read().split('---')[1])['description']))" skills/<group>/<name>/SKILL.md
 ```
 
-Target ≤ 1,024 for portability. Re-count after *any* wording change,
-not once at the end.
+1,024 is the Agent Skills spec cap, and `description` is one of the six
+fields the claude.ai upload path accepts — so that is the field that has
+to stay portable. Re-count after *any* wording change, not once at the
+end. If the skill sets `when_to_use`, count it too against its own 512:
+it is a Claude Code extension the spec does not carry, so spending the
+remainder there costs no portability the skill still had.
 
 **`cat` the whole file after any edit.** YAML frontmatter is a single
 malformed line away from the skill silently not loading, and the Edit
