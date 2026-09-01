@@ -8,9 +8,11 @@
   captured via /learn."*
 - **Kind**: scoping brief for a **new capability** — not yet a skill. The first
   decision (script vs skill vs both) is unmade and is step 1 below.
-- **Status**: open brief. Unlike
-  [skill-listing-field-evidence.md](skill-listing-field-evidence.md), this one
-  is not consumed by an existing pass — it stands alone until built.
+- **Status**: open brief, and it **stands alone** — unlike the context-cost
+  work, it is not consumed by an existing pass.
+- **Corrected 2026-08-31**: this brief was written citing a finding that was
+  later retracted (see "One motivating example was wrong", below). The core
+  case survives; one of the three blind spots did not.
 - **Run in**: a fresh session in `agent-config`. Everything needed is on disk.
 
 ## The gap, stated precisely
@@ -22,9 +24,10 @@ that only fails in the wild:
 
 - A skill whose description never matches real phrasing is indistinguishable,
   from inside the home repo, from a skill that works perfectly.
-- A skill silently dropped from the listing entirely (see the sibling brief —
-  19 of 44 in a live repo) looks identical to one that was listed and simply
-  not needed.
+- A skill that is *withheld* from the listing looks identical to one that was
+  listed and simply not needed. (Withholding is normally by design — see the
+  correction below — but the observational problem is real either way: from
+  inside a session you cannot tell "not offered" from "offered and declined".)
 - A skill that fired but did not change the outcome looks identical to one that
   carried the whole session.
 
@@ -149,10 +152,31 @@ and auditing have different cadences.
   contrast is the regression test.
 - Lint any new skill per root `CLAUDE.md`; `pre-commit run --all-files`.
 
+## One motivating example was wrong
+
+This brief originally cited "a skill silently dropped from the listing
+entirely — 19 of 44 in a live repo" as a blind spot telemetry would catch.
+**That finding was retracted.** Those 19 skills carry `paths:` frontmatter and
+were withheld by design until a matching file entered scope; nothing was
+dropped and no budget was exceeded. See "How this brief's premises were
+corrected" in [skill-context-cost.md](skill-context-cost.md).
+
+What this changes: **truncation is not available as a fixture.** The original
+plan was to use measured drop counts as the telemetry's primary test case, and
+there are none. The other two blind spots — descriptions that never match real
+phrasing, and skills that fire without changing the outcome — are unaffected
+and remain the case for building this.
+
+It also sharpens the requirement. Any telemetry built here must distinguish
+**withheld** (conditional, no matching file), **listed but not chosen**, and
+**chosen** — because conflating the first two is precisely the error that
+produced the retracted finding. A counter that cannot tell them apart will
+reproduce it.
+
 ## Dependencies
 
-Read [skill-listing-field-evidence.md](skill-listing-field-evidence.md) first —
-it supplies the measured baseline, the Skill-tool-vs-slash correction, and the
-drop-order finding this brief's design assumptions rest on. If both briefs are
-executed in one pass, do the listing work first: the truncation numbers are the
-telemetry's primary fixture.
+None blocking. [skill-context-cost.md](skill-context-cost.md) supplies the
+measured listing/activation baseline and the `--debug-file` recipe for reading
+what the model actually received; borrow from it rather than re-measuring. The
+Skill-tool-vs-`skillUsage` distinction documented there is load-bearing for any
+counter built here.
