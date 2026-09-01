@@ -1,0 +1,49 @@
+{
+    // Line endings are NOT set here. .gitattributes is authoritative at
+    // commit time and root .editorconfig supplies the editor side (LF
+    // everywhere, CRLF for *.ps1/*.bat/*.cmd) via the recommended
+    // EditorConfig extension. One rule, one home.
+
+    // claude/settings.json is the user-scope PAYLOAD copy. SchemaStore's
+    // Claude Code Settings schema auto-binds to **/.claude/settings.json,
+    // which covers this repo's own .claude/settings.json but misses the
+    // payload. Bind it explicitly. The schema carries skillOverrides,
+    // skillListingMaxDescChars, effortLevel, permissions and hooks, and
+    // sets additionalProperties:true — so no false errors on new keys.
+    "json.schemas": [
+        {
+            "fileMatch": ["/claude/settings.json"],
+            "url": "https://www.schemastore.org/claude-code-settings.json"
+        }
+    ],
+
+    // Fabric / PBIP test fixtures. Every .platform carries its own
+    // $schema, so this buys real validation rather than just colour.
+    "files.associations": {
+        "**/.platform": "json",
+        "*.pbir": "json",
+        "*.pbip": "json",
+        "*.pbism": "json",
+        "*.upstream": "plaintext"
+    },
+
+    // 191 markdown files wired together by ~192 distinct relative links
+    // plus heading anchors (README.md#tool-support). Off by default;
+    // the one check that catches breakage nothing else in the repo does.
+    "markdown.validate.enabled": true,
+    "markdown.validate.fileLinks.enabled": "warning",
+    "markdown.validate.fragmentLinks.enabled": "warning",
+
+    // Prose here wraps at ~72 columns (skill bodies top out at 70-71).
+    "[markdown]": {
+        "editor.rulers": [72],
+        "editor.wordWrap": "off"
+    }
+
+    // files.trimTrailingWhitespace / files.insertFinalNewline are
+    // deliberately absent. They cannot be scoped by path, only by
+    // language, and tests/ fixture bytes are load-bearing -- the
+    // validation procedure in CLAUDE.md ends by confirming fixtures are
+    // unmodified. Opening and saving one must not mutate it. pre-commit
+    // checks neither, so there is nothing to conform to.
+}

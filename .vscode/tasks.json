@@ -1,0 +1,110 @@
+{
+    "version": "2.0.0",
+
+    // Default shell for tasks here. -NoProfile skips this machine's
+    // two-line profile banner; -NonInteractive matters because several
+    // of these would otherwise sit on a prompt until they time out.
+    "options": {
+        "shell": {
+            "executable": "pwsh.exe",
+            "args": ["-NoProfile", "-NonInteractive", "-Command"]
+        }
+    },
+
+    "tasks": [
+        {
+            // The ONLY form of this command that should be run on this
+            // machine. Running it bare re-links all 37 platform skills
+            // and silently undoes the workflow-only prune -- it reports
+            // "Done. All links verified." either way. Happened
+            // 2026-08-31; see CLAUDE.md. -Force also pushes
+            // claude/CLAUDE.md and claude/settings.json, which deploy by
+            // copy rather than junction.
+            "label": "link-claude (workflow only)",
+            "type": "shell",
+            "command": "./scripts/link-claude.ps1 -SkillGroups workflow -Force",
+            "detail": "Deploy the payload. NEVER run link-claude.ps1 bare.",
+            "problemMatcher": []
+        },
+        {
+            "label": "verify skill prune held",
+            "type": "shell",
+            "command": "Get-ChildItem ~/.claude/skills -Name",
+            "detail": "Should list the seven workflow skills and nothing else.",
+            "problemMatcher": []
+        },
+        {
+            "label": "lint frontmatter (current file)",
+            "type": "shell",
+            "command": "uv run --with pyyaml scripts/lint-frontmatter.py '${file}'",
+            "detail": "Frontmatter check for the SKILL.md or rule in the active editor.",
+            "problemMatcher": {
+                "owner": "frontmatter",
+                // ${file} is absolute; autoDetect also handles the relative
+                // paths the linter prints when invoked by pre-commit.
+                "fileLocation": ["autoDetect", "${workspaceFolder}"],
+                // Linter emits `<path>:<rule>: <message>`, one space after
+                // the rule, and no line number.
+                "pattern": {
+                    "regexp": "^(.+?):([a-z0-9-]+): (.*)$",
+                    "file": 1,
+                    "code": 2,
+                    "message": 3
+                }
+            }
+        },
+        {
+            // No "lint all skills" task: pre-commit covers it, and doing
+            // it directly would need a skills/*/*/SKILL.md glob, which
+            // PowerShell passes through literally to an external command
+            // and therefore fails.
+            "label": "pre-commit (all files)",
+            "type": "shell",
+            "command": "pre-commit run --all-files",
+            "detail": "gitleaks + both frontmatter linters, the way CI runs them.",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "instructions-log",
+            "type": "shell",
+            "command": "scripts/instructions-log ${input:instructionsLogView}",
+            "detail": "Hook observability. Records rule loads and skill INVOCATIONS only -- never conditional (paths:) activation.",
+            // Forward slashes on purpose: valid for CreateProcess and
+            // avoids escaping a Windows path inside JSON.
+            "options": {
+                "shell": {
+                    "executable": "C:/Program Files/Git/bin/bash.exe",
+                    "args": ["-c"]
+                }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "bootstrap pre-commit",
+            "type": "shell",
+            "command": "scripts/bootstrap-pre-commit",
+            "detail": "Fresh clone only: install pre-commit via uv and wire .git/hooks.",
+            "options": {
+                "shell": {
+                    "executable": "C:/Program Files/Git/bin/bash.exe",
+                    "args": ["-c"]
+                }
+            },
+            "problemMatcher": []
+        }
+    ],
+
+    "inputs": [
+        {
+            "id": "instructionsLogView",
+            "type": "pickString",
+            "description": "instructions-log view",
+            "options": ["today", "reasons", "paths", "csv", "skills", "tail"],
+            "default": "today"
+        }
+    ]
+}
