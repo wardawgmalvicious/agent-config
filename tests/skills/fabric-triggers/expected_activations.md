@@ -30,11 +30,11 @@ an apparent one.
 | `SampleES.Eventstream/eventstreamProperties.json` | `fabric-eventstream` | 2,810 |
 | `SampleDash.KQLDashboard/.platform` | `fabric-realtime-dashboard` | 1,839 |
 | `SampleDash.KQLDashboard/RealTimeDashboard.json` | `fabric-realtime-dashboard` | 1,839 |
-| **`SampleNB.Notebook/.platform`** | `fabric-error-handling`, `fabric-spark` | **4,418** |
-| `SampleNB.Notebook/notebook-content.py` | `fabric-error-handling`, `fabric-spark` | 4,418 |
-| `SampleNB.Notebook/notebook-settings.json` | `fabric-error-handling`, `fabric-spark` | 4,418 |
-| `SampleSparkNB.Notebook/.platform` | `fabric-error-handling`, `fabric-spark` | 4,418 |
-| `SampleSparkNB.Notebook/notebook-content.sql` | `fabric-error-handling`, `fabric-spark` | 4,418 |
+| **`SampleNB.Notebook/.platform`** | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | **6,448** |
+| `SampleNB.Notebook/notebook-content.py` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
+| `SampleNB.Notebook/notebook-settings.json` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
+| `SampleSparkNB.Notebook/.platform` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
+| `SampleSparkNB.Notebook/notebook-content.sql` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
 | `SampleVL.VariableLibrary/.platform` | `fabric-variable-library` | 2,693 |
 | `SampleVL.VariableLibrary/settings.json` | `fabric-variable-library` | 2,693 |
 | `SampleVL.VariableLibrary/variables.json` | `fabric-variable-library` | 2,693 |
@@ -115,12 +115,25 @@ call the static check uses. A flat SQL project would still activate. This
 is written down because the opposite was believed for a while and filed as
 a live bug risk; it is not one.
 
-**3. `fabric-spark` and `fabric-error-handling` are inseparable.** Both
-glob `**/*.Notebook/**`, so every Notebook file pulls 4,418 tokens of two
-skills and no path can select one. That is the standing case for
-Workstream C1 in
+**3. Three skills glob `**/*.Notebook/**` and no path can select one.**
+`fabric-spark`, `fabric-error-handling` and — since 2026-09-01 —
+`fabric-spark-monitoring`. That is the standing case for Workstream C1 in
 `docs/handoff-briefs/execute/skill-context-cost.md`, and this fixture is
 the measurement behind it.
+
+The third one was added deliberately, reversing the "probably a bad trade"
+the brief recorded against it. That verdict priced an activation at the
+skill's *body* (~2,030 tokens on every Notebook touch). It is not: a
+`paths:` match emits a `skill_listing` attachment carrying the skill's
+listing entry, and the body loads only if the skill is then invoked. So
+the real trade is 239 description tokens in *every* session against the
+same entry in *Notebook-touching* sessions only — which is the trade the
+whole workstream is built on.
+
+`**/*.Notebook/**` only, though the skill's description also covers
+`sparkJobDefinitions`. Widening it to `**/*.SparkJobDefinition/**` needs
+that item type verified against a real export and a fixture added in the
+same commit; ACME has none, and neither does this set.
 
 **4. A Lakehouse activates a skill on exactly one of its four files.**
 `shortcuts.metadata.json` pulls `fabric-variable-library`, because a

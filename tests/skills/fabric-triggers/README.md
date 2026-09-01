@@ -196,8 +196,9 @@ than the globs.
 ## Cost note
 
 These files are inert until opened. Reading anything under either
-`*.Notebook/` folder pulls ~4,418 tokens of skill bodies — the worst
-activation in this set, and two skills no path can separate.
+`*.Notebook/` folder pulls three skills no path can separate — and if all
+three are invoked, ~6,448 tokens of bodies, the worst in this set.
+Activation itself costs only the three listing entries.
 `SampleSparkNB.Notebook/notebook-content.sql` is dearer still: it adds
 `coding-sparksql` and `coding-tsql` on top. Don't leave a fixture open
 while doing unrelated work.
