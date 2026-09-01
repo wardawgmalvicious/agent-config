@@ -95,14 +95,29 @@ record containing `<command-name>/commit</command-name>` immediately before
 the injected skill body, and an auto-trigger injects the body
 (`Base directory for this skill: ...`) with no such header.
 
-**Two readings remain, and the evidence does not yet separate them.**
-**(A)** `model:` is only honoured on explicit slash invocation. **(B)** those
-two sessions had a session model explicitly pinned via `/model`, which
-outranks a skill's. Both fit all five rows.
+**Reading (B) has since been largely ruled out.** It held that those two
+sessions had a session model explicitly pinned, which outranked the skill's.
+There *is* such a pin — `~/.claude/settings.json` carries
+`"model": "opus[1m]"` — but it is **user scope and therefore constant across
+every row in the table**, including the three slash runs that honoured
+`model: sonnet` anyway. An override in force during the runs that took the
+pin cannot be what stopped the runs that didn't. Neither auto-trigger
+session issued a `/model` command either (`3b303490` issued no slash command
+at all). That leaves **(A)**: `model:` is honoured on explicit slash
+invocation and dropped on model-invocation.
 
-The test is nearly free: from a session with **no** explicit `/model`
-override, make a plain-English commit request and read the model off the
-run. `claude-sonnet-5` means (B); `claude-opus-5` means (A).
+Worth knowing when re-checking this: `model` is **not** part of this repo's
+payload — `claude/settings.json` has never carried the key. Claude Code
+writes it into the deployed copy itself, next to `theme`, `tui` and
+`agentPushNotifEnabled`. So it is live client state that a key-level merge
+preserves, not something a `link-claude.ps1 -Force` run sets or clears.
+
+(A) is still only two auto-triggered runs, so confirm before acting on it:
+make a plain-English commit request — no slash command — and read the model
+off the run. `claude-opus-5` confirms (A); `claude-sonnet-5` overturns it
+and puts the cause back to something not yet identified. The explicit
+session model is now a controlled constant rather than a confound, so the
+result is readable either way.
 
 Worth settling rather than leaving, because it is not really about
 `commit`. Root [`CLAUDE.md`](../../../CLAUDE.md) states the `model:` pin is
