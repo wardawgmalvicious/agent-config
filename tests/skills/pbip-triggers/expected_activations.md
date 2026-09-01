@@ -50,9 +50,41 @@ between them.
 method is wrong. Check this before believing any other row.
 
 **4. `pbir-filters` and `pbir-visual-json` never appear alone on
-`visual.json`.** All three `pbir-*` visual skills co-fire there and can't
-be separated by path — that is the standing case for Workstream C2 in
-`docs/handoff-briefs/execute/skill-context-cost.md`.
+`visual.json`.** All three `pbir-*` visual skills co-fire there and cannot
+be separated by path. That was the standing case for merging them —
+Workstream C2 of the retired `skill-context-cost.md` — and **the merge was
+declined on 2026-09-01.** Do not reopen it on the co-firing alone: the
+co-firing is real, and it is not the argument.
+
+Three things killed it, two of which postdate the brief:
+
+- **The prize is ~700 tokens, not ~9,000.** C2 was scored at the trio's
+  combined *body* — the 9,086 in the `Tokens` column above. An activation
+  injects the listing entry, so the real figure is three descriptions
+  (2,914 chars, ~1,079 tok) against ~379 for one merged entry.
+- **It saves nothing in this repo.** `skillOverrides` in
+  `.claude/settings.json` collapses all three to `name-only`, so an
+  activation here emits three *names*. The ~700 tokens exist only in client
+  repos, which carry no overrides.
+- **Merging is lossy now that `DESCRIPTION_MAX` is 1,024.** One merged
+  description replaces 2,914 chars of trigger text with 1,024 — a 65% cut
+  to the entire trigger mechanism, across three descriptions that barely
+  overlap (literal suffixes, filter types, CF selectors). And since
+  `pbir-filters` also globs `report.json` and `page.json`, the merged skill
+  would fire on **82** files rather than 73, carrying visual-authoring
+  guidance into page- and report-level files that have no visuals in them.
+
+A merge also renames, and the names are load-bearing in more places than
+the brief listed: `skillOverrides`, the per-skill junctions, client-repo
+relinks — *and* roughly a dozen prose cross-references from other skill
+bodies (`pbir-themes`, `pbir-pages`, `pbir-bookmarks`,
+`pbir-report-workflow`, `fabric-gotchas`). None of those error when stale.
+
+Reconsider only if `skillOverrides` is dropped here **and** the three
+descriptions turn out to be genuinely redundant rather than merely
+co-firing. The cheap alternative that keeps the trio intact is
+`when_to_use`, which is near-free on a conditional skill and whose best
+target is exactly this cluster.
 
 **5. Every `.SemanticModel` file carries `fabric-tmdl-api` as well as
 `fabric-tmdl`.** Added 2026-09-01 by Workstream E, which took the skill

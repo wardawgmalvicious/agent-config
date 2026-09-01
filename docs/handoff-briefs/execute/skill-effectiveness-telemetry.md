@@ -181,8 +181,9 @@ This brief originally cited "a skill silently dropped from the listing
 entirely — 19 of 44 in a live repo" as a blind spot telemetry would catch.
 **That finding was retracted.** Those 19 skills carry `paths:` frontmatter and
 were withheld by design until a matching file entered scope; nothing was
-dropped and no budget was exceeded. See "How this brief's premises were
-corrected" in [skill-context-cost.md](skill-context-cost.md).
+dropped and no budget was exceeded. The retraction was recorded in
+`skill-context-cost.md` under "How this brief's premises were corrected";
+that brief was retired 2026-09-01 and is recoverable from git history.
 
 What this changes: **truncation is not available as a fixture.** The original
 plan was to use measured drop counts as the telemetry's primary test case, and
@@ -198,8 +199,19 @@ reproduce it.
 
 ## Dependencies
 
-None blocking. [skill-context-cost.md](skill-context-cost.md) supplies the
-measured listing/activation baseline and the `--debug-file` recipe for reading
-what the model actually received; borrow from it rather than re-measuring. The
-Skill-tool-vs-`skillUsage` distinction documented there is load-bearing for any
-counter built here.
+None blocking. The measured listing/activation baseline lived in
+`skill-context-cost.md`, retired 2026-09-01 — recover it from git history
+with
+`git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
+rather than re-measuring. Two things from it are load-bearing here, and are
+restated so this brief does not depend on that recovery:
+
+- **The `--debug-file` recipe** for reading what the model actually
+  received. It also survives in `tests/skills/pbip-triggers/README.md` and
+  in [activation-test-harness.md](activation-test-harness.md).
+- **The `skillUsage`-vs-Skill-tool distinction.**
+  `scripts/instructions-log skills` counts Skill-tool calls only;
+  `skillUsage` in `~/.claude.json` counts typed `/name` invocations too.
+  **Neither counts conditional activation** — a `paths:`-matched skill is
+  *loaded*, never invoked, so a zero in either says nothing about whether
+  its glob fired. Only the session transcript records that.

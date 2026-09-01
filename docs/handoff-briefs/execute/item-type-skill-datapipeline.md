@@ -39,9 +39,15 @@ activity types, connection references, or deployment.
 **Consequence to weigh**: a skill on the same glob **co-loads with the
 rule**, on every pipeline file. Budget the pair, not the skill alone —
 `coding-expressions.md` is ~1,900 tokens on its own. This is the same
-co-activation arithmetic as C1 in
-[skill-context-cost.md](skill-context-cost.md), and it is the main argument
-*against* the skill.
+co-activation arithmetic as workstream C1 of the retired
+`skill-context-cost.md`, and it is the main argument *against* the skill.
+Note how C1 was resolved: the notebook pair was **not** merged, on the
+finding that permanent co-firing is not evidence that two things are one
+topic (recorded in `tests/skills/fabric-triggers/expected_activations.md`,
+assertion 3). Applied here that cuts the other way — it says a pipeline
+skill and `coding-expressions.md` may legitimately co-load, and the real
+question is whether the skill earns its own listing entry, not whether the
+pair is tidy.
 
 **`fabric-cicd`** and **`fabric-gotchas`** are unconditional and may
 already carry pipeline deployment content. **Grep both before drafting** —
@@ -83,9 +89,11 @@ narrowing needed. Verify with the static check in
 - Add `.schedules` to `SamplePL.DataPipeline/` in the fixture tree **in the
   same commit** as the skill, and update `expected_activations.md` — the
   row currently reads *(none)* and that is the assertion being changed.
-- Body cap: aim under ~3,100 chars-per-token-equivalent (see
-  [skill-context-cost.md](skill-context-cost.md) on why ~2,900 was probably
-  too tight). Long detail goes in `references/`, not `SKILL.md`.
+- Body cap: aim under ~3,100 tokens. The earlier ~2,900 target was
+  abandoned as too tight — three consecutive body refactors landed at
+  2,952 / 2,975 / 3,071 and further cuts removed facts rather than
+  redundancy, so ~2,700–3,100 is the natural floor for a dense platform
+  reference skill. Long detail goes in `references/`, not `SKILL.md`.
 - Lint, `pre-commit run --all-files`, `/commit`.
 
 ## If the answer turns out to be no

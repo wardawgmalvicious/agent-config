@@ -8,9 +8,12 @@
 - **Run in**: a fresh session. The corpus is 44 files and the work is
   editorial, so context fills fast, and a changed `description` is a changed
   *trigger* — the session that writes one cannot judge whether it fires.
-- **Parent**: [skill-context-cost.md](skill-context-cost.md) workstream D.
-  That brief keeps the cost model and the measurements; this one owns
-  adoption. Do not restate D's asymmetry table here — read it there.
+- **Parent**: `skill-context-cost.md` workstream D. That brief was
+  **retired on 2026-09-01** once its last open workstream (C) was declined;
+  recover it from git history with
+  `git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
+  then `git show <sha>^:<path>`. Everything this brief still needs from D is
+  restated in its own budget table below, so it is now self-contained.
 - **Queue**: [README.md](README.md) has the execution order and what blocks
   what. This brief does not carry its own position.
 
@@ -57,10 +60,12 @@ At the ~2.7 chars/token that description text measures at, a full 512-char
 
 | | n | Listing cost of adding `when_to_use` | Consequence |
 | --- | --- | --- | --- |
-| **Conditional** (`paths:`) | 19 | ~0 — withheld from the listing until a matching file is touched | Blanket-eligible. Write one wherever there is something useful to say. |
-| **Unconditional** | 25 | ~190 tokens each, paid in **every session on this machine**. All 25 ≈ **~4,700 tokens** onto a listing with ~100 tokens of headroom | Net-neutral or nothing. Every char added has to come out of that skill's own `description`. |
+| **Conditional** (`paths:`) | 24 | ~0 — withheld from the listing until a matching file is touched | Blanket-eligible. Write one wherever there is something useful to say. |
+| **Unconditional** | 20 | ~190 tokens each, paid in **every session on this machine**. All 20 ≈ **~3,800 tokens** onto a listing with ~100 tokens of headroom | Net-neutral or nothing. Every char added has to come out of that skill's own `description`. |
 
-A blanket pass over the unconditional 25 would overrun the `opus[1m]` budget
+Counts refreshed 2026-09-01 after wave 4 (`24/20`, was `19/25`); the five
+skills E moved are on the cheap side now. A blanket pass over the
+unconditional 20 would still overrun the `opus[1m]` budget
 by roughly half again, and the penalty is not an error — Claude Code shortens
 descriptions starting with the skills you invoke least, so the cost lands as
 *silently weakened triggers on the skills you use rarely*, which is the exact
@@ -107,38 +112,31 @@ legibility and disambiguation without adding a character to the listing.
    glob, be merged, or be removed). Do not write `when_to_use` text for a
    skill that might become conditional or cease to exist.
 
-**Outcome 4 is why the ordering matters.** Workstream E (queue wave 4) moves
-unconditional skills into the conditional column or out of the corpus
-entirely. A skill that gains a `paths:` glob moves from the expensive side of
-the table above to the free side, which can change its answer from MOVE to
-ADD. Running the unconditional half of this brief *before* wave 4 means
-writing text that wave 4 may invalidate.
+**Outcome 4 was why the ordering mattered — and wave 4 is now closed.**
+Both of its workstreams landed on 2026-09-01, and the corpus they were
+going to churn is settled:
 
-**Recommendation: run the whole brief after wave 4, not half of it.**
+- **E is done.** Five unconditional skills gained a `paths:` glob
+  (`fabric-copy-job`, `fabric-mirroring`, `fabric-tmdl-api`,
+  `fabric-spark-monitoring`, `fabric-warehouse-monitoring`), moving them
+  from the expensive column to the free one. The split is now **24
+  conditional / 20 unconditional**, not 19/25. No skill was demoted to
+  `docs/` and none was removed, so DEFER has no remaining occupants from E.
+- **C is declined.** No merges. `fabric-spark` + `fabric-error-handling`
+  (C1) and the `pbir-*` trio (C2) all keep their names and stay separate.
+  The reasoning is recorded in
+  [`../../../tests/skills/pbip-triggers/expected_activations.md`](../../../tests/skills/pbip-triggers/expected_activations.md)
+  (assertion 4) and its `fabric-triggers` sibling (assertion 3).
 
-An earlier draft of this brief said to run the 19 conditional skills
-immediately, on the grounds that only the unconditional 25 are affected by
-workstream E. That was wrong, and the reason is workstream **C**, not E.
-C's merge candidates are **conditional** skills — `fabric-spark` +
-`fabric-error-handling` (C1) and the `pbir-visual-json` /
-`pbir-conditional-formatting` / `pbir-filters` trio (C2) — so five of the 19
-are candidates for being renamed or merged out of existence.
+**This brief is therefore unblocked, in full.** Run both halves.
 
-The `pbir-*` trio is the sharp case: it is exactly where `when_to_use`
-disambiguation looks most valuable, and C2's proposal is to merge all three
-into **one** skill, which would make that disambiguation moot rather than
-merely rewritten. Writing three careful `when_to_use` blocks and then
-merging their skills is the worst available order.
-
-So both halves wait for wave 4:
-
-- **C** settles which conditional skills still exist and under what names.
-- **E** settles which unconditional skills survive, and which have gained a
-  `paths:` glob — moving them from the expensive column to the free one and
-  potentially changing a MOVE into an ADD.
-
-Wave 4 also *enlarges* the cheap set, so running after it means one pass over
-a settled corpus instead of two passes over a moving one.
+C's decline also *sharpens* the case for this brief rather than removing
+it. The `pbir-*` trio was the sharp case all along — three conditional
+skills that co-fire on every `visual.json` and cannot be separated by
+path. C2 would have collapsed the disambiguation problem by collapsing the
+skills; declining C2 leaves it standing, and `when_to_use` is now the only
+lever aimed at it. All three are conditional, so the field is near-free on
+them. **Start there.**
 
 ## What counts as evidence for a trigger miss
 
@@ -157,8 +155,9 @@ Absent any of these, the honest answer for a working skill is SKIP.
 
 ## Procedure
 
-1. Read D's asymmetry table and this brief's budget table. Confirm the
-   conditional/unconditional split is still 19/25 — wave 4 changes it.
+1. Read this brief's budget table. The split is **24 conditional / 20
+   unconditional** as of 2026-09-01 (wave 4 moved five); re-derive it
+   rather than trusting the number if any `paths:` glob has changed since.
 2. Take the conditional 19 first. For each: read the `description`, decide
    ADD or SKIP, and draft ≤ 512 chars that adds trigger surface rather than
    restating the description.
@@ -166,7 +165,7 @@ Absent any of these, the honest answer for a working skill is SKIP.
    `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`.
    `cat` the file after any edit — an edit landing inside the frontmatter can
    leave YAML that still parses, into the wrong shape.
-4. For the unconditional 25 (only after wave 4): decide MOVE, SKIP or DEFER.
+4. For the unconditional 20: decide MOVE, SKIP or DEFER.
    A MOVE must be char-counted **both** before and after; net change ≤ 0.
 5. Record the decision for all 44 in a table in this brief before deleting
    it, and carry that table into the commit message. The skipped set is the
