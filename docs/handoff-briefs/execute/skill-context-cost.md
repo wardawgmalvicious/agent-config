@@ -11,11 +11,13 @@
   skills) were added on the update and have not been started.
 - **Run in**: a fresh session. **This brief is self-contained** — it is the only
   document needed for the context-cost work.
-- **Sibling brief**: [skill-model-policy.md](skill-model-policy.md) covers
-  `disable-model-invocation`, model pins, and per-session *spend*. Different
-  subject; no overlap. One shared edge: DMI removes a skill's description from
-  the listing, so it is also a listing-cost lever — if that brief applies DMI to
-  a skill, re-measure here.
+- **Sibling brief**: `skill-model-policy.md` covered
+  `disable-model-invocation`, model pins, and per-session *spend*. **Retired
+  2026-09-01**; recover it from git history by the recipe below. Its one edge on
+  this brief is now settled rather than pending: DMI removes a skill's
+  description from the listing, so it *would* be a listing-cost lever, but it
+  was declined repo-wide and is `false` on all 44 skills. Nothing to re-measure
+  here unless that decision is reopened.
 - **Queue**: [README.md](README.md) has the execution order and what
   blocks what. This brief does not carry its own position.
 
@@ -29,7 +31,8 @@ This brief absorbed two predecessors on 2026-08-31, both now deleted per the
   "How this brief's premises were corrected".
 - The listing-cost half of `skill-optimization-pass.md` (its steps 2, 5 and 6),
   now Workstreams D and E. What remained of that brief became
-  [skill-model-policy.md](skill-model-policy.md).
+  `skill-model-policy.md`, which was itself executed and retired on
+  2026-09-01 — its two unfinished items live on as wave 8 of the queue.
 
 Recover either in full from git history:
 
