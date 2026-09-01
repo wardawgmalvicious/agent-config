@@ -30,9 +30,22 @@ NAME_CHAR_RE = re.compile(r"[a-z0-9-]")
 RESERVED_WORDS = ("anthropic", "claude")
 NAME_MAX = 64
 # Claude Code truncates the combined `description` + `when_to_use` text at
-# 1,536 chars in the skill listing. Gate at the truncation point so a
-# description that would silently lose its tail fails the lint instead.
-DESCRIPTION_MAX = 1536
+# 1,536 chars in the skill listing (configurable via
+# `skillListingMaxDescChars`). Truncation is silent, so the lint has to gate
+# at or below it.
+#
+# The 1,536 is split into a fixed budget per field rather than left as one
+# shared pool, so that an edit to one field can never overflow the other and
+# a failure names the field to cut. `description` keeps the 1,024 Agent
+# Skills spec cap — it is one of the six fields the claude.ai upload path
+# accepts, so it is the half that has to stay portable. `when_to_use` is a
+# Claude Code extension the spec does not carry, so its 512 is the
+# Claude-Code-only remainder. 1,024 + 512 = 1,536 exactly, which makes
+# LISTING_MAX an assertion rather than a third constraint: it can only fire
+# if these constants are edited apart.
+DESCRIPTION_MAX = 1024
+WHEN_TO_USE_MAX = 512
+LISTING_MAX = 1536
 BODY_MAX_LINES = 500
 FRONTMATTER_SCAN_LINES = 50
 BOM = codecs.BOM_UTF8
@@ -179,6 +192,20 @@ def lint_file(path: Path) -> list[str]:
             fail("description-type", f"`description` must be a string, got {type(desc).__name__}.")
         elif len(desc) > DESCRIPTION_MAX:
             fail("description-length", f"`description` length {len(desc)} exceeds {DESCRIPTION_MAX}.")
+
+        when = fm.get("when_to_use")
+        if when is not None:
+            if not isinstance(when, str):
+                fail("when-to-use-type", f"`when_to_use` must be a string, got {type(when).__name__}.")
+            else:
+                if len(when) > WHEN_TO_USE_MAX:
+                    fail("when-to-use-length", f"`when_to_use` length {len(when)} exceeds {WHEN_TO_USE_MAX}.")
+                # Claude Code appends `when_to_use` to `description` in the
+                # listing and truncates the pair. Unreachable while the two
+                # field caps sum to LISTING_MAX; it exists so that editing
+                # either constant upward cannot silently reopen the gap.
+                if isinstance(desc, str) and len(desc) + len(when) > LISTING_MAX:
+                    fail("listing-length", f"`description` + `when_to_use` length {len(desc) + len(when)} exceeds the {LISTING_MAX} listing truncation point.")
 
     # A rule with no `paths` never loads, which is the whole point of a rule.
     if rule_mode and "paths" not in fm:
