@@ -5,8 +5,8 @@ Minimal but structurally real Fabric Git-synced item folders, used to test
 enters session scope.
 
 Companion to [`../pbip-triggers/`](../pbip-triggers/), which covers the
-Power BI half. Same contract, same method, disjoint skills: 9 there, 13
-here, and that is all 22 conditional skills in the payload.
+Power BI half. Same contract, same method, disjoint skills: 10 there, 13
+here, and that is all 23 conditional skills in the payload.
 
 ## Why this exists
 
