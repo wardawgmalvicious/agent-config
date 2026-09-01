@@ -26,6 +26,13 @@ happen only when explicitly requested, never as follow-through.
 - **One logical unit per commit.** A rename, a new feature, and a
   docs catch-up are three commits even when they touch the same file.
   Test: could each commit's subject line be written without "and"?
+- **Review grouping is not a commit boundary.** Parts approved
+  together in one review are still separate commits when each stands
+  on its own in history — independently revertible, citable, worth
+  landing alone. Bundle only when the parts are mutually dependent
+  for meaning: a claim and the caveat qualifying it, a rename and its
+  call sites. Tiebreak for a docs batch — which shape would you
+  rather read in `git log` a year from now?
 - **Every commit must be self-consistent.** No commit may reference a
   name, file, or skill that doesn't exist yet at that point in
   history, and none may leave the repo in a broken intermediate state.
