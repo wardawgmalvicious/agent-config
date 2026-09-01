@@ -12,19 +12,49 @@ one that fails silently.
 
 Before this fixture, the Power BI half of the payload — the `pbip-` and
 `pbir-` skills — could only be trigger-tested against a real client repo.
-Worse, **there is no observability for conditional skill
-activation on this machine**, so "it didn't seem to fire" was not a
-usable signal:
+And **no log on this machine sees a `paths:` activation**, so "it didn't
+seem to fire" is not a usable signal:
 
-| Log | Records | Sees `paths:` activation? |
+| Source | Records | Sees `paths:` activation? |
 | --- | --- | --- |
 | `~/.claude/logs/instructions-loaded.log` | `CLAUDE.md`, `AGENTS.md`, `.claude/rules/coding-*.md` | **No** — its 188 `path_glob_match` entries are all *rules* |
 | `~/.claude/logs/skills-invoked.log` | Skill-*tool* calls | **No** — a path-triggered skill is loaded, never invoked |
 | `skillUsage` in `~/.claude.json` | slash + Skill-tool invocations | **No** — same reason |
+| `claude --debug-file` output | startup skill discovery | **No** — its `N conditional skills stored` and `Sending N skills via attachment (initial)` lines are both written before any Read |
+| **the session transcript `.jsonl`** | every attachment | **Yes** — see below |
 
-All three count *invocation*. Conditional skills are *loaded*. A zero in
-any of them says nothing about whether a glob matched. Verify by
-observing what is in context, never by reading a counter.
+The first four count *invocation* or *startup*. Conditional skills are
+*loaded*, mid-session. A zero in any of them says nothing about whether a
+glob matched.
+
+### The transcript does record it
+
+Corrected 2026-09-01 on 2.1.252; this file previously said nothing
+recorded activation. A match appends one JSON line to
+`~/.claude/projects/<project>/<session-id>.jsonl` with `type` of
+`attachment`, whose `attachment` object carries:
+
+- `type` — `skill_listing`
+- `isInitial` — **`false`** (this is the whole assertion)
+- `names` — e.g. `["pbir-conditional-formatting", "pbir-filters", "pbir-visual-json"]`
+- `content` — the listing lines, e.g. `"- pbir-filters"`
+
+The `isInitial: true` record is the startup listing and is present in
+every session regardless of what was read, so filter it out.
+
+Two things follow. This is a machine-readable assertion — a cold
+`claude -p "Read <fixture> and reply ok"` plus a grep of the resulting
+transcript tests a row of the table below without a human reading
+context. And what a match injects is the skill's **listing entry, not its
+body**: `content` above is three lines of names. Bodies load on
+invocation only, so the token figures in `expected_activations.md` are
+*body* weights for the case where the skill is then invoked — they are
+not the cost of the match.
+
+Self-report is not a substitute. Asking the print session which skills it
+could see returned different answers across otherwise identical runs, and
+once omitted an unconditional skill that was certainly present. Read the
+transcript.
 
 ## File layout
 

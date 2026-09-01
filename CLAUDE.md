@@ -362,14 +362,30 @@ none of the fixtures above test. That contract belongs to
 skills and 10, disjoint, which is all 19 conditional skills in the
 payload. Assertions live in each set's `expected_activations.md`.
 
-**No log on this machine records conditional activation.**
-`instructions-loaded.log` sees rules only; `skills-invoked.log` and
-`skillUsage` count *invocations*, and a path-triggered skill is
-*loaded*, never invoked. A zero in any of them says nothing about
-whether a glob matched — verify by observing what is in context. The
-cheap regression is the static glob check in either trigger README,
-which needs no session at all; a cold session only proves the harness
-agrees with the globs.
+**No *log* records conditional activation, but the session transcript
+does.** `instructions-loaded.log` sees rules only; `skills-invoked.log`
+and `skillUsage` count *invocations*, and a path-triggered skill is
+*loaded*, never invoked, so a zero in any of them says nothing about
+whether a glob matched. The transcript is the exception, and it is
+authoritative: a match appends an `{"type":"attachment"}` record whose
+`attachment.type` is `skill_listing`, with `isInitial` **false** and
+`names` naming the skills, to
+`~/.claude/projects/<project>/<session-id>.jsonl`. The `isInitial: true`
+record is the startup listing and says nothing about any file. Confirmed
+2026-09-01 on 2.1.252.
+
+**`--debug-file` cannot see it**, which is probably how the older
+"no observability" claim formed. Its `N conditional skills stored` and
+`Sending N skills via attachment (initial)` lines are both emitted before
+any Read runs, so neither can show a file-triggered activation.
+
+What a match injects is the skill's **listing entry, not its body** — the
+body loads only on invocation. Cost models that price an activation at
+body size are wrong by an order of magnitude.
+
+The cheap regression is still the static glob check in either trigger
+README, which needs no session at all; a cold session only proves the
+harness agrees with the globs.
 
 ## Line endings
 

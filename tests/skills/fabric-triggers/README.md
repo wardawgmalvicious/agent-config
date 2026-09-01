@@ -12,12 +12,14 @@ here, and that is all 23 conditional skills in the payload.
 
 Every other fixture set here tests what a skill *does once invoked*. These
 two test whether it fires at all, which is a different contract and the one
-that fails silently. **There is no observability for conditional skill
-activation on this machine** — `instructions-loaded.log` records only
-rules, and `skills-invoked.log` and `skillUsage` count *invocations*, while
-a path-triggered skill is *loaded* and never invoked. A zero in any of them
-says nothing. See [`../pbip-triggers/README.md`](../pbip-triggers/README.md)
-for the full table.
+that fails silently. **No log on this machine sees a `paths:`
+activation** — `instructions-loaded.log` records only rules, and
+`skills-invoked.log` and `skillUsage` count *invocations*, while a
+path-triggered skill is *loaded* and never invoked. A zero in any of them
+says nothing. The **session transcript** does record it, as a
+`skill_listing` attachment with `isInitial: false`; see
+[`../pbip-triggers/README.md`](../pbip-triggers/README.md) for the full
+table and the exact record.
 
 This set also closes the one assertion `pbip-triggers` could not: that
 `.platform` in a non-PBIP item type does **not** pull
@@ -169,25 +171,26 @@ that load `fabric-git-serialization`.
 ### Real path — does the harness agree?
 
 The static check tests the globs. It does **not** test that Claude Code
-actually loads on a match. For that, in a fresh session, read one fixture
-file and then ask which skills are available.
-
-Read the listing carefully: it normally shows **unconditional skills
-only**. A conditional skill appearing is the positive signal; its absence
-in a session where nothing matched is correct, not a failure.
-
-For a machine-readable capture:
+actually loads on a match. For that, run a cold print session and read
+its **transcript** — not its debug log, which cannot see an activation,
+and not the session's own account of itself, which is unreliable
+(measured 2026-09-01: self-report varied across identical runs and once
+omitted an unconditional skill that was certainly present):
 
 ```bash
-claude -p "Read <fixture path> and reply ok" --model opus[1m] \
-  --debug-file /tmp/trig.log
-grep -iE "conditional|unique skills|via attachment|<skill-name>" /tmp/trig.log
+claude -p "Read <fixture path> and reply ok" --model opus[1m]
+# newest transcript for that cwd, under ~/.claude/projects/<project-slug>/
+grep -o '"type":"skill_listing"[^}]*' <session-id>.jsonl
 ```
 
-Grep for the **skill name**, not only `via attachment`. The
-`Sending N skills via attachment (initial)` line is emitted *before* the
-Read runs, so it cannot show a file-triggered activation and reading it as
-a negative result is a mistake.
+Every activation is one JSON line whose `attachment.type` is
+`skill_listing` and whose **`isInitial` is `false`**; its `names` array is
+the assertion. Discard the `isInitial: true` record — that is the startup
+listing, present in every session whatever you read. Reading it as a
+result is the mistake this note exists to prevent, and it is the same
+mistake as grepping `Sending N skills via attachment (initial)` in the
+debug log, which is emitted before any Read and so can never show an
+activation.
 
 Always run `control/notes.md` as well. It matches nothing, so if a
 conditional skill shows up there, the observation method is broken rather
