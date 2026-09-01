@@ -4,6 +4,9 @@ description: Use when creating, editing, or wiring Power BI PBIR bookmarks in Re
 paths:
   - "**/bookmarks/bookmarks.json"
   - "**/bookmarks/*.bookmark.json"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR Bookmarks Reference

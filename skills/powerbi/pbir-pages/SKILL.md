@@ -4,6 +4,9 @@ description: Use when authoring or editing page.json / pages.json inside a Power
 paths:
   - "**/pages/**/page.json"
   - "**/pages/pages.json"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR Page JSON Reference

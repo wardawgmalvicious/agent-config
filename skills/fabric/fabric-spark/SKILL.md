@@ -3,6 +3,9 @@ name: fabric-spark
 description: "Use for PySpark / Spark in Microsoft Fabric notebooks. Covers the no-external-HTTP constraint (land data in Files/ first), abfss:// URI format for OneLake (GUIDs not names), `notebookutils.runtime.context` for identity lookups vs `spark.conf.*` for session tuning, mssparkutils, lakehouse `enableSchemas` immutability and cross-lakehouse 3-part names, table maintenance (OPTIMIZE/VACUUM/V-Order) impact on SQL Endpoint, Delta Lake default, REST notebook upload quirks (bare-string source `400 exceptionCulprit:1`, `metadata.dependencies.lakehouse` for default-lakehouse binding, 411 on empty-body getDefinition, `/result` LRO suffix, `?updateMetadata=true` requires `.platform`), notebook-execution gotchas (`defaultLakehouse` needs id+name, never retry POST), and in-notebook auto-restart via `%%configure retriableOptions { enabled, maxAttempt }` (April 2026, for pipeline-driven runs)."
 paths:
   - "**/*.Notebook/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Spark / PySpark in Fabric

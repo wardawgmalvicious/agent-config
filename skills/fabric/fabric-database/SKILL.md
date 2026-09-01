@@ -3,6 +3,9 @@ name: fabric-database
 description: "Use when working with Fabric SQL Database — the Azure SQL Database hosted inside a Fabric workspace. Key point: this is a DIFFERENT engine from Fabric Warehouse and does NOT share its restrictions. nvarchar/datetime/money/triggers/MERGE/ALTER COLUMN/recursive CTEs/FOR XML/temporal tables/full-text search all work. Entra ID auth only (no SQL auth), token audience `database.windows.net`, tables auto-replicate to OneLake as Delta, standard .sqlproj format."
 paths:
   - "**/*.SQLDatabase/**/*.sql"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric SQL Database

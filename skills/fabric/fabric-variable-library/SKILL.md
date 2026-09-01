@@ -3,6 +3,9 @@ name: fabric-variable-library
 description: "Use for Microsoft Fabric Variable Library — config-as-code for parameterizing notebooks and pipelines across environments. Covers definition parts (variables.json, settings.json, valueSets/<name>.json — no `format` field, omit it), variable types (String, Boolean, Number, Integer, DateTime, ItemReference), notebook consumption via `notebookutils.variableLibrary.getLibrary('Lib').<var>` dot notation (NOT `.get('lib','var')`) or the `get(\"$(/**/Lib/Var)\")` reference-path form, runtime limits (same-workspace only, no SPN, active value set), the ItemReference kernel-shape trap (dict-like; `.value()` AttributeErrors), Git-sync `InvalidContent (ValueMismatch)` (stale override name or empty value), the blank-parameter + lazy-resolution pattern, the `bool('false')` → True trap, pipeline integration via the `libraryVariables` block, the type-name mapping (Boolean→Bool, Integer→Int, Number→Double, DateTime/ItemReference→String), Expression-object wrapping, `valueSetsOrder`, and the runtime-ID rule for ItemReference."
 paths:
   - "**/*.VariableLibrary/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric Variable Library

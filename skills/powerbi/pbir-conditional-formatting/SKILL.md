@@ -4,6 +4,9 @@ description: Use when adding conditional formatting to a Power BI visual — per
 paths:
   - "**/visuals/**/visual.json"
   - "**/definition/reportExtensions.json"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR Conditional Formatting Reference

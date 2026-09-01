@@ -12,6 +12,9 @@ description: >-
   report", "redesign report", "create design brief", "Power BI report design archetype".
 metadata:
   version: 0.1.0
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Power BI Report Design Skill

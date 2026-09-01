@@ -1,6 +1,9 @@
 ---
 name: fabric-rest-api
 description: "Use for Microsoft Fabric REST API patterns: listing and paginating workspaces/items with continuationToken/continuationUri, calling /v1/workspaces/{wsId}/items, handling long-running operations (202 Accepted, Location header, polling /v1/operations/{id}, Retry-After, /result), the runtime item ID vs .platform logicalId distinction (PowerBIEntityNotFound root cause), the 201-or-202 create pattern, jobType values for /jobs/instances (RunNotebook, Pipeline, SparkJob, Refresh — NOT DefaultJob), the `definition` envelope and `?updateMetadata=true` `.platform` flag, job scheduling (Daily/Weekly/Monthly), 429 rate limiting with Retry-After, capacity assignment, and the GA `sensitivityLabel` field on List/Get/Update Item responses (GUID only, not settable via PATCH)."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric REST API patterns

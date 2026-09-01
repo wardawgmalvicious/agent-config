@@ -1,6 +1,9 @@
 ---
 name: pbir-report-workflow
 description: Use when scaffolding or building a new Power BI report end-to-end from a published semantic model using the pbir CLI. Covers the 10-step workflow — KPI / filter / granularity requirements, model field discovery via pbir model, pbir new report scaffold, renaming the default Page 1 instead of adding a new one, 3-30-300 visual hierarchy for three viewing distances (glance / scan / investigate), layout math with margin/gap constants (always inspect the scaffolded page first), row-by-row visual placement with explicit coordinates, explicit sort after bind, report vs page filters, extension-measure conditional formatting with theme tokens like good/bad, time-granularity inference from the active date filter, pbir validate + publish, then service-side visual verification — render the published report to PNG via the Power BI exportToFile REST API and review the images (no Power BI Desktop needed). Invoke when user says 'build a report', 'scaffold a dashboard', or 'lay out a KPI page'.
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR Report Workflow

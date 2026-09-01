@@ -3,6 +3,9 @@ name: fabric-realtime-dashboard
 description: "Use for Microsoft Fabric Real-Time Dashboards (KQLDashboard item) — authoring or editing RealTimeDashboard.json by hand or via Git: file anatomy (queries[] holds all KQL text; tiles reference it by queryRef.queryId; baseQueries are {id, variableName, queryId} wired through usedVariables), load-time validation (every queryId referenced exactly once, RFC-4122 UUIDs, identity preservation — changing ids = delete+recreate on sync, misleading 'baseQueryId' error = malformed queryId), the 24-column tile grid, visual types (card, multistat, bar, column, table, map, kpi) and visualOptions, the kpi gauge's static-only min/max/reference lines, autoRefresh intervals, display-edge formatting in KQL (no per-tile number formats — emit currency/percent as strings), the live JSON Schema at dataexplorer.azure.com/static/d/schema/{v}/dashboard.json, and the missing image-export REST API. Invoke on mentions of Real-Time Dashboard, RTDB, KQL dashboard, dashboard tiles/base queries, or RealTimeDashboard.json."
 paths:
   - "**/*.KQLDashboard/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric Real-Time Dashboard (KQLDashboard)

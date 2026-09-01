@@ -3,6 +3,9 @@ name: fabric-eventhouse
 description: "Use for Microsoft Fabric Eventhouse / KQL Database. Covers connection (cluster URI via `kqlDatabases` REST, kusto.kusto.windows.net audience, az rest temp-file for `|` escaping), authoring (`.create-merge` for safe schema evolution, ingestion inline/set-or-append/from-storage `;impersonate`, streaming policy, CSV/JSON mappings, retention/caching/partitioning/merge policies, materialized views + update policies, external tables), OneLake-availability-ON constraints (add/delete column ✅ April 2026+; type/rename/RLS/deletes need availability off), per-KQL-database remote MCP server (http, read/query auth, not in global MCP template), 4-role permissions (viewer/user/ingestor/admin), KQL query patterns (time-filter-first, has vs contains, materialize), string-matching speed table, KQL graph operators (`make-graph`/`graph-match`/`graph()` snapshots, openCypher — in-engine KQL graph, NOT the GraphModel item; see fabric-graph), and Fabric gotchas (`;impersonate`, MV stuck at 0%, dynamic vs string, == case-sensitive)."
 paths:
   - "**/*.Eventhouse/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric Eventhouse / KQL Database

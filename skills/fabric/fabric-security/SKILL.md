@@ -1,6 +1,9 @@
 ---
 name: fabric-security
 description: "Use for the Fabric security/permission model. Covers the layers (workspace roles Admin/Member/Contributor/Viewer, item-level Read/ReadData/ReadAll, OneLake security data access roles, SQL GRANT/DENY/REVOKE), Admin/Member/Contributor bypass of RLS/CLS/DDM, least-privilege pattern (Viewer + SQL GRANT), ReadData vs ReadAll distinction (SQL vs Spark/OneLake), the mode-dependent RLS/CLS enforcement across engines (OneLake security GA May 2026 enforces in Spark/Lakehouse/Direct-Lake-on-OneLake and SQL endpoints in user's-identity mode; the old Spark/OneLake bypass survives only for SQL-defined RLS and delegated-identity-mode endpoints), auto-create of users on GRANT (no CREATE USER), and the 40-warehouses-per-workspace token-size limit."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Security model

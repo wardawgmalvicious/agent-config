@@ -3,6 +3,9 @@ name: fabric-graph
 description: "Use for Microsoft Fabric Graph (the GraphModel item, GA June 2026) — a labeled property graph modeled over OneLake Delta tables and queried with GQL (ISO/IEC 39075), distinct from openCypher/Cypher and from the KQL graph operators in Eventhouse. Covers the GraphModel REST path and GQL Query API (`POST /v1/workspaces/{ws}/GraphModels/{id}/executeQuery?preview=true` — app errors return HTTP 200 with GQL status codes), GQL query syntax and graph-type DDL (`(:Label => {prop :: TYPE NOT NULL})`, `CONSTRAINT ... REQUIRE (n.id) IS KEY`, `=>` inheritance, `ABSTRACT`, `+=`, `<:` refs), the item-definition JSON (dataSources / graphDefinition nodeTables+edgeTables / graphType / stylingConfiguration), save-triggers-ingest refresh, and gotchas (GQL is read-only — no DML, load via data management; no schema evolution — reingest; edges have exactly one label; no DROP GRAPH in GQL; NL2GQL still preview). Use whenever a user mentions Fabric graph models, GQL, property graphs over OneLake, or GraphModel items."
 paths:
   - "**/*.GraphModel/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Microsoft Fabric Graph (GraphModel item)

@@ -1,6 +1,9 @@
 ---
 name: fabric-cli
 description: "Use for the Fabric CLI `fab` (v1.5 GA March 2026, `pip install ms-fabric-cli`, Python 3.10–3.13, pre-installed in Fabric Notebooks) — filesystem-style CLI over Fabric + Power BI REST. Covers path syntax (Workspace.Workspace/Item.ItemType, .ItemType suffix mandatory, hidden roots .capacities/.connections/.domains/.gateways), auth reuse from `az login`, navigation (ls/cd/pwd/exists/get/desc/find), item CRUD (mkdir/set/rm/cp/mv/ln/export/import), ACLs, capacity/domain assign, labels, jobs (incl. semantic-model refresh + dataflow), table maintenance, shortcuts via `fab ln`, `fab deploy --config <yaml>` for one-command workspace CI/CD on top of fabric-cicd (v1.5+), `fab api` REST passthrough (-A powerbi/storage/azure), deployment pipelines, report rebind via `fab set semanticModelId`, DuckDB-on-OneLake, executing DAX via fab api, and common gotchas (InvalidPath, GUID vs friendly names for schema tables, -f for non-interactive)."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric CLI (`fab`)

@@ -3,6 +3,9 @@ name: fabric-semantic-model-ai-instructions
 description: "Use when configuring AI instructions on a Power BI semantic model — the 10,000-character blob attached via `Prep data for AI` → `Add AI instructions` in Desktop or the service. Applies everywhere Copilot uses the model (reports, Q&A, Copilot pane). Covers what belongs in the blob (business context, terminology, date rules, default tables/measures, relationship navigation, hard rules, disambiguation) vs. what does NOT (per-column synonyms, descriptions, format strings, persona/tone, Q&A pairs). Includes prompt-engineering patterns, the 8,000-char target to leave iteration headroom, limitations (no deterministic enforcement, not visible to users, no per-persona scoping)."
 paths:
   - "**/*.SemanticModel/definition/cultures/*.tmdl"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Configuring Power BI Semantic Model AI Instructions

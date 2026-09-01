@@ -1,6 +1,9 @@
 ---
 name: pbir-cli
 description: Use when running the pbir CLI (install via uv tool install pbir-cli) to inspect or edit local Power BI PBIR reports. Covers path syntax (Report.Report/Page.Page/Visual.Visual with required type suffixes, glob patterns, property dot-notation), verb noun groups — report / page / visual / filter / bookmark / theme / dax / fields / schema / profile / annotation / model — plus discovery verbs (ls / tree / find / cat / get / schema describe) that should run before any mutation, property get/set with glob bulk edits requiring -f, validation and publish flows, download/publish to Fabric workspaces, and batch runs. Detailed per-command flags and arguments live in references/REFERENCE.md. Invoke whenever the user mentions pbir <verb>, pbir-cli, pbir set/get/ls/add/new/rm/validate/publish, or any specific pbir subcommand.
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## pbir CLI — Verb Index

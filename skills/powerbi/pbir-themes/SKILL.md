@@ -5,6 +5,9 @@ paths:
   - "**/StaticResources/**/*.json"
   - "**/BaseThemes/*.json"
   - "**/RegisteredResources/*.json"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 ## PBIR Theme Reference

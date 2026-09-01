@@ -1,6 +1,9 @@
 ---
 name: fabric-auth
 description: "Use when authenticating to Microsoft Fabric APIs — getting 401 Unauthorized errors, choosing token audience/scope for Fabric REST, Power BI REST, OneLake, Warehouse/SQL, KQL, XMLA, or Azure ARM, or running `az login` / `az account get-access-token` / `az rest` for Fabric. Covers the full token-audience table, the OneLake-only `storage.azure.com/.default` requirement, `az login` flow variants (--allow-no-subscriptions, --use-device-code, SPN cert, managed identity), `az rest --resource` requirement (Fabric URL is not a built-in Azure endpoint), JWT decoding for 401 debugging, and why using the wrong audience is the #1 cause of 401s."
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Fabric authentication & token audiences

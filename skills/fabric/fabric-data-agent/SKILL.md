@@ -3,6 +3,9 @@ name: fabric-data-agent
 description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / MS Graph (≤5 sources per agent), consumed in-product or via the agent's MCP endpoint (Assistants API and Copilot-in-Power-BI paths retired 2026-08-26). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, governance precedence (organizational → role-based → developer → user), best practices (right-layer scoping, iteration, version control), and key limitations (read-only, structured data only, English only, 25-row/25-col response cap, no example queries on semantic models). The Creator Agent ('Build agent with AI', SQL/Eventhouse only), MCP endpoint, M365 Copilot Agent Store, Python SDK, Copilot Studio, Azure AI Foundry, and service-principal auth (not Foundry/Copilot or KQL) remain in preview."
 paths:
   - "**/*.DataAgent/**"
+model: inherit
+# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
+disable-model-invocation: false
 ---
 
 # Configuring Fabric Data Agents
