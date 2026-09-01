@@ -103,6 +103,14 @@ command, and every cross-reference.
 - **`powerbi-*` is reserved.** Those are vendored from
   `microsoft/skills-for-fabric` and keep upstream naming so re-sync
   diffs stay clean. Never take that prefix for a local skill.
+- **The namespace picks the group directory**, and the group directory
+  is load-bearing. `skills/fabric/` for `fabric-*`, `skills/powerbi/`
+  for `pbir-`, `pbid-`, `pbip-` and the vendored `powerbi-*`,
+  `skills/workflow/` for the behavioral ones. A skill placed flat at
+  `skills/<name>/SKILL.md` fails twice silently: the pre-commit hook
+  matches `^skills/[^/]+/[^/]+/SKILL\.md$` so the linter never sees it,
+  and Claude Code discovers skills exactly one level under the skills
+  root so the harness never loads it.
 - **Name the job, not the target**, where they differ. `drift-audit` is
   named that way because it audits rules, `CLAUDE.md`, and the MCP
   templates too — `skill-audit` would have named a quarter of its scope
@@ -142,7 +150,9 @@ present; fall back without ceremony when not.
 bounds the draft, and it is the part that gets lost if it is not written
 down at the time. A brief that says "the REST surface was not drilled;
 nothing in this skill describes it" is what stops the next reader
-assuming the omission was an oversight.
+assuming the omission was an oversight. The template's **Sources
+drilled** section is where both halves go — not Notes, and not a
+sentence buried in Scope.
 
 Stop drilling when new pages stop changing the outline, not when the
 source list is exhausted.
@@ -196,7 +206,7 @@ Show the brief to the user before drafting from it.
 
 ## 6. Draft the SKILL.md
 
-Write `skills/<name>/SKILL.md` from the brief.
+Write `skills/<group>/<name>/SKILL.md` from the brief.
 
 **The `description` is the entire model-invoked trigger mechanism.**
 Write it to fire on the queries the skill should answer — the user's
@@ -205,11 +215,11 @@ body. A description that reads as an accurate abstract and never
 triggers has failed at its only job. Where the skill neighbours another,
 spend a clause on the disambiguation.
 
-**Long detail goes to `skills/<name>/references/`, not the body.** Root
-`CLAUDE.md` is explicit about this. Command flag tables, per-item-type
-matrices, and long worked examples belong in a reference file the body
-points at. The linter caps the body at 500 lines, but that is a
-backstop, not a target.
+**Long detail goes to `skills/<group>/<name>/references/`, not the
+body.** Root `CLAUDE.md` is explicit about this. Command flag tables,
+per-item-type matrices, and long worked examples belong in a reference
+file the body points at. The linter caps the body at 500 lines, but that
+is a backstop, not a target.
 
 Match the house voice: numbered steps, bold lead-ins for the rule being
 stated, an explicit constraints section at the end, and reasons attached
@@ -226,14 +236,16 @@ inline with the date and version, the way `/learn` does, so a later
 Run all four. Each catches something the others do not.
 
 ```
-uv run --with pyyaml scripts/lint-frontmatter.py skills/<name>/SKILL.md
+uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
 ```
 
-**Re-count the description.** The linter reports overflow only after the
-fact, and it does not warn on the near miss:
+**Re-count the description.** The linter gates at 1,536 and measures
+`description` alone, so it says nothing about the 1,024 house target and
+nothing at all about a long `when_to_use` — which shares the same
+listing truncation point and is silently cut:
 
 ```
-uv run --with pyyaml python -c "import sys,yaml; print(len(yaml.safe_load(open(sys.argv[1],encoding='utf-8').read().split('---')[1])['description']))" skills/<name>/SKILL.md
+uv run --with pyyaml python -c "import sys,yaml; print(len(yaml.safe_load(open(sys.argv[1],encoding='utf-8').read().split('---')[1])['description']))" skills/<group>/<name>/SKILL.md
 ```
 
 Target ≤ 1,024 for portability. Re-count after *any* wording change,
@@ -306,10 +318,10 @@ Hand off to `/commit`. Do not commit here.
 - **Brief before draft**, even in one session.
 - **No test fixtures.** `tests/` is a separate, deliberate exercise.
 - **No commit**, no push.
-- **Do not edit other skills.** Only `skills/<name>/`, the new brief, and
-  the single `skills/README.md` entry. `Edit` is available for those two
-  existing files and nothing else — adjacent cleanups are `/learn` and
-  `/simplify` territory, and an unbriefed edit made here has no evidence
-  behind it.
+- **Do not edit other skills.** Only `skills/<group>/<name>/`, the new
+  brief, and the single `skills/README.md` entry. `Edit` is available
+  for those two existing files and nothing else — adjacent cleanups are
+  `/learn` and `/simplify` territory, and an unbriefed edit made here
+  has no evidence behind it.
 - **Deletion is the user's call.** Step 9 proposes; it does not sweep
   files away.
