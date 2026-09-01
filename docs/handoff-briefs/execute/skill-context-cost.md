@@ -6,12 +6,12 @@
   safest first. **Workstream C changes skill names**; **Workstream E adds globs
   to, or relocates, unconditional skills**. Neither should start before A and B
   land — both now have.
-- **Status**: **A and B are complete.** C, D and E are open. D (`when_to_use`)
-  and E (is the skill necessary at all? — scoped to the **unconditional**
-  skills) were added on the update and have not been started. **D gained a
-  split-cap proposal on 2026-09-01** — three candidate splits, a
-  recommendation, and the corpus measurement behind it. It needs a decision,
-  not more research; the linter change follows from whichever split is chosen.
+- **Status**: **A, B and E are complete.** **C is the only workstream still
+  open.** D is half done — its policy half (the split-cap decision) landed
+  2026-09-01 and its adoption half moved to
+  [when-to-use-adoption.md](when-to-use-adoption.md), which runs after C.
+  **E completed 2026-09-01**, six globs, ~1,355 listing tokens per session;
+  see its section for what was declined and why.
 - **Run in**: a fresh session. **This brief is self-contained** — it is the only
   document needed for the context-cost work.
 - **Sibling brief**: `skill-model-policy.md` covered
@@ -505,7 +505,70 @@ no `skillOverrides`. Decide whether to keep or drop that setting before
 trusting any local measurement of a listing change. This contradiction is
 unresolved and belongs to whoever picks up D.
 
-## Workstream E — is the skill necessary at all? (NEW, not started)
+## Workstream E — is the skill necessary at all? — COMPLETE 2026-09-01
+
+**Outcome: six `paths:` globs, ~1,355 listing tokens saved in every
+session on this machine and in every client repo the payload deploys
+into. No skill was demoted to `docs/`, and no body was rewritten.**
+
+| Skill | Glob written | Saved | Commit |
+| --- | --- | --- | --- |
+| `fabric-copy-job` | `**/*.CopyJob/**` | 352 | `2d923d7` |
+| `fabric-mirroring` | `**/*.MirroredDatabase/**` | 350 | `c5516de` |
+| `fabric-tmdl-api` | `**/*.SemanticModel/**` | 244 | `ff74c7b` |
+| `fabric-spark-monitoring` | `**/*.Notebook/**` | 239 | `839f92e` |
+| `fabric-warehouse-monitoring` | `**/*.Warehouse/**/*.sql` | 170 | `9c62d0c` |
+| `fabric-variable-library` | `+ **/*.Lakehouse/shortcuts.metadata.json` | 0 (already conditional) | `20bd78b` |
+
+**Declined, with reasons recorded in `expected_activations.md` so the
+empty column is not reopened:**
+
+- `fabric-cicd` (367) — documents the *Python library*, not the portal's
+  Git-sync control surface, so `alm.settings.json` is not its content;
+  and it is cross-cutting with no natural file trigger, so a glob costs
+  more reach than it saves.
+- `pbid-tom-live` (335) — drives a live `msmdsrv` process over
+  TOM/ADOMD. No file trigger exists; `**/*.pbix` / `**/*.pbid` as
+  proposed below is not a real item type. Still a demotion candidate.
+- `fabric-mlv` (379) — the proposed `**/*.Lakehouse/**` is **wrong**.
+  Materialized lake views serialize inside
+  `<name>.Notebook/notebook-content.py` (confirmed: 4 public exports;
+  a search for a `MaterializedLakeView` item type returns none). Its
+  only real trigger would be `**/*.Notebook/**`, which already carries
+  three skills, and MLV is narrow enough that it would fire mostly on
+  notebooks it has nothing to say about. Left open.
+
+**Two corrections this workstream produced.**
+
+*The cost model was wrong, and it inverted a row.* A `paths:` match
+injects the skill's **listing entry, not its body** — measured against a
+cold-session transcript, the attachment content for a three-skill match
+was three lines of names. The body loads only on invocation. So the
+`fabric-spark-monitoring` row below, recorded as "probably a bad trade"
+because it priced activation at ~2,030 body tokens per Notebook touch, is
+in fact a good trade: 239 tokens in *every* session against one listing
+entry in *Notebook-touching* sessions. The glob went in.
+
+*Two candidate globs were narrowed or rejected on content rather than
+reach.* `fabric-warehouse-monitoring` got `**/*.Warehouse/**/*.sql`
+rather than the whole item folder, because every section it carries is
+SQL you write. And the three item-type names that had no ACME instance
+were confirmed against real exports **before** the globs were written:
+`CopyJob` (89 exports), `MirroredDatabase` (30). That also re-verified
+both entries in `fabric-git-serialization`, which had carried them on the
+partly-unverified list.
+
+**What is left here:** nothing required. `fabric-mlv` is the one open
+call, and the demotion candidates below (`fabric-cli`, `fabric-rest-api`,
+`fabric-security`, `fabric-ai-functions`, `powerbi-report-authoring`,
+plus `fabric-cicd` and `pbid-tom-live`) were deliberately not actioned —
+demotion loses client-repo deployment and all trigger modes, which is a
+bigger call than a glob and was out of scope for a pass framed as
+"cheapest first".
+
+---
+
+*The original analysis follows, unedited except where a row was executed.*
 
 The user's framing: some of these are **reference documents, not workflows**.
 A skill that describes a product surface but never tells you what to *do* is
