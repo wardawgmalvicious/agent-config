@@ -49,6 +49,13 @@ conformance checking.
   Git-synced repos (EOF newlines, mixed CRLF/LF, the auto-generated
   view header, `.gitattributes -text`). Triggers on `*.{ItemType}`
   item folders and `.platform` files.
+- [vscode-scoping.md](vscode-scoping.md) — not a coding convention:
+  which VS Code scope a setting belongs in (profile vs
+  `.vscode/settings.json` vs `extensions.json` vs `.code-workspace`),
+  and the silent failures around it — formatters naming extensions that
+  are not enabled, `useDefaultFlags` linking a profile back to Default,
+  globs that cannot match leading dots. Triggers on `.vscode/*.json`,
+  `*.code-workspace`, and stored profile settings.
 
 ## Project-scope override
 
