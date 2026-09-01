@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Six briefs are open. Five waves are spent (struck through below). Where a
+Five briefs are open. Six waves are spent (struck through below). Where a
 spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -15,11 +15,17 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 10
-links between the current 6 files. Numbering the filenames would mean
-rewriting those 16 links now, and again on every deletion, choosing each
-time between renumber-and-relink churn or a queue that reads `01, 04, 06,
-08`. The filename is the link target, so it has to be the stable thing.
+deleted **individually** as each is spent, and heavily cross-linked — 16
+links across the current 6 files, counting this queue. Numbering the
+filenames would mean rewriting those links now, and again on every
+deletion, choosing each time between renumber-and-relink churn or a queue
+that reads `05, 07, 09, 10`. The filename is the link target, so it has to
+be the stable thing.
+
+Deleting a spent brief is therefore not just an `rm`: **re-point whatever
+linked to it in the same commit.** Retiring `skill-context-cost.md` on
+2026-09-01 meant editing four other files, and the test was that no
+surviving brief still says "read it there" about a file that is gone.
 
 So: **stable kebab-case filenames, order in this file.** If a brief needs
 to know it is blocked, that belongs in the brief as a dependency, not as a
@@ -38,7 +44,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | ~~**1**~~ | ~~`rule-glob-gaps.md` — bugs 1, 1b~~ | **Done 2026-08-31.** `coding-sparksql.md` now matches `**/*.Notebook/notebook-content.sql`; the `coding-tsql` overlap is resolved by a precedence section in each rule, keyed on the notebook kernel. Bug 1b was not a contradiction — recorded as a scope carve-out. |
 | ~~**2**~~ | ~~`item-type-skill-kqlqueryset.md` + `rule-glob-gaps.md`~~ | **Done 2026-08-31.** Decided together, as one call. **No KQLQueryset skill** — there is no procedure to encode, only KQL authoring conventions that already existed and were correct. Fixed the rule instead: `coding-kql.md` gained three narrow item-specific globs for the JSON envelopes that hold queries, so it now reaches an actual query and not just schema DDL. Reasoning and the reconsider-if condition are recorded in `tests/skills/fabric-triggers/expected_activations.md`, which also gained the regression rows. |
 | ~~**3**~~ | ~~`skill-model-policy.md`~~ | **Done 2026-09-01.** `model`, `effort` and `disable-model-invocation` are written out on all 44 skills so each flip point is visible in the file. Only `commit` changes behaviour (`model: sonnet`, `effort: high`); the six workflow skills pin `effort: max` as a floor under the unchanged `max` session default; DMI was declined repo-wide and is `false` everywhere. The `workflow-subagent` 24% was identified — it is the Workflow tool's fan-out agents, and a rare spike rather than a structural cost (three runs ever, 0% on 31 of 33 days). **Two items outlived the brief — see wave 8.** |
-| **4** | [skill-context-cost.md](skill-context-cost.md) workstream C | **E is done 2026-09-01**, and the folded-in `item-type-skill-lakehouse.md` is spent and deleted — Lakehouse was an E row, its Options A and B were E's last three table rows, and the call was made once. **All three declined: a Lakehouse gets no skill and no glob.** Option A (`fabric-variable-library` on `shortcuts.metadata.json`) was written and reverted — VL binding is a choice an author makes, not what a shortcuts file is, and no glob can see the `$(...)` that tells them apart. Five other skills did get globs, for ~1,355 listing tokens. **C remains** and is the rest of this wave. |
+| ~~**4**~~ | ~~`skill-context-cost.md` workstream C~~ | **Done 2026-09-01 — C declined, and that retires the brief.** No merges. **C1** (`fabric-spark` + `fabric-error-handling`) and **C2** (the `pbir-*` trio) both keep their names and stay separate; **C3** was already a leave-alone. Three things settled it, two of which postdate the brief. C's headline figures were *body* sizes — C2 was scored at 9,086 tokens — but an activation injects the **listing entry**, so the real prize was ~700 tokens for C2 and ~169 for C1. Both are **zero in this repo**, where `skillOverrides` collapses all five names to `name-only`. And `DESCRIPTION_MAX` of 1,024, landed the same day by D, makes merging **lossy**: C2 would compress 2,914 chars of trigger text into 1,024 (−65%) and widen activation from 73 files to 82. C1 gained its own argument — co-firing is not sameness, `fabric-spark` is product surface while `fabric-error-handling` is this repo's own convention. Reasoning recorded in both `expected_activations.md` files so the column is not reopened. **Wave 4 is closed**, which unblocks [when-to-use-adoption.md](when-to-use-adoption.md) in full. |
 | **5** | [item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) | The only "yes, author it" in the queue, and the largest single chunk of work. Nothing blocks it — it is late because it is expensive, not because it is stuck. Do it earlier if the pipeline surface is what you are actually working on. |
 | ~~**6**~~ | ~~`rule-glob-gaps.md` — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
@@ -46,8 +52,19 @@ rest would only invalidate every reference to a wave elsewhere.
 | **9** | [activation-cleanroom-null.md](activation-cleanroom-null.md) | Investigation, cheap, and **blocks wave 10's design**. A scratch directory outside this repo activated no conditional skill and loaded no rule, with the same payload that works in-repo — so the natural place to build an automated trigger test is the one place it silently reports nothing. Small enough to fold into another session. |
 | **10** | [activation-test-harness.md](activation-test-harness.md) | Script the real-path activation test that was run by hand for the first time on 2026-09-01. Blocked on wave 9 for *where* it may run; its own open question — whether an activation is a per-session delta or per-file — is what decides whether a full run costs 2 sessions or 50, and is answerable in one. |
 
-[skill-context-cost.md](skill-context-cost.md) workstream **D**
-(`when_to_use`) is **half done as of 2026-09-01.** The policy half landed:
+`skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
+half and E all landed, and C was declined, so nothing in it remained open.
+Per the [lifecycle](#lifecycle) the file is deleted and git history is the
+archive; the queue rows above carry the outcomes. Recover it with
+`git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
+then `git show <sha>^:<path>`. Its durable method survived the deletion
+rather than going with it: the static glob check lives in both trigger
+READMEs, the `--debug-file` recipe in `tests/skills/pbip-triggers/README.md`
+and [activation-test-harness.md](activation-test-harness.md), and the
+content-preservation diff — which caught silent content loss twice — moved
+into `author-skill` step 6.
+
+Its workstream **D** (`when_to_use`) landed its policy half the same day:
 split **A** — `description` ≤ 1,024, `when_to_use` ≤ 512, enforced separately
 in `scripts/lint-frontmatter.py`, with root `CLAUDE.md`, the handoff
 template and `author-skill` reworded to match. All 44 skills passed the
@@ -55,18 +72,21 @@ tightened gate unchanged. The premise the cost model rested on was drilled
 and holds: `when_to_use` really is appended to `description` in the listing
 and shares its 1,536 truncation point.
 
-The adoption half — which skills get the field, and what each says — is now
-its own brief, [when-to-use-adoption.md](when-to-use-adoption.md), and **it
-runs after wave 4 in full.** Both of wave 4's workstreams churn the corpus it
-would edit: **C** merges or renames conditional skills (the `pbir-*` trio is
-a C2 candidate, and it is precisely where `when_to_use` disambiguation looks
-most valuable), and **E** can give an unconditional skill a `paths:` glob,
-moving it from the expensive column to the free one. Running adoption first
-means writing text for skills that wave 4 renames, merges, or deletes.
+The adoption half — which skills get the field, and what each says — is
+[when-to-use-adoption.md](when-to-use-adoption.md), and **wave 4 closing
+unblocks it in full.** It was held back because both of wave 4's
+workstreams churned the corpus it edits; both are now settled. **E** moved
+five skills from unconditional to conditional, making the split **24/20**
+rather than 19/25, and **C** was declined, so no conditional skill is
+renamed or merged out of existence. The `pbir-*` trio survives intact —
+which *sharpens* the brief rather than shrinking it, since three
+permanently co-firing conditional skills are exactly where `when_to_use`
+disambiguation earns its keep, and the field is near-free on conditional
+skills.
 
-Cost is the other half of why: adding the field to all 25 unconditional
-skills would put ~4,700 tokens onto a listing already sitting at ~9,900
-against a ~10,000-token budget, so that half is net-neutral-or-nothing
+Cost still shapes the other half: adding the field to all 20 unconditional
+skills would put ~3,800 tokens onto a listing already sitting at ~9,900
+against a ~10,000-token budget, so that half stays net-neutral-or-nothing
 rather than a blanket pass.
 
 ## Wave 8 finding: the two pins do not travel the same path

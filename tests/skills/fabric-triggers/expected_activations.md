@@ -124,9 +124,32 @@ a live bug risk; it is not one.
 
 **3. Three skills glob `**/*.Notebook/**` and no path can select one.**
 `fabric-spark`, `fabric-error-handling` and — since 2026-09-01 —
-`fabric-spark-monitoring`. That is the standing case for Workstream C1 in
-`docs/handoff-briefs/execute/skill-context-cost.md`, and this fixture is
-the measurement behind it.
+`fabric-spark-monitoring`. This fixture is the measurement behind that,
+and it was the standing case for merging the first two — Workstream C1 of
+the retired `skill-context-cost.md`. **The merge was declined on
+2026-09-01**, on the same reasoning that killed C2 (recorded in full at
+[`../pbip-triggers/`](../pbip-triggers/expected_activations.md), assertion
+4) plus one argument specific to this pair.
+
+The arithmetic is worse here than for C2: the two descriptions are 1,479
+chars (~548 tok) against ~379 for a merged entry, so the ceiling is **~169
+tokens** — and zero in this repo, where `skillOverrides` collapses both to
+`name-only`. Against that, `DESCRIPTION_MAX` of 1,024 forces a 31% cut to
+the combined trigger text, and the rename touches `skillOverrides`, the
+junctions, client-repo relinks and the prose cross-references in
+`fabric-gotchas`, `fabric-mlv` and `fabric-spark-monitoring`.
+
+The specific argument: **co-firing is not sameness.** `fabric-spark` is
+Fabric product surface — ABFS URIs, `notebookutils.runtime.context`,
+`enableSchemas` immutability, REST upload quirks. `fabric-error-handling`
+is *this repo's own convention* — the Tier 1 / Tier 2 split and the
+canonical `results` shape. They share a glob because both live in
+notebooks, not because they are one topic. Keeping them apart is what lets
+the convention be revised without touching product documentation, and
+lets either one be re-scoped later without dragging the other along.
+
+Reconsider only if the two bodies start duplicating each other's content.
+Permanent co-activation on its own is not sufficient and never was.
 
 The third one was added deliberately, reversing the "probably a bad trade"
 the brief recorded against it. That verdict priced an activation at the
@@ -282,9 +305,10 @@ negative controls — a glob that starts matching them is over-broad.
 
 - **No `Environment`, `Reflex`, `MirroredDatabase`, `CopyJob` or
   `SparkJobDefinition` fixture.** None has a conditional skill today.
-  Several are candidates for a `paths:` glob under Workstream E in
-  `docs/handoff-briefs/execute/skill-context-cost.md`; add the fixture
-  *with* the glob, in the same commit.
+  Several were candidates for a `paths:` glob under Workstream E of the
+  retired `skill-context-cost.md`, which closed 2026-09-01 having written
+  five globs; these item types were not among them because no export
+  confirmed a fixture. Add the fixture *with* the glob, in the same commit.
 - **`fabric-git-serialization`'s item-type list is only partly verified.**
   Carried forward from `rule-glob-gaps.md` when that brief was deleted:
   three names (`GraphModel`, `UserDataFunction`, `ApacheAirflowJob`) were
