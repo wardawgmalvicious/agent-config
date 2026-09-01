@@ -64,6 +64,8 @@ an apparent one.
 | `SamplePL.DataPipeline/pipeline-content.json` | *(none)* | 0 |
 | `SampleLH.Lakehouse/.platform` | *(none)* | 0 |
 | `SampleLH.Lakehouse/lakehouse.metadata.json` | *(none)* | 0 |
+| `SampleLH.Lakehouse/alm.settings.json` | *(none)* | 0 |
+| **`SampleLH.Lakehouse/shortcuts.metadata.json`** | `fabric-variable-library` | 2,693 |
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 
@@ -106,7 +108,21 @@ Workstream C1 in
 `docs/handoff-briefs/execute/skill-context-cost.md`, and this fixture is
 the measurement behind it.
 
-**4. `control/notes.md` activates nothing.** If it does, the observation
+**4. A Lakehouse activates a skill on exactly one of its four files.**
+`shortcuts.metadata.json` pulls `fabric-variable-library`, because a
+shortcut target can bind to a variable through the
+`$(/**/Lib/Var)` reference-path form — the same syntax that skill already
+owns for notebooks. The other three files stay *(none)*: `.platform` and
+`lakehouse.metadata.json` carry no procedure, and `alm.settings.json` is a
+**deliberate** zero, not a gap. It was considered for a `fabric-cicd` glob
+and declined — that skill documents the *Python library*, not the portal's
+Git-sync control surface, and it is cross-cutting enough that making it
+conditional would cost more reach than the 367 listing tokens it saves.
+The shortcut section in `fabric-variable-library` covers what
+`alm.settings.json` does instead. Reopen only if a Fabric-ALM procedure
+appears that genuinely has no owner.
+
+**5. `control/notes.md` activates nothing.** If it does, the observation
 method is wrong. Check this before believing any other row.
 
 ## Rules load here too
@@ -186,12 +202,20 @@ and a total gap are different problems.
 
 ## Fabric item types with no skill at all
 
-Three fixtures below are real Fabric item types that the payload has no
-skill for: `DataPipeline`, `Lakehouse`, `KQLQueryset`. That is the
-*current* truth rather than a target, and all three are common in
-`fabric-acme`. Each now has a brief in `docs/handoff-briefs/execute/`
-(`item-type-skill-datapipeline.md`, `-lakehouse.md`); the recommendation
-is "yes" for only one of them.
+Two fixtures below are real Fabric item types that the payload has no
+skill for: `DataPipeline` and `KQLQueryset`. That is the *current* truth
+rather than a target, and both are common in `fabric-acme`. `DataPipeline`
+has a brief in `docs/handoff-briefs/execute/`
+(`item-type-skill-datapipeline.md`) recommending "yes".
+
+`Lakehouse` is **decided: no skill**, 2026-09-01, and its brief is spent.
+A Git-synced Lakehouse is four files and no data — tables, files and the
+SQL analytics endpoint never reach Git — so a "Lakehouse skill" would
+describe things no agent sees in the repo. The one genuinely uncovered
+thing was the *shortcut* payload, and it went to the skill that already
+owns the syntax: `fabric-variable-library` now globs
+`shortcuts.metadata.json`. Reconsider only if Lakehouse gains a procedure
+that is neither shortcut nor ALM.
 
 `KQLQueryset` is **decided: no skill**, 2026-08-31, and its brief is
 spent. There is no KQLQueryset procedure — no ordering, no refusal
