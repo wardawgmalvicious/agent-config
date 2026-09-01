@@ -39,7 +39,20 @@ top-level README for additional context.
 
 Open briefs — work scoped but not yet done — wait in
 [execute/](execute/). Queued right now:
-[skill-optimization-pass.md](execute/skill-optimization-pass.md).
+
+- [skill-context-cost.md](execute/skill-context-cost.md) — listing and
+  activation cost of the skill payload. Workstreams A and B are done;
+  C (merges), D (`when_to_use`) and E (unconditional-skill cleanup) are open.
+- [skill-model-policy.md](execute/skill-model-policy.md) — invocation control
+  and model/effort pins. Spend, not context.
+- [skill-effectiveness-telemetry.md](execute/skill-effectiveness-telemetry.md)
+  — scoping for a post-session telemetry capability. Stands alone.
+
+Those three are the whole queue: four briefs were consolidated into two on
+2026-08-31 because two of them had begun to contradict each other, and a
+retracted finding from one had already propagated into a third. **Briefs on the
+same subject belong in one file** — a split that outlives its reason is how the
+contradiction got in.
 
 **Once the change lands, the brief is deleted.** Git history is the
 archive — the brief was committed when it was written, so
