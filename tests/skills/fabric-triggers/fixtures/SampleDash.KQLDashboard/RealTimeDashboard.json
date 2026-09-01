@@ -1,0 +1,17 @@
+{
+  "$schema": "https://kusto.azureedge.net/dashboard-schema/dashboard.schema.json",
+  "schema_version": "62",
+  "title": "SampleDash",
+  "pages": [ { "name": "Overview", "id": "00000000-0000-0000-0000-0000000000b1" } ],
+  "queries": [
+    {
+      "id": "00000000-0000-0000-0000-0000000000b2",
+      "text": "SampleEvents_v1 | summarize count() by bin(eventTime, 1h)",
+      "dataSource": { "kind": "inline", "dataSourceId": "00000000-0000-0000-0000-0000000000b3" },
+      "usedVariables": []
+    }
+  ],
+  "dataSources": [],
+  "parameters": [],
+  "tiles": []
+}

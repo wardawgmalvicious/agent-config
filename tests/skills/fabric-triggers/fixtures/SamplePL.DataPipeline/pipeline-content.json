@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "name": "SampleNotebookRun",
+        "type": "TridentNotebook",
+        "dependsOn": [],
+        "typeProperties": {
+          "notebookId": "00000000-0000-0000-0000-000000000005",
+          "workspaceId": "00000000-0000-0000-0000-0000000000ff"
+        }
+      }
+    ]
+  }
+}

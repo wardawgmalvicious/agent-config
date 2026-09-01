@@ -1,0 +1,23 @@
+{
+  "sources": [
+    {
+      "name": "SampleCustomEndpoint",
+      "type": "CustomEndpoint",
+      "properties": {}
+    }
+  ],
+  "destinations": [
+    {
+      "name": "SampleEventhouse",
+      "type": "Eventhouse",
+      "properties": {
+        "dataIngestionMode": "ProcessedIngestion",
+        "inputSerialization": { "type": "Json" }
+      },
+      "inputNodes": [ { "name": "SampleCustomEndpoint" } ]
+    }
+  ],
+  "streams": [],
+  "operators": [],
+  "compatibilityLevel": "1.0"
+}
