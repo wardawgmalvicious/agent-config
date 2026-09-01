@@ -2,7 +2,7 @@
 name: security-reviewer
 description: "Security scan specialist. Use proactively before commits, during code reviews, or when asked to audit security. Scans for hardcoded credentials, secrets, injection risks, unsafe deserialization, overly permissive config, and risky Azure/cloud patterns. Returns findings with severity and file:line refs; does not modify code."
 tools: Read, Grep, Glob, Bash
-model: inherit
+model: sonnet
 memory: user
 color: red
 ---
