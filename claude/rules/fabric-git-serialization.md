@@ -21,9 +21,12 @@ paths:
   - "**/*.MirroredDatabase/**"
   - "**/*.CopyJob/**"
   - "**/*.GraphQLApi/**"
+  - "**/*.GraphModel/**"
   - "**/*.SQLDatabase/**"
   - "**/*.MountedDataFactory/**"
   - "**/*.DataAgent/**"
+  - "**/*.UserDataFunction/**"
+  - "**/*.ApacheAirflowJob/**"
 ---
 
 # Fabric Git-synced repos: portal serialization
