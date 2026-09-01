@@ -29,7 +29,7 @@ for p in sorted(pathlib.Path('claude/rules').glob('*.md')):
         R[p.stem] = d['paths']
 for f in ["Integration/X.Notebook/notebook-content.sql",
           "RealTime/X.KQLQueryset/RealTimeQueryset.json",
-          "Analytics/X.GraphModel/graphmodel.json"]:
+          "Analytics/X.GraphModel/graphDefinition.json"]:
     print(f, "->", sorted(n for n, p in R.items()
                           if wg.globmatch(f, p, flags=F)))
 ```
@@ -127,7 +127,7 @@ Effect is small: `.platform` inside the folder still matches via the bare
 `**/.platform`, so only the item's own definition files miss the rule.
 
 ```text
-Analytics/X.GraphModel/graphmodel.json  ->  []      (no rule at all)
+Analytics/X.GraphModel/graphDefinition.json  ->  []   (no rule at all)
 Analytics/X.GraphModel/.platform        ->  ['fabric-git-serialization']
 ```
 
@@ -137,10 +137,18 @@ is no mechanism keeping it current. `MountedDataFactory` and `Activator`
 are in it; `Dataflow` is present but `DataflowGen2` naming should be
 confirmed.
 
-**Caveat**: `.GraphModel` is itself unverified — no instance exists in ACME,
-and the name comes from `fabric-graph`'s own claim. If that claim is wrong
-this "fix" propagates the error into a second file. Settle the shape first
-via [fixture-shape-capture.md](fixture-shape-capture.md).
+**Formerly blocked, now clear (2026-08-31).** `.GraphModel` used to rest on
+`fabric-graph`'s own claim, so adding it here risked propagating an error
+into a second file. The name is now confirmed against real Git-synced
+exports — `metadata.type` is `GraphModel` and the folder is
+`<name>.GraphModel` in `frkim/NovaSteel3` and `rasgiza/RTI-Hackathon-Demo`,
+pinned in `tests/skills/fabric-triggers/README.md`. Apply the fix.
+
+The same verification settled the file names inside the folder: a
+GraphModel serializes as `dataSources.json`, `graphDefinition.json`,
+`graphSettings.json`, `graphType.json` and `stylingConfiguration.json`. The
+probe above names one of them; all five resolve to `[]` alike, so its
+conclusion is unchanged.
 
 ## Validation
 
