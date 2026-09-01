@@ -174,13 +174,28 @@ actually loads on a match. For that, run a cold print session and read
 its **transcript** — not its debug log, which cannot see an activation,
 and not the session's own account of itself, which is unreliable
 (measured 2026-09-01: self-report varied across identical runs and once
-omitted an unconditional skill that was certainly present):
+omitted an unconditional skill that was certainly present).
+
+**The probe must use the `Read` tool**, and must be made to: activation
+is keyed to `Read`, and `cat` through Bash or a `Grep` over the same file
+activates **nothing** — output indistinguishable from a broken glob. This
+machine defaults every session to auto mode, which prefers `cat`, so an
+unpinned probe goes dark at random. Pin the tools:
 
 ```bash
-claude -p "Read <fixture path> and reply ok" --model opus[1m]
-# newest transcript for that cwd, under ~/.claude/projects/<project-slug>/
+claude -p "Use the Read tool to read <fixture path> then reply with just: ok" \
+  --model opus[1m] --output-format json \
+  --allowedTools Read --disallowedTools Bash PowerShell Glob Grep Agent
+# --output-format json prints session_id; the transcript is
+# ~/.claude/projects/<project-slug>/<session-id>.jsonl
 grep -o '"type":"skill_listing"[^}]*' <session-id>.jsonl
 ```
+
+Assert the `tool_use` block is a `Read` as well as the attachment, or a
+run that reached for `cat` is scored as a glob failure. Full reasoning and
+the ruled-out alternatives are in
+[`../pbip-triggers/README.md`](../pbip-triggers/README.md#real-path--does-the-harness-agree);
+the probe may run in any directory, in or out of a repo.
 
 Every activation is one JSON line whose `attachment.type` is
 `skill_listing` and whose **`isInitial` is `false`**; its `names` array is

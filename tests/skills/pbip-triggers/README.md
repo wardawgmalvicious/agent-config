@@ -43,9 +43,10 @@ The `isInitial: true` record is the startup listing and is present in
 every session regardless of what was read, so filter it out.
 
 Two things follow. This is a machine-readable assertion — a cold
-`claude -p "Read <fixture> and reply ok"` plus a grep of the resulting
-transcript tests a row of the table below without a human reading
-context. And what a match injects is the skill's **listing entry, not its
+`claude -p` probe plus a grep of the resulting transcript tests a row of
+the table below without a human reading context. (Pin the probe's tools;
+"Read <fixture> and reply ok" is *not* enough — see
+[Real path](#real-path--does-the-harness-agree).) And what a match injects is the skill's **listing entry, not its
 body**: `content` above is three lines of names. Bodies load on
 invocation only, so the token figures in `expected_activations.md` are
 *body* weights for the case where the skill is then invoked — they are
@@ -125,29 +126,83 @@ Compare against [expected_activations.md](expected_activations.md).
 ### Real path — does the harness agree?
 
 The static check tests the globs. It does **not** test that Claude Code
-actually loads on a match. For that, in a fresh session, read one fixture
-file and then ask which skills are available.
+actually loads on a match.
 
-Read the listing carefully: it normally shows **unconditional skills
-only**. A conditional skill appearing is the positive signal; its absence
-in a session where nothing matched is correct, not a failure.
+**The probe must use the `Read` tool.** Activation is keyed to file
+access through `Read`, not to the file itself — `cat` through Bash, and
+`Grep`, both touch the same file and activate **nothing**. This is the
+trap, and it has no error path: a Bash-read probe reports exactly the
+output a broken glob does. Measured 2026-09-01 on 2.1.252; see
+[the auto-mode note](#why-a-probe-silently-reads-with-bash) below for why
+it happens by default on this machine.
 
-For a machine-readable capture:
+So pin the tools rather than trusting the model to pick `Read`:
 
 ```bash
-claude -p "Read <fixture path> and reply ok" --model opus[1m] \
-  --debug-file /tmp/trig.log
-grep -iE "conditional|unique skills|via attachment|<skill-name>" /tmp/trig.log
+claude -p "Use the Read tool to read <fixture path> then reply with just: ok" \
+  --model opus[1m] --output-format json \
+  --allowedTools Read --disallowedTools Bash PowerShell Glob Grep Agent
+# --output-format json prints session_id; the transcript is
+# ~/.claude/projects/<project-slug>/<session-id>.jsonl
+grep -o '"type":"skill_listing"[^}]*' <session-id>.jsonl
 ```
 
-Grep for the **skill name**, not only `via attachment`. The
-`Sending N skills via attachment (initial)` line is emitted *before* the
-Read runs, so it cannot show a file-triggered activation and reading it
-as a negative result is a mistake.
+Every activation is one JSON line whose `attachment.type` is
+`skill_listing` and whose **`isInitial` is `false`**; its `names` array is
+the assertion. Discard the `isInitial: true` record — that is the startup
+listing, present in every session whatever you read. Reading it as a
+result is the same mistake as grepping
+`Sending N skills via attachment (initial)` in a `--debug-file` log, which
+is emitted before any Read and so can never show an activation.
+
+**Assert the tool call too, not just the attachment.** Parse the
+transcript for the `tool_use` block and fail the probe if it is not a
+`Read` — otherwise a run that silently reached for `cat` is scored as a
+glob failure.
+
+Do **not** ask the session which skills it can see. Self-report is
+unreliable: measured 2026-09-01, it varied across identical runs and once
+omitted an unconditional skill that was certainly present.
 
 Always run `control/notes.md` as well. It matches nothing, so if a
 conditional skill shows up there, the observation method is broken rather
 than the globs.
+
+#### Why a probe silently reads with Bash
+
+This repo's own `claude/settings.json` sets `permissions.defaultMode` to
+`auto`, user scope, so **every session on this machine starts in auto
+mode** — and auto mode instructs the model to read files with `cat`
+through Bash wherever Bash can do the job. Nothing is wrong when it does;
+the file is read and the answer is correct. Only the activation is
+missing.
+
+It is not deterministic, which is what makes it expensive to diagnose:
+across the 2026-09-01 runs the model picked `Read` sometimes and `cat`
+others from near-identical prompts. Eight probes in one directory all
+chose `cat` and were read as a property of the directory
+(see `activation-cleanroom-null.md`, retired).
+
+`--disallowedTools Bash` fixes it twice over: the model cannot reach for
+`cat`, and auto mode switches itself off when Bash is unavailable
+(confirmed — the `auto_mode` attachment is absent from those transcripts).
+
+#### Where the probe may run
+
+**Anywhere.** A scratch directory activates exactly as the repo does,
+with the same payload. Ruled out by measurement on 2026-09-01, each as
+its own probe: being outside a git repo, being under
+`AppData/Local/Temp`, having no `.claude/settings.json`, the 8.3 short
+path, and the fixture's depth below the project root (`fixtures/…`
+matched identically to `tests/skills/pbip-triggers/fixtures/…`). Project
+scope activates; skills reached through this repo's junctions activate.
+
+**Rules follow the same rule.** A `paths:` rule loads on a `Read` and not
+on a `cat`, arriving as a `nested_memory` attachment naming the rule file.
+Assert it from the transcript, not from
+`~/.claude/logs/instructions-loaded.log` — the `InstructionsLoaded` hook
+missed two of four confirmed loads in short `-p` sessions, so its silence
+proves nothing.
 
 ## What this fixture is asserting
 
