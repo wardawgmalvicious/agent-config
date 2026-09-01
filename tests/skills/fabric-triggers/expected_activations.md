@@ -7,7 +7,15 @@ at ~3.5 chars/token — relative weights, not billing figures.
 Shapes are modelled on `C:\Repos\ACME\fabric-acme`, except the three noted
 under "Fixtures built on an unverified shape" in the README.
 
-| Fixture file | Activates | Tokens |
+**This table lists skills only.** Rules in `claude/rules/` have `paths:`
+globs of their own and load on the same files — `fabric-git-serialization`
+matches every item folder here, and `coding-tsql`, `coding-python`,
+`coding-kql` and `coding-expressions` match individual files. So *(none)*
+in the middle column means "no skill", **not** "nothing loads". See
+"Rules load here too" below; it is the difference between a real gap and
+an apparent one.
+
+| Fixture file | Activates (skills) | Tokens |
 | --- | --- | --- |
 | `control/notes.md` | *(none)* | 0 |
 | `SampleEH.Eventhouse/.platform` | `fabric-eventhouse` | 2,952 |
@@ -80,14 +88,42 @@ the measurement behind it.
 **4. `control/notes.md` activates nothing.** If it does, the observation
 method is wrong. Check this before believing any other row.
 
+## Rules load here too
+
+Extend the static check to `claude/rules/*.md` (same snippet, second glob
+set) and the picture changes. Measured 2026-08-31:
+
+| Fixture file | Rules |
+| --- | --- |
+| every item file except `control/` and `SampleGraph.GraphModel/graphmodel.json` | `fabric-git-serialization` |
+| `SampleNB.Notebook/notebook-content.py` | + `coding-python` |
+| `…/SampleKDB.KQLDatabase/DatabaseSchema.kql` | + `coding-kql` |
+| `SamplePL.DataPipeline/pipeline-content.json` | + `coding-expressions` |
+| `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
+| `SampleGraph.GraphModel/graphmodel.json` | **none** |
+
+Two findings came out of running that, both filed as
+`docs/handoff-briefs/execute/rule-glob-gaps.md`:
+
+- `fabric-git-serialization` lists `**/*.GraphQLApi/**` but not
+  `**/*.GraphModel/**`, so a GraphModel definition file gets no rule.
+- `coding-kql` reaches `DatabaseSchema.kql` and none of the three JSON
+  files that actually hold queries.
+
+**Whenever you judge a *(none)* row, run the rules pass too.** A skill gap
+and a total gap are different problems.
+
 ## Fabric item types with no skill at all
 
-Three fixtures below are real Fabric item types that the payload does not
-cover: `DataPipeline`, `Lakehouse`, `KQLQueryset`. They activate nothing,
-and that is the *current* truth rather than a target. They are kept
-because they are the natural negative controls — a glob that starts
-matching them is over-broad — and because they make the coverage gap
-visible. All three are common in `fabric-acme`.
+Three fixtures below are real Fabric item types that the payload has no
+skill for: `DataPipeline`, `Lakehouse`, `KQLQueryset`. That is the
+*current* truth rather than a target, and all three are common in
+`fabric-acme`. Each now has a brief in `docs/handoff-briefs/execute/`
+(`item-type-skill-datapipeline.md`, `-lakehouse.md`, `-kqlqueryset.md`);
+the recommendation is "yes" for only one of them.
+
+They are kept as fixtures regardless, because they are the natural
+negative controls — a glob that starts matching them is over-broad.
 
 ## Known gaps
 
