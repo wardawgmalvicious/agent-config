@@ -58,16 +58,31 @@ than a clean failure, and note that `Read-Host` under `pwsh
 -NonInteractive` errors yet still exits 0, so a script wrapping it
 reports success having done nothing. Pass the non-interactive flag.
 
-### Writing files that contain Windows paths
+### Writing files that contain backslashes
 
-The Bash tool strips backslashes from command text. A Windows path
-inside a `sed` or `perl -e` expression arrives with `\R`, `\G` and the
-like silently removed, so the edit lands but the backslashes are gone —
-no error, just wrong output. Write such content through a **quoted
-heredoc** (`cat > file <<'EOF'`), which passes through literally, and
-verify the result. PowerShell here-strings (`@'...'@`) cannot be used
-inline in the Bash tool at all; put them in a `.ps1` written by a quoted
-heredoc and run that file instead.
+Two separate things eat backslashes here. Keep them apart — the remedy
+differs, and blaming the wrong one sends you looking in the wrong place.
+
+**The Bash tool collapses `\\` into `\`, including inside a quoted
+heredoc.** A *single* backslash survives untouched, so Windows paths and
+`\n` / `\t` / `\R` pass through fine; the PowerShell tool does neither.
+What breaks is content that legitimately needs a doubled backslash: a
+Python `'\\n'` arrives as `'\n'` and becomes a real newline, silently
+corrupting the file with no error and no failed assertion. Build such
+backslashes in-language (`chr(92)` in Python) or use the Write/Edit
+tools, which are unaffected. Verified Sep 2026 — `\\` to `\`, `\\\\` to
+`\\`, singles intact, both bare command text and `<<'EOF'`.
+
+**Backslashes vanishing from a `sed` or `perl -e` expression are that
+program's doing, not the tool's.** `sed 's|x|C:\Repos\Personal|'` yields
+`C:ReposPersonal` — and still does when sed reads the script from a
+file, which rules the tool out entirely. Undefined regex escapes are
+simply dropped. So write Windows paths through a **quoted heredoc**
+(`cat > file <<'EOF'`) to keep them away from a regex engine, and verify
+the result. That remedy is sound; only its stated cause was wrong.
+PowerShell here-strings (`@'...'@`) cannot be used inline in the Bash
+tool at all; put them in a `.ps1` written by a quoted heredoc and run
+that file instead.
 
 ### Command-line tooling
 
