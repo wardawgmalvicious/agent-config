@@ -119,12 +119,15 @@ set) and the picture changes. Measured 2026-08-31:
 | every item file except `control/notes.md` | `fabric-git-serialization` |
 | `SampleNB.Notebook/notebook-content.py` | + `coding-python` |
 | `…/SampleKDB.KQLDatabase/DatabaseSchema.kql` | + `coding-kql` |
+| `…/SampleKDB.KQLDatabase/EmbeddedRealTimeQueryset.json` | + `coding-kql` |
+| `SampleQS.KQLQueryset/RealTimeQueryset.json` | + `coding-kql` |
+| `SampleDash.KQLDashboard/RealTimeDashboard.json` | + `coding-kql` |
 | `SamplePL.DataPipeline/pipeline-content.json` | + `coding-expressions` |
 | `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
 | `SampleSparkNB.Notebook/notebook-content.sql` | + `coding-sparksql`, `coding-tsql` |
 
-Re-measured 2026-08-31 after the `rule-glob-gaps.md` fixes landed. Two of
-the three findings that run produced are now closed:
+Re-measured 2026-08-31 after the `rule-glob-gaps.md` fixes landed. All
+three findings that run produced are now closed:
 
 - `fabric-git-serialization` was missing `**/*.GraphModel/**`, so the five
   GraphModel definition parts got **no rule at all**. Added, along with
@@ -135,10 +138,27 @@ the three findings that run produced are now closed:
   conventions from `coding-tsql`'s bare `**/*.sql`. `SampleSparkNB` is
   the regression fixture for the fix.
 
-Still open, deliberately — it is a judgement call, not a typo:
+- `coding-kql` globbed `**/*.kql` and `**/*.csl` only, so it reached
+  `DatabaseSchema.kql` — schema DDL — and **not one written query** in any
+  item type. Every RTI query surface stores KQL as a string inside JSON.
+  Closed by adding three narrow item-specific globs
+  (`**/*.KQLQueryset/RealTimeQueryset.json`,
+  `**/*.KQLDatabase/EmbeddedRealTimeQueryset.json`,
+  `**/*.KQLDashboard/RealTimeDashboard.json`) rather than a broad
+  `**/*RealTime*.json`, which is the shape that caused A1. The three rows
+  above are the regression fixtures. Deliberately a *rule* fix and not a
+  new KQLQueryset skill — see "Fabric item types with no skill at all".
 
-- `coding-kql` reaches `DatabaseSchema.kql` and none of the three JSON
-  files that actually hold queries.
+### `coding-kql` on a KQLDashboard co-loads with a skill
+
+`SampleDash.KQLDashboard/RealTimeDashboard.json` is the one file here
+carrying both a rule and a skill for the same content. Checked before the
+glob went in: `fabric-realtime-dashboard` governs *wiring* — `queryRef`/
+`queryId` identity, the tile grid, `visualOptions` — and touches KQL only
+at the display edge ("emit currency/percent as strings", because tiles have
+no per-tile number formats). `coding-kql` governs casing and pipe layout.
+Complementary, not contradictory. If either grows into the other's
+territory, this is the pair to re-check.
 
 ### The `coding-sparksql` + `coding-tsql` overlap is expected
 
@@ -170,6 +190,15 @@ skill for: `DataPipeline`, `Lakehouse`, `KQLQueryset`. That is the
 `fabric-acme`. Each now has a brief in `docs/handoff-briefs/execute/`
 (`item-type-skill-datapipeline.md`, `-lakehouse.md`, `-kqlqueryset.md`);
 the recommendation is "yes" for only one of them.
+
+`KQLQueryset` is **decided: no skill**, 2026-08-31. There is no
+KQLQueryset procedure — no ordering, no refusal conditions, no lifecycle.
+What the file needs is KQL authoring conventions, which already existed
+and were correct; only the glob failed to reach it. A skill would
+have duplicated a rule. Reconsider only if a genuine procedure appears —
+queryset-to-dashboard promotion, or cross-environment `dataSources`
+rebinding — and even then that content belongs in `fabric-cicd` or
+`fabric-eventhouse` before it justifies a new skill.
 
 They are kept as fixtures regardless, because they are the natural
 negative controls — a glob that starts matching them is over-broad.
