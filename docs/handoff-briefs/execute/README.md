@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Five briefs are open. Five waves are spent (struck through below). Where a
+Four briefs are open. Five waves are spent (struck through below). Where a
 spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -16,7 +16,7 @@ cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
 deleted **individually** as each is spent, and heavily cross-linked — 8
-links between the current 5 files. Numbering the filenames would mean
+links between the current 4 files. Numbering the filenames would mean
 rewriting those 16 links now, and again on every deletion, choosing each
 time between renumber-and-relink churn or a queue that reads `01, 04, 06,
 08`. The filename is the link target, so it has to be the stable thing.
@@ -38,7 +38,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | ~~**1**~~ | ~~`rule-glob-gaps.md` — bugs 1, 1b~~ | **Done 2026-08-31.** `coding-sparksql.md` now matches `**/*.Notebook/notebook-content.sql`; the `coding-tsql` overlap is resolved by a precedence section in each rule, keyed on the notebook kernel. Bug 1b was not a contradiction — recorded as a scope carve-out. |
 | ~~**2**~~ | ~~`item-type-skill-kqlqueryset.md` + `rule-glob-gaps.md`~~ | **Done 2026-08-31.** Decided together, as one call. **No KQLQueryset skill** — there is no procedure to encode, only KQL authoring conventions that already existed and were correct. Fixed the rule instead: `coding-kql.md` gained three narrow item-specific globs for the JSON envelopes that hold queries, so it now reaches an actual query and not just schema DDL. Reasoning and the reconsider-if condition are recorded in `tests/skills/fabric-triggers/expected_activations.md`, which also gained the regression rows. |
 | ~~**3**~~ | ~~`skill-model-policy.md`~~ | **Done 2026-09-01.** `model`, `effort` and `disable-model-invocation` are written out on all 44 skills so each flip point is visible in the file. Only `commit` changes behaviour (`model: sonnet`, `effort: high`); the six workflow skills pin `effort: max` as a floor under the unchanged `max` session default; DMI was declined repo-wide and is `false` everywhere. The `workflow-subagent` 24% was identified — it is the Workflow tool's fan-out agents, and a rare spike rather than a structural cost (three runs ever, 0% on 31 of 33 days). **Two items outlived the brief — see wave 8.** |
-| **4** | [skill-context-cost.md](skill-context-cost.md) workstreams C + E, folding in [item-type-skill-lakehouse.md](item-type-skill-lakehouse.md) | The big pass. Lakehouse **is** an E row — its recommended fix is a `paths:` glob on `fabric-variable-library` — so run them together or E gets made twice. E's `paths:` candidates must be measured against confirmed item-type names — see the sources pinned in `tests/skills/fabric-triggers/README.md`, and add the fixture in the same commit as the glob. |
+| **4** | [skill-context-cost.md](skill-context-cost.md) workstream C | **E is done 2026-09-01**, and the folded-in `item-type-skill-lakehouse.md` is spent and deleted — Lakehouse was an E row, its Options A and B were E's last three table rows, and the call was made once: **A yes, B no.** `fabric-variable-library` gained `**/*.Lakehouse/shortcuts.metadata.json`; `fabric-cicd` and `pbid-tom-live` were declined a glob. **C remains** and is the rest of this wave. |
 | **5** | [item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) | The only "yes, author it" in the queue, and the largest single chunk of work. Nothing blocks it — it is late because it is expensive, not because it is stuck. Do it earlier if the pipeline surface is what you are actually working on. |
 | ~~**6**~~ | ~~`rule-glob-gaps.md` — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
@@ -169,12 +169,12 @@ the 2026-08-31 consolidation of four briefs into two.
 **Cheap and independent before expensive.** Wave 3 ran before 4 and 5 and
 is done; wave 8 was what it left behind, and is now spent too.
 
-## Two briefs are decisions, not edits
+## One brief is a decision, not edits
 
-[item-type-skill-lakehouse.md](item-type-skill-lakehouse.md) and
-[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) each
-open with a recommendation, and one of them recommends **not** building the
-thing. `/drift-update` treats a decision-kind brief as something to put
+[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) opens
+with a recommendation rather than an edit list. Its sibling
+`item-type-skill-lakehouse.md` was the other, and it is spent — the "no"
+landed on 2026-09-01 and the brief is deleted. `/drift-update` treats a decision-kind brief as something to put
 back to the user rather than execute; the same applies here. Landing a
 "no" is a real outcome — record the reasoning in the commit that deletes
 the brief, or the empty column gets re-opened by whoever notices it next.

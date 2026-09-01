@@ -3,6 +3,7 @@ name: fabric-variable-library
 description: "Use for Microsoft Fabric Variable Library — config-as-code for parameterizing notebooks and pipelines across environments. Covers definition parts (variables.json, settings.json, valueSets/<name>.json — no `format` field, omit it), variable types (String, Boolean, Number, Integer, DateTime, ItemReference), notebook consumption via `notebookutils.variableLibrary.getLibrary('Lib').<var>` dot notation (NOT `.get('lib','var')`) or the `get(\"$(/**/Lib/Var)\")` reference-path form, runtime limits (same-workspace only, no SPN, active value set), the ItemReference kernel-shape trap (dict-like; `.value()` AttributeErrors), Git-sync `InvalidContent (ValueMismatch)` (stale override name or empty value), the blank-parameter + lazy-resolution pattern, the `bool('false')` → True trap, pipeline integration via the `libraryVariables` block, the type-name mapping (Boolean→Bool, Integer→Int, Number→Double, DateTime/ItemReference→String), Expression-object wrapping, `valueSetsOrder`, and the runtime-ID rule for ItemReference."
 paths:
   - "**/*.VariableLibrary/**"
+  - "**/*.Lakehouse/shortcuts.metadata.json"
 model: inherit
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -183,6 +184,33 @@ Pipeline type names DIFFER from Variable Library type names. Map carefully:
 | ItemReference | **String** |
 
 Dynamic references must be wrapped in Expression objects: `{"value": "@pipeline().libraryVariables.x", "type": "Expression"}`. Bare strings are treated as literals — not resolved.
+
+## Lakehouse shortcut consumption
+
+A OneLake shortcut can bind its **target** to a variable, so one shortcut resolves to a different item per environment. In Git this lands in `<Name>.Lakehouse/shortcuts.metadata.json` — an array of shortcut objects, where the reference-path form replaces the `itemReference` value:
+
+```json
+{
+  "name": "ue_Holidays_v2",
+  "path": "/Tables/bronze",
+  "target": {
+    "type": "OneLake",
+    "oneLake": {
+      "path": "Tables/ue_Holidays_v2",
+      "itemReference": "$(/**/MyConfig/ItemReferenceOperation)"
+    }
+  }
+}
+```
+
+The backing variable must be type **`ItemReference`**, whose value is a `{"workspaceId", "itemId"}` GUID pair — not a lakehouse name. The Runtime ID rule below applies unchanged.
+
+Two constraints worth knowing before designing around this:
+
+- **Variable libraries are the only supported assignment method.** Shortcut variables cannot be assigned via REST API; the portal's *Manage shortcut → Edit target* pane is the assignment surface, and Git is where the result is read back.
+- The reference is **static** — it points at one item and does not re-resolve across environments by itself. Per-stage behaviour comes from value sets, each pointing at a different item.
+
+Whether shortcuts reach Git at all is controlled by `alm.settings.json` in the same folder, which carries an `Enabled`/`Disabled` state per target type (`Shortcuts.OneLake`, `Shortcuts.AdlsGen2`, `Shortcuts.Dataverse`, `Shortcuts.AmazonS3`, and four more) plus `DataAccessRoles`. A shortcut whose target type is `Disabled` there will not sync — check it before debugging a shortcut that "vanished" on deploy.
 
 ## Runtime ID rule (cross-reference)
 

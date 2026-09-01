@@ -1,0 +1,25 @@
+[
+  {
+    "name": "sample_holidays",
+    "path": "/Tables/bronze",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "path": "Tables/sample_holidays",
+        "itemReference": "$(/**/SampleVL/ItemReferenceOperation)"
+      }
+    }
+  },
+  {
+    "name": "sample_static",
+    "path": "/Tables/bronze",
+    "target": {
+      "type": "OneLake",
+      "oneLake": {
+        "workspaceId": "00000000-0000-0000-0000-000000000000",
+        "itemId": "00000000-0000-0000-0000-000000000000",
+        "path": "Tables/sample_static"
+      }
+    }
+  }
+]
