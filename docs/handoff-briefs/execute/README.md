@@ -42,7 +42,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | **5** | [item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) | The only "yes, author it" in the queue, and the largest single chunk of work. Nothing blocks it — it is late because it is expensive, not because it is stuck. Do it earlier if the pipeline surface is what you are actually working on. |
 | ~~**6**~~ | ~~`rule-glob-gaps.md` — bug 3~~ | **Done 2026-08-31.** `**/*.GraphModel/**` added to `fabric-git-serialization.md`, with `**/*.UserDataFunction/**` and `**/*.ApacheAirflowJob/**` from a partial item-type diff. `Dataflow` confirmed correct. |
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
-| ~~**8**~~ | ~~*No brief — this row was the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model~~ | **Done 2026-09-01**, fresh session, Claude Code 2.1.252. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is now `model: sonnet`. Baseline (`inherit` → `claude-opus-5`) and candidate (`claude-sonnet-5`) each scanned the fixtures from an identical cold memory state, and the caught/not-caught sets were **identical**: 4/4 seeded findings at the expected severities (2 Critical at `config.py:2,3`, 1 High at `queries.py:3`, 1 Low at `notes.md:1`), no false positives, five-field format intact, all four closing-summary components present, memory seeded, and neither run read `expected_findings.md`. Fixtures unmodified after. Mode 3 on sonnet took the **preferred** branch — refused outright, never attempted the `Edit` — so the hook had nothing to block; it was verified separately as a direct unit test over four cases (in-scope write allowed, out-of-scope write blocked with exit 2, a different `agent_type` unaffected, `../` traversal out of the memory dir blocked). Both runs **foreground**. *Unverified sliver:* sonnet was forced via the Agent tool's `model` override, because the **frontmatter** pin cannot be exercised in the session that writes it — subagents are not hot-reloaded. One fresh-session run closes it; read the model off the run's own transcript (see below). **(b)** ~~Confirm `/commit` picks up its pins.~~ **Closed** — `e3cae240` shows three `commit` runs at `claude-sonnet-5 xhigh`, each bracketed by `claude-opus-5 high`, so both pins fire at the *current* values and turn-scoping holds. **(c)** **Confirmed** — a plain-English request does auto-trigger `commit`; see the invocation-path finding below, which is how it was measured. |
+| ~~**8**~~ | ~~*No brief — this row was the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model~~ | **Done 2026-09-01**, fresh session, Claude Code 2.1.252. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is now `model: sonnet`. Baseline (`inherit` → `claude-opus-5`) and candidate (`claude-sonnet-5`) each scanned the fixtures from an identical cold memory state, and the caught/not-caught sets were **identical**: 4/4 seeded findings at the expected severities (2 Critical at `config.py:2,3`, 1 High at `queries.py:3`, 1 Low at `notes.md:1`), no false positives, five-field format intact, all four closing-summary components present, memory seeded, and neither run read `expected_findings.md`. Fixtures unmodified after. Mode 3 on sonnet took the **preferred** branch — refused outright, never attempted the `Edit` — so the hook had nothing to block; it was verified separately as a direct unit test over four cases (in-scope write allowed, out-of-scope write blocked with exit 2, a different `agent_type` unaffected, `../` traversal out of the memory dir blocked). Both runs **foreground**. The **frontmatter** pin — which those two runs could not exercise, since sonnet was forced by an Agent-tool override and a subagent is not hot-reloaded into the session that edits it — was confirmed separately the same day from a fresh session (`83089e9f`, started 25 minutes after the pin landed): an un-overridden spawn ran `claude-sonnet-5` while its parent session sat on Opus. **Wave 8(a) is fully closed.** **(b)** ~~Confirm `/commit` picks up its pins.~~ **Closed** — `e3cae240` shows three `commit` runs at `claude-sonnet-5 xhigh`, each bracketed by `claude-opus-5 high`, so both pins fire at the *current* values and turn-scoping holds. **(c)** **Confirmed** — a plain-English request does auto-trigger `commit`; see the invocation-path finding below, which is how it was measured. |
 
 [skill-context-cost.md](skill-context-cost.md) workstream **D**
 (`when_to_use`) is **half done as of 2026-09-01.** The policy half landed:
@@ -80,6 +80,8 @@ version, and not on time:
 | 2026-09-01T05:08 | plain English | **`claude-opus-5`** | `xhigh` |
 | 2026-09-01T06:13 | plain English | **`claude-opus-5`** | `xhigh` |
 | 2026-09-01T14:44 | `/commit` | `claude-sonnet-5` | `xhigh` |
+| 2026-09-01T15:48 | `/commit` | `claude-sonnet-5` | `xhigh` |
+| 2026-09-01T15:59 | plain English | **`claude-opus-5`** | `xhigh` |
 
 `model: sonnet` has been live since 2026-08-31T21:55Z (`56e00bc`) and
 `effort: xhigh` since 2026-09-01T04:57Z (`c7caa5d`), so every row above is
@@ -112,21 +114,41 @@ writes it into the deployed copy itself, next to `theme`, `tui` and
 `agentPushNotifEnabled`. So it is live client state that a key-level merge
 preserves, not something a `link-claude.ps1 -Force` run sets or clears.
 
-(A) is still only two auto-triggered runs, so confirm before acting on it:
-make a plain-English commit request — no slash command — and read the model
-off the run. `claude-opus-5` confirms (A); `claude-sonnet-5` overturns it
-and puts the cause back to something not yet identified. The explicit
-session model is now a controlled constant rather than a confound, so the
-result is readable either way.
+**(A) is confirmed.** The last two rows are the decisive pair: same
+session, same `2.1.252`, same `opus[1m]` session model, same skill, same
+pins, eleven minutes apart. The *only* variable was how the skill was
+reached, and the model followed it. `effort: xhigh` applied to both.
 
-Worth settling rather than leaving, because it is not really about
-`commit`. Root [`CLAUDE.md`](../../../CLAUDE.md) states the `model:` pin is
-turn-scoped without qualifying the invocation path, all 37 platform skills
-are model-invoked **by design**, and a subagent is never slash-invoked at
-all — so under reading (A) the `model: sonnet` just pinned on
-`security-reviewer` would be inert, and the skill-invocation section of root
-`CLAUDE.md` needs a caveat. Under (B) both stand as written. Do not amend
-`CLAUDE.md` until one run decides it.
+Root [`CLAUDE.md`](../../../CLAUDE.md) has been amended accordingly — the
+`model:` entry in the skill-invocation section now says slash-only, and
+carries the two consequences. `commit`'s `model: sonnet` is a saving only
+when you actually type `/commit`; a plain-English "commit this" runs on the
+session model. And a `model:` pin on any of the 37 platform skills would be
+inert by construction, since those trigger by description and never by
+slash. All 37 are `model: inherit` today, so nothing is broken — but a
+future pin there would do nothing, silently.
+
+**Subagents are the opposite case, and it was worth checking rather than
+inferring.** A subagent's `model:` is a different mechanism — an agent
+definition, not skill frontmatter — so the slash-only result above does not
+transfer to it. Measured from a fresh session: an un-overridden
+`security-reviewer` spawn ran `claude-sonnet-5` while its parent sat on
+Opus. **The pin applies.** So the two mechanisms genuinely differ — a
+skill's `model:` is dropped on the model-invocation path, a subagent's is
+honoured on an Agent-tool spawn — and neither should be reasoned about from
+the other.
+
+The control that makes that readable is
+`subagents/agent-<agentId>.meta.json`: it carries a `model` key **only**
+when an Agent-tool override was passed. Absent on the confirming run,
+present (`"model":"sonnet"`) on the two forced during wave 8(a). Check it
+before believing any subagent model measurement — an override and a
+frontmatter pin produce an identical `.message.model`, and this file is the
+only thing that tells them apart.
+
+Scope it honestly: that is **one spawn path**, the Agent tool at
+`spawnDepth: 1`. It is not a general claim about every way a subagent is
+reached — subagent preloading and scheduled-task firing are untested.
 
 Method note, since wave 8 needed it and the fixture README assumes it:
 **a subagent's transcript is its own file**, at

@@ -286,9 +286,22 @@ filename has to stay stable and the ordering lives in the queue file.
   exactly the *floor* they were written for. Platform skills stay
   unpinned **on purpose**: they auto-trigger alongside your real work,
   so an effort pin there governs your Fabric/Power BI turn rather than
-  any discrete skill run. Four things to know before changing one.
+  any discrete skill run. Five things to know before changing one.
   `model:` is **turn-scoped** — it applies while the skill is active
-  and the session model resumes on the next prompt. `effort:` has **no
+  and the session model resumes on the next prompt. But it is also
+  **slash-only**: a skill reached by model-invocation (the description
+  matching, i.e. a plain-English request) runs on the *session* model
+  and its `model:` pin is silently ignored. `effort:` applies on both
+  paths. Measured 2026-09-01 on 2.1.252, within a single session, with
+  everything else held constant — `/commit` ran `claude-sonnet-5
+  xhigh`, and a plain-English commit request eleven minutes later ran
+  `claude-opus-5 xhigh`. Two consequences. `commit`'s `model: sonnet`
+  only saves anything when you actually type `/commit`. And a `model:`
+  pin on any of the 37 platform skills would be **inert by
+  construction**, since those trigger by description and never by
+  slash — they are all `model: inherit` today, so nothing is currently
+  broken, but a future pin there would do nothing and say nothing.
+  `effort:` has **no
   `inherit` value**; omitting the field *is* the inherit, which is why
   it is carried as a commented placeholder rather than a written-out
   default, and an unsupported level silently falls back to the highest
