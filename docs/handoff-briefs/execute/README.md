@@ -15,8 +15,8 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 28
-links across the current 8 files, counting this queue. Numbering the
+deleted **individually** as each is spent, and heavily cross-linked — 27
+links across the current 7 files, counting this queue. Numbering the
 filenames would mean rewriting those links now, and again on every
 deletion, choosing each time between renumber-and-relink churn or a queue
 that reads `05, 07, 09, 10`. The filename is the link target, so it has to
@@ -82,15 +82,16 @@ The adoption half — which skills get the field, and what each says — is
 unblocks it in full.** It was held back because both of wave 4's
 workstreams churned the corpus it edits; both are now settled. **E** moved
 five skills from unconditional to conditional, making the split **24/20**
-rather than 19/25, and **C** was declined, so no conditional skill is
-renamed or merged out of existence. The `pbir-*` trio survives intact —
+at the time — **25/21** today, after `fabric-data-pipeline` — rather than
+19/25, and **C** was declined, so no conditional skill is renamed or
+merged out of existence. The `pbir-*` trio survives intact —
 which *sharpens* the brief rather than shrinking it, since three
 permanently co-firing conditional skills are exactly where `when_to_use`
 disambiguation earns its keep, and the field is near-free on conditional
 skills.
 
-Cost still shapes the other half: adding the field to all 20 unconditional
-skills would put ~3,800 tokens onto a listing already sitting at ~9,900
+Cost still shapes the other half: adding the field to all 21 unconditional
+skills would put ~4,000 tokens onto a listing already sitting at ~9,900
 against a ~10,000-token budget, so that half stays net-neutral-or-nothing
 rather than a blanket pass.
 
@@ -150,10 +151,18 @@ Root [`CLAUDE.md`](../../../CLAUDE.md) has been amended accordingly — the
 `model:` entry in the skill-invocation section now says slash-only, and
 carries the two consequences. `commit`'s `model: sonnet` is a saving only
 when you actually type `/commit`; a plain-English "commit this" runs on the
-session model. And a `model:` pin on any of the 37 platform skills would be
-inert by construction, since those trigger by description and never by
-slash. All 37 are `model: inherit` today, so nothing is broken — but a
-future pin there would do nothing, silently.
+session model.
+
+**The second consequence was wrong, and is corrected as of 2026-09-02.**
+This section used to say a `model:` pin on any platform skill was inert by
+construction, "since those trigger by description and never by slash."
+That holds only for the **25 conditional** ones, whose `paths:` glob
+withholds them from the startup listing — until a matching file is Read
+they have no description in context and `/<name>` answers `Unknown
+command`. The other **13** carry no glob and slash normally, so a pin
+there is **live**. Measured on 2.1.252 with `/fabric-gotchas` against
+`/fabric-data-pipeline`. All 38 are `model: inherit` today, so nothing is
+broken either way; root `CLAUDE.md` now carries the split.
 
 **Subagents are the opposite case, and it was worth checking rather than
 inferring.** A subagent's `model:` is a different mechanism — an agent
