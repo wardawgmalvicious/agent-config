@@ -270,9 +270,20 @@ single commit — committing straight to `main` is correct and stays
 correct.
 
 **Branch when an intermediate state would be broken while deployed** —
-that is the trigger, not "am I in a session". Authoring a skill is the
-live case: each `SKILL.md` save is in every session's listing before
-the fixtures, the queue row and the rule catch up.
+that is the trigger, not "am I in a session". **Settled 2026-09-02: it
+stays the trigger, and branching stays the exception.** Committing
+straight to `main` remains the default; the measurement behind that is
+the worktree section below, which found no isolation a branch could buy.
+Reconsider if a second silent collision between concurrent sessions
+happens anyway.
+
+Note which skills that trigger actually covers. It is the **eight
+workflow skills** — they are junctioned into user scope, so each
+`SKILL.md` save is in every session's listing before the fixtures, the
+queue row and the rule catch up. A **platform** skill is pruned from
+user scope and junctioned nowhere, so authoring one changes no
+session's payload at any point and needs no branch on these grounds.
+Waves 12–14 are all platform-skill authoring.
 
 **Sequencing outranks branching when another session is live.** These
 two rules collide, and this is the precedence: `git switch -c` is still
@@ -322,12 +333,39 @@ but a skill present on one branch and not the other still leaves
 again, and the other session's *files* still change underneath it
 regardless of payload.
 
-**A worktree still isn't the way around that**, though it is closer
-than it was. The per-skill junctions are absolute and keep pointing at
-*this* directory, so a second worktree's skills are edited but never
-deployed. Everything else would now deploy correctly from a worktree
-via `-ClaudeDir`, so if worktrees ever become worth it, `skills/` is
-the only thing standing in the way.
+**A worktree does isolate the files, and still isn't the way around
+that.** Measured 2026-09-02 by deploying to a real worktree and probing
+it cold; the paragraph that stood here named the wrong blocker. Three
+results, in the order they matter:
+
+- **The junction blocker was misidentified.** The junctions are
+  absolute, but `link-claude.ps1` takes `$RepoRoot` from
+  `$PSScriptRoot`, so running the *worktree's own* copy links that
+  worktree's skills and a session there loads them — conditional
+  activation included, and the description that loads is demonstrably
+  the worktree's. The trap is running the **main tree's** copy with
+  `-ClaudeDir <worktree>`: it relinks every junction back to the main
+  tree, reporting `Relink` and ending `Done`. Run the script from the
+  tree whose content you want deployed.
+- **User scope outranks project scope**, and that is the real blocker.
+  With `drift-handoff` at both scopes and a marker in only the
+  worktree's copy, the listing carried the **user-scope** text and the
+  marker appeared nowhere in the transcript. Project scope only adds
+  names user scope lacks.
+- **So a worktree is either unnecessary or ineffective, with no case
+  in between.** A platform skill is pruned from user scope, so editing
+  it here changes no session's payload and needs no isolation — the
+  workflow-only prune already *is* the isolation. A workflow skill is
+  at user scope, and a worktree cannot override it.
+
+Two supporting facts, both measured the same day. `-SkillGroups` does
+**not** prune user scope when `-ClaudeDir` is given — the prune loop
+walks `$ClaudeDir/skills`, and user scope held at eight across four
+runs; the hazard is *omitting* `-ClaudeDir`, which is the ordinary
+bare-run hazard and has nothing to do with worktrees. And two
+worktrees cannot share a branch: git answers `fatal: '<branch>' is
+already used by worktree at ...`, so worktree-per-session means
+branch-per-session by construction.
 
 **Two sessions in this tree share every file, branch or no branch.**
 Branching does not isolate them; only sequencing does. So before
