@@ -41,8 +41,12 @@ Both logs feed [scripts/instructions-log](../../scripts/instructions-log)
 Hooks must be registered in `settings.json` to fire. All hooks here
 are wired in this repo's [settings.json](../settings.json) under the
 `hooks` key. The committed commands resolve via `$HOME/.claude/...` —
-[scripts/link-claude.ps1](../../scripts/link-claude.ps1) junctions this
+[scripts/link-claude.ps1](../../scripts/link-claude.ps1) copies this
 `hooks/` directory into `~/.claude/hooks/` and mirrors `settings.json`
 there, so the paths work for any user regardless of where the repo is
-cloned. If you keep your Claude Code config somewhere other than
+cloned. **These are copies, not junctions** (changed 2026-09-02): a hook
+edited here is not live until that script runs again, and the deployed
+copy keeps executing the previous version until it does. That is the
+point — hooks *execute*, so a junction meant every half-written save
+fired on the next matching tool call in every session on the machine. If you keep your Claude Code config somewhere other than
 `~/.claude`, edit the paths in `settings.json` to match.

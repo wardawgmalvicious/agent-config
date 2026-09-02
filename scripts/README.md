@@ -17,10 +17,17 @@ Helper scripts for repo maintenance and observability.
   [jq](https://jqlang.org).
 - [link-claude.ps1](link-claude.ps1) — link this repo into `~/.claude`
   so Claude Code loads its config from a clone living anywhere on disk.
-  Creates directory junctions (no elevation needed) at
-  `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
-  `claude/agents`, `claude/hooks`, `claude/rules`, `claude/mcp` and the
-  root `skills/` — see `$LinkDirs` in the script for the mapping. Mirrors
+  Copies `claude/agents`, `claude/hooks`, `claude/rules` and
+  `claude/mcp` into `~/.claude/{agents,hooks,mcp,rules}` — see
+  `$CopyDirs` in the script for the mapping — and junctions the root
+  `skills/` one skill at a time into `~/.claude/skills` (no elevation
+  needed). **Skills are the only junction**: they are the one payload
+  Claude Code hot-reloads, so edit-to-live is the authoring loop there,
+  while the other four are not watched and a junction only made every
+  uncommitted save — and every `git switch`/`stash`/`rebase` — live
+  machine-wide. Converted 2026-09-02. A copied directory takes repo
+  content without `-Force`; `-Force` is needed only to delete a
+  target-only file the repo no longer has. Mirrors
   `claude/CLAUDE.md` (→ `~/.claude/CLAUDE.md`) and
   `claude/settings.json` as plain copies (file
   symlinks need Developer Mode; hard links break on `git pull`). The
@@ -29,9 +36,12 @@ Helper scripts for repo maintenance and observability.
   the live copy, and those are ignored; only repo keys must match.
   Idempotent — re-run any time, including after moving or renaming
   the repo folder, or after payload moves between the root and
-  `claude/` (stale junctions are re-pointed automatically, no `-Force`).
-  Never overwrites a drifted mirror copy or deletes a real directory
-  without `-Force`; exits 1 when anything needs attention.
+  `claude/` (stale skill junctions are re-pointed automatically, and a
+  directory left behind as a junction by the pre-2026-09-02 layout is
+  migrated to a copy via a staged swap — both with no `-Force`).
+  Never overwrites a drifted mirror copy, deletes a real directory, or
+  removes a target-only file without `-Force`; exits 1 when anything
+  needs attention.
 - [lint-frontmatter.py](lint-frontmatter.py) — validate `SKILL.md` and
   `rules/*.md` frontmatter against repo conventions. Kind is inferred from
   the path: files under `rules/` need `paths:` and are exempt from

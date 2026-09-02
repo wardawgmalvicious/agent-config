@@ -126,22 +126,34 @@ purpose; line-ending policy is per repo via a committed `.gitattributes`.
 
 ## Agent config source
 
-`~/.claude/agents`, `hooks`, `mcp`, and `rules` are directory
-junctions into `C:\Repos\Personal\agent-config` — a file under either
-path is the same file, and edits are committed from that repo. The
-repo side is **not** flat: `agents`, `hooks`, `mcp`, and `rules` live
-under `agent-config/claude/`, because they are written in Claude Code's
-own formats. Only `skills` sits at the repo root, in the tool-neutral
-Agent Skills format, grouped by domain (`fabric/`, `powerbi/`,
-`workflow/`). Claude Code discovers a skill one level down only, so
-`~/.claude/skills` is a real directory holding one junction per skill
-rather than a single junction; `-SkillGroups` chooses which groups
-deploy, and `-ClaudeDir` can target a project instead of home. The
-deployed names above never change, so a repo-side move only ever
-changes a junction target.
-`~/.claude/CLAUDE.md` and `settings.json` are plain copies of
-`claude/CLAUDE.md` and `claude/settings.json`: edit the repo versions
-and re-run `scripts/link-claude.ps1 -Force`.
+`~/.claude/agents`, `hooks`, `mcp`, and `rules` are **copies** taken
+from `C:\Repos\Personal\agent-config` by `scripts/link-claude.ps1`, so
+editing the repo does **not** change them until that script runs again.
+They were junctions until 2026-09-02; the change is deliberate, because
+none of the four is hot-reloaded — a fresh session was needed either way
+— so immediacy bought nothing while making every uncommitted save, and
+every `git switch`/`stash`/`rebase`, live for every session on the
+machine. Hooks were the sharp end: they execute.
+
+The repo side is **not** flat: `agents`, `hooks`, `mcp`, and `rules`
+live under `agent-config/claude/`, because they are written in Claude
+Code's own formats. Only `skills` sits at the repo root, in the
+tool-neutral Agent Skills format, grouped by domain (`fabric/`,
+`powerbi/`, `workflow/`). Claude Code discovers a skill one level down
+only, so `~/.claude/skills` is a real directory holding one junction per
+skill rather than a single junction; `-SkillGroups` chooses which groups
+deploy, and `-ClaudeDir` can target a project instead of home.
+
+**`skills` is still junctioned, and is now the only thing that is** — it
+is the one payload Claude Code watches, so edit-to-live is the authoring
+loop rather than a hazard. A skill edit is live immediately; an agent,
+hook, rule or MCP-template edit is not live until the script runs.
+
+`~/.claude/CLAUDE.md` and `settings.json` are plain copies too, of
+`claude/CLAUDE.md` and `claude/settings.json`, but on stricter terms:
+they need `-Force` to overwrite, because Claude Code rewrites the live
+`settings.json` at runtime. Edit the repo versions and re-run
+`scripts/link-claude.ps1 -Force`.
 
 ## Coding conventions
 

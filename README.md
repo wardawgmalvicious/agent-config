@@ -99,8 +99,9 @@ rearranging the root.
   Deployed to `~/.claude/settings.json` by the link script, which
   compares it at the key level — runtime keys Claude Code writes to the
   live copy (like the model pin) stay untracked. Hook commands resolve
-  via `$HOME/.claude/...`, which the junctions provide regardless of
-  where the repo is cloned or how the repo side is arranged. Personal
+  via `$HOME/.claude/...`, which the link script's deployment provides
+  regardless of where the repo is cloned or how the repo side is
+  arranged. Personal
   `permissions` entries live in `settings.local.json` (gitignored) —
   add your own there.
 
@@ -226,10 +227,11 @@ content is written for and validated with Claude Code first.
     git clone git@github.com:wardawgmalvicious/agent-config.git
     ```
 
-2. Link into Claude Code. Creates directory junctions (no elevation
-   needed) at `~/.claude/{agents,hooks,mcp,rules,skills}`, sourced from
-   `claude/agents`, `claude/hooks`, `claude/rules`, `claude/mcp`, and
-   the root `skills/`. Mirrors `claude/CLAUDE.md`
+2. Deploy into Claude Code. Copies `claude/agents`, `claude/hooks`,
+   `claude/rules` and `claude/mcp` into
+   `~/.claude/{agents,hooks,mcp,rules}`, and junctions the root
+   `skills/` one skill at a time into `~/.claude/skills` (no elevation
+   needed). Mirrors `claude/CLAUDE.md`
    (→ `~/.claude/CLAUDE.md`) and `claude/settings.json` as plain copies.
    **Back up first if you already have a `~/.claude`** — the
    script refuses to replace real directories or drifted files without
@@ -262,7 +264,7 @@ content is written for and validated with Claude Code first.
 - Plugins, credentials, sessions, memory, caches, and other runtime
   state remain in each tool's real home directory, not in this repo.
   That separation is the point of scoped linking.
-- This config is Windows-targeted (junctions, PowerShell link scripts,
+- This config is Windows-targeted (per-skill junctions, PowerShell link scripts,
   Git Bash for the shell hooks). Hook commands resolve via `$HOME` so
   they're portable across users on Windows, but Linux / macOS users
   will need to symlink manually and adjust paths — no promise it works
@@ -270,14 +272,24 @@ content is written for and validated with Claude Code first.
 
 ## Ongoing workflow
 
-Edit files in place and commit like any other repo. Changes to the
-junctioned directories (`claude/agents/`, `claude/hooks/`,
-`claude/rules/`, `claude/mcp/`, `skills/`) need no deploy step — the
-tools read the same files. Changes to
-`claude/CLAUDE.md` or `claude/settings.json` need a
-`scripts/link-claude.ps1` re-run to reach the live copies (the script also verifies everything else and
-exits non-zero if any link or mirror needs attention — including after
-moving or renaming the repo folder, which it repairs automatically).
+Edit files in place and commit like any other repo. **`skills/` is the
+only payload that needs no deploy step** — each skill is junctioned, so
+the tools read the same file. Everything else is a copy and needs a
+`scripts/link-claude.ps1` re-run to reach the live payload:
+`claude/agents/`, `claude/hooks/`, `claude/rules/` and `claude/mcp/`
+take repo content on a plain run, while `claude/CLAUDE.md` and
+`claude/settings.json` need `-Force`. The script verifies everything
+and exits non-zero if any link or copy needs attention — including
+after moving or renaming the repo folder, which it repairs
+automatically.
+
+Those four were junctions until 2026-09-02. The deploy step is the
+point of the change: none of them is hot-reloaded, so a fresh session
+was needed either way and the junction bought no immediacy, while
+making every uncommitted save — and every `git switch`, `stash` and
+`rebase`, including pre-commit's own stash/restore around a commit —
+live for every session on the machine. Hooks were the sharp end,
+because they *execute*.
 
 Needing no deploy step is not the same as being picked up by a running
 session, and the two differ by payload type. **Skills hot-reload**:
