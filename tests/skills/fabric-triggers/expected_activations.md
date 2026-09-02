@@ -303,9 +303,9 @@ skill for: `KQLQueryset`. That is the *current* truth rather than a
 target, and it is common in `fabric-acme`.
 
 `DataPipeline` was the other, and is **no longer** one: `fabric-data-pipeline`
-landed 2026-09-02, taking the "yes" its brief recommended
-(`docs/handoff-briefs/execute/item-type-skill-datapipeline.md`). Its three
-rows above are the assertion that changed — see assertion 6.
+landed 2026-09-02, taking the "yes" its brief recommended — that brief is
+spent and deleted, so git history is the archive. Its three rows above are
+the assertion that changed — see assertion 6.
 
 `Lakehouse` is **decided: no skill**, 2026-09-01, and its brief is spent.
 A Git-synced Lakehouse is four files and no data — tables, files and the
