@@ -19,6 +19,7 @@
         "fabric-cli": "name-only",
         "fabric-copy-job": "name-only",
         "fabric-data-agent": "name-only",
+        "fabric-data-pipeline": "name-only",
         "fabric-database": "name-only",
         "fabric-error-handling": "name-only",
         "fabric-eventhouse": "name-only",

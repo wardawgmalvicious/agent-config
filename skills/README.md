@@ -74,7 +74,7 @@ internal cross-references stay intact.
   which guidance was in use, checks existing coverage, verifies against
   docs, proposes a diff for approval, hands off to `/commit`.
 
-## Microsoft Fabric platform (24)
+## Microsoft Fabric platform (26)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -89,6 +89,15 @@ internal cross-references stay intact.
   library: `FabricWorkspace` / `publish_all_items`, `parameter.yml`
   substitution model, `config.yml` deploys, feature flags, ADO /
   GitHub Actions wiring.
+- [fabric-data-pipeline/](fabric/fabric-data-pipeline/) — DataPipeline item
+  as Git serializes it: the `pipeline-content.json` envelope, activity
+  anatomy and `policy`, the activity-type enum including the
+  `InvokePipeline` → `ExecutePipeline` deprecation, deactivation via
+  `state` + `onInactiveMarkAs`, and the `.schedules` job-scheduler file
+  nothing else in the payload reaches. Named for the item type rather
+  than `fabric-pipeline` because "pipeline" already means deployment and
+  release pipelines in `fabric-cicd`'s territory. Expression syntax stays
+  in the `coding-expressions` rule, which co-loads on the same file.
 - [fabric-copy-job/](fabric/fabric-copy-job/) — Copy job item: full vs
   incremental modes, watermark vs CDC incremental, JSON definition,
   REST + on-demand runs, Activator invocation.
