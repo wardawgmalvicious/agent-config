@@ -151,6 +151,16 @@ explicitly there with `git config --local user.email …` rather than
 touching the global config. `core.autocrlf` is `false` globally on
 purpose; line-ending policy is per repo via a committed `.gitattributes`.
 
+**The GitHub API actor is a third identity, bound separately from both.**
+`gh` carries its own credential — its own keyring entry, written by
+`gh auth login` — and the `github-mcp` server carries another, so the two
+can resolve to **different GitHub accounts**, as they do here. A PR or
+merge issued through `gh` is then attributed to an account with nothing
+to do with the `includeIf` author on the commits, and nothing warns.
+Compare `gh auth status` against the MCP `get_me` before any outward
+GitHub action, and use whichever matches the repo you are in. Verified
+2026-09-02.
+
 ## Agent config source
 
 `~/.claude/agents`, `hooks`, `mcp`, and `rules` are **copies** taken
