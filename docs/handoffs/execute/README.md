@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Nine briefs are open. Nine waves are spent (struck through below). Where
+Eight briefs are open. Ten waves are spent (struck through below). Where
 a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -15,9 +15,9 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 58
-relative markdown links across the current 10 files, counting this queue
-(recounted 2026-09-02 while landing wave 11, as `](` occurrences that are
+deleted **individually** as each is spent, and heavily cross-linked — 57
+relative markdown links across the current 9 files, counting this queue
+(recounted 2026-09-02 while closing wave 15, as `](` occurrences that are
 not `http`; the previous figures of 27 and 41 do not reproduce under any
 method tried, so treat this one as the baseline and keep the method with
 the number). Numbering the
@@ -59,7 +59,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | **12** | [item-type-skill-ontology.md](item-type-skill-ontology.md) | The third "yes, author it", and the one with a **payload inconsistency already live**: `fabric-data-agent`'s description names Ontology as a source and nothing behind it says anything. Ontology is a Git-supported item ("IQ (preview) items"). Blocked only on confirming the folder suffix — no local sample exists, which is exactly when a guess gets committed. Carries the same free `fabric-git-serialization.md` side-fix as wave 11. Do this **before** wave 13. |
 | **13** | [skill-semantic-model-audit.md](skill-semantic-model-audit.md) | A review procedure over an existing model — the first thing in the payload that is not authoring guidance. **Design and performance are one skill, not two**: inactive relationships are expanded at refresh regardless of use, so a single finding is both a design and a memory finding. Wave 12 first: the ontology generation-constraint matrix is drilled there and merely cited here. Reference case is `ACME_SM_Operation.SemanticModel`, whose known answers (4 tables on both sides of a relationship, 7 of 26 relationships inactive, `DimDate` reached four ways) are the acceptance test. Also settles a repo-wide question — how a skill cites the `scripts/data/*.sh` wrappers — and carries a spin-off that is **not** a skill: a Power BI MCP template for `claude/mcp/`. Brief revised 2026-09-02 after drilling the star-schema and relationship guidance; read its revision note, not just the diff. |
 | **14** | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Gated, not scheduled.** Fabric IQ Plan is a Git-supported item with genuinely unguessable content (its automatic time-intelligence parser silently drops `Sept`, `WK1`, `Q5`). But nothing here uses Plan and no payload inconsistency pushes on it, so step 0 asks whether the workload is in play before anything else runs. A "no" is a defer that **keeps** the brief rather than deleting it — the one exception to the lifecycle below. If it does proceed, it must land a carve-out in wave 13, or the audit will report a correct planning model as a defective reporting one. |
-| **15** | [concurrent-session-workflow.md](concurrent-session-workflow.md) | **Runs after 11 and before 12**, despite the number — the queue does not renumber, because that invalidates every reference to a wave elsewhere. Should branching become the standard workflow rather than the one-off it was for PR #6? The premise needs testing first: root [`CLAUDE.md`](../../../CLAUDE.md) says branching does **not** isolate concurrent sessions in a shared working tree, so worktrees are the only mechanism that would — blocked on the absolute per-skill junctions, plus a constraint not written down anywhere, that `~/.claude/skills` is user scope and singular. Placed ahead of 12 because 12→13→14 is three consecutive skill-authoring waves, exactly the workload that compounds the contention. Settles the downstream "do we need a PR skill" question, whose earlier "no" rested on a base rate measured entirely before the workflow that produced the branch. |
+| ~~**15**~~ | ~~`concurrent-session-workflow.md`~~ | **Done 2026-09-02 — the answer is no.** Branching stays the exception and committing straight to `main` stays the default. The premise re-confirmed mechanically: one working tree has one HEAD, so two sessions in it share every file regardless of branch, and git refuses the same branch in two worktrees. Worktrees were then **measured**, in a real one probed cold, and root [`CLAUDE.md`](../../../CLAUDE.md) had named the wrong blocker — `link-claude.ps1` takes `$RepoRoot` from `$PSScriptRoot`, so the worktree's own copy deploys the worktree's skills and a session there loads them, conditional activation included. The real blocker is **scope precedence**: with `drift-handoff` at both scopes and a marker in only the worktree's copy, the listing carried the **user-scope** text. Project scope only adds names user scope lacks — so a worktree is **unnecessary** for a platform skill (pruned from user scope, so authoring one changes no session's payload) and **ineffective** for a workflow skill (at user scope, unoverridable), with no case in between. The downstream **PR-skill question resolves no** as well, on new grounds: the base-rate argument was bad and stays bad, but the flow is three commands plus "open the PR with `github-mcp`, not `gh`", both already in root `CLAUDE.md`, which auto-loads here — a skill would spend permanent listing budget on text already in context. **Reconsider if** a second silent collision between concurrent sessions happens anyway. Brief deleted; `CLAUDE.md`'s worktree section rewritten with the measurements. |
 | **16** | [logicalid-runtime-id-encoding.md](logicalid-runtime-id-encoding.md) | **Gated on a credential, not on a wave.** Fell out of wave 11: a `.platform` `logicalId` appears to be a runtime item ID with its 16 bytes reversed — 33 of 35 in one repo reverse to valid RFC-4122 v4, and one item's cross-reference matched exactly. Confirming needs one read-only `GET /v1/workspaces/{ws}/items`, and no `az login` existed during wave 11. Run it in **any** session that has one — it blocks nothing and nothing blocks it. Its step 2 half, reversing public Git-synced exports offline, needs no credential at all and can go first. Touches `fabric-gotchas`, `fabric-rest-api` and `fabric-operations-agent` §4, which today states the relationship and declines the inference. |
 
 `skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
@@ -281,23 +281,27 @@ general modelling guidance turned out to document something else. Splitting
 them is the [subject-not-lineage](../README.md) rule applied; they share an
 origin and resolve independently.
 
-**Wave 15 runs between 11 and 12**, and its number says nothing about its
-position — positions live in this table, not in the number, for the same
-reason they do not live in filenames. It goes ahead of 12 because 12–14 is
-the queue's only real sequence and three consecutive skill-authoring waves
-are exactly what a concurrent-session workflow question compounds across.
-Added 2026-09-02, after this repo's first branch was merged as PR #6.
+**Wave 15 ran between 11 and 12 and is spent**, which is the worked
+example of why the number says nothing about the position — positions live
+in this table, not in the number, for the same reason they do not live in
+filenames. It went ahead of 12 because 12–14 is the queue's only real
+sequence and three consecutive skill-authoring waves looked like exactly
+what a concurrent-session workflow question compounds across. It answered
+**no**, and the reason retires that premise too: those three waves author
+**platform** skills, which the workflow-only prune already keeps out of
+every session's payload, so they were never the contention case they
+looked like. Added and closed 2026-09-02.
 
-## Five briefs are decisions, not edits
+## Four briefs are decisions, not edits
 
 [item-type-skill-operationsagent.md](item-type-skill-operationsagent.md)
-— **decided "yes" 2026-09-02**; kept on disk only until wave 11's
-validation closes, then deleted with its four inbound links re-pointed —
+— **decided "yes" 2026-09-02**, and wave 11's validation has since
+closed; it is kept on disk only until it is deleted with its three
+inbound briefs and this queue's two references re-pointed —
 [item-type-skill-ontology.md](item-type-skill-ontology.md),
 [skill-semantic-model-audit.md](skill-semantic-model-audit.md),
-[item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) and
-[concurrent-session-workflow.md](concurrent-session-workflow.md) all open
-with a recommendation rather than an edit list. Two more are spent and
+[item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md)
+all open with a recommendation rather than an edit list. Two more are spent and
 deleted: `item-type-skill-lakehouse.md`, whose "no" landed 2026-09-01,
 and `item-type-skill-datapipeline.md`, whose "yes" landed 2026-09-02 as
 the `fabric-data-pipeline` skill. `/drift-update` treats a
