@@ -21,8 +21,8 @@ no home yet. If the right destination for a learning turns out to be a
 skill this repo does not have, that is an `/author-skill` job.
 
 This repo lives at `C:\Repos\Personal\agent-config`; `~/.claude/skills`
-etc. are junctions into it, so `/learn` may fire from a session in any
-repo. All repo-relative paths and commands below (grep, the lint
+holds one junction per skill into it, so `/learn` may fire from a
+session in any repo. All repo-relative paths and commands below (grep, the lint
 script, `/commit`) run from that repo root, not the session's cwd.
 
 ## Step 1 — Identify what was learned

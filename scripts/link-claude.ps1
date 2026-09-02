@@ -4,19 +4,34 @@
     loads its config from here.
 
 .DESCRIPTION
-    Creates directory junctions (no elevation or Developer Mode needed) for
-    agents/, hooks/, mcp/, and rules/ under $ClaudeDir, pointing back into
-    this repo. The repo-side sources are NOT all at the repo root: content
-    written in Claude Code's own formats lives under claude/ (claude/agents,
-    claude/hooks, claude/rules, claude/mcp), while skills/ stays at the root
-    in the tool-neutral Agent Skills format. See $LinkDirs for the mapping.
-    (Claude Code itself doesn't read ~/.claude/mcp; the junction exists so
-    the template-copy commands documented in claude/mcp/README.md resolve
-    from a stable path.) Junctions already pointing at the right target are
-    left alone; junctions pointing elsewhere (e.g. after the repo folder
-    moved, was renamed, or after payload moved under claude/) are replaced.
-    A real directory occupying a link path is never removed unless -Force
-    is passed.
+    Copies agents/, hooks/, mcp/, and rules/ into $ClaudeDir as real
+    directories of real files. The repo-side sources are NOT all at the repo
+    root: content written in Claude Code's own formats lives under claude/
+    (claude/agents, claude/hooks, claude/rules, claude/mcp), while skills/
+    stays at the root in the tool-neutral Agent Skills format. See $CopyDirs
+    for the mapping. (Claude Code itself doesn't read ~/.claude/mcp; the
+    copy exists so the template-copy commands documented in
+    claude/mcp/README.md resolve from a stable path.)
+
+    THESE FOUR WERE JUNCTIONS UNTIL 2026-09-02 and are copies now. A
+    junction made every save live for every session on the machine before it
+    was committed, which is wrong for payload that is not hot-reloaded:
+    Claude Code watches skill directories, but agents, hooks and rules need
+    a fresh session regardless, so immediacy bought nothing while a mid-edit
+    state cost plenty. Hooks were the sharp end - they EXECUTE, so a
+    half-written .sh fired on every matching tool call in every live
+    session. Ordinary git operations (switch, stash, reset, rebase, and
+    pre-commit's own stash/restore around a commit) all mutated live config
+    as a side effect. A run of this script is now the only thing that does.
+
+    The repo always wins on CONTENT here: nothing under these four is
+    authored at the target, so a differing file is stale rather than
+    precious and is overwritten without -Force. Files present only at the
+    target are the opposite case - they may be hand-authored - so they are
+    reported and deleted only with -Force. An existing junction is migrated
+    in place: the replacement is staged alongside and swapped in, so the
+    window in which a live session could miss a hook is a rename rather than
+    a recursive copy.
 
     SKILLS ARE DIFFERENT. The repo groups them by domain (skills/fabric/,
     skills/powerbi/, skills/workflow/), but Claude Code only discovers a
@@ -38,12 +53,14 @@
     a skill authored directly in the target, or one linked from another
     repo — is always left alone.
 
-    CLAUDE.md and settings.json cannot be junctioned (file symlinks require
-    elevation or Developer Mode, and hard links silently break when git
-    replaces the file by rename on pull/checkout), so they are mirrored as
-    plain copies: copied when missing at the target, reported when they
-    drift, and pushed repo -> target only with -Force. Reconcile drift
-    manually before forcing — the target copy may hold edits the repo lacks.
+    CLAUDE.md and settings.json are copies too, but on stricter terms than
+    the four directories above, because the target copy really can hold
+    edits the repo lacks: Claude Code rewrites settings.json at runtime.
+    They are copied when missing, reported when they drift, and pushed
+    repo -> target only with -Force. Reconcile drift manually before
+    forcing. (They could not be junctioned in any case: file symlinks
+    require elevation or Developer Mode, and hard links silently break when
+    git replaces the file by rename on pull/checkout.)
 
     ~/.claude/CLAUDE.md (user scope, all projects) is sourced from the
     repo's claude/CLAUDE.md — NOT the repo-root CLAUDE.md, which is
@@ -61,9 +78,11 @@
     the repo folder (the script resolves targets from its own location).
 
 .PARAMETER Force
-    Replace a real directory occupying a link path (its contents are
-    DELETED) and overwrite drifted target copies of CLAUDE.md /
-    settings.json with the repo versions.
+    Delete target-only files under agents/hooks/rules/mcp that the repo no
+    longer has, replace a real directory occupying a skill link path (its
+    contents are DELETED), and overwrite drifted target copies of CLAUDE.md
+    / settings.json with the repo versions. Pushing repo content into the
+    four copied directories does NOT need it - the repo always wins there.
 
 .PARAMETER ClaudeDir
     The Claude Code config directory to link into. Defaults to ~/.claude.
@@ -75,7 +94,7 @@
     Groups not listed are pruned from the target — see the description.
 
 .PARAMETER SkillsOnly
-    Deploy skills and nothing else: no agents/hooks/rules/mcp junctions and
+    Deploy skills and nothing else: no agents/hooks/rules/mcp copies and
     no CLAUDE.md / settings.json mirroring. Intended for project targets,
     which want this repo's skills but their own everything else.
 
@@ -117,8 +136,10 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 # Agent Skills format. The destination names are what Claude Code expects
 # and never change, so hook commands in settings.json ($HOME/.claude/...)
 # stay valid no matter how the repo side is arranged. skills/ is absent
-# here on purpose: it deploys per-skill, not as one junction.
-$LinkDirs = @(
+# here on purpose: it deploys per-skill, and stays JUNCTIONED because it is
+# the one payload Claude Code hot-reloads, which is what makes edit-to-live
+# worth its cost there. See the .DESCRIPTION for why these four are not.
+$CopyDirs = @(
     @{ Source = 'claude/agents'; Dest = 'agents' }
     @{ Source = 'claude/hooks';  Dest = 'hooks' }
     @{ Source = 'claude/rules';  Dest = 'rules' }
@@ -208,27 +229,117 @@ function Set-Junction {
     return $true
 }
 
+function Sync-PayloadDirectory {
+    # Mirror $Source onto $Dest as real files. Content is one-way: nothing
+    # under these directories is authored at the target, so a file that
+    # differs is stale rather than precious and is overwritten with no
+    # -Force. A file the target has and the repo does not is the opposite
+    # case, since it may be hand-authored, so it is reported and removed
+    # only with -Force.
+    param([string]$Source, [string]$Dest, [string]$Label)
+
+    $sourceRoot = [IO.Path]::GetFullPath($Source)
+    $destRoot   = [IO.Path]::GetFullPath($Dest)
+    $existing   = Get-Item $destRoot -Force -ErrorAction SilentlyContinue
+
+    if ($existing -and ($existing.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+        # Legacy layout: this directory was a junction into the repo. Stage
+        # the replacement alongside and swap, so a live session's window to
+        # miss a hook is one rename instead of a whole recursive copy.
+        # Deleting a reparse point removes only the link, never the target.
+        $leaf    = Split-Path -Leaf $destRoot
+        $staging = Join-Path (Split-Path -Parent $destRoot) "$leaf.migrating"
+        if (Test-Path $staging) { Remove-Item $staging -Recurse -Force }
+        New-Item -ItemType Directory -Path $staging | Out-Null
+        Copy-Item -Path (Join-Path $sourceRoot '*') -Destination $staging -Recurse -Force
+        $existing.Delete()
+        Rename-Item -Path $staging -NewName $leaf
+        Write-Host "Migrated $Label from junction to copy (staged swap)"
+    }
+    elseif (-not $existing) {
+        New-Item -ItemType Directory -Path $destRoot | Out-Null
+        Write-Host "Created $Label"
+    }
+
+    $sourceFiles     = @(Get-ChildItem $sourceRoot -Recurse -File -Force)
+    $sourceRelatives = @{}
+    $copied = 0
+    $same   = 0
+
+    foreach ($file in $sourceFiles) {
+        $relative = $file.FullName.Substring($sourceRoot.Length).TrimStart('\', '/')
+        $sourceRelatives[$relative] = $true
+        $target = Join-Path $destRoot $relative
+
+        if ((Test-Path $target) -and
+            ((Get-FileHash $file.FullName).Hash -eq (Get-FileHash $target).Hash)) {
+            $same++
+            continue
+        }
+        $targetParent = Split-Path -Parent $target
+        if (-not (Test-Path $targetParent)) {
+            New-Item -ItemType Directory -Path $targetParent -Force | Out-Null
+        }
+        Copy-Item $file.FullName $target -Force
+        $copied++
+    }
+
+    # Target-only files. Hashtable keys are case-insensitive, which matches
+    # how Windows resolves these paths.
+    $stale = @()
+    foreach ($file in Get-ChildItem $destRoot -Recurse -File -Force -ErrorAction SilentlyContinue) {
+        $relative = $file.FullName.Substring($destRoot.Length).TrimStart('\', '/')
+        if (-not $sourceRelatives.ContainsKey($relative)) { $stale += $file }
+    }
+
+    $pruned = 0
+    if ($stale.Count -gt 0) {
+        if ($Force) {
+            foreach ($file in $stale) {
+                $relative = $file.FullName.Substring($destRoot.Length).TrimStart('\', '/')
+                Remove-Item $file.FullName -Force
+                Write-Host "Pruned  $Label/$relative (not in repo)"
+                $pruned++
+            }
+        }
+        else {
+            Write-Warning ("$Label has $($stale.Count) file(s) the repo does not: " +
+                ($stale | ForEach-Object {
+                    $_.FullName.Substring($destRoot.Length).TrimStart('\', '/')
+                }) -join ', ')
+            Write-Warning ("Those may be hand-authored. Diff and reconcile, or re-run " +
+                "with -Force to DELETE them from $destRoot.")
+            $script:DriftCount++
+        }
+    }
+
+    Write-Host ("Synced  $Label ($copied pushed, $same unchanged" +
+                $(if ($pruned) { ", $pruned pruned" } else { '' }) + ')')
+}
+
 if (-not (Test-Path $ClaudeDir)) {
     New-Item -ItemType Directory -Path $ClaudeDir | Out-Null
     Write-Host "Created $ClaudeDir"
 }
 
-#region Format-payload junctions (agents, hooks, rules, mcp)
+#region Format-payload copies (agents, hooks, rules, mcp)
 if ($SkillsOnly) {
     Write-Host "Skipped agents/hooks/rules/mcp (-SkillsOnly)"
 }
 else {
-    foreach ($dir in $LinkDirs) {
-        $target = Join-Path $RepoRoot $dir.Source
-        if (-not (Test-Path $target)) {
-            # Counts as drift: any existing junction still points at the
-            # vanished path, so rules silently stop loading and the hooks
-            # in settings.json stop firing.
-            Write-Warning "Repo directory missing, skipped: $target"
+    foreach ($dir in $CopyDirs) {
+        $source = Join-Path $RepoRoot $dir.Source
+        if (-not (Test-Path $source)) {
+            # Counts as drift, and it is quieter than the junction era was:
+            # a dangling junction stopped rules loading and hooks firing,
+            # whereas a copy keeps serving the last content the repo had. A
+            # mistyped or half-completed rename therefore looks like nothing
+            # happened at all unless this says so.
+            Write-Warning "Repo directory missing, skipped: $source"
             $script:DriftCount++
             continue
         }
-        $null = Set-Junction -Link (Join-Path $ClaudeDir $dir.Dest) -Target $target -Label $dir.Dest
+        Sync-PayloadDirectory -Source $source -Dest (Join-Path $ClaudeDir $dir.Dest) -Label $dir.Dest
     }
 }
 #endregion
@@ -377,5 +488,5 @@ if ($script:DriftCount -gt 0) {
     Write-Host "`nDone with $script:DriftCount item(s) needing attention (see warnings above)."
     exit 1
 }
-Write-Host "`nDone. All links verified."
+Write-Host "`nDone. Payload verified (skills linked, everything else copied)."
 exit 0

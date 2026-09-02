@@ -79,7 +79,7 @@ scope than hand-authored per repo.
     ```
 
     Unlike the Claude templates, this file has no `~/.claude/...` path —
-    `scripts/link-claude.ps1` junctions `claude/mcp`, not this directory, so
+    `scripts/link-claude.ps1` deploys `claude/mcp`, not this directory, so
     copy it from the clone.
 
 2. Drop any entries you don't need — most repos want one or two of these, not
