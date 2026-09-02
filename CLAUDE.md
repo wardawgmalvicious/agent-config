@@ -410,9 +410,23 @@ What a match injects is the skill's **listing entry, not its body** — the
 body loads only on invocation. Cost models that price an activation at
 body size are wrong by an order of magnitude.
 
-The cheap regression is still the static glob check in either trigger
-README, which needs no session at all; a cold session only proves the
-harness agrees with the globs.
+**An activation is a per-session cumulative delta**, for rules as well as
+skills: an attachment names only what was not already active, so a second
+file matching an already-loaded skill emits *nothing*. Confirmed
+2026-09-01 on 2.1.252. Don't read that silence as a failed match — and
+don't write a per-file cost model on top of it either. It is also what
+makes the real-path test affordable: one session covers a whole fixture
+set, so both sets cost ~2 sessions rather than ~70. Attachments are
+flushed in batches rather than after each read, so an activation is
+attributable to the run of files read since the previous flush, not
+always to one file.
+
+`./scripts/test-activation.ps1 -Set pbip|fabric` runs the whole real-path
+test — deploy to a throwaway probe, one cold session, transcript
+assertion, teardown in a `finally`. Add `-StaticOnly` for the glob check
+alone. The cheap regression is still that static check, which needs no
+session at all; a cold session only proves the harness agrees with the
+globs.
 
 ## Line endings
 

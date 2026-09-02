@@ -169,6 +169,24 @@ that load `fabric-git-serialization`.
 
 ### Real path — does the harness agree?
 
+```powershell
+./scripts/test-activation.ps1 -Set fabric          # static, then the real path
+./scripts/test-activation.ps1 -Set fabric -StaticOnly   # globs only, no session
+```
+
+`scripts/test-activation.ps1` runs everything below in one command —
+deploy to a throwaway probe, one cold session, transcript assertion,
+teardown in a `finally`. **One session covers the whole set**: activation
+is a per-session cumulative delta, so 56 fixtures cost one session rather
+than 56. Both skill groups deploy for this set, because assertion 1 below
+needs `pbip-project-structure` to be *present* in order to prove it does
+not fire.
+
+The rest of this section is what the script is doing, kept because a
+failing run still has to be read by a human. Reasoning and the ruled-out
+alternatives live in
+[`../pbip-triggers/README.md`](../pbip-triggers/README.md#real-path--does-the-harness-agree).
+
 The static check tests the globs. It does **not** test that Claude Code
 actually loads on a match. For that, run a cold print session and read
 its **transcript** — not its debug log, which cannot see an activation,
