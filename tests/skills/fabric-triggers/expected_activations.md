@@ -66,7 +66,9 @@ an apparent one.
 | `…/Files/Config/draft/stage_config.json` | `fabric-data-agent` | 3,071 |
 | `…/draft/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
 | `…/draft/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
-| `…/Files/Config/published/…` — 3 files, mirrors `draft/` | `fabric-data-agent` | 3,071 |
+| `…/Files/Config/published/stage_config.json` | `fabric-data-agent` | 3,071 |
+| `…/published/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
+| `…/published/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
 | `SampleMD.MirroredDatabase/.platform` | `fabric-mirroring` | 4,659 |
 | `SampleMD.MirroredDatabase/mirroring.json` | `fabric-mirroring` | 4,659 |
 | `SampleCJ.CopyJob/.platform` | `fabric-copy-job` | 2,776 |
