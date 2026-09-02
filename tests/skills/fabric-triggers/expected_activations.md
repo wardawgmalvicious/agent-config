@@ -73,8 +73,9 @@ an apparent one.
 | `SampleMD.MirroredDatabase/mirroring.json` | `fabric-mirroring` | 4,659 |
 | `SampleCJ.CopyJob/.platform` | `fabric-copy-job` | 2,776 |
 | `SampleCJ.CopyJob/copyjob-content.json` | `fabric-copy-job` | 2,776 |
-| `SamplePL.DataPipeline/.platform` | *(none)* | 0 |
-| `SamplePL.DataPipeline/pipeline-content.json` | *(none)* | 0 |
+| `SamplePL.DataPipeline/.platform` | `fabric-data-pipeline` | 3,141 |
+| `SamplePL.DataPipeline/pipeline-content.json` | `fabric-data-pipeline` | 3,141 |
+| `SamplePL.DataPipeline/.schedules` | `fabric-data-pipeline` | 3,141 |
 | `SampleLH.Lakehouse/.platform` | *(none)* | 0 |
 | `SampleLH.Lakehouse/lakehouse.metadata.json` | *(none)* | 0 |
 | `SampleLH.Lakehouse/alm.settings.json` | *(none)* | 0 |
@@ -82,8 +83,8 @@ an apparent one.
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 
-Together with `../pbip-triggers/`, all **24** conditional skills in the
-payload are now covered — 10 there, 14 here.
+Together with `../pbip-triggers/`, all **25** conditional skills in the
+payload are now covered — 10 there, 15 here.
 
 ## Assertions that carry weight
 
@@ -198,6 +199,28 @@ waiting to be filled — a Git-synced Lakehouse is four files and no data.
 **5. `control/notes.md` activates nothing.** If it does, the observation
 method is wrong. Check this before believing any other row.
 
+**6. All three DataPipeline files activate `fabric-data-pipeline`, and only
+`pipeline-content.json` also pulls a rule.** These three rows read *(none)*
+until 2026-09-02; the skill's single `**/*.DataPipeline/**` glob is
+item-scoped and reaches all three, while `coding-expressions` globs
+`**/*.DataPipeline/pipeline-content.json` and reaches exactly one. That
+split is the point of having three fixtures rather than one — an
+item-scoped skill and a file-scoped rule on the same item, where widening
+the rule's glob to the folder would be visible here.
+
+`.schedules` is a **dotfile**, and the static check only sees it because
+`activation-expect.py` sets `wcmatch`'s `DOTGLOB`. A glob implementation
+without it would silently score this row zero and read as a broken skill
+glob. Same trap as every `.platform` row, but worth naming once.
+
+The fixture composes two verified shapes rather than copying one file: the
+`Weekly` block is `ACME_PL_Orchestration.DataPipeline/.schedules` in
+`fabric-acme`, and the `Cron` block — `interval: 15`, which is **minutes**,
+not a crontab expression — is from `fabric-acme-legacy`. Both are real; the
+pairing is not. `endDateTime` is mandatory in both, which is why the
+`Weekly` block carries the far-future `9999-12-31` workaround and the
+`Cron` block carries a deliberately expired one.
+
 ## Rules load here too
 
 Extend the static check to `claude/rules/*.md` (same snippet, second glob
@@ -275,11 +298,14 @@ and a total gap are different problems.
 
 ## Fabric item types with no skill at all
 
-Two fixtures below are real Fabric item types that the payload has no
-skill for: `DataPipeline` and `KQLQueryset`. That is the *current* truth
-rather than a target, and both are common in `fabric-acme`. `DataPipeline`
-has a brief in `docs/handoff-briefs/execute/`
-(`item-type-skill-datapipeline.md`) recommending "yes".
+One fixture below is a real Fabric item type that the payload has no
+skill for: `KQLQueryset`. That is the *current* truth rather than a
+target, and it is common in `fabric-acme`.
+
+`DataPipeline` was the other, and is **no longer** one: `fabric-data-pipeline`
+landed 2026-09-02, taking the "yes" its brief recommended
+(`docs/handoff-briefs/execute/item-type-skill-datapipeline.md`). Its three
+rows above are the assertion that changed — see assertion 6.
 
 `Lakehouse` is **decided: no skill**, 2026-09-01, and its brief is spent.
 A Git-synced Lakehouse is four files and no data — tables, files and the
@@ -300,8 +326,9 @@ queryset-to-dashboard promotion, or cross-environment `dataSources`
 rebinding — and even then that content belongs in `fabric-cicd` or
 `fabric-eventhouse` before it justifies a new skill.
 
-They are kept as fixtures regardless, because they are the natural
-negative controls — a glob that starts matching them is over-broad.
+`KQLQueryset` and `Lakehouse` are kept as fixtures regardless, because they
+are the natural negative controls — a glob that starts matching them is
+over-broad.
 
 ## Known gaps
 
