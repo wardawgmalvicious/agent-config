@@ -1,6 +1,6 @@
 ---
 name: drift-update
-description: "Execute the handoff briefs a /drift-handoff run wrote to docs/drift-audit/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Use when the user says to execute, apply, action, or work through the drift handoffs or briefs, or points at a docs/drift-audit directory. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
+description: "Execute the handoff briefs a /drift-handoff run wrote to docs/audits/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Use when the user says to execute, apply, action, or work through the drift handoffs or briefs, or points at a docs/audits directory. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
 argument-hint: "[audit-date | source-id | path] [brief-number]"
 allowed-tools: Read Edit Write Glob Grep Bash
 model: inherit
@@ -55,11 +55,11 @@ announce itself looks like a cold one that skipped work.
 
 ## 2. Resolve the brief set
 
-The target is a directory: `docs/drift-audit/<audit-date>/<source-id>/`.
+The target is a directory: `docs/audits/<audit-date>/<source-id>/`.
 
 Argument forms, all optional:
 
-- **A path** — `docs/drift-audit/2026-08-29/fabric`, in either slash style.
+- **A path** — `docs/audits/2026-08-29/fabric`, in either slash style.
   Use it directly. This is the shape of the hand-written invocation this skill
   replaces, so it must keep working.
 - **ISO date** (`YYYY-MM-DD`) — that run's directory. If it holds more than one
@@ -67,7 +67,7 @@ Argument forms, all optional:
 - **Source id** (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …) — that
   source under the most recent audit date that has one.
 - **Trailing integer** — restrict the run to that single numbered brief.
-- **No argument** — the most recent date directory under `docs/drift-audit/`.
+- **No argument** — the most recent date directory under `docs/audits/`.
 
 **Multiple source directories under one date are separate runs of work, not one
 run.** List them and ask which to execute. Do not silently pick the first or
@@ -89,7 +89,7 @@ If the directory does not exist, **stop**:
 > No briefs at `<path>`. This skill executes briefs that `/drift-handoff`
 > already wrote; it does not derive work from an audit report. Run
 > `/drift-audit` then `/drift-handoff` first, or name an existing directory
-> under `docs/drift-audit/`.
+> under `docs/audits/`.
 
 ## 3. Triage — which briefs this skill may execute
 
@@ -225,7 +225,7 @@ Append; never rewrite the brief above it. The brief as written is the record of
 what was decided, and the log is the record of what happened — keeping them
 distinct is what makes the pair auditable.
 
-`docs/drift-audit/` is gitignored, so these stamps are working state, not
+`docs/audits/` is gitignored, so these stamps are working state, not
 history. They exist to make a re-run resumable, not to document the change —
 the commit message does that.
 

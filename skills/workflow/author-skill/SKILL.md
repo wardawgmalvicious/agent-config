@@ -1,6 +1,6 @@
 ---
 name: author-skill
-description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoff-briefs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
+description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 model: inherit
@@ -159,8 +159,8 @@ source list is exhausted.
 
 ## 5. Write the handoff brief
 
-The target is `docs/handoff-briefs/execute/<name>.md`, built from
-`docs/handoff-briefs/templates/skill-handoff.md`.
+The target is `docs/handoffs/execute/<name>.md`, built from
+`docs/handoffs/templates/skill-handoff.md`.
 
 **Check whether that path is already occupied before writing a byte.**
 A `/drift-update` escalation leaves its scoping input at exactly this
@@ -183,7 +183,7 @@ never deletion.
 filling the template, not content, and a brief that keeps them reads as
 half-finished. Exactly two blocks are reproduced verbatim: the guidance
 note directly under the title, and Claude Code's post-draft checklist.
-`docs/handoff-briefs/examples/author-skill.example.md` is the reference
+`docs/handoffs/examples/author-skill.example.md` is the reference
 — two guidance blocks in the finished brief, not one per heading. The
 other two examples predate this convention and strip both; follow the
 `author-skill` one.
@@ -197,7 +197,7 @@ finished skill. Write it before drafting even though the same session
 does both — the ordering is what makes the scope decisions explicit
 instead of emergent.
 
-If an existing brief in `docs/handoff-briefs/examples/` matches the new
+If an existing brief in `docs/handoffs/examples/` matches the new
 skill's shape, lift it as design source and record that lineage in
 `Changes from source proposal` using the wording that
 `examples/README.md` specifies, rather than re-narrating the design.
@@ -312,7 +312,7 @@ Report:
    `/test-skill` reads back out of the brief**, so a vague one here
    becomes a vague test there.
 
-Then **sweep `docs/handoff-briefs/execute/`** for briefs whose work has
+Then **sweep `docs/handoffs/execute/`** for briefs whose work has
 landed. A queued brief is deleted once its change lands, or promoted
 into `examples/` in the one case where something cites it. That
 convention has already failed once unattended, which is why the sweep is

@@ -11,7 +11,7 @@
 - **Parent**: `skill-context-cost.md` workstream D. That brief was
   **retired on 2026-09-01** once its last open workstream (C) was declined;
   recover it from git history with
-  `git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
+  `git log --diff-filter=D -- 'docs/**/skill-context-cost.md'`
   then `git show <sha>^:<path>`. Everything this brief still needs from D is
   restated in its own budget table below, so it is now self-contained.
 - **Queue**: [README.md](README.md) has the execution order and what blocks

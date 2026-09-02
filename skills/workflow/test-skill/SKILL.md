@@ -1,6 +1,6 @@
 ---
 name: test-skill
-description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description` or `paths:` glob, or as the follow-on to `/author-skill`. Reads the skill's handoff brief from `docs/handoff-briefs/execute/<name>.md` on disk, so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript is the only witness (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the workflow-only prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
+description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description` or `paths:` glob, or as the follow-on to `/author-skill`. Reads the skill's handoff brief from `docs/handoffs/execute/<name>.md` on disk, so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript is the only witness (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the workflow-only prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
 argument-hint: "[skill-name]"
 disable-model-invocation: false
 model: inherit
@@ -46,7 +46,7 @@ manufacture a fixture to make the phase look done.
 ### 1. Read the brief from disk
 
 ```
-docs/handoff-briefs/execute/<skill-name>.md
+docs/handoffs/execute/<skill-name>.md
 ```
 
 Take from it the `paths:` glob, the named trigger queries, and the

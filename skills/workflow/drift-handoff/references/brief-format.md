@@ -7,7 +7,7 @@ A brief is read **cold** — by a session holding none of the context of
 the conversation that produced the audit. Every section below exists
 because a cold reader needs it. If a section would be empty, drop the
 heading rather than writing "N/A"; unlike the handoff-brief templates in
-`docs/handoff-briefs/`, this format is not a fixed checklist.
+`docs/handoffs/`, this format is not a fixed checklist.
 
 ## Filename
 
@@ -114,7 +114,7 @@ they are shared, which is why the defects are one brief.
 
 ## Worked example
 
-Preserved from `docs/drift-audit/2026-08-29/vscode-agent/`, the first
+Preserved from `docs/audits/2026-08-29/vscode-agent/`, the first
 run that produced briefs by hand. That directory is gitignored and
 short-lived; this copy is the durable one. Lightly trimmed.
 

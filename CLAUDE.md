@@ -223,27 +223,27 @@ The workflow skills in `skills/workflow/` are this repo's own operating
 procedure, not generic helpers:
 
 - `/author-skill` — new skill end to end: coverage check, naming, doc
-  drilling, a filled brief in `docs/handoff-briefs/`, then the draft
+  drilling, a filled brief in `docs/handoffs/`, then the draft
   and post-draft checks. Stops at a linted draft; writes no fixtures
   and does not commit.
 - `/learn` — fold a session learning into guidance that already
   exists (a `SKILL.md`, a rule, `claude/CLAUDE.md`).
 - `/drift-audit` → `/drift-handoff` → `/drift-update` → `/commit` —
   the upstream-staleness pipeline. The audit is findings-only; the
-  handoff writes briefs to `docs/drift-audit/<date>/<source-id>/`; the
+  handoff writes briefs to `docs/audits/<date>/<source-id>/`; the
   update executes them in numbered order and stamps each done.
 - `/commit` — split the working tree into logical commits.
 
-`docs/drift-audit/` is **gitignored generated output** with a short
+`docs/audits/` is **gitignored generated output** with a short
 half-life: working notes consumed by a follow-up run, then stale. A run
-worth keeping is copied into `docs/handoff-briefs/examples/`, not
+worth keeping is copied into `docs/handoffs/examples/`, not
 un-ignored in place. Briefs there may quote paths from before a repo
 reorganization — confirm a brief's evidence still exists before acting
 on it.
 
 Work that is scoped but not yet done lives in
-`docs/handoff-briefs/execute/`, and
-**[execute/README.md](docs/handoff-briefs/execute/README.md) is the
+`docs/handoffs/execute/`, and
+**[execute/README.md](docs/handoffs/execute/README.md) is the
 queue** — the only place the execution order lives, so read it before
 starting a session here. Those briefs are *not* numbered the way
 `/drift-handoff` numbers its output: they are committed, deleted
@@ -289,7 +289,7 @@ git switch -c <type>/<kebab-slug>
 commits agree without a second taxonomy. `<slug>` names the subject:
 `feat/fabric-ontology-skill`, `docs/semantic-model-briefs`,
 `fix/coding-kql-glob`. **Don't number branches by queue wave.**
-`docs/handoff-briefs/execute/README.md` deliberately keeps positions out
+`docs/handoffs/execute/README.md` deliberately keeps positions out
 of filenames because positions churn and links break; the same argument
 applies here.
 
@@ -311,7 +311,7 @@ the only thing standing in the way.
 
 **Two sessions in this tree share every file, branch or no branch.**
 Branching does not isolate them; only sequencing does. So before
-editing a contended file — `docs/handoff-briefs/execute/README.md`
+editing a contended file — `docs/handoffs/execute/README.md`
 above all, and each `expected_activations.md` — **re-read it
 immediately first**, and stage explicit paths so a commit cannot sweep
 up the other session's work. On 2026-09-02 two sessions edited the
