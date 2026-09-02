@@ -207,8 +207,11 @@ rather than re-measuring. Two things from it are load-bearing here, and are
 restated so this brief does not depend on that recovery:
 
 - **The `--debug-file` recipe** for reading what the model actually
-  received. It also survives in `tests/skills/pbip-triggers/README.md` and
-  in [activation-test-harness.md](activation-test-harness.md).
+  received. It survives in `tests/skills/pbip-triggers/README.md`, which
+  also carries the limit worth knowing before reaching for it: the debug
+  log's skill lines are all emitted before any `Read`, so it can never
+  witness a conditional activation. For that, use
+  `scripts/test-activation.ps1` and the transcript it asserts against.
 - **The `skillUsage`-vs-Skill-tool distinction.**
   `scripts/instructions-log skills` counts Skill-tool calls only;
   `skillUsage` in `~/.claude.json` counts typed `/name` invocations too.
