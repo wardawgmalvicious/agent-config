@@ -50,7 +50,7 @@ Drilled — all repo bytes; this is a harness skill, not a platform one:
   down in a `finally`. Its header also documents the three traps that
   each report "nothing loaded" — undeployed platform skills, reading the
   debug log instead of the transcript, and the probe reaching for `cat`.
-- `scripts/activation_expect.py` — the CLI surface only: three
+- `scripts/activation-expect.py` — the CLI surface only: three
   subcommands, `static --set <set> [--show-rules]`, `files --set <set>`,
   and `check --set <set> --transcript <path> --fixtures-root <path>`.
 - `tests/skills/fabric-triggers/README.md` — the static-check snippet
@@ -86,7 +86,7 @@ Not drilled — **nothing in this skill describes any of it**:
   record them as measured on 2.1.252. If a flag has been renamed
   upstream the skill will be wrong about it, and a `/drift-audit` on the
   `claude-code` CHANGELOG source is what would catch that.
-- **`activation_expect.py` internals** beyond its CLI surface — the
+- **`activation-expect.py` internals** beyond its CLI surface — the
   delta computation, the `realpath` comparison and the casing rules were
   not read. The skill treats the script as a black box with a contract.
 - **The subagent and hook validation procedure**
@@ -209,7 +209,7 @@ rather than by omission.
 - `commit` — (a) already converted. The hand-off target.
 - `drift-audit` — (a) already converted. Named as what would catch a
   renamed CLI flag, per the undrilled set.
-- `scripts/test-activation.ps1`, `scripts/activation_expect.py`,
+- `scripts/test-activation.ps1`, `scripts/activation-expect.py`,
   `scripts/link-claude.ps1` — (c) external/standard, in-repo tooling.
 - `tests/skills/fabric-triggers/`, `tests/skills/pbip-triggers/`,
   `tests/skills/code-review/` — (c) the fixture sets it operates on.

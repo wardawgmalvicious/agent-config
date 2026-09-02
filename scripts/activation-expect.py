@@ -20,9 +20,9 @@ correct even if the model reads the fixtures out of order or in batches,
 and means ``expected_activations.md`` stays a plain per-file table.
 
 Usage:
-    uv run --with pyyaml --with wcmatch python scripts/activation_expect.py \
+    uv run --with pyyaml --with wcmatch python scripts/activation-expect.py \
         static --set pbip
-    uv run --with pyyaml --with wcmatch python scripts/activation_expect.py \
+    uv run --with pyyaml --with wcmatch python scripts/activation-expect.py \
         check --set pbip --transcript <session>.jsonl --fixtures-root <dir>
 """
 

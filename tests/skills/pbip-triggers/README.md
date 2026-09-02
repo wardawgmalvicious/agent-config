@@ -87,10 +87,10 @@ tests/skills/pbip-triggers/
     └── control/notes.md         (matches nothing — negative control)
 ```
 
-Ten of the repo's 24 conditional skills are covered here. The other fourteen
+Ten of the repo's 25 conditional skills are covered here. The other fifteen
 are keyed to Fabric item types (`.Eventstream`, `.Warehouse`,
 `.Notebook`, …) and live in [`../fabric-triggers/`](../fabric-triggers/).
-Together the two sets cover all 24.
+Together the two sets cover all 25.
 
 ## Running the test
 
@@ -108,7 +108,7 @@ warm session may be reporting the pre-edit globs.
 `scripts/test-activation.ps1` deploys the platform skills to a throwaway
 probe directory outside this repo, opens one cold `claude -p` session
 there, has it `Read` every fixture, asserts the transcript against
-`scripts/activation_expect.py`, and tears the probe down in a `finally`
+`scripts/activation-expect.py`, and tears the probe down in a `finally`
 block. One session per fixture set, not one per file — see
 [the delta note](#activation-is-a-per-session-delta).
 
@@ -206,7 +206,7 @@ what makes this test cheap enough to run at all — ~2 sessions for both
 sets rather than ~70. And **per-file assertions are not independent**:
 what a file emits depends on what was read before it, so an expectation
 has to be computed against the read order, which is what
-`activation_expect.py` does. `expected_activations.md` stays a plain
+`activation-expect.py` does. `expected_activations.md` stays a plain
 per-file table; nothing about it needs to become order-aware.
 
 **Attachments are flushed in batches, not after every read.** A run of
