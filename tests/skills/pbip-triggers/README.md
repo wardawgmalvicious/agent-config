@@ -98,6 +98,35 @@ Together the two sets cover all 24.
 frontmatter hot-reload is the one case not verified on this machine — a
 warm session may be reporting the pre-edit globs.
 
+### Scripted — both halves in one command
+
+```powershell
+./scripts/test-activation.ps1 -Set pbip          # static, then the real path
+./scripts/test-activation.ps1 -Set pbip -StaticOnly   # globs only, no session
+```
+
+`scripts/test-activation.ps1` deploys the platform skills to a throwaway
+probe directory outside this repo, opens one cold `claude -p` session
+there, has it `Read` every fixture, asserts the transcript against
+`scripts/activation_expect.py`, and tears the probe down in a `finally`
+block. One session per fixture set, not one per file — see
+[the delta note](#activation-is-a-per-session-delta).
+
+It handles all three traps below on your behalf; the rest of this section
+is what it is doing and why, kept because a run that fails still has to be
+read by a human. Two guards are worth knowing about because they turn the
+silent failures into loud ones:
+
+- **Both skill groups deploy for either set.** The pbip fixtures activate
+  `fabric-tmdl*` on their `.SemanticModel` files, and the fabric set's
+  headline negative assertion — `pbip-project-structure` must *not* fire
+  on `SampleNB.Notebook/.platform` — is vacuous unless that skill is
+  actually present to fail.
+- **The startup listing is checked before any fixture is read.** If the
+  unconditional `fabric-*`/`pbi*` skills are missing from it, the deploy
+  failed and every row would report "nothing loaded" — trap 1, told apart
+  from a broken glob.
+
 ### Fast path — static, no session needed
 
 Confirms the globs still resolve as documented. Catches a broken glob
@@ -159,6 +188,34 @@ is emitted before any Read and so can never show an activation.
 transcript for the `tool_use` block and fail the probe if it is not a
 `Read` — otherwise a run that silently reached for `cat` is scored as a
 glob failure.
+
+#### Activation is a per-session delta
+
+An attachment names only what was **not already active** — for rules as
+well as skills. Measured 2026-09-01 on 2.1.252, three ways in one session:
+reading `bookmarks.json` then `Bookmark1.bookmark.json` (identical
+expectations) emitted an attachment for the first and **nothing** for the
+second; `report.json` after it emitted `pbir-filters` but *not* the
+`fabric-git-serialization` rule already loaded; and `page.json`, which
+matches both `pbir-filters` and `pbir-pages`, emitted only `pbir-pages`.
+The static check is the control — all of those files do match, so the
+silences are deduplication and not a failure to fire.
+
+Two consequences. **One session can cover a whole fixture set**, which is
+what makes this test cheap enough to run at all — ~2 sessions for both
+sets rather than ~70. And **per-file assertions are not independent**:
+what a file emits depends on what was read before it, so an expectation
+has to be computed against the read order, which is what
+`activation_expect.py` does. `expected_activations.md` stays a plain
+per-file table; nothing about it needs to become order-aware.
+
+**Attachments are flushed in batches, not after every read.** A run of
+several reads can be followed by a single flush covering all of them, so
+an activation can only be attributed to the *group* of files read since
+the previous flush. The script reports how many groups a run produced;
+prompting the model to print a line after each read narrows them but does
+not reliably reach one file per group. It costs assertion sharpness, not
+correctness — a group's expectation is the union over its files.
 
 Do **not** ask the session which skills it can see. Self-report is
 unreliable: measured 2026-09-01, it varied across identical runs and once
