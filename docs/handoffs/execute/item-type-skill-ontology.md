@@ -39,10 +39,11 @@ reference.
 ## Step 1 — verify the folder suffix before writing the glob
 
 **Do not assume `.Ontology`.** Wave 0 of this queue was spent entirely on
-confirming three item-type folder names that had been guessed, and the
-`.OperationsAgent` brief opens on the same problem from the other
-direction (an item filed under the wrong workload in the ALM support
-list). `C:\Repos\ACME\fabric-acme` has **no** ontology item today —
+confirming three item-type folder names that had been guessed, and wave
+11 hit the same problem from the other direction — an item filed under
+the wrong workload in the ALM support list, now recorded in
+[`fabric-operations-agent`](../../../skills/fabric/fabric-operations-agent/SKILL.md).
+`C:\Repos\ACME\fabric-acme` has **no** ontology item today —
 confirmed 2026-09-02 — so there is no local sample to read the suffix
 off, which is precisely the condition under which a guess gets committed.
 
@@ -155,12 +156,12 @@ server**, which puts it in the same category as this repo's own
 works, not just to Fabric.
 
 The operations-agent row also connects this brief to
-[item-type-skill-operationsagent.md](item-type-skill-operationsagent.md)
-— that brief already cites
+[`fabric-operations-agent`](../../../skills/fabric/fabric-operations-agent/SKILL.md),
+which wave 11 authored and which already cites
 `fabric/iq/ontology/how-to-create-operations-agent` as the
 ontology-grounded variant of the item it covers. **Cross-link the two
-skills; do not duplicate.** Whichever is authored second should cite the
-first.
+skills; do not duplicate.** That one is already on disk, so this is the
+skill authored second and it is the one that cites.
 
 ### Not drilled
 

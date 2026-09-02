@@ -1,8 +1,11 @@
 # Handoff: is a `.platform` `logicalId` a byte-reversed runtime item ID?
 
-- **Written**: 2026-09-02, during wave 11
-  ([item-type-skill-operationsagent.md](item-type-skill-operationsagent.md)),
-  from evidence that arrived while checking that brief's step 3d.
+- **Written**: 2026-09-02, during wave 11, from evidence that arrived
+  while checking step 3d of the `item-type-skill-operationsagent.md`
+  decision brief. That brief was deleted when wave 11 closed — recover
+  it with
+  `git log --diff-filter=D -- 'docs/**/item-type-skill-operationsagent.md'`
+  then `git show <sha>^:<path>`.
 - **Kind**: verification, then a small edit to two existing skills.
   **Not** a new-skill decision.
 - **Status**: open. **Recommendation: make the one API call, then
