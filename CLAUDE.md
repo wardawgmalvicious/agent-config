@@ -225,6 +225,62 @@ starting a session here. Those briefs are *not* numbered the way
 individually as each is spent, and cross-linked by filename, so the
 filename has to stay stable and the ordering lives in the queue file.
 
+## Branching and concurrent sessions
+
+**Every save is live.** `~/.claude/rules`, `hooks`, `agents` and `mcp`
+are junctions into *this working tree* by absolute path, and each skill
+is its own junction — so an edit here changes the payload for **every
+session on this machine the moment it hits disk**, committed or not.
+That is the property the repo is built on, and it is also what makes
+branching here unlike branching anywhere else.
+
+Every commit here is on `main`: **no merge commit and no second branch
+has ever existed** (measured 2026-09-02, 305 commits in). That is not an
+oversight. For the common change — one brief, one doc, one queue row,
+complete in a single commit — committing straight to `main` is correct
+and stays correct.
+
+**Branch when an intermediate state would be broken while deployed** —
+that is the trigger, not "am I in a session". A skill plus its
+fixtures plus a queue row plus a rule edit is four saves, and the first
+three are live on this machine before the fourth lands.
+
+```bash
+git switch -c <type>/<kebab-slug>
+```
+
+`<type>` is the conventional-commit vocabulary `/commit` already writes
+— `feat`, `fix`, `docs`, `refactor`, `chore` — so the branch and its
+commits agree without a second taxonomy. `<slug>` names the subject:
+`feat/fabric-ontology-skill`, `docs/semantic-model-briefs`,
+`fix/coding-kql-glob`. **Don't number branches by queue wave.**
+`docs/handoff-briefs/execute/README.md` deliberately keeps positions out
+of filenames because positions churn and links break; the same argument
+applies here.
+
+**Never `git checkout` or `git switch` while another session is live in
+this tree.** One working tree is on one branch, so the switch is not
+scoped to you — it swaps the other session's rules and hooks underneath
+it mid-turn, and a skill present on one branch but not the other leaves
+`~/.claude/skills/<name>` dangling until `scripts/link-claude.ps1` runs
+again.
+
+**A worktree is not the way around that.** The junctions are absolute
+and keep pointing at *this* directory, so a second worktree is edited
+but never deployed — which silently voids the "Live when: immediately —
+same files" column of the table above, and any validation done from
+there with it.
+
+**Two sessions in this tree share every file, branch or no branch.**
+Branching does not isolate them; only sequencing does. So before
+editing a contended file — `docs/handoff-briefs/execute/README.md`
+above all, and each `expected_activations.md` — **re-read it
+immediately first**, and stage explicit paths so a commit cannot sweep
+up the other session's work. On 2026-09-02 two sessions edited the
+queue minutes apart; nothing warned, and re-reading before writing is
+the only thing that caught it. The failure mode is silent: your write
+succeeds and drops the other session's rows.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +
