@@ -437,7 +437,7 @@ it if they hadn't.
   xhigh`, and a plain-English commit request eleven minutes later ran
   `claude-opus-5 xhigh`. Two consequences. `commit`'s `model: sonnet`
   only saves anything when you actually type `/commit`. And a
-  `model:` pin is **inert on the 25 conditional platform skills** — a
+  `model:` pin is **inert on the 26 conditional platform skills** — a
   `paths:` glob withholds them from the startup listing, so they are
   reached by path, and `/<name>` answers `Unknown command`. It is
   **live on the other 13**, which carry no glob and slash normally
@@ -504,13 +504,17 @@ Changing a `paths:` glob changes *whether a skill fires at all*, which
 none of the fixtures above test. That contract belongs to
 [tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
 [tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) —
-disjoint fixture sets that between them assert **all 25** conditional
-skills in the payload — 10 pbip, 15 fabric.
-`fabric-data-pipeline` was the last one outstanding and was fixtured
-2026-09-02. Assertions live in each set's `expected_activations.md`.
-(Recounted 2026-09-02: the previous "9 and 10, all 19" predated
-workstream E, which moved five skills from unconditional to
-conditional.)
+disjoint fixture sets that between them assert **all 26** conditional
+skills in the payload — 10 pbip, 16 fabric.
+Assertions live in each set's `expected_activations.md`, which is where
+each figure is owned — **don't restate a total anywhere else.** This
+count was duplicated into six files, checked by nothing, and by
+2026-09-02 had drifted three ways at once (`tests/README.md` still said
+19). Both sets stayed exhaustive throughout; only the prose rotted.
+Derive it instead: `./scripts/test-activation.ps1 -Set fabric
+-StaticOnly`, then `-Set pbip`. Recounted twice on 2026-09-02 — first to
+25 after workstream E moved five skills from unconditional to
+conditional, then to 26 when `fabric-operations-agent` landed.
 
 **No *log* records conditional activation, but the session transcript
 does.** `instructions-loaded.log` sees rules only; `skills-invoked.log`

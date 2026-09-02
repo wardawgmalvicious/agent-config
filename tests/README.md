@@ -15,8 +15,11 @@ Run manually; not wired into CI.
   [skills/fabric-triggers/](skills/fabric-triggers/) — minimal but
   structurally real PBIP projects and Fabric item folders, used to test
   **`paths:` activation**: which conditional skills load when a given
-  file enters session scope. Disjoint by design — 9 skills in the first,
-  10 in the second, which is all 19 conditional skills in the payload.
+  file enters session scope. Disjoint by design and jointly exhaustive
+  over the payload's conditional skills — each set's
+  `expected_activations.md` states its own share, and this file
+  deliberately no longer restates the total, which had gone stale here
+  by two generations before 2026-09-02.
   Assertions live in each set's `expected_activations.md`; the
   load-bearing ones are the two halves of the A1 fix — `visual.json`
   must *not* pull `pbip-project-structure`, and neither may a

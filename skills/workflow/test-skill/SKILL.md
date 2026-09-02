@@ -66,10 +66,19 @@ The glob decides it:
 | Fabric item folders (`**/*.DataPipeline/**`, `.Notebook`, `.Eventhouse`, …) | `tests/skills/fabric-triggers/` |
 | PBIP / report / semantic-model paths | `tests/skills/pbip-triggers/` |
 
-The two sets are disjoint and between them assert 24 of the payload's
-25 conditional skills (recounted 2026-09-02). A skill whose glob spans
-both is a design smell — raise it rather than splitting fixtures across
-sets.
+The two sets are **disjoint and jointly exhaustive** over the payload's
+conditional skills. Don't restate the count here — it was duplicated
+into six files, checked by nothing, and had drifted three different ways
+by 2026-09-02, one of them two generations stale. Each set's
+`expected_activations.md` owns its own figure; derive the total when you
+actually need it:
+
+```powershell
+./scripts/test-activation.ps1 -Set fabric -StaticOnly   # then -Set pbip
+```
+
+A skill whose glob spans both sets is a design smell — raise it rather
+than splitting fixtures across sets.
 
 ### 3. Write or extend the fixtures
 
