@@ -1,6 +1,6 @@
 ---
 name: fabric-variable-library
-description: "Use for Microsoft Fabric Variable Library — config-as-code for parameterizing notebooks and pipelines across environments. Covers definition parts (variables.json, settings.json, valueSets/<name>.json — no `format` field, omit it), variable types (String, Boolean, Number, Integer, DateTime, ItemReference), notebook consumption via `notebookutils.variableLibrary.getLibrary('Lib').<var>` dot notation (NOT `.get('lib','var')`) or the `get(\"$(/**/Lib/Var)\")` reference-path form, runtime limits (same-workspace only, no SPN, active value set), the ItemReference kernel-shape trap (dict-like; `.value()` AttributeErrors), Git-sync `InvalidContent (ValueMismatch)` (stale override name or empty value), the blank-parameter + lazy-resolution pattern, the `bool('false')` → True trap, pipeline integration via the `libraryVariables` block, the type-name mapping (Boolean→Bool, Integer→Int, Number→Double, DateTime/ItemReference→String), Expression-object wrapping, `valueSetsOrder`, and the runtime-ID rule for ItemReference."
+description: "Use for Microsoft Fabric Variable Library — config-as-code for parameterizing notebooks and pipelines per environment. Covers definition parts (variables.json, settings.json, valueSets/<name>.json — no `format` field, omit it), variable types (String, Boolean, Number, Integer, DateTime, Guid, ItemReference, ConnectionReference), notebook consumption via `notebookutils.variableLibrary.getLibrary('Lib').<var>` dot notation (NOT `.get('lib','var')`) or the `get(\"$(/**/Lib/Var)\")` reference-path form, runtime limits (same-workspace only, no SPN, active value set), the ItemReference kernel-shape trap (dict-like; `.value()` AttributeErrors), Git-sync `InvalidContent (ValueMismatch)`, the `bool('false')` → True trap, pipeline integration via the `libraryVariables` block (three keys, no `libraryId`), the pipeline type mapping (Boolean→Bool, Integer→Int, DateTime/Guid→String, Number unsupported, Item/ConnectionReference→Object), Expression-object wrapping, and the runtime-ID rule for ItemReference."
 paths:
   - "**/*.VariableLibrary/**"
 model: inherit
@@ -25,14 +25,16 @@ Config-as-code for parameterizing notebooks and pipelines per environment. Store
 
 ## Supported variable types
 
-| Type | Description |
-|---|---|
-| `String` | Text |
-| `Boolean` | true / false (stored as a string!) |
-| `Number` | Floating-point |
-| `Integer` | Whole numbers |
-| `DateTime` | ISO 8601 |
-| `ItemReference` | Fabric item GUID binding (`{itemId, workspaceId}`) |
+| Type | Tier | Description |
+|---|---|---|
+| `String` | Basic | Text |
+| `Boolean` | Basic | true / false (stored as a string!) |
+| `Number` | Basic | Floating-point. **Not supported in pipelines** |
+| `Integer` | Basic | Whole numbers |
+| `DateTime` | Basic | ISO 8601 |
+| `Guid` | Basic | GUID |
+| `ItemReference` | Advanced | Fabric item binding (`{itemId, workspaceId}`) |
+| `ConnectionReference` | Advanced | External connection (Snowflake, Azure SQL, …) by ID, so items reference it without embedded credentials; exposes `.connectionId` |
 
 ## variables.json
 
@@ -158,7 +160,6 @@ Pipelines consume Variable Library values via a `libraryVariables` block, **sibl
     "libraryVariables": {
       "notebook_id": {
         "libraryName": "MyConfig",
-        "libraryId": "<guid>",
         "variableName": "notebook_id",
         "type": "String"
       }
@@ -167,7 +168,13 @@ Pipelines consume Variable Library values via a `libraryVariables` block, **sibl
 }
 ```
 
-Each `libraryVariables` entry needs **all four**: `libraryName`, `libraryId`, `variableName`, `type`.
+Each entry needs exactly **three** keys — `libraryName`, `variableName`,
+`type`. There is **no `libraryId`**: every entry in live Git-synced
+pipelines carries these three and nothing else (36 entries across two
+pipelines, checked 2026-09-02), and no Microsoft Learn page mentions
+such a field. The object key (`notebook_id` above) is the local alias
+the expression uses; `variableName` is the name in the library, and the
+two need not match.
 
 ### Pipeline type mapping
 
@@ -177,10 +184,28 @@ Pipeline type names DIFFER from Variable Library type names. Map carefully:
 |---|---|
 | Boolean | **Bool** |
 | Integer | **Int** |
-| Number | **Double** |
-| DateTime | **String** |
 | String | **String** |
-| ItemReference | **String** |
+| DateTime | **String** |
+| Guid | **String** |
+| Number | **unsupported in pipelines** |
+| ItemReference | **Object** |
+| ConnectionReference | **Object** |
+
+The two advanced types are `Object`, not `String`, because the whole
+point of them is property access — `.itemId`, `.workspaceId`,
+`.connectionId` — which a string cannot carry:
+
+```json
+"notebookId": { "value": "@pipeline().libraryVariables.NotebookRef.itemId",
+                "type": "Expression" }
+```
+
+`Object` is confirmed against live Git-synced pipelines (2026-09-02);
+Learn documents the dotted property access but not the type name.
+**`Number` has no pipeline representation at all** — Learn's
+known-limitations list is explicit that Number types aren't supported in
+pipelines, so a Number variable cannot be consumed from one. Use
+`Integer`, or `String` and cast.
 
 Dynamic references must be wrapped in Expression objects: `{"value": "@pipeline().libraryVariables.x", "type": "Expression"}`. Bare strings are treated as literals — not resolved.
 
@@ -235,9 +260,10 @@ where no glob can see it. Tried and reverted 2026-09-01.
 | `.get("lib", "var")` fails at runtime | Use `getLibrary("lib").var` — always dot notation |
 | `bool("false")` → `True` | Compare as string: `flag.lower() == "true"` |
 | Definition rejected — `format` field | Omit `format` entirely — VariableLibrary does not support it |
-| Pipeline variable wrong type | Map correctly: Boolean→Bool, Integer→Int, Number→Double, DateTime/ItemReference→String |
+| Pipeline variable wrong type | Map correctly: Boolean→Bool, Integer→Int, DateTime/Guid→String, Item/ConnectionReference→**Object**. `Number` has no pipeline type — switch the variable to Integer or String |
 | Pipeline expression treated as literal | Wrap in `{"value": "...", "type": "Expression"}` |
-| Pipeline variable not resolving | Include BOTH `libraryName` and `libraryId` |
+| Pipeline variable not resolving | Check `libraryName` + `variableName` and the Expression wrapper. There is no `libraryId` — adding one is not the fix |
+| `.itemId` / `.connectionId` unresolved on a library variable | Entry declared `"type": "String"`; advanced types must be `"type": "Object"` |
 | Value Sets ignored | Add `valueSetsOrder` array to `settings.json` |
 | Value Set validation error | Create matching file under `valueSets/` for every entry in `valueSetsOrder` |
 | `PowerBIEntityNotFound` from `ItemReference` | Stored a `.platform` `logicalId` instead of the runtime item ID |
