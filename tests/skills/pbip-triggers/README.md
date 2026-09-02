@@ -87,10 +87,10 @@ tests/skills/pbip-triggers/
     └── control/notes.md         (matches nothing — negative control)
 ```
 
-Ten of the repo's 25 conditional skills are covered here. The other fifteen
+Ten of the repo's 26 conditional skills are covered here. The other sixteen
 are keyed to Fabric item types (`.Eventstream`, `.Warehouse`,
 `.Notebook`, …) and live in [`../fabric-triggers/`](../fabric-triggers/).
-Together the two sets cover all 25.
+Together the two sets cover all 26.
 
 ## Running the test
 
