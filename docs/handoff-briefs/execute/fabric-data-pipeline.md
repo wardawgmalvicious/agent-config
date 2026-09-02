@@ -306,6 +306,87 @@ separate, deliberate exercise"). The contract wins; the fixture plan is
 in the fresh-session test instead, and wave 5 does not close until it
 runs.
 
+## Fresh-session test
+
+Written 2026-09-02 by `/test-skill`, which found this section referenced
+twice above and missing. **Phase A is done**; Phase B below is not, and is
+what closes wave 5.
+
+### Phase A — activation contract (done, 2026-09-02)
+
+Fixture `tests/skills/fabric-triggers/fixtures/SamplePL.DataPipeline/.schedules`
+added; the item's three rows in `expected_activations.md` changed from
+*(none)* to `fabric-data-pipeline`, recorded as assertion 6 there. Static
+check and real-path check both pass — 57/57 fixtures, every activation
+delta matched. The set now covers 15 skills to `pbip-triggers`' 10, which
+is all 25 conditional skills in the payload.
+
+### Phase B — behaviour (outstanding)
+
+Deploy, and **restore the prune afterwards** — `-SkillGroups` prunes user
+scope, which serves every session on this machine:
+
+```powershell
+./scripts/link-claude.ps1 -SkillGroups workflow,fabric
+# ... run the queries below ...
+./scripts/link-claude.ps1 -SkillGroups workflow
+ls ~/.claude/skills    # expect the eight workflow skills and nothing else
+```
+
+Baseline first with `claude --safe-mode`, which starts with the whole
+payload off. Anything it already answers correctly is the base model, not
+this skill. Confirm the skill actually loaded with `/context` rather than
+by asking the session — self-report is unreliable.
+
+**Trigger queries — model-invocation (plain English).** Each targets a
+fact the description carries and the base model is likely to get wrong:
+
+1. "In a Fabric data pipeline, what timeout does an activity get if I
+   don't set `policy.timeout`?" — must give **7 days** for an absent
+   field and distinguish that from the portal's stamped
+   `0.12:00:00` (12 hours). Getting only "12 hours" is a fail: the
+   14x gap is the whole point.
+2. "How do I disable one activity in a Fabric pipeline without deleting
+   it?" — `state: "Inactive"` (**not** `InActive`, which is what the REST
+   reference says) plus `onInactiveMarkAs`, and the consequence that the
+   skipped activity has no `error` or output fields for a downstream
+   expression to read.
+3. "My Fabric pipeline's schedule silently stopped firing and the
+   `.schedules` file looks fine." — must reach for the mandatory
+   `endDateTime` having passed, and for scheduler auto-disable after
+   consecutive failures.
+4. "Should I use `InvokePipeline` or `ExecutePipeline`?" — `InvokePipeline`
+   is deprecated, and the migration is a **rebinding** (GUID vs
+   `referenceName`), not a rename.
+5. "What does `interval: 15` mean in a `Cron` schedule block?" — minutes,
+   not a crontab expression.
+
+**Trigger query — slash invocation.** `/fabric-data-pipeline`. Run at
+least one of the above both ways: `model:` is honoured on the slash path
+and silently dropped on model-invocation, `effort:` applies on both. This
+skill is `model: inherit`, so the two paths should agree — a divergence
+means something other than the pin is in play.
+
+**Scope guards — the skill must defer, not answer.** It declares three
+neighbours and a deliberate omission; answering any of these itself is a
+failure even if the answer is right:
+
+- "How do I write an `@concat` expression in `pipeline-content.json`?" →
+  `coding-expressions` (the rule co-loads on the same file).
+- "How do I rebind the connection GUID for another workspace?" →
+  `fabric-cicd`, which already prescribes `key_value_replace` on
+  `externalReferences.connection`.
+- "What are the `libraryVariables` entry's fields?" →
+  `fabric-variable-library`. **Note** that skill is wrong here in two
+  ways (see Notes above); the guard is that this skill defers, and the
+  fix belongs to `/learn`.
+- "How do I configure the Copy activity's source and sink?" → out of
+  scope by design. Copy internals were deliberately not drilled, so a
+  confident answer is a fabrication, not a bonus.
+
+**Path activation** needs no query: reading any file under a
+`*.DataPipeline/` folder is already proven by Phase A.
+
 ## Confidence
 
 - **Structure**: H. Reference-skill shape with a `references/` split,
