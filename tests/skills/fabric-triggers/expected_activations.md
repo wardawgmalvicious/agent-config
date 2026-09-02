@@ -82,9 +82,11 @@ an apparent one.
 | `SampleLH.Lakehouse/shortcuts.metadata.json` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
+| `SampleOA.OperationsAgent/.platform` | `fabric-operations-agent` | 3,919 |
+| `SampleOA.OperationsAgent/Configurations.json` | `fabric-operations-agent` | 3,919 |
 
-Together with `../pbip-triggers/`, all **25** conditional skills in the
-payload are now covered — 10 there, 15 here.
+Together with `../pbip-triggers/`, all **26** conditional skills in the
+payload are now covered — 10 there, 16 here.
 
 ## Assertions that carry weight
 
