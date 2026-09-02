@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Four briefs are open. Eight waves are spent (struck through below). Where
+Seven briefs are open. Eight waves are spent (struck through below). Where
 a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -15,8 +15,8 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 12
-links across the current 5 files, counting this queue. Numbering the
+deleted **individually** as each is spent, and heavily cross-linked — 28
+links across the current 8 files, counting this queue. Numbering the
 filenames would mean rewriting those links now, and again on every
 deletion, choosing each time between renumber-and-relink churn or a queue
 that reads `05, 07, 09, 10`. The filename is the link target, so it has to
@@ -52,6 +52,9 @@ rest would only invalidate every reference to a wave elsewhere.
 | ~~**9**~~ | ~~`activation-cleanroom-null.md`~~ | **Done 2026-09-01.** The clean room was never the variable — **the `Read` tool is**. Activation is keyed to file access through `Read`; a Bash `cat` or a `Grep` over the same file activates nothing, and this machine defaults every session to auto mode, which prefers `cat`. Measured as a 2x2 (Read/`cat` x in-repo/scratch): `Read` activated the same 3 skills and loaded the same rule in **both** directories, `cat` in **neither**. The original report's correlation was luck — all 8 clean-room probes chose `cat`, both in-repo controls chose `Read`; re-reading those transcripts confirms it retroactively. Every directory hypothesis is ruled out by its own probe: git repo, `AppData/Local/Temp`, missing `.claude/settings.json`, 8.3 short path, and fixture depth. Negative control clean. Written into root [`CLAUDE.md`](../../../CLAUDE.md) and both trigger READMEs. **Wave 10 is unblocked** — it may run anywhere, and must pin `--allowedTools Read --disallowedTools Bash …` and fail on a non-`Read` tool call. |
 | ~~**10**~~ | ~~`activation-test-harness.md`~~ | **Done 2026-09-02.** [`scripts/test-activation.ps1`](../../../scripts/test-activation.ps1) runs the real-path test for a named set in one command — static check, deploy to a throwaway probe outside the repo, one cold session, transcript assertion, teardown in a `finally`. Expectations come from [`scripts/activation_expect.py`](../../../scripts/activation_expect.py). **Both sets PASS**: pbip 16/16, fabric 56/56, skills *and* rules. See the finding below for the open question it answered. |
 | **11** | [item-type-skill-operationsagent.md](item-type-skill-operationsagent.md) | The second "yes, author it", and much cheaper than wave 5 — the definition file is 2 KB with a live schema, and the overlap check is short because nothing else globs `**/*.OperationsAgent/**`. Independent of everything above. Carries a free side-fix (a `fabric-git-serialization.md` glob gap, same shape as wave 6) that should land even if the skill decision goes the other way. |
+| **12** | [item-type-skill-ontology.md](item-type-skill-ontology.md) | The third "yes, author it", and the one with a **payload inconsistency already live**: `fabric-data-agent`'s description names Ontology as a source and nothing behind it says anything. Ontology is a Git-supported item ("IQ (preview) items"). Blocked only on confirming the folder suffix — no local sample exists, which is exactly when a guess gets committed. Carries the same free `fabric-git-serialization.md` side-fix as wave 11. Do this **before** wave 13. |
+| **13** | [skill-semantic-model-audit.md](skill-semantic-model-audit.md) | A review procedure over an existing model — the first thing in the payload that is not authoring guidance. **Design and performance are one skill, not two**: inactive relationships are expanded at refresh regardless of use, so a single finding is both a design and a memory finding. Wave 12 first: the ontology generation-constraint matrix is drilled there and merely cited here. Reference case is `ACME_SM_Operation.SemanticModel`, whose known answers (4 tables on both sides of a relationship, 7 of 26 relationships inactive, `DimDate` reached four ways) are the acceptance test. Also settles a repo-wide question — how a skill cites the `scripts/data/*.sh` wrappers — and carries a spin-off that is **not** a skill: a Power BI MCP template for `claude/mcp/`. Brief revised 2026-09-02 after drilling the star-schema and relationship guidance; read its revision note, not just the diff. |
+| **14** | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Gated, not scheduled.** Fabric IQ Plan is a Git-supported item with genuinely unguessable content (its automatic time-intelligence parser silently drops `Sept`, `WK1`, `Q5`). But nothing here uses Plan and no payload inconsistency pushes on it, so step 0 asks whether the workload is in play before anything else runs. A "no" is a defer that **keeps** the brief rather than deleting it — the one exception to the lifecycle below. If it does proceed, it must land a carve-out in wave 13, or the audit will report a correct planning model as a defective reporting one. |
 
 `skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
 half and E all landed, and C was declined, so nothing in it remained open.
@@ -248,20 +251,41 @@ have to be talked into running.
 
 **Waves are not a priority order past this point.** 9 and 10 are both
 spent; 5 is the biggest single piece of work in the queue and is late only
-because it is expensive. Nothing in the queue now blocks anything else —
-take whichever fits the session you have.
+because it is expensive. Waves 5, 7 and 11 block nothing and are blocked
+by nothing — take whichever fits the session you have.
 
-## Two briefs are decisions, not edits
+**Waves 12–14 are the exception, and are a real sequence.** 12 before 13,
+because the ontology generation-constraint matrix is drilled in 12 and
+cited by 13; 14 gated on its own step 0 and, if it proceeds, owed a
+carve-out in 13. Added 2026-09-02 from a semantic-model coverage question.
+Three briefs from one question is unusual for this queue and was the
+finding rather than the plan: the three sit at different layers — an item
+type, a review procedure, and a separate workload that arrived
+misidentified — and 14 in particular exists because two links offered as
+general modelling guidance turned out to document something else. Splitting
+them is the [subject-not-lineage](../README.md) rule applied; they share an
+origin and resolve independently.
 
-[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) and
-[item-type-skill-operationsagent.md](item-type-skill-operationsagent.md)
-both open with a recommendation rather than an edit list. A third,
+## Five briefs are decisions, not edits
+
+[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md),
+[item-type-skill-operationsagent.md](item-type-skill-operationsagent.md),
+[item-type-skill-ontology.md](item-type-skill-ontology.md),
+[skill-semantic-model-audit.md](skill-semantic-model-audit.md) and
+[item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) all open
+with a recommendation rather than an edit list. A sixth,
 `item-type-skill-lakehouse.md`, is spent — the "no" landed on 2026-09-01
 and the brief is deleted. `/drift-update` treats a decision-kind brief as
 something to put back to the user rather than execute; the same applies
 here. Landing a
 "no" is a real outcome — record the reasoning in the commit that deletes
 the brief, or the empty column gets re-opened by whoever notices it next.
+
+Wave 14 is the one that does **not** follow that rule. Its "no" is a
+defer on an unused preview workload, not a finding that the skill is
+unwarranted, so the brief stays on disk with the step 0 answer and its
+date recorded in the queue row. Delete it only if the workload is
+abandoned upstream or ruled out outright, and record which.
 
 ## Before touching any `paths:` glob
 
