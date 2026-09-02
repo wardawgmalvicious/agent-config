@@ -85,7 +85,7 @@ internal cross-references stay intact.
   the authoring run. Skills only; subagents and hooks keep the manual
   procedure in [tests/](../tests/).
 
-## Microsoft Fabric platform (26)
+## Microsoft Fabric platform (27)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -150,6 +150,14 @@ internal cross-references stay intact.
 - [fabric-semantic-model-ai-instructions/](fabric/fabric-semantic-model-ai-instructions/)
   — Copilot semantic model AI-instructions authoring.
 - [fabric-data-agent/](fabric/fabric-data-agent/) — Fabric Copilot data agent.
+- [fabric-operations-agent/](fabric/fabric-operations-agent/) — the
+  OperationsAgent item's `Configurations.json`: definition schema, which
+  references survive a deployment, `shouldRun` as a deployed capacity
+  meter, and the portal's serializer artifacts. Named for the item, not
+  "rti-agent", because Git integration files it under Data Factory and
+  three separate front doors write the same item. Distinct from
+  fabric-data-agent — autonomous and write-capable, not conversational
+  and read-only.
 - [fabric-ai-functions/](fabric/fabric-ai-functions/) — `ai.*` LLM functions
   on pandas/PySpark DataFrames in notebooks: import paths, config
   objects, custom endpoints, billing meters.
