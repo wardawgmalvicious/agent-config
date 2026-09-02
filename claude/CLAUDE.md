@@ -84,6 +84,24 @@ PowerShell here-strings (`@'...'@`) cannot be used inline in the Bash
 tool at all; put them in a `.ps1` written by a quoted heredoc and run
 that file instead.
 
+### "Permission denied" renaming a directory
+
+Windows refuses a directory rename while any process holds an open
+handle beneath it; MSYS2 maps that to `EACCES`, so it surfaces as
+`mv: cannot move 'x' to 'y': Permission denied`. An editor, a file
+watcher, Defender or the search indexer is enough, and the hold is
+usually brief.
+
+**Retry — don't switch shells, and don't touch settings.** PowerShell
+`Move-Item` fails the same way ("The process cannot access the file
+because it is being used by another process"); it only appears to fix
+things when the retry happens to land after the handle closes. A Claude
+Code permission or sandbox denial refuses *before* the program runs, so
+it never arrives as the program's own error text — nothing in
+`settings.json` or `settings.local.json` is involved. Measured
+2026-09-02 by holding a `FileStream` on a child file: Git Bash `mv` and
+`git mv` both failed, both succeeded the instant it closed.
+
 ### Command-line tooling
 
 Present, on `PATH` in both shells, and safe to reach for: `git`, `gh`,
