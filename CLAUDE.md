@@ -313,6 +313,28 @@ queue minutes apart; nothing warned, and re-reading before writing is
 the only thing that caught it. The failure mode is silent: your write
 succeeds and drops the other session's rows.
 
+**Explicit-path staging has a blind spot: the line you need may live
+inside *their* diff.** Re-reading catches the case where your write
+drops their rows; it does not catch the inverse — a fix whose target
+exists only in the other session's uncommitted work and not in `HEAD`.
+Path granularity cannot help, because `git add <path>` takes every hunk
+in the file and an added line has no `HEAD` version to stage apart from
+the block it belongs to. So before editing a contended file, check
+whether the target is in `HEAD` at all:
+
+```bash
+git show HEAD:<path> | grep -n "<target>"
+```
+
+Nothing back means the line is theirs, not yours. Leave it, and record
+the deferred fix in your own commit message so `git log` carries it
+rather than this conversation. On 2026-09-02 a rename needed one word
+changed in `tests/skills/fabric-triggers/expected_activations.md`; the
+only mention sat inside another session's unstaged block, so the rename
+shipped with that reference knowingly stale and a note saying so. The
+other session fixed it themselves — the note is what would have carried
+it if they hadn't.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +
