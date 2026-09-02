@@ -202,7 +202,7 @@ reproduce it.
 None blocking. The measured listing/activation baseline lived in
 `skill-context-cost.md`, retired 2026-09-01 — recover it from git history
 with
-`git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
+`git log --diff-filter=D -- 'docs/**/skill-context-cost.md'`
 rather than re-measuring. Two things from it are load-bearing here, and are
 restated so this brief does not depend on that recovery:
 

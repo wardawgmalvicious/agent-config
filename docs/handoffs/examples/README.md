@@ -21,7 +21,7 @@ artifact's shape, lift it as design source and record that lineage in
 the new brief's `Changes from source proposal` section:
 
 > N/A — design lifted directly from
-> `docs/handoff-briefs/examples/<path>`. No design changes; example is
+> `docs/handoffs/examples/<path>`. No design changes; example is
 > the design.
 
 This avoids re-narrating the example's design rationale and keeps the

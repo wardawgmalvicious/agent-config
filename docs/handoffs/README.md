@@ -43,12 +43,14 @@ queue**: what is open, what order to run it in, and what blocks what. It is
 the only place the order lives, so it is the file to read before starting a
 session — not this one.
 
-Briefs there are **not** numbered the way `/drift-handoff` numbers its
-output. A `docs/drift-audit/` directory is a disposable whole whose briefs
-do not cite each other; `execute/` briefs are committed, deleted
-individually, and cross-linked by filename. The filename is the link
-target, so it stays stable and the ordering lives in the queue file. The
-reasoning is in [execute/README.md](execute/README.md).
+`docs/audits/` holds handoff briefs too — the two directories split by
+lifecycle, not by kind. Briefs there are **not** numbered the way
+`/drift-handoff` numbers its output: a `docs/audits/` directory is a
+generated, disposable whole whose briefs do not cite each other, while
+`execute/` briefs are hand-derived, committed, deleted individually, and
+cross-linked by filename. The filename is the link target, so it stays
+stable and the ordering lives in the queue file. The reasoning is in
+[execute/README.md](execute/README.md).
 
 Two conventions there worth knowing before writing a new one. **Briefs on
 the same subject belong in one file** — four were consolidated into two on
@@ -60,11 +62,13 @@ that reason. Subject, not lineage, decides.
 
 **Once the change lands, the brief is deleted.** Git history is the
 archive — the brief was committed when it was written, so
-`git log --diff-filter=D -- 'docs/handoff-briefs/**/<name>.md'` finds the
-deleting commit and `git show <sha>^:<path>` recovers it in full. A
-retained copy only competes with the artifact it produced.
+`git log --diff-filter=D -- 'docs/**/<name>.md'` finds the deleting
+commit and `git show <sha>^:<path>` recovers it in full. The glob
+deliberately omits the directory: briefs deleted before 2026-09-02 live
+under this directory's old name, `docs/handoff-briefs/`, and `docs/**/`
+spans both. A retained copy only competes with the artifact it produced.
 
-This is *not* the `docs/drift-audit/` rule, which gitignores its output
+This is *not* the `docs/audits/` rule, which gitignores its output
 outright. That output is regenerable — re-run the audit and it comes
 back. A brief is hand-derived: the measurements and doc citations in it
 cost a research session, so it is committed when written and deleted

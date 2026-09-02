@@ -190,7 +190,7 @@ trigger mechanism. What is repo-specific here is not "how Claude Code works"
 but "how this payload is wired into it": the junction-vs-copy split, why
 `settings.json` is copied, the fixture procedure. Those belong in root
 `CLAUDE.md` (sessions editing this repo), `README.md` (cherry-pickers), and
-this audit's own `docs/drift-audit/<date>/claude-code/` ledger (dated
+this audit's own `docs/audits/<date>/claude-code/` ledger (dated
 evidence). Findings land on the `artifacts` above; bucket (b) stays empty.
 Checked 2026-08-30 — the 2026-08-29 run's 418 filtered bullets across 89 days
 produced zero new-skill candidates, which is the expected result, not a thin

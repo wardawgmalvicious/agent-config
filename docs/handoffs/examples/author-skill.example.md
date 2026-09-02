@@ -25,7 +25,7 @@ prune.
 Authors a new skill for this repo end to end. Input is a **topic**, not a
 brief: the skill checks for existing coverage, decides the name and
 namespace, drills the official documentation behind the topic, writes a
-filled handoff brief to `docs/handoff-briefs/execute/<name>.md` using
+filled handoff brief to `docs/handoffs/execute/<name>.md` using
 `templates/skill-handoff.md`, drafts the `SKILL.md` from that brief, runs
 the post-draft checks, and adds the skill's entry to `skills/README.md`.
 It ends at a linted draft plus a fresh-session test plan. It does not
@@ -33,7 +33,7 @@ write test fixtures and does not commit.
 
 The brief is an **intermediate artifact**, not an input. That was the
 substantive change this skill made to the repo's documented practice,
-and it landed before drafting began: both `docs/handoff-briefs/README.md`
+and it landed before drafting began: both `docs/handoffs/README.md`
 and root `README.md` described a two-surface split where a chat session
 wrote the brief and Claude Code drafted from it, justified by the chat
 surface having more context and being better at structural proposal.
@@ -55,7 +55,7 @@ Inline, model-invocable, not path-scoped.
 
 Drilled — all repo-internal, which is the point of a house-style skill:
 `templates/skill-handoff.md` (the field list in Frontmatter below came
-from it), `docs/handoff-briefs/README.md` and root `README.md` (the
+from it), `docs/handoffs/README.md` and root `README.md` (the
 two-surface split this brief overturned), the drift brief numbered 07 in
 its run directory (the "incidental grep hits are not coverage" failure
 mode, and the undrilled-set discipline), `skills/README.md` (house entry
@@ -75,7 +75,7 @@ redundant with this skill.
 ```yaml
 ---
 name: author-skill  # repo linter requires it; max 64 chars; lowercase letters/numbers/hyphens; forbidden words "anthropic"/"claude"
-description: Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoff-briefs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit. To fold a session learning into guidance that already exists, use learn instead.  # required; house target ≤ 1,024 chars
+description: Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit. To fold a session learning into guidance that already exists, use learn instead.  # required; house target ≤ 1,024 chars
 argument-hint: "[topic]"  # optional; autocomplete display hint shown in / menu
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch  # Edit is for skills/README.md and the brief, not for rewriting unrelated skills
 model: inherit  # always present
@@ -87,7 +87,7 @@ context: inline  # naming and scoping decisions need the user in the loop; a for
 
 Two notes on the field choices. **`Edit` is included** — unlike
 `drift-handoff`, this skill must modify two existing tracked files
-(`skills/README.md` and, on first run, `docs/handoff-briefs/README.md`),
+(`skills/README.md` and, on first run, `docs/handoffs/README.md`),
 so withholding `Edit` would not work. The body must bound that instead of
 the tool list doing it. **`context: inline`** because the name, the
 namespace, and the "is this actually one skill or two" call are all
@@ -145,7 +145,7 @@ load-bearing for triggering — and move it into the body.
    which pages were drilled **and which were not** — the undrilled set is
    what bounds the draft, and drift brief 07 is the worked example of why
    that matters.
-5. **Write the filled brief** to `docs/handoff-briefs/execute/<name>.md`
+5. **Write the filled brief** to `docs/handoffs/execute/<name>.md`
    from `templates/skill-handoff.md`. Check the path is not already
    occupied first — a `/drift-update` escalation leaves its scoping input
    at exactly that name. Every template heading survives; sections that
@@ -181,7 +181,7 @@ Derived from a conversational proposal on 2026-08-29 that suggested a new
 `docs/author-skill/` or `docs/create-skill/` directory holding the brief.
 Two departures:
 
-- **No new directory.** `docs/handoff-briefs/` already exists, already
+- **No new directory.** `docs/handoffs/` already exists, already
   holds the template, and its README already documents that open briefs
   are deleted once the change lands. `drift-handoff-skill.md` is the
   precedent. A third top-level `docs/` folder would fragment a convention
@@ -202,7 +202,7 @@ executor), and it produces **no test fixtures**.
 ## Portability caveats
 
 The skill is portable in format but not in content — it hardcodes this
-repo's layout (`skills/<group>/`, `docs/handoff-briefs/execute/`,
+repo's layout (`skills/<group>/`, `docs/handoffs/execute/`,
 `scripts/lint-frontmatter.py`) and its naming conventions. Anyone
 cherry-picking it would need to rewrite steps 2, 3, 5, 7 and 8. That is
 acceptable and worth saying in the skill body: it is deliberately a
@@ -230,14 +230,14 @@ loss of behaviour — it pins a floor, and the session already sits at
   scoping decision that authorizes a run.
 - `skill-creator`, `plugin-dev:skill-development` — (c) external. Not
   dependencies; named in the body only to justify the overlap.
-- `docs/handoff-briefs/README.md` and root `README.md` — **done.** Both
+- `docs/handoffs/README.md` and root `README.md` — **done.** Both
   carried the two-surface split; both were rewritten to be
   surface-agnostic before drafting began, so this skill now implements
   documented practice rather than contradicting it. The duplication is
   worth remembering: root `CLAUDE.md` names drifting project-scope
   instruction files as this repo's recurring failure mode, and this
   brief originally listed only the first of the two.
-- `docs/handoff-briefs/templates/skill-handoff.md` — (a) already
+- `docs/handoffs/templates/skill-handoff.md` — (a) already
   converted. Consumed as-is at the time. **It has since changed**
   (2026-09-01): the artifact-path guidance names the group directory, the
   three spend fields are marked always-present, the char-count section
@@ -267,7 +267,7 @@ the template's own changes. It is kept current rather than frozen because
 stale copy is one that gets copied forward. `git log` has the original.
 
 **The README convention change has landed.** Both
-`docs/handoff-briefs/README.md` and root `README.md` describe the
+`docs/handoffs/README.md` and root `README.md` describe the
 pattern without naming a surface. The open item this brief recorded —
 `drift-handoff-skill.md` sitting at the top level with its change already
 shipped — is **resolved**: it was deleted, and the lifecycle is now

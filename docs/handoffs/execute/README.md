@@ -10,7 +10,7 @@ order lives; each brief carries its own dependencies but not its position.
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`
 walks that order. That works there because a
-`docs/drift-audit/<date>/<source-id>/` directory is a **disposable whole**:
+`docs/audits/<date>/<source-id>/` directory is a **disposable whole**:
 gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
@@ -60,7 +60,7 @@ rest would only invalidate every reference to a wave elsewhere.
 half and E all landed, and C was declined, so nothing in it remained open.
 Per the [lifecycle](#lifecycle) the file is deleted and git history is the
 archive; the queue rows above carry the outcomes. Recover it with
-`git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
+`git log --diff-filter=D -- 'docs/**/skill-context-cost.md'`
 then `git show <sha>^:<path>`. Its durable method survived the deletion
 rather than going with it: the static glob check lives in both trigger
 READMEs — and is now also the `-StaticOnly` mode of

@@ -112,7 +112,7 @@ rearranging the root.
   frontmatter linter.
 - [tests/](tests/) — Synthetic fixtures for validating the code-review
   skill and security-reviewer agent.
-- [docs/handoff-briefs/](docs/handoff-briefs/) — Templates and worked
+- [docs/handoffs/](docs/handoffs/) — Templates and worked
   examples for the brief-before-draft pattern (see
   [Handoff discipline](#handoff-discipline)).
 - [CLAUDE.md](CLAUDE.md) — Project-scope instructions for working on
@@ -331,13 +331,13 @@ contracts — refusal patterns, severity rubrics, scope-enforced read-only
 or destructive guards. For pure reference skills (canonical-answer
 content), the pattern is overkill; real-use validation suffices.
 
-Templates and worked examples live in [docs/handoff-briefs/](docs/handoff-briefs/):
+Templates and worked examples live in [docs/handoffs/](docs/handoffs/):
 
-- [templates/skill-handoff.md](docs/handoff-briefs/templates/skill-handoff.md)
+- [templates/skill-handoff.md](docs/handoffs/templates/skill-handoff.md)
   — fill-in template for new skills
-- [templates/subagent-handoff.md](docs/handoff-briefs/templates/subagent-handoff.md)
+- [templates/subagent-handoff.md](docs/handoffs/templates/subagent-handoff.md)
   — fill-in template for new subagents
-- [examples/](docs/handoff-briefs/examples/) — reference briefs derived
+- [examples/](docs/handoffs/examples/) — reference briefs derived
   from validated artifacts
 
 The templates are internal tooling. Consumers cherry-picking from this

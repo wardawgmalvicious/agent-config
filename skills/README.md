@@ -27,7 +27,7 @@ internal cross-references stay intact.
 
 - [author-skill/](workflow/author-skill/) — author a new skill for this repo end
   to end: coverage check, name and namespace, doc drilling, a filled
-  handoff brief in [docs/handoff-briefs/](../docs/handoff-briefs/), then
+  handoff brief in [docs/handoffs/](../docs/handoffs/), then
   the `SKILL.md` draft and the post-draft checks. Ends at a linted draft
   plus a fresh-session test plan — no fixtures, no commit. Deliberately
   overlaps the loaded `skill-creator` and `plugin-dev:skill-development`
@@ -54,7 +54,7 @@ internal cross-references stay intact.
   quarter of its scope and would collide with a plausible future skill
   that actually audits skill quality.
 - [drift-handoff/](workflow/drift-handoff/) — the write half of `/drift-audit`:
-  turn its report into `docs/drift-audit/<date>/<source-id>/`, holding
+  turn its report into `docs/audits/<date>/<source-id>/`, holding
   the report verbatim plus one brief per recommended action, grouped by
   shared verification steps. Split from `drift-audit` so the turn doing
   the analysis has no write capability; runs inline because it reads the

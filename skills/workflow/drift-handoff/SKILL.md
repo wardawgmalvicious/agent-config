@@ -1,6 +1,6 @@
 ---
 name: drift-handoff
-description: "Turn a completed drift-audit report into handoff briefs on disk. Use immediately after a /drift-audit run, or when the user asks to prepare handoffs, write up the findings, or capture the recommended actions from an audit. Writes one directory per run — docs/drift-audit/<audit-date>/<source-id>/ — holding the audit report verbatim as 00-audit-report.md plus one numbered brief per recommended action, grouped so each brief covers a single kind of work with its own verification steps. Only recommended actions become briefs; every other finding stays a conversational read-through. Runs inline and reads the report from the current session, so it cannot reconstruct an audit it did not see."
+description: "Turn a completed drift-audit report into handoff briefs on disk. Use immediately after a /drift-audit run, or when the user asks to prepare handoffs, write up the findings, or capture the recommended actions from an audit. Writes one directory per run — docs/audits/<audit-date>/<source-id>/ — holding the audit report verbatim as 00-audit-report.md plus one numbered brief per recommended action, grouped so each brief covers a single kind of work with its own verification steps. Only recommended actions become briefs; every other finding stays a conversational read-through. Runs inline and reads the report from the current session, so it cannot reconstruct an audit it did not see."
 argument-hint: "[source-id]"
 allowed-tools: Read Write Glob Grep
 model: inherit
@@ -35,7 +35,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 
 ## 2. Resolve the target directory
 
-`docs/drift-audit/<audit-date>/<source-id>/`
+`docs/audits/<audit-date>/<source-id>/`
 
 - `<audit-date>` — the date the audit **ran**, ISO format. Not the window floor.
 - `<source-id>` — the registry id from `skills/drift-audit/references/sources.md` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
@@ -44,7 +44,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 
 **Before writing anything, `Glob` the target directory.** If files already exist there, `Read` them and stop to ask. Two audits of one source on one day are different audits; silently overwriting the first one's briefs destroys the only copy. Offer to suffix the directory rather than overwrite.
 
-Confirm `.gitignore` still carries `/docs/drift-audit/*` before the first write of a session. Without it these working notes land in version control.
+Confirm `.gitignore` still carries `/docs/audits/*` before the first write of a session. Without it these working notes land in version control.
 
 ## 3. Persist the report
 
@@ -94,7 +94,7 @@ This boundary is the skill's main editorial rule, and it has a failure mode: an 
 List the files written, one line each:
 
 ```
-docs/drift-audit/2026-08-29/vscode-agent/
+docs/audits/2026-08-29/vscode-agent/
   00-audit-report.md                          audit report, verbatim
   01-correct-vscode-version-attribution.md    actions 1–2 · prose correction
   02-repair-vscode-agent-registry-entry.md    actions 3–4 · registry repair
@@ -104,4 +104,4 @@ Then the deliberate omissions from step 6. Then stop.
 
 Do **not** start the work the briefs describe. That is `/drift-update`'s job — preferably from a fresh session, which is what proves the briefs are readable cold. Doing it here re-merges the two halves the split separated.
 
-Hand off to `/commit` only if something **tracked** changed. `docs/drift-audit/` is gitignored, so a normal run leaves the tree clean and nothing to commit — say so rather than invoking `/commit` against an empty diff. A run worth keeping is copied into `docs/handoff-briefs/examples/` as a tracked example; that copy is a separate, explicit request.
+Hand off to `/commit` only if something **tracked** changed. `docs/audits/` is gitignored, so a normal run leaves the tree clean and nothing to commit — say so rather than invoking `/commit` against an empty diff. A run worth keeping is copied into `docs/handoffs/examples/` as a tracked example; that copy is a separate, explicit request.

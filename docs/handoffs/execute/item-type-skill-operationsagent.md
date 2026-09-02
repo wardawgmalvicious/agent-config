@@ -15,7 +15,7 @@
 
 `grep -rni "operations.agent" skills/ claude/ tests/` returns **one hit**
 across the entire payload, and it is a spent audit note
-(`docs/drift-audit/2026-08-29/fabric/00-audit-report.md:147`, "Investigator
+(`docs/audits/2026-08-29/fabric/00-audit-report.md:147`, "Investigator
 insights in Operations Agent (Preview)" — flagged, never actioned).
 
 There is no fixture, no glob, and no skill. The item type is not in
