@@ -42,7 +42,10 @@ happen only when explicitly requested, never as follow-through.
   unavailable in this harness — instead, step the file through
   intermediate states: edit it down to the first commit's portion,
   commit, restore the next portion, commit again. Verify the final
-  state matches the intended end state exactly.
+  state matches the intended end state exactly. **This assumes you own
+  the whole file.** If another session has uncommitted work in it,
+  stepping it through intermediate states rewrites their in-flight
+  text — commit only what is yours and leave the rest with a note.
 - **Stage explicit paths only.** No `git add -A` / `git add .` — they
   silently sweep in untracked or unrelated files.
 - **Renames go through `git mv`** (or are staged so git detects the
