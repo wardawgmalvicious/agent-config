@@ -366,7 +366,7 @@ needed**:
   **in the same commit** as the skill —
   `SampleOA.OperationsAgent/.platform` and
   `SampleOA.OperationsAgent/Configurations.json`, each expecting
-  `fabric-operations-agent` plus the serialization rule. `scripts/activation_expect.py`
+  `fabric-operations-agent` plus the serialization rule. `scripts/activation-expect.py`
   reads that table directly, so the rows *are* the assertion.
 - The set's file count changes; check whether the README's "10 here" /
   "24 conditional skills" counts need updating with it.

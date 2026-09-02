@@ -4,7 +4,7 @@
     the conditional skills and rules the globs say it should?
 
 .DESCRIPTION
-    The static check (scripts/activation_expect.py static) compares the
+    The static check (scripts/activation-expect.py static) compares the
     frontmatter globs against tests/skills/<set>-triggers/expected_activations.md.
     It tests the globs. It does not test that the harness acts on them.
 
@@ -82,7 +82,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repo = Split-Path -Parent $PSScriptRoot
-$expect = Join-Path $PSScriptRoot 'activation_expect.py'
+$expect = Join-Path $PSScriptRoot 'activation-expect.py'
 $fixtureSrc = Join-Path $repo "tests/skills/$Set-triggers/fixtures"
 $marker = '.activation-probe'
 
@@ -153,7 +153,7 @@ try {
     # The "print done N" step is load-bearing, not chatter. Claude queues
     # activation attachments and flushes them in batches; a text block
     # between reads tends to force a flush per read, which is what gives
-    # per-file resolution instead of per-group. See activation_expect.py.
+    # per-file resolution instead of per-group. See activation-expect.py.
     $prompt = @"
 Read every one of the files listed below. Use the Read tool for each one —
 this matters, do not use any other means of reading them. Do not skip any,
