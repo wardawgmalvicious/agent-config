@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Six briefs are open. Nine waves are spent (struck through below). Where
+Seven briefs are open. Nine waves are spent (struck through below). Where
 a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -15,8 +15,9 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 27
-links across the current 7 files, counting this queue. Numbering the
+deleted **individually** as each is spent, and heavily cross-linked — 41
+markdown links across the current 8 files, counting this queue (recounted
+2026-09-02; the previous figure of 27 predated the wave 12–14 briefs). Numbering the
 filenames would mean rewriting those links now, and again on every
 deletion, choosing each time between renumber-and-relink churn or a queue
 that reads `05, 07, 09, 10`. The filename is the link target, so it has to
@@ -55,6 +56,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | **12** | [item-type-skill-ontology.md](item-type-skill-ontology.md) | The third "yes, author it", and the one with a **payload inconsistency already live**: `fabric-data-agent`'s description names Ontology as a source and nothing behind it says anything. Ontology is a Git-supported item ("IQ (preview) items"). Blocked only on confirming the folder suffix — no local sample exists, which is exactly when a guess gets committed. Carries the same free `fabric-git-serialization.md` side-fix as wave 11. Do this **before** wave 13. |
 | **13** | [skill-semantic-model-audit.md](skill-semantic-model-audit.md) | A review procedure over an existing model — the first thing in the payload that is not authoring guidance. **Design and performance are one skill, not two**: inactive relationships are expanded at refresh regardless of use, so a single finding is both a design and a memory finding. Wave 12 first: the ontology generation-constraint matrix is drilled there and merely cited here. Reference case is `ACME_SM_Operation.SemanticModel`, whose known answers (4 tables on both sides of a relationship, 7 of 26 relationships inactive, `DimDate` reached four ways) are the acceptance test. Also settles a repo-wide question — how a skill cites the `scripts/data/*.sh` wrappers — and carries a spin-off that is **not** a skill: a Power BI MCP template for `claude/mcp/`. Brief revised 2026-09-02 after drilling the star-schema and relationship guidance; read its revision note, not just the diff. |
 | **14** | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Gated, not scheduled.** Fabric IQ Plan is a Git-supported item with genuinely unguessable content (its automatic time-intelligence parser silently drops `Sept`, `WK1`, `Q5`). But nothing here uses Plan and no payload inconsistency pushes on it, so step 0 asks whether the workload is in play before anything else runs. A "no" is a defer that **keeps** the brief rather than deleting it — the one exception to the lifecycle below. If it does proceed, it must land a carve-out in wave 13, or the audit will report a correct planning model as a defective reporting one. |
+| **15** | [concurrent-session-workflow.md](concurrent-session-workflow.md) | **Runs after 11 and before 12**, despite the number — the queue does not renumber, because that invalidates every reference to a wave elsewhere. Should branching become the standard workflow rather than the one-off it was for PR #6? The premise needs testing first: root [`CLAUDE.md`](../../../CLAUDE.md) says branching does **not** isolate concurrent sessions in a shared working tree, so worktrees are the only mechanism that would — blocked on the absolute per-skill junctions, plus a constraint not written down anywhere, that `~/.claude/skills` is user scope and singular. Placed ahead of 12 because 12→13→14 is three consecutive skill-authoring waves, exactly the workload that compounds the contention. Settles the downstream "do we need a PR skill" question, whose earlier "no" rested on a base rate measured entirely before the workflow that produced the branch. |
 
 `skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
 half and E all landed, and C was declined, so nothing in it remained open.
@@ -275,12 +277,20 @@ general modelling guidance turned out to document something else. Splitting
 them is the [subject-not-lineage](../README.md) rule applied; they share an
 origin and resolve independently.
 
-## Four briefs are decisions, not edits
+**Wave 15 runs between 11 and 12**, and its number says nothing about its
+position — positions live in this table, not in the number, for the same
+reason they do not live in filenames. It goes ahead of 12 because 12–14 is
+the queue's only real sequence and three consecutive skill-authoring waves
+are exactly what a concurrent-session workflow question compounds across.
+Added 2026-09-02, after this repo's first branch was merged as PR #6.
+
+## Five briefs are decisions, not edits
 
 [item-type-skill-operationsagent.md](item-type-skill-operationsagent.md),
 [item-type-skill-ontology.md](item-type-skill-ontology.md),
-[skill-semantic-model-audit.md](skill-semantic-model-audit.md) and
-[item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) all open
+[skill-semantic-model-audit.md](skill-semantic-model-audit.md),
+[item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) and
+[concurrent-session-workflow.md](concurrent-session-workflow.md) all open
 with a recommendation rather than an edit list. Two more are spent and
 deleted: `item-type-skill-lakehouse.md`, whose "no" landed 2026-09-01,
 and `item-type-skill-datapipeline.md`, whose "yes" landed 2026-09-02 as
