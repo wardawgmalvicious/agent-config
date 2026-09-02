@@ -365,9 +365,12 @@ it if they hadn't.
   **hot-reload**: Claude Code watches skill directories and picks up
   changes in-session, and this works through this repo's junctions —
   verified 2026-08-31 on Claude Code 2.1.251 for skill add, skill
-  removal, and `skillOverrides`. An in-place `description` edit is the
-  one case not yet confirmed here, so restart before trusting a changed
-  *trigger*. (Upstream fixed in-session skill reload in 2.1.216; this
+  removal, `skillOverrides`, and — added 2026-09-02 on 2.1.252 — an
+  in-place `description` edit: four descriptions were rewritten with
+  `sed` and the next listing carried the new text, no restart. That
+  confirms the *listing* refreshing, which is the surface triggers are
+  matched against; it was not separately tested that a reworded trigger
+  then fires. (Upstream fixed in-session skill reload in 2.1.216; this
   file previously claimed the opposite.)
 - **Rules** — `paths:` frontmatter globs control auto-load; a rule
   fires when a matching file enters session scope (GitHub Copilot's
