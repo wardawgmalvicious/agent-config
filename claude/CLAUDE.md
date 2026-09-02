@@ -118,6 +118,15 @@ profiles or `machine-config/setup.ps1`: `starship`, `hurl`, and `es`
 (Everything CLI) — admin-scope winget packages that a non-admin bootstrap
 defers.
 
+**`bash` from PowerShell is WSL, not Git Bash.** `Get-Command bash`
+resolves to `C:\WINDOWS\system32\bash.exe`, so calling it from `pwsh`
+enters WSL and fails on Windows paths with a relay error —
+`execvpe(/bin/bash) failed: No such file or directory` — which reads
+like a missing tool and isn't. Use
+`& 'C:\Program Files\Git\bin\bash.exe'` explicitly for the mingw64
+shell from PowerShell. (`sh` resolves to nothing at all.) Verified
+2026-09-02.
+
 PowerShell modules available: `Az`, `MicrosoftPowerBIMgmt`, `SqlServer`,
 `Microsoft.Graph`, `ImportExcel`, `powershell-yaml`, `Pester`,
 `PSScriptAnalyzer`, `Microsoft.PowerShell.SecretManagement` +
