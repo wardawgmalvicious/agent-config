@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Three briefs are open. Eight waves are spent (struck through below). Where
+Four briefs are open. Eight waves are spent (struck through below). Where
 a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -51,6 +51,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | ~~**8**~~ | ~~*No brief — this row was the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model~~ | **Done 2026-09-01**, fresh session, Claude Code 2.1.252. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is now `model: sonnet`. Baseline (`inherit` → `claude-opus-5`) and candidate (`claude-sonnet-5`) each scanned the fixtures from an identical cold memory state, and the caught/not-caught sets were **identical**: 4/4 seeded findings at the expected severities (2 Critical at `config.py:2,3`, 1 High at `queries.py:3`, 1 Low at `notes.md:1`), no false positives, five-field format intact, all four closing-summary components present, memory seeded, and neither run read `expected_findings.md`. Fixtures unmodified after. Mode 3 on sonnet took the **preferred** branch — refused outright, never attempted the `Edit` — so the hook had nothing to block; it was verified separately as a direct unit test over four cases (in-scope write allowed, out-of-scope write blocked with exit 2, a different `agent_type` unaffected, `../` traversal out of the memory dir blocked). Both runs **foreground**. The **frontmatter** pin — which those two runs could not exercise, since sonnet was forced by an Agent-tool override and a subagent is not hot-reloaded into the session that edits it — was confirmed separately the same day from a fresh session (`83089e9f`, started 25 minutes after the pin landed): an un-overridden spawn ran `claude-sonnet-5` while its parent session sat on Opus. **Wave 8(a) is fully closed.** **(b)** ~~Confirm `/commit` picks up its pins.~~ **Closed** — `e3cae240` shows three `commit` runs at `claude-sonnet-5 xhigh`, each bracketed by `claude-opus-5 high`, so both pins fire at the *current* values and turn-scoping holds. **(c)** **Confirmed** — a plain-English request does auto-trigger `commit`; see the invocation-path finding below, which is how it was measured. |
 | ~~**9**~~ | ~~`activation-cleanroom-null.md`~~ | **Done 2026-09-01.** The clean room was never the variable — **the `Read` tool is**. Activation is keyed to file access through `Read`; a Bash `cat` or a `Grep` over the same file activates nothing, and this machine defaults every session to auto mode, which prefers `cat`. Measured as a 2x2 (Read/`cat` x in-repo/scratch): `Read` activated the same 3 skills and loaded the same rule in **both** directories, `cat` in **neither**. The original report's correlation was luck — all 8 clean-room probes chose `cat`, both in-repo controls chose `Read`; re-reading those transcripts confirms it retroactively. Every directory hypothesis is ruled out by its own probe: git repo, `AppData/Local/Temp`, missing `.claude/settings.json`, 8.3 short path, and fixture depth. Negative control clean. Written into root [`CLAUDE.md`](../../../CLAUDE.md) and both trigger READMEs. **Wave 10 is unblocked** — it may run anywhere, and must pin `--allowedTools Read --disallowedTools Bash …` and fail on a non-`Read` tool call. |
 | ~~**10**~~ | ~~`activation-test-harness.md`~~ | **Done 2026-09-02.** [`scripts/test-activation.ps1`](../../../scripts/test-activation.ps1) runs the real-path test for a named set in one command — static check, deploy to a throwaway probe outside the repo, one cold session, transcript assertion, teardown in a `finally`. Expectations come from [`scripts/activation_expect.py`](../../../scripts/activation_expect.py). **Both sets PASS**: pbip 16/16, fabric 56/56, skills *and* rules. See the finding below for the open question it answered. |
+| **11** | [item-type-skill-operationsagent.md](item-type-skill-operationsagent.md) | The second "yes, author it", and much cheaper than wave 5 — the definition file is 2 KB with a live schema, and the overlap check is short because nothing else globs `**/*.OperationsAgent/**`. Independent of everything above. Carries a free side-fix (a `fabric-git-serialization.md` glob gap, same shape as wave 6) that should land even if the skill decision goes the other way. |
 
 `skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
 half and E all landed, and C was declined, so nothing in it remained open.
@@ -250,13 +251,15 @@ spent; 5 is the biggest single piece of work in the queue and is late only
 because it is expensive. Nothing in the queue now blocks anything else —
 take whichever fits the session you have.
 
-## One brief is a decision, not edits
+## Two briefs are decisions, not edits
 
-[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) opens
-with a recommendation rather than an edit list. Its sibling
-`item-type-skill-lakehouse.md` was the other, and it is spent — the "no"
-landed on 2026-09-01 and the brief is deleted. `/drift-update` treats a decision-kind brief as something to put
-back to the user rather than execute; the same applies here. Landing a
+[item-type-skill-datapipeline.md](item-type-skill-datapipeline.md) and
+[item-type-skill-operationsagent.md](item-type-skill-operationsagent.md)
+both open with a recommendation rather than an edit list. A third,
+`item-type-skill-lakehouse.md`, is spent — the "no" landed on 2026-09-01
+and the brief is deleted. `/drift-update` treats a decision-kind brief as
+something to put back to the user rather than execute; the same applies
+here. Landing a
 "no" is a real outcome — record the reasoning in the commit that deletes
 the brief, or the empty column gets re-opened by whoever notices it next.
 
