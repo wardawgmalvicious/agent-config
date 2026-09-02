@@ -1,6 +1,6 @@
 ---
 name: author-skill
-description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoff-briefs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit. To fold a session learning into guidance that already exists, use learn instead."
+description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoff-briefs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 model: inherit
@@ -308,7 +308,9 @@ Report:
    changed `SKILL.md` does not reliably reload mid-session on Windows,
    so trigger behaviour cannot be validated in the session that wrote
    it. Name the specific queries it should fire on, so the fresh-session
-   test is runnable rather than aspirational.
+   test is runnable rather than aspirational — **those queries are what
+   `/test-skill` reads back out of the brief**, so a vague one here
+   becomes a vague test there.
 
 Then **sweep `docs/handoff-briefs/execute/`** for briefs whose work has
 landed. A queued brief is deleted once its change lands, or promoted
@@ -324,7 +326,10 @@ a step here instead of a habit.
   the work landed. Deletion itself is safe — briefs are committed when
   written, so the deleting commit and its content stay recoverable.
 
-Hand off to `/commit`. Do not commit here.
+Hand off to **`/test-skill`, then `/commit`**. Do not commit here, and
+do not test here either. `/test-skill` reads the brief from disk, so it
+can run now or in a fresh session next week — the two do not have to be
+back to back, and a cold run is the better one.
 
 ## 10. Constraints
 
@@ -337,7 +342,10 @@ Hand off to `/commit`. Do not commit here.
 - **Name before drilling.** Naming and the one-skill-or-two call go to
   the user first; both are cheap now and expensive after a draft exists.
 - **Brief before draft**, even in one session.
-- **No test fixtures.** `tests/` is a separate, deliberate exercise.
+- **No test fixtures.** `tests/` is a separate, deliberate exercise —
+  and it is `/test-skill`'s, which writes the fixtures, updates
+  `expected_activations.md` and runs both the static and the real-path
+  activation test.
 - **No commit**, no push.
 - **Do not edit other skills.** Only `skills/<group>/<name>/`, the new
   brief, and the single `skills/README.md` entry. `Edit` is available

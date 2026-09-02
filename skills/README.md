@@ -73,6 +73,17 @@ internal cross-references stay intact.
   skill / rule / CLAUDE.md that should have covered it. Auto-detects
   which guidance was in use, checks existing coverage, verifies against
   docs, proposes a diff for approval, hands off to `/commit`.
+- [test-skill/](workflow/test-skill/) — the second half of
+  `/author-skill`: write a drafted skill's trigger fixtures, update the
+  `expected_activations.md` contract, run the static and real-path
+  activation tests, then check behaviour in a cold session against a
+  `--safe-mode` baseline. Named as the verb you invoke, and paired with
+  `author-skill` deliberately — that skill stops at a linted draft and
+  writes no fixtures, so nothing validated a new skill until this one
+  existed. Reads the handoff brief from disk rather than from session
+  context, so it runs cold like `/drift-update` instead of depending on
+  the authoring run. Skills only; subagents and hooks keep the manual
+  procedure in [tests/](../tests/).
 
 ## Microsoft Fabric platform (26)
 
