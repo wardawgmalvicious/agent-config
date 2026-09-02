@@ -261,11 +261,13 @@ too until 2026-09-02 and are copies now, so they change only when
 hazard this section was written for — what remains applies to `skills/`
 alone.
 
-Every commit here is on `main`: **no merge commit and no second branch
-has ever existed** (measured 2026-09-02, 305 commits in). That is not an
-oversight. For the common change — one brief, one doc, one queue row,
-complete in a single commit — committing straight to `main` is correct
-and stays correct.
+Every commit here is on `main`, and **no merge commit has ever existed**
+(measured 2026-09-02, 324 commits in). The first branch —
+`docs/rename-docs-dirs`, merged the same day — did not change that,
+because it was integrated by fast-forward. That is not an oversight. For
+the common change — one brief, one doc, one queue row, complete in a
+single commit — committing straight to `main` is correct and stays
+correct.
 
 **Branch when an intermediate state would be broken while deployed** —
 that is the trigger, not "am I in a session". Authoring a skill is the
@@ -292,6 +294,24 @@ commits agree without a second taxonomy. `<slug>` names the subject:
 `docs/handoffs/execute/README.md` deliberately keeps positions out
 of filenames because positions churn and links break; the same argument
 applies here.
+
+**Integrate by fast-forward.** Rebase-merge is **disabled on this
+repo** — the API answers `405 Rebase merges are not allowed` — and
+squash would collapse the logical split `/commit` just made. So land a
+branch locally rather than through the merge button:
+
+```bash
+git switch main && git merge --ff-only <branch> && git push origin main
+```
+
+That preserves the exact SHAs, keeps `main` linear and adds no merge
+commit; GitHub marks the PR merged once its commits are reachable. Open
+the PR with the `github-mcp` tools, **not `gh`** — the two authenticate
+as different accounts here, and only one of them matches this repo (see
+`~/.claude/CLAUDE.md`). The repo is public so CI is pollable
+unauthenticated, but `allow_*_merge` and branch protection are not
+(`null` / `401`), so the rebase rejection surfaces at merge time and not
+before. Verified 2026-09-02 on PR #6.
 
 **Never `git checkout` or `git switch` while another session is live in
 this tree.** One working tree is on one branch, so the switch is not
