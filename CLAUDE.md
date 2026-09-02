@@ -198,6 +198,12 @@ deployed anywhere and loads only in sessions inside this repo.
   Behavioral, cross-domain skills are named as the verb you invoke
   (`commit`, `learn`, `code-review`, `drift-audit`); platform skills
   carry a `fabric-`, `pbir-`, or `pbid-` namespace prefix.
+  The three ways are **not independently available**: a skill carrying
+  a `paths:` glob is withheld from the startup listing, so until a
+  matching file is Read its description is not in context and
+  `/<name>` is `Unknown command` — path is its only cold entry, and
+  model-invocation becomes available only afterwards. Measured
+  2026-09-02 on 2.1.252.
 - **Rules** (`claude/rules/*.md`) have no `name` or `description`, only
   `paths:` — they auto-load when a matching file enters session scope.
 - **Hooks** (`claude/hooks/*.sh`) fire on events registered in
@@ -407,11 +413,16 @@ it if they hadn't.
   everything else held constant — `/commit` ran `claude-sonnet-5
   xhigh`, and a plain-English commit request eleven minutes later ran
   `claude-opus-5 xhigh`. Two consequences. `commit`'s `model: sonnet`
-  only saves anything when you actually type `/commit`. And a `model:`
-  pin on any of the 38 platform skills would be **inert by
-  construction**, since those trigger by description and never by
-  slash — they are all `model: inherit` today, so nothing is currently
-  broken, but a future pin there would do nothing and say nothing.
+  only saves anything when you actually type `/commit`. And a
+  `model:` pin is **inert on the 25 conditional platform skills** — a
+  `paths:` glob withholds them from the startup listing, so they are
+  reached by path, and `/<name>` answers `Unknown command`. It is
+  **live on the other 13**, which carry no glob and slash normally
+  (measured with `/fabric-gotchas`, 2026-09-02 on 2.1.252). All 38 are
+  `model: inherit` today, so nothing is broken, but a future pin is
+  inert or effective depending on which half it lands in. Corrected
+  2026-09-02 — this previously said all 38 were inert because they
+  "never" slash.
   `effort:` has **no
   `inherit` value**; omitting the field *is* the inherit, which is why
   it is carried as a commented placeholder rather than a written-out
