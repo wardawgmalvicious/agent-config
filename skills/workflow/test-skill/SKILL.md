@@ -158,7 +158,7 @@ undoing a deliberate prune and must put it back:
 
 ```powershell
 ./scripts/link-claude.ps1 -SkillGroups workflow
-ls ~/.claude/skills    # expect the seven workflow skills and nothing else
+ls ~/.claude/skills    # expect the eight workflow skills and nothing else
 ```
 
 **Never run the script bare.** Omitting `-SkillGroups` deploys every
@@ -193,9 +193,29 @@ does the right thing but ignores its own scope guard has failed.
 (slash review, NL review, slash adversarial, NL adversarial) to copy
 from.
 
+**A conditional skill has neither path until a matching file is Read.**
+The `paths:` glob keeps it out of the startup listing, so its
+`description` — the whole model-invocation trigger — is never in
+context, and `/<name>` answers `Unknown command`. Read a matching file
+first; that injects the listing entry and the model can then invoke it.
+The four-mode matrix above applies as written only to an
+*unconditional* skill. Measured 2026-09-02 on 2.1.252:
+`/fabric-data-pipeline` was `Unknown command` while `/fabric-gotchas` —
+same session shape, no `paths:` — ran normally.
+
+**Run the behavioural session outside this repo.**
+`.claude/settings.json` here collapses all 38 platform skill
+descriptions to `name-only`, and the description *is* the trigger — so
+an in-repo run is a guaranteed false negative that looks exactly like a
+broken skill.
+
 Confirm the skill actually loaded with `/context` rather than by asking
 the session — self-report is unreliable, and once omitted an
 unconditional skill that was certainly present.
+In a `-p` probe where `/context` is unavailable, use the transcript: a
+model-invoked skill appears as a `Skill` tool_use, while a slash-invoked
+one is **inlined as a command expansion** and produces no `Skill` call —
+so an absent `Skill` record disproves nothing on the slash path.
 
 ### 9. Confirm the fixtures are unmodified
 
@@ -216,8 +236,8 @@ Do not commit here.
 
 ## Reading a failure
 
-Four different bugs produce the identical symptom "nothing activated".
-Work down this table before touching a glob:
+Several different bugs produce the identical symptom "nothing
+activated". Work down this table before touching a glob:
 
 | Symptom | Real cause |
 | --- | --- |
@@ -227,6 +247,8 @@ Work down this table before touching a glob:
 | An activation looks one or two reads late | Attachments **flush in batches**; attribute it to the group read since the last flush, not to one file |
 | A negative assertion always passes | The skill it is asserting *against* is not deployed. Both groups must deploy for either set |
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
+| The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
+| `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally |
 
 **The transcript is the only witness.** It is at
 `~/.claude/projects/<project>/<session-id>.jsonl`; an activation is a
