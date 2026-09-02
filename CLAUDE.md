@@ -34,7 +34,7 @@ deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
 `.claude/settings.json` holds more than servers and permissions: a
-`skillOverrides` block collapses all 37 platform skill descriptions to
+`skillOverrides` block collapses all 38 platform skill descriptions to
 `name-only` in sessions here. That is deliberate, and it stays even
 though the workflow-only prune already keeps those skills out of
 `~/.claude/skills` — it keeps them auditable from this repo and holds
@@ -92,7 +92,7 @@ output line that reads as wrong: the run reports `Linked` 37 times and
 ends `Done. All links verified.` This happened on 2026-08-31, and the
 only visible symptom was 18 platform skills reappearing in the session's
 skill listing. Confirm the prune held with `ls ~/.claude/skills`: it
-should list the seven workflow skills and nothing else.
+should list the eight workflow skills and nothing else.
 
 `-SkillGroups` **prunes**: a group not listed is removed from the target
 on the next run. Pruning only ever deletes a junction resolving inside
@@ -359,18 +359,19 @@ succeeds and drops the other session's rows.
   Current policy: the session default is `"effortLevel": "max"` in
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
   this repo). `model: inherit` everywhere except `commit` (`sonnet`).
-  `effort` is `max` on the six workflow skills that drive this repo
-  — `code-review`, `drift-audit`, `author-skill`, `learn`,
-  `drift-update`, `drift-handoff` — `xhigh` on `commit`, and left
-  commented on all 37 platform skills, which therefore inherit `max`.
+  `effort` is `max` on the seven workflow skills that drive this repo
+  — `code-review`, `drift-audit`, `author-skill`, `test-skill`,
+  `learn`, `drift-update`, `drift-handoff` — `xhigh` on `commit`, and
+  left commented on all 38 platform skills, which therefore inherit
+  `max`.
   Note what that means: *while the session actually sits at* `max`,
   only `commit` changes behaviour. But the session level is **live
   state, not the file** — it can be changed mid-session, nothing
   warns when it drifts, and the transcript is the only place the real
   value shows (observed 2026-09-01: both copies of `settings.json`
   read `max` while the session ran at `xhigh`, switched by accident
-  while browsing the level list). Whenever it sits below `max` the six
-  pins start *raising* effort rather than matching it, which is
+  while browsing the level list). Whenever it sits below `max` the
+  seven pins start *raising* effort rather than matching it, which is
   exactly the *floor* they were written for. Platform skills stay
   unpinned **on purpose**: they auto-trigger alongside your real work,
   so an effort pin there governs your Fabric/Power BI turn rather than
@@ -385,7 +386,7 @@ succeeds and drops the other session's rows.
   xhigh`, and a plain-English commit request eleven minutes later ran
   `claude-opus-5 xhigh`. Two consequences. `commit`'s `model: sonnet`
   only saves anything when you actually type `/commit`. And a `model:`
-  pin on any of the 37 platform skills would be **inert by
+  pin on any of the 38 platform skills would be **inert by
   construction**, since those trigger by description and never by
   slash — they are all `model: inherit` today, so nothing is currently
   broken, but a future pin there would do nothing and say nothing.
@@ -446,9 +447,13 @@ or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/REA
 Changing a `paths:` glob changes *whether a skill fires at all*, which
 none of the fixtures above test. That contract belongs to
 [tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
-[tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) — 9
-skills and 10, disjoint, which is all 19 conditional skills in the
-payload. Assertions live in each set's `expected_activations.md`.
+[tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) —
+disjoint fixture sets that between them assert **24 of the 25**
+conditional skills in the payload. The 25th is `fabric-data-pipeline`,
+whose fixtures are outstanding. Assertions live in each set's
+`expected_activations.md`. (Recounted 2026-09-02: the previous "9 and
+10, all 19" predated workstream E, which moved five skills from
+unconditional to conditional.)
 
 **No *log* records conditional activation, but the session transcript
 does.** `instructions-loaded.log` sees rules only; `skills-invoked.log`
