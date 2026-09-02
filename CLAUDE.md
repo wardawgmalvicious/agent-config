@@ -43,10 +43,10 @@ triggers *while working here*: a `description` is the entire trigger
 mechanism, and in this repo the platform ones are not in the listing to
 be matched against.
 
-Being a `<tool>/` payload says nothing about *how* it deploys: within
-`claude/`, `agents/`, `hooks/`, and `rules/` are junctioned while
-`CLAUDE.md` and `settings.json` are copied. Deployment mechanism is the
-table below; directory placement is only about format.
+Being a `<tool>/` payload says nothing about *how* it deploys:
+everything under `claude/` is **copied**, while `skills/` is
+junctioned. Deployment mechanism is the table below; directory
+placement is only about format.
 
 ## Commands
 
@@ -70,8 +70,10 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 ```powershell
 # THIS MACHINE'S DEFAULT — always use this form. Deploys the workflow
 # skills only; fabric and powerbi are PRUNED from ~/.claude/skills.
-# -Force also pushes claude/CLAUDE.md and claude/settings.json, which
-# deploy by copy rather than junction.
+# -Force also pushes claude/CLAUDE.md and claude/settings.json, and is
+# what allows deleting a target-only file under agents/hooks/rules/mcp.
+# Everything except skills/ deploys by copy, so a repo edit to a rule,
+# hook, agent or MCP template is NOT live until this runs.
 ./scripts/link-claude.ps1 -SkillGroups workflow -Force
 
 # Same, when neither copied file has changed.
@@ -127,35 +129,50 @@ lands determines when it goes live:
 
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
-| `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
-| `claude/mcp/` | `~/.claude/mcp` | directory junction (`scripts/link-claude.ps1`) | immediately — same files |
 | `skills/<group>/` | `~/.claude/skills/<name>` | one junction per skill (`scripts/link-claude.ps1`) | immediately — same files |
+| `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
+| `claude/mcp/` | `~/.claude/mcp` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
+
+**`skills/` is the only junction, and that is the whole design.** It is
+the one payload Claude Code hot-reloads, so edit-to-live is the
+authoring loop; agents, hooks and rules need a fresh session either way,
+so a junction there bought no immediacy while making every uncommitted
+save — and every `git switch`, `stash`, `reset` and `rebase`, including
+pre-commit's own stash/restore around a commit — live for every session
+on this machine. Hooks were the sharp end: they *execute*, so a
+half-written `.sh` fired on every matching tool call. Converted
+2026-09-02. The four copied directories take repo content without
+`-Force`; `-Force` is only needed to **delete** a target-only file the
+repo no longer has.
 
 Claude Code discovers a skill at `<skills-root>/<name>/SKILL.md` — one
 level, no group directory in between — so `~/.claude/skills` is a real
 directory holding one junction per skill, not a single junction for
-`skills/`. (Claude Code doesn't read `~/.claude/mcp` at all; that
-junction exists so the template-copy commands in
+`skills/`. (Claude Code doesn't read `~/.claude/mcp` at all; that copy
+exists so the template-copy commands in
 [claude/mcp/README.md](claude/mcp/README.md) resolve from a stable
 path.)
 
 The deployed names on the right are fixed by each tool and never
 change, so repo-side moves are cheap: relocating payload under
-`claude/` only changes a junction *target*, which
-`scripts/link-claude.ps1` repairs on its next run with no `-Force`.
+`claude/` only changes where the script reads from, which
+`scripts/link-claude.ps1` picks up on its next run with no `-Force`.
 Hook commands in `settings.json` resolve via `$HOME/.claude/...`, so
 they are unaffected by repo layout entirely.
 
-`CLAUDE.md` and `settings.json` are copies rather than links **on
-purpose** — don't "simplify" them into junctions for consistency. A
-symlinked `~/.claude/settings.json` broke three times upstream in
-mid-2026, once destructively: 2.1.247 had the Bash sandbox's
-after-command cleanup *delete* a dotfile-managed symlink at that path.
-The junctioned *directories* are a different story — their symlink-path
-bugs (2.1.178, 2.1.198, 2.1.239) were fixed rather than being arguments
-against junctions. The narrow claim is about the `settings.json` file.
+`CLAUDE.md` and `settings.json` are copies **on purpose** — don't
+"simplify" them into links. A symlinked `~/.claude/settings.json` broke
+three times upstream in mid-2026, once destructively: 2.1.247 had the
+Bash sandbox's after-command cleanup *delete* a dotfile-managed symlink
+at that path. The directories used to be a separate story — their
+symlink-path bugs (2.1.178, 2.1.198, 2.1.239) were fixed rather than
+being arguments against junctions, and that reasoning was sound while
+the junction was load-bearing for syncing several payload targets at
+once. That rationale is gone, and all four are copies now, so the only
+surviving reparse points are the per-skill junctions. Fewer of them is
+strictly less exposure to that class of bug.
 
 GitHub Copilot needs no payload and no linker: the VS Code agent
 surface reads the same `~/.claude` paths this repo already populates
@@ -186,8 +203,10 @@ deployed anywhere and loads only in sessions inside this repo.
 - **Hooks** (`claude/hooks/*.sh`) fire on events registered in
   `claude/settings.json`. Their commands are hardcoded to
   `$HOME/.claude/...` and only resolve because the link script
-  junctions this repo there — **don't rewrite them to be
-  repo-relative.**
+  deploys this repo there — **don't rewrite them to be
+  repo-relative.** A hook edit is **not live until
+  `scripts/link-claude.ps1` runs**; the deployed copy keeps executing
+  the previous version, and nothing says so.
 - The `security-reviewer` subagent is scoped by an explicit tool
   allowlist plus the `PreToolUse` hook, which blocks any Edit/Write
   outside `~/.claude/agent-memory/security-reviewer/`.
@@ -227,12 +246,14 @@ filename has to stay stable and the ordering lives in the queue file.
 
 ## Branching and concurrent sessions
 
-**Every save is live.** `~/.claude/rules`, `hooks`, `agents` and `mcp`
-are junctions into *this working tree* by absolute path, and each skill
-is its own junction — so an edit here changes the payload for **every
-session on this machine the moment it hits disk**, committed or not.
-That is the property the repo is built on, and it is also what makes
-branching here unlike branching anywhere else.
+**Skill saves are live; nothing else is.** Each skill is its own
+junction into *this working tree*, so a `SKILL.md` edit changes the
+payload for **every session on this machine the moment it hits disk**,
+committed or not. `rules`, `hooks`, `agents` and `mcp` were junctions
+too until 2026-09-02 and are copies now, so they change only when
+`scripts/link-claude.ps1` runs. That conversion removed most of the
+hazard this section was written for — what remains applies to `skills/`
+alone.
 
 Every commit here is on `main`: **no merge commit and no second branch
 has ever existed** (measured 2026-09-02, 305 commits in). That is not an
@@ -241,9 +262,17 @@ complete in a single commit — committing straight to `main` is correct
 and stays correct.
 
 **Branch when an intermediate state would be broken while deployed** —
-that is the trigger, not "am I in a session". A skill plus its
-fixtures plus a queue row plus a rule edit is four saves, and the first
-three are live on this machine before the fourth lands.
+that is the trigger, not "am I in a session". Authoring a skill is the
+live case: each `SKILL.md` save is in every session's listing before
+the fixtures, the queue row and the rule catch up.
+
+**Sequencing outranks branching when another session is live.** These
+two rules collide, and this is the precedence: `git switch -c` is still
+a switch, uncommitted work travels with it, and a commit the other
+session makes while you are on your branch lands on *your* branch. So
+when someone else is working in this tree, stay on `main`, commit in
+small complete units, and stage explicit paths. Branch when you have
+the tree to yourself.
 
 ```bash
 git switch -c <type>/<kebab-slug>
@@ -260,16 +289,19 @@ applies here.
 
 **Never `git checkout` or `git switch` while another session is live in
 this tree.** One working tree is on one branch, so the switch is not
-scoped to you — it swaps the other session's rules and hooks underneath
-it mid-turn, and a skill present on one branch but not the other leaves
+scoped to you. Since the copy conversion this no longer swaps the other
+session's rules and hooks — those move only when the link script runs —
+but a skill present on one branch and not the other still leaves
 `~/.claude/skills/<name>` dangling until `scripts/link-claude.ps1` runs
-again.
+again, and the other session's *files* still change underneath it
+regardless of payload.
 
-**A worktree is not the way around that.** The junctions are absolute
-and keep pointing at *this* directory, so a second worktree is edited
-but never deployed — which silently voids the "Live when: immediately —
-same files" column of the table above, and any validation done from
-there with it.
+**A worktree still isn't the way around that**, though it is closer
+than it was. The per-skill junctions are absolute and keep pointing at
+*this* directory, so a second worktree's skills are edited but never
+deployed. Everything else would now deploy correctly from a worktree
+via `-ClaudeDir`, so if worktrees ever become worth it, `skills/` is
+the only thing standing in the way.
 
 **Two sessions in this tree share every file, branch or no branch.**
 Branching does not isolate them; only sequencing does. So before
