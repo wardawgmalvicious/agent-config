@@ -5,8 +5,8 @@ Minimal but structurally real Fabric Git-synced item folders, used to test
 enters session scope.
 
 Companion to [`../pbip-triggers/`](../pbip-triggers/), which covers the
-Power BI half. Same contract, same method, disjoint skills: 10 there, 14
-here, and that is all 24 conditional skills in the payload.
+Power BI half. Same contract, same method, disjoint skills: 10 there, 15
+here, and that is all 25 conditional skills in the payload.
 
 ## Why this exists
 
@@ -60,7 +60,8 @@ tests/skills/fabric-triggers/fixtures/
 │       └── published/              (mirrors draft/)
 ├── SampleMD.MirroredDatabase/      .platform, mirroring.json
 ├── SampleCJ.CopyJob/               .platform, copyjob-content.json
-├── SamplePL.DataPipeline/          .platform, pipeline-content.json
+├── SamplePL.DataPipeline/          .platform, pipeline-content.json,
+│                                   .schedules
 ├── SampleLH.Lakehouse/             .platform, lakehouse.metadata.json,
 │                                   shortcuts.metadata.json,
 │                                   alm.settings.json
@@ -68,10 +69,11 @@ tests/skills/fabric-triggers/fixtures/
 └── control/notes.md                (matches nothing — negative control)
 ```
 
-`DataPipeline`, `Lakehouse` and `KQLQueryset` have **no skill in the
-payload**. They are here as
-negative controls and to make that coverage gap visible — see
-[expected_activations.md](expected_activations.md).
+`Lakehouse` and `KQLQueryset` have **no skill in the payload**. They are
+here as negative controls and to make that coverage gap visible — see
+[expected_activations.md](expected_activations.md). `DataPipeline` was a
+third until 2026-09-02, when `fabric-data-pipeline` landed and its three
+files stopped being a gap.
 
 ## What these fixtures are modelled on
 
@@ -158,7 +160,7 @@ for f in sorted(base.rglob('*')):
 
 Compare against [expected_activations.md](expected_activations.md). Point
 it at `../pbip-triggers/fixtures` to check the other half; the union of the
-two runs must cover all 19 conditional skills.
+two runs must cover all 25 conditional skills.
 
 **Run it a second time over `claude/rules/*.md`** — same code, swap the
 `skills/*/*/SKILL.md` glob for `claude/rules/*.md` and key on `p.stem`.
@@ -177,7 +179,7 @@ that load `fabric-git-serialization`.
 `scripts/test-activation.ps1` runs everything below in one command —
 deploy to a throwaway probe, one cold session, transcript assertion,
 teardown in a `finally`. **One session covers the whole set**: activation
-is a per-session cumulative delta, so 56 fixtures cost one session rather
+is a per-session cumulative delta, so 57 fixtures cost one session rather
 than 56. Both skill groups deploy for this set, because assertion 1 below
 needs `pbip-project-structure` to be *present* in order to prove it does
 not fire.

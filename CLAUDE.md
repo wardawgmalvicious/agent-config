@@ -448,12 +448,13 @@ Changing a `paths:` glob changes *whether a skill fires at all*, which
 none of the fixtures above test. That contract belongs to
 [tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
 [tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) —
-disjoint fixture sets that between them assert **24 of the 25**
-conditional skills in the payload. The 25th is `fabric-data-pipeline`,
-whose fixtures are outstanding. Assertions live in each set's
-`expected_activations.md`. (Recounted 2026-09-02: the previous "9 and
-10, all 19" predated workstream E, which moved five skills from
-unconditional to conditional.)
+disjoint fixture sets that between them assert **all 25** conditional
+skills in the payload — 10 pbip, 15 fabric.
+`fabric-data-pipeline` was the last one outstanding and was fixtured
+2026-09-02. Assertions live in each set's `expected_activations.md`.
+(Recounted 2026-09-02: the previous "9 and 10, all 19" predated
+workstream E, which moved five skills from unconditional to
+conditional.)
 
 **No *log* records conditional activation, but the session transcript
 does.** `instructions-loaded.log` sees rules only; `skills-invoked.log`
