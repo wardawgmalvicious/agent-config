@@ -1,0 +1,44 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/operationsAgents/definition/1.0.0/schema.json",
+  "configuration": {
+    "instructions": "*** Operational Instructions ***\n1. Alert me when freezer temperature crosses above 20.\n\n*** Semantic Instructions ***\n1. Freezer readings are in the 'FreezerTelemetry' table, each identified by the 'freezer_id' column.\n2. Temperature is measured in degrees Celsius.",
+    "dataSources": {
+      "00000000-0000-0000-0000-000000000018": {
+        "id": "00000000-0000-0000-0000-000000000018",
+        "type": "KustoDatabase",
+        "workspaceId": "00000000-0000-0000-0000-000000000000"
+      }
+    },
+    "actions": {
+      "00000000-0000-0000-0000-000000000019": {
+        "connection": {
+          "jobArtifactId": "00000000-0000-0000-0000-000000000011",
+          "jobWorkspaceId": "00000000-0000-0000-0000-000000000020",
+          "itemType": "Pipeline",
+          "jobType": "Pipeline",
+          "subItemId": ""
+        },
+        "id": "00000000-0000-0000-0000-000000000019",
+        "displayName": "Run Sample Pipeline",
+        "description": "Execute the sample orchestration pipeline",
+        "kind": "FabricJobAction",
+        "parameters": [
+          {
+            "name": "DryRun",
+            "description": "false"
+          },
+          {
+            "name": "MaxIterations",
+            "description": "1"
+          }
+        ]
+      }
+    },
+    "messageDestination": {
+      "kind": "Recipient",
+      "recipient": "sample.user@contoso.com"
+    }
+  },
+  "playbook": {},
+  "shouldRun": false
+}
