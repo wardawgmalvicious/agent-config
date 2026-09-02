@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Four briefs are open. Seven waves are spent (struck through below). Where
+Three briefs are open. Eight waves are spent (struck through below). Where
 a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -50,7 +50,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | **7** | [skill-effectiveness-telemetry.md](skill-effectiveness-telemetry.md) | Scoping only, no dependencies, no deadline. Also the one most likely to be overtaken by upstream shipping something. |
 | ~~**8**~~ | ~~*No brief — this row was the whole spec.* Validate the wave 3 frontmatter pass, and decide the `security-reviewer` model~~ | **Done 2026-09-01**, fresh session, Claude Code 2.1.252. **(a)** [`claude/agents/security-reviewer.md`](../../../claude/agents/security-reviewer.md) is now `model: sonnet`. Baseline (`inherit` → `claude-opus-5`) and candidate (`claude-sonnet-5`) each scanned the fixtures from an identical cold memory state, and the caught/not-caught sets were **identical**: 4/4 seeded findings at the expected severities (2 Critical at `config.py:2,3`, 1 High at `queries.py:3`, 1 Low at `notes.md:1`), no false positives, five-field format intact, all four closing-summary components present, memory seeded, and neither run read `expected_findings.md`. Fixtures unmodified after. Mode 3 on sonnet took the **preferred** branch — refused outright, never attempted the `Edit` — so the hook had nothing to block; it was verified separately as a direct unit test over four cases (in-scope write allowed, out-of-scope write blocked with exit 2, a different `agent_type` unaffected, `../` traversal out of the memory dir blocked). Both runs **foreground**. The **frontmatter** pin — which those two runs could not exercise, since sonnet was forced by an Agent-tool override and a subagent is not hot-reloaded into the session that edits it — was confirmed separately the same day from a fresh session (`83089e9f`, started 25 minutes after the pin landed): an un-overridden spawn ran `claude-sonnet-5` while its parent session sat on Opus. **Wave 8(a) is fully closed.** **(b)** ~~Confirm `/commit` picks up its pins.~~ **Closed** — `e3cae240` shows three `commit` runs at `claude-sonnet-5 xhigh`, each bracketed by `claude-opus-5 high`, so both pins fire at the *current* values and turn-scoping holds. **(c)** **Confirmed** — a plain-English request does auto-trigger `commit`; see the invocation-path finding below, which is how it was measured. |
 | ~~**9**~~ | ~~`activation-cleanroom-null.md`~~ | **Done 2026-09-01.** The clean room was never the variable — **the `Read` tool is**. Activation is keyed to file access through `Read`; a Bash `cat` or a `Grep` over the same file activates nothing, and this machine defaults every session to auto mode, which prefers `cat`. Measured as a 2x2 (Read/`cat` x in-repo/scratch): `Read` activated the same 3 skills and loaded the same rule in **both** directories, `cat` in **neither**. The original report's correlation was luck — all 8 clean-room probes chose `cat`, both in-repo controls chose `Read`; re-reading those transcripts confirms it retroactively. Every directory hypothesis is ruled out by its own probe: git repo, `AppData/Local/Temp`, missing `.claude/settings.json`, 8.3 short path, and fixture depth. Negative control clean. Written into root [`CLAUDE.md`](../../../CLAUDE.md) and both trigger READMEs. **Wave 10 is unblocked** — it may run anywhere, and must pin `--allowedTools Read --disallowedTools Bash …` and fail on a non-`Read` tool call. |
-| **10** | [activation-test-harness.md](activation-test-harness.md) | Script the real-path activation test that was run by hand for the first time on 2026-09-01. **Unblocked** — wave 9 answered *where* (anywhere) and added the trap it must handle (pin the tools to `Read`). Its own open question — whether an activation is a per-session delta or per-file — is what decides whether a full run costs 2 sessions or 50, and is answerable in one. |
+| ~~**10**~~ | ~~`activation-test-harness.md`~~ | **Done 2026-09-02.** [`scripts/test-activation.ps1`](../../../scripts/test-activation.ps1) runs the real-path test for a named set in one command — static check, deploy to a throwaway probe outside the repo, one cold session, transcript assertion, teardown in a `finally`. Expectations come from [`scripts/activation_expect.py`](../../../scripts/activation_expect.py). **Both sets PASS**: pbip 16/16, fabric 56/56, skills *and* rules. See the finding below for the open question it answered. |
 
 `skill-context-cost.md` is **retired as of 2026-09-01** — A, B, D's policy
 half and E all landed, and C was declined, so nothing in it remained open.
@@ -59,10 +59,11 @@ archive; the queue rows above carry the outcomes. Recover it with
 `git log --diff-filter=D -- 'docs/handoff-briefs/execute/skill-context-cost.md'`
 then `git show <sha>^:<path>`. Its durable method survived the deletion
 rather than going with it: the static glob check lives in both trigger
-READMEs, the `--debug-file` recipe in `tests/skills/pbip-triggers/README.md`
-and [activation-test-harness.md](activation-test-harness.md), and the
-content-preservation diff — which caught silent content loss twice — moved
-into `author-skill` step 6.
+READMEs — and is now also the `-StaticOnly` mode of
+`scripts/test-activation.ps1` — the `--debug-file` recipe in
+`tests/skills/pbip-triggers/README.md`, and the content-preservation
+diff — which caught silent content loss twice — moved into `author-skill`
+step 6.
 
 Its workstream **D** (`when_to_use`) landed its policy half the same day:
 split **A** — `description` ≤ 1,024, `when_to_use` ≤ 512, enforced separately
@@ -178,6 +179,52 @@ Method note, since wave 8 needed it and the fixture README assumes it:
 — *not* an `isSidechain` record inside the parent session transcript, where
 looking for it turns up nothing.
 
+## Wave 10 finding: activation is a per-session delta
+
+The open question — per-session delta or per-file? — is **delta**, for
+rules as well as skills, and it was answerable in one session as predicted.
+Three confirmations from that one run, each with the static check as its
+control (every file below *does* match, so the silences are deduplication
+and not a failure to fire):
+
+| Read | Expected | Emitted |
+| --- | --- | --- |
+| `bookmarks.json` | `pbir-bookmarks` + rule | both |
+| `Bookmark1.bookmark.json` — identical expectations | `pbir-bookmarks` + rule | **nothing** |
+| `report.json` | `pbir-filters` + same rule | skill only — the rule was already loaded |
+| `page.json` | `pbir-filters`, `pbir-pages` | `pbir-pages` only |
+
+So a full run is **~2 sessions, not ~50**, which is what makes the test
+cheap enough to actually get run. Three things came out of building it that
+the brief did not anticipate:
+
+- **`expected_activations.md` did *not* need an order-aware form.** The
+  brief expected one. Instead the script derives the expected delta from
+  the read order it *observes* in the transcript, so the tables stay plain
+  per-file contracts and the ordering never forks into a second format.
+- **Attachments flush in batches, not per read.** A run of several reads
+  can produce one flush covering all of them, so an activation is
+  attributable to the group of files read since the previous flush rather
+  than always to one file. Getting this wrong makes every activation look
+  one or two reads late — a whole-run failure that reads like a dozen
+  unrelated glob bugs. Prompting for a line after each read narrows the
+  groups but does not reliably reach 1:1.
+- **Both skill groups must deploy for either set.** The fabric set's
+  headline negative assertion — `pbip-project-structure` must not fire on
+  `SampleNB.Notebook/.platform` — is vacuous unless that skill is present
+  to fail. Deploying only the set's own group would have turned the
+  regression test into a tautology that passes forever.
+
+Two smaller things fixed in passing. The `.platform` fixtures forced a
+Windows detail into the open: `$env:TEMP` yields the 8.3 short path
+(`C:\Users\EXAMPL~1\...`) while Claude records the long one, so paths are
+compared with `os.path.realpath`; and casing is preserved rather than
+`normcase`d, because the globs themselves are case-sensitive and a
+lowercased path stops matching `**/*.Report/.platform`. One row of
+`fabric-triggers/expected_activations.md` collapsed three DataAgent
+`published/` fixtures into prose, leaving them unasserted — expanded into
+three explicit rows.
+
 ## What this order is optimising for
 
 **Bugs before improvements.** Wave 1 was the only thing in the queue
@@ -191,15 +238,17 @@ the 2026-08-31 consolidation of four briefs into two.
 **Cheap and independent before expensive.** Wave 3 ran before 4 and 5 and
 is done; wave 8 was what it left behind, and is now spent too. Waves 9 and
 10 are what wave 4 left behind, in the same way — closing A1 by hand
-surfaced both, and neither was in scope to fix while doing it. 9 is now
-spent as well, and it paid for itself: the thing it found was not a
+surfaced both, and neither was in scope to fix while doing it. Both are
+now spent, and each paid for itself: 9 found that the culprit was not a
 property of any directory but a false negative in the measurement method
-that both trigger READMEs documented.
+that both trigger READMEs documented, and 10 turned the whole procedure
+into one command — the point at which a check stops being something you
+have to be talked into running.
 
-**Waves are not a priority order past this point.** 9 is spent and 10 is
-unblocked; 5 is the biggest single piece of work in the queue and is late
-only because it is expensive. Nothing in the queue now blocks anything
-else — take whichever fits the session you have.
+**Waves are not a priority order past this point.** 9 and 10 are both
+spent; 5 is the biggest single piece of work in the queue and is late only
+because it is expensive. Nothing in the queue now blocks anything else —
+take whichever fits the session you have.
 
 ## One brief is a decision, not edits
 
