@@ -226,6 +226,16 @@ mistake as grepping `Sending N skills via attachment (initial)` in the
 debug log, which is emitted before any Read and so can never show an
 activation.
 
+**The converse trap does not bite here, and it is the `--allowedTools`
+line that stops it.** An `isInitial: false` record is emitted by a *hot
+reload* too — edit a `SKILL.md`, or re-run `link-claude.ps1`, and the
+affected skills are re-announced exactly as a glob match would be (438
+such deltas across this machine's transcripts, measured 2026-09-03). The
+probe pins `--allowedTools Read`, so it cannot write a skill or redeploy,
+which is why every delta it produces is a real activation. Keep that
+restriction even if a future probe needs another tool — the moment the
+session can edit `skills/`, the assertion stops meaning what it says.
+
 Always run `control/notes.md` as well. It matches nothing, so if a
 conditional skill shows up there, the observation method is broken rather
 than the globs.
