@@ -58,6 +58,25 @@ Helper scripts for repo maintenance and observability.
   glob checks. Used by the pre-commit `Validate SKILL.md frontmatter` and
   `Validate rules frontmatter` hooks; can also run manually as
   `python scripts/lint-frontmatter.py <path>...`.
+- [skill-telemetry.py](skill-telemetry.py) — post-hoc answer to "which
+  skills are earning their listing budget?". Three subcommands:
+  `coverage` (per skill: how many startup listings it appeared in, how
+  many path activations, slash vs auto invocations, `skillUsage`),
+  `listing` (listing size per project, and the standing check for a
+  deployed-but-never-offered skill), `triggers` (slash-vs-auto ratio —
+  a skill only ever reached by name has a description that is not
+  matching). Needs `pyyaml`, so run it through
+  `uv run --with pyyaml python`. Reads only what already exists; writes
+  nothing and adds no hook. It is a **sibling of `instructions-log`, not
+  a subcommand of it**, for two reasons: the data is different —
+  `instructions-log` owns the two hook logs, while everything here comes
+  from the session transcripts, which are the only complete record — and
+  bash+jq cannot do the job, since reading ~270 transcripts one `jq`
+  process at a time did not finish inside two minutes on this machine,
+  where the same scan in-process takes about a second. Its flags
+  deliberately never say "delete this": zero invocations is not disuse if
+  the skill was withheld by design or covers a rare path; see `verdict`
+  in the script.
 - [test-activation.ps1](test-activation.ps1) — the real-path test for
   `paths:` activation: does Claude Code actually load the conditional
   skills the globs say it should? Deploys the platform skills to a
