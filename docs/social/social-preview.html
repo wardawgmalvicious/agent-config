@@ -1,0 +1,73 @@
+<!doctype html><meta charset="utf-8">
+<title>agent-config social preview</title>
+<!--
+  GitHub social preview card - 1280x640.
+  Render: msedge --headless=new --disable-gpu --hide-scrollbars
+          --window-size=1280,640 --screenshot=social-preview.png file:///<abs path>/social-preview.html
+  All content is inset >=96px, comfortably inside GitHub's recommended 40pt safe border.
+-->
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:1280px;height:640px;overflow:hidden}
+  body{
+    font-family:"Segoe UI Variable Display","Segoe UI",system-ui,sans-serif;
+    background:#0B1120;color:#E6EDF7;position:relative;
+  }
+  .grid{
+    position:absolute;inset:0;
+    background-image:
+      linear-gradient(rgba(120,160,220,.055) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(120,160,220,.055) 1px,transparent 1px);
+    background-size:40px 40px;
+  }
+  .glow{position:absolute;width:900px;height:900px;right:-260px;top:-400px;
+    background:radial-gradient(circle,rgba(232,179,5,.17),rgba(232,179,5,0) 62%)}
+  .glow2{position:absolute;width:860px;height:860px;left:-330px;bottom:-470px;
+    background:radial-gradient(circle,rgba(59,130,246,.19),rgba(59,130,246,0) 62%)}
+
+  .wrap{position:absolute;inset:0;padding:84px 100px 76px;display:flex;flex-direction:column}
+  .main{flex:1;display:flex;flex-direction:column;justify-content:center}
+
+  .owner{font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+    font-size:28px;letter-spacing:.02em;color:#7D8DA6;margin-bottom:10px}
+  h1{font-family:"Cascadia Code",Consolas,"Courier New",monospace;
+    font-size:96px;line-height:1.02;font-weight:700;letter-spacing:-.02em;color:#F5F8FF}
+  h1 .accent{color:#E8B305}
+  .rule{width:132px;height:6px;background:#E8B305;border-radius:3px;margin:26px 0 24px}
+  p{font-size:31px;line-height:1.42;color:#AEBCD1;max-width:1000px;font-weight:400}
+  p b{color:#E6EDF7;font-weight:600}
+
+  .chips{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap}
+  .chip{font-family:"Cascadia Code",Consolas,monospace;font-size:21px;
+    padding:9px 17px;border:1px solid rgba(150,175,210,.30);border-radius:9px;
+    color:#B9C8DC;background:rgba(140,170,210,.06)}
+
+  .foot{
+    display:flex;justify-content:space-between;align-items:baseline;
+    border-top:1px solid rgba(150,175,210,.20);padding-top:20px;
+    font-family:"Cascadia Code",Consolas,monospace;font-size:19px;color:#6E7E97;
+  }
+  .foot .r{letter-spacing:.02em}
+</style>
+<div class="grid"></div><div class="glow"></div><div class="glow2"></div>
+<div class="wrap">
+  <div class="main">
+    <div class="owner">wardawgmalvicious /</div>
+    <h1>agent<span class="accent">-</span>config</h1>
+    <div class="rule"></div>
+    <p>Skills, coding rules, hooks, a subagent and MCP templates for coding
+       agents &mdash; day-to-day <b>Microsoft Fabric</b>, <b>Power BI</b> and
+       <b>Azure</b> work.</p>
+    <div class="chips">
+      <span class="chip">skills/</span>
+      <span class="chip">rules/</span>
+      <span class="chip">hooks/</span>
+      <span class="chip">agents/</span>
+      <span class="chip">mcp/</span>
+    </div>
+  </div>
+  <div class="foot">
+    <span>MIT</span>
+    <span class="r">personal config first, public artifact second</span>
+  </div>
+</div>

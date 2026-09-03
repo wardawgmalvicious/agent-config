@@ -9,6 +9,11 @@ Internal documentation for the repo's authoring workflow.
   subagents. A filled brief lives here until the work lands, then is
   deleted. See [Handoff discipline](../README.md#handoff-discipline) in
   the top-level README for context.
+- [social/](social/) — the GitHub social preview card: its HTML source,
+  the rendered 1280x640 PNG, and how to re-render it. GitHub does not
+  read the file from here; the card is uploaded by hand under
+  **Settings → General → Social preview**, so a re-render is only half
+  the job.
 - [project-CLAUDE-template.md](project-CLAUDE-template.md) — fill-in
   starter for a project-scope `CLAUDE.md` in client/project repos.
   The content is tool-neutral, so it serves equally as an `AGENTS.md`
