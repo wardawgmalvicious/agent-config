@@ -34,7 +34,7 @@ deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
 `.claude/settings.json` holds more than servers and permissions: a
-`skillOverrides` block collapses all 40 platform skill descriptions to
+`skillOverrides` block collapses all 41 platform skill descriptions to
 `name-only` in sessions here. That is deliberate, and it stays even
 though the workflow-only prune already keeps those skills out of
 `~/.claude/skills` — it keeps them auditable from this repo and holds
@@ -451,7 +451,7 @@ it if they hadn't.
   `effort` is `max` on the seven workflow skills that drive this repo
   — `code-review`, `drift-audit`, `author-skill`, `test-skill`,
   `learn`, `drift-update`, `drift-handoff` — `xhigh` on `commit`, and
-  left commented on all 40 platform skills, which therefore inherit
+  left commented on all 41 platform skills, which therefore inherit
   `max`.
   Note what that means: *while the session actually sits at* `max`,
   only `commit` changes behaviour. But the session level is **live
@@ -478,8 +478,8 @@ it if they hadn't.
   `model:` pin is **inert on the 27 conditional platform skills** — a
   `paths:` glob withholds them from the startup listing, so they are
   reached by path, and `/<name>` answers `Unknown command`. It is
-  **live on the other 13**, which carry no glob and slash normally
-  (measured with `/fabric-gotchas`, 2026-09-02 on 2.1.252). All 39 are
+  **live on the other 14**, which carry no glob and slash normally
+  (measured with `/fabric-gotchas`, 2026-09-02 on 2.1.252). All 41 are
   `model: inherit` today, so nothing is broken, but a future pin is
   inert or effective depending on which half it lands in. Corrected
   2026-09-02 — this previously said all of them were inert because they

@@ -34,6 +34,7 @@
         "fabric-rest-api": "name-only",
         "fabric-security": "name-only",
         "fabric-semantic-model-ai-instructions": "name-only",
+        "fabric-semantic-model-audit": "name-only",
         "fabric-spark": "name-only",
         "fabric-spark-monitoring": "name-only",
         "fabric-tmdl": "name-only",
