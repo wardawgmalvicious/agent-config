@@ -270,6 +270,23 @@ One pass per consumer, each deferring to the skill that owns it.
   constraint matrix belongs to `fabric-ontology`. Cite it, don't restate
   it.
 
+**Non-descriptive names (check 13) are the one finding here with a
+documented bulk remediation.** On a large model the finding is otherwise
+useless — "rename 400 columns by hand" is not an action anyone takes. The
+data-agent guidance names the tool: **if a `powerbi-modeling-mcp` server
+is configured**, an LLM can generate business-friendly names for tables,
+columns and measures in bulk. Same idiom as `dax.sh` in §2 — an
+accelerator that happens to be present, never a dependency, and this
+skill still loads where no MCP server is configured at all.
+
+Two things stay true when you point at it. **Reporting the finding is
+still this skill's job; running the rename is not** — that is a write
+against the model, so it needs a separate ask (§8). And carry the source's
+own caveat rather than just the recommendation: **review and validate the
+renames before saving**, because a rename can break DAX expressions,
+relationships and other dependent objects. A bulk rename applied
+unreviewed converts a naming finding into a broken model.
+
 ## 8. Reporting
 
 Per finding: **what**, **the evidence** (a `file:line` or the query that
