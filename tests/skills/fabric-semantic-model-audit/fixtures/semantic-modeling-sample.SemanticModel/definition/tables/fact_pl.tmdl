@@ -1,0 +1,247 @@
+table fact_pl
+	lineageTag: a1b6a5bb-c1a9-4375-b04f-2d6a43a82e5f
+
+	column DateKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 8237b75a-0f4d-4273-90e4-5bee5645f395
+		summarizeBy: none
+		sourceColumn: DateKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ScenarioKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0c3340bf-5326-4cc8-ac72-4752632c1b4e
+		summarizeBy: none
+		sourceColumn: ScenarioKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column RegionKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7d58fec1-a79f-4c8e-8fb7-c50280029a4a
+		summarizeBy: none
+		sourceColumn: RegionKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a3215a76-46cd-466d-8ffd-4e9b463d1c86
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerSegmentKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: f23e17bb-ab45-49ba-b314-3bbb6cb73c4e
+		summarizeBy: none
+		sourceColumn: CustomerSegmentKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: double
+		lineageTag: e3eebba1-1d51-433d-9bac-dc0a2085dbd8
+		summarizeBy: sum
+		sourceColumn: Quantity
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Unit Price'
+		dataType: double
+		lineageTag: 26f5eae3-ad87-45cd-8015-9e956df9b877
+		summarizeBy: sum
+		sourceColumn: Unit Price
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Discount Amount'
+		dataType: double
+		lineageTag: ffb2190b-d8a7-4493-9a07-7d96af6b0ae1
+		summarizeBy: sum
+		sourceColumn: Discount Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Return Amount'
+		dataType: double
+		lineageTag: cba7d6cf-d1f3-45e6-a534-7c24f556e1af
+		summarizeBy: sum
+		sourceColumn: Return Amount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Raw Material Cost'
+		dataType: double
+		lineageTag: a87df310-aa25-4e7d-9717-40dcbb8e7bd0
+		summarizeBy: sum
+		sourceColumn: Raw Material Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Packaging Cost'
+		dataType: double
+		lineageTag: ccc8cbaa-9e59-4fd0-8490-cae83bf16544
+		summarizeBy: sum
+		sourceColumn: Packaging Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Direct Labor Cost'
+		dataType: double
+		lineageTag: cc00652c-8e28-424b-acb2-f47809cea848
+		summarizeBy: sum
+		sourceColumn: Direct Labor Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Manufacturing Overhead'
+		dataType: double
+		lineageTag: 905eade0-c015-4fdc-8c1f-f908890eec92
+		summarizeBy: sum
+		sourceColumn: Manufacturing Overhead
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Freight In Cost'
+		dataType: double
+		lineageTag: 55139979-a551-4bdb-aac8-4efd544fd8c5
+		summarizeBy: sum
+		sourceColumn: Freight In Cost
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Marketing Expense'
+		dataType: double
+		lineageTag: bf87d62f-5ec9-47bd-9f10-611f9ce8edd8
+		summarizeBy: sum
+		sourceColumn: Marketing Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Sales Expense'
+		dataType: double
+		lineageTag: 9b854cf6-92ab-4095-bd4d-4956b0db394a
+		summarizeBy: sum
+		sourceColumn: Sales Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Admin Expense'
+		dataType: double
+		lineageTag: a5789803-3bc7-4cd8-a43a-fd564efde140
+		summarizeBy: sum
+		sourceColumn: Admin Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'IT Expense'
+		dataType: double
+		lineageTag: 8a1ab219-2ec1-44cf-b79a-52e2e00a5e65
+		summarizeBy: sum
+		sourceColumn: IT Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'R&D Expense'
+		dataType: double
+		lineageTag: 1a988886-5664-4518-8aed-fbdb2bf94cb0
+		summarizeBy: sum
+		sourceColumn: R&D Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Depreciation Expense'
+		dataType: double
+		lineageTag: 5a554d8e-6fce-442a-897b-7bc64bf1737d
+		summarizeBy: sum
+		sourceColumn: Depreciation Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Interest Expense'
+		dataType: double
+		lineageTag: 78d174a0-f02c-48b4-a4ea-dcc4be6c50fa
+		summarizeBy: sum
+		sourceColumn: Interest Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Tax Expense'
+		dataType: double
+		lineageTag: e5d0fe87-b039-47a7-8208-0faa0a592161
+		summarizeBy: sum
+		sourceColumn: Tax Expense
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition fact_pl = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\fact_pl.csv"),[Delimiter=",", Columns=22, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"DateKey", Int64.Type}, {"ScenarioKey", Int64.Type}, {"RegionKey", Int64.Type}, {"ProductKey", Int64.Type}, {"CustomerSegmentKey", Int64.Type}, {"Quantity", type number}, {"Unit Price", type number}, {"Discount Amount", type number}, {"Return Amount", type number}, {"Raw Material Cost", type number}, {"Packaging Cost", type number}, {"Direct Labor Cost", type number}, {"Manufacturing Overhead", type number}, {"Freight In Cost", type number}, {"Marketing Expense", type number}, {"Sales Expense", type number}, {"Admin Expense", type number}, {"IT Expense", type number}, {"R&D Expense", type number}, {"Depreciation Expense", type number}, {"Interest Expense", type number}, {"Tax Expense", type number}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

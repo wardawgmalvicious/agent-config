@@ -1,0 +1,43 @@
+table bridge__product__year
+	lineageTag: 128f0a8b-324a-4222-ad91-bfd9e1abda77
+
+	column ProductName
+		dataType: string
+		lineageTag: 0872194d-9e2d-4c2f-ab91-8b92a783436d
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: c48ed32c-8ad9-4f17-bec8-3aa7bdfad123
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = User
+
+	column IsValid
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ff5d794f-6f6e-4722-90b6-e032858ac658
+		summarizeBy: none
+		sourceColumn: IsValid
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bridge__product__year = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\bridge__product__year.csv"),[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductName", type text}, {"Year", Int64.Type}, {"IsValid", type logical}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

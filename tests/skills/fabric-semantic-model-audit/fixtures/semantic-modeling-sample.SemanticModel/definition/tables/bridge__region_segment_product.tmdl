@@ -1,0 +1,62 @@
+table bridge__region_segment_product
+	lineageTag: d92e5f80-5296-484d-b912-2fdf6d30d539
+
+	column ID
+		dataType: int64
+		formatString: 0
+		lineageTag: db04e027-7653-43ca-9cc0-15eef9e940fd
+		summarizeBy: none
+		sourceColumn: ID
+
+		annotation SummarizationSetBy = User
+
+	column RegionKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 999b4945-382f-4a92-b41c-30c535c58b49
+		summarizeBy: none
+		sourceColumn: RegionKey
+
+		annotation SummarizationSetBy = User
+
+	column SegmentKey
+		dataType: int64
+		formatString: 0
+		lineageTag: dcfeb631-4f46-4c20-ae02-bc0760061291
+		summarizeBy: none
+		sourceColumn: SegmentKey
+
+		annotation SummarizationSetBy = User
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 8952607f-2ce1-4d19-b5b2-c5bfb449c818
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = User
+
+	column IsValid
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f1fe0a6f-f0b1-46c1-a9ab-edd10bc1f6ca
+		summarizeBy: none
+		sourceColumn: IsValid
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bridge__region_segment_product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\bridge__region_segment_product.csv"),[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ID", Int64.Type}, {"RegionKey", Int64.Type}, {"SegmentKey", Int64.Type}, {"ProductKey", Int64.Type}, {"IsValid", type logical}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,188 @@
+table 'Modelling Measures Table'
+	lineageTag: 40278587-0abf-49e9-b009-366ce426782c
+
+	measure 'Case 1 Two-level Coverage' = COUNTROWS(dim_subcategory)
+		formatString: 0
+		lineageTag: bf2bd9cf-67c7-4c0a-a688-1ce8843d4a3e
+
+	measure 'Case 2 Coverage with actuals overlay' =
+			
+			VAR Valid = COUNTROWS ( dim_product )
+			VAR ActualQty  = SUM ( fact_pl[Quantity] )
+			RETURN
+			
+			IF (
+			    Valid > 0,
+			    IF ( NOT ISBLANK ( ActualQty ), ActualQty, 1 )
+			)
+		lineageTag: d97ffbf5-0593-4a7d-a679-5a8a95cea78a
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Case 3 Full hierarchy planning view' =
+			
+			IF (
+			    NOT ISEMPTY ( dim_subcategory ) &&
+			    NOT ISEMPTY ( dim_product),
+			    1, 0
+			)
+		formatString: 0
+		lineageTag: 3b8d1616-8245-4d02-8ffc-488582784bc6
+
+	measure 'Case 4 Governed Validity table' =
+			
+			
+			IF (
+			    NOT ISEMPTY (
+			        CALCULATETABLE (
+			            FILTER ( 'bridge__region_segment_product', 'bridge__region_segment_product'[IsValid] = "true" ),
+			            TREATAS ( VALUES ( dim_region[RegionKey] ), bridge__region_segment_product[RegionKey] ),
+			            TREATAS ( VALUES ( dim_customer_segment[CustomerSegmentKey] ),bridge__region_segment_product[SegmentKey]),
+			            TREATAS ( VALUES (dim_product[ProductKey] ), bridge__region_segment_product[ProductKey])
+			        )
+			    ),
+			    1
+			)
+		formatString: 0
+		lineageTag: 0343411a-00ce-4be0-ace3-24835ec24344
+
+	measure 'Case 5 Planning with scenario as a dimension' =
+			
+			IF (
+			    SELECTEDVALUE ( Dim_Scenario[IsForecast], FALSE() )
+			        && MAX ( Dim_Date[Date] ) >= SELECTEDVALUE ( dim_scenario[OpenFrom] )
+			        && MAX ( Dim_Date[Date] ) <= SELECTEDVALUE ( dim_scenario[OpenUntil] ),
+			    1,
+			    0)
+		formatString: 0
+		lineageTag: 2a3aac54-2e0a-4f7e-9316-1cee0291d596
+
+	measure 'Case 6 Rolling forecast' =
+			
+			IF (
+			    MAX ( Dim_Date[Date] ) >= TODAY (),
+			    1,0)
+		formatString: 0
+		lineageTag: 99f32300-f62b-45cd-906a-53f73bfcff5d
+
+	measure 'Case 7 History driven combinations, extended horizon' =
+			
+			IF (
+			    MAX ( Dim_Date[Date] )
+			        <= CALCULATE ( MAX ( Dim_Date[Date] ), ALL ( Dim_Date ) ) - 1,
+			    1,
+			    0
+			)
+		formatString: 0
+		lineageTag: 7a735121-109d-4a44-90d6-cb47b6f3a646
+
+	measure 'Case 8 Controlled planning horizon' =
+			
+			
+			VAR TupleExists =
+			    NOT ISEMPTY (
+			        CALCULATETABLE ( Fact_PL, REMOVEFILTERS ( Dim_Scenario ), REMOVEFILTERS ( Dim_Date ) )
+			    )
+			VAR IsForecastScenario = SELECTEDVALUE ( dim_scenario[IsForecast], FALSE () )
+			VAR CurrentDate        = MAX ( Dim_Date[Date] )
+			VAR OpenFrom            = SELECTEDVALUE ( dim_scenario[OpenFrom] )
+			VAR OpenUntil           = SELECTEDVALUE ( dim_scenario[OpenUntil])
+			VAR NativeValue         = SUM ( Fact_PL[Quantity] )
+			VAR HistoricalValue     =
+			    CALCULATE (
+			        SUM ( Fact_PL[Quantity] ),
+			        REMOVEFILTERS ( Dim_Scenario ),
+			        Dim_Scenario[Scenario] = "Actual"
+			    )
+			
+			RETURN
+			IF (
+			    TupleExists,
+			    IF (
+			        NOT IsForecastScenario,
+			        NativeValue,
+			        IF (
+			            CurrentDate < OpenFrom,
+			            HistoricalValue,
+			            IF ( CurrentDate <= OpenUntil, 0, BLANK () )
+			        )
+			    )
+			)
+		lineageTag: 264be8cc-9ae2-4c14-8b33-887283ca306f
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Case 9 Seasonal validity table' =
+			
+			
+			VAR ShapeValid =
+			    NOT ISEMPTY (
+			        CALCULATETABLE (
+			            FILTER ( bridge__region_category, bridge__region_category[IsValid] = "TRUE" ),
+			            TREATAS ( VALUES ( dim_region[RegionName] ), bridge__region_category[RegionName] ),
+			            TREATAS ( VALUES ( dim_category[CategoryName] ), bridge__region_category[CategoryName] )
+			        )
+			    )
+			    && NOT ISEMPTY (
+			        CALCULATETABLE (
+			            FILTER ( bridge__product__year, bridge__product__year[IsValid] = "TRUE" ),
+			            TREATAS ( VALUES ( dim_product[ProductName] ), bridge__product__year[ProductName] ),
+			            TREATAS ( VALUES ( Dim_Date[Year] ), bridge__product__year[Year] )
+			        )
+			    )
+			
+			VAR NativeValue = SUM ( Fact_PL[Quantity] )
+			
+			RETURN
+			IF (
+			    ShapeValid,
+			    IF ( NOT ISBLANK ( NativeValue ), NativeValue, 1 ),
+			    BLANK ()
+			)
+		formatString: 0
+		lineageTag: 4d43a3ac-6ce5-4439-a992-592807e75633
+
+	measure 'Case_10 Fiscal/Retail planning' =
+			
+			VAR CurrentScenarioKey  = SELECTEDVALUE ( Dim_Scenario[ScenarioKey] )
+			VAR IsForecastScenario  = SELECTEDVALUE ( Dim_Scenario[IsForecast], FALSE () )
+			VAR CurrentPeriodKey     = MAX ( Dim_Date[Date] )
+			VAR OpenFromDate          = SELECTEDVALUE ( Dim_Scenario[OpenFrom] )
+			VAR OpenUntilDate         = SELECTEDVALUE ( Dim_Scenario[OpenUntil] )
+			VAR OpenFromKey           =
+			    CALCULATE ( VALUES ( Dim_Date[Date] ),
+			        Dim_Date[Date] = DATE ( YEAR(OpenFromDate), MONTH(OpenFromDate), DAY(OpenFromDate) ) )
+			VAR OpenUntilKey          =
+			    CALCULATE ( VALUES ( Dim_Date[Date] ),
+			        Dim_Date[Date] = DATE ( YEAR(OpenUntilDate), MONTH(OpenUntilDate), DAY(OpenUntilDate) ) )
+			VAR ActualQty             =
+			    CALCULATE (
+			        SUM ( Fact_PL[Quantity] ),
+			        TREATAS ( VALUES ( Dim_Scenario[ScenarioKey] ), Fact_PL[ScenarioKey] )
+			    )
+			RETURN
+			IF (
+			    NOT IsForecastScenario,
+			    ActualQty,
+			    IF (
+			        CurrentPeriodKey < OpenFromKey,
+			        ActualQty,
+			        IF ( CurrentPeriodKey <= OpenUntilKey, 0, BLANK () )
+			    )
+			)
+		lineageTag: 260f2854-7753-449f-8ac2-dc9f0e81224d
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Modelling Measures Table' = m
+		mode: import
+		source =
+				let
+				    Source = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Column1 = _t]),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"Column1", type text}}),
+				    #"Removed Columns" = Table.RemoveColumns(#"Changed Type",{"Column1"})
+				in
+				    #"Removed Columns"
+
+	annotation PBI_ResultType = Table
+
