@@ -57,7 +57,14 @@ disable-model-invocation: false
 - `fromColumn:` = many-side (fact); `toColumn:` = one-side (dimension)
 - Create relationships BEFORE measures that depend on them
 - Default: `crossFilteringBehavior: oneDirection`; add `bothDirections` only when needed
-- `isActive: false` for role-playing dimensions; use `USERELATIONSHIP()` in DAX
+- **Role-playing dimensions: duplicate the table by default** — `Date`,
+  `Ship Date`, `Delivery Date`, each with one active relationship.
+  Microsoft recommends "defining active relationships whenever possible",
+  which "means that role-playing dimension tables should be duplicated in
+  your model"; the cost is model size, "rarely a concern" for dimensions.
+  `isActive: false` + `USERELATIONSHIP()` is the *conditional* case —
+  only when no visual needs two roles at once and you write the measures.
+  In Direct Lake, confirm duplication is available first (see below).
 - Both sides must have matching `dataType`
 - Set `isKey: true` on dimension primary key columns
 - Hide foreign keys on fact tables (`isHidden: true`)
@@ -156,6 +163,13 @@ model Model
 
 - `dataType: binary` columns are NOT supported in Direct Lake
 - Columns map directly via `sourceColumn` — no transforms
+- **Adding the same source table twice is not supported** in Power BI
+  Desktop or web modeling — XMLA tools can, but **Edit tables** and
+  **refresh** then error. So the role-playing fix above usually has to
+  happen upstream: add the role table to the lakehouse and bind it.
+  Calculated tables are preview on Direct Lake on OneLake and unsupported
+  on Direct Lake on SQL; Direct Lake calculated columns are unmaterialized
+  and so [can't be used in relationships](https://learn.microsoft.com/power-bi/transform-model/desktop-calculated-columns).
 - **Cross-environment rebinding (deployment pipelines):** Direct Lake on OneLake does **not**
   support data source rules — the dropdowns are simply greyed out. Only the [Direct Lake
   overview limitations table](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)
