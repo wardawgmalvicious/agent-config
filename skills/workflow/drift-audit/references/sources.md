@@ -196,6 +196,50 @@ Checked 2026-08-30 — the 2026-08-29 run's 418 filtered bullets across 89 days
 produced zero new-skill candidates, which is the expected result, not a thin
 one.
 
+### `fabric-iq-ontology` — Fabric IQ ontology doc set
+
+- `repo`: `MicrosoftDocs/fabric-docs`
+- `branch`: `main`
+- `path`: `docs/iq/ontology/`
+- `files`: `overview.md`, `concepts-generate.md`, `how-to-bind-data.md`,
+  `concepts-agent-integration.md`, `resources-troubleshooting.md`,
+  `overview-tenant-settings.md` — the six pages `fabric-ontology` is
+  built on. The `how-to-create-*`, `how-to-use-rules` and tutorial pages
+  are deliberately out of the fetch set; §8 of that skill's
+  `references/REFERENCE.md` lists them as undrilled.
+- `shape`: `prose`
+- `sections`: none — these pages are individually small, so the fetch
+  unit is the whole file, as with `vscode-agent`.
+- `drill.host`: `learn.microsoft.com`
+- `drill.via`: `microsoft-learn-mcp`
+- `artifacts`: `skills/fabric/fabric-ontology/`,
+  `skills/fabric/fabric-data-agent/`,
+  `skills/fabric/fabric-operations-agent/`,
+  `claude/rules/fabric-git-serialization.md`
+
+**A doc-set source, not a change feed — and the first one aimed at a
+single skill.** The `fabric` What's New source will announce that
+ontology reaches GA; it will not announce that the property-type table
+gained a row, that the one-static-binding-per-entity-type limit moved, or
+that the MCP endpoint path changed. Those are exactly the claims
+`fabric-ontology` encodes, and they live only in the spec pages.
+
+Registered 2026-09-02, when that skill was authored. Two properties make
+it worth the slot and neither generalizes: the workload is **preview**, so
+the pages move under their own steam rather than on the What's New
+cadence; and the skill was written **entirely from docs with no local
+sample**, because no ontology item exists in any repo on this machine.
+Every other Fabric skill here was checkable against a real export. That
+is the condition this source substitutes for — so do **not** read it as a
+precedent for one source per skill. Retire it if an ontology item ever
+lands in a Git-synced workspace here, or if the item goes GA and settles.
+
+The REST **item-definition** spec is a separate page in a separate repo
+(`rest/api/fabric/articles/item-management/definitions/ontology-definition`)
+and is *not* covered here. It is the source for the definition-part
+schemas in that skill's reference, and it drifts on its own schedule;
+check it by hand when the definition layout is in question.
+
 ## Shape contracts
 
 What "an entry" means for the diff, per shape.
