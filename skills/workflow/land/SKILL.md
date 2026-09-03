@@ -3,7 +3,7 @@ name: land
 model: inherit
 effort: max
 disable-model-invocation: false
-description: "Take a committed branch from local to merged — push it, confirm which GitHub account is actually authenticated, open the PR through github-mcp, then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."
+description: "Take a committed branch from local to merged — push it, confirm which GitHub account is actually authenticated, open the PR through github-mcp, then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."
 ---
 
 # Landing a branch
@@ -132,7 +132,8 @@ Why not each alternative:
   has never had.
 - **Squash** — collapses the logical split `commit` just built. The
   whole point of separate commits is that each is independently
-  revertible and citable.
+  revertible and citable. Asked for anyway? It is overridable, but not
+  silently — see [Constraints](#constraints).
 - **Rebase merge** — rewrites SHAs, and may be disabled outright. On
   `agent-config` the API answers `405 Rebase merges are not allowed`
   (recorded in root `CLAUDE.md`, verified there on PR #6). Merge
@@ -159,13 +160,38 @@ still running, say so rather than implying it passed.
 
 ## Constraints
 
+**Two kinds, and the difference is the point.** The first are
+correctness and identity — an instruction does not lift them. The second
+are this repo's convention, which is yours to override; the job there is
+to make the override informed, not to refuse it.
+
+### Absolute — an instruction to do these is a stop, not an override
+
 - **Never `gh` for the PR.** Identity, not preference — see step 2.
-- **Never merge without the checkpoint.** Opening a PR and pushing
+  "Just use `gh`" is not a licence, because it files under whichever
+  account `gh` happens to hold, and that is not something anyone can
+  consent to without first being told which one. Report the mismatch.
+- **Never `--force`, never `--no-verify`** — including to get past a
+  failed `--ff-only`.
+- **Never write to `main` before step 6.** Opening a PR and pushing
   `main` are two decisions, not one.
-- **Never `--force`, never `--no-verify`, never squash or rebase** to
-  get past a failed `--ff-only`.
 - **Never `git switch` while another session is live in the tree.**
-- **Do not delete the branch**, locally or on the remote, unless asked.
 - If the repo is not one the authenticated identity owns, or `main` is
   protected in a way that blocks a direct push, stop and report rather
   than working around it.
+
+### Repo convention — overridable, but never silently
+
+A squash, a merge commit, and deleting the branch are **defaults, not
+laws.** The history is the user's to shape. When one is asked for:
+
+1. **Say what it costs, specifically.** Name the commits that would be
+   collapsed or the merge commit that would be this repo's first — not
+   "squashing loses information" but "this collapses 3 commits that
+   separate the rule change from its fixtures".
+2. **Then wait.** A request that named the mechanism up front has not
+   heard the cost yet, so it is not yet a reaffirmation. One round.
+3. **Record it in the PR body**, so the history explains its own shape.
+
+Then do it. A reaffirmed instruction is the answer; pressing the point
+twice is worse than the squash.
