@@ -2,7 +2,7 @@
 
 - **Written**: 2026-09-02, after fetching the two
   `learn.microsoft.com/fabric/iq/plan/` links that prompted
-  [skill-semantic-model-audit.md](skill-semantic-model-audit.md) and
+  the [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md) work and
   finding they were about something else entirely.
 - **Kind**: coverage decision, then possibly `/author-skill`.
 - **Status**: open. **Recommendation: provisional yes, gated on step 0.**
@@ -30,8 +30,8 @@ planning-grid guidance instead. That misread is the reason to write this
 down: the correction is cheap now and expensive after a skill has been
 drafted against the wrong premise.
 
-The genuine modelling-audit content is briefed separately in
-[skill-semantic-model-audit.md](skill-semantic-model-audit.md), and it is
+The genuine modelling-audit content shipped separately as
+[`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md),
 drilled against different sources.
 
 ## Step 0 — the gating question
@@ -168,12 +168,14 @@ Lighter than the other two briefs, but not nil:
   will co-load with anything touching the planning semantic model. Half
   A's date-table and dimension guidance must not restate their
   conventions — cite and move on.
-- The audit skill in
-  [skill-semantic-model-audit.md](skill-semantic-model-audit.md) will
-  want to know that a *planning* model is legitimately shaped differently
-  from a reporting one. If both are authored, the audit needs a carve-out
-  saying so, or it will report a correct planning model as a defective
-  reporting model. **This is the one hard dependency between the two.**
+- [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md)
+  — now shipped — needs to know that a *planning* model is legitimately
+  shaped differently from a reporting one. It carries **no such carve-out
+  today**, so if Plan proceeds, adding one is part of this brief's work,
+  or the audit will report a correct planning model as a defective
+  reporting model. **This is the one hard dependency between the two, and
+  wave 13 closing did not discharge it** — it made the debt concrete,
+  because the skill now exists to be wrong.
 
 ## Validation, if it proceeds
 
