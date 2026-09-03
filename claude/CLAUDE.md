@@ -86,6 +86,27 @@ delimiters are passed through as literal text. Put them in a `.ps1`
 written by a quoted heredoc and run that file instead. Silent case
 verified 2026-09-02.
 
+### A leading `/` argument becomes a Git install path
+
+MSYS2 rewrites any argument starting with a slash into a Windows path,
+so `claude -p "/code-review"` from the Bash tool arrives as
+`C:/Program Files/Git/code-review`. Quoting does not stop it, and
+neither does trailing text: `"/my-skill do the thing"` becomes
+`C:/Program Files/Git/my-skill do the thing`.
+
+**It fails silently and looks like success.** No slash command is
+parsed, so nothing is expanded — the model just reads a message that
+happens to name a skill and invokes it through the Skill tool. The
+answer is right and the skill did run, so a probe written to test
+*slash* invocation has actually tested model-invocation. That matters
+because a skill's `model:` pin is honoured on one path and dropped on
+the other.
+
+Run such a probe from PowerShell, or prefix the Bash one with
+`MSYS2_ARG_CONV_EXCL='*'`. Both yield the real thing: a
+`<command-name>` record, no `Skill` tool_use, the body inlined.
+Measured 2026-09-02 on two skills.
+
 ### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open
