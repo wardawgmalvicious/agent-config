@@ -4,6 +4,14 @@ Helper scripts for repo maintenance and observability.
 
 ## What's here
 
+- [activation-expect.py](activation-expect.py) — the glob-vs-contract
+  engine behind `test-activation.ps1`. `static` compares each skill's
+  `paths:` frontmatter against a fixture set's
+  `expected_activations.md`; `files` lists a set's fixtures in read
+  order; `check` asserts a session transcript's activation attachments
+  against the globs. Needs `pyyaml` and `wcmatch`, so run it through
+  `uv run --with pyyaml --with wcmatch python` — or just use the
+  wrapper, which does.
 - [bootstrap-pre-commit](bootstrap-pre-commit) — install the
   [pre-commit](https://pre-commit.com/) framework via
   [uv](https://docs.astral.sh/uv/) and wire git hooks for this repo.
@@ -50,6 +58,29 @@ Helper scripts for repo maintenance and observability.
   glob checks. Used by the pre-commit `Validate SKILL.md frontmatter` and
   `Validate rules frontmatter` hooks; can also run manually as
   `python scripts/lint-frontmatter.py <path>...`.
+- [test-activation.ps1](test-activation.ps1) — the real-path test for
+  `paths:` activation: does Claude Code actually load the conditional
+  skills the globs say it should? Deploys the platform skills to a
+  throwaway probe, opens one cold `claude -p` session, has it Read every
+  fixture, then asserts the activations recorded in the session
+  transcript. `-Set pbip|fabric` picks the fixture set; **`-StaticOnly`
+  runs the glob-vs-contract check alone**, which needs no session and is
+  the cheap regression. Deriving a conditional-skill count is a side
+  effect of the static run — see the "don't restate a total" note in
+  [CLAUDE.md](../CLAUDE.md#validating-a-change).
+- [test-semantic-model-audit.ps1](test-semantic-model-audit.ps1) — the
+  behaviour test for
+  [`fabric-semantic-model-audit`](../skills/fabric/fabric-semantic-model-audit/SKILL.md),
+  a skill with no `paths:` glob at all: given it *is* loaded, does it
+  produce the right findings? `-Mode shipped|baseline|nocarveout|all`.
+  The third mode is the one that discriminates — it strips the
+  planning-model carve-out from a copy of the skill and re-runs, which
+  is the only control that can show the carve-out doing any work.
+  Deploys **project-scoped**, so the user-scope prune is never touched;
+  it compares the user-scope skill list before and after and fails on a
+  difference. It produces the runs and does not grade them — compare
+  each against
+  [expected_findings.md](../tests/skills/fabric-semantic-model-audit/expected_findings.md).
 
 There is deliberately **no `link-copilot.ps1`**. It existed to junction
 skills one-by-one into the shared `~/.agents/skills`, on the premise that

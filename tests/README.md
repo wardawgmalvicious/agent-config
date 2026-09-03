@@ -11,6 +11,15 @@ Run manually; not wired into CI.
   DAX, TMDL, and Fabric pipeline expressions. Each fixture has a
   paired entry in [expected_findings.md](skills/code-review/expected_findings.md)
   describing what the skill should catch.
+- [skills/fabric-semantic-model-audit/](skills/fabric-semantic-model-audit/)
+  — Microsoft's own planning semantic-model sample, saved to PBIP and cut
+  down to `definition/`. It tests the **planning-model carve-out**: a
+  false-positive guard, so
+  [expected_findings.md](skills/fabric-semantic-model-audit/expected_findings.md)
+  has two halves and both must hold. Going quiet is the regression it
+  exists to catch, not a pass. Driven by
+  [scripts/test-semantic-model-audit.ps1](../scripts/test-semantic-model-audit.ps1),
+  which produces the runs without grading them.
 - [skills/pbip-triggers/](skills/pbip-triggers/) and
   [skills/fabric-triggers/](skills/fabric-triggers/) — minimal but
   structurally real PBIP projects and Fabric item folders, used to test

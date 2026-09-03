@@ -516,7 +516,8 @@ and secrets, and nothing else is machine-checkable. Behavior is verified
 by hand against the fixtures in `tests/`.
 
 After changing a skill, rule, subagent, or enforcement hook, follow the
-procedure in [tests/skills/code-review/README.md](tests/skills/code-review/README.md)
+procedure in [tests/skills/code-review/README.md](tests/skills/code-review/README.md),
+[tests/skills/fabric-semantic-model-audit/README.md](tests/skills/fabric-semantic-model-audit/README.md)
 or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/README.md):
 
 - Run in a **fresh** agent session — for context hygiene (accumulated
