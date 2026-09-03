@@ -79,6 +79,15 @@ RELOAD_CMD_RE = re.compile(r"link-claude")
 LISTED_FLOOR = 50
 SLASH_FLOOR = 3
 
+# Below this many recorded sessions there is no evidence base, and every
+# flag below would fire on *absence of data* rather than on a finding --
+# with an empty ~/.claude/projects the rubric otherwise reports every
+# conditional skill as never-activated and every unconditional one as
+# evidence of listing truncation. Say "too thin" instead: a tool that
+# draws confident conclusions from no data is the failure this rubric
+# exists to avoid.
+MIN_SESSIONS = 20
+
 
 def skills_on_disk() -> dict[str, dict]:
     """Map skill name -> {group, conditional} from skills/<group>/<name>/."""
@@ -292,7 +301,15 @@ def cmd_coverage(args):
     if args.json:
         print(json.dumps({"sessions": nsessions, "rows": rows}, indent=2))
         return
-    print(f"{nsessions} sessions with a recorded listing, {len(disk)} skills on disk\n")
+    print(f"{nsessions} sessions with a recorded listing, {len(disk)} skills on disk")
+    if nsessions < MIN_SESSIONS:
+        print(
+            f"\nToo few sessions to flag anything (need {MIN_SESSIONS}). Counts\n"
+            "below are real; the flag column is suppressed rather than filled\n"
+            "with findings that only reflect missing history.\n"
+        )
+    else:
+        print()
     head = (
         f'{"skill":<38}{"cond":>5}{"listed":>7}{"activ":>6}'
         f'{"slash":>6}{"tool":>5}{"usage":>6}  flag'
@@ -316,6 +333,8 @@ def verdict(info, listed, chosen, agg, name, nsessions):
     session is expected; a rare-but-critical skill is doing its job. So
     nothing here says "delete" -- the flags name which question to ask.
     """
+    if nsessions < MIN_SESSIONS:
+        return ""
     if info["conditional"]:
         if listed:
             # It carries a glob *now*. Those listings predate the glob --
@@ -384,7 +403,14 @@ def cmd_listing(args):
     ever = set().union(*(v["names"] for v in by_project.values())) if by_project else set()
     missing = sorted(unconditional - ever)
     print()
-    if missing:
+    if len(withlisting) < MIN_SESSIONS:
+        print(
+            f"Only {len(withlisting)} recorded sessions (need {MIN_SESSIONS}) --"
+            " not enough to\nconclude anything about truncation. With no history"
+            " every skill looks\nnever-listed, which is missing data rather than"
+            " a dropped skill."
+        )
+    elif missing:
         print("Unconditional skills that have NEVER appeared in a listing:")
         for m in missing:
             print(f"  {m}")

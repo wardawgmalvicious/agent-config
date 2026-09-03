@@ -76,7 +76,11 @@ Helper scripts for repo maintenance and observability.
   where the same scan in-process takes about a second. Its flags
   deliberately never say "delete this": zero invocations is not disuse if
   the skill was withheld by design or covers a rare path; see `verdict`
-  in the script.
+  in the script. Below `MIN_SESSIONS` recorded sessions the flags are
+  suppressed outright rather than filled in — on a thin or empty corpus
+  every conditional skill otherwise reads as never-activated and every
+  unconditional one as evidence of truncation, which is missing history
+  and not a finding.
 - [test-activation.ps1](test-activation.ps1) — the real-path test for
   `paths:` activation: does Claude Code actually load the conditional
   skills the globs say it should? Deploys the platform skills to a
