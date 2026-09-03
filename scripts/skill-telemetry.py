@@ -36,6 +36,17 @@ Usage:
     uv run --with pyyaml python scripts/skill-telemetry.py triggers
 
 Add ``--json`` to any subcommand for the same data unrounded and unsorted.
+
+A companion *skill* wrapping this script was considered and **declined**
+(2026-09-03). The tool's own first run was the argument: ``code-review``
+had appeared in 259 of 259 listings and been auto-triggered zero times,
+and five platform skills sat in 92-162 listings each with no use of any
+kind. Adding another unconditional skill to that listing is the exact cost
+this data says is already overpaid, and the judgement content is thin
+enough to travel with the output -- the rubric is a dozen lines, it lives
+in ``verdict()`` and the legend, and it prints on every run. **Reconsider
+if** a run ever produces a finding the legend cannot explain, or if the
+corpus grows past the point where reading the table is itself the work.
 """
 
 from __future__ import annotations
