@@ -1,11 +1,11 @@
 # Handoff: adopt `when_to_use` across the skill corpus
 
 - **Written**: 2026-09-01.
-- **Kind**: content pass over all 44 skills, with a per-skill decision
+- **Kind**: content pass over the whole skill corpus (50 as of 2026-09-03), with a per-skill decision
   recorded for every one of them. Not a blanket edit — see the budget below.
 - **Status**: not started. The policy it depends on is settled; what is open
   is which skills get the field and what each one says.
-- **Run in**: a fresh session. The corpus is 44 files and the work is
+- **Run in**: a fresh session. The corpus is ~50 files and the work is
   editorial, so context fills fast, and a changed `description` is a changed
   *trigger* — the session that writes one cannot judge whether it fires.
 - **Parent**: `skill-context-cost.md` workstream D. That brief was
@@ -45,7 +45,7 @@ The field semantics are **confirmed at source**, not inferred —
 
 ## The ask, and the one place it collides with the budget
 
-Every one of the 44 skills gets **considered**, with the decision **recorded**
+Every skill in the corpus gets **considered**, with the decision **recorded**
 — that is the requested scope and this brief keeps it.
 
 What it cannot mean is every skill getting the field, and the reason is a
@@ -60,12 +60,25 @@ At the ~2.7 chars/token that description text measures at, a full 512-char
 
 | | n | Listing cost of adding `when_to_use` | Consequence |
 | --- | --- | --- | --- |
-| **Conditional** (`paths:`) | 24 | ~0 — withheld from the listing until a matching file is touched | Blanket-eligible. Write one wherever there is something useful to say. |
-| **Unconditional** | 20 | ~190 tokens each, paid in **every session on this machine**. All 20 ≈ **~3,800 tokens** onto a listing with ~100 tokens of headroom | Net-neutral or nothing. Every char added has to come out of that skill's own `description`. |
+| **Conditional** (`paths:`) | 27 | ~0 — withheld from the listing until a matching file is touched | Blanket-eligible. Write one wherever there is something useful to say. |
+| **Unconditional** | 23 | ~190 tokens each, paid in **every session on this machine**. All 23 ≈ **~4,400 tokens** onto a listing with ~100 tokens of headroom | Net-neutral or nothing. Every char added has to come out of that skill's own `description`. |
 
-Counts refreshed 2026-09-01 after wave 4 (`24/20`, was `19/25`); the five
-skills E moved are on the cheap side now. A blanket pass over the
-unconditional 20 would still overrun the `opus[1m]` budget
+**Counts re-derived 2026-09-03: 50 skills, `27/23`.** They have moved twice
+since this brief was written (`19/25` → `24/20` after wave 4 → `27/23` as
+skills landed), so **re-derive again before starting** rather than trusting
+this row:
+
+```bash
+find skills -name SKILL.md | wc -l                              # total
+grep -l "^paths:" $(find skills -name SKILL.md) | wc -l         # conditional
+```
+
+The six skills added since split evenly — `fabric-data-pipeline`,
+`fabric-ontology` and `fabric-operations-agent` conditional;
+`fabric-semantic-model-audit`, `land` and `test-skill` not — so the
+expensive column grew too, and the budget below got tighter rather than
+looser. A blanket pass over the
+unconditional 23 would still overrun the `opus[1m]` budget
 by roughly half again, and the penalty is not an error — Claude Code shortens
 descriptions starting with the skills you invoke least, so the cost lands as
 *silently weakened triggers on the skills you use rarely*, which is the exact
@@ -89,7 +102,7 @@ descending order of force:
    context. Declined repo-wide, but it is the hard stop.
 3. **Narrowing the `description`** — it is the entire trigger mechanism, so a
    tighter one fires less.
-4. **`skillOverrides: name-only`** — already in force here for the 37
+4. **`skillOverrides: name-only`** — already in force here for the 41
    platform skills.
 
 The **MOVE** outcome below is the one that serves control at zero budget cost:
@@ -119,8 +132,9 @@ going to churn is settled:
 - **E is done.** Five unconditional skills gained a `paths:` glob
   (`fabric-copy-job`, `fabric-mirroring`, `fabric-tmdl-api`,
   `fabric-spark-monitoring`, `fabric-warehouse-monitoring`), moving them
-  from the expensive column to the free one. The split is now **24
-  conditional / 20 unconditional**, not 19/25. No skill was demoted to
+  from the expensive column to the free one. That made the split **24
+  conditional / 20 unconditional** at the time, not 19/25 — see the budget
+  table above for the current figure. No skill was demoted to
   `docs/` and none was removed, so DEFER has no remaining occupants from E.
 - **C is declined.** No merges. `fabric-spark` + `fabric-error-handling`
   (C1) and the `pbir-*` trio (C2) all keep their names and stay separate.
@@ -155,19 +169,19 @@ Absent any of these, the honest answer for a working skill is SKIP.
 
 ## Procedure
 
-1. Read this brief's budget table. The split is **24 conditional / 20
-   unconditional** as of 2026-09-01 (wave 4 moved five); re-derive it
-   rather than trusting the number if any `paths:` glob has changed since.
-2. Take the conditional 19 first. For each: read the `description`, decide
+1. Re-derive the split with the two commands in the budget table above. It
+   was **27 conditional / 23 unconditional** on 2026-09-03 and has moved
+   twice already; do not trust the number in this brief.
+2. Take the conditional set first. For each: read the `description`, decide
    ADD or SKIP, and draft ≤ 512 chars that adds trigger surface rather than
    restating the description.
 3. Lint after every file:
    `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`.
    `cat` the file after any edit — an edit landing inside the frontmatter can
    leave YAML that still parses, into the wrong shape.
-4. For the unconditional 20: decide MOVE, SKIP or DEFER.
+4. For the unconditional set: decide MOVE, SKIP or DEFER.
    A MOVE must be char-counted **both** before and after; net change ≤ 0.
-5. Record the decision for all 44 in a table in this brief before deleting
+5. Record the decision for every skill in a table in this brief before deleting
    it, and carry that table into the commit message. The skipped set is the
    part that cannot be reconstructed from the diff.
 6. Hand off to `/commit`.
@@ -203,7 +217,7 @@ grep -iE "conditional|unique skills|getSkills|via attachment" /path/to/dbg.log
 1% of the running model's context window, so the number moves with the model.
 
 **The local measurement is a no-op, and this is the trap.**
-`.claude/settings.json` in this repo sets all 37 platform skills to
+`.claude/settings.json` in this repo sets all 41 platform skills to
 `name-only` via `skillOverrides`, which suppresses their descriptions from
 the listing *here*. A description or `when_to_use` change to a platform skill
 will show no listing delta in this repo and will show its full cost in a
@@ -214,7 +228,7 @@ measure" while it is still in force.
 
 ## Constraints
 
-- **No blanket add to the unconditional 25.** The budget math above is the
+- **No blanket add to the unconditional set.** The budget math above is the
   reason, and it is measured rather than assumed.
 - **`when_to_use` must not restate `description`.** Duplicated text is paid
   for twice and adds no trigger surface.
