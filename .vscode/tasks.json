@@ -34,9 +34,14 @@
             "problemMatcher": []
         },
         {
+            // lint-frontmatter.py itself has no path filter -- pre-commit
+            // supplies that via the `files:` regex per hook. Mirror it here
+            // so running this against README.md, CLAUDE.md, or any other
+            // doc in the active editor reports "not applicable" instead of
+            // a real-looking "missing frontmatter" failure.
             "label": "lint frontmatter (current file)",
             "type": "shell",
-            "command": "uv run --with pyyaml scripts/lint-frontmatter.py '${file}'",
+            "command": "$p = '${file}'; $leaf = Split-Path $p -Leaf; $dir1 = Split-Path (Split-Path $p -Parent) -Leaf; if ($leaf -eq 'SKILL.md' -or ($dir1 -eq 'rules' -and $leaf -ne 'README.md' -and $leaf -like '*.md')) { uv run --with pyyaml scripts/lint-frontmatter.py $p } else { Write-Host \"Skipped: '$leaf' is not a SKILL.md or claude/rules/*.md file -- lint-frontmatter.py doesn't apply.\" }",
             "detail": "Frontmatter check for the SKILL.md or rule in the active editor.",
             "problemMatcher": {
                 "owner": "frontmatter",
