@@ -34,7 +34,7 @@ deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
 `.claude/settings.json` holds more than servers and permissions: a
-`skillOverrides` block collapses all 39 platform skill descriptions to
+`skillOverrides` block collapses all 40 platform skill descriptions to
 `name-only` in sessions here. That is deliberate, and it stays even
 though the workflow-only prune already keeps those skills out of
 `~/.claude/skills` — it keeps them auditable from this repo and holds
@@ -451,7 +451,7 @@ it if they hadn't.
   `effort` is `max` on the seven workflow skills that drive this repo
   — `code-review`, `drift-audit`, `author-skill`, `test-skill`,
   `learn`, `drift-update`, `drift-handoff` — `xhigh` on `commit`, and
-  left commented on all 39 platform skills, which therefore inherit
+  left commented on all 40 platform skills, which therefore inherit
   `max`.
   Note what that means: *while the session actually sits at* `max`,
   only `commit` changes behaviour. But the session level is **live
@@ -475,7 +475,7 @@ it if they hadn't.
   xhigh`, and a plain-English commit request eleven minutes later ran
   `claude-opus-5 xhigh`. Two consequences. `commit`'s `model: sonnet`
   only saves anything when you actually type `/commit`. And a
-  `model:` pin is **inert on the 26 conditional platform skills** — a
+  `model:` pin is **inert on the 27 conditional platform skills** — a
   `paths:` glob withholds them from the startup listing, so they are
   reached by path, and `/<name>` answers `Unknown command`. It is
   **live on the other 13**, which carry no glob and slash normally
@@ -542,8 +542,8 @@ Changing a `paths:` glob changes *whether a skill fires at all*, which
 none of the fixtures above test. That contract belongs to
 [tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
 [tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) —
-disjoint fixture sets that between them assert **all 26** conditional
-skills in the payload — 10 pbip, 16 fabric.
+disjoint fixture sets that between them assert **all 27** conditional
+skills in the payload — 10 pbip, 17 fabric.
 Assertions live in each set's `expected_activations.md`, which is where
 each figure is owned — **don't restate a total anywhere else.** This
 count was duplicated into six files, checked by nothing, and by
@@ -552,7 +552,8 @@ count was duplicated into six files, checked by nothing, and by
 Derive it instead: `./scripts/test-activation.ps1 -Set fabric
 -StaticOnly`, then `-Set pbip`. Recounted twice on 2026-09-02 — first to
 25 after workstream E moved five skills from unconditional to
-conditional, then to 26 when `fabric-operations-agent` landed.
+conditional, then to 26 when `fabric-operations-agent` landed, then to 27
+when `fabric-ontology` did.
 
 **No *log* records conditional activation, but the session transcript
 does.** `instructions-loaded.log` sees rules only; `skills-invoked.log`
