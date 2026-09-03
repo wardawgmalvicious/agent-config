@@ -85,7 +85,7 @@ internal cross-references stay intact.
   the authoring run. Skills only; subagents and hooks keep the manual
   procedure in [tests/](../tests/).
 
-## Microsoft Fabric platform (28)
+## Microsoft Fabric platform (29)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -149,6 +149,15 @@ internal cross-references stay intact.
   two-audience rule, definition envelope, Direct Lake partitions.
 - [fabric-semantic-model-ai-instructions/](fabric/fabric-semantic-model-ai-instructions/)
   — Copilot semantic model AI-instructions authoring.
+- [fabric-semantic-model-audit/](fabric/fabric-semantic-model-audit/) —
+  reviewing a *finished* model rather than authoring one: star-schema
+  shape and the two opposite meanings of "flatten", relationship health,
+  memory cost, and readiness for reports, agents and ontologies. Named
+  `-audit` and not `-review` because `code-review` is diff-scoped and
+  this is corpus-scoped; carries the `fabric-` prefix even though it is a
+  procedure, since `drift-audit` already holds the bare verb slot.
+  Unconditional on purpose — a `paths:` glob would co-load an audit
+  procedure on every one-line measure edit.
 - [fabric-data-agent/](fabric/fabric-data-agent/) — Fabric Copilot data agent.
 - [fabric-operations-agent/](fabric/fabric-operations-agent/) — the
   OperationsAgent item's `Configurations.json`: definition schema, which
