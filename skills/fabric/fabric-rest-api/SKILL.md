@@ -48,7 +48,11 @@ Every Fabric item has **two** GUIDs, and they are NOT interchangeable. Using the
 | **Runtime item ID** | Fabric portal URL (`…/items/{guid}`); `GET /v1/workspaces/{wsId}/items` response `id` | The Fabric engine at execution time | Pipeline activity `notebookId` / `pipelineId`, Variable Library values consumed at runtime, REST `/items/{id}` calls, `notebookutils.runtime.context` lookups |
 | **logicalId** | `.platform` file → `config.logicalId` | Git integration / source-control tooling | `.platform` payloads, PBIP + pbir-cli + `fab import` source-control operations |
 
-The two values can look visually similar — Git integration sometimes derives one as a byte-swapped permutation of the other (segments reshuffled) — but Fabric will NOT silently fall back from one to the other at runtime.
+**The relationship is exact, not a resemblance: for a portal-created item, `logicalId` is the runtime item ID with its 16 bytes reversed.** Confirmed 2026-09-03 against `GET /v1/workspaces/{wsId}/items` over 19 workspaces — 21 of 21 resolvable reversals hit a real item with the same `displayName` and `type`, none hit a different item, and no raw `logicalId` was itself an item ID. Reversal is an involution, so it round-trips. This is also why a `logicalId` so often has a version nibble that is not `4`: a reversed v4 GUID does not look like a v4 GUID (79 reversals, zero failures, across two private repos and ~20 public ones spanning tenants).
+
+**The precondition is load-bearing.** It holds for items **created in the portal**. An item authored *git-first* — committed as files, then synced into the workspace — carries a fresh client-side v4 that encodes nothing, and reversing it yields a GUID that is not an item ID. Classifying items by whether their oldest commit is a Fabric portal sync (`Committing N items from workspace …`) separated the two forms 76 of 76 with no cross-cases.
+
+Knowing the derivation does **not** make the values interchangeable — Fabric will NOT silently fall back from one to the other at runtime. It means you can *derive* one offline instead of calling the API for it.
 
 **Rule of thumb:** if the value ends up in a payload the Fabric engine reads (pipeline definition, Variable Library value, REST body), use the **runtime item ID**. If it ends up in a file the Git integration layer reads (`.platform`, PBIP manifest), use the **logicalId**.
 
@@ -56,6 +60,14 @@ To fetch the runtime ID:
 - Portal: open the item, copy the trailing GUID from the URL
 - REST: `GET /v1/workspaces/{wsId}/items` → find by `displayName`, return `id`
 - `fab` CLI: `fab get "Workspace.Workspace/Item.ItemType" -q id`
+- **Offline, from a committed `.platform`** — reverse the `logicalId`, no credential needed. Portal-created items only; verify once against any of the three above before relying on it in a script.
+
+```python
+import uuid
+rev = lambda g: str(uuid.UUID(bytes_le=uuid.UUID(g).bytes_le[::-1]))
+rev("7c4d1e88-93af-4b02-9d61-2fa50c7e3b14")   # synthetic
+# -> '0c7e3b14-2fa5-9d61-4b02-93af7c4d1e88'
+```
 
 **Variable Library specifically:** variable string values are passed **verbatim** to consumers — they are NOT resolved against `.platform` logicalIds. Always store the runtime item ID.
 

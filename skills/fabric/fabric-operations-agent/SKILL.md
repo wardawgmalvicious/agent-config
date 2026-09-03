@@ -120,16 +120,36 @@ two different encodings.**
   ```
 
   This is also why a `logicalId` so often has a version nibble that is
-  not `4` — a reversed v4 GUID does not look like a v4 GUID. Across one
-  Git-synced repo, 33 of 35 `.platform` `logicalId`s reversed to valid
-  RFC-4122 v4 GUIDs, so the encoding is systematic rather than a
-  property of this item type. *Single-repo observation, 2026-09-02.*
+  not `4` — a reversed v4 GUID does not look like a v4 GUID. The
+  encoding is systematic rather than a property of this item type: 79
+  reversals with zero failures, across two Git-synced repos (74 of 76)
+  and ~20 unrelated public repos and tenants, where every id is a valid
+  v4 in exactly one of the two forms. *Measured 2026-09-02, widened
+  2026-09-03.*
+
+  **The reversed form is the runtime item ID — confirmed 2026-09-03**
+  against `GET /v1/workspaces/{ws}/items` over 19 workspaces. Of the
+  local `logicalId`s whose reversal resolved to anything, **21 of 21**
+  hit a real item carrying the **same `displayName` and `type`**. No
+  reversal landed on a different item, and no raw `logicalId` was itself
+  an item ID. The remaining 16 were absent from every visible workspace,
+  so they neither confirm nor refute.
+
+  **The precondition matters more than the rule.** This holds for items
+  **created in the portal**. An item authored *git-first* — committed as
+  files, then synced into the workspace — carries a fresh client-side v4
+  that encodes nothing, and reversing it yields a GUID that is not an
+  item ID at all. Classifying by whether an item's oldest commit is a
+  Fabric portal sync separated the two forms **76 of 76 with no
+  cross-cases** in the source repos. Neither git-first item resolved
+  against the API, so that half is consistent but untested.
 
   **Do not conclude that `logicalId` and the runtime item ID are
   interchangeable.** They are still different strings and substituting
   one for the other still fails — see `fabric-gotchas` on
-  `PowerBIEntityNotFound`. Whether the *reversed* form equals the runtime
-  ID is unconfirmed here; it needs a live `GET /v1/workspaces/{ws}/items`.
+  `PowerBIEntityNotFound`. What the confirmation buys is the *derivation*
+  — reverse it yourself, offline — not a licence to paste one where the
+  other belongs.
 
 - **`jobWorkspaceId` is a plain workspace ID.** Workspaces have no
   logicalId, so this is the one value in the file that genuinely does not
