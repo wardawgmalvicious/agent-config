@@ -69,6 +69,15 @@ internal cross-references stay intact.
   never from the conversation, which is what keeps `drift-handoff`'s
   cold-read contract honest: a brief that can't be executed without
   opening the audit report is reported as a brief-format defect.
+- [land/](workflow/land/) — the step after `/commit`: push the branch,
+  verify which GitHub account is actually authenticated, open the PR
+  through `github-mcp`, then fast-forward `main` and check CI. Stops for
+  confirmation before the push to `main`, the one irreversible step.
+  Named `land` because root [CLAUDE.md](../CLAUDE.md) already says to
+  "land a branch locally rather than through the merge button" — the
+  repo's own vocabulary. Earns its place because two steps fail
+  *silently*: `gh` and `github-mcp` can authenticate as different
+  accounts, so a PR lands under the wrong identity with no error.
 - [learn/](workflow/learn/) — "learn!": capture a session learning into the
   skill / rule / CLAUDE.md that should have covered it. Auto-detects
   which guidance was in use, checks existing coverage, verifies against
