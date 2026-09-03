@@ -85,7 +85,7 @@ internal cross-references stay intact.
   the authoring run. Skills only; subagents and hooks keep the manual
   procedure in [tests/](../tests/).
 
-## Microsoft Fabric platform (27)
+## Microsoft Fabric platform (28)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -158,6 +158,11 @@ internal cross-references stay intact.
   three separate front doors write the same item. Distinct from
   fabric-data-agent — autonomous and write-capable, not conversational
   and read-only.
+- [fabric-ontology/](fabric/fabric-ontology/) — the Ontology item (Fabric
+  IQ, preview): its Git definition layout, generating one from a semantic
+  model and the storage-mode support matrix, the data-binding rules, the
+  `Decimal`-returns-null trap, and consuming it — including as an MCP
+  server. Grounds both agent skills above; defers GQL to fabric-graph.
 - [fabric-ai-functions/](fabric/fabric-ai-functions/) — `ai.*` LLM functions
   on pandas/PySpark DataFrames in notebooks: import paths, config
   objects, custom endpoints, billing meters.
