@@ -69,8 +69,10 @@ image* of the ontology case that justified wave 12: there,
 inconsistency pulled the work in. Here the one internal mention exists to
 push work **away** from Plan. It is evidence against, not a loose thread.
 
-Everything below step 0 is therefore **unexecuted**. Nothing in steps 1–3
-was attempted, no suffix was guessed, and no glob was written.
+Steps 1 and 2 are therefore **unexecuted** — no suffix was guessed, no
+glob was written, and no skill was drafted. **Step 3 is the exception**:
+its `fabric-semantic-model-audit` carve-out was split off and landed the
+same day, because it was never gated on step 0. See that step for why.
 
 ## The gap, if step 0 says yes
 
@@ -189,12 +191,16 @@ Lighter than the other two briefs, but not nil:
   conventions — cite and move on.
 - [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md)
   — now shipped — needs to know that a *planning* model is legitimately
-  shaped differently from a reporting one. It carries **no such carve-out
-  today**, so if Plan proceeds, adding one is part of this brief's work,
-  or the audit will report a correct planning model as a defective
-  reporting model. **This is the one hard dependency between the two, and
-  wave 13 closing did not discharge it** — it made the debt concrete,
-  because the skill now exists to be wrong.
+  shaped differently from a reporting one. **Done 2026-09-03, and no
+  longer this brief's work**: its "what an audit must not flag" section
+  now excludes planning models, and check 1 in `references/REFERENCE.md`
+  carries the pointer at the point of use. This step was the one hard
+  dependency between the two and it is **discharged**, deliberately ahead
+  of step 0's defer, because it turned out not to be gated on anything
+  here — it needed the documented shape of a planning model, not a folder
+  suffix or a Plan item. What the guard has not had is a real planning
+  model to be tested against; that limitation is recorded in the audit
+  skill's own §9 rather than here.
 
 ## Validation, if it proceeds
 
