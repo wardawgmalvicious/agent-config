@@ -28,6 +28,7 @@
         "fabric-graph": "name-only",
         "fabric-mirroring": "name-only",
         "fabric-mlv": "name-only",
+        "fabric-ontology": "name-only",
         "fabric-operations-agent": "name-only",
         "fabric-realtime-dashboard": "name-only",
         "fabric-rest-api": "name-only",

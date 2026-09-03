@@ -5,8 +5,8 @@ Minimal but structurally real Fabric Git-synced item folders, used to test
 enters session scope.
 
 Companion to [`../pbip-triggers/`](../pbip-triggers/), which covers the
-Power BI half. Same contract, same method, disjoint skills: 10 there, 16
-here, and that is all 26 conditional skills in the payload.
+Power BI half. Same contract, same method, disjoint skills: 10 there, 17
+here, and that is all 27 conditional skills in the payload.
 
 ## Why this exists
 
@@ -160,7 +160,7 @@ for f in sorted(base.rglob('*')):
 
 Compare against [expected_activations.md](expected_activations.md). Point
 it at `../pbip-triggers/fixtures` to check the other half; the union of the
-two runs must cover all 26 conditional skills.
+two runs must cover all 27 conditional skills.
 
 **Run it a second time over `claude/rules/*.md`** — same code, swap the
 `skills/*/*/SKILL.md` glob for `claude/rules/*.md` and key on `p.stem`.
