@@ -530,6 +530,18 @@ or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/REA
   behavior the payload produces from behavior the base model produces.
   A flag you type, never something to wire into `settings.json` or a
   script — that would disable the payload it is meant to isolate.
+  **It is the wrong control for a false-positive guard**, though, and
+  silently so: a guard suppresses a finding the skill's *own* checklist
+  generates, and the base model runs no checklist, so the baseline
+  passes the criterion by never asking the question. Measured
+  2026-09-03 on `fabric-semantic-model-audit`'s planning-model
+  carve-out, where `--safe-mode` passed the criterion it was predicted
+  to fail. The discriminating control there is an **ablation** — the
+  same skill with the guard stripped, everything else identical
+  (`test-semantic-model-audit.ps1 -Mode nocarveout`). Strip *every*
+  reference to the guard: a half-strip leaves the skill
+  self-contradictory, and a run that notices hedges, which biases the
+  result toward standing down.
 - Compare against `expected_findings.md` rather than judging the output
   on its own — the fixtures encode what should be caught *and* what
   should not be.
