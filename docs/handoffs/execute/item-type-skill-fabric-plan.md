@@ -65,9 +65,18 @@ Nothing in the payload globs it, mentions it, or fixtures it.
 
 ## Step 1 — verify the folder suffix
 
-Same blocker, same reason, as
-[item-type-skill-ontology.md](item-type-skill-ontology.md) step 1. **Do
-not assume `.Plan`** — and note the specific hazard here: the ACME
+Same blocker, same reason, as wave 12's ontology brief (now spent — see
+the queue row). **Resolve it the way that one was**: the REST
+item-management **definition** page for the item type states the
+`.platform` `metadata.type` outright, in the base64 payload of its
+definition example — for ontology,
+[Ontology definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition)
+decoded to `"type": "Ontology"`, and the Git folder is
+`{display name}.{type}`. The equivalent
+[Plan definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/plan-definition)
+page exists and is the place to look. That beats hunting for a real
+workspace, and it settles the `definition/` layout in the same fetch.
+**Do not assume `.Plan`** — and note the specific hazard here: the ACME
 semantic model already contains a table literally named `Plan`
 (`Analytics/ACME_SM_Operation.SemanticModel/definition/tables/Plan.tmdl`),
 which is unrelated. A glob written on a guess would be both wrong and

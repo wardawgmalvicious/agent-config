@@ -13,10 +13,13 @@
   and 2 resolve.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
-- **Siblings**: [item-type-skill-ontology.md](item-type-skill-ontology.md)
-  owns the Ontology *item*; this skill consumes its generation
-  constraints as one audit dimension. Author ontology first if you are
-  doing both — the constraint matrix is drilled there.
+- **Siblings**: wave 12 is **spent** — the Ontology *item* is now owned by
+  [`fabric-ontology`](../../../skills/fabric/fabric-ontology/SKILL.md),
+  which carries the generation-constraint matrix this skill consumes as
+  one audit dimension. **Cite it; do not restate it.** The matrix is in
+  that skill's "Generating an ontology from a semantic model" section and
+  the fuller limitation list in its
+  [references/REFERENCE.md](../../../skills/fabric/fabric-ontology/references/REFERENCE.md) §5.
 
 ## Revision note
 
