@@ -1,6 +1,6 @@
 # Open briefs — execution order
 
-Six briefs are open. Eleven waves are spent (struck through below). Where
+Five briefs are open. Twelve waves are spent (struck through below). Where
 a spent wave had a brief, that brief is deleted, so those struck rows name
 files that no longer exist — git history is the archive. Wave 8 never had
 one; its row was always the whole spec. This file is the **only** place the
@@ -15,12 +15,13 @@ gitignored, executed in one pass, discarded together, and its briefs do not
 cite each other.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
-deleted **individually** as each is spent, and heavily cross-linked — 48
-relative markdown links across the current 7 files, counting this queue
-(recounted 2026-09-02 while closing wave 11, by the method kept with the
-number: `](` occurrences that are not `http`. The figure was 57 across 9
-files before wave 11 retired two briefs; earlier figures of 27 and 41 do
-not reproduce under any method tried, so this lineage starts at 57).
+deleted **individually** as each is spent, and heavily cross-linked — 44
+relative markdown links across the current 6 files, counting this queue
+(recounted 2026-09-02 while closing wave 12, by the method kept with the
+number: `](` occurrences that are not `http`. The lineage runs 57 across
+9 files → 48 across 7 after wave 11 retired two briefs → 44 across 6
+after wave 12 retired one; earlier figures of 27 and 41 do not reproduce
+under any method tried, so it starts at 57).
 Numbering the
 filenames would mean rewriting those links now, and again on every
 deletion, choosing each time between renumber-and-relink churn or a queue
@@ -57,7 +58,7 @@ rest would only invalidate every reference to a wave elsewhere.
 | ~~**9**~~ | ~~`activation-cleanroom-null.md`~~ | **Done 2026-09-01.** The clean room was never the variable — **the `Read` tool is**. Activation is keyed to file access through `Read`; a Bash `cat` or a `Grep` over the same file activates nothing, and this machine defaults every session to auto mode, which prefers `cat`. Measured as a 2x2 (Read/`cat` x in-repo/scratch): `Read` activated the same 3 skills and loaded the same rule in **both** directories, `cat` in **neither**. The original report's correlation was luck — all 8 clean-room probes chose `cat`, both in-repo controls chose `Read`; re-reading those transcripts confirms it retroactively. Every directory hypothesis is ruled out by its own probe: git repo, `AppData/Local/Temp`, missing `.claude/settings.json`, 8.3 short path, and fixture depth. Negative control clean. Written into root [`CLAUDE.md`](../../../CLAUDE.md) and both trigger READMEs. **Wave 10 is unblocked** — it may run anywhere, and must pin `--allowedTools Read --disallowedTools Bash …` and fail on a non-`Read` tool call. |
 | ~~**10**~~ | ~~`activation-test-harness.md`~~ | **Done 2026-09-02.** [`scripts/test-activation.ps1`](../../../scripts/test-activation.ps1) runs the real-path test for a named set in one command — static check, deploy to a throwaway probe outside the repo, one cold session, transcript assertion, teardown in a `finally`. Expectations come from [`scripts/activation-expect.py`](../../../scripts/activation-expect.py). **Both sets PASS**: pbip 16/16, fabric 57/57, skills *and* rules. See the finding below for the open question it answered. |
 | ~~**11**~~ | ~~`item-type-skill-operationsagent.md` → `fabric-operations-agent.md`~~ | **Done 2026-09-02.** The decision was **yes** — [`skills/fabric/fabric-operations-agent/`](../../../skills/fabric/fabric-operations-agent/SKILL.md) exists with a `references/` split, and the free side-fix landed too (`**/*.OperationsAgent/**` added to `fabric-git-serialization.md`). Validated the same day — fixtures, the two `expected_activations.md` rows, `test-activation.ps1 -Set fabric` (59/59, re-confirmed at close) and the cold behaviour run against a `--safe-mode` baseline. Both briefs are now deleted per the [lifecycle](#lifecycle), the decision brief's three inbound references re-pointed in the same commit. Two of the source brief's findings were **overturned** rather than executed, and both survive the deletion in live artifacts rather than in the brief: its step 3b portability conclusion is inverted in [SKILL.md §4](../../../skills/fabric/fabric-operations-agent/SKILL.md) (`dataSource.id` is the source `logicalId` verbatim; `jobArtifactId` is the target's byte-reversed, and the asymmetry is a schema fact rather than a portability one), and its two-ID-families hypothesis became wave 16. |
-| **12** | [item-type-skill-ontology.md](item-type-skill-ontology.md) | The third "yes, author it", and the one with a **payload inconsistency already live**: `fabric-data-agent`'s description names Ontology as a source and nothing behind it says anything. Ontology is a Git-supported item ("IQ (preview) items"). Blocked only on confirming the folder suffix — no local sample exists, which is exactly when a guess gets committed. Carries the same free `fabric-git-serialization.md` side-fix as wave 11. Do this **before** wave 13. |
+| ~~**12**~~ | ~~`item-type-skill-ontology.md`~~ | **Done 2026-09-02.** The decision was **yes** — [`skills/fabric/fabric-ontology/`](../../../skills/fabric/fabric-ontology/SKILL.md) exists with a `references/` split, and the free side-fix landed (`**/*.Ontology/**` added to `fabric-git-serialization.md`). **Step 1 resolved without a workspace, and that is the reusable part**: the REST [Ontology definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition) page states the suffix outright — its definition example's base64 `.platform` payload decodes to `"type": "Ontology"` — and settles the whole `definition/` layout in the same fetch, which the brief had called unguessable. No guess was committed. Wave 14's step 1 is re-pointed at that method. The skill's highest-value content came from pages the brief had **not** drilled: `how-to-bind-data` yielded one static binding per entity type but many time-series, static-before-time-series ordering, entity keys string/integer only, no OneLake security, and the source-type map in which lakehouse `decimal` binds to `double` while `decimal(p, s)` binds to **string**; `resources-troubleshooting` yielded the documented remedy for the `Decimal` null trap (recreate as `Double`, bind manually) that the brief recorded only as a dead end. The payload inconsistency is closed — `fabric-data-agent` now points at the new skill. Validated: static 64/64, `test-activation.ps1 -Set fabric` **PASS 64/64 skills and rules**, and a cold behaviour run against a `--safe-mode` baseline where the baseline answered **"Yes"** to binding two static tables to one entity type (wrong), invented the cause of missing Direct Lake bindings, and prescribed a CAST-view fix for the `Decimal` trap. Registered a `fabric-iq-ontology` drift source. Brief deleted; three inbound references re-pointed in the same commit. |
 | **13** | [skill-semantic-model-audit.md](skill-semantic-model-audit.md) | A review procedure over an existing model — the first thing in the payload that is not authoring guidance. **Design and performance are one skill, not two**: inactive relationships are expanded at refresh regardless of use, so a single finding is both a design and a memory finding. Wave 12 first: the ontology generation-constraint matrix is drilled there and merely cited here. Reference case is `ACME_SM_Operation.SemanticModel`, whose known answers (4 tables on both sides of a relationship, 7 of 26 relationships inactive, `DimDate` reached four ways) are the acceptance test. Also settles a repo-wide question — how a skill cites the `scripts/data/*.sh` wrappers — and carries a spin-off that is **not** a skill: a Power BI MCP template for `claude/mcp/`. Brief revised 2026-09-02 after drilling the star-schema and relationship guidance; read its revision note, not just the diff. |
 | **14** | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Gated, not scheduled.** Fabric IQ Plan is a Git-supported item with genuinely unguessable content (its automatic time-intelligence parser silently drops `Sept`, `WK1`, `Q5`). But nothing here uses Plan and no payload inconsistency pushes on it, so step 0 asks whether the workload is in play before anything else runs. A "no" is a defer that **keeps** the brief rather than deleting it — the one exception to the lifecycle below. If it does proceed, it must land a carve-out in wave 13, or the audit will report a correct planning model as a defective reporting one. |
 | ~~**15**~~ | ~~`concurrent-session-workflow.md`~~ | **Done 2026-09-02 — the answer is no.** Branching stays the exception and committing straight to `main` stays the default. The premise re-confirmed mechanically: one working tree has one HEAD, so two sessions in it share every file regardless of branch, and git refuses the same branch in two worktrees. Worktrees were then **measured**, in a real one probed cold, and root [`CLAUDE.md`](../../../CLAUDE.md) had named the wrong blocker — `link-claude.ps1` takes `$RepoRoot` from `$PSScriptRoot`, so the worktree's own copy deploys the worktree's skills and a session there loads them, conditional activation included. The real blocker is **scope precedence**: with `drift-handoff` at both scopes and a marker in only the worktree's copy, the listing carried the **user-scope** text. Project scope only adds names user scope lacks — so a worktree is **unnecessary** for a platform skill (pruned from user scope, so authoring one changes no session's payload) and **ineffective** for a workflow skill (at user scope, unoverridable), with no case in between. The downstream **PR-skill question resolves no** as well, on new grounds: the base-rate argument was bad and stays bad, but the flow is three commands plus "open the PR with `github-mcp`, not `gh`", both already in root `CLAUDE.md`, which auto-loads here — a skill would spend permanent listing budget on text already in context. **Reconsider if** a second silent collision between concurrent sessions happens anyway. Brief deleted; `CLAUDE.md`'s worktree section rewritten with the measurements. |
@@ -163,7 +164,7 @@ session model.
 **The second consequence was wrong, and is corrected as of 2026-09-02.**
 This section used to say a `model:` pin on any platform skill was inert by
 construction, "since those trigger by description and never by slash."
-That holds only for the **26 conditional** ones, whose `paths:` glob
+That holds only for the **27 conditional** ones, whose `paths:` glob
 withholds them from the startup listing — until a matching file is Read
 they have no description in context and `/<name>` answers `Unknown
 command`. The other **13** carry no glob and slash normally, so a pin
@@ -273,10 +274,14 @@ you have. 16 is the cheaper of the two and is gated only on a credential,
 so it fits a session that already has an `az login` and no appetite for
 authoring.
 
-**Waves 12–14 are the exception, and are a real sequence.** 12 before 13,
-because the ontology generation-constraint matrix is drilled in 12 and
-cited by 13; 14 gated on its own step 0 and, if it proceeds, owed a
-carve-out in 13. Added 2026-09-02 from a semantic-model coverage question.
+**Waves 12–14 were the exception, and were a real sequence — 12 is now
+spent, leaving 13 then 14.** 12 went first because the ontology
+generation-constraint matrix is drilled there and cited by 13; that
+dependency is **discharged**, and 13 now cites
+[`fabric-ontology`](../../../skills/fabric/fabric-ontology/SKILL.md)
+rather than a brief. 14 stays gated on its own step 0 and, if it
+proceeds, still owes a carve-out in 13. Added 2026-09-02 from a
+semantic-model coverage question.
 Three briefs from one question is unusual for this queue and was the
 finding rather than the plan: the three sit at different layers — an item
 type, a review procedure, and a separate workload that arrived
@@ -296,17 +301,19 @@ what a concurrent-session workflow question compounds across. It answered
 every session's payload, so they were never the contention case they
 looked like. Added and closed 2026-09-02.
 
-## Three briefs are decisions, not edits
+## Two briefs are decisions, not edits
 
-[item-type-skill-ontology.md](item-type-skill-ontology.md),
-[skill-semantic-model-audit.md](skill-semantic-model-audit.md),
+[skill-semantic-model-audit.md](skill-semantic-model-audit.md) and
 [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md)
-all open with a recommendation rather than an edit list. Three more are
+open with a recommendation rather than an edit list. Four more are
 spent and deleted: `item-type-skill-lakehouse.md`, whose "no" landed
 2026-09-01; `item-type-skill-datapipeline.md`, whose "yes" landed
-2026-09-02 as the `fabric-data-pipeline` skill; and
+2026-09-02 as the `fabric-data-pipeline` skill;
 `item-type-skill-operationsagent.md`, whose "yes" landed the same day as
-`fabric-operations-agent`. `/drift-update` treats a
+`fabric-operations-agent`; and `item-type-skill-ontology.md`, whose
+"yes" landed the same day as `fabric-ontology`. **Three "yes" decisions
+and one "no" so far** — the column is not a formality, but it has not
+been a rubber stamp either. `/drift-update` treats a
 decision-kind brief as something to put back to the user rather than
 execute; the same applies here. Landing a
 "no" is a real outcome — record the reasoning in the commit that deletes
