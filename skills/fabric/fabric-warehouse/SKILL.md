@@ -66,6 +66,20 @@ ENFORCED` constraints. What constrains you:
 
 CTAS workaround **destroys time-travel history and security (GRANT/DENY)** on the original table — re-apply security after the swap.
 
+**Git sync can drop a table's data on a schema change.** Adding a nullable
+column to a table's DDL file and syncing from Git wiped the table's rows
+(observed 2026-09-03; sibling tables in the same schema untouched). The docs
+describe sync as DacFx incremental deployment but warn of "limitations with
+adding table constraints or columns", and the `IDENTITY_INSERT` bullet under
+*Limitations in Git integration* implies a table rebuild with re-insert —
+mechanism not documented. Treat any synced DDL change to a populated table as
+destructive: capture what you need first (for a control table, `MAX(Watermark)`
+per entity from its run log — only statuses that actually advance the cursor,
+not ones that merely park a pending window), then re-register from that, not
+from the script's seed values. Corollary: a register proc whose UPDATE branch
+assigns every column unconditionally NULLs any column the caller omits, so
+re-registration scripts must carry every column they mean to keep.
+
 The `ALTER COLUMN` preview conversion matrix (what widening is actually allowed,
 and the Delta type-widening consequence for external readers) is in
 [references/schema-evolution.md](references/schema-evolution.md).
