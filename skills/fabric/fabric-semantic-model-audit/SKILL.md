@@ -108,6 +108,18 @@ is a false positive:
   user input.
 - **Factless fact / bridging tables** — the *recommended* way to relate
   two dimensions many-to-many.
+- **Planning models** — a model built for planning in Fabric states row
+  existence in the *dimensions* on purpose: a Subcategory table carrying
+  its parent `CategoryID`, a validity table with an `IsValid` flag, a
+  `Scenario` table with `IsForecast` / `OpenFrom` / `OpenUntil`, and a
+  weight matrix reached through Blend as a measure rather than through a
+  relationship. **Check 1 fires on the first of those and check 9 on the
+  last, and both are wrong here** — those relationships are what generate
+  the planning grid's rows, so collapsing the snowflake removes the thing
+  the model exists to do. A reporting model lets the fact table decide
+  which rows appear; a planning model cannot, because it must represent
+  futures that have no transactions yet. Recognise it and stand down;
+  *how* to build one is out of scope for this skill.
 
 Carry the hedge, so the report does not read as dogma: "optimal model
 design is part science and part art. Sometimes you can break with good
@@ -282,6 +294,11 @@ remediation is unavailable in this storage mode is not a finding yet.
 - **executeQueries limits**: one `EVALUATE` per call, 100,000 rows /
   15 MB, 120 requests per minute. A full metadata sweep is four calls,
   not one.
+- **The planning-model carve-out in §3 is documentation-derived.** It
+  comes from Microsoft's planning semantic-modeling guidance, fetched
+  2026-09-03; no planning model has been audited from this machine and
+  Plan is a preview workload. If a check-1 finding is contested on
+  planning grounds, re-read the source rather than insisting.
 - **The notebook tier is documented, not exercised.** As of 2026-09-02
   nothing in §2's third row has been run from this machine — it cannot
   be, without a capacity. Treat its invocations as first-party
