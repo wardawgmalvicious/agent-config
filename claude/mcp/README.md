@@ -20,7 +20,9 @@ The dividing line is **not** how often you use a server; it is whether a session
 - **User scope** — servers that answer questions about *your work in general*: docs lookup, source control, cloud control plane. Useful in a Fabric repo, a config repo, and a scratch directory alike.
 - **Project scope** — servers bound to a workload: anything needing a workspace ID, a database, a connection string, or a running desktop application. `.mcp.json` in the repo that has those things.
 
-The Fabric and Power BI servers sit in the project template for exactly this reason. They dominate this collection by count, which makes them feel foundational, but a Power BI modeling server is inert unless Power BI Desktop is open with a model loaded, and a Fabric server is inert without a workspace. Keeping them at user scope means every session everywhere carries tools that cannot fire. This repo is the standing example: it is markdown, PowerShell, and Python, and its own [.mcp.json](../../.mcp.json) lists two servers.
+The Fabric and Power BI servers sit in the project template for exactly this reason. They dominate this collection by count, which makes them feel foundational, but each one is inert without the thing it binds to — a Fabric server without a workspace, and `powerbi-modeling-mcp` without a semantic model to connect to. Keeping them at user scope means every session everywhere carries tools that cannot fire. This repo is the standing example: it is markdown, PowerShell, and Python, and its own [.mcp.json](../../.mcp.json) lists two servers.
+
+**`powerbi-modeling-mcp`'s binding is broader than "Power BI Desktop is open", and this file used to say otherwise.** Upstream names three connection targets — a model open in **Power BI Desktop**, a semantic model in a **Fabric workspace**, or the **TMDL folder inside a PBIP** on disk. The third needs no Desktop and no capacity, which is the one that matters here: it makes the server usable against a repo's committed `definition/` files. That *strengthens* the project-scope call rather than weakening it — a PBIP folder is about as workload-bound as a path gets — but the old reasoning was wrong about why.
 
 ---
 
@@ -75,13 +77,13 @@ claude mcp add --scope user microsoft-learn-mcp --transport http https://learn.m
 
 [.mcp.project.template.json](.mcp.project.template.json) is the starter set for servers bound to a specific workload. Copy it to the repo root as `.mcp.json` and commit it — every collaborator who opens the repo in Claude Code gets the same MCP tools.
 
-Treat it as a menu, not a manifest. Almost no repo wants all six: a Power BI repo wants `powerbi-modeling-mcp`, a Fabric repo wants `microsoft-fabric-mcp` and maybe `fabric-rti-mcp`, an application repo wants `sql-mcp` and `azure-devops-mcp`. Delete the rest.
+Treat it as a menu, not a manifest. Almost no repo wants all seven: a Power BI repo wants `powerbi-modeling-mcp`, a Fabric repo wants `microsoft-fabric-mcp` and maybe `fabric-rti-mcp`, an application repo wants `sql-mcp` and `azure-devops-mcp`. Delete the rest.
 
 ### Prerequisites (project scope)
 
 Three runtimes, needed only for the servers you keep:
 
-- **`npx`-based stdio servers** (`powerbi-modeling-mcp`, `microsoft-fabric-mcp`, `azure-devops-mcp`) need [Node.js](https://nodejs.org/) on `PATH`. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux drop `"cmd", "/c"` and invoke `npx` directly.
+- **`npx`-based stdio servers** (`powerbi-modeling-mcp`, `microsoft-fabric-mcp`, `azure-devops-mcp`) need [Node.js](https://nodejs.org/) on `PATH` — **20.0+** for `powerbi-modeling-mcp`, which is the only one upstream pins a floor for. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux drop `"cmd", "/c"` and invoke `npx` directly.
 - **`uvx`-based stdio servers** (`fabric-rti-mcp`) need [`uv`](https://docs.astral.sh/uv/) on `PATH` — `uvx` is the Python tool-runner shipped with `uv` (the `npx` analog for PyPI-packaged tools). The server is distributed on PyPI as `microsoft-fabric-rti-mcp` and downloaded on first launch.
 - **`dnx`-based stdio servers** (`fabric-data-factory-mcp`) need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) on `PATH` — `dnx` is the .NET tool-runner that ships with it (the `npx` analog for NuGet-packaged tools). The server is distributed via NuGet and downloaded on first launch.
 
@@ -121,7 +123,7 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
-| `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Local Power BI Desktop / TOM operations — tables, measures, relationships, partitions, DAX query execution against an open model. Needs Power BI Desktop running with a model loaded. |
+| `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
 | `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. The working Claude Code alternative to the DCR-blocked hosted Fabric Core endpoint. |
 | `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Covers most RTI workflows without the hosted KQL endpoints, which don't connect from Claude Code. |
 | `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
@@ -129,6 +131,65 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | `azure-devops-mcp` | stdio (`npx @azure-devops/mcp`) | Azure DevOps work items, repos, pipelines scoped to the configured org + project. |
 
 > `ASPNETCORE_URLS=http://127.0.0.1:0` forces DAB to pick a free loopback port so multiple Claude sessions or a running dev server don't collide.
+
+---
+
+### `powerbi-modeling-mcp` is a write tool
+
+Several servers here write — `microsoft-fabric-mcp` creates items,
+`fabric-data-factory-mcp` is a control plane. What singles this one out is
+**what it writes to and how hard that is to undo**: it edits a semantic
+model in place through TOM, so a bad batch is not a resource you delete
+and recreate but a model whose measures and relationships have moved.
+`--readwrite` is the documented default and the template passes no flag to
+change it.
+
+**Back the model up first.** Upstream says so in a warning box, not a
+footnote: an LLM driving TOM can make unintended changes, and there is no
+undo. Bulk operations are the selling point and therefore also the risk —
+batch renames run across hundreds of objects inside one transaction.
+
+**Two flags change the risk profile, and neither is set here.**
+
+| Flag | Effect |
+| --- | --- |
+| `--readonly` | Safe mode — blocks every write. The right default for an *audit* repo that only reads the model. |
+| `--skipconfirmation` | Approves all writes with no prompt. Only with backups and a known-good operation. |
+
+**The confirmation prompt works from Claude Code**, which was worth
+checking rather than assuming — the server gates the first write and the
+first query behind the [MCP elicitation
+protocol](https://modelcontextprotocol.io/specification/2025-06-18/client/elicitation),
+and a client that doesn't implement it would fail or hang exactly where a
+`--skipconfirmation` workaround looks tempting. Claude Code **2.1.252
+does** implement it: the bundle registers an `elicitation/create` request
+handler with both `form` and `url` modes. So leave the confirmations on.
+This is *not* the DCR situation that blocks the hosted Fabric endpoints —
+different protocol, different answer.
+
+Two access facts that are easy to attribute to the wrong layer:
+
+- **Write permission on the semantic model is required** — read access
+  is not enough, and this is a Power BI permission, not an MCP one.
+- **There is no tenant admin switch for this server.** It connects over
+  the **XMLA endpoint**, so the only way to block it is to disable XMLA
+  — which also blocks Tabular Editor, DAX Studio, and every other
+  external tool. Don't propose it as a targeted control.
+
+For unattended use, `--authmode=serviceprincipal` plus `AZURE_CLIENT_ID`,
+`AZURE_TENANT_ID` and a secret or certificate replaces the interactive
+login; `PBI_MODELING_MCP_ACCESS_TOKEN` supplies a token directly.
+
+Both Power BI MCP servers are **Public Preview**, and upstream says the
+implementation may change significantly before GA. The flags, env vars and
+connection targets above are read from
+[`microsoft/powerbi-modeling-mcp`](https://github.com/microsoft/powerbi-modeling-mcp)'s
+README, **not** from Learn — the Learn overview links out to it rather
+than restating it, so a `drift-audit` run over the `powerbi` What's New
+source will not see a flag rename. Verified 2026-09-03 against that
+README and the Learn [MCP servers
+overview](https://learn.microsoft.com/power-bi/developer/mcp/mcp-servers-overview);
+re-read the repo README when the server goes GA.
 
 ---
 
