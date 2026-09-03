@@ -127,6 +127,21 @@ like a missing tool and isn't. Use
 shell from PowerShell. (`sh` resolves to nothing at all.) Verified
 2026-09-02.
 
+**No image *generation*, but HTML renders to PNG with no install.** No
+image model is available, so a picture can't be made from a prompt —
+author HTML/SVG and screenshot it headless instead, which covers social
+cards, diagrams and badges. Edge is the renderer, and only its **x86**
+path exists (`C:\Program Files\Microsoft\Edge\` is not there):
+
+    msedge --headless=new --disable-gpu --hide-scrollbars \
+      --window-size=1280,640 --screenshot="C:/abs/out.png" "file:///C:/abs/in.html"
+
+Both paths must be absolute and the source needs the `file:///C:/...`
+triple-slash form. The PNG comes out exactly `--window-size` px and is
+reproducible byte-for-byte. Success prints `N bytes written to file`; a
+`fallback_task_provider.cc ... ERROR` line on stderr is noise, not a
+failure. Verified 2026-09-02.
+
 PowerShell modules available: `Az`, `MicrosoftPowerBIMgmt`, `SqlServer`,
 `Microsoft.Graph`, `ImportExcel`, `powershell-yaml`, `Pester`,
 `PSScriptAnalyzer`, `Microsoft.PowerShell.SecretManagement` +
