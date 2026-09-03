@@ -26,7 +26,7 @@ executeQueries, **N** = Fabric notebook (`sempy.fabric`).
 | 10 | Assume referential integrity | D | `referentialIntegrity` on a DirectQuery relationship | Only with genuine integrity; otherwise results silently understate |
 | 11 | Missing `formatString` / `summarizeBy` | D | column and measure properties | Set explicitly (see `coding-tmdl.md`) |
 | 12 | Implicit measures | D | numeric columns with `summarizeBy` other than `none` and no explicit measure | Create explicit measures; set `summarizeBy: none` |
-| 13 | Non-descriptive names | D | `TR_AMT`, `F_SLS`, `DIM_GEO_01` | Rename, or supply `description` and synonyms |
+| 13 | Non-descriptive names | D | `TR_AMT`, `F_SLS`, `DIM_GEO_01` | Rename, or supply `description` and synonyms. At scale, `powerbi-modeling-mcp` renames in bulk — review before saving (see `../SKILL.md` §7) |
 | 14 | Missing descriptions | D/Q | tables, columns, measures | Add concise descriptions — required for AI consumers |
 | 15 | Measure `[State]` not `Ready` | Q | `INFO.VIEW.MEASURES()` | Fix the broken DAX |
 | 16 | Calculated columns doing Power Query work | Q | non-empty `[Expression]` on a column | Move upstream; calc columns recompute at refresh and bloat the model |
