@@ -76,7 +76,7 @@ disable-model-invocation: false
 ### AVOID
 
 - Hardcoded workspace/item IDs — discover via REST API
-- Confusing `.platform` `logicalId` with runtime item ID — they are NOT interchangeable; runtime references need the portal/API ID
+- Confusing `.platform` `logicalId` with runtime item ID — they are NOT interchangeable; runtime references need the portal/API ID. For a **portal-created** item the two are the same 16 bytes reversed, so you can derive one offline — deriving is fine, substituting still fails
 - `SELECT *` without LIMIT on large tables
 - Long-running transactions (increases conflict window)
 - Singleton `INSERT...VALUES` at scale (creates tiny Parquet files)

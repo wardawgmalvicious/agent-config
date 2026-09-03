@@ -17,7 +17,10 @@ The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface ar
 
 - [Fabric Items REST API: list / get](https://learn.microsoft.com/rest/api/fabric/core/items) — endpoint that returns the **runtime** item ID needed by pipeline / Variable Library / `getDefinition` / `updateDefinition` calls.
 - [Item definition overview](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/item-definition-overview) — explains the `.platform` part and its `logicalId` field, which is *separate* from the runtime ID.
-- See `fabric-rest-api` skill for the canonical rules.
+- **They are separate strings but not independent values.** For an item **created in the portal**, `logicalId` is the runtime item ID with its 16 bytes reversed — so the runtime ID can be derived offline from a committed `.platform`, with no API call. Measured 2026-09-03 against `GET /v1/workspaces/{ws}/items` across 19 workspaces: 21 of 21 resolvable reversals hit a real item with the same `displayName` and `type`; none hit a different item; no raw `logicalId` was itself an item ID.
+- **Not for git-first items.** An item authored as files and synced *into* a workspace carries a fresh client-side v4 that encodes nothing. Origin is what separates the two forms (76 of 76, no cross-cases) — an item whose oldest commit is a portal sync (`Committing N items from workspace …`) reverses; one first added by a human commit does not.
+- Deriving is safe; **substituting is still the bug this row exists for.** Fabric does not fall back from one to the other at runtime.
+- See `fabric-rest-api` skill for the canonical rules and the snippet.
 
 ## TDS connection (Warehouse / SQL endpoint / SQL Database)
 
