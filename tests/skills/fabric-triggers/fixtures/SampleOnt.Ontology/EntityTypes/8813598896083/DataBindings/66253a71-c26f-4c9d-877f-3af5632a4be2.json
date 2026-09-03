@@ -1,0 +1,23 @@
+{
+  "id": "66253a71-c26f-4c9d-877f-3af5632a4be2",
+  "dataBindingConfiguration": {
+    "dataBindingType": "NonTimeSeries",
+    "propertyBindings": [
+      {
+        "sourceColumnName": "DisplayName",
+        "targetPropertyId": "3117068036374594013"
+      },
+      {
+        "sourceColumnName": "Manufacturer",
+        "targetPropertyId": "3117068031950000331"
+      }
+    ],
+    "sourceTableProperties": {
+      "sourceType": "LakehouseTable",
+      "workspaceId": "00000000-0000-0000-0000-000000000001",
+      "itemId": "00000000-0000-0000-0000-000000000002",
+      "sourceTableName": "equipment1nontimeseries",
+      "sourceSchema": "dbo"
+    }
+  }
+}

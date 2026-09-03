@@ -1,0 +1,44 @@
+{
+  "id": "8813598896083",
+  "namespace": "usertypes",
+  "baseEntityTypeId": null,
+  "name": "Equipment1",
+  "entityIdParts": [
+    "3117068036374594013"
+  ],
+  "displayNamePropertyId": "3117068036374594013",
+  "namespaceType": "Custom",
+  "visibility": "Visible",
+  "properties": [
+    {
+      "id": "3117068036374594013",
+      "name": "DisplayName",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    },
+    {
+      "id": "3117068031950000331",
+      "name": "Manufacturer",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "String"
+    }
+  ],
+  "timeseriesProperties": [
+    {
+      "id": "3114584981368796953",
+      "name": "PreciseTimestamp",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "DateTime"
+    },
+    {
+      "id": "3114584977562679672",
+      "name": "Temperature",
+      "redefines": null,
+      "baseTypeNamespaceType": null,
+      "valueType": "Double"
+    }
+  ]
+}

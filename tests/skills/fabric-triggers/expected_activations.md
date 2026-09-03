@@ -84,9 +84,14 @@ an apparent one.
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
 | `SampleOA.OperationsAgent/.platform` | `fabric-operations-agent` | 3,919 |
 | `SampleOA.OperationsAgent/Configurations.json` | `fabric-operations-agent` | 3,919 |
+| `SampleOnt.Ontology/.platform` | `fabric-ontology` | 2,746 |
+| `SampleOnt.Ontology/definition.json` | `fabric-ontology` | 2,746 |
+| `SampleOnt.Ontology/EntityTypes/8813598896083/definition.json` | `fabric-ontology` | 2,746 |
+| `…/DataBindings/66253a71-c26f-4c9d-877f-3af5632a4be2.json` | `fabric-ontology` | 2,746 |
+| `SampleOnt.Ontology/RelationshipTypes/3110733855942077719/definition.json` | `fabric-ontology` | 2,746 |
 
-Together with `../pbip-triggers/`, all **26** conditional skills in the
-payload are now covered — 10 there, 16 here.
+Together with `../pbip-triggers/`, all **27** conditional skills in the
+payload are now covered — 10 there, 17 here.
 
 ## Assertions that carry weight
 
