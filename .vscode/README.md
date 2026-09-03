@@ -106,13 +106,31 @@ scope than hand-authored per repo.
 
 | Server | Purpose |
 | --- | --- |
-| `powerbi-remote-mcp` | Hosted Fabric service for Power BI — workspace-scoped tools, IDs passed per call. |
+| `powerbi-remote-mcp` | Hosted Power BI query service — retrieves model schema and generates/executes DAX. Scoped per call by **semantic model ID**, not by workspace. Read-only: to *edit* a model use `powerbi-modeling-mcp` from the [Claude project template](../claude/mcp/README.md#powerbi-modeling-mcp-is-a-write-tool) instead. Two prerequisites below. |
 | `fabric-core-remote-mcp` | Hosted Fabric Core MCP — natural-language workspace + item CRUD, role assignments, capacity ops. Preview as of 2026-05. |
 | `kql-global-mcp` | Hosted Fabric global KQL endpoint — workspace + database IDs passed per tool call. |
 | `warehouse-global-mcp` | Hosted Fabric global Warehouse SQL endpoint — workspace + item IDs passed per tool call. |
 | `eventhouse-remote-mcp` | Fabric Eventhouse remote MCP pre-scoped to one KQL database via `<WorkspaceId>` / `<KqlDatabaseId>`. |
 | `warehouse-remote-mcp` | Fabric Warehouse remote MCP pre-scoped to one warehouse via `<WorkspaceId>` / `<WarehouseId>`. |
 | `activator-remote-mcp` | Fabric Activator remote MCP pre-scoped to one reflex via `<WorkspaceId>` / `<ActivatorId>`. Tools cover rule creation (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). |
+
+#### `powerbi-remote-mcp` has two gates that are not placeholders
+
+Both fail *after* the server connects, so they look like the model is
+empty or the agent is confused rather than like a configuration problem:
+
+- **A tenant setting must be on** — *"Users can use the Power BI Model
+  Context Protocol server endpoint (preview)"*, enabled by a Power BI
+  admin. Nothing in `mcp.json` can substitute for it.
+- **Its `Generate Query` tool needs a Copilot license** and consumes
+  Copilot capacity, because it calls the same DAX generation engine as
+  Copilot for Power BI. The rest of the tools do not. If you would
+  rather not spend capacity, disable that one tool in the client and let
+  the agent's own model write the DAX.
+
+You also need **Build** permission on at least one semantic model, and
+the model ID is read from its service URL:
+`https://app.powerbi.com/groups/{workspaceId}/datasets/{semanticModelId}`.
 
 ## Verifying
 
