@@ -20,6 +20,7 @@ disable-model-invocation: false
 | COPY INTO auth error | Missing Storage Blob Data Reader on ADLS | Grant role or use SAS in CREDENTIAL |
 | MERGE failures in production | Preview feature with table-level conflict detection | Use DELETE + INSERT pattern instead (Warehouse only — fabric-database skill supports MERGE) |
 | ALTER COLUMN fails | Not supported in Fabric Warehouse | Use CTAS + sp_rename workaround (Warehouse only — fabric-database skill supports ALTER COLUMN) |
+| Table empty after Git sync of a DDL change | Sync rebuilt the table (DacFx table-rebuild path) — even a nullable `ADD COLUMN` (observed 2026-09-03; mechanism undocumented) | Capture needed rows/state before syncing DDL to a populated table; re-register after. See fabric-warehouse — *Schema Evolution* |
 | TMDL validation error | Spaces instead of tabs, or `//` comments | Use literal tabs; use `///` for descriptions |
 | Parts missing after updateDefinition | Only modified parts sent | Must include ALL parts in every update |
 | `DefaultJob` in job execution | Wrong jobType | Use type-specific values: `RunNotebook`, `Pipeline`, `SparkJob`, `Refresh` |
