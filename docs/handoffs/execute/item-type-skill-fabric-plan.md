@@ -5,10 +5,14 @@
   the [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md) work and
   finding they were about something else entirely.
 - **Kind**: coverage decision, then possibly `/author-skill`.
-- **Status**: open. **Recommendation: provisional yes, gated on step 0.**
-  The content is real, uncovered and unguessable. Whether it is *used*
-  here is unresolved, and that is the whole decision.
-- **Run in**: a fresh session, and **not before** step 0 is answered.
+- **Status**: **deferred 2026-09-03 — step 0 was answered *no*.** The
+  recommendation below is unchanged *on the merits*: the content is real,
+  uncovered and unguessable. What was unresolved was whether Plan is
+  **used** here, and today it is not. This brief is alive and on disk on
+  purpose — that is not an oversight to tidy up.
+- **Run in**: a fresh session, and **not before step 0 is *re*-answered.**
+  The 2026-09-03 "no" is a snapshot of one day, not a standing verdict;
+  re-measure rather than reading it off this line.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -52,6 +56,21 @@ because the time-intelligence half is a lookup table you cannot reason
 your way to.
 
 Do not skip to step 1 on the strength of the docs being interesting.
+
+**Answered 2026-09-03: no — defer.** The evidence was re-measured that
+day rather than taken from the 2026-09-02 line above: no `*.Plan` folder
+in `fabric-acme`, `fabric-acme-legacy`, `edgebridge` or `internal-tooling`, and
+the payload's only mention of Plan is now the clause in
+`fabric-ontology`'s `when_to_use` disambiguating that item **from** this
+one. That
+single reference is worth reading correctly, because it is the *mirror
+image* of the ontology case that justified wave 12: there,
+`fabric-data-agent` promised a source the payload did not have, and the
+inconsistency pulled the work in. Here the one internal mention exists to
+push work **away** from Plan. It is evidence against, not a loose thread.
+
+Everything below step 0 is therefore **unexecuted**. Nothing in steps 1–3
+was attempted, no suffix was guessed, and no glob was written.
 
 ## The gap, if step 0 says yes
 
@@ -200,3 +219,9 @@ this is the one brief of the three that should *not* be deleted on a
 file, and revisit when a Plan item appears. Delete it only if the
 workload is abandoned upstream or the user rules it out outright, and
 record which of those it was.
+
+It *was* the outcome, on 2026-09-03, and this procedure is what was
+followed — so treat this section as the standing instruction for the
+**next** answer, not as an open question. It stays in the conditional on
+purpose: step 0 can be asked again, and a later "yes" does not make these
+paragraphs stale.
