@@ -61,6 +61,22 @@ The cheap regression test is the static glob check in either trigger
 README — it needs no session and catches a broken glob directly. A cold
 session only proves the harness agrees with the globs.
 
+**Choosing the control matters as much as the fixture.** `--safe-mode` is
+the default control and answers "does the payload add anything over the
+base model". It cannot answer "does *this paragraph* earn its place",
+and for a **false-positive guard** it is actively misleading: the guard
+suppresses a finding the skill's own checklist generates, and the base
+model — which runs no checklist — never generates it, so the baseline
+passes the criterion by never asking the question. Measured 2026-09-03
+on the planning-model carve-out, where `--safe-mode` passed the very
+criterion it was predicted to fail.
+
+The discriminating control there is an **ablation**: the same skill with
+the guard removed and everything else identical. Strip *every* reference
+to it — a half-strip leaves the build self-contradictory, and a run that
+notices the contradiction hedges, which confounds the result toward
+standing down.
+
 **Agent fixtures** cover the enforcement floors that gate behavior:
 refusal language, the PreToolUse hook block on out-of-scope writes,
 memory hygiene (pre-scan read of `MEMORY.md`, post-scan update,
