@@ -140,7 +140,7 @@ platform skills). Revisit if the spend shows up.
 
 ## Description char count
 
-- `description`: 683 / 1,024
+- `description`: **894 / 1,024** (was 683 at first draft)
 - `when_to_use`: N/A — not set (see Frontmatter)
 
 **The binding constraint here is the aggregate, not the per-field cap.**
@@ -148,6 +148,16 @@ The eight existing workflow descriptions total ~6,230 chars and are all
 unconditional at user scope, so `land` adds its full length to every
 session on this machine. Keep it near 600 and spend the budget on
 trigger vocabulary, not on summary.
+
+**That 600 target was knowingly overshot on 2026-09-03, and the reason
+is the rule's own escape clause.** The +211 chars are the defect-2 fix:
+a sentence naming the mechanism-directive prompt shapes (`'squash these
+and merge'`, `'force push it'`) that the first draft's description did
+not catch. That is *entirely* trigger vocabulary, which is the half this
+section says to spend on — the summary half was not grown. Trim here
+first if the aggregate ever becomes the binding problem, starting with
+the "Guards two silent failures" sentence, whose content is in the body
+and whose keywords are now carried by the new sentence anyway.
 
 ## Body structure outline
 
@@ -174,14 +184,19 @@ auto-loads in this repo, so a reference file would duplicate it.
    three alternatives is wrong here.
 9. **Verify** — `merged: true`, CI check runs, and that the merge-commit
    count did not move.
-10. **Constraints** — never force, never squash, never `gh` for the PR,
-    never merge without the checkpoint.
+10. **Constraints** — **two tiers** (decided 2026-09-03, see
+    [Changes from source proposal](#changes-from-source-proposal) item
+    3). *Absolute*: never `gh` for the PR, never `--force` /
+    `--no-verify`, never write to `main` before the checkpoint, never
+    `git switch` with a live session. *Repo convention, overridable but
+    never silently*: squash, merge commit, branch deletion.
 
 ## Changes from source proposal
 
 Derived from the `/learn` request in this session ("a sibling skill to
-commit… publish branch, open pr, merge to main"). Two material
-departures, both agreed with the user before drafting:
+commit… publish branch, open pr, merge to main"). Three material
+departures — the first two agreed with the user before drafting, the
+third forced by the cold test run afterwards:
 
 1. **This reverses a recorded decision.** Wave 15, closed earlier the
    same day, resolved the PR-skill question **no**, on the grounds that
@@ -199,6 +214,25 @@ departures, both agreed with the user before drafting:
    user chose this over an unattended full run: pushing `main` is the
    one irreversible step, and `commit`'s own rule is never to push
    unless asked.
+3. **Constraints are two-tiered, not absolute** — added 2026-09-03,
+   after the cold `/test-skill` run, and put to the user as an explicit
+   choice between all-absolute, all-defeasible, and the split that was
+   taken. The cold run had found that under `/land` a direct "squash
+   them" instruction **defeated** the flat `never squash` rule, with the
+   model reasoning about the rule's purpose and disclosing the override.
+   Treating that as a bug to harden against was rejected on two grounds:
+   it had already lost once, and a flat refusal contradicts the
+   harness's own disposition that a reaffirmed instruction is the user's
+   call. So the list splits by *what kind of claim each item is*.
+   **Identity and safety are absolute** — "just use `gh`" cannot be
+   consented to, because the asker does not know which account `gh`
+   holds. **History shape is the user's** — squash, merge commit and
+   branch deletion are defaults, and the skill's job is to make the
+   override informed rather than to refuse it: name the specific cost,
+   wait one round, record it in the PR body, then comply. The mechanism
+   is deliberately the one that already works in this skill — step 6's
+   checkpoint stops and waits, and *that* held in testing where a
+   `never` did not.
 
 ## Tag
 
