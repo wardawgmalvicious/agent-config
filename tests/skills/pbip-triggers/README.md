@@ -184,6 +184,16 @@ result is the same mistake as grepping
 `Sending N skills via attachment (initial)` in a `--debug-file` log, which
 is emitted before any Read and so can never show an activation.
 
+**The converse trap does not bite here, and it is the `--allowedTools`
+line that stops it.** An `isInitial: false` record is emitted by a *hot
+reload* too — edit a `SKILL.md`, or re-run `link-claude.ps1`, and the
+affected skills are re-announced exactly as a glob match would be (438
+such deltas across this machine's transcripts, measured 2026-09-03). The
+probe pins `--allowedTools Read`, so it cannot write a skill or redeploy,
+which is why every delta it produces is a real activation. Keep that
+restriction even if a future probe needs another tool — the moment the
+session can edit `skills/`, the assertion stops meaning what it says.
+
 **Assert the tool call too, not just the attachment.** Parse the
 transcript for the `tool_use` block and fail the probe if it is not a
 `Read` — otherwise a run that silently reached for `cat` is scored as a

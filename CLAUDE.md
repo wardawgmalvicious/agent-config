@@ -580,6 +580,25 @@ authoritative: a match appends an `{"type":"attachment"}` record whose
 record is the startup listing and says nothing about any file. Confirmed
 2026-09-01 on 2.1.252.
 
+**But `isInitial: false` is not proof of a glob match — it is also how a
+hot reload announces itself.** Editing a `SKILL.md` re-announces *that*
+skill, and a `link-claude.ps1` run re-announces everything it deployed;
+both produce a record indistinguishable from an activation. Measured
+2026-09-03 across 268 transcripts: **438** delta announcements named a
+skill that was already in the same session's startup listing, and every
+one sampled was preceded by an `Edit` to its `SKILL.md` or by a
+redeployment. That is not a rounding error — in this repo, where editing
+skills *is* the work, it is most of the deltas. It does not affect
+`test-activation.ps1`, whose probe only ever `Read`s fixtures, but it
+does mean a transcript delta only witnesses activation when nothing wrote
+that skill earlier in the same session. `scripts/skill-telemetry.py`
+subtracts the explainable ones; anything else counting deltas must too.
+
+The `isInitial: true` record is worth more than it looks: its `names`,
+`skillCount` and rendered `content` are the only record of **what was
+offered**, so "listed and not chosen" is separable from "never listed" —
+which is the distinction the retracted truncation finding got wrong.
+
 **`--debug-file` cannot see it**, which is probably how the older
 "no observability" claim formed. Its `N conditional skills stored` and
 `Sending N skills via attachment (initial)` lines are both emitted before
@@ -619,7 +638,9 @@ body size are wrong by an order of magnitude.
 **An activation is a per-session cumulative delta**, for rules as well as
 skills: an attachment names only what was not already active, so a second
 file matching an already-loaded skill emits *nothing*. Confirmed
-2026-09-01 on 2.1.252. Don't read that silence as a failed match — and
+2026-09-01 on 2.1.252. **Scope that to activation, though** — a hot
+reload re-announces a skill that is already listed, so the deduplication
+rule governs glob matches, not every delta (see above). Don't read that silence as a failed match — and
 don't write a per-file cost model on top of it either. It is also what
 makes the real-path test affordable: one session covers a whole fixture
 set, so both sets cost ~2 sessions rather than ~70. Attachments are
