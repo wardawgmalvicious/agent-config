@@ -81,8 +81,10 @@ simply dropped. So write Windows paths through a **quoted heredoc**
 (`cat > file <<'EOF'`) to keep them away from a regex engine, and verify
 the result. That remedy is sound; only its stated cause was wrong.
 PowerShell here-strings (`@'...'@`) cannot be used inline in the Bash
-tool at all; put them in a `.ps1` written by a quoted heredoc and run
-that file instead.
+tool at all, and they **fail silently rather than erroring** — the
+delimiters are passed through as literal text. Put them in a `.ps1`
+written by a quoted heredoc and run that file instead. Silent case
+verified 2026-09-02.
 
 ### "Permission denied" renaming a directory
 

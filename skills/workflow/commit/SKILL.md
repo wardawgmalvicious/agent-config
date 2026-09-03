@@ -61,8 +61,14 @@ happen only when explicitly requested, never as follow-through.
   deleted"), and any ordering or scoping rationale. Never restate the
   diff. Wrap near 72 columns. Trivial single-file changes may skip
   the body.
-- Multi-line messages from PowerShell: single-quoted here-string
-  (`@'` ... `'@`, closing delimiter at column 0). From Bash: heredoc.
+- Multi-line messages: from PowerShell, a single-quoted here-string
+  (`@'` ... `'@`, closing delimiter at column 0); from Bash, prefer
+  `git commit -F -` fed by a quoted heredoc over `-m`, which sidesteps
+  the quoting entirely. **Crossing the two exits 0** — a PowerShell
+  here-string handed to `-m` in the Bash tool commits `@` as the
+  subject with the delimiters in the body, and neither the hooks nor
+  the exit code says so. Confirm with `git log -1 --format=%B` before
+  reporting the commit.
 
 ## Safety rails
 
