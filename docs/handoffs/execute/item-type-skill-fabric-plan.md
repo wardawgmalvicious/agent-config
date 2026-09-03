@@ -49,6 +49,19 @@ there is no internal pressure here at all. `grep -rni "powertable\|fabric
 iq plan"` over `skills/`, `claude/` and `tests/` returns nothing, and
 `C:\Repos\ACME\fabric-acme` contains no Plan item (confirmed 2026-09-02).
 
+**That grep no longer returns nothing, and the next reader must not
+misread the hits.** As of 2026-09-03 03:19 (`9ccbace`, ~1.5 h *after*
+this brief's first step 0 answer was committed) it returns five, all from
+`tests/skills/fabric-semantic-model-audit/`: the audit fixture *is*
+Microsoft's Plan sample `.pbix`, and `expected_findings.md` describes
+validity tables and PowerTable by name. Those are **carve-out** assets —
+they exist to prove the audit skill *stands down* on a planning model,
+which is step 3's discharged work. They are payload pressure pushing the
+same way as the `fabric-ontology` clause, not the wave-12 pattern of a
+promise with nothing behind it. Note also what the fixture is not: a
+`.SemanticModel`, so no `paths:` glob on a Plan item would ever fire on
+it, and step 1 stays as unresolved-by-need as before.
+
 A "no" at step 0 is a clean **defer**, not a rejection: the content stays
 true, the brief stays on disk, and nothing is lost by waiting. A "yes"
 makes this the most concretely useful of the three briefs written today,
@@ -57,17 +70,32 @@ your way to.
 
 Do not skip to step 1 on the strength of the docs being interesting.
 
-**Answered 2026-09-03: no — defer.** The evidence was re-measured that
-day rather than taken from the 2026-09-02 line above: no `*.Plan` folder
-in `fabric-acme`, `fabric-acme-legacy`, `edgebridge` or `internal-tooling`, and
-the payload's only mention of Plan is now the clause in
-`fabric-ontology`'s `when_to_use` disambiguating that item **from** this
-one. That
+**Answered 2026-09-03 01:40: no — defer.** The evidence was re-measured
+that day rather than taken from the 2026-09-02 line above: no `*.Plan`
+folder in `fabric-acme`, `fabric-acme-legacy`, `edgebridge` or
+`internal-tooling`, and the payload's only mention of Plan was, *at that
+hour*, the clause in `fabric-ontology`'s `when_to_use` disambiguating
+that item **from** this one. That
 single reference is worth reading correctly, because it is the *mirror
 image* of the ontology case that justified wave 12: there,
 `fabric-data-agent` promised a source the payload did not have, and the
 inconsistency pulled the work in. Here the one internal mention exists to
 push work **away** from Plan. It is evidence against, not a loose thread.
+
+**Re-answered the same day, later: still no.** The queue row says to
+re-run step 0 rather than trust it, so it was re-run rather than read
+off. Repo side is unchanged and was measured wider than before — a
+full-depth `find` for `*.Plan` across all of `C:\Repos\ACME` (including
+`fabric-acme.worktrees`) and `internal-tooling` returns **zero**, against a
+live suffix inventory of `DataPipeline`, `Eventhouse`, `EventSchemaSet`,
+`Eventstream`, `KQLDashboard`, `KQLQueryset`, `Lakehouse`, `Notebook`,
+`OperationsAgent`, `Report`, `SemanticModel`, `VariableLibrary` and
+`Warehouse`. Payload side is what moved, and the step 0 paragraph above
+now carries the correction: the mention count went 1 → 6, and all five
+new ones are the audit skill's carve-out fixtures. **A count is not a
+direction** — that is the whole lesson of this re-run, and it is why the
+step 0 grep is now a trap rather than a measurement. Every one of the new
+hits argues the same way the old one did.
 
 Steps 1 and 2 are therefore **unexecuted** — no suffix was guessed, no
 glob was written, and no skill was drafted. **Step 3 is the exception**:
@@ -82,7 +110,11 @@ lists **Plan** under "IQ (preview) items", next to Ontology. So it
 serialises into a Git-synced repo and is a candidate for a `paths:`-scoped
 skill on the same footing as every other item type in the payload.
 
-Nothing in the payload globs it, mentions it, or fixtures it.
+Nothing in the payload globs the **item**, and nothing fixtures it. It is
+mentioned — six times as of 2026-09-03, per step 0 — but every mention is
+either a disambiguation clause or a carve-out fixture built from a
+planning *semantic model*, which is a `.SemanticModel` folder and not a
+Plan item at all.
 
 ## Step 1 — verify the folder suffix
 
