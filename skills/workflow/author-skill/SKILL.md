@@ -1,6 +1,6 @@
 ---
 name: author-skill
-description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment that makes a skill live immediately. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
+description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment and the link step a new skill needs. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 model: inherit
@@ -21,15 +21,30 @@ generic mechanics of the Agent Skills format are somebody else's job
 (see step 1).
 
 Repo-relative paths below are relative to the agent-config repo
-(`C:\Repos\Personal\agent-config`), not the session's cwd. `~/.claude/skills`
-is a junction into that repo, so this skill can fire from a session in any
+(`C:\Repos\Personal\agent-config`), not the session's cwd.
+`~/.claude/skills` is a real directory holding **one junction per
+skill** into that repo, so this skill can fire from a session in any
 repo — resolve paths against agent-config regardless of where it fired.
 
-**Deployment is immediate and needs no step.** `scripts/link-claude.ps1`
-junctions `skills/` wholesale, so the file is live in `~/.claude/skills/`
-the moment it is written. There is nothing to copy and no linker to
-re-run. That also means a half-drafted skill is a live half-drafted
-skill; finish the frontmatter before walking away.
+**An edit is immediate; a new skill needs the linker once.** The
+asymmetry follows from those per-skill junctions. Editing an
+already-junctioned skill is live the moment it hits disk, for every
+session on this machine, committed or not. But a directory that did not
+exist at the last `scripts/link-claude.ps1` run has **no junction**, so
+a newly authored skill is invisible everywhere — absent from the
+listing, and `/<name>` answers `Unknown command`. Measured 2026-09-02:
+`land` was missing from a listing of 8 junctions immediately after its
+`SKILL.md` was written, and appeared only once the linker ran. On this
+machine the form is `./scripts/link-claude.ps1 -SkillGroups workflow`,
+**never bare** — see root `CLAUDE.md`.
+
+A **platform** skill is the exception that proves the rule: `fabric` and
+`powerbi` are pruned from user scope here on purpose, so a new one stays
+unlinked by design and enters no session's payload. Nothing is broken
+when that happens, and no linker run changes it.
+
+Once linked, a half-drafted skill is a live half-drafted skill; finish
+the frontmatter before walking away.
 
 ## 1. Check this is the right skill
 
@@ -304,10 +319,15 @@ Report:
 2. **The scope decisions** — what the skill deliberately does not cover,
    and why.
 3. **Check results** — lint, description count, `pre-commit`.
-4. **That the skill is not behaviourally tested.** Say it plainly. A
-   changed `SKILL.md` does not reliably reload mid-session on Windows,
-   so trigger behaviour cannot be validated in the session that wrote
-   it. Name the specific queries it should fire on, so the fresh-session
+4. **That the skill is not behaviourally tested.** Say it plainly —
+   but for the right reason. It is *not* that the file cannot reload:
+   skills hot-reload in-session, fixed upstream in 2.1.216 and verified
+   here 2026-08-31 and again 2026-09-02 on an in-place `description`
+   edit. It is that the session which wrote the skill is the worst
+   place to test it — accumulated context can mask a co-load failure,
+   and you already know the answers you are checking for. A cold run
+   against a `--safe-mode` baseline is the test.
+   Name the specific queries it should fire on, so the fresh-session
    test is runnable rather than aspirational — **those queries are what
    `/test-skill` reads back out of the brief**, so a vague one here
    becomes a vague test there.
