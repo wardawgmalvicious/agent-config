@@ -28,6 +28,7 @@ paths:
   - "**/*.UserDataFunction/**"
   - "**/*.ApacheAirflowJob/**"
   - "**/*.OperationsAgent/**"
+  - "**/*.Ontology/**"
 ---
 
 # Fabric Git-synced repos: portal serialization
