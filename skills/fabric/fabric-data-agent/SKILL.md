@@ -18,6 +18,8 @@ A Fabric Data Agent is a conversational Q&A interface. It accepts natural-langua
 
 Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power BI Semantic Model, Fabric SQL Database, Mirrored Database, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**. Read-only by design — it never generates create/update/delete queries.
 
+**Ontology as a source** is the one entry there that is a whole item type of its own — see `fabric-ontology` for modelling it, binding it to data, and its semantic enrichment, which is what makes an ontology-grounded agent answer well. Three data-agent-side behaviours belong here rather than there: an ontology source is still **preview**, the agent's first few queries after creation can fail while it initializes (wait and retry), and **aggregation is a known gap** — add the instruction `Support group by in GQL` to the agent's instructions.
+
 **GA since March 2026** for the core surface: create / configure / publish / share, built-in diagnostics, and lifecycle management via Git integration + deployment pipelines. Everything else named in this skill as *preview* — Creator Agent, MCP endpoint, M365 Copilot, Python SDK, Copilot Studio, Foundry, SPN auth — should be gated behind an explicit decision. **Two integration paths retired 2026-08-26**: the Azure OpenAI **Assistants API** (migrate to the MCP endpoint; within the SDK, to the Fabric OpenAI **Responses** client) and **Copilot in Power BI**. Full status breakdown and migration detail:
 [references/status-and-retirements.md](references/status-and-retirements.md).
 
