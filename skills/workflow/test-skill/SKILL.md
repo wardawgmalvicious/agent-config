@@ -226,6 +226,14 @@ model-invoked skill appears as a `Skill` tool_use, while a slash-invoked
 one is **inlined as a command expansion** and produces no `Skill` call —
 so an absent `Skill` record disproves nothing on the slash path.
 
+**Launch a slash probe from PowerShell**, not the Bash tool. MSYS2
+rewrites a leading-slash argument to `C:/Program Files/Git/<name>`, so
+`claude -p "/my-skill ..."` never reaches the slash path — and the
+failure is invisible, because the model reads the mangled text, still
+recognises the skill name, and invokes it via the Skill tool. The run
+then looks like a passing slash test while measuring model-invocation.
+`MSYS2_ARG_CONV_EXCL='*'` works too. Measured 2026-09-02.
+
 ### 9. Confirm the fixtures are unmodified
 
 ```bash
