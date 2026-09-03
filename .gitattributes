@@ -30,3 +30,10 @@
 # its own line here.
 scripts/instructions-log text eol=lf
 scripts/bootstrap-pre-commit text eol=lf
+
+# Binary assets. `* text=auto` already leaves these alone in practice --
+# git sniffs the NUL bytes in a PNG header and skips normalization -- but
+# the detection is heuristic, so say it outright rather than relying on
+# the sniff. `binary` is the shorthand for `-text -diff`: no EOL
+# conversion in either direction, and no attempt to render a textual diff.
+*.png binary
