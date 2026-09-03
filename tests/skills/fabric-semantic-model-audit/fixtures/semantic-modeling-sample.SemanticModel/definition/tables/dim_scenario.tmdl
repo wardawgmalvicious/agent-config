@@ -1,0 +1,75 @@
+table dim_scenario
+	lineageTag: 55534b4f-5a50-4755-a1ba-965f5120d950
+
+	column ScenarioKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 46faf55b-072d-403b-bc45-b384cd9897d3
+		summarizeBy: none
+		sourceColumn: ScenarioKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Scenario
+		dataType: string
+		lineageTag: dfd6017c-0bbe-4de5-a580-62f14ad02408
+		summarizeBy: none
+		sourceColumn: Scenario
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsForecast
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: e33e705e-b9b8-4aeb-b3b6-1c32a45a3957
+		summarizeBy: none
+		sourceColumn: IsForecast
+
+		annotation SummarizationSetBy = Automatic
+
+	column OpenFrom
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: ac8003a6-f826-404f-bbaa-e16e3edb4179
+		summarizeBy: none
+		sourceColumn: OpenFrom
+
+		variation Variation
+			isDefault
+			relationship: f727bcf9-e34d-441b-8d64-b48007268389
+			defaultHierarchy: LocalDateTable_d20a541e-b443-4f52-bdb8-ca1d5882de45.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column OpenUntil
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: be827c1f-5b20-413f-96aa-6a66afee3555
+		summarizeBy: none
+		sourceColumn: OpenUntil
+
+		variation Variation
+			isDefault
+			relationship: fcfe0eaa-8ea7-4db0-90e1-dfb14a3808f5
+			defaultHierarchy: LocalDateTable_d75e114c-9839-4b56-ac3e-2573d3d6fb3a.'Date Hierarchy'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition dim_scenario = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\dim_scenario.csv"),[Delimiter=",", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ScenarioKey", Int64.Type}, {"Scenario", type text}, {"IsForecast", type logical}, {"OpenFrom", type date}, {"OpenUntil", type date}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

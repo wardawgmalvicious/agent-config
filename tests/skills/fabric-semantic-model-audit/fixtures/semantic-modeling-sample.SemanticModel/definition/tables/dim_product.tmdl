@@ -1,0 +1,46 @@
+table dim_product
+	lineageTag: c57a1990-cde7-4e3a-8228-846b5704facb
+
+	column ProductKey
+		dataType: int64
+		formatString: 0
+		lineageTag: eae2c32d-cd81-4f0f-9335-0d88924a299d
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ProductName
+		dataType: string
+		lineageTag: 428e3462-c0ef-4ede-8b76-a070ab6c1ccc
+		summarizeBy: none
+		sourceColumn: ProductName
+
+		annotation SummarizationSetBy = Automatic
+
+	column SubcategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2e12f44b-83d1-4aa5-a360-12b167e7d50b
+		summarizeBy: none
+		sourceColumn: SubcategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_product = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\dim_product.csv"),[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"ProductKey", Int64.Type}, {"ProductName", type text}, {"SubcategoryKey", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

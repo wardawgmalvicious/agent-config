@@ -1,0 +1,46 @@
+table dim_subcategory
+	lineageTag: 4cae79da-34cb-4fba-b2b2-e7671570630a
+
+	column SubcategoryKey
+		dataType: int64
+		formatString: 0
+		lineageTag: 61c20794-f3d3-4eb8-bdee-9d3250bb5795
+		summarizeBy: none
+		sourceColumn: SubcategoryKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column SubcategoryName
+		dataType: string
+		lineageTag: e1a84c94-35b7-42a6-a77c-23f45745ad8a
+		summarizeBy: none
+		sourceColumn: SubcategoryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryKey
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 17e83e02-ab8e-4e23-be82-93a194dbca9f
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_subcategory = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\dim_subcategory.csv"),[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"SubcategoryKey", Int64.Type}, {"SubcategoryName", type text}, {"CategoryKey", Int64.Type}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

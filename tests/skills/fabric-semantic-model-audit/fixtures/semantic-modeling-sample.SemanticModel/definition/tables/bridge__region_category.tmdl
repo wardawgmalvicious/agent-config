@@ -1,0 +1,42 @@
+table bridge__region_category
+	lineageTag: cd54d16b-bd63-4673-a208-7d0d9d33be24
+
+	column RegionName
+		dataType: string
+		lineageTag: 6490d81a-689c-40b6-bfcf-a78e654c14ba
+		summarizeBy: none
+		sourceColumn: RegionName
+
+		annotation SummarizationSetBy = Automatic
+
+	column CategoryName
+		dataType: string
+		lineageTag: 1608fba5-c8d5-4d28-b824-d2a7b1ea7312
+		summarizeBy: none
+		sourceColumn: CategoryName
+
+		annotation SummarizationSetBy = Automatic
+
+	column IsValid
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ede520a7-f77d-4426-a7f9-e227ea6439d6
+		summarizeBy: none
+		sourceColumn: IsValid
+
+		annotation SummarizationSetBy = Automatic
+
+	partition bridge__region_category = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\bridge__region_category.csv"),[Delimiter=",", Columns=3, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"RegionName", type text}, {"CategoryName", type text}, {"IsValid", type logical}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

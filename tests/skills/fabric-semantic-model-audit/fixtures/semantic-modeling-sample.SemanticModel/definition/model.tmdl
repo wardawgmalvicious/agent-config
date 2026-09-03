@@ -1,0 +1,34 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-001
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["dim_category","dim_subcategory","dim_product","dim_region","dim_customer_segment","dim_date","dim_scenario","fact_pl","bridge__region_segment_product","bridge__region_category","bridge__product__year","Modelling Measures Table"]
+
+annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
+
+ref table dim_category
+ref table dim_subcategory
+ref table dim_product
+ref table dim_region
+ref table dim_customer_segment
+ref table dim_date
+ref table DateTableTemplate_7176350b-ef62-4f43-bb3c-9bd04bf0cdf8
+ref table LocalDateTable_49545699-a821-4e20-bf0e-8a59aa1d0102
+ref table LocalDateTable_f73ad784-8138-442b-b8f2-c56f50e8a29f
+ref table dim_scenario
+ref table LocalDateTable_d20a541e-b443-4f52-bdb8-ca1d5882de45
+ref table LocalDateTable_d75e114c-9839-4b56-ac3e-2573d3d6fb3a
+ref table fact_pl
+ref table bridge__region_segment_product
+ref table bridge__region_category
+ref table bridge__product__year
+ref table 'Modelling Measures Table'
+
+ref cultureInfo en-US
+

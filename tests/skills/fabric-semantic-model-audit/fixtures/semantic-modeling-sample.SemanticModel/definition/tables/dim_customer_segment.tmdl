@@ -1,0 +1,34 @@
+table dim_customer_segment
+	lineageTag: 26250988-1cfb-4a60-8aca-291c1894406f
+
+	column CustomerSegmentKey
+		dataType: int64
+		formatString: 0
+		lineageTag: e89f44a1-d1ce-4d1d-99b8-481b725b3df7
+		summarizeBy: none
+		sourceColumn: CustomerSegmentKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column CustomerSegment
+		dataType: string
+		lineageTag: 17a887f8-d0dd-43f4-89b6-6445365013e9
+		summarizeBy: none
+		sourceColumn: CustomerSegment
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_customer_segment = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents("C:\PlanningSample\dim_customer_segment.csv"),[Delimiter=",", Columns=2, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers",{{"CustomerSegmentKey", Int64.Type}, {"CustomerSegment", type text}})
+				in
+				    #"Changed Type"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+
