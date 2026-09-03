@@ -14,7 +14,7 @@ executeQueries, **N** = Fabric notebook (`sempy.fabric`).
 
 | # | Check | Tier | Evidence | Remediation, and its cost |
 | --- | --- | --- | --- | --- |
-| 1 | Tables on both sides of a relationship | D | a table owning both a `fromColumn` and a `toColumn` | Collapse the snowflake into one dimension table; costs redundant denormalized storage |
+| 1 | Tables on both sides of a relationship | D | a table owning both a `fromColumn` and a `toColumn` | Collapse the snowflake into one dimension table; costs redundant denormalized storage — **but not in a planning model**, see SKILL.md §3 |
 | 2 | Inactive relationship with no `USERELATIONSHIP` | D | `isActive: false` count vs. `USERELATIONSHIP` occurrences in `tables/*.tmdl` | Delete it, or add the measure that uses it. Free, and usually a pure win |
 | 3 | Role-playing dimension | D | **per (fact, dim) pair** — one table reaching one dimension more than once | Duplicate the dimension per role, one active relationship each; costs model size (usually negligible). **Check §5 first for Direct Lake** |
 | 4 | Bidirectional cross-filter | D | `crossFilteringBehavior: bothDirections` | Single-direction plus a bridging table where genuinely many-to-many |
