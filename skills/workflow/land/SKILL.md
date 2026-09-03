@@ -93,13 +93,28 @@ owes a reader:
 - **Disclosure of concurrent-session commits** from step 4.
 - **How it is to be integrated**, where the repo has a convention.
 
+**No GitHub remote, or no `github-mcp`? Stop.** An `origin` that is not
+GitHub — a `file://` path, another host — means there is no PR to open,
+and an unavailable `github-mcp` means the same thing for a different
+reason. Neither is permission to skip ahead and merge locally. A local
+merge satisfies the literal words "merged into main" while discarding
+review, CI and the PR body, and it makes any later PR empty because
+`main` already contains the commits. Report which of the two is missing
+and let the user choose. Reaching for `gh` is never the answer — step 2.
+
 ## 6. Checkpoint — stop here
 
-Report the PR URL and state exactly what happens next. **Then wait.**
+**The gate is the next command that writes to `main`, not the PR.** Stop
+before that command whether or not a PR exists: a PR that could not be
+opened is a reason to stop sooner, never a reason to carry on.
+
+Report where things stand — the PR URL, or what blocked it — and state
+exactly what happens next. **Then wait.**
 
 Everything past this point writes to `main`. Do not continue on your own
-initiative, even when the merge looks routine — this checkpoint is the
-skill's whole reason for not being one command.
+initiative, even when the merge looks routine, and even when the local
+half would plainly succeed on its own — this checkpoint is the skill's
+whole reason for not being one command.
 
 ## 7. Land by fast-forward
 
