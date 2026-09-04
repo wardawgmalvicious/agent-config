@@ -1,6 +1,7 @@
 ---
 name: test-skill
-description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description` or `paths:` glob, or as the follow-on to `/author-skill`. Reads the skill's handoff brief from `docs/handoffs/execute/<name>.md` on disk, so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript is the only witness (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the workflow-only prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
+description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Reads its inputs from disk — brief or shipped frontmatter — so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript is the only witness (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the workflow-only prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
+when_to_use: "Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description`, `when_to_use` or `paths:` glob, or as the follow-on to `/author-skill`."
 argument-hint: "[skill-name]"
 disable-model-invocation: false
 model: inherit
@@ -17,6 +18,10 @@ This is the second half of `/author-skill`, which stops at a linted
 draft and writes no fixtures on purpose. The coupling between them is
 the **brief on disk**, not session state — so this skill runs cold, in a
 fresh session, exactly like `/drift-update`.
+
+It also runs on a skill that shipped long ago and has since been
+edited. That case has **no brief** and needs none; step 1 says where
+its inputs come from instead.
 
 Repo-relative paths are relative to the agent-config repo
 (`C:\Repos\Personal\agent-config`), not the session's cwd.
@@ -43,7 +48,12 @@ unconditional skill has no activation contract, so there is nothing to
 fixture and nothing to assert. Say so and go to Phase B; do not
 manufacture a fixture to make the phase look done.
 
-### 1. Read the brief from disk
+### 1. Read the trigger contract from disk
+
+Two entry paths, and they take their inputs from different files.
+Establish which one you are on before reading anything.
+
+**A newly drafted skill, arriving from `/author-skill`:**
 
 ```
 docs/handoffs/execute/<skill-name>.md
@@ -52,10 +62,33 @@ docs/handoffs/execute/<skill-name>.md
 Take from it the `paths:` glob, the named trigger queries, and the
 scope decisions. **Read it from the file even if you wrote it an hour
 ago** — the point of the disk contract is that a fresh session with no
-memory of the authoring run behaves identically. If no brief exists,
-stop and say so: the trigger queries are what Phase B tests, and
-inventing them here would test the skill against expectations it was
-never written to meet.
+memory of the authoring run behaves identically.
+
+**An existing skill being retested after a `description`, `when_to_use`
+or `paths:` edit:** there is no brief, and its absence is not a fault.
+Briefs are deleted when spent, so a skill that shipped has none by
+design — stopping here would refuse the exact case the description
+advertises. Take the three inputs from the artifacts that already own
+them:
+
+| Input | Source |
+| --- | --- |
+| `paths:` glob | the `SKILL.md` itself — always authoritative, brief or no brief |
+| scope decisions | the set's `expected_activations.md`, which **is** the committed contract |
+| trigger queries | the skill's own `description` and `when_to_use` |
+
+That last row is sound rather than a fallback: `when_to_use` is defined
+upstream as "trigger phrases or example requests", so on a skill that
+carries one the queries are a first-class frontmatter field, not
+something to invent. Where a skill has no `when_to_use`, draw the
+queries from the `description` and **say in the report which ones you
+derived** — a derived query tests the skill against the trigger surface
+it actually ships, which is the point, but the reader needs to know no
+brief vouched for it.
+
+The one thing you may never do is invent expectations the skill was
+never written to meet. Reading them off the shipped frontmatter is not
+that; making them up is.
 
 ### 2. Pick the fixture set
 
@@ -192,7 +225,7 @@ MCP, commands, agents — and is the control condition that separates
 behaviour the payload produces from behaviour the base model produces.
 It is a flag you type, never something to wire into `settings.json`.
 
-Then, in a normal session, run the brief's named trigger queries. Test
+Then, in a normal session, run the trigger queries from step 1. Test
 **both** invocation paths, because they do not behave alike: a `model:`
 pin is honoured on `/slash` invocation and silently dropped on
 model-invocation, while `effort:` applies on both. Where the skill has
@@ -213,8 +246,8 @@ The four-mode matrix above applies as written only to an
 same session shape, no `paths:` — ran normally.
 
 **Run the behavioural session outside this repo.**
-`.claude/settings.json` here collapses all 38 platform skill
-descriptions to `name-only`, and the description *is* the trigger — so
+`.claude/settings.json` here collapses every platform skill
+description to `name-only`, and the description *is* the trigger — so
 an in-repo run is a guaranteed false negative that looks exactly like a
 broken skill.
 
