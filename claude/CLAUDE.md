@@ -11,6 +11,18 @@ command's output — that is the profile, not your command.
 `C:\Repos\Personal\machine-config` is the source of truth for what is
 installed here and how it is configured.
 
+**A process spawn costs ~0.4 s here, in both tool shells and from a
+real console** (measured 2026-09-04: 120 `git`/`date` spawns in 46 s,
+the same rate from a `start`-ed window). Bash scripts that fork per
+line — a `$(...)` per iteration, a pipeline per case — therefore run
+at a tenth of the speed you would guess, and a run that is merely
+slow looks exactly like a hang: the tool's 120 s default kills it, and
+`timeout` kills the children too, which surfaces as stray
+`write error: Permission denied` / `Invalid argument` lines that read
+like a bug. Do the arithmetic (spawns × 0.4 s) before diagnosing a
+hang, give such runs a ten-minute cap in the background, and design
+hooks for spawn economy — see `~/.claude/hooks/identity-guard.sh`.
+
 ### Python
 
 There is no system Python — but the names still resolve, so the failure
