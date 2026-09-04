@@ -28,6 +28,23 @@ start, before/after tool use, on stop, etc.).
   is under `~/.claude/agent-memory/security-reviewer/`; otherwise
   exits 0 (allow). Other callers (main session, other subagents) pass
   through unchanged. Requires [jq](https://jqlang.org).
+- [identity-guard.sh](identity-guard.sh) — fires on `PreToolUse` and
+  `PostToolUse` with matcher `Bash|PowerShell`, and acts only when the
+  command carries a `git commit` or `git push`. Blocks a commit whose
+  staged diff *adds* a line containing a term from
+  `~/.config/identity-denylist.txt`, feeds back after a commit whose
+  message does, and blocks a push while any unpushed commit on the
+  pushed ref carries one in its message or added lines. The denylist —
+  client and employer names, account names, your own profile path —
+  lives **outside every repo** because it is itself the thing that must
+  not be committed; `exempt: <path>` lines skip repo roots where the
+  name is legitimately present (a client's own repo). No denylist means
+  no check, silently. Fails open by design: a broken hook must not wedge
+  every commit on the machine, and
+  [tests/hooks/identity-guard/](../../tests/hooks/identity-guard/) is
+  what makes that acceptable. Exists because gitleaks matches secrets,
+  not identities, and never reads a commit message (measured 2026-09-04
+  on 8.30.1). Requires [jq](https://jqlang.org).
 
 ## Querying the logs
 

@@ -37,6 +37,12 @@ Run manually; not wired into CI.
   for the [security-reviewer agent](../claude/agents/security-reviewer.md).
   Synthetic files with seeded credential exposure, injection, and
   recon patterns matching the agent's sweep categories.
+- [hooks/identity-guard/](hooks/identity-guard/) — the one
+  machine-checkable test here: a bash script that drives
+  [claude/hooks/identity-guard.sh](../claude/hooks/identity-guard.sh)
+  through throwaway repos with a throwaway denylist of made-up terms and
+  asserts every exit code. Needs no session and never reads the real
+  `~/.config/identity-denylist.txt`.
 
 Each test directory has its own `README.md` documenting the validation
 procedure.

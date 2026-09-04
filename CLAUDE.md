@@ -223,6 +223,12 @@ deployed anywhere and loads only in sessions inside this repo.
 - The `security-reviewer` subagent is scoped by an explicit tool
   allowlist plus the `PreToolUse` hook, which blocks any Edit/Write
   outside `~/.claude/agent-memory/security-reviewer/`.
+- The `identity-guard` hook gates `git commit` and `git push` issued
+  through Bash or PowerShell against `~/.config/identity-denylist.txt`
+  — a **local** file that is never in this repo, because the list is
+  the leak. Its test in `tests/hooks/identity-guard/` is the one
+  machine-checkable suite here; run it after any edit, and again
+  against the deployed copy after `scripts/link-claude.ps1`.
 
 ## Working on this repo
 

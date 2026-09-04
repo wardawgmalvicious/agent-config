@@ -23,6 +23,15 @@
             "command": "bash $HOME/.claude/hooks/security-reviewer-memory-scope.sh"
           }
         ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/identity-guard.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -32,6 +41,15 @@
           {
             "type": "command",
             "command": "bash $HOME/.claude/hooks/log-skill-invocations.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/identity-guard.sh"
           }
         ]
       }
