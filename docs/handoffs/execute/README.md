@@ -1,10 +1,9 @@
 # Open briefs — execution order
 
-Two items are open, and neither blocks the other:
+One item is open:
 
 | Item | State |
 | --- | --- |
-| [when-to-use-adoption.md](when-to-use-adoption.md) | **Next.** Unblocked since 2026-09-01 and never held a wave number — it was blocked on wave 4, which closed. A content pass over the whole skill corpus, to be run in **its own fresh session**: the work is editorial across ~50 files, and a changed `description` is a changed *trigger*, which the session that writes it cannot judge. |
 | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Deferred 2026-09-03** — not declined. Step 0 answered *no*: no `*.Plan` item exists in any repo here, and the payload's only mention of Plan pushes work away from it. Waiting on a Plan item appearing, not on anything in this queue. Its carve-out debt was split off and paid separately, so what remains is the skill itself. |
 
 This is the **only** place the execution order lives — each brief carries
