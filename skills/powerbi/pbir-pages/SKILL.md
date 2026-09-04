@@ -1,7 +1,7 @@
 ---
 name: pbir-pages
 description: Use when authoring or editing page.json / pages.json inside a Power BI PBIR report's definition/pages/ folder. Covers top-level page properties (name hex GUID vs displayName, displayOption as STRING not integer, width/height, type Default vs Tooltip, visibility AlwaysVisible vs HiddenInViewMode, verticalAlignment/horizontalAlignment), pages.json pageOrder + activePageName, canvas background vs outspace wallpaper distinction, visualInteractions NoFilter/Filter/Highlight overrides, page-level filterConfig, tooltip pages (section references the NAME guid not displayName), drillthrough pages with Column-typed filter, page folder renaming rules (folder freely renamable; page.json filename and internal name stay fixed), literal value encoding (D/L suffixes).
-when_to_use: Invoke when the user edits a page, adds a tooltip or drillthrough page, configures cross-visual interactions, or changes page background. Co-fires with pbir-filters on page.json — use this skill for page properties, layout, pageOrder, visualInteractions and backgrounds, and pbir-filters for the filterConfig.filters body on the same file. For the visuals sitting on the page use pbir-visual-json.
+when_to_use: Invoke when the user edits a page, adds a tooltip or drillthrough page, configures cross-visual interactions, or changes page background. Co-fires with pbir-filters on page.json — use this skill for page properties, layout, pageOrder, visualInteractions and backgrounds, and pbir-filters for the filterConfig.filters body on the same file. For the visuals sitting on the page, the edit target is visual.json.
 paths:
   - "**/pages/**/page.json"
   - "**/pages/pages.json"
