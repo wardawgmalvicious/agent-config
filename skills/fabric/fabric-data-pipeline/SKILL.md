@@ -39,7 +39,7 @@ the `fabric-git-serialization` rule, which globs this folder too.
     "parameters":       { "DryRun": { "type": "bool", "defaultValue": false } },
     "variables":        { "ChangedEntities": { "type": "Array", "defaultValue": [] } },
     "libraryVariables": { "EnvSuffix": { "type": "String",
-        "variableName": "EnvironmentSuffix", "libraryName": "ACME_VL" } }
+        "variableName": "EnvironmentSuffix", "libraryName": "MyVarLib" } }
 } }
 ```
 

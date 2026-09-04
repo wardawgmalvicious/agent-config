@@ -198,7 +198,7 @@ def batch_transcript(records, fixtures_root: pathlib.Path, known: list[str]):
     and turn a working glob into a reported failure.
     """
     # realpath, not abspath: $env:TEMP hands out the 8.3 short form
-    # (C:\Users\EXAMPL~1\...) while Claude records the long one, and a plain
+    # (C:\Users\<USER>~1\...) while Claude records the long one, and a plain
     # string prefix test then rejects every read as "outside the root".
     root = os.path.realpath(str(fixtures_root))
     canon = {f.lower(): f for f in known}

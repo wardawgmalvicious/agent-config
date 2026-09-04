@@ -77,15 +77,16 @@ files stopped being a gap.
 
 ## What these fixtures are modelled on
 
-Most shapes are taken from real item folders in `C:\Repos\ACME\fabric-acme`:
-folder naming, the `.platform` schema and `metadata.type` value, the
-`.children/` nesting a KQLDatabase sits in under its Eventhouse, the
-`# META` comment blocks in `notebook-content.py`, the Warehouse
-`ingest/{Tables,Views}/*.sql` split.
+Most shapes are taken from real item folders in a production Fabric
+Git-synced repo (*the reference repo* below): folder naming, the
+`.platform` schema and `metadata.type` value, the `.children/` nesting a
+KQLDatabase sits in under its Eventhouse, the `# META` comment blocks in
+`notebook-content.py`, the Warehouse `ingest/{Tables,Views}/*.sql` split.
 
-`GraphModel`, `SQLDatabase` and `DataAgent` do not exist in ACME. They are
-modelled instead on **public Git-synced exports on GitHub**, pinned here so
-a later reader can re-check them rather than take this file's word:
+`GraphModel`, `SQLDatabase` and `DataAgent` do not exist in the
+reference repo. They are modelled instead on **public Git-synced exports
+on GitHub**, pinned here so a later reader can re-check them rather than
+take this file's word:
 
 | Fixture | Modelled on | Corroborated by |
 | --- | --- | --- |
@@ -110,9 +111,10 @@ other byte is synthetic content laid on the observed structure — GUIDs
 zeroed, and the one non-schema URI in the set (the `abfss://` Delta path in
 `dataSources.json`) zeroed on both its workspace and item GUID.
 
-**Contents are synthetic.** No file is copied from an export, ACME's or
-GitHub's. Every GUID is `00000000-…`, every URI is a schema URL bar the one
-zeroed `abfss://` path noted above, and nothing carries a workspace name,
+**Contents are synthetic.** No file is copied from an export, the
+reference repo's or GitHub's. Every GUID is `00000000-…`, every URI is a
+schema URL bar the one zeroed `abfss://` path noted above, and nothing
+carries a workspace name,
 cluster URI, or key-vault reference. Keep it that way — `tests/` is
 gitleaks-allowlisted precisely because fixtures contain credential-*shaped*
 strings, so the allowlist cannot catch a real one that lands here.

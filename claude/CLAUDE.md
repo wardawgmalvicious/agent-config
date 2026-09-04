@@ -181,7 +181,8 @@ before assuming one exists.
 
 `~/.gitconfig` declares **no** identity and sets `user.useConfigOnly =
 true`. Identity arrives through `includeIf gitdir:` — personal under
-`C:/Repos/Personal/`, work under `C:/Repos/ACME/`. In a repo outside both
+`C:/Repos/Personal/`, work under a separate client root — see
+`~/.gitconfig` for the actual paths. In a repo outside both
 roots `git commit` fails with *"Please tell me who you are"*, which is
 deliberate: without `useConfigOnly`, git silently invents an author from
 the domain-joined machine's AD record, i.e. the corporate email. Set one
