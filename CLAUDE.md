@@ -284,12 +284,12 @@ the worktree section below, which found no isolation a branch could buy.
 Reconsider if a second silent collision between concurrent sessions
 happens anyway.
 
-Note which skills that trigger actually covers. It is the **eight
-workflow skills** — they are junctioned into user scope, so each
-`SKILL.md` save is in every session's listing before the fixtures, the
-queue row and the rule catch up. A **platform** skill is pruned from
-user scope and junctioned nowhere, so authoring one changes no
-session's payload at any point and needs no branch on these grounds.
+Note which skills that trigger actually covers. It is the **workflow
+skills** — they are junctioned into user scope, so each `SKILL.md` save
+is in every session's listing before the fixtures, the queue row and the
+rule catch up. A **platform** skill is pruned from user scope and
+junctioned nowhere, so authoring one changes no session's payload at any
+point and needs no branch on these grounds.
 Waves 12–14 are all platform-skill authoring.
 
 **Sequencing outranks branching when another session is live.** These
