@@ -178,10 +178,15 @@ GitHub Copilot needs no payload and no linker: the VS Code agent
 surface reads the same `~/.claude` paths this repo already populates
 (`rules`, `skills`, `settings.json`, `CLAUDE.md`, and `agents` once
 `chat.agentFilesLocations` names it — the one path that isn't a
-documented default). It parses Claude's hook *format* but not its
+documented default). **`skills` is the exception and does not work**:
+`~/.claude/skills` did not resolve when tested 2026-09-04, so Copilot
+sees skills only where a client repo has its own `.claude/skills`.
+It parses Claude's hook *format* but not its
 semantics — notably, matchers are read and ignored, so the
 matcher-scoped `security-reviewer` write guard runs far wider there
-than under Claude Code. Full detail, including the settings block and
+than under Claude Code. It validates skill frontmatter against its own
+field list too, so `paths:`, `model:` and `effort:` all warn and are
+ignored — meaning a conditional skill is **unconditional** there. Full detail, including the settings block and
 the traps, is in [README.md](README.md#tool-support); this repo is
 authored and validated against Claude Code, and Copilot wiring is not
 maintained here.

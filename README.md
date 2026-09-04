@@ -159,7 +159,8 @@ stay separable:
 - **GitHub Copilot** — consumes this repo with **almost no wiring and
   no linker of its own**. The VS Code agent surface reads Claude's
   user-scope paths directly: `~/.claude/rules` for instructions,
-  `~/.claude/skills` for personal skills, `~/.claude/settings.json` for
+  `~/.claude/skills` for personal skills (in principle — that one path
+  did **not** resolve when tested; see below), `~/.claude/settings.json` for
   hooks (it parses Claude Code's hook format), `~/.claude/CLAUDE.md` for
   always-on instructions, and `~/.claude/agents` for subagents once
   `chat.agentFilesLocations` points at it — all of which
@@ -192,6 +193,35 @@ stay separable:
     no copy into `~/.copilot/agents` or `~/.agents/skills` is needed;
     both only invite drift. MCP is a workspace `.vscode/mcp.json` (see
     [.vscode/README.md](.vscode/README.md)).
+
+    **Copilot validates skill frontmatter against its own field list and
+    warns rather than failing.** Measured 2026-09-04: an unsupported key
+    leaves the skill loaded and listed, with a diagnostic naming it —
+    unlike the claude.ai upload path, which hard-fails. Supported are
+    `argument-hint`, `compatibility`, `context`, `description`,
+    `disable-model-invocation`, `license`, `metadata`, `name` and
+    `user-invocable`. **Every skill in this repo already warns**: `model:`
+    is on all 50, `paths:` on 27, `effort:` on 9, `allowed-tools:` on 5.
+    So the warning is ambient, and adding a Claude-only field costs
+    nothing that was not already being paid — but it also means a *real*
+    frontmatter mistake is camouflaged by the noise.
+
+    `paths:` being unsupported has a consequence worth stating plainly:
+    **a conditional skill is unconditional in Copilot.** All 27 load
+    unconditionally there, so the conditional/unconditional listing-cost
+    split that governs `when_to_use` adoption is a Claude Code fact only,
+    and "free because it is conditional" does not transfer.
+
+    **`~/.claude/skills` did not resolve** when tested 2026-09-04, while
+    project-scope `.claude/skills` did — even though only the former is
+    listed in `chat.agentSkillsLocations` and the latter is at its
+    default. The nine workflow skills were absent from the agent surface
+    and the 41 platform skills junctioned into a client repo's
+    `.claude/skills` were all present. **Junctions are not the cause** —
+    Copilot read *through* one to report a field warning on a file whose
+    only copy lives in this repo. Suspect `~` expansion; an absolute path
+    is the thing to try. Until it is resolved, Copilot sees this payload
+    at project scope only.
 
     Copilot parses the Claude hook format, not its semantics. Matchers
     are read and **ignored**, so a matcher-scoped hook fires on every
