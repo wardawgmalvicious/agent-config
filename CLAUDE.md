@@ -86,13 +86,15 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 
 **Never run the script bare on this machine** — neither
 `./scripts/link-claude.ps1` nor `./scripts/link-claude.ps1 -Force`.
-Omitting `-SkillGroups` deploys *every* group, which re-links the 37
-platform skills and silently undoes the prune. There is no error and no
-output line that reads as wrong: the run reports `Linked` 37 times and
-ends `Done. All links verified.` This happened on 2026-08-31, and the
+Omitting `-SkillGroups` deploys *every* group, which re-links every
+platform skill and silently undoes the prune. There is no error and no
+output line that reads as wrong: the run reports `Linked` once per skill
+and ends `Done. All links verified.` This happened on 2026-08-31, and the
 only visible symptom was 18 platform skills reappearing in the session's
-skill listing. Confirm the prune held with `ls ~/.claude/skills`: it
-should list the eight workflow skills and nothing else.
+skill listing. Confirm the prune held **by name, not by count** —
+`ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid)-'` must come back
+empty. A count is what rots here; the absence of a namespace prefix is
+the thing actually being asserted.
 
 `-SkillGroups` **prunes**: a group not listed is removed from the target
 on the next run. Pruning only ever deletes a junction resolving inside
