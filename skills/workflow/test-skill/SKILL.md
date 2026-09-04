@@ -200,7 +200,7 @@ undoing a deliberate prune and must put it back:
 
 ```powershell
 ./scripts/link-claude.ps1 -SkillGroups workflow
-ls ~/.claude/skills    # expect the eight workflow skills and nothing else
+ls ~/.claude/skills | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
 ```
 
 **Never run the script bare.** Omitting `-SkillGroups` deploys every
