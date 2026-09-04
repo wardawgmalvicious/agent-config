@@ -11,9 +11,10 @@ the row were then **invoked**. Treat them as relative weights and as the
 worst case, never as the cost of opening the file. (Corrected 2026-09-01;
 this table previously read as though a match loaded the bodies.)
 
-Shapes are modelled on `C:\Repos\ACME\fabric-acme`, except `GraphModel`,
-`SQLDatabase` and `DataAgent`, which are modelled on the public Git-synced
-exports pinned in the README. No fixture here rests on an unverified shape.
+Shapes are modelled on a production Fabric Git-synced repo — *the
+reference repo* below — except `GraphModel`, `SQLDatabase` and
+`DataAgent`, which are modelled on the public Git-synced exports pinned
+in the README. No fixture here rests on an unverified shape.
 
 **This table lists skills only.** Rules in `claude/rules/` have `paths:`
 globs of their own and load on the same files — `fabric-git-serialization`
@@ -173,7 +174,7 @@ whole workstream is built on.
 `**/*.Notebook/**` only, though the skill's description also covers
 `sparkJobDefinitions`. Widening it to `**/*.SparkJobDefinition/**` needs
 that item type verified against a real export and a fixture added in the
-same commit; ACME has none, and neither does this set.
+same commit; the reference repo has none, and neither does this set.
 
 **4. A Lakehouse activates nothing, on all four files.** All four zeros
 are **deliberate**, and each was tried against a real candidate before
@@ -187,13 +188,13 @@ fixture set.
   conditional would cost more reach than the 367 listing tokens it saves.
 - `shortcuts.metadata.json` was given a `fabric-variable-library` glob on
   2026-09-01 and **reverted the same day.** A shortcut target *can* bind
-  to a variable through the `$(/**/Lib/Var)` form, and ACME's happen to,
-  but that is a choice the author made rather than what a shortcuts file
-  is. Most shortcuts carry a plain `workspaceId`/`itemId` pair, so the
-  glob pulled the skill into every Lakehouse whether or not any variable
-  was involved — the same over-broad shape A1 had to narrow out of
-  `pbip-project-structure`. The discriminator is `$(...)` *inside* the
-  file, and no glob can see it.
+  to a variable through the `$(/**/Lib/Var)` form, and the reference
+  repo's happen to, but that is a choice the author made rather than
+  what a shortcuts file is. Most shortcuts carry a plain
+  `workspaceId`/`itemId` pair, so the glob pulled the skill into every
+  Lakehouse whether or not any variable was involved — the same
+  over-broad shape A1 had to narrow out of `pbip-project-structure`. The
+  discriminator is `$(...)` *inside* the file, and no glob can see it.
 
 This fixture is the regression: `sample_holidays` uses the VL form and
 `sample_static` does not, so a glob that cannot tell them apart is visible
@@ -221,12 +222,12 @@ without it would silently score this row zero and read as a broken skill
 glob. Same trap as every `.platform` row, but worth naming once.
 
 The fixture composes two verified shapes rather than copying one file: the
-`Weekly` block is `ACME_PL_Orchestration.DataPipeline/.schedules` in
-`fabric-acme`, and the `Cron` block — `interval: 15`, which is **minutes**,
-not a crontab expression — is from `fabric-acme-legacy`. Both are real; the
-pairing is not. `endDateTime` is mandatory in both, which is why the
-`Weekly` block carries the far-future `9999-12-31` workaround and the
-`Cron` block carries a deliberately expired one.
+`Weekly` block is an orchestration pipeline's `.DataPipeline/.schedules`
+in the reference repo, and the `Cron` block — `interval: 15`, which is
+**minutes**, not a crontab expression — is from an older sibling repo.
+Both are real; the pairing is not. `endDateTime` is mandatory in both,
+which is why the `Weekly` block carries the far-future `9999-12-31`
+workaround and the `Cron` block carries a deliberately expired one.
 
 ## Rules load here too
 
@@ -307,7 +308,7 @@ and a total gap are different problems.
 
 One fixture below is a real Fabric item type that the payload has no
 skill for: `KQLQueryset`. That is the *current* truth rather than a
-target, and it is common in `fabric-acme`.
+target, and it is common in the reference repo.
 
 `DataPipeline` was the other, and is **no longer** one: `fabric-data-pipeline`
 landed 2026-09-02, taking the "yes" its brief recommended — that brief is

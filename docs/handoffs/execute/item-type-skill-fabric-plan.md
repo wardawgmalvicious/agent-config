@@ -47,7 +47,7 @@ brief — where a payload inconsistency already exists because
 `fabric-data-agent` names ontology as a source with nothing behind it —
 there is no internal pressure here at all. `grep -rni "powertable\|fabric
 iq plan"` over `skills/`, `claude/` and `tests/` returns nothing, and
-`C:\Repos\ACME\fabric-acme` contains no Plan item (confirmed 2026-09-02).
+the reference Fabric repo contains no Plan item (confirmed 2026-09-02).
 
 **That grep no longer returns nothing, and the next reader must not
 misread the hits.** As of 2026-09-03 03:19 (`9ccbace`, ~1.5 h *after*
@@ -72,11 +72,10 @@ Do not skip to step 1 on the strength of the docs being interesting.
 
 **Answered 2026-09-03 01:40: no — defer.** The evidence was re-measured
 that day rather than taken from the 2026-09-02 line above: no `*.Plan`
-folder in `fabric-acme`, `fabric-acme-legacy`, `edgebridge` or
-`internal-tooling`, and the payload's only mention of Plan was, *at that
-hour*, the clause in `fabric-ontology`'s `when_to_use` disambiguating
-that item **from** this one. That
-single reference is worth reading correctly, because it is the *mirror
+folder in any of the four work repos, and the payload's only mention of
+Plan was, *at that hour*, the clause in `fabric-ontology`'s
+`when_to_use` disambiguating that item **from** this one. That single
+reference is worth reading correctly, because it is the *mirror
 image* of the ontology case that justified wave 12: there,
 `fabric-data-agent` promised a source the payload did not have, and the
 inconsistency pulled the work in. Here the one internal mention exists to
@@ -85,10 +84,10 @@ push work **away** from Plan. It is evidence against, not a loose thread.
 **Re-answered the same day, later: still no.** The queue row says to
 re-run step 0 rather than trust it, so it was re-run rather than read
 off. Repo side is unchanged and was measured wider than before — a
-full-depth `find` for `*.Plan` across all of `C:\Repos\ACME` (including
-`fabric-acme.worktrees`) and `internal-tooling` returns **zero**, against a
-live suffix inventory of `DataPipeline`, `Eventhouse`, `EventSchemaSet`,
-`Eventstream`, `KQLDashboard`, `KQLQueryset`, `Lakehouse`, `Notebook`,
+full-depth `find` for `*.Plan` across every work repo (worktrees
+included) returns **zero**, against a live suffix inventory of
+`DataPipeline`, `Eventhouse`, `EventSchemaSet`, `Eventstream`,
+`KQLDashboard`, `KQLQueryset`, `Lakehouse`, `Notebook`,
 `OperationsAgent`, `Report`, `SemanticModel`, `VariableLibrary` and
 `Warehouse`. Payload side is what moved, and the step 0 paragraph above
 now carries the correction: the mention count went 1 → 6, and all five
@@ -129,10 +128,10 @@ decoded to `"type": "Ontology"`, and the Git folder is
 [Plan definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/plan-definition)
 page exists and is the place to look. That beats hunting for a real
 workspace, and it settles the `definition/` layout in the same fetch.
-**Do not assume `.Plan`** — and note the specific hazard here: the ACME
+**Do not assume `.Plan`** — and note the specific hazard here: a work
 semantic model already contains a table literally named `Plan`
-(`Analytics/ACME_SM_Operation.SemanticModel/definition/tables/Plan.tmdl`),
-which is unrelated. A glob written on a guess would be both wrong and
+(`<model>.SemanticModel/definition/tables/Plan.tmdl`), which is
+unrelated. A glob written on a guess would be both wrong and
 plausible-looking in a grep.
 
 Resolve from a workspace containing a real Plan item, or from the Fabric
