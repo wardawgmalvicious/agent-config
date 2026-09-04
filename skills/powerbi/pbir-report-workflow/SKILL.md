@@ -287,7 +287,7 @@ Notes:
 - Empty visuals in the export usually mean a binding mismatch — see
   fabric-gotchas (byConnection rebind / TMDL binding diff).
 - If a `scripts/data/report-png.sh` wrapper is deployed in the repo
-  (internal-tooling local-cli template), prefer it over raw curl.
+  (an internal local-cli template), prefer it over raw curl.
 
 ### Common Page Sizes
 

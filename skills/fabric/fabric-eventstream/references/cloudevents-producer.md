@@ -59,7 +59,7 @@ A schema-associated eventstream → Eventhouse (processed ingestion) **auto-crea
 
 **Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
 
-Reference C# implementation: `edgebridge.core/Helpers/AzureEventHubPusher.cs` (`SendBatch` sets the `cloudEvents:*` props; `ExportToAzureEventHub` is the SDK path) and `edgebridge.core/Models/Job/JobOutput.cs` (`BuildDataSchema`).
+Reference producer shape (C#): set the `cloudEvents:*` application properties in the batch-send helper that assembles the `EventDataBatch` — the higher-level SDK export path does not carry them — and build the `dataschema` URI in the job-output model that already knows the schema name and version.
 
 ### Custom endpoint connection anatomy (Event Hub mode)
 
