@@ -191,16 +191,21 @@ touching the global config. `core.autocrlf` is `false` globally on
 purpose; line-ending policy is per repo via a committed `.gitattributes`.
 
 **The GitHub API actor is a third identity, bound separately from both.**
-`gh` carries its own credential — its own keyring entry, written by
-`gh auth login` — and the `github-mcp` server carries another, so the two
-can resolve to **different GitHub accounts**, as they do here. A PR or
-merge issued through `gh` is then attributed to an account with nothing
-to do with the `includeIf` author on the commits, and nothing warns.
-Compare `gh auth status` against the MCP `get_me` before any outward
-GitHub action, and use whichever matches the repo you are in. Verified
-2026-09-02.
+`gh` keeps one keyring entry per account it has logged into, with one
+*active*, and the `github-mcp` server carries its own token (project
+scope, in a repo's `.mcp.json`), so the two can resolve to **different
+GitHub accounts**. A PR or merge issued under the wrong one is
+attributed to an account with nothing to do with the `includeIf` author
+on the commits, and nothing warns. Since 2026-09-04 the shell profiles
+**folder-scope `gh`** the way git is: the wrapper reads the repo's
+`user.name`, and when that is a logged-in account it runs `gh` under a
+per-call `GH_TOKEN` for it. So `gh auth status` reports the keyring's
+active account, **not** the one `gh` will act as here — probe with
+`gh api user -q .login`, compare it with the MCP `get_me` where that
+server is loaded, and use whichever matches the repo. A script or hook
+that skips the profile gets the active account.
 
-**Identity leaks through file content too, and nothing guards that.**
+**Identity leaks through file content too, and the guard is a denylist.**
 `useConfigOnly` protects the author field only. An **organization's**
 account names — `AzureAD\…` / Entra accounts, tenant names, internal
 hostnames — never go into a file or a commit message, whatever the
@@ -217,7 +222,22 @@ forward. The trap is that documenting machine-specific behaviour is
 exactly when real account names read as the subject matter rather than
 as an incident. Hit in `machine-config` 2026-09-03 — both accounts
 landed in the body *and* the message, and only the body could be
-corrected.
+corrected. And once pushed, history cannot be fixed either: GitHub's
+`refs/pull/N/head` are permanent and pin every commit a PR ever
+touched, so `git filter-repo` plus a force-push leaves the leak
+reachable, and the only effective remedy is to delete and recreate the
+repo — done for `agent-config` on 2026-09-04, at the cost of its stars,
+PRs and creation date.
+
+The `identity-guard` hook (`~/.claude/hooks/`) turns that into a gate:
+before a `git commit` it scans the added lines, after one it reads the
+message back, and before a `git push` it scans every unpushed commit,
+all against `~/.config/identity-denylist.txt` — a local file, in no
+repo, because the list is itself the leak. It matches only what is on
+the list, so a new client name is still yours to catch, and to add;
+`exempt:` lines skip the client roots where the name belongs. gitleaks
+is not this guard: it matches secrets, not names, and never reads a
+message (measured 2026-09-04).
 
 ## Agent config source
 
