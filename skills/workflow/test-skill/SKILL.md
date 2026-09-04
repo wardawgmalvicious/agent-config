@@ -225,6 +225,13 @@ MCP, commands, agents — and is the control condition that separates
 behaviour the payload produces from behaviour the base model produces.
 It is a flag you type, never something to wire into `settings.json`.
 
+**A close baseline is not a failed skill.** Where the base model already
+knows the domain, `--safe-mode` reproduces most of a good answer, so
+"the payload run answered well" measures nothing by itself. Compare a
+detail that is a claim **only the skill makes**. Measured 2026-09-04 on
+`pbir-filters`: both runs got `SourceRef.Source` and doubled quotes; only
+the payload wrote the skill's 20-char hex `name` (baseline: a 32-char GUID).
+
 Then, in a normal session, run the trigger queries from step 1. Test
 **both** invocation paths, because they do not behave alike: a `model:`
 pin is honoured on `/slash` invocation and silently dropped on
