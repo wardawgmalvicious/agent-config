@@ -78,6 +78,16 @@ happen only when explicitly requested, never as follow-through.
 - Never `--no-verify` / skip hooks; if a hook fails, fix the cause.
 - If a change looks accidental or unrelated to the stated work, leave
   it uncommitted and flag it rather than sweeping it in.
+- **Scan for identity strings — in the diff *and* in the message you
+  are about to write.** An organization's account names (`AzureAD\…`,
+  Entra accounts), tenant names, internal hostnames, and hardcoded
+  `C:\Users\<name>` profile paths get genericized before the commit,
+  whatever the repo's visibility. gitleaks does not cover this: it
+  matches secrets, not identities, and the pre-commit hook only sees
+  *staged content*, so the message is unguarded entirely. The trap is
+  that a commit documenting machine- or tenant-specific behaviour is
+  exactly where real account names read as the subject matter — and a
+  message, unlike a file, cannot be fixed forward.
 
 ## Fabric Git-synced repos
 
