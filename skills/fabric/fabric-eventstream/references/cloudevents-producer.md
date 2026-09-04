@@ -69,7 +69,7 @@ Everything in a custom endpoint's connection string except the key follows servi
 Endpoint=sb://<namespace>.servicebus.windows.net/;SharedAccessKeyName=key_<guid>;SharedAccessKey=<secret>;EntityPath=<namespace>_eh
 ```
 
-- **Namespace**: `eseh<random>` (e.g. `esehexampleabcdefgh123`) — the portal labels it "Event hub name".
+- **Namespace**: `eseh<random>`, the random half being 18 lowercase alphanumerics — the portal labels it "Event hub name".
 - **EntityPath** (the hub — `eventhub_name` in SDKs): always **`<namespace>_eh`**. Derive it; don't store it separately.
 - **SAS policy name**: `key_<guid>` — not secret. Only `SharedAccessKey` is secret material.
 
