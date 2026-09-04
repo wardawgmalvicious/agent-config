@@ -199,6 +199,25 @@ Compare `gh auth status` against the MCP `get_me` before any outward
 GitHub action, and use whichever matches the repo you are in. Verified
 2026-09-02.
 
+**Identity leaks through file content too, and nothing guards that.**
+`useConfigOnly` protects the author field only. An **organization's**
+account names — `AzureAD\…` / Entra accounts, tenant names, internal
+hostnames — never go into a file or a commit message, whatever the
+repo's visibility: private is a setting rather than a property, the
+information is the employer's rather than yours to publish, and a
+privileged account name is half a credential. **Your own** profile path
+is the lesser case and the reason is portability, not privacy —
+`C:\Users\<you>` in a doc describing how to set up *a* machine is a bug
+before it is a leak. Write `~`, `$env:USERPROFILE` or `<username>`
+unless the literal string is the point.
+
+Check before committing, not after: a commit message cannot be fixed
+forward. The trap is that documenting machine-specific behaviour is
+exactly when real account names read as the subject matter rather than
+as an incident. Hit in `machine-config` 2026-09-03 — both accounts
+landed in the body *and* the message, and only the body could be
+corrected.
+
 ## Agent config source
 
 `~/.claude/agents`, `hooks`, `mcp`, and `rules` are **copies** taken
