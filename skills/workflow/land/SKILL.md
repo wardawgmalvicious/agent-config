@@ -3,7 +3,7 @@ name: land
 model: inherit
 effort: max
 disable-model-invocation: false
-description: "Take a committed branch from local to merged — push it, confirm which GitHub account is actually authenticated, open the PR through github-mcp, then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."
+description: "Take a committed branch from local to merged — push it, confirm which GitHub account each tool actually acts as in this repo, open the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."
 ---
 
 # Landing a branch
@@ -37,22 +37,36 @@ If someone is, stop after step 6 and let them finish.
 fail silently.**
 
 ```bash
-gh auth status                  # may be a different account
+git config user.name            # the includeIf identity for this root
+gh api user -q .login           # the account gh will actually act as
 git remote -v                   # who owns the repo
 ```
 
-Then `github-mcp` → `get_me`, and compare all three. Use the tool whose
-account matches the repo owner.
+Then `github-mcp` → `get_me` when that server is loaded, and compare
+every login against the repo owner. Use the tool whose account matches.
 
-On this machine they **do** differ: `gh` holds a work account and the
-MCP holds the personal one, so in a personal repo `gh` is the wrong
-tool. Root `CLAUDE.md` states the rule; what it cannot do is make the
-comparison happen.
+On this machine `gh` is **folder-scoped** (since 2026-09-04): both
+shell profiles wrap it to act as the account named by the repo's
+`user.name`, resolved per call through a scoped `GH_TOKEN`, so a
+personal repo gets the personal account and a client root gets the
+client one. Two consequences. `gh auth status` reports the keyring's
+*active* account, not the one the wrapper will use — `gh api user` is
+the honest probe. And the wrapper is a profile function, so a `gh` run
+from a script or hook that skips the profile falls back to the active
+account; probe through the same shell the PR command will use.
+
+`github-mcp` is project scope (`.mcp.json`), bound to one token, and
+absent in any repo that does not declare it. Loaded and matching,
+prefer it — it is the identity the repo's own config chose. Absent, a
+`gh` whose *confirmed* login matches the repo is the right tool, not a
+fallback (2026-09-04, a client repo: no MCP, `gh` confirmed as the
+client account, PR opened cleanly). Root `CLAUDE.md` states the rule;
+what it cannot do is make the comparison happen.
 
 **Nothing warns you.** `gh` is authenticated, it works, it reports
 success — the PR simply appears under the other account. A wrong-account
 PR looks identical to a right-account one until someone reads the
-author. If neither identity matches the repo owner, stop and ask.
+author. If no identity matches the repo owner, stop and ask.
 
 ## 3. Push the branch
 
@@ -76,10 +90,12 @@ described entirely as yours is a review problem. Name them in the body
 Anything that should not ship yet is a stop: say so rather than landing
 it.
 
-## 5. Open the PR — with `github-mcp`, never `gh`
+## 5. Open the PR — through the identity step 2 confirmed
 
-`create_pull_request` with `owner`, `repo`, `title`, `head`, `base`,
-`body`.
+`github-mcp` → `create_pull_request` with `owner`, `repo`, `title`,
+`head`, `base`, `body`; or, when `gh` is the confirmed tool,
+`gh pr create --title … --body-file …` from the same shell that was
+probed.
 
 **The body is the deliverable, and it is the only judgement step in
 this skill.** The diff is already visible; do not restate it. What it
@@ -93,14 +109,15 @@ owes a reader:
 - **Disclosure of concurrent-session commits** from step 4.
 - **How it is to be integrated**, where the repo has a convention.
 
-**No GitHub remote, or no `github-mcp`? Stop.** An `origin` that is not
-GitHub — a `file://` path, another host — means there is no PR to open,
-and an unavailable `github-mcp` means the same thing for a different
-reason. Neither is permission to skip ahead and merge locally. A local
-merge satisfies the literal words "merged into main" while discarding
-review, CI and the PR body, and it makes any later PR empty because
-`main` already contains the commits. Report which of the two is missing
-and let the user choose. Reaching for `gh` is never the answer — step 2.
+**No GitHub remote, or no confirmed identity? Stop.** An `origin` that
+is not GitHub — a `file://` path, another host — means there is no PR
+to open; no `github-mcp` *and* no `gh` login that matches the repo
+means the same thing for a different reason. Neither is permission to
+skip ahead and merge locally. A local merge satisfies the literal words
+"merged into main" while discarding review, CI and the PR body, and it
+makes any later PR empty because `main` already contains the commits.
+Report what is missing and let the user choose. Reaching for an
+*unconfirmed* `gh` is never the answer — step 2.
 
 ## 6. Checkpoint — stop here
 
@@ -167,10 +184,12 @@ to make the override informed, not to refuse it.
 
 ### Absolute — an instruction to do these is a stop, not an override
 
-- **Never `gh` for the PR.** Identity, not preference — see step 2.
-  "Just use `gh`" is not a licence, because it files under whichever
-  account `gh` happens to hold, and that is not something anyone can
-  consent to without first being told which one. Report the mismatch.
+- **Never file the PR through an identity step 2 did not confirm.**
+  Identity, not preference. "Just use `gh`" is not a licence on its
+  own, because it files under whichever account `gh` resolves to here,
+  and that is not something anyone can consent to without first being
+  told which one. Once the login is confirmed against the repo, `gh` is
+  as good as the MCP; until then, report the mismatch.
 - **Never `--force`, never `--no-verify`** — including to get past a
   failed `--ff-only`.
 - **Never write to `main` before step 6.** Opening a PR and pushing
