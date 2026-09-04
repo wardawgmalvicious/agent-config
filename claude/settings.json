@@ -45,6 +45,7 @@
   },
   "extraKnownMarketplaces": {},
   "effortLevel": "max",
+  "cleanupPeriodDays": 15,
   "autoUpdatesChannel": "latest",
   "permissions": {
     "defaultMode": "auto"
