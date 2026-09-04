@@ -88,6 +88,11 @@ happen only when explicitly requested, never as follow-through.
   that a commit documenting machine- or tenant-specific behaviour is
   exactly where real account names read as the subject matter — and a
   message, unlike a file, cannot be fixed forward.
+  The `identity-guard` hook backstops this from
+  `~/.config/identity-denylist.txt`: it blocks a commit whose staged
+  diff adds a listed term, hands back a message that carries one, and
+  blocks the push. It knows only what is on the list — a name it has
+  never seen is yours to catch, and then to add.
 
 ## Fabric Git-synced repos
 

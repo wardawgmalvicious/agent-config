@@ -83,7 +83,9 @@ rearranging the root.
   rule; auto-load via `paths:` globs when matching files enter session
   scope.
 - [claude/hooks/](claude/hooks/) — InstructionsLoaded and
-  Skill-invocation loggers, and a security-reviewer memory-scope guard.
+  Skill-invocation loggers, a security-reviewer memory-scope guard, and
+  an identity guard that stops `git commit` / `git push` from carrying
+  denylisted client or account names into history.
 - [claude/mcp/](claude/mcp/) — MCP server templates in Claude's
   `mcpServers` schema, one per shareable scope: user (`~/.claude.json`)
   and project (a repo's `.mcp.json`). Both carry only servers that
