@@ -53,7 +53,7 @@ Start at the top tier. TMDL on disk answers the highest-value questions
 in this skill and costs nothing.
 
 **If a `scripts/data/dax.sh` wrapper is deployed in the repo**
-(internal-tooling local-cli template), prefer it over raw curl for the second
+(an internal local-cli template), prefer it over raw curl for the second
 tier — `dax.sh -s tables|columns|measures|relationships` are four canned
 `INFO.VIEW` projections. It is an accelerator that happens to be present,
 never a dependency: this skill loads at user scope in repos that have no

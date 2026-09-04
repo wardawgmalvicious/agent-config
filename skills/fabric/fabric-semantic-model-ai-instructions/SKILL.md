@@ -287,7 +287,7 @@ Hard limit. Plan for it.
 
 ## See also
 
-- For a starting-point AI-instructions example, see the internal-tooling repo.
+- For a starting-point AI-instructions example, see your internal tooling repo.
 
 ---
 

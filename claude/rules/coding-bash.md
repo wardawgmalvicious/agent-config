@@ -9,7 +9,7 @@ paths:
 Applies to shell scripts across these repos. Two shapes exist and they
 have different rules, called out where they diverge:
 
-- **CLI wrappers** — `internal-tooling/local-cli/*.sh`, `infra/deploy.sh`.
+- **CLI wrappers** — `local-cli/*.sh`, `infra/deploy.sh`.
   Strict-mode scripts a human or agent runs directly.
 - **Claude Code hooks** — `agent-config/hooks/*.sh`. Run automatically on
   every session or tool call; see the hooks section.
