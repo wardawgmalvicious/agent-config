@@ -230,6 +230,19 @@ body. A description that reads as an accurate abstract and never
 triggers has failed at its only job. Where the skill neighbours another,
 spend a clause on the disambiguation.
 
+**A disambiguation pointer must be reachable from where it is read.** A
+`paths:`-scoped skill is in the listing only once one of its *own* globs
+has matched, so "use `<other-skill>`" is dead whenever the two share no
+trigger file. The failure is worse than a no-op: the model calls the
+Skill tool, gets `Unknown skill`, and reports that skill as **not
+installed** — a false diagnosis layered on a dead pointer, in a session
+where it was deployed and merely not activated. So point at a co-active
+neighbour by **name**, and point off the shared surface by **file** —
+opening the file is what activates the skill there, which makes the file
+the only pointer that works cold. Measured 2026-09-04: `pbir-filters`
+said "for filter-pane styling use `pbir-themes`", and their globs are
+disjoint.
+
 **Long detail goes to `skills/<group>/<name>/references/`, not the
 body.** Root `CLAUDE.md` is explicit about this. Command flag tables,
 per-item-type matrices, and long worked examples belong in a reference
