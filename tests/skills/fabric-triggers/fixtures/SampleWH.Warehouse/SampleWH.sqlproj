@@ -4,5 +4,6 @@
   <PropertyGroup>
     <Name>SampleWH</Name>
     <DSP>Microsoft.Data.Tools.Schema.Sql.SqlDwDatabaseSchemaProvider</DSP>
+    <ProjectGuid>{00000000-0000-0000-0000-000000000000}</ProjectGuid>
   </PropertyGroup>
 </Project>
