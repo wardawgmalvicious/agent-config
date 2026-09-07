@@ -1,9 +1,10 @@
 # Open briefs — execution order
 
-One item is open:
+Two items are open:
 
 | Item | State |
 | --- | --- |
+| [drift-fetch-subagent.md](drift-fetch-subagent.md) | **Open 2026-09-07** — brief filled, not drafted. Blocked on its own validation gate, not on this queue: the brief specifies an A/B against an inline `/drift-audit --sources powerbi 2026-08-01` run before the agent is drafted, because the open risk is whether a subagent returns table cells and code verbatim enough for Phase 3 to drill. Run the baseline first; a null result on a `table` source is a legitimate outcome that narrows the agent to `claude-code` and `vscode-agent` rather than killing it. |
 | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Deferred 2026-09-03** — not declined. Step 0 answered *no*: no `*.Plan` item exists in any repo here, and the payload's only mention of Plan pushes work away from it. Waiting on a Plan item appearing, not on anything in this queue. Its carve-out debt was split off and paid separately, so what remains is the skill itself. |
 
 This is the **only** place the execution order lives — each brief carries
