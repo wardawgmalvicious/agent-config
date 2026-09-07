@@ -41,7 +41,19 @@ Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, 
 
 ### Install (user scope)
 
-Merge the `mcpServers` object from the template into the **top level** of `~/.claude.json` (on Windows: `C:\Users\<you>\.claude.json`):
+`scripts/link-claude.ps1 -GlobalMcp` does this, and is the maintained route:
+
+```powershell
+# Reports drift on every run; writes only with -GlobalMcp
+./scripts/link-claude.ps1 -SkillGroups workflow -GlobalMcp
+```
+
+It substitutes `<USER>`, backs the file up, replaces the top-level `mcpServers` key, and **prunes servers this template does not declare** — leaving every other key in `~/.claude.json` untouched. Two things follow from that:
+
+- **It is a reconciler, not a one-time install.** Docker Desktop's MCP Toolkit writes an unfiltered `MCP_DOCKER` gateway entry into `~/.claude.json` whenever it connects a client. That entry has no `--servers` filter, so it re-exports the whole gateway — every `azure-mcp` and `dockerhub-mcp` tool a second time, plus a full GitHub surface — into every session on the machine. Expect it back after a Docker Desktop update and re-run the linker.
+- **Prune before you're pruned.** Anything removed from user scope is gone everywhere; move a server you still want into the owning repo's `.mcp.json` *first*.
+
+Or merge the `mcpServers` object into the **top level** of `~/.claude.json` by hand (on Windows: `C:\Users\<you>\.claude.json`):
 
 ```jsonc
 {
@@ -57,11 +69,26 @@ Merge the `mcpServers` object from the template into the **top level** of `~/.cl
 
 > **Don't** place these under `projects.<path>.mcpServers` — that is **local scope** (per-project, private), not user scope.
 
-Alternatively, use the CLI (writes to the same top-level `mcpServers` key):
+Or use the CLI, which writes to the same top-level key:
 
 ```bash
 claude mcp add --scope user microsoft-learn-mcp --transport http https://learn.microsoft.com/api/mcp
+claude mcp remove --scope user MCP_DOCKER
 ```
+
+#### If you script an edit to `~/.claude.json` yourself
+
+That file is Claude Code's runtime state — oauth account, project history, usage counters — not config you own, and two things about parsing it in PowerShell are silent when wrong. Both are handled in `link-claude.ps1`; reproduce them in anything else that reads it.
+
+```powershell
+$config = Get-Content "$HOME\.claude.json" -Raw |
+    ConvertFrom-Json -AsHashtable -DateKind String
+```
+
+- **`-AsHashtable`** — the file accumulates project keys that differ only in drive-letter casing (`C:/Repos/...` and `c:/Repos/...`). A plain `ConvertFrom-Json` rejects that as a duplicate-key collision and *throws on a perfectly valid file*.
+- **`-DateKind String`** (pwsh 7.5+) — without it, every ISO-8601 timestamp in the file is parsed into `[datetime]` and re-emitted in **local** time on write. Same instant, different bytes, so a run that changes no server still silently rewrites rate-limit caches. With both switches the round trip is semantically identical, verified by canonical diff against the live file.
+
+And a live session rewrites this file from memory on its own schedule, so a write made while one is open can be reverted when it exits. Back up first, and confirm in a **fresh** session with `claude mcp list`.
 
 ### Servers (user scope)
 
@@ -235,7 +262,7 @@ JSON files don't support comments, so substitution instructions live here.
 
 ### `<USER>` placeholder (global template)
 
-[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the two Docker MCP Gateway servers (`azure-mcp`, `dockerhub-mcp`). Replace each occurrence before merging the template into `~/.claude.json`.
+[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the two Docker MCP Gateway servers (`azure-mcp`, `dockerhub-mcp`). `scripts/link-claude.ps1 -GlobalMcp` substitutes it for you; do it by hand only when merging the template manually.
 
 **It is the profile *directory* name, not the account name, and this file used to say otherwise.** The two are the same on most machines and differ whenever a Windows account was renamed after its profile folder was created — which is the case here. The placeholder sits inside a path, so reading `$env:USERNAME` builds `C:\Users\<account>\AppData\Local`, a directory that does not exist. Nothing reports that: the gateway starts, fails to resolve Docker Desktop's per-user state, and surfaces later as a server that will not connect.
 
@@ -251,7 +278,7 @@ Split-Path -Leaf $HOME        # or: Split-Path -Leaf $env:USERPROFILE
 basename "$USERPROFILE"
 ```
 
-So `C:\\Users\\<USER>\\AppData\\Local` becomes whatever `$env:LOCALAPPDATA` already reads as. **Check them against each other** — if `$env:LOCALAPPDATA` is not `$HOME\AppData\Local`, AppData has been redirected and the whole `env` block needs editing by hand rather than substituting.
+So `C:\\Users\\<USER>\\AppData\\Local` becomes whatever `$env:LOCALAPPDATA` already reads as. **Check them against each other** — if `$env:LOCALAPPDATA` is not `$HOME\AppData\Local`, AppData has been redirected and the whole `env` block needs editing by hand rather than substituting. The linker warns when it sees that rather than writing a path it guessed.
 
 The entire `env` block (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) is **Windows-specific** — it tells the gateway process where to find Docker Desktop's per-user state on Windows. On Linux / macOS, Docker Desktop resolves these from the OS, so omit the `env` block entirely. The `cmd /c npx ...` wrapper in the project template is likewise Windows-specific and should be replaced with a direct `npx` invocation elsewhere.
 

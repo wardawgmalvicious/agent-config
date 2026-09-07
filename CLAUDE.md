@@ -79,6 +79,12 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 # Same, when neither copied file has changed.
 ./scripts/link-claude.ps1 -SkillGroups workflow
 
+# Also reconcile user-scope MCP servers in ~/.claude.json down to the three
+# in claude/mcp/.mcp.global.template.json, PRUNING everything else there.
+# Off by default even under -Force; every run without it just reports the
+# drift. Re-run after a Docker Desktop update, which re-adds MCP_DOCKER.
+./scripts/link-claude.ps1 -SkillGroups workflow -GlobalMcp
+
 # Partial payload: push only the Fabric skills into a client repo's .claude,
 # without this machine's agents, hooks, or rules.
 ./scripts/link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric
@@ -136,6 +142,24 @@ lands determines when it goes live:
 | `claude/mcp/` | `~/.claude/mcp` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
+| `claude/mcp/.mcp.global.template.json` | `~/.claude.json` (top-level `mcpServers` only) | single-key reconcile, prunes | after `scripts/link-claude.ps1 -GlobalMcp` |
+
+The last row is the odd one and deliberately so. `~/.claude.json` sits
+**beside** `~/.claude`, not inside it, and is not payload at all — it is
+Claude Code's runtime state, holding the oauth account, project history
+and usage counters. So it is the only target with its own opt-in switch:
+`-GlobalMcp` is off even under `-Force`, is skipped under `-SkillsOnly`,
+and is ignored unless `-ClaudeDir` is user scope, since no other scope has
+this file (a project's equivalent is a committed `.mcp.json` at its repo
+root, which the linker does not deploy). Drift is *reported* on every run
+regardless, because this is a reconciler rather than an install: Docker
+Desktop's MCP Toolkit re-adds an unfiltered `MCP_DOCKER` gateway entry
+whenever it connects a client, and that entry re-exports every
+`azure-mcp` and `dockerhub-mcp` tool a second time into every session on
+the machine. The switch replaces exactly one key and round-trips the rest
+untouched — see [claude/mcp/README.md](claude/mcp/README.md) for the two
+`ConvertFrom-Json` switches that make that round trip lossless, both of
+which fail silently when omitted.
 
 **`skills/` is the only junction, and that is the whole design.** It is
 the one payload Claude Code hot-reloads, so edit-to-live is the

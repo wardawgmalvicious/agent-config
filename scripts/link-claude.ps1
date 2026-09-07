@@ -74,6 +74,33 @@
     into the target (top-level, whole-key replacement) and keeps
     target-only keys.
 
+    ~/.claude.json IS STRICTER STILL and is off by default even under
+    -Force, because it is not payload at all: it is Claude Code's own
+    runtime state - oauth account, project history, usage counters - and a
+    live session rewrites it from memory on its own schedule. -GlobalMcp
+    opts into reconciling exactly ONE key in it, top-level mcpServers,
+    against claude/mcp/.mcp.global.template.json, pruning user-scope
+    servers the template does not declare. Every other key is round-tripped
+    untouched. Drift is REPORTED on every run either way, because Docker
+    Desktop's MCP Toolkit writes an unfiltered MCP_DOCKER gateway entry
+    whenever it connects a client - so this is a reconciler for something
+    an external app re-adds, not a one-time cleanup.
+
+    Two parse switches are load-bearing there, and both fail silently when
+    omitted. -AsHashtable: the file carries project keys differing only in
+    drive-letter casing (C:/... and c:/...), which a plain ConvertFrom-Json
+    rejects outright as a duplicate-key collision, so the read throws on a
+    perfectly valid file. -DateKind String: without it every ISO-8601
+    timestamp in the file is parsed to [datetime] and re-emitted in LOCAL
+    time, so a run that changes no server still silently rewrites the
+    rate-limit caches this script does not own. With both, the round trip
+    is semantically identical - verified 2026-09-07 by canonical diff
+    against the live 63 KB file.
+
+    The template's <USER> placeholder is substituted from $env:USERNAME at
+    deploy time. That is deliberate rather than incidental: the literal
+    profile path belongs in the live file and never in the repo.
+
     Idempotent; safe to re-run any time, including after moving or renaming
     the repo folder (the script resolves targets from its own location).
 
@@ -98,6 +125,14 @@
     no CLAUDE.md / settings.json mirroring. Intended for project targets,
     which want this repo's skills but their own everything else.
 
+.PARAMETER GlobalMcp
+    Reconcile the top-level mcpServers key in ~/.claude.json against
+    claude/mcp/.mcp.global.template.json, PRUNING user-scope servers the
+    template does not declare. The file is backed up first. Off by default
+    even with -Force, skipped entirely under -SkillsOnly, and ignored
+    unless -ClaudeDir is user scope, since no other scope has this file.
+    Without it, drift is reported and nothing is written.
+
 .EXAMPLE
     ./scripts/link-claude.ps1
     Verify and relink the full user-scope payload, reporting drift.
@@ -116,6 +151,11 @@
     Same as above example but pushes drifted CLAUDE.md / settings.json to the target.
 
 .EXAMPLE
+    ./scripts/link-claude.ps1 -SkillGroups workflow -GlobalMcp
+    Same, and reconcile ~/.claude.json's user-scope mcpServers down to the
+    servers the global template declares.
+
+.EXAMPLE
     ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric,powerbi -SkillsOnly
     Give a client repo the platform skills and nothing else.
 #>
@@ -124,7 +164,8 @@ param(
     [switch]$Force,
     [string]$ClaudeDir = (Join-Path $HOME '.claude'),
     [string[]]$SkillGroups,
-    [switch]$SkillsOnly
+    [switch]$SkillsOnly,
+    [switch]$GlobalMcp
 )
 
 $ErrorActionPreference = 'Stop'
@@ -152,6 +193,14 @@ $MirrorFiles = @(
     @{ Source = 'claude/settings.json'; Dest = 'settings.json' }
 )
 $SkillsRoot = [IO.Path]::GetFullPath((Join-Path $RepoRoot 'skills'))
+# User-scope MCP servers live in ~/.claude.json, which sits BESIDE ~/.claude
+# rather than inside it, and exists at no other scope - a project's
+# equivalent is a committed .mcp.json at its repo root, which this script
+# does not deploy. So this pair is resolved once, from $HOME, and the
+# reconcile is skipped when -ClaudeDir points anywhere else.
+$GlobalMcpTemplate = Join-Path $RepoRoot 'claude/mcp/.mcp.global.template.json'
+$GlobalMcpConfig   = Join-Path $HOME '.claude.json'
+$UserScopeDir      = Join-Path $HOME '.claude'
 $script:DriftCount = 0
 
 function Get-LinkTarget([System.IO.FileSystemInfo]$Item) {
@@ -190,6 +239,34 @@ function Test-JsonSubset($Subset, $Superset) {
         return $true
     }
     return $Subset -eq $Superset
+}
+
+function Test-JsonEqual($A, $B) {
+    # Full equality over the OrderedHashtable shape ConvertFrom-Json
+    # -AsHashtable produces, as opposed to Test-JsonSubset's one-way check
+    # over PSCustomObjects. Deliberately ORDER-INSENSITIVE for maps: a
+    # server whose keys the template writes as type/url and the live file
+    # holds as url/type is the same server, and comparing serialized text
+    # would report drift that no rewrite could ever settle.
+    if ($A -is [System.Collections.IDictionary]) {
+        if ($B -isnot [System.Collections.IDictionary]) { return $false }
+        if ($A.Keys.Count -ne $B.Keys.Count) { return $false }
+        foreach ($key in $A.Keys) {
+            if (-not $B.Contains($key)) { return $false }
+            if (-not (Test-JsonEqual $A[$key] $B[$key])) { return $false }
+        }
+        return $true
+    }
+    # Strings are not IList, so they fall through to the scalar compare.
+    if ($A -is [System.Collections.IList]) {
+        if ($B -isnot [System.Collections.IList]) { return $false }
+        if ($A.Count -ne $B.Count) { return $false }
+        for ($i = 0; $i -lt $A.Count; $i++) {
+            if (-not (Test-JsonEqual $A[$i] $B[$i])) { return $false }
+        }
+        return $true
+    }
+    return $A -eq $B
 }
 
 function Set-Junction {
@@ -315,6 +392,110 @@ function Sync-PayloadDirectory {
 
     Write-Host ("Synced  $Label ($copied pushed, $same unchanged" +
                 $(if ($pruned) { ", $pruned pruned" } else { '' }) + ')')
+}
+
+function Sync-GlobalMcp {
+    # Reconcile ONE key - top-level mcpServers - in Claude Code's runtime
+    # state file against the global template. See .DESCRIPTION for why this
+    # is opt-in, and why the two ConvertFrom-Json switches below are not
+    # optional.
+    param([string]$TemplatePath, [string]$ConfigPath, [switch]$Apply)
+
+    if (-not (Test-Path $TemplatePath)) {
+        Write-Warning "Repo file missing, skipped: $TemplatePath"
+        $script:DriftCount++
+        return
+    }
+    if (-not (Test-Path $ConfigPath)) {
+        # Never create it. Claude Code owns this file's shape, and a stub
+        # holding nothing but mcpServers would be a worse starting point
+        # than the one it writes for itself on first run.
+        Write-Warning ("$ConfigPath does not exist - Claude Code writes it on first run. " +
+            "Nothing to reconcile.")
+        $script:DriftCount++
+        return
+    }
+
+    # <USER> is substituted at deploy time so the literal profile path lands
+    # in the live file and never in the repo.
+    #
+    # It is taken from the PROFILE DIRECTORY, not from $env:USERNAME. Those
+    # are different strings on this machine - the account was renamed after
+    # the profile folder was created - and the placeholder sits inside a
+    # LOCALAPPDATA path, so $env:USERNAME builds C:\Users\<account>\AppData\
+    # Local, a directory that does not exist. Nothing would report that: the
+    # docker gateway starts, fails to resolve Docker Desktop's per-user
+    # state, and surfaces as a server that will not connect.
+    $profileName  = Split-Path -Leaf $HOME
+    $templateText = (Get-Content $TemplatePath -Raw).Replace('<USER>', $profileName)
+    # Reconstructing the path only holds while AppData sits under the
+    # profile. Say so rather than emitting a silently wrong value.
+    $expectedLocalAppData = Join-Path $HOME 'AppData\Local'
+    if ($env:LOCALAPPDATA -and $env:LOCALAPPDATA -ine $expectedLocalAppData) {
+        Write-Warning ("LOCALAPPDATA is '$env:LOCALAPPDATA', not '$expectedLocalAppData' - " +
+            "the <USER> substitution assumes AppData lives under the profile. " +
+            "Edit the env block in $TemplatePath by hand.")
+        $script:DriftCount++
+    }
+    $template = $templateText | ConvertFrom-Json -AsHashtable -DateKind String
+    if (-not $template.Contains('mcpServers')) {
+        Write-Warning "$TemplatePath has no top-level mcpServers key, skipped."
+        $script:DriftCount++
+        return
+    }
+    $desired = $template['mcpServers']
+
+    $config  = Get-Content $ConfigPath -Raw | ConvertFrom-Json -AsHashtable -DateKind String
+    $current = [ordered]@{}
+    if ($config.Contains('mcpServers')) { $current = $config['mcpServers'] }
+
+    $missing   = @($desired.Keys | Where-Object { -not $current.Contains($_) })
+    $differing = @($desired.Keys | Where-Object {
+        $current.Contains($_) -and -not (Test-JsonEqual $desired[$_] $current[$_]) })
+    # Local-scope servers live under projects.<path>.mcpServers and are a
+    # different key entirely, so nothing here can reach them.
+    $extra     = @($current.Keys | Where-Object { -not $desired.Contains($_) })
+
+    if ($missing.Count -eq 0 -and $differing.Count -eq 0 -and $extra.Count -eq 0) {
+        Write-Host "OK      .claude.json (user-scope mcpServers match the template)"
+        return
+    }
+
+    $summary = @(
+        if ($missing.Count)   { "$($missing.Count) missing: $($missing -join ', ')" }
+        if ($differing.Count) { "$($differing.Count) differing: $($differing -join ', ')" }
+        if ($extra.Count)     { "$($extra.Count) not in template: $($extra -join ', ')" }
+    ) -join '; '
+
+    if (-not $Apply) {
+        Write-Warning "user-scope mcpServers in $ConfigPath drifted from the template - $summary"
+        Write-Warning ("Re-run with -GlobalMcp to reconcile (the file is backed up first). " +
+            "Servers 'not in template' are DELETED from user scope; move any you still " +
+            "want to the owning repo's .mcp.json first - see claude/mcp/README.md.")
+        $script:DriftCount++
+        return
+    }
+
+    $backup = "$ConfigPath.$(Get-Date -Format 'yyyyMMdd-HHmmss').bak"
+    Copy-Item $ConfigPath $backup -Force
+    Write-Host "Backed up $ConfigPath -> $(Split-Path -Leaf $backup)"
+
+    $config['mcpServers'] = $desired
+    $serialized = $config | ConvertTo-Json -Depth 100
+    # Validate through the SAME switches the read used, before the write.
+    # A gate that parses more strictly than the reader rejects good content
+    # and abandons the write silently.
+    $null = $serialized | ConvertFrom-Json -AsHashtable -DateKind String
+    Set-Content -Path $ConfigPath -Value $serialized -Encoding utf8NoBOM
+
+    foreach ($name in $extra)   { Write-Host "Pruned  mcpServers/$name (not in template)" }
+    foreach ($name in $missing) { Write-Host "Added   mcpServers/$name" }
+    foreach ($name in $differing) { Write-Host "Updated mcpServers/$name" }
+    Write-Host ("Synced  .claude.json mcpServers ($($desired.Keys.Count) server(s): " +
+                "$($desired.Keys -join ', '))")
+    Write-Warning ("Claude Code rewrites $ConfigPath from memory, so a session that " +
+        "started BEFORE this run can revert it on exit. Confirm in a fresh session with " +
+        "'claude mcp list'.")
 }
 
 if (-not (Test-Path $ClaudeDir)) {
@@ -481,6 +662,20 @@ else {
             $script:DriftCount++
         }
     }
+}
+#endregion
+
+#region User-scope MCP servers (~/.claude.json)
+if ($SkillsOnly) {
+    Write-Host "Skipped .claude.json mcpServers (-SkillsOnly)"
+}
+elseif (-not (Test-SamePath $ClaudeDir $UserScopeDir)) {
+    # A project target's MCP equivalent is a committed .mcp.json at its repo
+    # root, which is a copy-the-template step rather than a linker one.
+    Write-Host "Skipped .claude.json mcpServers (user scope only; -ClaudeDir is not $UserScopeDir)"
+}
+else {
+    Sync-GlobalMcp -TemplatePath $GlobalMcpTemplate -ConfigPath $GlobalMcpConfig -Apply:$GlobalMcp
 }
 #endregion
 
