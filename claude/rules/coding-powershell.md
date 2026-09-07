@@ -127,10 +127,40 @@ try { Get-Item $path -ErrorAction Stop } catch { Fail "not found: $path" }
 one: `$?` is still `False` and `$Error` is still populated. Use it only
 where absence is an expected outcome you are about to test for.
 
+**Native commands never throw — check `$LASTEXITCODE` per call.**
+`npm`, `winget`, `dotnet`, `git` report failure only through their exit
+code; `try`/`catch` and `$ErrorActionPreference` see nothing, so a
+failed install prints its error and the script keeps reporting success.
+
+```powershell
+npm install -g $pkg
+if ($LASTEXITCODE -ne 0) { Fail "npm install $pkg exited $LASTEXITCODE" }
+```
+
+(Hit live Sep 2026: an npm E401 registry rejection logged as
+`[INSTALL]` success in a machine-config bootstrap run.)
+
 For multi-step machine scripts, prefer **accumulating** failures and
 printing a summary over throwing on the first one — a half-applied
 change the user cannot see is worse than a complete report with three
 `[FAIL]` lines.
+
+## Strict mode
+
+Scripts here run `Set-StrictMode -Version Latest`, which turns two
+quiet lookups into throws:
+
+- **An absent hashtable key throws** instead of returning `$null` —
+  guard optional keys with `.ContainsKey()` before reading.
+- **Assigning from a bare `if` that yields an empty array unrolls it
+  to `$null`**, so a later `.Count` throws. Wrap the whole statement:
+  `$x = @(if ($cond) { $items } else { @() })`.
+
+Both bugs pass any test that does not itself run strict —
+`$null.Count` is silently `0` without strict mode — so Pester suites
+must set `Set-StrictMode -Version Latest` in `BeforeEach` to test the
+semantics the script actually has. (Both hit live in machine-config,
+Sep 2026; pinned by tests there.)
 
 ## JSON
 
@@ -195,11 +225,32 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
   delimiter must be at column 0** — indenting it is a parse error.
 - Escape `$` inside an interpolating string as `` `$ ``, e.g. a regex
   replacement referencing a named group: ``"`${d}:/$NewLeaf/"``.
+- `-replace` is **regex**; `[string]::Replace()` is literal. A lone
+  `'\'` pattern parses clean and lints clean, then throws at runtime
+  on every input — use `.Replace('\', '/')` for literal text and save
+  `-replace` for actual patterns.
+
+## Pester
+
+- Import with `Import-Module Pester -MinimumVersion 5.0` — Windows
+  bundles v3.4.0 alongside the installed v6; if v3 loads first, every
+  `Should` fails with syntax errors that look nothing like a version
+  problem.
+- Pester 6 rejects a top-level `BeforeEach` ("Each test setup is not
+  supported in root") — it goes inside `Describe`.
+- Don't shadow automatic variables in test state: `$script:Home`
+  collides with the read-only `$HOME`. Pick another name.
+- Mirror the script's strict mode in `BeforeEach` — see Strict mode
+  above.
 
 ## Anti-patterns
 
 - Aliases in scripts (`ls`, `%`, `?`, `cat`).
 - `try`/`catch` without `-ErrorAction Stop` — see above.
+- Unparenthesized simple-function calls in a boolean expression —
+  `Test-X $a -or Test-X $b` binds `-or` and everything after it as
+  positional args to the first call, and the guard fails open. Wrap
+  each call: `(Test-X $a) -or (Test-X $b)`.
 - `Write-Host` for data. It writes to the host, not the pipeline; use
   `Write-Output` for values and reserve `Write-Host` for the deliberate
   human-facing status lines described above.
