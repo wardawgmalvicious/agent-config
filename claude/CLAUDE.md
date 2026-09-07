@@ -282,6 +282,31 @@ they need `-Force` to overwrite, because Claude Code rewrites the live
 `settings.json` at runtime. Edit the repo versions and re-run
 `scripts/link-claude.ps1 -Force`.
 
+### User-scope MCP servers are deliberately three
+
+`~/.claude.json` holds top-level `mcpServers`, and that key is reconciled
+against `agent-config/claude/mcp/.mcp.global.template.json` by
+`scripts/link-claude.ps1 -GlobalMcp` — off by default even under
+`-Force`, because that file is Claude Code's runtime state rather than
+payload. User scope is `microsoft-learn-mcp`, `azure-mcp` and
+`dockerhub-mcp`: servers useful in any repo. **Everything Fabric and
+Power BI is project scope** (`<fabric-repo>/.mcp.json` and the like), so
+those tools are absent here and that is not a fault to fix — a
+user-scope server loads its whole tool surface into every session on the
+machine, including ones where it cannot fire. Reach for a project's
+`.mcp.json` rather than promoting a server to user scope.
+
+Two things about that file bite anything that reads it. It needs
+`ConvertFrom-Json -AsHashtable -DateKind String`: project keys differing
+only in drive-letter casing make a plain parse *throw*, and without
+`-DateKind String` every ISO-8601 timestamp is silently rewritten into
+local time on the way back out. And a live session rewrites the file
+from memory on exit, so confirm any change in a fresh session with
+`claude mcp list`. Docker Desktop's MCP Toolkit also re-adds an
+unfiltered `MCP_DOCKER` gateway entry when it connects a client, which
+double-loads every azure and dockerhub tool; re-running the linker
+prunes it.
+
 ## Coding conventions
 
 Per-language conventions live in `~/.claude/rules/coding-<lang>.md`,
