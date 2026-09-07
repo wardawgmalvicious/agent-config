@@ -35,7 +35,7 @@ The Fabric and Power BI servers sit in the project template for exactly this rea
 - **Hosted http endpoints** (`microsoft-learn-mcp`) need no local runtime and no credential.
 - **Docker MCP Gateway servers** (`azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view. When Docker Desktop isn't running these fail to connect, and Claude Code reports it at session start.
 
-Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows username before merging. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
+Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows **profile directory** name before merging — which is not always the account name, see [`<USER>` placeholder](#user-placeholder-global-template) below. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
 
 > **`github-mcp` is not here.** It is in the project template instead, because on a machine with more than one GitHub account the token *is* workload-bound — see [GitHub and multiple accounts](#github-and-multiple-accounts) below.
 
@@ -235,21 +235,23 @@ JSON files don't support comments, so substitution instructions live here.
 
 ### `<USER>` placeholder (global template)
 
-[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the two Docker MCP Gateway servers (`azure-mcp`, `dockerhub-mcp`). Replace each occurrence with your **Windows profile name** before merging the template into `~/.claude.json`.
+[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the two Docker MCP Gateway servers (`azure-mcp`, `dockerhub-mcp`). Replace each occurrence before merging the template into `~/.claude.json`.
 
-To see the value:
+**It is the profile *directory* name, not the account name, and this file used to say otherwise.** The two are the same on most machines and differ whenever a Windows account was renamed after its profile folder was created — which is the case here. The placeholder sits inside a path, so reading `$env:USERNAME` builds `C:\Users\<account>\AppData\Local`, a directory that does not exist. Nothing reports that: the gateway starts, fails to resolve Docker Desktop's per-user state, and surfaces later as a server that will not connect.
+
+Take it from the profile path instead:
 
 ```powershell
-# PowerShell
-$env:USERNAME
+# PowerShell — the directory, not the account
+Split-Path -Leaf $HOME        # or: Split-Path -Leaf $env:USERPROFILE
 ```
 
 ```bash
 # Git Bash
-echo "$USER"
+basename "$USERPROFILE"
 ```
 
-Example: if `$env:USERNAME` is `<USER>`, then `C:\\Users\\<USER>\\AppData\\Local` becomes `C:\\Users\\<USER>\\AppData\\Local`.
+So `C:\\Users\\<USER>\\AppData\\Local` becomes whatever `$env:LOCALAPPDATA` already reads as. **Check them against each other** — if `$env:LOCALAPPDATA` is not `$HOME\AppData\Local`, AppData has been redirected and the whole `env` block needs editing by hand rather than substituting.
 
 The entire `env` block (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) is **Windows-specific** — it tells the gateway process where to find Docker Desktop's per-user state on Windows. On Linux / macOS, Docker Desktop resolves these from the OS, so omit the `env` block entirely. The `cmd /c npx ...` wrapper in the project template is likewise Windows-specific and should be replaced with a direct `npx` invocation elsewhere.
 
