@@ -16,9 +16,9 @@ and cite the API answering `405 Rebase merges are not allowed` on PR #6.
 
 That was true of the repo that existed until 2026-09-08. It is not true
 now. The repo was deleted and recreated that day (to purge a profile
-name from history — see
-[leak-remediation-correction.md](leak-remediation-correction.md) for
-that story), and **a recreate resets every merge setting to GitHub's
+name from history — the header comment in
+`claude/hooks/identity-guard.sh` carries why a rewrite alone was not
+enough), and **a recreate resets every merge setting to GitHub's
 default**. All three merge types are enabled again.
 
 This is a live trap rather than a dead one: it fires whenever a branch
