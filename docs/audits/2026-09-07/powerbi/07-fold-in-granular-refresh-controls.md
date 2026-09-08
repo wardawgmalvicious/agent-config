@@ -103,3 +103,80 @@ is a fold-in rather than a new skill is recorded in `00-audit-report.md`
 under New-skill candidates — that judgment is settled and is not
 re-opened by this brief. Only the placement between the two named
 candidates is open.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — escalated (placement decision put to the user)
+- **Session**: fresh
+- **Files changed**: none
+- **Verification**: step 1 ran and **passes with one correction to the brief's
+  own Evidence**; step 2 ran as a baseline; steps 3–4 are not reachable until a
+  file is chosen.
+  1. Upstream page fetched via `microsoft-learn-mcp`. The three options are
+     confirmed, but the shipped label for the first is **"Refresh Schema and
+     data"** — capital *S* — where the What's New row this brief quotes writes
+     "Refresh schema and data". This is exactly the release-note-vs-UI drift the
+     Constraint warned about, so use the page's casing when writing. Verbatim:
+
+     > - **Refresh Schema and data** - performs a schema sync first, followed by a data refresh.
+     > - **Sync schema only** – Updates the semantic model to reflect the data source structure (for example, column type changes or new columns).
+     > - **Refresh data only** – Loads fresh data while preserving the current schema in your semantic model.
+
+     Two further facts the What's New row does not carry, both worth having
+     before the placement call is made:
+     - The expandable **Refresh** button appears in **both the Home ribbon and
+       the Data pane** — not one location.
+     - Table-level refresh is per-table *and* per-kind: *"By selecting an
+       individual table, you can also choose whether to refresh its schema,
+       data, or both."*
+     - The page motivates the split with a **Direct Lake** scenario: the
+       underlying Lakehouse table gains a column, and you may want the latest
+       data without pulling the new column into the model.
+  2. `grep -rniE "sync schema|refresh data only|refresh schema and data" skills/`
+     returns nothing, so the coverage gap the brief describes still holds and
+     no file matches yet. Re-run after the addition lands; exactly one file
+     should match.
+- **The open question, and why it was not answered here**: the Kind gates this
+  brief on a placement decision and says the decision is the user's. Per
+  `/drift-update` § 3, a decision brief is escalated and never executed, so no
+  file was chosen and nothing was written. The question put to the user is the
+  one the brief frames: is this **a trap to avoid** (Option A, one row in
+  `fabric-gotchas`) or **context for interpreting model state** (Option B, a
+  short addition to `fabric-semantic-model-audit`)?
+
+  The drill surfaced one input the audit did not have: the upstream page frames
+  the whole feature around a **Direct Lake** schema-drift scenario. That is
+  state-interpretation shaped rather than trap shaped, so it is evidence for
+  Option B — but it is offered as evidence, not as the decision.
+- **Deferred**: the addition itself. Whichever option the user picks, the work
+  is a separate, deliberately started task and is not folded into this run.
+- **Deviations**: none. The Constraint was observed — the page was drilled
+  before anything was written, `fabric-tmdl-api` was left out of scope, and
+  REST refresh semantics were not examined.
+
+### Decision — 2026-09-08
+
+**Declined. Neither candidate; the fold-in is dropped.**
+
+Asked at the `/drift-update` checkpoint as the Kind requires, and answered by
+the user: neither Option A (`fabric-gotchas`) nor Option B
+(`fabric-semantic-model-audit`). No file is changed and none will be.
+
+The reasoning behind the option, recorded so it does not have to be
+reconstructed: this is Power BI **Service portal UI** behaviour, and this
+repo's skills are organised around file formats, TMDL and REST. The audit had
+already ruled it out as a new-skill candidate on exactly that ground
+(`00-audit-report.md`, New-skill candidates); declining the fold-in extends the
+same judgement to the two existing-file options.
+
+**This brief is spent — it should not be re-raised.** A later `powerbi` drift
+audit that re-encounters the granular refresh rows should treat them as a
+recorded no-op rather than an uncovered gap, and cite this decision. The
+drilled evidence above stays on disk in case that judgement is ever revisited:
+the three shipped option labels (note the capital *S* in **Refresh Schema and
+data**), the Home-ribbon-and-Data-pane locations, per-table schema/data/both
+granularity, and the Direct Lake motivation.
+
+Verification step 2 now has a fixed expected result: `grep -rniE "sync
+schema|refresh data only|refresh schema and data" skills/` should return
+**nothing**, permanently, rather than matching exactly one file.
