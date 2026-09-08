@@ -119,3 +119,43 @@ an edit, explicitly on the grounds that the interaction was plausible but
 unverified — the connection to the existing modal-dialog warning in the
 skill's own error table is what made it worth raising at all, and is also
 the reason it stops short of a recommendation.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — escalated (investigation could not be started)
+- **Session**: fresh
+- **Files changed**: none
+- **Verification**: step 1 partially satisfied — the Desktop build installed on
+  this machine is recorded below, which the brief asked for and which was
+  "not recorded anywhere yet". Steps 2 and 3 were not reachable.
+- **Why the investigation could not run**: both preconditions are absent.
+  - **No Power BI Desktop is running.** `tasklist /FI "IMAGENAME eq
+    PBIDesktop.exe"` returns *"No tasks are running which match the specified
+    criteria."* Desktop **is** installed — Microsoft Store build
+    **2.157.1354.0** (`Microsoft.MicrosoftPowerBIDesktop_2.157.1354.0_x64`) —
+    but starting it and opening a PBIP is a GUI act.
+  - **The reload bridge CLI is not installed.** `powerbi-desktop` is not on
+    `PATH` in either shell, so `powerbi-desktop status` — step 1 of *What to
+    investigate* — cannot be issued at all, and `bridgeStatus` cannot be
+    observed. `pbir` 0.9.7 is installed but is not this tool: it exposes
+    `open` (launch a report in Desktop) and no `reload` or `status` bridge
+    command.
+
+  Every one of investigation steps 2–5 requires an external write to be made
+  against a live, bridged Desktop instance and the resulting dialog observed.
+  None of that is reachable from an agent shell.
+- **Deliberately NOT recorded as a negative result.** Verification step 3 asks
+  for a note in this directory when no edit lands, so the next audit does not
+  re-raise the question. That instruction is for a *negative finding* — an
+  investigation that ran and found no interaction. Writing one here would be
+  false: the investigation did not run, and a note saying "no interaction" would
+  suppress a real finding on the next audit. The open question therefore stays
+  open, and this stamp is the record of why.
+- **Deferred — the whole brief.** It needs a human at a GUI: Power BI Desktop
+  running with a PBIP open, and the `powerbi-desktop` bridge CLI installed.
+  When that session happens, run steps 1–5 as written and follow the brief's
+  own decision tree; record the build number then, since 2.157.1354.0 may not
+  be what the investigation ultimately runs against.
+- **Deviations**: none. The Constraint — *do not edit `powerbi-desktop.md` on
+  the strength of the What's New row alone* — was observed; no speculative
+  caveat was written.
