@@ -263,6 +263,35 @@ Removes filter context for global min/max:
 }
 ```
 
+#### Custom icon from a URL
+
+The block above is the **Rules** format style, driving a built-in icon set. The
+other style, **Field value**, points at a column of image URLs and renders those
+instead of a built-in icon — the way to get an arbitrary custom icon into a
+table or matrix cell.
+
+- The URL may be an **anonymously accessible web URL**, or a **OneLake file
+  URL**: `https://onelake.dfs.fabric.microsoft.com/{workspace-id}/{item-id}/Files/{path-to-image}`
+- Icons must be **BMP, JPG, JPEG, GIF, PNG or SVG**.
+- Desktop path: field dropdown → **Conditional formatting** → **Icons** →
+  **Format style** = **Field value**. *Icon layout* still controls left / right
+  of the value or icon-only.
+
+Two limits ride along when the URL is a OneLake one — Power BI loads it under
+each viewer's Entra identity, so:
+
+- Viewers need **Read** on the lakehouse item *and* OneLake **Read** on the
+  folder holding the image. Access to the report does not grant it.
+- **Publish to web and anonymous embed cannot use OneLake URLs at all** — they
+  have no identity to authenticate with. Use an anonymously accessible web URL
+  for reports headed there. See `powerbi-report-authoring/references/image.md`
+  for the full OneLake image-source model.
+
+> The `visual.json` encoding for the **Field value** icon source is deliberately
+> **not** given here — it was not observed against a real PBIP export, and this
+> skill's property paths are only worth having when they are verified. The block
+> above is the Rules style and does not carry over unchanged.
+
 ### Gotchas
 
 | Issue | Cause | Fix |
@@ -278,6 +307,7 @@ Removes filter context for global min/max:
 | `title` / `legend` selector ignored | These objects don't accept selectors | Apply globally (no selector) |
 | Gradient midpoint shifts unexpectedly | Data-driven bounds when fixed needed | Switch to explicit bounds form with `value` on min/mid/max |
 | `AllRolesRef` scope wrong place | Nested incorrectly | `ScopedEval.Scope: [{"AllRolesRef": {}}]` at the outer wrapper |
+| URL-sourced custom icons vanish in Publish to web | The column holds OneLake URLs, which cannot authenticate anonymously | Use anonymously accessible web URLs for any report published to web or anonymously embedded |
 
 ### Reference
 

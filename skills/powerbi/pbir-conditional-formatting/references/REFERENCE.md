@@ -8,7 +8,7 @@ The 3 highest-leverage entry points (CF in tables/matrices, CF for fill colors v
 
 ## Conditional formatting — user concept
 
-- [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting) — full reference for table/matrix CF: backgrounds, font color, data bars, icons, web URLs. The Desktop UX corresponds to the `dataBars` / `icon` blocks the parent skill documents.
+- [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting) — full reference for table/matrix CF: backgrounds, font color, data bars, icons (built-in sets *and* custom icons from a web or OneLake URL), web URLs. The Desktop UX corresponds to the `dataBars` / `icon` blocks the parent skill documents.
 - [Conditional formatting for chart visuals](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-format-visual-titles) — color-by-rule / color-by-field / gradient color scales for chart elements. Maps to the `dataPoint` two-entry-array + `dataViewWildcard.matchingOption: 1` pattern.
 - [Tips and tricks for color formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/service-tips-and-tricks-for-color-formatting) — color expressions, theme-driven colors, dynamic colors via measures.
 

@@ -137,3 +137,53 @@ as a distinct scenario with its own upstream subsection, and treated the
 owning skill as a separate artifact. Both readings are defensible; this
 brief exists so the skill that actually owns the `icon` block is not
 missed. Nothing here contradicts brief `03`.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied (capability documented, JSON encoding
+  omitted per Constraint)
+- **Session**: fresh
+- **Files changed**: `skills/powerbi/pbir-conditional-formatting/SKILL.md`,
+  `skills/powerbi/pbir-conditional-formatting/references/REFERENCE.md`
+- **Verification**: steps 1 and 4 ran and pass; 2 and 3 are not applicable
+  because no JSON was written; step 5 runs once at the end of the brief set.
+  1. `grep -rniE "custom icon|icon.{0,12}url|onelake"
+     skills/powerbi/pbir-conditional-formatting` — 10 hits where there were
+     none, across the new `#### Custom icon from a URL` subsection, a new
+     gotcha row, and the updated `references/REFERENCE.md` index line.
+  4. Lint passes; nothing was summarised into `description`, so the 1024-char
+     cap was not approached.
+- **The "addition or expansion?" question the brief posed — answered: an
+  addition.** `references/REFERENCE.md:11` lists "web URLs" among the upstream
+  page's contents, and the drill shows that refers to the page's **Format as web
+  URLs** section, which makes cell values into hyperlinks. That is a different
+  feature from a URL-sourced *icon*, and the skill body documented neither. The
+  `icon` block at `SKILL.md:256` encodes only the **Rules** style driving a
+  built-in set (`value` → `Conditional.Cases` → `'SymbolMedium'`), so nothing
+  was half-present to expand.
+- **Constraint honoured — no invented property names.** The encoding for the
+  **Field value** icon source was not observed, for the same reason brief `04`
+  is blocked: it needs a Desktop PBIP round-trip, and Desktop (Store build
+  **2.157.1354.0**) cannot be driven from an agent shell. `pbir` 0.9.7 was not
+  a substitute — its bundled schema predates this release, as recorded in
+  `04`'s log. So the brief's explicit fallback was taken: *"document the
+  capability and its UI path and omit the JSON."* The new subsection says so in
+  as many words, and warns that the Rules-style block above does not carry over
+  unchanged — an agent that assumed it did would produce exactly the silent
+  formatting drop the Constraint is guarding against.
+- **Both OneLake limits carried**, as the Constraint requires: the per-viewer
+  permission requirement (Read on the lakehouse item *and* OneLake Read on the
+  folder) and the Publish-to-web / anonymous-embed exclusion, the latter also
+  as a gotcha-table row since that is where a trap of that shape is looked for.
+- **Sequencing note — not honoured, and could not be.** The note asks that this
+  run share brief `04`'s Desktop round-trip. `04` is blocked and no round-trip
+  happened, so there was nothing to share. The prose half of this brief does not
+  depend on it and was completed; the JSON half joins `04` in waiting for the
+  same Desktop session, and should be done in that one sitting as the note
+  intends.
+- **Deferred**: the `visual.json` encoding for the Field-value icon source; and
+  behavioural confirmation, since an edited `SKILL.md` does not reliably reload
+  mid-session on Windows.
+- **Deviations**: the upstream subsection was drilled directly rather than taken
+  from the brief's quotes. It supplied the format list (BMP, JPG, JPEG, GIF,
+  PNG, SVG) and the exact UI path, neither of which the brief carried.
