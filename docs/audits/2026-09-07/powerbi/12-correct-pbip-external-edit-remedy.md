@@ -138,3 +138,46 @@ sits in a troubleshooting table. Neither mapping is wrong and the two
 targets are both real — which is why this brief exists rather than being
 folded into `06`. The `SKILL.md:213` line is named in no other brief in
 this directory.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied
+- **Session**: fresh
+- **Files changed**: `skills/powerbi/pbip-project-structure/SKILL.md`
+- **Verification**: steps 1–4 ran and pass; step 5 runs once at the end of the
+  brief set.
+  1. `grep -rn "Close and reopen Desktop" skills/powerbi` — **no hits**. The
+     obsolete remedy is gone from the whole tree, not just the target file.
+  2. The replacement landed at `SKILL.md:215` (the row moved down two lines
+     because of the preview line noted below).
+  3. Preview framing present at `SKILL.md:135`.
+  4. Lint passes.
+- **Item 1** — the symptom row was kept rather than deleted, as the brief
+  directs. Cause becomes "apply-changes prompt dismissed or not shown", and the
+  fix leads with taking the prompt while keeping reopening the project as the
+  fallback for when no prompt appears. A reader whose prompt never arrives still
+  lands somewhere.
+- **Item 2** — the optional VS Code addition was made; the existing cell's
+  content was preserved and the built-in entry point appended to it.
+- **Constraints**: no external-edit caution was deleted — the edit replaces one
+  table cell and appends to another, removing nothing. PBIP is not described as
+  GA anywhere.
+- **Deferred**: no behavioural confirmation — an edited `SKILL.md` does not
+  reliably reload mid-session on Windows.
+- **Deviations**: one, and it exists because verification step 3 could not
+  otherwise be satisfied. That step confirms *"the preview framing survived"* —
+  but a grep before any edit showed this skill contained **no** mention of
+  preview at all, anywhere in the file. So there was nothing to survive, the
+  check was vacuous, and the Constraint *"do not describe PBIP as GA"* was only
+  true by omission — a skill about PBIP project structure that never says PBIP
+  is preview invites exactly the GA inference the Constraint guards against. One
+  sentence was therefore added above the PBIX-vs-PBIP table, taken verbatim in
+  substance from this brief's own Evidence (preview status plus the *File >
+  Options and settings > Options > Preview features > Power BI Project (.pbip)
+  save option* path). It is a third edit where the brief enumerates two; nothing
+  beyond the brief's evidence was asserted, and step 3 is now a real check.
+- **Sequencing**: executed independently of brief `06`, as the note permits.
+  `06` could not be started this session (no running Desktop, no
+  `powerbi-desktop` bridge CLI), so its potential enhancement — a caveat about
+  the prompt being modal — is not reflected here. The note is explicit that this
+  is an enhancement rather than a precondition, so nothing here is blocked on it.

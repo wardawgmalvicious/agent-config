@@ -132,11 +132,13 @@ For Fabric REST API deployments, use the id form: `"connectionString": "semantic
 
 ### PBIX vs PBIP
 
+PBIP is still **preview**. Saving as PBIP requires *File > Options and settings > Options > Preview features > **Power BI Project (.pbip) save option***.
+
 | Aspect | PBIX | PBIP |
 |---|---|---|
 | Format | Single binary ZIP | Folder of text files |
 | Source control | Not diff-friendly | Git-ready |
-| External editing | Not supported | VS Code, pbir CLI, scripts |
+| External editing | Not supported | VS Code (Desktop has a built-in entry point that opens the project directly), pbir CLI, scripts |
 | Cached data | Embedded | `cache.abf` gitignored |
 | Conversion | File → Save As → PBIP in Desktop | File → Save As → PBIX in Desktop |
 
@@ -210,7 +212,7 @@ Renaming a table, measure, or column requires updates in every location that ref
 |---|---|---|
 | Parse error on open | File saved with UTF-8 BOM | Re-save as UTF-8 without BOM |
 | 260-char path error on Git clone | Deep GUID folder nesting | Shorten root path; rename GUID folders |
-| PBI Desktop ignores external edits | Stale in-memory state | Close and reopen Desktop |
+| PBI Desktop ignores external edits | Apply-changes prompt dismissed or not shown | Desktop **detects** external project-file changes and prompts to apply them with one click — take the prompt. Reopening the project is the fallback only when no prompt appears |
 | Broken visual after table rename | Missed cascade location | Grep for old name across `.json`, `.tmdl`, `.dax` (both DAXQueries folders) |
 | Empty `reportExtensions.json` crashes Desktop | `"entities": []` is invalid | Delete the file instead of leaving empty |
 | Forked project shows as same Fabric item | `logicalId` not regenerated | New GUID per `.platform` on fork |
