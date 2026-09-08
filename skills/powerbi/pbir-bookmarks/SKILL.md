@@ -101,6 +101,22 @@ Order in `items[]` = order in the Bookmarks pane.
 
 Hiding / showing a visual via bookmark is driven by `display.mode`, NOT by changing the visual's root `isHidden`.
 
+> **`display.mode: "hidden"` does not hide a visual from Copilot.** In the Power
+> BI **service**, Copilot Summary and the Copilot Narrative visual read visuals
+> that are hidden by default and revealed by a **display-only** report bookmark
+> — the `options.suppressData: true` shape below. Copilot reads them in place,
+> so bookmark state is unchanged and RLS/OLS stay enforced. This is a
+> *disclosure-surface* change rather than a permissions bypass: content an
+> author may have assumed was excluded from generated narrative text is not.
+>
+> Two upstream qualifiers, both encodable here: the bookmark must be
+> **display-only** (no data/filter state), and it must be **reachable via a
+> bookmark button or navigator** — "bookmarks without a user-facing affordance
+> are excluded", so an unwired bookmark is not read. Personal bookmarks and
+> visuals on hidden pages are excluded too. Source:
+> [Summarize a report with Copilot](https://learn.microsoft.com/power-bi/explore-reports/copilot-pane-summarize-content),
+> drilled 2026-09-08.
+
 ### byExpr Filter Entry
 
 ```json
