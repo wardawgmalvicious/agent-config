@@ -239,16 +239,16 @@ So give each account its own variable and let each repo name the one it needs:
 
 **Deliberately do not define a bare `GITHUB_PAT`.** An undefined variable fails visibly at session start; a default silently authenticates as the wrong account and the mistake surfaces later, attributed to the wrong identity. This mirrors the `user.useConfigOnly = true` reasoning in a two-identity `.gitconfig`: on a machine with two identities, a wrong default is worse than no default.
 
-Set them as Windows **user** environment variables, without putting the token into shell history:
+They are Windows **user** environment variables, and `machine-config` provisions them — the variable is machine state, so that repo owns the name and the setter while this file keeps the rationale above. Don't restate either side in the other.
 
 ```powershell
-$t = Read-Host 'Personal GitHub PAT' -AsSecureString
-[Environment]::SetEnvironmentVariable('GITHUB_PAT_PERSONAL',
-    [Runtime.InteropServices.Marshal]::PtrToStringAuto(
-        [Runtime.InteropServices.Marshal]::SecureStringToBSTR($t)), 'User')
+# from C:\Repos\Personal\machine-config
+.\scripts\github-pat-bootstrap.ps1
 ```
 
-Then **fully restart VS Code** — processes inherit the environment when they spawn, so a reload window is not enough.
+It prompts as a `SecureString` and writes straight to User scope, so the token never reaches shell history or a transcript; `-MigrateFrom <name>` copies one already set under a different name, and `-RemoveGeneric` clears the account-agnostic ones. The names themselves are declared in that repo's `config.psd1` (`GitHubPatVar`, `WorkGitHubPatVar`), and its `setup.ps1` reports any that do not resolve.
+
+Then **fully restart VS Code** — processes inherit the environment when they spawn, so a reload window is not enough. This is the failure mode to know, because it reads as an auth problem rather than an environment one: with the variable absent from the *running* process, `${...}` never expands, the literal text goes out as the bearer token, and the server answers `400 ... Authorization header is badly formatted`. Hit on 2026-09-07, where the variable was correct in the registry the whole time.
 
 Prefer a real PAT (classic or fine-grained) over `gh auth token`: the `gho_` token the `gh` CLI holds is rotated, so a value copied out of it goes stale. Scope it to what the MCP tools actually need — `repo` and `read:org` cover issues, PRs, and code search.
 
