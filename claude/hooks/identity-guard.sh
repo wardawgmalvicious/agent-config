@@ -17,6 +17,16 @@
 # immediate remedy is delete-and-recreate. Hence a gate on push, not only
 # on commit.
 #
+# If a rewrite is part of that remedy, its commit-map is a trap. git
+# filter-repo leaves .git/filter-repo/commit-map to translate old SHAs to
+# new, but a repo rewritten before carries two lineages, so each logical
+# commit appears twice and `grep '^<sha>' | head -1` returns whichever
+# sorted first. On 2026-09-08 six of seven translated SHAs landed on a
+# stale stash lineage: they resolved locally under git cat-file and git
+# log, then answered 422 on GitHub, being on no published ref. Resolving
+# is not the test — assert `git merge-base --is-ancestor <new> main`, or
+# delete stale refs before rewriting so the ambiguity cannot arise.
+#
 # Wired on Bash|PowerShell for two events; the script branches on
 # hook_event_name:
 #   PreToolUse  `git commit` — ADDED lines of the staged diff (plus the
