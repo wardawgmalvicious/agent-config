@@ -1,10 +1,9 @@
 # Open briefs — execution order
 
-Three items are open:
+Two items are open:
 
 | Item | State |
 | --- | --- |
-| [stale-rebase-merge-claim.md](stale-rebase-merge-claim.md) | **Open 2026-09-08** — do this one first; it is the cheapest and the only one correcting a statement that is *live wrong* during ordinary work. Root `CLAUDE.md` and `land/SKILL.md` both say rebase-merge is disabled here and cite a `405`. True of the repo deleted on 2026-09-08; a recreate resets merge settings to GitHub's defaults and all three are enabled now. Net shrink — root `CLAUDE.md` loses the clause outright, since fast-forward never depended on it. Re-measure with `gh api ... --jq .allow_rebase_merge` first: a `false` means someone re-disabled it and the brief closes as no-longer-applicable. |
 | [drift-fetch-subagent.md](drift-fetch-subagent.md) | **Open 2026-09-07** — brief filled, not drafted. Blocked on its own validation gate, not on this queue: the brief specifies an A/B against an inline `/drift-audit --sources powerbi 2026-08-01` run before the agent is drafted, because the open risk is whether a subagent returns table cells and code verbatim enough for Phase 3 to drill. Run the baseline first; a null result on a `table` source is a legitimate outcome that narrows the agent to `claude-code` and `vscode-agent` rather than killing it. |
 | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Deferred 2026-09-03** — not declined. Step 0 answered *no*: no `*.Plan` item exists in any repo here, and the payload's only mention of Plan pushes work away from it. Waiting on a Plan item appearing, not on anything in this queue. Its carve-out debt was split off and paid separately, so what remains is the skill itself. |
 

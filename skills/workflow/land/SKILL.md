@@ -151,11 +151,13 @@ Why not each alternative:
   whole point of separate commits is that each is independently
   revertible and citable. Asked for anyway? It is overridable, but not
   silently — see [Constraints](#constraints).
-- **Rebase merge** — rewrites SHAs, and may be disabled outright. On
-  `agent-config` the API answers `405 Rebase merges are not allowed`
-  (recorded in root `CLAUDE.md`, verified there on PR #6). Merge
-  settings and branch protection are not readable unauthenticated, so a
-  rejection surfaces at merge time and not before.
+- **Rebase merge** — rewrites SHAs, and may be disabled outright. Read
+  the setting rather than assuming it: `gh api repos/<owner>/<repo>
+  --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge}'`.
+  Unauthenticated, those fields come back `null` — so a check without a
+  token proves nothing and a rejection surfaces at merge time. A repo's
+  answer is not durable either: a delete-and-recreate resets all three
+  to GitHub's defaults.
 
 **`--ff-only` fails loudly rather than inventing a merge commit.** If it
 fails, `main` has moved: stop, reconcile deliberately, and never reach

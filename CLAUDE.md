@@ -345,10 +345,9 @@ commits agree without a second taxonomy. `<slug>` names the subject:
 of filenames because positions churn and links break; the same argument
 applies here.
 
-**Integrate by fast-forward.** Rebase-merge is **disabled on this
-repo** — the API answers `405 Rebase merges are not allowed` — and
-squash would collapse the logical split `/commit` just made. So land a
-branch locally rather than through the merge button:
+**Integrate by fast-forward.** Squash would collapse the logical split
+`/commit` just made, and rebase-merge rewrites the SHAs it just wrote.
+So land a branch locally rather than through the merge button:
 
 ```bash
 git switch main && git merge --ff-only <branch> && git push origin main
