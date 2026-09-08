@@ -28,17 +28,12 @@ hooks for spawn economy — see `~/.claude/hooks/identity-guard.sh`.
 There is no system Python — but the names still resolve, so the failure
 does not look like one:
 
-- `python` / `python3` are the Windows Store execution-alias stubs in
-  `%LOCALAPPDATA%\Microsoft\WindowsApps`. **With** arguments they print
-  `Python was not found; run without arguments to install from the
-  Microsoft Store` and exit **49** — not "command not found". With *no*
-  arguments they open the Store.
-- `pip` is genuinely absent.
-- `C:\Python314\` and `C:\Python314\Scripts\` are on the machine PATH but
-  that directory no longer exists. Dead entries; ignore them.
-- `python3.13` **does** work — it is uv's shim for the primary
-  interpreter at `~/.local/bin/python3.13.exe`. Fine for a throwaway
-  one-liner; anything with a dependency goes through `uv run`.
+- `python` / `python3` are Windows Store alias stubs — with arguments
+  they fail with exit **49**, not "command not found". `pip` is absent,
+  and the `C:\Python314\` PATH entries are dead.
+- `python3.13` **does** work — uv's shim for the primary interpreter.
+  Fine for a throwaway one-liner; anything with a dependency goes
+  through `uv run`.
 
 Always go through `uv`:
 
@@ -100,42 +95,25 @@ verified 2026-09-02.
 
 ### A leading `/` argument becomes a Git install path
 
-MSYS2 rewrites any argument starting with a slash into a Windows path,
-so `claude -p "/code-review"` from the Bash tool arrives as
-`C:/Program Files/Git/code-review`. Quoting does not stop it, and
-neither does trailing text: `"/my-skill do the thing"` becomes
-`C:/Program Files/Git/my-skill do the thing`.
-
-**It fails silently and looks like success.** No slash command is
-parsed, so nothing is expanded — the model just reads a message that
-happens to name a skill and invokes it through the Skill tool. The
-answer is right and the skill did run, so a probe written to test
-*slash* invocation has actually tested model-invocation. That matters
-because a skill's `model:` pin is honoured on one path and dropped on
-the other.
-
-Run such a probe from PowerShell, or prefix the Bash one with
-`MSYS2_ARG_CONV_EXCL='*'`. Both yield the real thing: a
-`<command-name>` record, no `Skill` tool_use, the body inlined.
-Measured 2026-09-02 on two skills.
+MSYS2 rewrites any Bash-tool argument starting with a slash into a
+Windows path, so `claude -p "/code-review"` arrives as `C:/Program
+Files/Git/code-review`. Quoting does not stop it and neither does
+trailing text, and **it fails silently** — nothing reports the mangling.
+Prefix with `MSYS2_ARG_CONV_EXCL='*'`, or run from PowerShell. (Probing
+a skill's *slash* path has further traps; `test-skill` covers them.)
 
 ### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open
-handle beneath it; MSYS2 maps that to `EACCES`, so it surfaces as
-`mv: cannot move 'x' to 'y': Permission denied`. An editor, a file
-watcher, Defender or the search indexer is enough, and the hold is
-usually brief.
+handle beneath it — an editor, a file watcher, Defender or the indexer
+is enough — and MSYS2 surfaces that as `mv: cannot move 'x' to 'y':
+Permission denied`. The hold is usually brief.
 
-**Retry — don't switch shells, and don't touch settings.** PowerShell
-`Move-Item` fails the same way ("The process cannot access the file
-because it is being used by another process"); it only appears to fix
-things when the retry happens to land after the handle closes. A Claude
-Code permission or sandbox denial refuses *before* the program runs, so
-it never arrives as the program's own error text — nothing in
-`settings.json` or `settings.local.json` is involved. Measured
-2026-09-02 by holding a `FileStream` on a child file: Git Bash `mv` and
-`git mv` both failed, both succeeded the instant it closed.
+**Retry.** Don't switch shells: PowerShell `Move-Item` fails the same
+way, and only appears to fix things when the retry lands after the
+handle closes. Don't touch settings either — a Claude Code permission
+or sandbox denial refuses *before* the program runs, so it never
+arrives as the program's own error text.
 
 ### Command-line tooling
 
@@ -164,25 +142,17 @@ shell from PowerShell. (`sh` resolves to nothing at all.) Verified
 
 **No image *generation*, but HTML renders to PNG with no install.** No
 image model is available, so a picture can't be made from a prompt —
-author HTML/SVG and screenshot it headless instead, which covers social
-cards, diagrams and badges. Edge is the renderer, and only its **x86**
-path exists (`C:\Program Files\Microsoft\Edge\` is not there):
-
-    msedge --headless=new --disable-gpu --hide-scrollbars \
-      --window-size=1280,640 --screenshot="C:/abs/out.png" "file:///C:/abs/in.html"
-
-Both paths must be absolute and the source needs the `file:///C:/...`
-triple-slash form. The PNG comes out exactly `--window-size` px and is
-reproducible byte-for-byte. Success prints `N bytes written to file`; a
-`fallback_task_provider.cc ... ERROR` line on stderr is noise, not a
-failure. Verified 2026-09-02.
+author HTML/SVG and screenshot it headless with Edge instead, whose
+**x86** path is the only one present (`C:\Program Files\Microsoft\Edge\`
+is not there). Both paths must be absolute and the source needs the
+`file:///C:/...` triple-slash form. Recipe and failure modes:
+`agent-config/docs/social/README.md`.
 
 PowerShell modules available: `Az`, `MicrosoftPowerBIMgmt`, `SqlServer`,
 `Microsoft.Graph`, `ImportExcel`, `powershell-yaml`, `Pester`,
 `PSScriptAnalyzer`, `Microsoft.PowerShell.SecretManagement` +
-`SecretStore`, `PSFzf`. Windows bundles Pester 3.4.0 *alongside* the
-installed 6.1.0 — import with `-MinimumVersion 5.0` or every `Should`
-fails with syntax errors that look nothing like a version problem.
+`SecretStore`, `PSFzf`. Pester has a version trap that reads as a syntax
+error — see `~/.claude/rules/coding-powershell.md` before writing tests.
 
 `az account clear` runs in interactive shells only: both profiles skip it
 when `CLAUDECODE` is set, so an existing `az login` survives across tool
@@ -203,19 +173,14 @@ touching the global config. `core.autocrlf` is `false` globally on
 purpose; line-ending policy is per repo via a committed `.gitattributes`.
 
 **The GitHub API actor is a third identity, bound separately from both.**
-`gh` keeps one keyring entry per account it has logged into, with one
-*active*, and the `github-mcp` server carries its own token (project
-scope, in a repo's `.mcp.json`), so the two can resolve to **different
-GitHub accounts**. A PR or merge issued under the wrong one is
-attributed to an account with nothing to do with the `includeIf` author
-on the commits, and nothing warns. Since 2026-09-04 the shell profiles
-**folder-scope `gh`** the way git is: the wrapper reads the repo's
-`user.name`, and when that is a logged-in account it runs `gh` under a
-per-call `GH_TOKEN` for it. So `gh auth status` reports the keyring's
-active account, **not** the one `gh` will act as here — probe with
-`gh api user -q .login`, compare it with the MCP `get_me` where that
-server is loaded, and use whichever matches the repo. A script or hook
-that skips the profile gets the active account.
+`gh` and the project-scope `github-mcp` server carry separate tokens and
+can resolve to **different GitHub accounts**. A PR or merge issued under
+the wrong one is attributed to an account with nothing to do with the
+`includeIf` author on the commits, and nothing warns. Since 2026-09-04
+the shell profiles **folder-scope `gh`** the way git is, so `gh auth
+status` reports the keyring's active account, **not** the one `gh` will
+act as here — probe with `gh api user -q .login` and compare against the
+repo before acting. The full procedure is in the `land` skill.
 
 **Identity leaks through file content too, and the guard is a denylist.**
 `useConfigOnly` protects the author field only. An **organization's**
@@ -253,34 +218,15 @@ message (measured 2026-09-04).
 
 ## Agent config source
 
-`~/.claude/agents`, `hooks`, `mcp`, and `rules` are **copies** taken
-from `C:\Repos\Personal\agent-config` by `scripts/link-claude.ps1`, so
-editing the repo does **not** change them until that script runs again.
-They were junctions until 2026-09-02; the change is deliberate, because
-none of the four is hot-reloaded — a fresh session was needed either way
-— so immediacy bought nothing while making every uncommitted save, and
-every `git switch`/`stash`/`rebase`, live for every session on the
-machine. Hooks were the sharp end: they execute.
-
-The repo side is **not** flat: `agents`, `hooks`, `mcp`, and `rules`
-live under `agent-config/claude/`, because they are written in Claude
-Code's own formats. Only `skills` sits at the repo root, in the
-tool-neutral Agent Skills format, grouped by domain (`fabric/`,
-`powerbi/`, `workflow/`). Claude Code discovers a skill one level down
-only, so `~/.claude/skills` is a real directory holding one junction per
-skill rather than a single junction; `-SkillGroups` chooses which groups
-deploy, and `-ClaudeDir` can target a project instead of home.
-
-**`skills` is still junctioned, and is now the only thing that is** — it
-is the one payload Claude Code watches, so edit-to-live is the authoring
-loop rather than a hazard. A skill edit is live immediately; an agent,
-hook, rule or MCP-template edit is not live until the script runs.
-
-`~/.claude/CLAUDE.md` and `settings.json` are plain copies too, of
-`claude/CLAUDE.md` and `claude/settings.json`, but on stricter terms:
-they need `-Force` to overwrite, because Claude Code rewrites the live
-`settings.json` at runtime. Edit the repo versions and re-run
-`scripts/link-claude.ps1 -Force`.
+`~/.claude` is deployed from `C:\Repos\Personal\agent-config` by
+`scripts/link-claude.ps1`. **`skills` is junctioned, and is the only
+thing that is** — a `SKILL.md` edit is live in every session on this
+machine the moment it hits disk. `agents`, `hooks`, `mcp` and `rules`
+are **copies**; `CLAUDE.md` and `settings.json` are copies needing
+`-Force`. An edit to any of those is **not live until the script runs
+again**, and nothing says so. Repo layout, deployment mechanics and the
+reasoning behind them live in that repo's own `CLAUDE.md`, which loads
+in sessions there.
 
 ### User-scope MCP servers are deliberately three
 
@@ -296,16 +242,10 @@ user-scope server loads its whole tool surface into every session on the
 machine, including ones where it cannot fire. Reach for a project's
 `.mcp.json` rather than promoting a server to user scope.
 
-Two things about that file bite anything that reads it. It needs
-`ConvertFrom-Json -AsHashtable -DateKind String`: project keys differing
-only in drive-letter casing make a plain parse *throw*, and without
-`-DateKind String` every ISO-8601 timestamp is silently rewritten into
-local time on the way back out. And a live session rewrites the file
-from memory on exit, so confirm any change in a fresh session with
-`claude mcp list`. Docker Desktop's MCP Toolkit also re-adds an
-unfiltered `MCP_DOCKER` gateway entry when it connects a client, which
-double-loads every azure and dockerhub tool; re-running the linker
-prunes it.
+That file has parsing traps that corrupt it silently, and Docker
+Desktop re-adds an unfiltered `MCP_DOCKER` entry that double-loads every
+azure and dockerhub tool. Both are covered in
+`agent-config/claude/mcp/README.md`; read it before editing the file.
 
 ## Coding conventions
 
