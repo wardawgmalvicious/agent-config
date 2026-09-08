@@ -19,19 +19,23 @@ Internal documentation for the repo's authoring workflow.
   The content is tool-neutral, so it serves equally as an `AGENTS.md`
   for a repo whose tooling reads that instead.
 
-Two further directories are gitignored and not part of the public repo:
+- [audits/](audits/) — `/drift-audit` output, one directory per run at
+  `audits/<audit-date>/<source-id>/`, holding the audit report verbatim
+  plus a brief per recommended action. Tracked and kept: each directory
+  is the dated record of what an upstream source looked like that day.
+  See [audits/README.md](audits/README.md) for the lifecycle.
+
+One directory is gitignored and not part of the public repo:
 
 - `project-instructions/` — the author's personal Claude Desktop project
   instructions (easier to edit here and paste into Desktop).
-- `audits/` — generated `/drift-audit` output, one directory per run at
-  `audits/<audit-date>/<source-id>/`, holding the audit report plus a
-  brief per recommended action. Working notes with a short half-life:
-  consumed by a follow-up task, then stale. A run worth keeping gets
-  copied into `handoffs/examples/` rather than un-ignored in place.
 
 `handoffs/` and `audits/` **both hold handoff briefs** — the split
-between them is lifecycle, not kind. A `handoffs/execute/` brief is
-hand-derived, committed when written, and deleted individually once its
-work lands; an `audits/` directory is machine-generated, disposable as a
-whole, and regenerable by re-running the audit. Renamed from
-`handoff-briefs/` and `drift-audit/` on 2026-09-02.
+between them is lifecycle, not kind. A `handoffs/execute/` brief is a
+queue row: hand-derived, committed when written, and deleted
+individually once its work lands, because a spent row invites redoing
+finished work. An `audits/` directory is a ledger entry:
+machine-generated, executed as a whole, and kept in place afterwards,
+because the date is the index and the snapshot outlives the execution.
+Renamed from `handoff-briefs/` and `drift-audit/` on 2026-09-02;
+`audits/` became tracked on 2026-09-07.

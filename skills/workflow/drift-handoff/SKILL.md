@@ -44,7 +44,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 
 **Before writing anything, `Glob` the target directory.** If files already exist there, `Read` them and stop to ask. Two audits of one source on one day are different audits; silently overwriting the first one's briefs destroys the only copy. Offer to suffix the directory rather than overwrite.
 
-Confirm `.gitignore` still carries `/docs/audits/*` before the first write of a session. Without it these working notes land in version control.
+This output is **tracked**, not gitignored — it is a dated ledger, and committing it is what lets a later `/drift-update` run on a different machine. Write accordingly: these files are for a reader who was not in the audit session.
 
 ## 3. Persist the report
 
@@ -104,4 +104,4 @@ Then the deliberate omissions from step 6. Then stop.
 
 Do **not** start the work the briefs describe. That is `/drift-update`'s job — preferably from a fresh session, which is what proves the briefs are readable cold. Doing it here re-merges the two halves the split separated.
 
-Hand off to `/commit` only if something **tracked** changed. `docs/audits/` is gitignored, so a normal run leaves the tree clean and nothing to commit — say so rather than invoking `/commit` against an empty diff. A run worth keeping is copied into `docs/handoffs/examples/` as a tracked example; that copy is a separate, explicit request.
+Then hand off to `/commit`. `docs/audits/` is tracked, so a normal run leaves the whole directory to commit — as one `docs(drift-audit):` commit, before any brief is executed. Commit it even when `/drift-update` will run in the same session: the point of the split is that the briefs stand on their own, and an unexecuted directory in git is what a second machine picks up.

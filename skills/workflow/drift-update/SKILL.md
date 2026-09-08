@@ -225,9 +225,11 @@ Append; never rewrite the brief above it. The brief as written is the record of
 what was decided, and the log is the record of what happened — keeping them
 distinct is what makes the pair auditable.
 
-`docs/audits/` is gitignored, so these stamps are working state, not
-history. They exist to make a re-run resumable, not to document the change —
-the commit message does that.
+`docs/audits/` is tracked, so these stamps are history and not just working
+state: they make a re-run resumable, and they are also the record of what a
+brief actually did. That does not make them the changelog — the commit message
+still documents the change. Stamps are committed alongside the edits they
+describe, so a brief and its outcome land together.
 
 ### 4.6 Checkpoint
 

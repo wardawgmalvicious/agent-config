@@ -22,12 +22,12 @@
 # contain sensitive information.
 /docs/project-instructions/*
 
-# Generated drift-audit output, one directory per run:
-# docs/audits/<audit-date>/<source-id>/. These are working notes
-# with a short half-life — consumed by a follow-up task, then stale.
-# A run worth keeping gets copied into docs/handoffs/examples/
-# as a tracked example rather than un-ignoring anything here.
-/docs/audits/*
+# docs/audits/ is deliberately NOT ignored — see docs/audits/README.md.
+# It carried /docs/audits/* until 2026-09-07 on the rationale that the
+# output was regenerable. That was disproven the same day: the powerbi
+# source 404'd at every endpoint, so the run already on disk could no
+# longer be re-fetched. Audit output is now tracked, which is also what
+# makes the audit -> handoff -> update pipeline portable across machines.
 
 # Runtime prompt/log/memory state.
 /prompts/*

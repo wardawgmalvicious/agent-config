@@ -271,12 +271,14 @@ procedure, not generic helpers:
   update executes them in numbered order and stamps each done.
 - `/commit` — split the working tree into logical commits.
 
-`docs/audits/` is **gitignored generated output** with a short
-half-life: working notes consumed by a follow-up run, then stale. A run
-worth keeping is copied into `docs/handoffs/examples/`, not
-un-ignored in place. Briefs there may quote paths from before a repo
-reorganization — confirm a brief's evidence still exists before acting
-on it.
+`docs/audits/` is a **tracked, dated ledger** — one directory per run,
+committed when written and kept after it is spent. See
+[docs/audits/README.md](docs/audits/README.md) for the lifecycle and
+why it differs from `execute/`. It was gitignored until 2026-09-07 on
+the grounds that audit output is regenerable; the powerbi source 404ing
+at every endpoint that same day disproved it. Briefs there may quote
+paths from before a repo reorganization — confirm a brief's evidence
+still exists before acting on it.
 
 Work that is scoped but not yet done lives in
 `docs/handoffs/execute/`, and

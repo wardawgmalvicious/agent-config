@@ -22,9 +22,10 @@ has them in full if a closed decision ever needs re-reading.
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`
 walks that order. That works there because a
-`docs/audits/<date>/<source-id>/` directory is a **disposable whole**:
-gitignored, executed in one pass, discarded together, and its briefs do
-not cite each other.
+`docs/audits/<date>/<source-id>/` directory is a **fixed whole**: written
+in one pass, executed in one pass, kept together afterwards as a dated
+ledger, and its briefs do not cite each other. Numbers are safe where
+nothing is ever removed.
 
 `execute/` is the opposite on all three counts. Briefs here are committed,
 deleted **individually** as each is spent, and cross-linked by filename —

@@ -44,13 +44,15 @@ the only place the order lives, so it is the file to read before starting a
 session — not this one.
 
 `docs/audits/` holds handoff briefs too — the two directories split by
-lifecycle, not by kind. Briefs there are **not** numbered the way
-`/drift-handoff` numbers its output: a `docs/audits/` directory is a
-generated, disposable whole whose briefs do not cite each other, while
-`execute/` briefs are hand-derived, committed, deleted individually, and
-cross-linked by filename. The filename is the link target, so it stays
-stable and the ordering lives in the queue file. The reasoning is in
-[execute/README.md](execute/README.md).
+lifecycle, not by kind. Both are tracked; what differs is what happens
+when a brief is spent. A `docs/audits/` directory is a generated whole,
+numbered `01-`, `02-`, executed in one pass and then **kept in place**
+as a dated ledger, its briefs not citing each other. `execute/` briefs
+are hand-derived, deleted individually as each is spent, and
+cross-linked by filename — so the filename is the link target, it stays
+stable, and the ordering lives in the queue file. The reasoning is in
+[execute/README.md](execute/README.md) and
+[../audits/README.md](../audits/README.md).
 
 Two conventions there worth knowing before writing a new one. **Briefs on
 the same subject belong in one file** — four were consolidated into two on
@@ -68,11 +70,13 @@ deliberately omits the directory: briefs deleted before 2026-09-02 live
 under this directory's old name, `docs/handoff-briefs/`, and `docs/**/`
 spans both. A retained copy only competes with the artifact it produced.
 
-This is *not* the `docs/audits/` rule, which gitignores its output
-outright. That output is regenerable — re-run the audit and it comes
-back. A brief is hand-derived: the measurements and doc citations in it
-cost a research session, so it is committed when written and deleted
-when spent, rather than never committed at all.
+This is *not* the `docs/audits/` rule, which keeps its briefs where they
+were written. The difference is what the directory is *for*. An
+`execute/` brief is a queue row, and a spent row is a hazard — it
+invites re-execution of work already done. An audit directory is a
+dated snapshot of what upstream looked like on a day, so its value
+survives execution and the date is the index. Deleting from a queue is
+tidying; deleting from a ledger is losing the entry.
 
 The one exception is a brief that is still *referenced* — cited by a
 skill, or worth lifting as design source. That one gets promoted into

@@ -3,9 +3,15 @@ title = "claude-config gitleaks config"
 [extend]
 useDefault = true
 
+# tests/ fixtures intentionally contain fake credential-shaped strings.
+# docs/ is NOT allowlisted: it was, wholesale, but docs/audits/ became
+# tracked on 2026-09-07 and audit reports quote upstream code samples
+# verbatim, so a blanket allowlist would have left the newly-tracked
+# bytes unscanned. Measured the same day — the default ruleset finds
+# zero leaks across docs/, so the entry was carrying nothing. If a doc
+# ever needs an exemption, add that path here rather than the tree.
 [allowlist]
 description = "Allowlisted patterns for claude-config"
 paths = [
-    '''docs/.*''',
     '''tests/.*'''
 ]
