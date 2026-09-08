@@ -3,7 +3,7 @@ name: drift-audit
 description: "Audit registered upstream docs sources for drift since a prior commit SHA or date — detect new GA / preview features, syntax additions, deprecations, and harness or tooling changes that affect existing skills, rules, CLAUDE.md, settings.json, hooks, or the MCP templates. Sources live in a registry (references/sources.md): Microsoft Fabric (incl. RTI) and Power BI What's New, the VS Code agent-customization docs behind the GitHub Copilot wiring, and the anthropics/claude-code CHANGELOG — the harness the rest runs inside. RTI folds into the Fabric source. Use when running a monthly Fabric / Power BI staleness check, checking whether VS Code moved the chat.*Locations settings, checking whether a Claude Code release renamed a hook event or moved a ~/.claude path, or auditing what changed on the registered pages between two points in time. Narrow a run with --sources <id,id>. Prefers github-mcp for exact bytes and commit patches, falling back to WebFetch. Findings only — no edits."
 argument-hint: "[prior-sha-or-date] [--sources id,id]"
 arguments: prior_ref
-allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__microsoft-learn-mcp__microsoft_docs_fetch
+allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__github-mcp__search_repositories mcp__microsoft-learn-mcp__microsoft_docs_fetch
 model: inherit
 effort: max
 disable-model-invocation: false
@@ -21,7 +21,7 @@ The audit input is a **registry**, not a fixed pair of pages. `Read` [references
 
 Each entry carries an `id` (what `--sources` matches), its GitHub repo / branch / path (plus `files`, when that path is a directory) or plain `url`, a `shape` (`table` / `prose` / `changelog`) that drives extraction, `sections` for the WebFetch fallback, a `drill` block (host, mechanism, anchor-strip patterns) for Phase 3, and the `artifacts` classes it can produce findings against. The registry's Shape contracts section defines what "an entry" means per shape; its Adding a source checklist is the procedure for widening the audit.
 
-As registered today: `fabric` and `powerbi` (`table`), `vscode-agent` (`prose`), and `claude-code` (`changelog`). All four are public and fetchable anonymously, but `claude-code` is a ~590 KB file with no `sections` list, so in practice only the `github-mcp` path can read it.
+As registered today: `fabric` and `powerbi` (`table`), `vscode-agent` (`prose`), and `claude-code` (`changelog`). These are public and fetchable anonymously with two exceptions. `claude-code` is a ~590 KB file with no `sections` list, so in practice only the `github-mcp` path can read it. And `powerbi`'s upstream repo was taken down — 404 at the API, web and raw endpoints as of 2026-09-07 — so that source fetches by the strategy written into its own registry entry rather than from a `repo` field.
 
 ## 2. Argument parsing
 
@@ -49,6 +49,8 @@ This separation matters because a single bad rewrite during audit triage can sil
 ## 4. Phase 1 — Fetch and diff each source
 
 Work through the selected sources in registry order. Two fetch paths; pick once, at the top of the run, and say which one the report used.
+
+**An entry may override both.** Where a registry entry documents its own fetch strategy — because its upstream repo is gone, or it was never GitHub-hosted — that strategy replaces 4a and 4b for that source, and any trust check it specifies is mandatory rather than advisory. § 1's no-hardcoding rule is what makes the entry authoritative: read it before assuming `repo` is a static field, and name the path taken in the report as you would for 4a or 4b.
 
 ### 4a. Preferred path — `github-mcp`
 
