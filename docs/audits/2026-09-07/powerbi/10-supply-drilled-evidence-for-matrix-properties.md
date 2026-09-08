@@ -164,3 +164,40 @@ rather than a competing brief — it does not contradict `04`, it feeds it.
 The most useful result is arguably the **negative** one in E-4: drilling
 the axis page and finding no property name converts `04`'s Constraint
 from a precaution into a measured fact for that item.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — deferred with brief `04` (no independent edit)
+- **Session**: fresh
+- **Files changed**: none
+- **Why nothing was written**: the **Kind** is explicit — this is *"an evidence
+  supplement to brief `04`, not an independent edit … Execute it inside `04`,
+  not as separate work."* Brief `04` is blocked on a Power BI Desktop PBIP
+  round-trip that an agent shell cannot perform (see `04`'s execution log for
+  what was tried, including the finding that `pbir` 0.9.7's bundled schema
+  predates this release and carries none of the six). With `04` unexecuted,
+  there is nothing for this brief to execute *inside*, and its own instruction
+  forbids doing the work separately. No edit was made to
+  `skills/powerbi/pbir-visual-json/`.
+- **Verification**: this brief's two additional greps ran as baselines. Step 3
+  runs once at the end of the brief set.
+  1. `grep -rniE "autoExpand|auto.expand" skills/powerbi` — **no hits**. The
+     defect this check guards against (an unqualified `autoExpand` written into
+     a skill as though it were a confirmed PBIR name) does not exist in the
+     tree, and this run did not introduce it. The Constraint was observed:
+     `autoExpand` is an embedded Authoring SDK name and was treated as a search
+     hint only.
+  2. `grep -rniE "overlap series|space between series" skills/powerbi` — no
+     hits, so the axis additions have not landed and the new setting names are
+     nowhere yet. Re-run after `04` executes.
+  - E-4's pointer was confirmed as a real starting place: `innerPadding`
+    literals do exist today at `cartesian.md:528`, `cartesian.md:1033`, and
+    three times in `powerbi-report-design/assets/base.json` (96, 123, 152). A
+    future export search for the Outer padding property should start beside
+    them.
+- **Deferred — the whole brief, jointly with `04` and with `09`'s JSON half.**
+  All three want the same single Desktop session. When it happens, this brief's
+  E-1 through E-4 are the drilled evidence to start from, so the matrix and
+  axis pages need not be fetched again; its **What this changes in brief `04`**
+  section is the amended scope for items 3, 4 and 5.
+- **Deviations**: none.
