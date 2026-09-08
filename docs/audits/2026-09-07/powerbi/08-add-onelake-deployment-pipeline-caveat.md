@@ -139,3 +139,40 @@ disagreement between the two runs — nothing in brief `03` contradicts it.
 
 The two runs otherwise converged closely, which is the main reason to
 trust both.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-cicd/SKILL.md`
+- **Verification**: steps 1–4 ran and pass; step 5 runs once at the end of the
+  brief set.
+  1. `grep -rnic "deployment pipeline" skills/fabric/fabric-cicd/SKILL.md` — 5
+     hits; the new caveat sits directly beneath the existing pipeline rows at
+     lines 23–25, where the brief asked for it.
+  2. `grep -rnic "onelake" skills/fabric/fabric-cicd/SKILL.md` — 4 hits, up from
+     0 at audit time.
+  3. **Constraint 1: the wording stayed mechanism-neutral, and the reason is
+     recorded in the skill itself.** The `parameter.yml` binding was *not*
+     asserted. Investigating it turned up a sharper point than the brief
+     anticipated: `parameter.yml`'s `find_replace` does take a `file_path` glob
+     (`SKILL.md:118`), so it is genuinely plausible it could reach a report
+     definition — but `parameter.yml` belongs to the **Git-driven fabric-cicd
+     path**, whereas the upstream sentence is about **service-side deployment
+     pipelines**. Those are different mechanisms, listed as separate rows in
+     this skill's own comparison table. Treating upstream's "use parameters" as
+     `parameter.yml` would have conflated them, which is exactly the overreach
+     Constraint 1 exists to stop. The caveat therefore says the two should not
+     be assumed equivalent, which is a caution rather than a mechanism claim.
+  4. Lint passes.
+- **Constraint 2** observed: the caveat is scoped to deployment pipelines, and
+  it says explicitly that whether Git integration, `fab deploy`, or fabric-cicd
+  rewrite these URLs is *undocumented* rather than known to be "no" — so the
+  claim is not generalized to "Fabric deployment" as a whole.
+- **Sequencing note honoured**: brief `03` was executed in this same session,
+  and the OneLake URL format block is byte-identical between
+  `powerbi-report-authoring/references/image.md` and this file, as the note
+  asked.
+- **Deferred**: no behavioural confirmation — an edited `SKILL.md` does not
+  reliably reload mid-session on Windows. A fresh session would exercise it.
+- **Deviations**: none.

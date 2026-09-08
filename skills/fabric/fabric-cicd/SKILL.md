@@ -24,6 +24,33 @@ Microsoft's official open-source Python library for **code-first CI/CD into Fabr
 
 `fab deploy` **wraps fabric-cicd** and consumes the same `config.yml` / `parameter.yml`. Don't mix Git-driven deploys and service-side deployment pipelines on the same workspaces. Decision guide: [Choose the best Fabric CI/CD workflow](https://learn.microsoft.com/fabric/cicd/manage-deployment).
 
+**Deployment pipelines don't rewrite OneLake image URLs.** A report whose visuals
+source images from OneLake carries the *workspace GUID* inside the URL itself:
+
+```http
+https://onelake.dfs.fabric.microsoft.com/<workspace-guid>/<item-guid>/Files/<path>/<file-name>
+```
+
+Promote that report dev → test → prod through a **service-side deployment
+pipeline** and it keeps loading its images from the **original** workspace.
+Nothing fails and nothing warns — the report renders, the images appear — until
+access to the source workspace is revoked or it is deleted, long after the
+promotion. Upstream's remedies are to parameterize the URLs or rewrite them
+after deployment.
+
+Two bounds on that caveat, both deliberate:
+
+- The "parameters" upstream names are **deployment-pipeline** parameters. Do
+  **not** assume this skill's `parameter.yml` `find_replace` is the binding —
+  it takes a `file_path` glob and so *could* reach a report definition, but
+  that it does for this case is unverified, and `parameter.yml` belongs to the
+  Git-driven path rather than to deployment pipelines.
+- The claim is scoped to deployment pipelines, which is all upstream states.
+  Whether Git integration, `fab deploy`, or fabric-cicd itself rewrite these
+  URLs is **undocumented** — that is not the same as established to be "no".
+
+Reference: https://learn.microsoft.com/power-bi/visuals/power-bi-onelake-files
+
 ## Deployment model
 
 - **Full deployment every run** — no commit-diff inspection. The target workspace converges to the repository state; drift is overwritten. (`get_changed_items(repository_directory, git_compare_ref="HEAD~1")` exists if you want to scope a run yourself.)
