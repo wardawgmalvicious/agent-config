@@ -273,7 +273,7 @@ proves nothing.
 
 ## What this fixture is asserting
 
-The load-bearing case is the **A1 regression** (`34be2f4`):
+The load-bearing case is the **A1 regression** (`8ce009c`):
 
 > `visual.json`, deep inside a `.Report/` folder, must activate exactly
 > three skills — and **`pbip-project-structure` must not be one of them.**
