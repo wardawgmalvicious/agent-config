@@ -324,7 +324,7 @@ Fill and light variants are the same as the dropdown slicer (see above).
 | Type | `visualType` | Query roles | `data.mode` | Notes |
 |------|-------------|-------------|-------------|-------|
 | **Dropdown** | `slicer` | `Values` only (Column/Hierarchy) | `'Dropdown'` | Any cardinality, compact; default for executive Year/Period filters |
-| **Date range** | `slicer` | `Values` only (Date/DateTime column) | `'Between'` | Date picker with range; use only for arbitrary date-range exploration |
+| **Date range** | `slicer` | `Values` only (Date/DateTime column) | `'Between'` | Two-handle range slider with input boxes; use only for arbitrary date-range exploration. Not the same as the **Date picker** style below |
 | **Single** | `slicer` | `Values` only (Column) | `'Single'` | Single-select |
 | **Before** | `slicer` | `Values` only (Date/Numeric) | `'Before'` | Upper bound only (≤) |
 | **After** | `slicer` | `Values` only (Date/Numeric) | `'After'` | Lower bound only (≥) |
@@ -332,6 +332,53 @@ Fill and light variants are the same as the dropdown slicer (see above).
 | **Relative time** | `slicer` | `Values` only (DateTime column) | `'RelativeTime'` | "Last N minutes/hours" — uses `data.relativeTimePeriod` instead of `relativePeriod` |
 | **Scrollable list** | `listSlicer` | `Values` (Column/Hierarchy), `Tooltips` (Measure/Aggregation) | — | Default for list-style slicers. `data.mode` not available. |
 | **Button/tile** | `advancedSlicerVisual` | `Values` (1 Column only), `Label` (1 Measure, optional), `Tooltips` (Aggregations) | — | ≤10 values, tile layout. `data.mode` not available. |
+| **Date picker** | `slicer` | `Values` only (Date column) | *not verified* | GA Aug 2026. Relative selections that roll forward, anchored on Today / First date / Last date. See [Date picker and the new format sections](#date-picker-and-the-new-format-sections) |
+
+### Date picker and the new format sections
+
+Date picker went **GA in August 2026**. It is a **Style** value, chosen the same
+way as the settings above: *Format pane -> **Visual** -> **Slicer settings** ->
+**Options** -> **Style** -> **Date picker***. Date columns only; no hierarchies.
+
+Its relative selections recalculate every time the report loads:
+
+| Option | Values |
+|---|---|
+| **Last / Next / This** | Direction and scope of the period relative to the anchor |
+| **Number of periods** | How many units to include |
+| **Period type** | Days, Weeks, Weeks (Calendar), Months, Months (Calendar), Years, Years (Calendar) |
+| **Anchor** | **Today**, **First date**, or **Last date** of the column |
+| **Offset** | Optional +/- shift of the anchor before the range is calculated |
+
+**Single date** — *Format pane -> **Visual** -> **Slicer settings** ->
+**Selection controls** -> **Single date***. Note where it sits: it is a
+**toggle under Selection controls, not a Style value**, so it composes with
+Date picker rather than replacing it. Turning it on makes the calendar and
+slider accept one date instead of a range, and constrains the relative options
+to those returning a single date. Without the toggle, a viewer can still pick a
+single date manually by selecting the same date twice in the calendar.
+
+Three top-level format sections arrived in the same release:
+
+| Section | Applies to | Controls |
+|---|---|---|
+| **Dropdown** | Dropdown style | Border color (CF), Rounded corners (px), Open icon color (CF), Open icon transparency; plus **Accent bar** -> Color (CF), Position, Transparency, Width |
+| **Hierarchy** | Vertical list and Dropdown using a hierarchy | Icon color (CF), and which Icon to use for expand/collapse |
+| **Selection icon** | Vertical list and Dropdown | Colour of the check box / radio button |
+
+**Gotcha:** Date picker slicers **don't filter other Date picker slicers**, even
+when visual interactions are set to filter.
+
+> **JSON not established for anything in this section.** Upstream publishes
+> format-pane labels only, and no PBIP export was available when this was
+> written — so there is no verified `visual.json` property name or literal for
+> the Date picker style, the Single date toggle, or the three sections above.
+> In particular, **do not infer a `data.mode` literal from the "Date picker"
+> label**. Derive it from a real export, or from `pbir schema describe` once its
+> bundled schema postdates 2026-08-25 (0.9.7's does not). The
+> [Sizing](#sizing) table likewise has no row for a single-date slicer; that
+> height can only come from a real render.
+> Source: [Slicer visual in Power BI](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-slicer-visual), drilled 2026-09-08.
 
 **Temporal decision matrix:**
 

@@ -181,3 +181,85 @@ The negative result is worth carrying forward: the axis page was drilled
 and publishes **no** property name, which converts brief `04`'s
 Constraint from a precaution into a measured fact for that item. See
 brief `10` for the full drilled evidence.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied with deferrals (D-2 prose applied; D-1
+  deferred entirely; all JSON omitted per Constraint)
+- **Session**: fresh
+- **Files changed**: `skills/powerbi/powerbi-report-authoring/references/slicers.md`
+- **Files deliberately NOT changed**:
+  `skills/powerbi/powerbi-report-authoring/references/cartesian.md`,
+  `skills/powerbi/powerbi-report-design/assets/base.json`
+
+### D-1 — deferred, no work possible
+
+Both halves are blocked, and one of them turned out to be already satisfied.
+
+- **The renames need nothing.** Verification step 2 —
+  `grep -rn "Category spacing\|Series spacing" skills/powerbi` — returns
+  **nothing**. The retired labels appear nowhere in the repo, so there is no
+  prose to update. The brief's fix "update any prose using the retired labels"
+  is vacuously complete.
+- **Outer padding needs the export.** No property name is published anywhere
+  (brief `10`'s E-4 established that as a measured fact), and the Desktop
+  round-trip is unavailable — see brief `04`'s log for what was tried. The
+  brief's **Open question**, whether `innerPadding` is the existing name for
+  what the UI now calls *Space between categories*, therefore stays open; it was
+  not guessed at.
+- **`base.json` untouched**, as the Constraint directs — *"for `base.json`
+  specifically, prefer omission."* `git diff --stat -- skills/powerbi/powerbi-report-design/`
+  is empty, so no shipped theme asset changed and verification step 5 does not
+  apply. The Knock-on risk the brief flags — every report built from
+  `powerbi-report-design` inheriting a new property — was not taken on.
+
+### D-2 — applied, JSON omitted
+
+The Sequencing note carves this out: the
+`power-bi-visualization-slicer-visual` fetch *"can happen independently of any
+Desktop access."* That page was drilled, and it carries far more than the What's
+New rows the brief quotes.
+
+**The Open question is now answered by evidence, not inference.** The brief
+suspected *Single date* was a separate boolean rather than a new value of the
+mode field, and flagged that as inference. The page settles it: *"In the Format
+pane, expand **Visual** > **Slicer settings** > **Selection controls**. Turn on
+**Single date**."* It is a toggle under Selection controls and **composes with**
+the Date picker style rather than replacing it — which is recorded explicitly,
+since an agent assuming it were a `data.mode` value would encode it wrongly.
+
+Also established and documented: Date picker is a **Style** value selected under
+`Visual > Slicer settings > Options > Style`, in the same dropdown as Dropdown /
+Vertical list / Tile / Between / Before / After / Relative date / Relative time;
+its five relative-selection options (Last-Next-This, Number of periods, Period
+type, Anchor of Today / First date / Last date, Offset); the three new top-level
+format sections (**Dropdown** with its Accent bar, **Hierarchy**, and
+**Selection icon**, which the brief did not know about); and one real gotcha —
+*"Date picker slicers don't filter other Date picker slicers, even when visual
+interactions are set to filter."*
+
+**No JSON was written.** The new section carries an explicit block saying so,
+warning specifically against inferring a `data.mode` literal from the "Date
+picker" label, and noting the Sizing table still has no single-date row because
+that height can only come from a real render (the brief's Knock-on).
+
+- **Verification**: steps 1, 2, 3 and 6-minus-`pre-commit` ran; 4 and 5 do not
+  apply because no property was written and no asset changed. Step 6 runs once
+  at the end of the brief set.
+  1. New axis names — absent, as expected while D-1 is deferred. The single hit
+     is `card.md:167` (`cardVisual…paddingUniform`), unrelated.
+  2. Retired labels — absent.
+  3. `single date` — present in `slicers.md` across the new section. The
+     `executive-summary.md:209` hit is pre-existing design-language prose, not
+     this feature.
+  - Lint passes on the parent `SKILL.md`.
+- **Deviations**: one line outside D-1/D-2 as written. The mode table's
+  **Date range** row described `'Between'` as *"Date picker with range"* — which
+  became actively confusing the moment Date picker was documented as a separate
+  Style. It now reads "Two-handle range slider with input boxes … Not the same
+  as the **Date picker** style below", matching upstream's own description of
+  Between. No `data.mode` literal was changed.
+- **Deferred**: D-1 in full; D-2's JSON encodings; the single-date sizing row;
+  and behavioural confirmation, since an edited skill does not reliably reload
+  mid-session on Windows. All the JSON work joins briefs `04`, `09` and `10` in
+  waiting for one Desktop session, which is what the Sequencing note intends.
