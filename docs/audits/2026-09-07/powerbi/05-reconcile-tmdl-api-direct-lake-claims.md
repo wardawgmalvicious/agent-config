@@ -137,3 +137,39 @@ The drill result is the strongest part of this brief: the support matrix
 was read directly from the live page rather than inferred from a release
 note, which is also what allowed the audit to certify the two files under
 Constraint as correct instead of assuming they had drifted alongside.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-tmdl-api/references/REFERENCE.md`,
+  `skills/fabric/fabric-tmdl-api/SKILL.md`
+- **Verification**: steps 1–4 ran and pass; step 5 runs once at the end of the
+  brief set.
+  1. `grep -rniE "unsupported in DL|all unsupported" skills/fabric` — one
+     surviving hit, `fabric-operations-agent/references/REFERENCE.md:45`
+     ("materialized views are all unsupported"), which is a different subject
+     entirely and not a Direct Lake claim. Survives scrutiny.
+  2. `grep -rniE "calculated column" skills/fabric/fabric-tmdl-api` — two hits,
+     `SKILL.md:68` and `references/REFERENCE.md:43`, now in agreement: both say
+     supported on DL on OneLake (User Context only, preview, unmaterialized)
+     and unsupported on DL on SQL. The contradiction is gone.
+  3. `git diff --stat` does **not** list `fabric-semantic-model-audit` or
+     `fabric-tmdl`. The two correct files named under Constraint are untouched.
+  4. Lint passes on `fabric-tmdl-api/SKILL.md`.
+- **How the scope note was resolved**: item 1 offered a choice — check the
+  hybrid-tables and partitions claims, or narrow the correction to calculated
+  columns. The first was taken, so nothing was left unscrutinised. The Direct
+  Lake overview page was fetched via `microsoft-learn-mcp` and its comparison
+  table settles both: *Hybrid tables* is `No` / `No` and *Model table
+  partitions* is `No` / `No` across DL on OneLake and DL on SQL. The original
+  parenthetical was therefore **correct on those two and wrong only on
+  calculated columns**, which is exactly what the corrected line now says. The
+  same page independently corroborates `SKILL.md:68`: *"Calculated columns |
+  Yes - User Context only (Preview) | No"*.
+- **Dating**: the correction carries no August date. The line was made wrong by
+  the April 2026 preview and the August row only re-announced it, as the brief
+  says; `SKILL.md:68` keeps its "(April 2026 preview)" stamp.
+- **Deferred**: no behavioural confirmation — an edited `SKILL.md` does not
+  reliably reload mid-session on Windows. A fresh session would exercise it.
+- **Deviations**: none.

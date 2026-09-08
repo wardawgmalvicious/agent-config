@@ -65,7 +65,7 @@ model Model
 
 - `dataType: binary` columns are NOT supported in Direct Lake
 - Columns map directly via `sourceColumn` — no transforms
-- **Calculated columns / tables (April 2026 preview)**: Direct Lake on **OneLake** now supports unmaterialized calculated columns (and calculated tables that reference them). Direct Lake on **SQL** still does not. User-context-aware DAX (`USERCULTURE`, `USERPRINCIPALNAME`, `CUSTOMDATA`, etc.) requires `expressionContext: userContext` on the column. See fabric-tmdl REFERENCE for the storage-mode × Expression-Context support matrix.
+- **Calculated columns / tables (April 2026 preview)**: Direct Lake on **OneLake** now supports unmaterialized calculated columns (and calculated tables that reference them). Direct Lake on **SQL** still does not. User-context-aware DAX (`USERCULTURE`, `USERPRINCIPALNAME`, `CUSTOMDATA`, etc.) requires `expressionContext: userContext` on the column. Authorable in **Power BI Desktop and web modeling**, without changing storage mode. See fabric-tmdl REFERENCE for the storage-mode × Expression-Context support matrix.
 
 ## Reference
 
