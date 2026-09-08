@@ -186,8 +186,40 @@ remain detectable for the reason below.
 the written rule literally against three more — which is what produced
 steps 1–3 above: the audit's own draft named the wrong metadata field,
 relied on a sort that does not exist, and had no substring guard. It has
-still only been exercised on one window. A run that finds it insufficient
-should say so in the report rather than improvising again in silence.
+now been exercised **twice by two independent runs, but still on only one
+window** (floor 2026-08-01). The second run followed steps 1–4 as
+written, reached the same `git_commit_id` via two forks that agreed
+(`jajin7`, `bsnyder9`), and the exact-name guard fired twice to drop
+`powerbi-docs-powershell` — so the *rule* has been replicated even though
+the window has not. Both runs also independently recovered the same three
+in-window commits. A run that finds it insufficient should say so in the
+report rather than improvising again in silence.
+
+#### Squash-merged monthly release — size before you fetch
+
+The monthly publish arrives as **one squashed release merge**, so the
+in-window commit count is a poor proxy for patch size and SKILL.md § 4a's
+">5 commits" test picks the wrong strategy here almost every month.
+Measured 2026-09-07: **three** in-window commits — comfortably under the
+threshold that selects per-commit patches — but the release commit
+`369371ac` carried 624 additions / 298 deletions across ~30 files with a
+~10 KB commit message, of which `whats-new.md` was 68 lines. Pulling
+`full_patch` would have dragged the entire release into context to read
+one page.
+
+On this source, § 4a step 5's escape hatch is therefore the **normal**
+path rather than the exception. Size first with `get_commit` at
+`detail: "stats"` (cap it with `perPage` — the file list is long), then
+take the two-ref diff on the single `path`. Both 2026-09-07 runs reached
+that conclusion independently and from opposite directions — one via raw
+URLs, one via `github-mcp` — which is the evidence it is a property of
+the source rather than of either run.
+
+The base for that two-ref diff is **the last commit touching `path`
+before the floor**, not the release merge's parent — see SKILL.md § 4b,
+*Resolving the diff base*. This source is precisely where that
+distinction bites: the merge's first parent is a same-day main-branch
+commit that never touches `whats-new.md` and is dated inside the window.
 
 #### Single-month document
 
