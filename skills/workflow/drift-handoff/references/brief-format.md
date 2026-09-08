@@ -161,9 +161,9 @@ Timeline that settles it:
 | --- | --- | --- |
 | 2026-06-26 | `~/.claude/skills` already documented | `cf47dadb` |
 | 2026-08-04 | docs reorg into `docs/agent-customization/` | `db6dab74` |
-| **2026-08-24** | `link-copilot.ps1` created, docstring claims the location is off | `70eb028` |
+| **2026-08-24** | `link-copilot.ps1` created, docstring claims the location is off | `16c5e9d` |
 | 2026-08-25 | VS Code 1.135 released | `9deb39cd` |
-| 2026-08-29 | linker deleted | `a49b159` |
+| 2026-08-29 | linker deleted | `f38b213` |
 
 So the docstring was **wrong from birth**, not made wrong by 1.135. The
 fact it denied had been true for roughly two months when it was written.
@@ -209,7 +209,7 @@ and is what the evidence supports.
 
 ## Not fixable
 
-Commit messages `a49b159` and `62fd636` both assert the 1.135 causality.
+Commit messages `f38b213` and `73171ca` both assert the 1.135 causality.
 History is not being rewritten for this. The corrected files will
 disagree with those messages; that is acceptable and worth a sentence in
 whichever commit lands this correction, so a reader who follows a
@@ -228,6 +228,6 @@ whichever commit lands this correction, so a reader who follows a
 ## Provenance
 
 Found by the first validation run of the `vscode-agent` drift-audit
-source, registered in `62fd636` roughly one hour before the run. The
+source, registered in `73171ca` roughly one hour before the run. The
 source caught a false claim that the same session had committed to three
 files — which is the failure class it was registered to catch.

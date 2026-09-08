@@ -30,7 +30,7 @@ were wrong with that.
 
 **Regenerable was false.** The same day, `MicrosoftDocs/powerbi-docs`
 returned 404 at the API, web, and raw endpoints — no redirect, so not a
-rename (commit `88616df`). The run already on disk quoted
+rename (commit `33425db`). The run already on disk quoted
 content that could no longer be fetched from its canonical source. An
 audit report is a snapshot of an upstream that moves and sometimes
 disappears; that is the definition of something worth committing.

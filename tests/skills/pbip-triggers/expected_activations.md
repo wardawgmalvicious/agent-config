@@ -1,6 +1,6 @@
 # Expected activations
 
-Skill lists measured against the payload at commit `871ebe9` and refreshed
+Skill lists measured against the payload at commit `48c01cc` and refreshed
 2026-09-01, using the static glob check in [README.md](README.md).
 
 **The `Tokens` column is a ceiling, not a toll.** A `paths:` match injects
@@ -33,7 +33,7 @@ this table previously read as though a match loaded the bodies.)
 ## Assertions that carry weight
 
 **1. `visual.json` must not activate `pbip-project-structure`.** This is
-the A1 regression test (`7eb6d9e`). Before that fix the same file pulled
+the A1 regression test (`34be2f4`). Before that fix the same file pulled
 four skills and ~11,923 tokens. Three skills and 9,086 is correct; four
 means the over-broad `**/*.Report/**` glob is back.
 

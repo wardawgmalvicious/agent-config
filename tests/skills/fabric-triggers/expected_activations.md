@@ -1,6 +1,6 @@
 # Expected activations
 
-Skill lists measured against the payload at commit `a5b9a02` and refreshed
+Skill lists measured against the payload at commit `72a275b` and refreshed
 2026-09-01, using the static glob check in [README.md](README.md).
 
 **The `Tokens` column is a ceiling, not a toll.** A `paths:` match injects
@@ -98,7 +98,7 @@ payload are now covered — 10 there, 17 here.
 
 **1. `SampleNB.Notebook/.platform` must not activate
 `pbip-project-structure`.** This is the other half of the A1 regression
-(`7eb6d9e`) and the reason this fixture set exists at all — the
+(`34be2f4`) and the reason this fixture set exists at all — the
 `pbip-triggers` set could not prove it, because proving it needs a
 `.platform` in a *non*-PBIP item type. `pbip-project-structure` used to
 glob a bare `**/.platform`, which is a Fabric item marker rather than a
