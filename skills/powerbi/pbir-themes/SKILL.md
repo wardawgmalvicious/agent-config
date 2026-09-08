@@ -31,17 +31,19 @@ Both referenced in `report.json`:
 }
 ```
 
-### Base Themes (April 2026)
+### Base Themes (verified 2026-09-08)
 
 Custom themes layer on top of a base theme. Three are shipped:
 
 | Base theme | Status | Notes |
 |---|---|---|
-| `Fluent 2` | Preview (Desktop only) | Modern Fluent 2 styling. New pages default to **1920x1080** (initial page stays 1280x720). Adds chart / button / slicer / small-multiples style presets. Enable via Options › Preview features › "Modern visual defaults and customize theme improvements". |
-| `Classic 2026` | Default for new reports | Incremental refresh of `CY24SU10`-era defaults. |
+| `Fluent 2` | **GA** — default for new reports, Desktop *and* service | Modern Fluent 2 styling. New pages default to **1920x1080** (initial page stays 1280x720). Adds chart / button / slicer / small-multiples style presets. |
+| `Classic 2026` | Previous default base theme | Incremental refresh of `CY24SU10`-era defaults. |
 | `Classic 2018` | Legacy compatibility | Original base theme; reports created before 2026. |
 
-Switch via View › Themes › Customize current theme › Base theme dropdown. The Customize-theme dialog also surfaces aspect-ratio page-size presets and table/matrix style enhancements when the preview is on.
+Switch via **View** ribbon → toggle on the **Theme** pane → **Theme settings** → **Base theme** dropdown. The Theme pane replaced the Customize-theme dialog at GA; it is sectioned as **Theme settings** (import / export / remove), **Colors** (palette, data, structural, sentiment, divergent), **Text**, **Visual properties** (background, border, header icons, tooltip, shadow, padding), **Page** (canvas settings, background, wallpaper), **Filter pane**, and **Filter cards** — the same surface a custom theme JSON encodes. An "Update to the latest base theme" banner with an **Update theme** button appears when a newer base ships; the **Reset to default** tile in the Themes dropdown removes the custom theme without touching per-visual formatting.
+
+Announced GA in the August 2026 update; page confirmed GA on 2026-09-07. No Desktop build number was verified.
 
 The published theme JSON schema referenced by visualStyles tracks the latest base — current is `reportThemeSchema-2.149.json` (under `microsoft/powerbi-desktop-samples` on GitHub).
 
@@ -61,6 +63,8 @@ The published theme JSON schema referenced by visualStyles tracks the latest bas
 1. Wildcard `visualStyles["*"]["*"]` — all visuals
 2. Visual type `visualStyles["lineChart"]["*"]` — overrides wildcard for that type
 3. Visual instance — `objects` / `visualContainerObjects` in `visual.json` (see `pbir-visual-json` for the `objects` vs `visualContainerObjects` split in schema 2.4.0+)
+
+Fonts resolve differently since the Fluent 2 GA: **font overrides were removed from the base theme**, so `textClasses` now applies consistently across all visuals instead of being shadowed per-visual by the base. A custom theme that previously needed per-visual `visualStyles` font entries to beat the base may now be over-specified.
 
 ### visualStyles Structure
 
@@ -246,7 +250,7 @@ Stale `objects` / `visualContainerObjects` in visual.json override theme default
 - Microsoft Learn: [Use report themes in Power BI Desktop](https://learn.microsoft.com/power-bi/create-reports/desktop-report-themes)
 - Microsoft Learn: [Create custom report themes (full JSON reference)](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom)
 - Microsoft Learn: [Set formatted text defaults (textClasses table)](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#set-formatted-text-defaults)
-- Microsoft Learn: [Visual defaults / base themes (Fluent 2 preview, Classic 2026, Classic 2018)](https://learn.microsoft.com/power-bi/create-reports/power-bi-reports-visual-defaults)
+- Microsoft Learn: [Visual defaults / base themes (Fluent 2, Classic 2026, Classic 2018)](https://learn.microsoft.com/power-bi/create-reports/power-bi-reports-visual-defaults)
 - Comprehensive MS Learn link bundle (theme JSON file format / textClasses / style presets / inheritance / filter pane styling): [references/REFERENCE.md](references/REFERENCE.md)
 
 ### See also

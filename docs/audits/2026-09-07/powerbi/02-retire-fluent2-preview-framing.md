@@ -224,3 +224,45 @@ fork of the deleted upstream repo (see brief `01`). The fork was
 cross-checked against the SHA the live Learn page pins, and every claim
 in this brief was additionally confirmed against the live page, so the
 findings here do not depend on the fork being trustworthy.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied with deferrals
+- **Session**: fresh (the rerun report was read as the invocation argument; no audit ran in this session)
+- **Files changed**: `skills/powerbi/pbir-themes/SKILL.md`, `skills/powerbi/pbir-pages/SKILL.md`
+- **Verification**: steps 1–3 ran and pass. Step 1's first run surfaced a
+  surviving stale hit the brief did not enumerate — the Learn link label at
+  `pbir-themes/SKILL.md:253` still read "Fluent 2 preview" — which was
+  corrected and step 1 re-run clean. The one remaining step-1 hit is the
+  deliberate historical reference at line 44 ("The Theme pane replaced the
+  Customize-theme dialog at GA"). Step 2 returns four hits across the two
+  target files, all corrected text; no third file repeats the stale framing.
+  Step 4 (`pre-commit run --all-files`) is run once at the end of the whole
+  brief set, not per brief.
+- **Deferred**:
+  - **D-4 open question — answered, no edit made.**
+    `powerbi-report-authoring/references/theming.md` was checked as the brief
+    instructed. It documents the `textClasses` cascade and the derived
+    classes but makes **no** claim about base-theme font overrides, so the
+    GA change contradicts nothing there and no corresponding note is
+    required. It does, separately, carry a retired UI name at line 240 —
+    "**4 primary classes** (editable in Customize Theme dialog)" — which is
+    the same dialog→pane rename as D-3. That file is not in this brief's
+    **Target**, and no other brief in this set names it, so it was left
+    alone and is reported as an adjacent finding instead.
+  - **The "initial page stays 1280x720" carve-out is unverified.** The audit's
+    recommended action 5 asks for it to be re-verified against a real new
+    report, and the GA page carries no initial-page exception. D-1 and D-5
+    both direct that the page-size notes be kept, so the claim survives
+    unchanged in both files. Verifying it needs Power BI Desktop, which this
+    run cannot drive.
+  - **No behavioural confirmation.** An edited `SKILL.md` does not reliably
+    reload mid-session on Windows, so neither skill was exercised after the
+    edit. Lint and the prose greps pass; a fresh session would confirm
+    behaviour.
+- **Deviations**: one, and it widened the diff by a single line — the
+  line 253 link label. It was not enumerated in **What to change**, but the
+  brief's own verification step 1 is written to fail on exactly that hit, so
+  leaving it would have meant reporting a failed verification for a defect
+  the brief plainly intends to retire. Nothing else outside the enumerated
+  targets was touched.
