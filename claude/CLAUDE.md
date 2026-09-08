@@ -195,16 +195,15 @@ before it is a leak. Write `~`, `$env:USERPROFILE` or `<username>`
 unless the literal string is the point.
 
 Check before committing, not after: a commit message cannot be fixed
-forward. The trap is that documenting machine-specific behaviour is
-exactly when real account names read as the subject matter rather than
-as an incident. Hit in `machine-config` 2026-09-03 — both accounts
-landed in the body *and* the message, and only the body could be
-corrected. And once pushed, history cannot be fixed either: GitHub's
-`refs/pull/N/head` are permanent and pin every commit a PR ever
-touched, so `git filter-repo` plus a force-push leaves the leak
-reachable, and the only effective remedy is to delete and recreate the
-repo — done for `agent-config` on 2026-09-04, at the cost of its stars,
-PRs and creation date.
+forward, and neither can pushed history — for **two** reasons, the
+second of which gets missed. `refs/pull/N/head` pin every commit a PR
+ever touched; and even with no PR refs at all, GitHub serves
+unreachable objects by explicit SHA until it garbage-collects, on no
+schedule you control. A `filter-repo` rewrite plus force-push therefore
+does not remove a pushed leak — delete-and-recreate is the only
+immediate remedy. The trap is that documenting machine-specific
+behaviour is exactly when real account names read as subject matter
+rather than as an incident.
 
 The `identity-guard` hook (`~/.claude/hooks/`) turns that into a gate:
 before a `git commit` it scans the added lines, after one it reads the

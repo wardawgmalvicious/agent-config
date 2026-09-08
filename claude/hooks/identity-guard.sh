@@ -10,9 +10,12 @@
 # it never reads a commit message (measured 2026-09-04 on 8.30.1 — a message
 # carrying an AWS-key pattern scanned clean). The pre-commit framework sees
 # staged content only. A message cannot be fixed forward, and once pushed
-# neither can history: refs/pull/N/head pin every commit a PR ever touched,
-# so a rewrite-in-place leaves the leak reachable and the only real remedy
-# is delete-and-recreate. Hence a gate on push, not only on commit.
+# neither can history, for two reasons: refs/pull/N/head pin every commit a
+# PR ever touched, and even with no PR refs at all GitHub serves unreachable
+# objects by explicit SHA until it garbage-collects, on no schedule you
+# control. So a rewrite-in-place leaves the leak reachable and the only
+# immediate remedy is delete-and-recreate. Hence a gate on push, not only
+# on commit.
 #
 # Wired on Bash|PowerShell for two events; the script branches on
 # hook_event_name:
@@ -260,7 +263,8 @@ HITS=$(grep -inF -m 20 -f "$TERMS" "$SCAN" 2>/dev/null)
     else
         echo "Genericize the text (a placeholder, a role, <client>) or, if the term"
         echo "is legitimately part of this repo, take it off the denylist. Do not"
-        echo "work around the guard: once pushed, refs/pull pin it forever."
+        echo "work around the guard: once pushed, GitHub serves it by SHA"
+        echo "until it garbage-collects, if it ever does."
     fi
 } >&2
 exit 2
