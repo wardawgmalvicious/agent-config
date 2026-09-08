@@ -8,6 +8,7 @@ and links to formatting reference for styling.
 - [1. Local File Image](#1-local-file-path-to-the-image)
 - [2. URL Image](#2-a-url-from-the-web)
 - [3. Data-Bound Image](#3-select-from-data)
+- [4. OneLake File URL](#4-a-onelake-file-url)
 - [Image Formatting (`objects.image`)](#image-formatting-objectsimage)
 - [Plot Area Background Image (`plotArea.image`)](#plot-area-background-image-plotareaimage)
 
@@ -21,6 +22,7 @@ The input to the image to render the image visual could be from any of the follo
 1. Local file path to the image
 2. A url (from the web)
 3. Select from data
+4. A OneLake file URL (authenticated — see section 4)
 
 If the user has not specified the source or just asks to add a new image, prompt the user with the source options. Do NOT even render an empty image visual layout, prompt for the source first unless the user mentions to render only the layout specifically.
 
@@ -100,7 +102,7 @@ use the suffixed name.
 ### 2. A url (from the web)
 
 **⚠️ URL image requirements**:
-- The URL must be **publicly accessible** (anonymous access, no sign-in required). Test by opening in a browser incognito window.
+- The URL must be **publicly accessible** (anonymous access, no sign-in required). Test by opening in a browser incognito window. **Exception:** OneLake file URLs are authenticated rather than public and are supported — see section 4.
 - The URL must point **directly to an image file** (e.g., ending in `.jpg`, `.png`, `.gif`, `.bmp`, `.svg`), not a webpage containing the image.
 - Use **HTTPS** URLs — HTTP may work in Desktop but can be blocked by the Power BI Service.
 - Reference: https://community.fabric.microsoft.com/t5/Desktop/Image-URL-creation/td-p/1910627
@@ -234,6 +236,72 @@ Full visual template (using measure example):
   }
 }
 ```
+
+### 4. A OneLake file URL
+
+Images stored in a Fabric lakehouse's **Files** area can be referenced by their
+OneLake HTTPS URL. GA August 2026; upstream page confirmed 2026-09-08.
+
+URL shape (copy it from the file's **Properties** pane in the Lakehouse
+explorer rather than assembling it by hand):
+
+```
+https://onelake.dfs.fabric.microsoft.com/<workspace-guid>/<item-guid>/Files/<path>/<file-name>
+```
+
+**Authentication is per viewer, not anonymous.** Power BI loads the file using
+each report viewer's Microsoft Entra identity, so the lakehouse does *not* need
+anonymous access — but every viewer needs their own read permission. Access to
+the report or the semantic model does not grant it. Give each viewer **Read**
+on the lakehouse item plus OneLake security **Read** on the folder holding the
+image (or **ReadAll** on the item to cover everything under `Tables` and
+`Files`; prefer least privilege). A viewer without permission simply sees no
+image.
+
+> 🚫 **Publish to web and other anonymous embed scenarios cannot use OneLake
+> file URLs at all** — those scenarios have no identity to authenticate with.
+> A report using them renders correctly in the service and silently loses its
+> images when published publicly. Choose a different source if the report is
+> destined for Publish to web.
+
+**Relationship to `dataCategory: ImageUrl`** — it depends on whether the URL is
+data-bound, and the existing rules in section 3 are unchanged:
+
+| How the URL reaches the visual | `dataCategory: ImageUrl` required? |
+|---|---|
+| Typed into the format pane's **Enter URL** box (`sourceType: 'imageUrl'`, `sourceUrl` literal) | **No** — not data-bound |
+| Carried by a **column** added to a visual | **Yes** — set Data category to Image URL on the column |
+| Returned by a **measure** | **Yes** — set Data category to Image URL on the measure |
+
+So the warn-before-creating workflow in section 3 applies to OneLake URLs
+exactly as it does to any other data-bound image source. The literal
+`sourceUrl` form in section 2 is the one that needs no data category — a
+OneLake URL substitutes directly for the web URL in that JSON.
+
+**Where OneLake URLs are accepted:**
+
+| Surface | Notes |
+|---|---|
+| Image visuals | Enter URL, or bind to a column / measure |
+| Card visuals | Image, callout image, or category-header background |
+| Tables, matrices, slicers, multi-row cards | Column categorized as Image URL |
+| Conditional formatting | Custom table / matrix icons from an image URL column |
+| Azure Maps marker layers | **SVG only** — a URL to one SVG, or a bound image URL field |
+| Shape map custom maps | TopoJSON or GeoJSON file as the custom map source |
+
+**Considerations:**
+
+- Supported formats are **BMP, JPG, JPEG, GIF, PNG, SVG**. Azure Maps marker
+  images must be SVG.
+- Moving or renaming a file changes its path — update the URL in the report or
+  semantic model afterwards.
+- Deployment pipelines **do not rewrite** OneLake image URLs; a report promoted
+  to a new stage keeps pointing at the original workspace. Use parameters or
+  update the URLs post-deployment.
+- Large images slow page rendering; size them for the visual.
+
+Reference: https://learn.microsoft.com/power-bi/visuals/power-bi-onelake-files
+
 
 ## Image Formatting (`objects.image`)
 

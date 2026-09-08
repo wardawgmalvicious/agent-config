@@ -125,3 +125,51 @@ does not appear in the What's New row at all — it was recovered from the
 squash-merge commit message of the same release, which is why this brief
 insists on confirming it against the published page before it is written
 into a skill as fact.
+
+## Execution log
+
+- **Executed**: 2026-09-08 — applied
+- **Session**: fresh
+- **Files changed**: `skills/powerbi/powerbi-report-authoring/references/image.md`,
+  `skills/powerbi/powerbi-report-authoring/SKILL.md`
+- **Verification**: all five steps addressed; 1–4 ran and pass, 5 is run once at
+  the end of the whole brief set.
+  1. Upstream page fetched via `microsoft-learn-mcp` before anything was
+     written, as the Constraint requires. Every added claim appears there,
+     including the two the brief flagged as unconfirmed: the visual list
+     (§ "Use OneLake images in visuals") and the limitation, which is published
+     prose and not only a commit message — *"Publish to web and other anonymous
+     embed scenarios don't support OneLake file URLs because those scenarios
+     can't authenticate to OneLake."* The URL format was taken from the page
+     verbatim; no sample URL was invented.
+  2. `grep -ni onelake … image.md` — 13 hits, in the sourcing sections and the
+     overview list a reader hits first.
+  3. `grep -rniE "publish to web|anonymous embed" skills/powerbi` — two hits,
+     both the new limitation block. No other file contradicts it.
+  4. Lint passes on the parent `SKILL.md`.
+- **What the drill resolved**: item 3 of **What to change** was an open question
+  and the page answers it outright, so nothing was assumed. Three add-paths
+  exist and they split cleanly: a URL typed into the format pane's **Enter URL**
+  box is not data-bound and needs no data category, while a URL arriving via a
+  **column** or a **measure** does require Data category = Image URL. The
+  existing warn-before-creating workflow in § 3 is therefore untouched and now
+  explicitly extends to OneLake URLs; it was not weakened.
+- **Deferred**: no behavioural confirmation — an edited `SKILL.md` does not
+  reliably reload mid-session on Windows, so the skill was not exercised after
+  the edit. A fresh session would confirm it.
+- **Deviations**: two, both narrow.
+  - Section 2's blanket rule *"The URL must be publicly accessible (anonymous
+    access, no sign-in required)"* would have made an agent reject a OneLake URL
+    on sight, so a one-line exception pointing at section 4 was added there.
+    Adding a source the file elsewhere forbids would not have satisfied item 1.
+  - Verification step 4 asks whether the parent skill still describes what it
+    covers. Its frontmatter `description` is generic, names no image sources and
+    needed no change. Two **in-body index rows** did: the `references/` table row
+    for `image.md`, and the gotcha row enumerating the source options an agent
+    must prompt with — which the new section 4 turned from three into four.
+    Both were updated. This is closing the loop on this brief's own edit rather
+    than an adjacent fix.
+  - The upstream page also carries the deployment-pipeline caveat that brief
+    `08` owns for `fabric-cicd`. It is recorded here in the Considerations list
+    because it is a property of OneLake image URLs that an author of one needs;
+    brief `08` remains responsible for the `fabric-cicd` side.
