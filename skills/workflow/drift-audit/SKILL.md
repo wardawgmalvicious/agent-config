@@ -146,8 +146,10 @@ Emit one markdown report to the conversation, sections in this exact order. If a
 - Floor: <ISO date> (resolved from: <sha | date | default-35d>)
 - Fetch path: <github-mcp | WebFetch fallback>
 - Sources audited: <id, id> — skipped: <id, id | none>
-- <label>: <commit-count> commits in window — prior `<prior-sha-or-floor>` → head `<head-sha>` (<head-date>)
-- ...one line per audited source, registry order...
+- <label>: <commit-count> commits in window — prior `<prior-sha-or-floor>` (<prior-date>) → head `<head-sha>` (<head-date>)
+  - `<sha>` (<date>) — <what the commit is>, `<path>` <+n/-m>
+  - ...one line per in-window commit, newest first...
+- ...one block per audited source, registry order...
 
 ## Drift / gap candidates (existing artifacts)
 
@@ -195,6 +197,7 @@ Report rules:
 - **Every drift bullet names its source id.** With a registry, "which page said this" is no longer inferable from the finding.
 - **URLs are anchor-stripped** per the source's `drill.strip`, per the Phase 1 invariant.
 - **No invention.** MCP transports, URLs, server names — quote the upstream reference or say "TBD". Never fabricate.
+- **Enumerate the in-window commits, never just the count.** One line each, with its date and what it is. A bare "3 commits in window" is unfalsifiable: it hides which commits were inspected and which were only listed, and it strands a later reader who wants to reproduce the diff. Twice now — 2026-09-07 on `powerbi`, both runs — the per-commit list has been the thing someone needed to check afterwards. Where a commit was listed but never fetched, say so on its line rather than describing it.
 - **Next-run footer always printed.** Even when buckets are empty — the SHAs are the user's handoff to next month.
 
 ## 8. Closing constraints
