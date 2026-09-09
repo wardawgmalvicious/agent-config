@@ -1,10 +1,10 @@
 # Open briefs — execution order
 
-Two items are open:
+Two items remain on the queue, both deferred:
 
 | Item | State |
 | --- | --- |
-| [drift-fetch-subagent.md](drift-fetch-subagent.md) | **Open 2026-09-07** — brief filled, not drafted. Blocked on its own validation gate, not on this queue: the brief specifies an A/B against an inline `/drift-audit --sources powerbi 2026-08-01` run before the agent is drafted, because the open risk is whether a subagent returns table cells and code verbatim enough for Phase 3 to drill. Run the baseline first; a null result on a `table` source is a legitimate outcome that narrows the agent to `claude-code` and `vscode-agent` rather than killing it. |
+| [drift-fetch-subagent.md](drift-fetch-subagent.md) | **Deferred 2026-09-08 — not declined.** Its validation gate is moot rather than unmet. The baseline it asks for already exists — two inline `powerbi` runs on floor 2026-08-01 in [../../audits/2026-09-07/powerbi/](../../audits/2026-09-07/powerbi/); use `00b`, since the two disagree on the prior ref. And the context failure the agent exists to prevent has never been observed in any run, including the registry's hardest case (the 89-day `claude-code` window). `--sources` already buys per-session isolation for free and the audit ledger is already per-source, so the cheap lever is in place. Re-open on a **single-source** run that compacts mid-Phase-1 or reports files left undiffed; multi-source pressure does not count. Six corrections recorded in the brief must be applied before any drafting. |
 | [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Deferred 2026-09-03** — not declined. Step 0 answered *no*: no `*.Plan` item exists in any repo here, and the payload's only mention of Plan pushes work away from it. Waiting on a Plan item appearing, not on anything in this queue. Its carve-out debt was split off and paid separately, so what remains is the skill itself. |
 
 This is the **only** place the execution order lives — each brief carries

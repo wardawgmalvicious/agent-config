@@ -4,6 +4,105 @@ Last verified: 2026-09-07
 
 > Subagents are Claude Code-only (not part of the Agent Skills open standard). Subagents cannot spawn other subagents. The `memory:` field requires Claude Code v2.1.33 or later.
 
+## Status
+
+**Deferred 2026-09-08 — not declined, and not waiting on the validation
+gate this brief specifies.** That gate is moot rather than unmet.
+
+The context failure the agent exists to prevent **has never been
+observed.** Nothing in `drift-audit` or the whole `docs/audits/` ledger
+records a run that compacted, exhausted its budget, or reported files
+left undiffed — including the registry's hardest case, the 89-day
+`claude-code` window (85 commits, 77 version sections, 1713 bullets
+against a ~590 KB file), which completed inline and whose numbers the
+registry now quotes as its own evidence. §4's three existing controls —
+blob-SHA narrowing, the delta-ordered 150 KB budget, and the `changelog`
+on-disk two-ref diff — are the mechanism, not workarounds waiting to be
+replaced, and they are more precise than an isolated window because they
+act *before* the fetch rather than after it.
+
+The cheaper lever also already exists. `--sources <id,id>` is documented,
+tested, and in the skill's `argument-hint`; **one source per session buys
+the same context isolation** with no payload, no return-block fidelity
+risk, and Phases 2–4 running against the entries themselves rather than a
+paraphrase of them. The artifact layout already assumes this —
+`/drift-handoff` writes one `docs/audits/<date>/<source-id>/` directory
+per run, and the 2026-09-07 `powerbi` run was a single-source session
+that produced a 13-brief ledger. Per-source sessions are the pipeline's
+intended shape, not a workaround for a missing subagent.
+
+**Re-open on one specific observation:** a `/drift-audit` run that
+degrades on a **single-source** invocation — compacting mid-Phase-1, or
+naming files left undiffed against the 150 KB budget. Multi-source
+pressure does not count, because `--sources` answers that for free.
+
+Nothing below is withdrawn on the merits; the structure is sound and the
+two calls worth keeping are §4 staying the single source of the mechanics
+and the description being written to suppress routing. But the
+corrections in the next section were measured after the brief was written
+and **must be applied before any drafting** — three of them are internal
+contradictions that would send a drafter down a path the registry already
+rules out.
+
+## Corrections — measured 2026-09-08
+
+1. **The A/B baseline already exists, and the two runs disagree.**
+   [`docs/audits/2026-09-07/powerbi/`](../../audits/2026-09-07/powerbi/)
+   holds two inline runs on floor 2026-08-01 — the exact window the Notes
+   propose. Use **`00b-audit-report-rerun.md`**, not `00`: they resolve
+   different prior refs (`443eb78f` vs `f1f53694`) because the by-path
+   base-resolution fix landed between them, and `00` therefore encodes
+   the superseded rule.
+
+2. **The `tools:` list cannot execute `powerbi` at all.** It omits
+   `mcp__github-mcp__search_repositories` and
+   `mcp__microsoft-learn-mcp__microsoft_docs_fetch`, both of which are in
+   `drift-audit`'s `allowed-tools`. The `powerbi` entry's primary route
+   *is* a repository search (steps 2–3, plus the exact-name filter), and
+   its documented fallback is the Learn page via `microsoft-learn-mcp`.
+   As specified, the frontmatter contradicts the validation plan in the
+   Notes.
+
+3. **"The parent picks the path; the agent does not re-decide it"
+   contradicts §4.** Body-structure item 2 says that; §4 opens with **"An
+   entry may override both"** — and `powerbi` is exactly that entry. An
+   agent holding the parent's choice follows §4b into
+   `raw.githubusercontent.com/MicrosoftDocs/powerbi-docs/...` and gets a
+   404. The input contract needs: *unless the source's registry entry
+   defines its own strategy, which wins.*
+
+4. **The stated reason `powerbi` is runnable is wrong.** The Notes claim
+   its `sections` list lets the WebFetch fallback do targeted re-fetch.
+   The registry says the opposite explicitly — the takedown "breaks § 4b
+   as well as § 4a, which is the non-obvious part," because §4b builds
+   raw URLs from the same dead `repo`. Its real fallback is
+   `microsoft-learn-mcp`, which returns full pages, so §4b's completeness
+   check does not apply. The conclusion (start with `powerbi`) survives;
+   the justification does not.
+
+5. **Reading the contract from disk imports claims about the *parent's*
+   tool scope.** This is the unpriced cost of the otherwise-correct
+   decision not to restate §4. The `powerbi` entry says *"Use `WebFetch`,
+   not a shell `curl`: § 3 keeps this skill read-only and Bash is
+   deliberately outside its tool scope"* — false for an agent that has
+   `Bash`. §4c ends *"do not write it to disk"*, which both the
+   `changelog` on-disk diff and the scratchpad carve-out cross. The body
+   needs one explicit precedence line: instructions reasoning from the
+   parent's tool scope do not transfer; the agent's own tool list and
+   scratchpad rule govern.
+
+6. **`maxTurns: 30` is an unlisted silent-failure mode.** Failure item 6
+   covers 404s, renames, oversized listings and exhausted budgets — not a
+   turn cap. A `maxTurns` stop mid-fetch returns a partial entry set
+   shaped exactly like a complete one. Add a `turns used / complete:
+   yes|no` line to the return block, or drop the cap.
+
+Also stale: the portability caveat records `github-mcp` failing to
+connect (`Authorization header is badly formatted`, 2026-09-07). It
+connects normally as of 2026-09-08 — verified with `get_me`. The
+WebFetch-fallback requirement it justifies still stands on the `powerbi`
+takedown alone, but not on that observation.
+
 ## Artifact path
 
 **Personal scope** — `claude/agents/drift-fetch.md` in this repo, deployed by
