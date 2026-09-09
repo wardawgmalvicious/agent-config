@@ -255,10 +255,18 @@ diff. Two consequences:
 Governs how this repo's `~/.claude` payload reaches GitHub Copilot, so its
 findings land on the repo's own deployment docs rather than on skills and
 rules. Claims about this surface go stale silently, and are as often wrong
-on arrival: `scripts/link-copilot.ps1` was written to work around a
-`chat.agentSkillsLocations` gap that had already been closed for two
-months, and the audit that retired the script is what caught it. Pin such
-claims to a date you have checked, not to a version you have inferred.
+on arrival — twice now. `scripts/link-copilot.ps1` was written to work
+around a `chat.agentSkillsLocations` gap that had already been closed for
+two months, and the audit that retired the script is what caught it. Then
+a 2026-09-04 measurement recorded `~/.claude/skills` as not resolving, and
+a 2026-09-09 retest found it resolving fine — the earlier run had most
+likely toggled that root off, because the `chat.*Locations` settings are a
+per-location on/off map and *not* the additive allowlist their own
+"deprecated, only used by the Local agent" note suggests. Both failures
+share a shape: a negative result about this surface was written down as a
+property of the tool. Pin such claims to a date you have checked, not to a
+version you have inferred, and prefer re-measuring to reasoning forward
+from a past result.
 VS Code ships monthly — faster than the Fabric cadence — and moves these
 pages (they were under `docs/copilot/customization/` until the 2026
 reorg), so a 404 on the path means find the new one, not that the source

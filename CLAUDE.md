@@ -201,13 +201,14 @@ surviving reparse points are the per-skill junctions. Fewer of them is
 strictly less exposure to that class of bug.
 
 GitHub Copilot needs no payload and no linker: the VS Code agent
-surface reads the same `~/.claude` paths this repo already populates
-(`rules`, `skills`, `settings.json`, `CLAUDE.md`, and `agents` once
-`chat.agentFilesLocations` names it — the one path that isn't a
-documented default). **`skills` is the exception and does not work**:
-`~/.claude/skills` did not resolve when tested 2026-09-04, so Copilot
-sees skills only where a client repo has its own `.claude/skills`.
-It parses Claude's hook *format* but not its
+surface reads the same `~/.claude` paths this repo already populates —
+`rules`, `skills`, `agents`, `settings.json` and `CLAUDE.md` are all
+documented defaults there, `skills` included (retested 2026-09-09; a
+2026-09-04 note here claimed it did not resolve and was wrong). The
+`chat.*Locations` settings are marked deprecated and "only used by the
+Local agent", which is the sidebar itself — so they are not inert but a
+live per-location on/off map, useful for silencing a skill that two
+roots both hold. It parses Claude's hook *format* but not its
 semantics — notably, matchers are read and ignored, so the
 matcher-scoped `security-reviewer` write guard runs far wider there
 than under Claude Code. It validates skill frontmatter against its own

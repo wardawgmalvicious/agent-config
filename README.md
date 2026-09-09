@@ -158,32 +158,37 @@ stay separable:
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads
   `SKILL.md` can consume [skills/](skills/) directly.
-- **GitHub Copilot** — consumes this repo with **almost no wiring and
-  no linker of its own**. The VS Code agent surface reads Claude's
-  user-scope paths directly: `~/.claude/rules` for instructions,
-  `~/.claude/skills` for personal skills (in principle — that one path
-  did **not** resolve when tested; see below), `~/.claude/settings.json` for
-  hooks (it parses Claude Code's hook format), `~/.claude/CLAUDE.md` for
-  always-on instructions, and `~/.claude/agents` for subagents once
-  `chat.agentFilesLocations` points at it — all of which
-  `link-claude.ps1` already populates. That is why there is no
-  `copilot/` payload directory: Copilot is a second consumer of the
-  Claude-format payload, not a separate one. The rest is a settings
-  decision:
+- **GitHub Copilot** — consumes this repo with **no payload of its own
+  and no wiring**. The Claude paths are *documented defaults* on the
+  VS Code agent surface, so `link-claude.ps1` alone is enough:
+  `~/.claude/rules` for instructions, `~/.claude/skills` for skills,
+  `~/.claude/agents` for subagents, `~/.claude/CLAUDE.md` for always-on
+  instructions, and `~/.claude/settings.json` for hooks (it parses
+  Claude Code's hook format). That is why there is no `copilot/` payload
+  directory: Copilot is a second consumer of the Claude-format payload,
+  not a separate one.
 
-    ```jsonc
-    // Checked 2026-08-29 against microsoft/vscode-docs@28f76f5f.
-    // Only the agents entry is load-bearing: ~/.claude/agents is not a
-    // documented default (VS Code's user-profile default is
-    // ~/.copilot/agents). The other three ~/.claude paths are already
-    // documented defaults, so listing them is belt-and-braces.
-    "chat.instructionsFilesLocations": { "~/.claude/rules": true },
-    "chat.agentFilesLocations":        { "~/.claude/agents": true },
-    "chat.agentSkillsLocations":       { "~/.claude/skills": true },
-    "chat.hookFilesLocations":         { "~/.claude/settings.json": true },
-    // chat.useClaudeMdFile governs ~/.claude/CLAUDE.md and already
-    // defaults to true — no entry needed.
-    ```
+    | Artifact | Workspace defaults | User-profile defaults |
+    | --- | --- | --- |
+    | Skills | `.github/skills`, `.claude/skills`, `.agents/skills` | `~/.copilot/skills`, `~/.claude/skills`, `~/.agents/skills` |
+    | Instructions | `.github/instructions`, `.claude/rules` | `~/.copilot/instructions`, `~/.claude/rules` |
+    | Agents | `.github/agents`, `.claude/agents` | `~/.copilot/agents`, `~/.claude/agents` |
+
+    Checked 2026-09-09 against `microsoft/vscode-docs@main`.
+
+    **The `chat.*Locations` settings are switchboards, not wiring.**
+    `chat.agentSkillsLocations`, `chat.instructionsFilesLocations`,
+    `chat.agentFilesLocations` and `chat.modeFilesLocations` are all
+    marked deprecated and "only used by the Local agent" — which is easy
+    to read as inert, and is not. The Local agent *is* the sidebar Chat,
+    so each still governs exactly the surface you work in; the note
+    scopes them away from Copilot CLI and cloud agents. Each is a
+    location → boolean map over the defaults above, and the sidebar
+    honours a change immediately: measured 2026-09-09 by setting
+    `~/.claude/skills` false (the skills left the picker) and
+    `~/.copilot/skills` true (they came back from there). So nothing
+    needs enabling — but anything can be **disabled**, which is how you
+    stop a skill listing twice when two roots hold it.
 
     Three traps. `chat.instructionsFilesLocations` accepts **folders
     only** — an entry for `~/.claude/CLAUDE.md` is silently ignored,
@@ -193,7 +198,16 @@ stay separable:
     `chat.useClaudeMdFile` vanishes from the file when set to `true` and
     only appears when set to `false` — absent means on, not unset. And
     no copy into `~/.copilot/agents` or `~/.agents/skills` is needed;
-    both only invite drift. MCP is a workspace `.vscode/mcp.json` (see
+    both only invite drift, and `~/.agents/skills` is shared ground —
+    on this machine it holds 28 Copilot-for-Azure skills with their own
+    manifest and lockfile.
+
+    **MCP is the one thing this payload cannot carry.** Nothing reads
+    `~/.claude/mcp` — not even Claude Code; it exists so the commands in
+    [claude/mcp/README.md](claude/mcp/README.md) resolve from a stable
+    path — and `~/.claude.json` is Claude Code's own runtime state.
+    Copilot wants a workspace `.vscode/mcp.json` or
+    `~/.copilot/mcp-config.json` (see
     [.vscode/README.md](.vscode/README.md)).
 
     **Copilot validates skill frontmatter against its own field list and
@@ -206,7 +220,20 @@ stay separable:
     is on all 50, `paths:` on 27, `effort:` on 9, `allowed-tools:` on 5.
     So the warning is ambient, and adding a Claude-only field costs
     nothing that was not already being paid — but it also means a *real*
-    frontmatter mistake is camouflaged by the noise.
+    frontmatter mistake is camouflaged by the noise. Copilot does hard-
+    require one thing Claude Code never checks: a skill's **directory
+    name must equal its frontmatter `name:`**. All 50 here comply, and
+    `copy-copilot.ps1` verifies it before copying.
+
+    **Copilot CLI is a different consumer with a different table.** It
+    lists the same three project roots but only `~/.copilot/skills` and
+    `~/.agents/skills` at personal scope — **not** `~/.claude/skills` —
+    and reads instructions from `~/.copilot/copilot-instructions.md`,
+    `~/.copilot/instructions/**/*.instructions.md`, plus repo-scope
+    `.github/copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md`,
+    `.claude/CLAUDE.md` and `GEMINI.md`. `COPILOT_HOME` replaces
+    `~/.copilot` throughout. So "Copilot reads it" is not one fact —
+    check which Copilot. (Checked 2026-09-09 against docs.github.com.)
 
     `paths:` being unsupported has a consequence worth stating plainly:
     **a conditional skill is unconditional in Copilot.** All 27 load
@@ -214,16 +241,15 @@ stay separable:
     split that governs `when_to_use` adoption is a Claude Code fact only,
     and "free because it is conditional" does not transfer.
 
-    **`~/.claude/skills` did not resolve** when tested 2026-09-04, while
-    project-scope `.claude/skills` did — even though only the former is
-    listed in `chat.agentSkillsLocations` and the latter is at its
-    default. The nine workflow skills were absent from the agent surface
-    and the 41 platform skills junctioned into a client repo's
-    `.claude/skills` were all present. **Junctions are not the cause** —
-    Copilot read *through* one to report a field warning on a file whose
-    only copy lives in this repo. Suspect `~` expansion; an absolute path
-    is the thing to try. Until it is resolved, Copilot sees this payload
-    at project scope only.
+    **`~/.claude/skills` does resolve** — retested 2026-09-09, with the
+    sidebar loading skills from `~/.claude/skills/<name>/SKILL.md`
+    through this repo's junctions. A 2026-09-04 entry here claimed the
+    opposite and was wrong; the likeliest cause is that
+    `chat.agentSkillsLocations` had that root switched off, since the
+    setting turns out to be a live per-location toggle rather than the
+    additive allowlist it was read as. That correction also retires the
+    "Copilot sees this payload at project scope only" conclusion built
+    on top of it.
 
     Copilot parses the Claude hook format, not its semantics. Matchers
     are read and **ignored**, so a matcher-scoped hook fires on every
