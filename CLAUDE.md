@@ -15,11 +15,23 @@ This file is also the repo's *only* project-scope instruction file. A
 alongside it and each drifted; both were deleted rather than kept in
 sync. Don't add a third.
 
+`copilot/instructions/` is **not** a third of those, and the difference
+is worth being precise about: those two were project-scope instruction
+files describing *this* repo, loaded in sessions here. `copilot/` is
+payload for *other* repos and is never read here. It does carry the same
+drift risk, since it duplicates `claude/rules/` prose in a second
+format — which is why it is the one payload with a machine-checked
+staleness gate (`scripts/lint-instructions.py`) instead of an intention
+to keep it in sync.
+
 Layout convention: **`<tool>/` names the payload's *format*, not its
 only consumer.** `claude/` holds everything written in Claude Code's
 formats — subagent frontmatter, `paths:`-scoped rules, hook event
 wiring, user-scope `CLAUDE.md` and `settings.json`, and the MCP
-templates in Claude's `mcpServers` schema. `skills/` is the only
+templates in Claude's `mcpServers` schema. `copilot/` holds the one
+payload written in *Copilot's* format — `*.instructions.md` carrying an
+`applyTo` glob string — which exists only because that and `paths:` are
+not interchangeable. `skills/` is the only
 payload at the top level, because the Agent Skills format belongs to no
 single tool. Root `CLAUDE.md` is already taken by this file, so the
 user-scope one needs a directory — and once one payload file does,
@@ -55,7 +67,12 @@ placement is only about format.
 uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
 uv run --with pyyaml scripts/lint-frontmatter.py claude/rules/<name>.md
 
-# All checks, the way CI runs them (gitleaks + both frontmatter linters)
+# Validate the Copilot instruction ports: applyTo frontmatter, no leaked
+# repo name or profile path, and no drift from the rule each was ported
+# from. --stamp re-records the hashes after a deliberate re-port.
+uv run --with pyyaml scripts/lint-instructions.py
+
+# All checks, the way CI runs them (gitleaks, frontmatter, instructions)
 pre-commit run --all-files
 pre-commit run lint-skills --all-files     # one hook only
 
@@ -88,6 +105,14 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 # Partial payload: push only the Fabric skills into a client repo's .claude,
 # without this machine's agents, hooks, or rules.
 ./scripts/link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric
+
+# Vendor a COMMITTABLE payload into a client repo for teammates: platform
+# skills into <repo>/.github/skills, ported rules into
+# <repo>/.github/instructions. Needed by nobody on this machine -- Copilot
+# already reads ~/.claude directly -- only by people cloning that repo.
+# -Payload skills|instructions does one half; a payload left out is left
+# ALONE, unlike -SkillGroups, where a group left out is PRUNED.
+./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric,powerbi
 ```
 
 **Never run the script bare on this machine** — neither
@@ -143,6 +168,7 @@ lands determines when it goes live:
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
 | `claude/mcp/.mcp.global.template.json` | `~/.claude.json` (top-level `mcpServers` only) | single-key reconcile, prunes | after `scripts/link-claude.ps1 -GlobalMcp` |
+| `copilot/instructions/` | `<repo>/.github/instructions` | file copy (`scripts/copy-copilot.ps1`) | in a teammate's clone, once committed there |
 
 The last row is the odd one and deliberately so. `~/.claude.json` sits
 **beside** `~/.claude`, not inside it, and is not payload at all — it is
@@ -200,8 +226,9 @@ once. That rationale is gone, and all four are copies now, so the only
 surviving reparse points are the per-skill junctions. Fewer of them is
 strictly less exposure to that class of bug.
 
-GitHub Copilot needs no payload and no linker: the VS Code agent
-surface reads the same `~/.claude` paths this repo already populates —
+GitHub Copilot needs no payload and no linker **on this machine**: the
+VS Code agent surface reads the same `~/.claude` paths this repo already
+populates —
 `rules`, `skills`, `agents`, `settings.json` and `CLAUDE.md` are all
 documented defaults there, `skills` included (retested 2026-09-09; a
 2026-09-04 note here claimed it did not resolve and was wrong). The
@@ -213,10 +240,21 @@ semantics — notably, matchers are read and ignored, so the
 matcher-scoped `security-reviewer` write guard runs far wider there
 than under Claude Code. It validates skill frontmatter against its own
 field list too, so `paths:`, `model:` and `effort:` all warn and are
-ignored — meaning a conditional skill is **unconditional** there. Full detail, including the settings block and
-the traps, is in [README.md](README.md#tool-support); this repo is
-authored and validated against Claude Code, and Copilot wiring is not
-maintained here.
+ignored — meaning a conditional skill is **unconditional** there.
+
+**That is a *skills* fact and does not generalize to rules.** In
+`.claude/rules` Copilot implements `paths:` on purpose, as the Claude
+Rules format, defaulting to `**` when absent — so a rule stays
+conditional exactly as it is here while a skill does not. Measured
+2026-09-09: a `.sql` file open in a client repo loaded two of the twelve
+rules in `~/.claude/rules`, the two whose globs matched. The pair is
+easy to conflate and the consequences run opposite ways.
+
+What the `~/.claude` paths cannot do is travel in a clone, which is what
+`copilot/` and `scripts/copy-copilot.ps1` exist for. Full detail,
+including the settings block and the traps, is in
+[README.md](README.md#tool-support); this repo is authored and validated
+against Claude Code, and Copilot wiring is not maintained here.
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
 deployed anywhere and loads only in sessions inside this repo.

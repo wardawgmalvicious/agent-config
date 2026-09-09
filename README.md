@@ -158,15 +158,17 @@ stay separable:
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads
   `SKILL.md` can consume [skills/](skills/) directly.
-- **GitHub Copilot** — consumes this repo with **no payload of its own
-  and no wiring**. The Claude paths are *documented defaults* on the
-  VS Code agent surface, so `link-claude.ps1` alone is enough:
-  `~/.claude/rules` for instructions, `~/.claude/skills` for skills,
-  `~/.claude/agents` for subagents, `~/.claude/CLAUDE.md` for always-on
-  instructions, and `~/.claude/settings.json` for hooks (it parses
-  Claude Code's hook format). That is why there is no `copilot/` payload
-  directory: Copilot is a second consumer of the Claude-format payload,
-  not a separate one.
+- **GitHub Copilot** — needs **no wiring on this machine**. The Claude
+  paths are *documented defaults* on the VS Code agent surface, so
+  `link-claude.ps1` alone is enough: `~/.claude/rules` for
+  instructions, `~/.claude/skills` for skills, `~/.claude/agents` for
+  subagents, `~/.claude/CLAUDE.md` for always-on instructions, and
+  `~/.claude/settings.json` for hooks (it parses Claude Code's hook
+  format). So Copilot is a second consumer of the Claude-format payload
+  rather than a separate one — and `paths:` carries over intact, which
+  was measured rather than assumed: on 2026-09-09 a `.sql` file open in
+  a client repo loaded exactly two of the twelve rules in
+  `~/.claude/rules`, the two whose globs matched.
 
     | Artifact | Workspace defaults | User-profile defaults |
     | --- | --- | --- |
@@ -241,6 +243,17 @@ stay separable:
     split that governs `when_to_use` adoption is a Claude Code fact only,
     and "free because it is conditional" does not transfer.
 
+    **Rules are the opposite, and the pair is easy to conflate.** In
+    `.claude/rules` Copilot implements `paths:` deliberately, as the
+    Claude Rules format, defaulting to `**` when the key is absent — so
+    a rule stays conditional there exactly as it is here, while a skill
+    does not. Measured 2026-09-09: a `.sql` file open in a client repo
+    loaded two of the twelve rules in `~/.claude/rules`, the two whose
+    globs matched, from user scope with nothing deployed. Note which
+    key each surface reads — `.github/instructions` takes `applyTo`
+    instead, and an instructions file carrying **neither** is never
+    applied automatically at all.
+
     **`~/.claude/skills` does resolve** — retested 2026-09-09, with the
     sidebar loading skills from `~/.claude/skills/<name>/SKILL.md`
     through this repo's junctions. A 2026-09-04 entry here claimed the
@@ -264,6 +277,25 @@ stay separable:
     `~/.claude/rules`, `~/.copilot/agents`) instead of VS Code profile
     user data — the change that removed the "or your user data"
     fallback from both location tables in mid-2026.
+
+- **[copilot/](copilot/) is the one exception, and it is for other
+  people.** A junction cannot be committed, so a teammate cloning a
+  client repo gets nothing from the paths above.
+  [copilot/instructions/](copilot/instructions/) holds eight
+  `claude/rules/` bodies re-emitted as `*.instructions.md` with
+  `applyTo` globs, which
+  [scripts/copy-copilot.ps1](scripts/copy-copilot.ps1) vendors into a
+  repo's `.github/instructions` as real files. This is the only place
+  the repo carries one piece of guidance in two formats, and the reason
+  is that they are genuinely different: `applyTo` is a single
+  comma-separated string where `paths:` is a list, and an instructions
+  file with **no** `applyTo` never auto-applies at all — so a straight
+  copy would ship files that silently do nothing. That makes the port a
+  translation rather than a copy, which means it is hand-written and can
+  rot, so
+  [scripts/lint-instructions.py](scripts/lint-instructions.py) fails a
+  commit when a rule moves without its port following. This repo has
+  already lost two parallel instruction payloads to exactly that drift.
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
