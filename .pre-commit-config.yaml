@@ -24,3 +24,18 @@ repos:
         additional_dependencies: [pyyaml]
         files: '^claude/rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]
+
+      # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
+      # so lint-frontmatter.py would reject every one and is scoped away from
+      # them. This validates them instead, blocks a personal-repo name or
+      # profile path reaching a client repo, and fails when a rule changes
+      # without its hand-written port following. Runs over the whole set
+      # rather than the changed files, since a rule edit and its port live in
+      # different directories and either one alone is the interesting case.
+      - id: lint-instructions
+        name: Validate Copilot instructions and check port drift
+        entry: python scripts/lint-instructions.py
+        language: python
+        additional_dependencies: [pyyaml]
+        files: '^(claude/rules/|copilot/)'
+        pass_filenames: false

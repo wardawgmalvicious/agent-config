@@ -72,6 +72,22 @@ Helper scripts for repo maintenance and observability.
   glob checks. Used by the pre-commit `Validate SKILL.md frontmatter` and
   `Validate rules frontmatter` hooks; can also run manually as
   `python scripts/lint-frontmatter.py <path>...`.
+- [lint-instructions.py](lint-instructions.py) — validate
+  `copilot/instructions/*.instructions.md` and guard them against drift from
+  the `claude/rules/*.md` they were hand-translated from. Three checks in one
+  pass. **Frontmatter**: `applyTo` is one comma-separated glob string, not a
+  list — a list parses as valid YAML and then matches nothing, and
+  `lint-frontmatter.py` cannot check these at all since it *requires*
+  `paths:`. **Leakage**: a personal-repo name or profile path must never
+  reach a client repo, so the hand-stripping is checkable rather than
+  remembered. **Drift**: each port is one-time and hand-written, so an edit
+  to a rule otherwise leaves its port stale with nothing anywhere to say so
+  — the exact way the two previous parallel instruction payloads here died.
+  Hashes live in `copilot/.source-hashes.json`, which stays in this repo and
+  is never deployed; it also lists the rules deliberately **not** ported and
+  why, so a newly added rule surfaces as a decision to make rather than an
+  omission. Re-record after a deliberate port with `--stamp`. Run by
+  pre-commit.
 - [skill-telemetry.py](skill-telemetry.py) — post-hoc answer to "which
   skills are earning their listing budget?". Three subcommands:
   `coverage` (per skill: how many startup listings it appeared in, how
