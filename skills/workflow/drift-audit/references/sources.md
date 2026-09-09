@@ -406,8 +406,34 @@ cadence; and the skill was written **entirely from docs with no local
 sample**, because no ontology item exists in any repo on this machine.
 Every other Fabric skill here was checkable against a real export. That
 is the condition this source substitutes for — so do **not** read it as a
-precedent for one source per skill. Retire it if an ontology item ever
-lands in a Git-synced workspace here, or if the item goes GA and settles.
+precedent for one source per skill.
+
+**Confirmed keep, 2026-09-09.** Both halves of the premise were
+re-measured rather than read off the line above: `find` over the repo
+roots still returns zero `*.Ontology` items, and the `fabric` skill group
+**is** deployed into a client repo, so `fabric-ontology` and the two agent
+skills in `artifacts` are live for someone. The question that prompted the
+re-check — whether a source aimed at an unused workload earns its slot —
+resolves the other way round from how it reads: *not* having a sample is
+precisely why the docs are this skill's only ground truth.
+
+**Retirement is narrower than it looks, and the trap is that it fires on
+the good news.** As originally written the condition read as
+automatic — *retire it if an ontology item ever lands in a Git-synced
+workspace here* — and a local ontology item is expected here soon. A sample is ground truth for the
+**definition layout** only — the `{}` envelope, the `EntityTypes/{id}/`
+and `DataBindings/{guid}.json` shapes, what `.platform` carries. It says
+nothing about the claims most likely to move and most expensive to get
+wrong: the one-static-binding-per-entity-type limit, static-before-
+time-series ordering, string/integer-only entity keys, managed-tables-only
+and the OneLake-security and delta-column-mapping exclusions, the
+`Decimal`-returns-null trap, and Direct Lake bindings failing silently
+when the backing lakehouse workspace has inbound public access disabled.
+Those are behavioural and support-matrix facts that no single export
+exhibits. So: **a first local sample retires the layout half of this
+source, not the source.** Narrow the `files` list to the pages carrying
+limits and the support matrix at that point, and retire the entry outright
+only when the item goes GA and settles.
 
 The REST **item-definition** spec is a separate page in a separate repo
 (`rest/api/fabric/articles/item-management/definitions/ontology-definition`)
