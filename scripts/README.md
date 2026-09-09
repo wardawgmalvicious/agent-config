@@ -50,6 +50,20 @@ Helper scripts for repo maintenance and observability.
   Never overwrites a drifted mirror copy, deletes a real directory, or
   removes a target-only file without `-Force`; exits 1 when anything
   needs attention.
+- [copy-copilot.ps1](copy-copilot.ps1) — copy selected skill groups into
+  a repo's `.github/skills` as real, committable files, so GitHub
+  Copilot serves them to everyone who clones it. Deliberately **not** a
+  user-scope tool: `-CopilotDir` is mandatory and has no default,
+  because Copilot already reads `~/.claude/skills` directly and a copy
+  there would only duplicate the junctions. Ownership is the whole
+  difficulty — a client's `.github/skills` may already hold skills this
+  repo did not write — so it tracks what it deployed in a
+  `.managed-skills.json` at the target, re-syncs and prunes only those
+  folders, and skips a name collision it did not create unless `-Force`
+  adopts it. That manifest names no source repo, commit, path or user:
+  it deploys into client repos, and this one is personal. Reports rather
+  than prevents double discovery when `.claude/skills` sits alongside,
+  since Copilot reads both.
 - [lint-frontmatter.py](lint-frontmatter.py) — validate `SKILL.md` and
   `rules/*.md` frontmatter against repo conventions. Kind is inferred from
   the path: files under `rules/` need `paths:` and are exempt from
@@ -105,15 +119,16 @@ Helper scripts for repo maintenance and observability.
   each against
   [expected_findings.md](../tests/skills/fabric-semantic-model-audit/expected_findings.md).
 
-There is deliberately **no `link-copilot.ps1`**. It existed to junction
-skills one-by-one into the shared `~/.agents/skills`, on the premise that
-`chat.agentSkillsLocations` had no entry for `~/.claude/skills` — which
-was already false when it was written. That location has been documented
-since at least 2026-06-26, so every artifact Copilot needs reaches it
-through the `~/.claude` paths `link-claude.ps1` already creates — rules,
-hooks, subagents, skills, and user-scope instructions alike. Enabling
-them is a `chat.*Locations` settings decision; see the Tool support
-section of the [root README](../README.md#tool-support).
+There is still deliberately **no `link-copilot.ps1`**, and
+`copy-copilot.ps1` is not one. Every artifact Copilot needs already
+reaches it through the `~/.claude` paths `link-claude.ps1` creates —
+rules, hooks, subagents, skills and user-scope instructions alike, all
+documented defaults on the VS Code agent surface. A linker would be
+copying files to where they already are. What `copy-copilot.ps1` does
+instead is the one thing a junction cannot: produce **committable**
+files, so a teammate cloning a client repo gets the skills without this
+repo, without a script, and without a machine that has either. See the
+Tool support section of the [root README](../README.md#tool-support).
 
 ## Pre-commit
 
