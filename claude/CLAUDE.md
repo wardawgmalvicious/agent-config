@@ -215,6 +215,26 @@ the list, so a new client name is still yours to catch, and to add;
 is not this guard: it matches secrets, not names, and never reads a
 message (measured 2026-09-04).
 
+### Branch naming
+
+`<type>/<kebab-slug>`, in every repo. `<type>` is the conventional-commit
+vocabulary — `feat`, `fix`, `docs`, `refactor`, `chore`, plus `perf`,
+`test`, `build`, `ci` where they apply — so a branch and the commits on
+it agree without maintaining a second taxonomy. Not `feature`, not
+`bugfix`, not `hotfix`: whatever `/commit` would write as the type is
+the type.
+
+`<slug>` names the subject in kebab-case, two to four words:
+`feat/fabric-ontology-skill`, `fix/coding-kql-glob`,
+`docs/semantic-model-briefs`. Prefer the noun the change is about over
+the action taken on it — `git log` already carries the verb. No ticket
+numbers, no dates, and no position or sequence markers (`wave-3`,
+`part-2`): positions churn and the name outlives them.
+
+A repo's own committed convention wins over this one. Check
+`CONTRIBUTING.md`, or `git branch -a` for what the repo already does,
+before naming the first branch in an unfamiliar repo.
+
 ## Agent config source
 
 `~/.claude` is deployed from `C:\Repos\Personal\agent-config` by
