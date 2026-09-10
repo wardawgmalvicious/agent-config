@@ -87,6 +87,15 @@ conformance checking.
   their per-context siblings, deliberately **not** on `.gitattributes` —
   that glob would fire in nearly every repo on the machine to deliver
   guidance that is mostly about one setup.
+- [claude-config-scoping.md](claude-config-scoping.md) — not a coding
+  convention: which Claude Code config file a server or permission
+  belongs in — user `~/.claude.json` vs local `projects.<path>` vs a
+  committed `.mcp.json` — plus the editing traps around them: the two
+  `ConvertFrom-Json` switches that are silent when omitted, a live
+  session rewriting `~/.claude.json` from memory, `request_timeout_ms`
+  being dropped on stdio, and `${VAR}` shipping literally when the
+  editor was reloaded rather than restarted. Triggers on `.mcp.json`,
+  `.claude/settings*.json`, `.claude.json`, and `.vscode/mcp.json`.
 
 ## Project-scope override
 

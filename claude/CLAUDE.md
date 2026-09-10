@@ -282,15 +282,14 @@ against `agent-config/claude/mcp/.mcp.global.template.json` by
 payload. User scope is `microsoft-learn-mcp`, `azure-mcp` and
 `dockerhub-mcp`: servers useful in any repo. **Everything Fabric and
 Power BI is project scope** (`<fabric-repo>/.mcp.json` and the like), so
-those tools are absent here and that is not a fault to fix — a
-user-scope server loads its whole tool surface into every session on the
-machine, including ones where it cannot fire. Reach for a project's
-`.mcp.json` rather than promoting a server to user scope.
+those tools are absent here and that is not a fault to fix. Reach for a
+project's `.mcp.json` rather than promoting a server to user scope.
 
-That file has parsing traps that corrupt it silently, and Docker
-Desktop re-adds an unfiltered `MCP_DOCKER` entry that double-loads every
-azure and dockerhub tool. Both are covered in
-`agent-config/claude/mcp/README.md`; read it before editing the file.
+The scope test behind that, the parsing traps that corrupt
+`~/.claude.json` silently, and the `MCP_DOCKER` entry Docker Desktop
+re-adds are in `~/.claude/rules/claude-config-scoping.md`, which loads
+whenever one of these files is opened; per-server detail stays in
+`~/.claude/mcp/README.md`.
 
 ## Coding conventions
 

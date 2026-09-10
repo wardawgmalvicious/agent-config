@@ -1,5 +1,6 @@
 {
   "deferred": {
+    "claude-config-scoping": "Claude Code harness plumbing -- scopes, ~/.claude.json runtime state, MCP server placement. Copilot reads none of these files and uses a different schema (top-level `servers` at .vscode/mcp.json), so a port would be guidance about a harness the reader is not running.",
     "coding-bash": "Harness plumbing, not data work; also the leakiest rule (names this repo's hooks twice).",
     "coding-markdown": "Universal syntax half, but the prose discipline is house voice measured from this repo's own 215 authored files -- not conventions to impose on a client repo's teammates. Also the only rule scoped `**/*.md`, so a port would load on every vendored and third-party doc in their tree. Port is a one-line flip if a team ever wants it.",
     "coding-powershell": "Data teammates do not write PowerShell here; references another personal repo.",
