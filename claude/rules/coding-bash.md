@@ -2,17 +2,24 @@
 paths:
   - "**/*.sh"
   - "**/*.bash"
+  - "**/.bashrc"
+  - "**/.bash_profile"
+  - "**/.profile"
 ---
 
 # Bash Coding Conventions
 
-Applies to shell scripts across these repos. Two shapes exist and they
-have different rules, called out where they diverge:
+Applies to shell scripts and to sourced shell profiles across these
+repos. Three shapes exist and they have different rules, called out
+where they diverge:
 
 - **CLI wrappers** — `local-cli/*.sh`, `infra/deploy.sh`.
   Strict-mode scripts a human or agent runs directly.
 - **Claude Code hooks** — `agent-config/hooks/*.sh`. Run automatically on
   every session or tool call; see the hooks section.
+- **Shell profiles** — `.bashrc`, `.bash_profile`, `.profile`. Sourced
+  into a shell rather than executed, which inverts the strict-mode rule
+  below.
 
 Target is bash 4.4+ (Git Bash on Windows ships 5.x). If a project-scope
 `.claude/rules/coding-bash.md` exists, that file supersedes this one.
@@ -55,7 +62,18 @@ configuration they read, usage examples, and any deployment assumption:
 ## Strict mode
 
 `set -euo pipefail` at the top of any script that **acts**. Do not use it
-in observability hooks that must never abort — see the hooks section.
+in observability hooks that must never abort — see the hooks section —
+and do not use it in a shell profile.
+
+**A profile is sourced, so `set -e` exits the shell you are starting.**
+The first command returning non-zero ends rc processing *and* the
+session, before any prompt appears — and a `command -v` probe or a
+`grep` that matched nothing is a command returning non-zero. `set -u`
+behaves differently rather than identically, which is worth knowing
+before reaching for one as a substitute: an unbound reference prints
+`bash: NAME: unbound variable` and rc processing **continues**. Guard
+optional work with a conditional and let the failures pass. Both
+measured on bash 5.3, 2026-09-10.
 
 Three errexit behaviours that bite, all verified on bash 5.3:
 

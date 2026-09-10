@@ -35,7 +35,9 @@ conformance checking.
 - [coding-powershell.md](coding-powershell.md) — PowerShell (`pwsh` 7+):
   bootstrap and automation scripts, machine-state tooling
 - [coding-bash.md](coding-bash.md) — Bash (Git Bash on Windows): CLI
-  wrapper scripts and Claude Code hooks
+  wrapper scripts, Claude Code hooks, and sourced shell profiles
+  (`.bashrc`, `.bash_profile`, `.profile`), which invert the strict-mode
+  rule because `set -e` exits the shell being started
 - [coding-kql.md](coding-kql.md) — KQL (Eventhouse, Log Analytics, ADX)
 - [coding-dax.md](coding-dax.md) — DAX (Power BI / Fabric semantic
   models)
