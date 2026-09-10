@@ -45,6 +45,22 @@ repos; live config describes this one. The VS Code template is the one
 deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
+`.claude/skills/` is that third category too, and is the one place where
+it holds *skills* rather than settings. Seven skills live there —
+`author-skill`, `test-skill`, `learn`, `drift-audit`, `drift-handoff`,
+`drift-update`, `land` — because their whole subject is maintaining this
+repo's own payload, so they can never usefully fire anywhere else. They
+are authored at project scope, deployed nowhere, and reached by no
+script: `link-claude.ps1` and `copy-copilot.ps1` both select out of
+`skills/`, so neither can see them and neither needed changing when they
+moved there (2026-09-09). That is the point rather than an omission — a
+`description` is the entire trigger mechanism and the listing has a
+budget, so six of these sitting at user scope were being offered to every
+client-repo session on this machine, where they could only ever be noise.
+`land` joined them for a different reason: it is built on `github-mcp`,
+which is project scope here, so a user-scope listing advertised it in
+sessions whose tools could not run it.
+
 `.claude/settings.json` holds more than servers and permissions: a
 `skillOverrides` block collapses all 41 platform skill descriptions to
 `name-only` in sessions here. That is deliberate, and it stays even
@@ -64,15 +80,22 @@ placement is only about format.
 
 ```bash
 # Lint frontmatter (skills need name/description; rules need paths:)
+# Both skill trees take the same linter: it infers kind from a `rules/`
+# path segment, not from `skills/`, so project scope needs no special case.
 uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
+uv run --with pyyaml scripts/lint-frontmatter.py .claude/skills/<name>/SKILL.md
 uv run --with pyyaml scripts/lint-frontmatter.py claude/rules/<name>.md
+
+# Check the flat skill-name namespace across BOTH trees. Runs over the
+# whole set, not changed files: a collision is a property of a pair.
+uv run scripts/lint-skill-scopes.py
 
 # Validate the Copilot instruction ports: applyTo frontmatter, no leaked
 # repo name or profile path, and no drift from the rule each was ported
 # from. --stamp re-records the hashes after a deliberate re-port.
 uv run --with pyyaml scripts/lint-instructions.py
 
-# All checks, the way CI runs them (gitleaks, frontmatter, instructions)
+# All checks, the way CI runs them (gitleaks, frontmatter, scopes, instructions)
 pre-commit run --all-files
 pre-commit run lint-skills --all-files     # one hook only
 
@@ -86,7 +109,9 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 
 ```powershell
 # THIS MACHINE'S DEFAULT — always use this form. Deploys the workflow
-# skills only; fabric and powerbi are PRUNED from ~/.claude/skills.
+# group only (code-review, commit); fabric and powerbi are PRUNED from
+# ~/.claude/skills. This repo's own maintenance skills are NOT here and
+# are not deployed by anything — see .claude/skills/ above.
 # -Force also pushes claude/CLAUDE.md and claude/settings.json, and is
 # what allows deleting a target-only file under agents/hooks/rules/mcp.
 # Everything except skills/ deploys by copy, so a repo edit to a rule,
@@ -146,12 +171,33 @@ Linting gotchas worth keeping:
   first with
   `$files = Get-ChildItem skills -Filter SKILL.md -Recurse | % FullName`.
 - The pre-commit hooks are **depth-pinned**. The skills hook matches
-  `^skills/[^/]+/[^/]+/SKILL\.md$` — that is
-  `skills/<group>/<name>/SKILL.md` and nothing else. A skill placed
-  flat at `skills/<name>/SKILL.md`, or nested a level deeper, is
-  silently skipped by the linter *and* invisible to Claude Code's
-  one-level discovery — two silent failures from one misplacement. The
-  rules hook is flat in the same way and won't see a nested rule.
+  `^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$` — the two trees sit
+  at different depths, so the first arm consumes a group segment and the
+  second consumes none, and each is pinned exactly. That is
+  `skills/<group>/<name>/SKILL.md` and `.claude/skills/<name>/SKILL.md`
+  and nothing else. A skill placed flat at `skills/<name>/SKILL.md`, or
+  nested a level deeper, is silently skipped by the linter *and*
+  invisible to Claude Code's one-level discovery — two silent failures
+  from one misplacement. The rules hook is flat in the same way and
+  won't see a nested rule.
+- **A `files:` pattern that misses reports success.** pre-commit prints
+  `(no files to check) Skipped`, which scans as a pass, so widening one
+  is not self-verifying. Prove it against a path that must match and a
+  path that must not:
+  `pre-commit run lint-skills --files .claude/skills/land/SKILL.md`
+  (expect `Passed`) and `... --files skills/land/SKILL.md` (expect
+  `Skipped`). Both were run when the second arm was added, 2026-09-09.
+- **Skill names are one flat namespace across both trees**, since Claude
+  Code addresses a skill by name alone — no group segment, no scope
+  qualifier. `scripts/lint-skill-scopes.py` enforces it, and runs over
+  the whole set rather than changed files because a collision belongs to
+  a *pair*: neither file is wrong on its own, so no per-file hook could
+  ever see it. It catches two cases with opposite noise levels. A name
+  in both `skills/` and `.claude/skills/` is the **silent** one — user
+  scope wins, the project-scope copy stops loading, and the only symptom
+  is a skill behaving like an older version of itself. A name duplicated
+  across `skills/` groups is already fatal in both deploy scripts; it is
+  caught here only so it fails before the commit instead of after.
 - `tests/` and `docs/` are gitleaks-allowlisted because fixtures
   intentionally contain fake credential-shaped strings.
 
@@ -163,6 +209,7 @@ lands determines when it goes live:
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
 | `skills/<group>/` | `~/.claude/skills/<name>` | one junction per skill (`scripts/link-claude.ps1`) | immediately — same files |
+| `.claude/skills/<name>/` | nowhere — read in place at project scope | none; no script touches it | immediately, in sessions here only |
 | `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/mcp/` | `~/.claude/mcp` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
@@ -261,7 +308,8 @@ deployed anywhere and loads only in sessions inside this repo.
 
 ## How the pieces trigger
 
-- **Skills** (`skills/<group>/<name>/SKILL.md`) trigger three ways:
+- **Skills** (`skills/<group>/<name>/SKILL.md` for deployable payload,
+  `.claude/skills/<name>/SKILL.md` for this repo's own) trigger three ways:
   model-invoked (the frontmatter `description` is the *entire* trigger
   mechanism — the model matches context against it), user-invoked
   (`/<name>`), or path-scoped (a `paths:` glob in frontmatter).
@@ -295,8 +343,11 @@ deployed anywhere and loads only in sessions inside this repo.
 
 ## Working on this repo
 
-The workflow skills in `skills/workflow/` are this repo's own operating
-procedure, not generic helpers:
+This repo's own operating procedure lives in `.claude/skills/` at
+project scope — these are not generic helpers, and outside this repo
+they have nothing to act on. `/commit` and `/code-review` are the
+exceptions and stay deployable in `skills/workflow/`, being useful in
+any repo:
 
 - `/author-skill` — new skill end to end: coverage check, naming, doc
   drilling, a filled brief in `docs/handoffs/`, then the draft
@@ -330,14 +381,23 @@ filename has to stay stable and the ordering lives in the queue file.
 
 ## Branching and concurrent sessions
 
-**Skill saves are live; nothing else is.** Each skill is its own
-junction into *this working tree*, so a `SKILL.md` edit changes the
-payload for **every session on this machine the moment it hits disk**,
-committed or not. `rules`, `hooks`, `agents` and `mcp` were junctions
+**Skill saves are live; nothing else is** — but *how far* they reach now
+depends on which tree they are in, and the difference is the whole point
+of the split. A skill under `skills/workflow/` is junctioned into user
+scope, so an edit changes the payload for **every session on this
+machine the moment it hits disk**, committed or not. A skill under
+`.claude/skills/` is live just as immediately, and only in **sessions
+inside this repo**. `rules`, `hooks`, `agents` and `mcp` were junctions
 too until 2026-09-02 and are copies now, so they change only when
-`scripts/link-claude.ps1` runs. That conversion removed most of the
-hazard this section was written for — what remains applies to `skills/`
-alone.
+`scripts/link-claude.ps1` runs.
+
+Two conversions have therefore eaten most of the hazard this section was
+written for. The 2026-09-02 copy conversion took `rules`/`hooks`/
+`agents`/`mcp` out of it, and the 2026-09-09 scope split took seven of
+the nine workflow skills out of user scope — so a mid-edit save to
+`/learn` or `/drift-audit` can no longer reach a client-repo session at
+all. What is left at machine-wide blast radius is `code-review` and
+`commit`.
 
 Every commit here is on `main`, and **no merge commit has ever existed**
 (measured 2026-09-02, 324 commits in). The first branch —
@@ -355,13 +415,20 @@ the worktree section below, which found no isolation a branch could buy.
 Reconsider if a second silent collision between concurrent sessions
 happens anyway.
 
-Note which skills that trigger actually covers. It is the **workflow
-skills** — they are junctioned into user scope, so each `SKILL.md` save
-is in every session's listing before the fixtures, the queue row and the
-rule catch up. A **platform** skill is pruned from user scope and
-junctioned nowhere, so authoring one changes no session's payload at any
-point and needs no branch on these grounds.
-Waves 12–14 are all platform-skill authoring.
+Note which skills that trigger actually covers, which the 2026-09-09
+scope split narrowed to two. It is `code-review` and `commit` — the only
+skills still junctioned into user scope, so each `SKILL.md` save is in
+every session's listing before the fixtures, the queue row and the rule
+catch up. A **platform** skill is pruned from user scope and junctioned
+nowhere, so authoring one changes no session's payload at any point and
+needs no branch on these grounds. Waves 12–14 are all platform-skill
+authoring.
+
+A **project-scope** skill in `.claude/skills/` sits between the two and
+lands nearer the platform case. A save is live, but only for sessions in
+this repo, so the reach is one working tree rather than the machine —
+and a branch cannot isolate that anyway, since both sessions share the
+tree. Sequencing is the remedy there, not branching.
 
 **Sequencing outranks branching when another session is live.** These
 two rules collide, and this is the precedence: `git switch -c` is still
@@ -428,12 +495,25 @@ results, in the order they matter:
   With `drift-handoff` at both scopes and a marker in only the
   worktree's copy, the listing carried the **user-scope** text and the
   marker appeared nowhere in the transcript. Project scope only adds
-  names user scope lacks.
+  names user scope lacks — and **a name it adds does resolve**, which
+  was the untested half until 2026-09-09: the seven skills moved to
+  `.claude/skills/` exist at project scope *only*, and a fresh session
+  here listed them. Shadowing is the rule when both scopes hold a name;
+  it is not a general demotion of project scope.
 - **So a worktree is either unnecessary or ineffective, with no case
   in between.** A platform skill is pruned from user scope, so editing
   it here changes no session's payload and needs no isolation — the
   workflow-only prune already *is* the isolation. A workflow skill is
   at user scope, and a worktree cannot override it.
+
+**The 2026-09-09 scope split reopens that last bullet, and it has not
+been re-measured.** The dichotomy held because every workflow skill was
+at user scope, where the shadowing rule made a worktree copy inert. The
+seven skills now in `.claude/skills/` are at project scope *only* — no
+user-scope copy exists to outrank them — so a worktree plausibly does
+isolate them, which would be the in-between case the bullet says cannot
+exist. Treat the conclusion as covering `code-review` and `commit`, and
+re-run the worktree probe before relying on it for the other seven.
 
 Two supporting facts, both measured the same day. `-SkillGroups` does
 **not** prune user scope when `-ClaudeDir` is given — the prune loop
@@ -495,8 +575,8 @@ it if they hadn't.
   semantics are confirmed against `code.claude.com/docs/en/skills`.
   Lint with
   `uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md`
-  (pre-commit runs it too). Long detail goes in
-  `skills/<group>/<name>/references/`, not SKILL.md. Skills
+  (pre-commit runs it too, over both skill trees). Long detail goes in
+  the skill's own `references/`, not SKILL.md. Skills
   **hot-reload**: Claude Code watches skill directories and picks up
   changes in-session, and this works through this repo's junctions —
   verified 2026-08-31 on Claude Code 2.1.251 for skill add, skill
@@ -530,11 +610,16 @@ it if they hadn't.
   Current policy: the session default is `"effortLevel": "max"` in
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
   this repo).
-  `effort` is `max` on the seven workflow skills that drive this repo
-  — `code-review`, `drift-audit`, `author-skill`, `test-skill`,
-  `learn`, `drift-update`, `drift-handoff` — `xhigh` on `commit`, and
+  `effort` is `max` on the eight skills that drive this repo —
+  `code-review` in `skills/workflow/`, and `drift-audit`,
+  `author-skill`, `test-skill`, `learn`, `drift-update`,
+  `drift-handoff`, `land` in `.claude/skills/` — `xhigh` on `commit`,
+  and
   left commented on all 41 platform skills, which therefore inherit
-  `max`.
+  `max`. The 2026-09-09 scope split moved six of the seven without
+  changing any pin: `effort` applies on both the slash and
+  model-invocation paths and is scope-independent, so a project-scope
+  skill keeps its floor exactly as a user-scope one does.
   Note what that means: *while the session actually sits at* `max`,
   only `commit` changes behaviour. But the session level is **live
   state, not the file** — it can be changed mid-session, nothing

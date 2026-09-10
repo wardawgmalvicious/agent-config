@@ -19,22 +19,12 @@ See each `SKILL.md` for its specific triggering conditions.
 ## Behavioral (cross-domain)
 
 Naming convention: behavioral skills are named as the verb you invoke
-(`/commit`, `/learn`); platform skills carry a `fabric-` / `pbir-` /
+(`/commit`, `/code-review`); platform skills carry a `fabric-` / `pbir-` /
 `pbid-` namespace prefix. `powerbi-*` skills are vendored from
 [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
 and keep Microsoft's upstream naming so re-sync diffs and their
 internal cross-references stay intact.
 
-- [author-skill/](workflow/author-skill/) — author a new skill for this repo end
-  to end: coverage check, name and namespace, doc drilling, a filled
-  handoff brief in [docs/handoffs/](../docs/handoffs/), then
-  the `SKILL.md` draft and the post-draft checks. Ends at a linted draft
-  plus a fresh-session test plan — no fixtures, no commit. Deliberately
-  overlaps the loaded `skill-creator` and `plugin-dev:skill-development`
-  plugin skills, which know the Agent Skills format but not this repo's
-  naming rules, `references/` split, lint command, or brief-before-draft
-  discipline. Named for the verb you invoke, like the rest of this
-  section, and kept distinct from `skill-creator` in trigger matching.
 - [code-review/](workflow/code-review/) — review code for quality, naming,
   error handling, security, and scaling. Multi-language: Python,
   PySpark, T-SQL, Spark SQL, KQL, DAX, TMDL, Fabric pipeline
@@ -43,56 +33,14 @@ internal cross-references stay intact.
   self-consistent commits: splitting rules, conventional-commit
   messages with motivation in the body, explicit-path staging,
   never-push/amend rails, Fabric Git-synced repo checks.
-- [drift-audit/](workflow/drift-audit/) — audit registered upstream docs sources
-  for skill staleness, drift in existing skills, new-skill candidates,
-  and MCP/tooling additions. Findings only — no edits. Sources are a
-  registry ([references/sources.md](workflow/drift-audit/references/sources.md)),
-  not a hardcoded list — Fabric and Power BI What's New today, and
-  widening the audit to another domain is an entry there plus a
-  validated run. Named for the job, not the target: it audits rules,
-  `CLAUDE.md`, and the MCP templates too, so `skill-audit` would name a
-  quarter of its scope and would collide with a plausible future skill
-  that actually audits skill quality.
-- [drift-handoff/](workflow/drift-handoff/) — the write half of `/drift-audit`:
-  turn its report into `docs/audits/<date>/<source-id>/`, holding
-  the report verbatim plus one brief per recommended action, grouped by
-  shared verification steps. Split from `drift-audit` so the turn doing
-  the analysis has no write capability; runs inline because it reads the
-  report out of the current conversation. Only recommended actions
-  become briefs — everything else stays conversational.
-- [drift-update/](workflow/drift-update/) — the third turn: execute the briefs
-  `/drift-handoff` left on disk. Walks them in numbered order with a
-  checkpoint each — confirm the quoted evidence still exists, apply,
-  run the brief's own verification, stamp an execution log — and stops
-  on the first failure. Briefs whose `Kind` is a decision rather than
-  an edit are escalated, never executed. Reads briefs from disk and
-  never from the conversation, which is what keeps `drift-handoff`'s
-  cold-read contract honest: a brief that can't be executed without
-  opening the audit report is reported as a brief-format defect.
-- [land/](workflow/land/) — the step after `/commit`: push the branch,
-  verify which GitHub account is actually authenticated, open the PR
-  through `github-mcp`, then fast-forward `main` and check CI. Stops for
-  confirmation before the push to `main`, the one irreversible step.
-  Named `land` because root [CLAUDE.md](../CLAUDE.md) already says to
-  "land a branch locally rather than through the merge button" — the
-  repo's own vocabulary. Earns its place because two steps fail
-  *silently*: `gh` and `github-mcp` can authenticate as different
-  accounts, so a PR lands under the wrong identity with no error.
-- [learn/](workflow/learn/) — "learn!": capture a session learning into the
-  skill / rule / CLAUDE.md that should have covered it. Auto-detects
-  which guidance was in use, checks existing coverage, verifies against
-  docs, proposes a diff for approval, hands off to `/commit`.
-- [test-skill/](workflow/test-skill/) — the second half of
-  `/author-skill`: write a drafted skill's trigger fixtures, update the
-  `expected_activations.md` contract, run the static and real-path
-  activation tests, then check behaviour in a cold session against a
-  `--safe-mode` baseline. Named as the verb you invoke, and paired with
-  `author-skill` deliberately — that skill stops at a linted draft and
-  writes no fixtures, so nothing validated a new skill until this one
-  existed. Reads the handoff brief from disk rather than from session
-  context, so it runs cold like `/drift-update` instead of depending on
-  the authoring run. Skills only; subagents and hooks keep the manual
-  procedure in [tests/](../tests/).
+
+The seven skills that maintain *this* repo — `author-skill`,
+`test-skill`, `learn`, `drift-audit`, `drift-handoff`,
+`drift-update`, `land` — are **not here**. They live at project
+scope in [.claude/skills/](../.claude/skills/), which no deploy
+script reaches, because they can only ever act on this working
+tree. Being payload is what this directory means, and they are not
+payload. See [.claude/skills/README.md](../.claude/skills/README.md).
 
 ## Microsoft Fabric platform (29)
 
