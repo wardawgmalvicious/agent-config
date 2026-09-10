@@ -289,8 +289,10 @@ It parses Claude's hook *format* but not its
 semantics — notably, matchers are read and ignored, so the
 matcher-scoped `security-reviewer` write guard runs far wider there
 than under Claude Code. It validates skill frontmatter against its own
-field list too, so `paths:`, `model:` and `effort:` all warn and are
-ignored — meaning a conditional skill is **unconditional** there.
+field list too, so `paths:` and `effort:` warn and are ignored —
+meaning a conditional skill is **unconditional** there. `model:` is
+the exception that is *not* merely ignored: it breaks slash dispatch
+outright, for which see Editing conventions below.
 
 **That is a *skills* fact and does not generalize to rules.** In
 `.claude/rules` Copilot implements `paths:` on purpose, as the Claude
