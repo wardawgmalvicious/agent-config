@@ -46,14 +46,16 @@ question.
   history, and none may leave the repo in a broken intermediate state.
   Order accordingly (e.g. a rename lands before anything citing the
   new name).
-- **When one file straddles commits**, interactive `git add -p` is
-  unavailable in this harness — instead, step the file through
-  intermediate states: edit it down to the first commit's portion,
-  commit, restore the next portion, commit again. Verify the final
-  state matches the intended end state exactly. **This assumes you own
-  the whole file.** If another session has uncommitted work in it,
-  stepping it through intermediate states rewrites their in-flight
-  text — commit only what is yours and leave the rest with a note.
+- **When one file straddles commits**, reach for interactive
+  `git add -p` where your harness offers it. Some do not: an agent
+  shell with no interactive stdin cannot drive it, and the prompt
+  either hangs or reads EOF. Where it is unavailable, step the file
+  through intermediate states instead — edit it down to the first
+  commit's portion, commit, restore the next portion, commit again.
+  Verify the final state matches the intended end state exactly.
+  **Stepping assumes you own the whole file.** If another session has
+  uncommitted work in it, stepping rewrites their in-flight text —
+  commit only what is yours and leave the rest with a note.
 - **Stage explicit paths only.** No `git add -A` / `git add .` — they
   silently sweep in untracked or unrelated files.
 - **Renames go through `git mv`** (or are staged so git detects the
@@ -95,10 +97,14 @@ question.
   that a commit documenting machine- or tenant-specific behaviour is
   exactly where real account names read as the subject matter — and a
   message, unlike a file, cannot be fixed forward.
-  The `identity-guard` hook backstops this from
-  `~/.config/identity-denylist.txt`: it blocks a commit whose staged
-  diff adds a listed term, hands back a message that carries one, and
-  blocks the push. It knows only what is on the list — a name it has
+  **Assume nothing catches this for you.** A hook can: an
+  `identity-guard` reading a local denylist blocks a commit whose
+  staged diff adds a listed term, hands back a message that carries
+  one, and blocks the push. But it is a *local* hook reading a *local*
+  list — the list is itself the leak, so it lives in no repo and
+  travels with no clone. Unless you installed both on this machine,
+  nothing above is checked for you and the scan is entirely yours. Even
+  where it does run it knows only what is on the list, so a name it has
   never seen is yours to catch, and then to add.
 
 ## Fabric Git-synced repos
