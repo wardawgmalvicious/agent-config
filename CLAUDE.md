@@ -273,26 +273,39 @@ once. That rationale is gone, and all four are copies now, so the only
 surviving reparse points are the per-skill junctions. Fewer of them is
 strictly less exposure to that class of bug.
 
-GitHub Copilot needs no payload and no linker **on this machine**: the
-VS Code agent surface reads the same `~/.claude` paths this repo already
-populates —
-`rules`, `skills`, `agents`, `settings.json` and `CLAUDE.md` are all
-documented defaults there, `skills` included (retested 2026-09-09; a
-2026-09-04 note here claimed it did not resolve and was wrong). The
-`chat.*Locations` settings are marked deprecated and "only used by the
-Local agent", which is the sidebar itself — so they are not inert but a
-live per-location on/off map, useful for silencing a skill that two
-roots both hold. The Local agent is itself scheduled for removal,
-though, and its replacement reads `~/.claude` directly — so discovery
-survives that transition and the on/off map is the part that does not.
-It parses Claude's hook *format* but not its
-semantics — notably, matchers are read and ignored, so the
-matcher-scoped `security-reviewer` write guard runs far wider there
-than under Claude Code. It validates skill frontmatter against its own
-field list too, so `paths:` and `effort:` warn and are ignored —
-meaning a conditional skill is **unconditional** there. `model:` is
-the exception that is *not* merely ignored: it breaks slash dispatch
-outright, for which see Editing conventions below.
+GitHub Copilot **deliberately inherits nothing from `~/.claude` on this
+machine** — a reversal of what stood here. Since 2026-09-09 every
+`chat.*Locations` entry naming a Claude root is `false` in VS Code user
+settings and `chat.useClaudeMdFile` is off, so Copilot reads `.github/*`
+and `~/.copilot/*` only. `rules`, `skills`, `agents`, `settings.json`
+and `CLAUDE.md` remain *documented defaults* on that surface (retested
+2026-09-09; a 2026-09-04 note here claimed `skills` did not resolve and
+was wrong) — they are switched off, not unsupported. So
+`scripts/copy-copilot.ps1` is the only route from this repo to Copilot,
+in a clone and on this machine alike, and `link-claude.ps1` now serves
+Claude Code alone.
+
+Two traps in that switchboard, both silent. **An unlisted location keeps
+its default, and the default is on** — each setting is a location →
+boolean map *over* the documented defaults, so disabling inheritance
+means writing every Claude root out as `false`; `.claude/skills` and
+`.claude/rules` stayed live by omission while every root listed beside
+them read `false`. And **the Settings UI does not reliably persist
+these**: object-valued `chat.*` settings edited through it can leave
+`settings.json` untouched with no error, measured 2026-09-09 against an
+mtime four days stale. Edit the file and check the mtime.
+
+The frontmatter facts below survive that change and now describe the
+**vendored** `.github/skills` payload rather than an inherited one.
+Copilot validates skill frontmatter against its own field list, so
+`paths:` and `effort:` warn and are ignored — meaning a conditional
+skill is **unconditional** there. `model:` is the exception that is
+*not* merely ignored: it breaks slash dispatch outright, for which see
+Editing conventions below. What no longer applies is hooks: Copilot
+parses Claude's hook *format* but not its semantics — matchers are read
+and ignored, so the matcher-scoped `security-reviewer` write guard once
+ran far wider there — and `chat.hookFilesLocations` is now `false` at
+every location, so no hook in this payload reaches it at all.
 
 **That is a *skills* fact and does not generalize to rules.** In
 `.claude/rules` Copilot implements `paths:` on purpose, as the Claude
@@ -300,11 +313,15 @@ Rules format, defaulting to `**` when absent — so a rule stays
 conditional exactly as it is here while a skill does not. Measured
 2026-09-09: a `.sql` file open in a client repo loaded two of the twelve
 rules in `~/.claude/rules`, the two whose globs matched. The pair is
-easy to conflate and the consequences run opposite ways.
+easy to conflate and the consequences run opposite ways. That
+measurement predates the cutover above and stands as a **format** fact —
+the mechanism is what `.github/instructions` inherits via `applyTo`; the
+`~/.claude/rules` root it was measured against is now switched off.
 
-What the `~/.claude` paths cannot do is travel in a clone, which is what
-`copilot/` and `scripts/copy-copilot.ps1` exist for. Full detail,
-including the settings block and the traps, is in
+The `~/.claude` paths could never travel in a clone, which is why
+`copilot/` and `scripts/copy-copilot.ps1` exist — and since the cutover
+that is the whole path rather than the half of it a teammate needed.
+Full detail, including the settings block and the traps, is in
 [README.md](README.md#tool-support); this repo is authored and validated
 against Claude Code, and Copilot wiring is not maintained here.
 

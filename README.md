@@ -166,17 +166,24 @@ stay separable:
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads
   `SKILL.md` can consume [skills/](skills/) directly.
-- **GitHub Copilot** — needs **no wiring on this machine**. The Claude
-  paths are *documented defaults* on the VS Code agent surface, so
-  `link-claude.ps1` alone is enough: `~/.claude/rules` for
-  instructions, `~/.claude/skills` for skills, `~/.claude/agents` for
-  subagents, `~/.claude/CLAUDE.md` for always-on instructions, and
-  `~/.claude/settings.json` for hooks (it parses Claude Code's hook
-  format). So Copilot is a second consumer of the Claude-format payload
-  rather than a separate one — and `paths:` carries over intact, which
-  was measured rather than assumed: on 2026-09-09 a `.sql` file open in
-  a client repo loaded exactly two of the twelve rules in
-  `~/.claude/rules`, the two whose globs matched.
+- **GitHub Copilot** — reads **its own directories only, by choice**.
+  The Claude paths are *documented defaults* on the VS Code agent
+  surface — `~/.claude/rules` for instructions, `~/.claude/skills` for
+  skills, `~/.claude/agents` for subagents, `~/.claude/CLAUDE.md` for
+  always-on instructions, `~/.claude/settings.json` for hooks (it
+  parses Claude Code's hook format) — so `link-claude.ps1` alone *was*
+  enough, and Copilot was a second consumer of the Claude-format
+  payload rather than a separate one. Since 2026-09-09 that inheritance
+  is switched off deliberately: every `chat.*Locations` entry naming a
+  Claude root is `false` and `chat.useClaudeMdFile` is off, leaving
+  `.github/*` and `~/.copilot/*`. Claude for Claude, Copilot for
+  Copilot — so `copy-copilot.ps1` is the only route from this repo to
+  Copilot, on this machine as much as in a clone. The format facts
+  measured under inheritance still hold, and now describe the vendored
+  payload: on 2026-09-09 a `.sql` file open in a client repo loaded
+  exactly two of the twelve rules in `~/.claude/rules`, the two whose
+  globs matched, confirming `paths:`/`applyTo` scoping carries over
+  intact.
 
     | Artifact | Workspace defaults | User-profile defaults |
     | --- | --- | --- |
@@ -198,7 +205,29 @@ stay separable:
     `~/.claude/skills` false (the skills left the picker) and
     `~/.copilot/skills` true (they came back from there). So nothing
     needs enabling — but anything can be **disabled**, which is how you
-    stop a skill listing twice when two roots hold it.
+    stop a skill listing twice when two roots hold it, and since
+    2026-09-09 how the whole Claude payload is held back from Copilot.
+
+    **`chat.hookFilesLocations` is a fifth switchboard and not part of
+    that family.** It carries no deprecation note; hooks are marked
+    **Preview** instead, with the docs warning that "the configuration
+    format and behavior might change." Its defaults are `.github/hooks`,
+    `.claude/settings.json`, `.claude/settings.local.json` and
+    `~/.claude/settings.json` — all `false` here, since Copilot has no
+    use for this repo's hooks. Preview plus an explicit false-map is a
+    staleness pair worth watching: a release that adds a default
+    location adds it **enabled**, past every `false` already written.
+
+    **Two silent failures, both met on 2026-09-09.** An **unlisted
+    location keeps its default, and the default is on** — each map sits
+    *over* the defaults above, so disabling inheritance means writing
+    every Claude root out as `false`; `.claude/skills` and `.claude/rules`
+    stayed live by omission while every root listed beside them read
+    `false`. And **the Settings UI does not reliably persist these**:
+    object-valued `chat.*` settings edited through it can leave
+    `settings.json` untouched with no error, caught only by an mtime
+    four days stale under repeated edits. Edit
+    `%APPDATA%\Code\User\settings.json` directly and check the mtime.
 
     **The Local agent is scheduled for removal**, which makes these
     temporary in a way "deprecated" alone does not convey. The docs say
@@ -210,6 +239,14 @@ stay separable:
     Whether Agent Host honours them is **not** stated either way, and
     their own note scopes them to the Local agent, so plan on the
     switchboard going and the discovery staying. Checked 2026-09-09.
+
+    **That now cuts the other way.** While these settings were only a
+    deduplication tool, losing them cost nothing. They are what enforces
+    the Claude/Copilot separation as of 2026-09-09 — so a switchboard
+    that goes while `~/.claude` discovery stays would silently restore
+    the inheritance just switched off, with no error and no setting left
+    to express the intent. Nothing signals it; watch for it in the
+    `vscode-docs` drift source.
 
     Three traps. `chat.instructionsFilesLocations` accepts **folders
     only** — an entry for `~/.claude/CLAUDE.md` is silently ignored,
