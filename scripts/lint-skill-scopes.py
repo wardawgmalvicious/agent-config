@@ -32,8 +32,10 @@ silently. What they cannot do is fail before the commit: without this you
 land the collision and discover it at the next deploy. Catching both here
 costs one extra comparison.
 
-Exits 0 if the namespace is clean, 1 if any name collides.
-Output: one line per collision: <path>:<rule>: <message>
+Exits 0 if the namespace is clean, 1 if any name collides — and 1, rather
+than a silent 0, if either skill tree is missing or holds no skills at all.
+A check that compared nothing must not report a pass.
+Output: one line per failure: <path>:<rule>: <message>
 """
 from __future__ import annotations
 
@@ -79,9 +81,44 @@ def project_skills() -> dict[str, str]:
 
 
 def main(argv: list[str]) -> int:
+    # A MISSING ROOT IS THE ONE WAY THIS CHECK PASSES BY SEEING NOTHING.
+    # Both collectors return {} for a root that is not a directory, so an
+    # absent tree and a clean namespace are indistinguishable downstream: no
+    # failures, exit 0, and the counts go to stderr, which pre-commit hides on
+    # a pass. That is the same silent-success shape as a `files:` regex that
+    # matches nothing. REPO_ROOT is derived from this file's own path by two
+    # .parent hops, so moving lint-skill-scopes.py one directory deeper is
+    # enough to cause it — assert the roots before trusting an empty result.
+    missing = [
+        rel
+        for rel, root in (("skills", PAYLOAD_ROOT), (".claude/skills", PROJECT_ROOT))
+        if not root.is_dir()
+    ]
+    if missing:
+        for rel in missing:
+            print(
+                f"{rel}:missing-root: expected a skill tree at "
+                f"{REPO_ROOT / rel}, which is not a directory. REPO_ROOT is "
+                "derived from this script's own location, so the usual cause is "
+                "lint-skill-scopes.py having moved without its .parent count "
+                "following."
+            )
+        return 1
+
     payload = payload_skills()
     project = project_skills()
     failures: list[str] = []
+
+    # Both roots exist but neither holds a <name>/SKILL.md — a restructure
+    # underneath them, or a tree emptied by mistake. Same reasoning as
+    # missing-root: refuse to certify a namespace this run never saw.
+    if not payload and not project:
+        print(
+            "skills:empty-namespace: both skill trees exist but contain no "
+            "<name>/SKILL.md, so no names were compared. A pass here would "
+            "assert nothing."
+        )
+        return 1
 
     # Cross-scope: the silent one. Report against the project-scope copy,
     # since that is the file that stops loading.
