@@ -161,16 +161,16 @@ before assuming one exists.
 
 ### Git identity is folder-scoped
 
-`~/.gitconfig` declares **no** identity and sets `user.useConfigOnly =
-true`. Identity arrives through `includeIf gitdir:` — personal under
-`C:/Repos/Personal/`, work under a separate client root — see
-`~/.gitconfig` for the actual paths. In a repo outside both
-roots `git commit` fails with *"Please tell me who you are"*, which is
-deliberate: without `useConfigOnly`, git silently invents an author from
-the domain-joined machine's AD record, i.e. the corporate email. Set one
-explicitly there with `git config --local user.email …` rather than
-touching the global config. `core.autocrlf` is `false` globally on
-purpose; line-ending policy is per repo via a committed `.gitattributes`.
+`~/.gitconfig` declares **no** identity; it arrives through `includeIf
+gitdir:` — personal under `C:/Repos/Personal/`, work under a separate
+client root. In a repo outside both roots `git commit` fails with
+*"Please tell me who you are"*, which is deliberate rather than broken:
+answer it with `git config --local user.email …` in that repo, never by
+adding an identity to the global config. Why that is the shape, the
+line-ending policy that lives beside it, and the four ways an
+`includeIf` pattern silently matches nothing are in
+`~/.claude/rules/git-identity-scoping.md`, which loads whenever a git
+config file is opened.
 
 **The GitHub API actor is a third identity, bound separately from both.**
 `gh` and the project-scope `github-mcp` server carry separate tokens and

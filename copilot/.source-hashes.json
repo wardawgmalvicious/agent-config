@@ -4,6 +4,7 @@
     "coding-markdown": "Universal syntax half, but the prose discipline is house voice measured from this repo's own 215 authored files -- not conventions to impose on a client repo's teammates. Also the only rule scoped `**/*.md`, so a port would load on every vendored and third-party doc in their tree. Port is a one-line flip if a team ever wants it.",
     "coding-powershell": "Data teammates do not write PowerShell here; references another personal repo.",
     "fabric-git-serialization": "Deferred pending review -- most-edited rule at 10 commits and the most Fabric-specific.",
+    "git-identity-scoping": "Machine setup guidance, not a coding convention -- same call as vscode-scoping. The includeIf mechanics are portable git facts, but the rule's frame is a two-identity machine with folder-scoped roots, which is a property of this setup rather than of a client repo. A teammate's identity problems are their own machine's.",
     "vscode-scoping": "Machine setup guidance, not a coding convention; names another personal repo."
   },
   "translated": {

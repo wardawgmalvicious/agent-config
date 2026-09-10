@@ -76,6 +76,17 @@ conformance checking.
   globs that cannot match leading dots. Triggers on `.vscode/*.json`,
   `*.code-workspace`, and any `vscode/**/*.json` — stored profile
   settings and a standalone `keybindings.json` alike.
+- [git-identity-scoping.md](git-identity-scoping.md) — not a coding
+  convention: which git config file owns an identity on a machine with
+  more than one, and the four ways an `includeIf gitdir:` pattern
+  silently matches nothing (missing trailing slash, drive-letter case,
+  an 8.3 short path, include order). Also the measured trap that
+  `git config --global user.email` writes *above* the include, appears
+  to do nothing, and plants the machine-wide default `useConfigOnly`
+  exists to prevent. Triggers on `gitconfig` / `.gitconfig` files and
+  their per-context siblings, deliberately **not** on `.gitattributes` —
+  that glob would fire in nearly every repo on the machine to deliver
+  guidance that is mostly about one setup.
 
 ## Project-scope override
 
