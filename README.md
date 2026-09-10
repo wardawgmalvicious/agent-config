@@ -213,16 +213,35 @@ stay separable:
     [.vscode/README.md](.vscode/README.md)).
 
     **Copilot validates skill frontmatter against its own field list and
-    warns rather than failing.** Measured 2026-09-04: an unsupported key
-    leaves the skill loaded and listed, with a diagnostic naming it —
-    unlike the claude.ai upload path, which hard-fails. Supported are
-    `argument-hint`, `compatibility`, `context`, `description`,
+    warns rather than failing** — with one exception that does not warn
+    at all. Measured 2026-09-04: an unsupported key leaves the skill
+    loaded and listed, with a diagnostic naming it — unlike the claude.ai
+    upload path, which hard-fails. Supported are `argument-hint`,
+    `compatibility`, `context`, `description`,
     `disable-model-invocation`, `license`, `metadata`, `name` and
-    `user-invocable`. **Every skill in this repo already warns**: `model:`
-    is on all 50, `paths:` on 27, `effort:` on 9, `allowed-tools:` on 5.
-    So the warning is ambient, and adding a Claude-only field costs
-    nothing that was not already being paid — but it also means a *real*
-    frontmatter mistake is camouflaged by the noise. Copilot does hard-
+    `user-invocable`. **Most skills here still warn**: `paths:` on 27,
+    `effort:` on 9, `allowed-tools:` on 5. So the warning is ambient, and
+    adding a Claude-only field costs nothing that was not already being
+    paid — but it also means a *real* frontmatter mistake is camouflaged
+    by the noise.
+
+    **The exception is `model:`, which breaks slash invocation outright.**
+    An active `model:` of any value — `inherit` as much as a real model
+    name — stops VS Code dispatching that skill as a slash command:
+    nothing is sent, no session is created, and it presents as a hang
+    rather than an error, so there is no diagnostic to trace back.
+    Measured 2026-09-09 with single-variable probes, after `/commit` and
+    `/code-review` both hung in a client repo while the same skills were
+    auto-loading there normally. Auto-load is unaffected — it adds text
+    to a request already in flight, where slash invocation builds a new
+    one carrying the skill's own parameters. `model` is a supported field
+    on Copilot *prompt* files, where it selects the LLM, which is the
+    likeliest reason a value it cannot resolve kills dispatch. All 50
+    skills here now carry `model:` commented out, and
+    [lint-frontmatter.py](scripts/lint-frontmatter.py) rejects an active
+    one so it cannot return silently.
+
+    Copilot does hard-
     require one thing Claude Code never checks: a skill's **directory
     name must equal its frontmatter `name:`**. All 50 here comply, and
     `copy-copilot.ps1` verifies it before copying.

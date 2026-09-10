@@ -519,12 +519,17 @@ it if they hadn't.
   `*.ext` with no `/` (which matches only repo-root files; `**/*.ext`
   matches those *and* nested ones).
 - **Skill invocation and spend fields** — every `SKILL.md` carries
-  `model`, `effort` and `disable-model-invocation` **explicitly**, even
-  where the value is the default. The point is that the flip point for
-  each lever is visible in the file instead of being an absent field.
+  `effort` and `disable-model-invocation` **explicitly**, even where the
+  value is the default, so the flip point for each lever is visible in
+  the file rather than being an absent field. `model:` is carried the
+  same way but **commented out on all 50** — an active `model:` key of
+  any value stops GitHub Copilot dispatching the skill as a slash
+  command, for which see below. The commented values are still the
+  documentation they always were: `# model: inherit` everywhere except
+  `commit` (`# model: sonnet`).
   Current policy: the session default is `"effortLevel": "max"` in
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
-  this repo). `model: inherit` everywhere except `commit` (`sonnet`).
+  this repo).
   `effort` is `max` on the seven workflow skills that drive this repo
   — `code-review`, `drift-audit`, `author-skill`, `test-skill`,
   `learn`, `drift-update`, `drift-handoff` — `xhigh` on `commit`, and
@@ -541,7 +546,25 @@ it if they hadn't.
   exactly the *floor* they were written for. Platform skills stay
   unpinned **on purpose**: they auto-trigger alongside your real work,
   so an effort pin there governs your Fabric/Power BI turn rather than
-  any discrete skill run. Five things to know before changing one.
+  any discrete skill run.
+
+  **Uncommenting a `model:` key breaks GitHub Copilot.** An active
+  `model:` of *any* value — `inherit` and `sonnet` alike — stops VS Code
+  dispatching that skill as a slash command: nothing is sent, no session
+  is created, and it reads as a hang rather than an error, so there is
+  no error path to follow back to the cause. Measured 2026-09-09 with
+  single-variable probes, after `/commit` and `/code-review` both hung
+  in a client repo: a control skill slash-invoked fine, adding `model:`
+  broke it, and `effort:`, `when_to_use:` and
+  `disable-model-invocation:` were all harmless. `model` is a supported
+  field on Copilot *prompt* files, where it selects the LLM, which is
+  the likeliest reason a value it cannot resolve kills dispatch.
+  `scripts/lint-frontmatter.py` rejects an active `model:` key so this
+  cannot return silently.
+
+  What follows is what the field did while it was active. It is kept
+  because it is the argument for how little was given up.
+
   `model:` is **turn-scoped** — it applies while the skill is active
   and the session model resumes on the next prompt. But it is also
   **slash-only**: a skill reached by model-invocation (the description
@@ -556,11 +579,16 @@ it if they hadn't.
   `paths:` glob withholds them from the startup listing, so they are
   reached by path, and `/<name>` answers `Unknown command`. It is
   **live on the other 14**, which carry no glob and slash normally
-  (measured with `/fabric-gotchas`, 2026-09-02 on 2.1.252). All 41 are
-  `model: inherit` today, so nothing is broken, but a future pin is
-  inert or effective depending on which half it lands in. Corrected
+  (measured with `/fabric-gotchas`, 2026-09-02 on 2.1.252). All 41
+  carried `model: inherit`, so nothing was broken either way. Corrected
   2026-09-02 — this previously said all of them were inert because they
   "never" slash.
+
+  So the whole cost of commenting the field out is that `/commit` now
+  runs on the session model instead of Sonnet. That was the only
+  load-bearing pin in the payload: 49 of 50 read `inherit`, which is the
+  default, and a pin is ignored entirely on the 27 conditional skills
+  and on any skill reached by description rather than by name.
   `effort:` has **no
   `inherit` value**; omitting the field *is* the inherit, which is why
   it is carried as a commented placeholder rather than a written-out
