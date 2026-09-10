@@ -1,0 +1,27 @@
+# Ruff configuration for the maintenance scripts in scripts/.
+#
+# The rule set is pinned rather than left to ruff's defaults, because the
+# effective default is neither stable across releases nor what the docs
+# describe. On ruff 0.16.5 a bare `ruff check` here selected PIE810 but
+# NOT E741 -- both wider and narrower than the documented E4/E7/E9/F at
+# the same time. Unpinned, a version bump would silently change what CI
+# enforces, and the failure would arrive detached from any commit that
+# caused it.
+
+# The repo's Python convention (claude/rules/coding-python.md), not
+# ruff's default of 88. Nothing enforces it today: E501 is unselected
+# below and `ruff format` is not adopted here. It is set so that if the
+# formatter is ever wired in, it cannot quietly reformat this repo to a
+# width its own published rule argues against.
+line-length = 100
+
+[lint]
+# The documented default set, plus PIE -- which is what caught the
+# duplicated `startswith` calls in both frontmatter linters.
+select = ["E4", "E7", "E9", "F", "PIE"]
+
+# E501 (line-too-long) is deliberately NOT selected. Thirteen existing
+# lines in lint-frontmatter.py and lint-instructions.py run past 100,
+# nearly all of them single-string diagnostic messages that read worse
+# wrapped. Splitting them is a judgement call per line and belongs in
+# its own change, not as a side effect of wiring up the linter.

@@ -5,6 +5,28 @@ repos:
       - id: gitleaks
         name: Scan staged changes for secrets (gitleaks)
 
+  # ruff CHECK only -- `ruff format` is deliberately left out. It would
+  # rewrite ~200 lines across all five scripts without fixing a single
+  # defect, on files dense with dated measurements in comments, where
+  # `git blame` is how you find when a claim was recorded.
+  #
+  # The rule selection lives in ruff.toml, pinned, rather than being left
+  # to the default: on 0.16.5 a bare `ruff check` here selected PIE810 but
+  # NOT E741, so the effective default is neither the documented E4/E7/E9/F
+  # nor stable across releases. Unpinned, a version bump would change what
+  # CI enforces with no commit to point at.
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.5
+    hooks:
+      # Scoped to scripts/ for the same reason tests/ is gitleaks-allowlisted:
+      # the five .py files under tests/ are FIXTURES, and their defects are the
+      # point. Unscoped, this hook fails on a bare `except`, an unused variable
+      # and two undefined `spark` references that the code-review and
+      # security-reviewer fixtures put there deliberately.
+      - id: ruff-check
+        name: Lint Python scripts (ruff)
+        files: '^scripts/.*\.py$'
+
   - repo: local
     hooks:
       # Two skill trees at DIFFERENT DEPTHS, which is why this is one
