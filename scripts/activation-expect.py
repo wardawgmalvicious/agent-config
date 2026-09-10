@@ -350,7 +350,7 @@ def cmd_check(args) -> int:
                 f"conditional skills present in the STARTUP listing: {leaked}. "
                 "They should only arrive on a matching Read.")
         else:
-            print(f"  ok  no conditional skill in the startup listing")
+            print("  ok  no conditional skill in the startup listing")
 
     # -- per-batch delta assertions ----------------------------------------
     print()
@@ -420,7 +420,7 @@ def cmd_check(args) -> int:
               f"({len(multi)} covering several files, widest {widest}). "
               "Activations are asserted per group, not per file.")
     else:
-        print(f"  note: per-file resolution - every read flushed on its own.")
+        print("  note: per-file resolution - every read flushed on its own.")
 
     print()
     if failures:

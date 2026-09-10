@@ -99,7 +99,7 @@ def check_paths(entries: list, fail) -> None:
             fail("paths-separator", f"`paths[{i}]` {entry!r} contains a backslash; glob separators are always '/'.")
             continue
 
-        if entry.startswith("/") or entry.startswith("./"):
+        if entry.startswith(("/", "./")):
             fail("paths-anchor", f"`paths[{i}]` {entry!r} starts with '/' or './'; patterns match unanchored.")
 
         # '*.ps1' matches only files at the repo root. '**/*.ps1' matches those

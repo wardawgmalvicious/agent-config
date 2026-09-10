@@ -157,7 +157,7 @@ def check_apply_to(value, fail) -> None:
                 f"`applyTo` entry {i} {glob!r} contains a backslash; glob separators are always '/'.",
             )
             continue
-        if glob.startswith("/") or glob.startswith("./"):
+        if glob.startswith(("/", "./")):
             fail(
                 "applyto-anchor",
                 f"`applyTo` entry {i} {glob!r} starts with '/' or './'; patterns match unanchored.",
@@ -201,7 +201,8 @@ def lint_file(path: Path, failures: list[str]) -> None:
     for needle, why in FORBIDDEN:
         if needle in text:
             line = next(
-                (i for i, l in enumerate(text.splitlines(), 1) if needle in l), 0
+                (i for i, line_text in enumerate(text.splitlines(), 1) if needle in line_text),
+                0,
             )
             fail("leak", f"line {line} contains {needle!r} — {why}. Rewrite it before shipping.")
 
