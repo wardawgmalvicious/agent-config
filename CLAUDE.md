@@ -90,6 +90,12 @@ uv run --with pyyaml scripts/lint-frontmatter.py claude/rules/<name>.md
 # whole set, not changed files: a collision is a property of a pair.
 uv run scripts/lint-skill-scopes.py
 
+# Which of a repo's files activate no rule and no skill at all. One repo,
+# or --sweep a parent for every repo under it, ranked by weight. Counts
+# per FILE, not per extension. Findings are candidates, not work.
+uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py <repo>
+uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py --sweep C:/Repos/Personal
+
 # Validate the Copilot instruction ports: applyTo frontmatter, no leaked
 # repo name or profile path, and no drift from the rule each was ported
 # from. --stamp re-records the hashes after a deliberate re-port.

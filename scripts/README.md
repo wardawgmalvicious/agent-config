@@ -116,6 +116,39 @@ Helper scripts for repo maintenance and observability.
   passing silently — when either tree is missing or empty, since both
   collectors return nothing for an absent root and a check that compared
   nothing must not report a pass. No dependencies. Run by pre-commit.
+- [payload-coverage.py](payload-coverage.py) — report which of a repo's
+  files activate **nothing** in this payload. Every rule and every
+  conditional skill declares `paths:` globs, so "what does this repo
+  contain that no rule and no skill will ever see" is a measurement rather
+  than a judgement call. Answers it for one repo, or `--sweep` a parent
+  directory for every repo under it and get the uncovered extensions ranked
+  by weight across all of them. Exists because the gap is otherwise
+  discovered by tripping over it — landing in an unfamiliar repo, a missing
+  rule surfaces one file at a time, or never.
+
+  **Counts per file, never per extension**, and that distinction is the
+  whole accuracy of the report. The first draft marked an extension covered
+  when *any* of its files matched: one `claude/rules/README.md` matching
+  `claude/rules/*.md` made all 230 `.md` files in this repo read as covered,
+  and the repo scored 88% instead of its actual **37%**. An extension can
+  now come back partial (`~`), which is the common case and the interesting
+  one.
+
+  Its matcher must agree with [activation-expect.py](activation-expect.py) —
+  wcmatch, `GLOBSTAR | DOTGLOB` — or it reports coverage the activation
+  harness would not confirm. The two cannot share the code, because a hyphen
+  in that filename makes it un-importable, so the flags are duplicated
+  deliberately. **Change them together.**
+
+  Findings are candidates, not work. `NON_TEXT` filters what cannot carry a
+  convention (images, binaries, signing material) and deliberately stops
+  there: `.csv`, `.toml` and `.xml` stay in the uncovered list where a person
+  decides, rather than being filtered into invisibility by a list nobody
+  re-reads. First sweep, 2026-09-10 — a client repo scored **0%**, no glob
+  matching any of its 200 files, and `.md` came back the largest uncovered
+  surface anywhere at 187 files across seven repos. Needs `pyyaml` and
+  `wcmatch`. Not run by pre-commit; there is no pass/fail here to gate on.
+
 - [skill-telemetry.py](skill-telemetry.py) — post-hoc answer to "which
   skills are earning their listing budget?". Three subcommands:
   `coverage` (per skill: how many startup listings it appeared in, how
