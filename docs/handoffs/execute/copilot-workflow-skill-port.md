@@ -37,7 +37,14 @@ a matrix, all of which Copilot supports and Claude Code also honours:
 | `user-invocable: false` | no | yes |
 | `disable-model-invocation: true` | yes | no |
 
-Prompt files are a **parallel** primitive, not a required wrapper.
+Prompt files are a **parallel** primitive, not a required wrapper —
+and a *retiring* one, which settles the question in the other
+direction too. Checked 2026-09-09: they are "deprecated for Agent Host
+sessions and aren't loaded by Agent Host", work only with the Local
+agent, which "will be removed in a future release", and VS Code ships
+a migration that converts prompt files *into* skills. The arrow runs
+toward skills. Don't build a prompt-file wrapper for a skill, and
+don't read this section as suggesting one.
 
 **The actual cause was found separately and is now fixed.** A `model:`
 key of *any* value stops VS Code Copilot dispatching a skill as a slash
