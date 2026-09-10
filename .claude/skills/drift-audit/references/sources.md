@@ -457,6 +457,138 @@ and is *not* covered here. It is the source for the definition-part
 schemas in that skill's reference, and it drifts on its own schedule;
 check it by hand when the definition layout is in question.
 
+### `skills-for-fabric` — Microsoft's Fabric skill catalog
+
+- `repo`: `microsoft/skills-for-fabric`
+- `branch`: `main`
+- `path`: `CHANGELOG.md`
+- `shape`: `changelog`
+- `sections`: none — the file was 58 KB on 2026-09-10, past the WebFetch
+  summarization threshold, so this source is github-mcp-only in practice,
+  as `claude-code` is.
+- `filter`: keep a bullet only if it
+  1. introduces a skill name that no earlier version section mentions —
+     a vendor-or-author candidate, bucket (b). **An `### Added` heading is
+     not that test**: `databricks-migration` carries three `0.3.14` bullets
+     under Added and has existed since `0.3.0`;
+  2. names a skill vendored here, or one a vendored skill routes to —
+     `powerbi-report-authoring`, `powerbi-report-design`,
+     `powerbi-report-planning`, `powerbi-report-management`;
+  3. names an upstream skill with a counterpart here (table below) **and**
+     states a behavioural fact — a limit, a request shape, an error and its
+     cause — rather than rewording a workflow; or
+  4. changes how the catalog itself routes — descriptions, the listing
+     budget, references between skills. That is bucket (c).
+
+  Everything else is bucket (d). The migration skills (`synapse-`,
+  `databricks-`, `hdinsight-`, `pipeline-migration`) carry much of the
+  volume and fall to (d) unless a migration is actually in progress.
+- `drill.host`: `learn.microsoft.com`
+- `drill.via`: `microsoft-learn-mcp`
+- `drill.strip`: none — the bullets carry no links.
+- `artifacts`: `skills/powerbi/powerbi-report-authoring/`,
+  `skills/powerbi/powerbi-report-design/`, the counterpart skills in the
+  table below, `claude/rules/fabric-git-serialization.md`
+
+**A skill catalog rather than a docs page, so its claims are drilled, not
+trusted.** Every other source here is documentation, where a claim is
+ground truth. This one is another team's skills — claims about Fabric at
+the same standing as ours. A behavioural bullet becomes a finding only
+once the fact is confirmed on Learn, which is what `drill` is for here.
+What upstream *says* is read from `skills/<name>/SKILL.md` with
+`get_file_contents`; that is a fetch for context, not the drill.
+
+Registered 2026-09-10, when an outside-repo check for skill prior art was
+scoped and collapsed to this one repo. A GitHub code search that day
+returned ~2,800 `SKILL.md` files mentioning "Microsoft Fabric" outside
+Microsoft's orgs, overwhelmingly aggregators re-hosting the same few
+skills; this is the one authoritative origin. `MicrosoftDocs/Agent-Skills`
+is the other official catalog and is Azure-scoped — its "Fabric" hits were
+Azure Service Fabric and passing mentions. **Don't register an
+aggregator or a community catalog here.** A third-party skill is
+instructions an agent executes with your permissions, so vendoring one
+is running a stranger's prompt.
+
+#### Vendored files — check path history, not the changelog
+
+The two `powerbi-report-*` skills are vendored verbatim at `v0.3.13`
+(`b8d541c`); each carries a *Local vendoring note* recording that. The
+CHANGELOG is **not a complete record of file changes**, measured
+2026-09-10 in both directions:
+
+- `list_commits` filtered to either vendored skill's directory returns the
+  `v0.3.3`, `v0.3.7` and `v0.3.12` release commits. The changelog names
+  those skills under `0.3.3` and `0.3.7` only — `v0.3.12` changed both
+  with no bullet.
+- `0.3.14` says every skill description was rewritten. Neither vendored
+  skill's path history shows a `0.3.14` commit.
+
+So for the vendored pair, run `list_commits` with `path:
+skills/<name>` and `since:` the vendored tag's date, once per skill, and
+treat any commit as a re-sync candidate whatever the changelog says. At
+registration both returned nothing after `v0.3.12`: the vendored copies
+were current through `v0.3.15`.
+
+#### Fetch — HEAD once, read the sections above the floor
+
+Each release lands as one squashed commit, `Release vX from internal
+repo`, roughly weekly — `0.3.12` through `0.3.15` shipped 2026-08-13,
+08-20, 08-26 and 09-04. A per-commit patch would therefore drag a whole
+release's file set in to read a few bullets, the same trap `powerbi`'s
+squashed release sets. The version headings are dated
+(`## [0.3.15] - 2026-09-04`), so the window resolves from the headings:
+fetch `CHANGELOG.md` at HEAD once and read every version section dated
+after the floor. No prior-ref fetch is needed while the file stays
+prepend-only, which is **assumed, not verified** — the first run should
+confirm that the floor ref's version sections reappear unchanged in
+HEAD's, as `claude-code`'s did.
+
+Price: 1 call for HEAD, 2 for the vendored path checks, and 1 per
+upstream `SKILL.md` read for context.
+
+#### Counterparts here — matched by name only
+
+| Upstream | Here |
+| --- | --- |
+| `eventhouse-cli` | `fabric-eventhouse` |
+| `eventstream-cli` | `fabric-eventstream` |
+| `spark-cli` | `fabric-spark` |
+| `sqldw-cli` | `fabric-warehouse`, `fabric-warehouse-monitoring` |
+| `sqldb-cli` | `fabric-database` |
+| `variable-library-cli` | `fabric-variable-library` |
+| `fabriciq`, `fabriciq-ontology-cli` | `fabric-ontology` |
+| `semantic-model-authoring` | `fabric-tmdl`, `fabric-tmdl-api` |
+| `deployment-pipelines-authoring-cli` | `fabric-cicd` (partial) |
+| `git-integration-operations-cli` | `fabric-cicd` (partial), `fabric-git-serialization` rule |
+
+Matched by name on 2026-09-10, from the `skills/` listing and the
+changelog, **without reading either side's content**. Upstream's `-cli`
+suffix suggests CLI procedures where ours are mostly reference and gotcha
+content, so a counterpart is a place to look rather than a duplicate. An
+upstream skill with no counterpart is reported under clause 1 of the
+filter once, in the window that introduces it —
+`onelake-catalog-govern-cli` first appears in `0.3.15` — and not again
+on every run.
+
+The repo also ships `.claude-plugin/` and `plugins/`, and `0.3.14` names
+two bundles, `fabric-skills` and `powerbi-authoring`. Installing a bundle
+is a third option beside vendoring and authoring; it was not evaluated
+here.
+
+**Read bucket (c) even when nothing maps.** `0.3.14` fixed three
+failures this repo also guards against: skills pointing at skills that had
+been merged away, descriptions that lost the literal tokens a request
+matches on, and a catalog close enough to the listing budget that later
+skills risked being known by name alone. Upstream hits these problems at
+a larger catalog size first, which makes its changelog an early warning
+for this payload's own mechanics.
+
+**Unvalidated.** Step 5 of *Adding a source* — a run against a window
+with a known answer — has not been done. One exists: with the floor at
+2026-08-20, both vendored path checks must return nothing, clause 1 must
+surface `onelake-catalog-govern-cli`, and it must **not** surface
+`databricks-migration`.
+
 ## Shape contracts
 
 What "an entry" means for the diff, per shape.
