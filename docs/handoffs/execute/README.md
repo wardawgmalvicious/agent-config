@@ -36,6 +36,24 @@ between renumber-and-relink churn and a queue that reads `05, 07, 09, 10`.
 If a brief needs to know it is blocked, that is a dependency and belongs
 in the brief. A position is a fact about the queue and belongs here.
 
+## A brief in `execute/` is not necessarily in this table
+
+`/author-skill` writes its brief to `docs/handoffs/execute/<name>.md` and
+says it **stays queued**, but it never edits this file — so a brief can
+sit in the directory while the table above does not mention it. Measured
+2026-09-10: the `linkedin-highlights` brief was written, spent and
+deleted without ever appearing here.
+
+That is usually harmless. An author-test-land cycle finishing in a
+sitting or two would add a row and strike it the same day, and the brief
+is discoverable by `ls` throughout. It matters when the cycle **stalls**,
+because the brief is then invisible to the instruction above to read this
+file before starting a session — the one hole in this file's claim to own
+the order.
+
+So add a row when a brief in `execute/` **outlives the session that wrote
+it**, and not before. Same-day work does not need one.
+
 ## Re-measure a row before acting on it
 
 The queue's two most expensive lessons, and the only ones that still
