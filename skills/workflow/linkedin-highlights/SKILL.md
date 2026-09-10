@@ -50,9 +50,11 @@ budget is per role and the evidence boundary is per role.
 
 ## 1. Fix the role boundary
 
-Settle three things before reading anything: **which repo, which role,
-which date range.** Ask if any is unclear — the answers bound everything
-downstream.
+Settle four things before reading anything: **which repo, which role,
+which date range, and whether the work is live.** Ask if any is unclear
+— the answers bound everything downstream. Deployment state is the one
+easily skipped, and it decides how step 5 handles outcome figures: a
+system still in Test has no adoption number to ask for.
 
 Establish authorship and filter by it:
 
@@ -155,6 +157,33 @@ Two failure modes to avoid, in both directions:
   and write the outcome qualitatively instead.
 
 Accept "I don't know" as an answer and move on; do not press twice.
+
+### When the system is not live yet
+
+**Check whether tier 3 is unavailable rather than merely unknown, and
+say which.** A system still in Test, or built but not promoted, has no
+adoption, no hours saved and no uptime — not because the user has not
+measured them, but because they do not exist yet. Asking anyway invites
+a guess about a system with no users, which is the failure this step
+exists to prevent, arriving by the route the step itself opened.
+
+So establish the deployment state in step 1 alongside the dates, and
+when it is pre-production:
+
+- **Do not ask for outcome figures.** Say why you are not asking. The
+  omission is evidence-driven and worth one sentence.
+- **Write the outcome as capability delivered**, not as result achieved —
+  what the platform now makes possible, in tier-2 intent phrasing.
+- **State the deployment state in the draft** where it is load-bearing.
+  "Validated through Test and pending production promotion" is a
+  stronger sentence than an unqualified claim, because it is checkable.
+- **Flag the entry for a re-run at go-live.** Promotion changes the
+  closing paragraph and is usually the point at which a real outcome
+  number first exists.
+
+Measured 2026-09-10 on a pre-production Fabric platform: the run reached
+this shape unaided and was right to, which is why it is written down
+rather than left to judgment.
 
 ## 6. Draft to the format
 
