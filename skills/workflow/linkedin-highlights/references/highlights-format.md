@@ -199,7 +199,8 @@ carries its outcome, a single hard figure as the closer, no bullets.
 
 - **Any LinkedIn API or MCP server.** Nothing in this skill assumes
   programmatic profile access; the output is text the user pastes by
-  hand. Deferred as a separate question, 2026-09-10.
+  hand. Answered **no** on 2026-09-10, with the reasoning in
+  [profile-access.md](profile-access.md).
 - **The user's real entries, verbatim.** Read once to derive the
   measured section, deliberately not retained — the spec is what
   survives, which keeps the skill portable rather than personal. An
