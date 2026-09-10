@@ -2,7 +2,7 @@
 paths:
   - "**/.vscode/*.json"
   - "**/*.code-workspace"
-  - "**/vscode/profiles/*.json"
+  - "**/vscode/**/*.json"
 ---
 
 # VS Code configuration: what belongs where

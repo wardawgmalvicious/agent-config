@@ -74,7 +74,8 @@ conformance checking.
   and the silent failures around it — formatters naming extensions that
   are not enabled, `useDefaultFlags` linking a profile back to Default,
   globs that cannot match leading dots. Triggers on `.vscode/*.json`,
-  `*.code-workspace`, and stored profile settings.
+  `*.code-workspace`, and any `vscode/**/*.json` — stored profile
+  settings and a standalone `keybindings.json` alike.
 
 ## Project-scope override
 
