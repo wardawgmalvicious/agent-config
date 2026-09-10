@@ -37,6 +37,17 @@ repos:
         files: '^claude/rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]
 
+      # A collision is a property of a PAIR of skills, so this runs over the
+      # whole set rather than the changed files -- neither file is wrong on
+      # its own and a per-file hook could never see it. Scoped to the two
+      # skill trees because nothing outside them can create one.
+      - id: lint-skill-scopes
+        name: Check skill names are unique across both trees
+        entry: python scripts/lint-skill-scopes.py
+        language: python
+        files: '^(skills/|\.claude/skills/)'
+        pass_filenames: false
+
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
       # so lint-frontmatter.py would reject every one and is scoped away from
       # them. This validates them instead, blocks a personal-repo name or
