@@ -167,6 +167,22 @@ def lint_file(path: Path) -> list[str]:
     rule_mode = is_rule(path)
 
     if not rule_mode:
+        # A `model:` key of ANY value stops VS Code Copilot dispatching the
+        # skill as a slash command: the request never reaches a model and no
+        # session is created, so the failure looks like a hang rather than an
+        # error. Measured 2026-09-09 with single-variable probes -- `sonnet`
+        # and `inherit` both broke it, `effort:`, `when_to_use:` and
+        # `disable-model-invocation:` were all fine. Carry the value as a
+        # commented placeholder instead; the field bought little even in
+        # Claude Code, being slash-only and inert on conditional skills.
+        if "model" in fm:
+            fail(
+                "model-key",
+                f"`model: {fm['model']}` blocks Copilot from slash-invoking this skill "
+                "(no session is created and it reads as a hang). Comment it out: "
+                f"`# model: {fm['model']}`.",
+            )
+
         name = fm.get("name")
         if name is None:
             fail("name-required", "missing required field `name`.")
