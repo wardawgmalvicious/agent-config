@@ -1,6 +1,31 @@
-# Normalize all text files to LF in the repo. Files already committed with
-# CRLF are left alone until an explicit `git add --renormalize .`.
-* text=auto
+# Normalize all text files to LF in the repo, AND check them out as LF.
+#
+# The `eol=lf` half is load-bearing and is NOT the default. Without it git
+# checks a text file out using core.eol precisely when core.autocrlf is
+# false -- the setting on this machine -- and core.eol is unset, so it
+# defaults to `native`, i.e. CRLF on Windows. What that produced was a
+# working tree whose line endings flipped per file on no schedule: git
+# rewrote a file to CRLF every time it touched one (checkout, switch,
+# stash, and pre-commit's own stash/restore around each commit), while the
+# editors and agent tools that wrote the same files in between left LF. On
+# 2026-09-09 that was 361 files CRLF against 8 LF, the 8 being simply the
+# ones most recently edited by hand.
+#
+# None of which shows up HERE, because `text=auto` normalizes on the way
+# into the index either way -- so the tree looks clean while being
+# arbitrarily mixed. It showed up DOWNSTREAM. scripts/copy-copilot.ps1
+# vendors this payload into client repos as real committed files, so every
+# flip landed there as the entire payload modified with nothing visibly
+# changed (159 files, 2026-09-09). That script normalizes on its own now,
+# but the instability was here, so it is fixed here too.
+#
+# In .gitattributes rather than core.eol deliberately: this is committed,
+# so it holds for every clone on every machine, where local config is
+# invisible state a fresh clone silently loses.
+#
+# Files already committed with CRLF are left alone until an explicit
+# `git add --renormalize .`.
+* text=auto eol=lf
 
 # Windows-native scripts: pin CRLF in the working tree. cmd.exe mis-parses
 # LF-only batch files (goto/label resolution), and CRLF is the safe default
@@ -17,14 +42,17 @@
 # cannot see them. Both are run directly, so a CRLF checkout breaks them the
 # same way.
 #
-# The pin is load-bearing, not belt-and-braces, and the mechanism is not the
-# obvious one: `* text=auto` marks these files text, and git checks out a text
-# file using core.eol precisely WHEN core.autocrlf is false -- which is the
-# setting on this machine. core.eol is unset, so it defaults to `native`, i.e.
-# CRLF on Windows. They are LF in the working tree today only because nothing
-# has re-checked them out since; `git diff` already warns "LF will be replaced
-# by CRLF the next time Git touches it" for every unpinned text file here.
-# Verified 2026-09-01.
+# This pin USED TO BE load-bearing, for the reason the `*` rule above now
+# spells out at length: a bare `text=auto` left checkout following core.eol,
+# which is `native` here, so an unpinned text file came back CRLF and these
+# two broke. Adding `eol=lf` to that rule covers them, so the pin is
+# belt-and-braces now rather than the only thing holding them.
+#
+# It stays anyway. The `*` rule is one line that governs everything and is
+# exactly the kind of line someone edits for an unrelated reason; these two
+# scripts execute directly and have no extension to fall back on, so they
+# keep a pin that names them. (Load-bearing until 2026-09-09, verified
+# 2026-09-01.)
 #
 # There is no glob for "file with a shebang": a new extensionless script needs
 # its own line here.
