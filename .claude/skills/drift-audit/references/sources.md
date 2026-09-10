@@ -267,6 +267,22 @@ share a shape: a negative result about this surface was written down as a
 property of the tool. Pin such claims to a date you have checked, not to a
 version you have inferred, and prefer re-measuring to reasoning forward
 from a past result.
+
+**A third failure mode, and the audit cannot catch this one.** Measured
+2026-09-09: an active `model:` key in a `SKILL.md` stops VS Code
+dispatching that skill as a slash command — nothing is sent, no session
+is created, so it reads as a hang rather than an error. The page lists
+six frontmatter fields (`name`, `description`, `argument-hint`,
+`user-invocable`, `disable-model-invocation`, `context`) and `model` is
+not among them, while other undocumented fields this payload carries
+(`effort:`, `when_to_use:`) are simply ignored. So the breakage lives in
+what the page does **not** say, and no diff of it will ever surface
+that. Bound this source's promise accordingly: it witnesses what VS Code
+documents, not how VS Code behaves. Findings of that kind arrive by
+measurement or not at all — which is an argument for probing the slash
+path (`test-skill` covers the traps) rather than expecting Phase 3 to
+drill one out.
+
 VS Code ships monthly — faster than the Fabric cadence — and moves these
 pages (they were under `docs/copilot/customization/` until the 2026
 reorg), so a 404 on the path means find the new one, not that the source
