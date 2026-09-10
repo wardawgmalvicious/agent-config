@@ -15,8 +15,17 @@
 # launched inside this directory. settings.json is this repo's own
 # shared project config and IS tracked; settings.local.json (personal
 # permissions) stays ignored by the name-based rule further down.
+#
+# skills/ is tracked too, and is PAYLOAD RATHER THAN RUNTIME STATE: the
+# skills that maintain this repo's own payload are authored here at
+# project scope, deployed nowhere, and so are deliberately outside
+# link-claude.ps1's reach. The negation has to name the DIRECTORY, not a
+# glob beneath it — git never descends into a directory excluded by
+# `/.claude/*`, so `!/.claude/skills/**` alone would re-include nothing
+# and the whole set would sit untracked with no error anywhere.
 /.claude/*
 !/.claude/settings.json
+!/.claude/skills/
 
 # Personal Claude Desktop project instructions — not portable, may
 # contain sensitive information.

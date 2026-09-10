@@ -7,12 +7,24 @@ repos:
 
   - repo: local
     hooks:
+      # Two skill trees at DIFFERENT DEPTHS, which is why this is one
+      # alternation rather than one pattern. Deployable payload lives at
+      # skills/<group>/<name>/SKILL.md, so the first arm consumes a group
+      # segment; this repo's own maintenance skills live at project scope
+      # in .claude/skills/<name>/SKILL.md with no group above them, so the
+      # second arm consumes none. Both arms stay depth-pinned on purpose: a
+      # skill placed flat or nested a level deeper is invisible to Claude
+      # Code's one-level discovery, and matching it here would lint a file
+      # nothing can ever load. Verify a change to this line with
+      # `pre-commit run lint-skills --files <a path that should match>` --
+      # a pattern that misses reports "(no files to check) Skipped", which
+      # reads as success.
       - id: lint-skills
         name: Validate SKILL.md frontmatter
         entry: python scripts/lint-frontmatter.py
         language: python
         additional_dependencies: [pyyaml]
-        files: '^skills/[^/]+/[^/]+/SKILL\.md$'
+        files: '^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$'
         types: [markdown]
 
       # README.md is documentation, not a rule — excluded so it isn't
