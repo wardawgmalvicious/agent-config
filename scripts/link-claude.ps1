@@ -53,6 +53,25 @@
     a skill authored directly in the target, or one linked from another
     repo — is always left alone.
 
+    THIS REPO'S OWN .claude/skills IS DELIBERATELY OUT OF SCOPE HERE, and
+    its absence is a design decision rather than an oversight. The skills
+    that maintain this repo's payload (author-skill, test-skill, learn,
+    drift-*, land) are authored at project scope in .claude/skills/ and
+    deploy nowhere: they can only ever act on this working tree, so
+    putting them in user scope only cost listing budget in every
+    client-repo session on the machine. Nothing here needed changing when
+    they moved (2026-09-09) because this script selects out of skills/ and
+    they are not in it. Two consequences worth knowing. They are real
+    directories rather than junctions, so even a run pointed at
+    -ClaudeDir <this repo>/.claude leaves them alone -- the prune skips
+    anything that is not a reparse point into skills/. And a NAME
+    COLLISION between the two trees would be silent here: user scope
+    outranks project scope, so re-creating one of those names under
+    skills/ shadows the project-scope copy with no error anywhere, and
+    nothing in this script can see it because it never reads
+    .claude/skills. scripts/lint-skill-scopes.py is what catches that,
+    at commit time rather than deploy time; pre-commit runs it.
+
     CLAUDE.md and settings.json are copies too, but on stricter terms than
     the four directories above, because the target copy really can hold
     edits the repo lacks: Claude Code rewrites settings.json at runtime.
@@ -143,8 +162,10 @@
 
 .EXAMPLE
     ./scripts/link-claude.ps1 -SkillGroups workflow
-    User scope, but only the behavioral skills; fabric and powerbi are
-    pruned from ~/.claude/skills.
+    THIS MACHINE'S DEFAULT. User scope, but only the repo-general verbs
+    (code-review, commit); fabric and powerbi are pruned from
+    ~/.claude/skills. This repo's own maintenance skills are not in this
+    group and are deployed by nothing -- see the .DESCRIPTION.
 
 .EXAMPLE
     ./scripts/link-claude.ps1 -SkillGroups workflow -Force

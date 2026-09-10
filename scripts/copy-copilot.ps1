@@ -155,10 +155,25 @@
 
 .PARAMETER SkillGroups
     Which skill groups under skills/ to copy (fabric, powerbi, workflow).
-    Defaults to all of them, matching link-claude. Usually
-    -SkillGroups fabric,powerbi: the workflow group is Claude Code harness
-    plumbing (commit, land, drift-*) with no Copilot analog, and it is not
-    what a teammate cloning a client repo needs.
+    Defaults to all of them, matching link-claude.
+
+    THE WORKFLOW GROUP IS NOW PORTABLE, which reverses the advice that
+    stood here. It used to hold this repo's own maintenance skills
+    alongside the general ones, so it was harness plumbing a teammate had
+    no use for. The 2026-09-09 scope split moved those to project scope in
+    .claude/skills/, which this script cannot see -- it selects out of
+    skills/ -- so what remains in the group is code-review and commit,
+    both harness-neutral and both useful in any repo. Verified for
+    Copilot: neither references github-mcp, hooks, or a ~/. path, and
+    code-review's one CLAUDE.md mention stays true there because Copilot
+    reads CLAUDE.md as a documented default.
+
+    That leaves -SkillGroups meaning exactly what the group names say, with
+    no per-skill selection needed. land was the reason it could not:
+    it is built on github-mcp throughout, and MCP is the one payload piece
+    that does not cross to Copilot. It moved to project scope with the
+    rest, so a port list in a script argument or a frontmatter marker --
+    both considered -- turned out to be unnecessary.
 
 .PARAMETER Force
     Adopt and overwrite a destination skill folder or instruction file that
