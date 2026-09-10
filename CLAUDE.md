@@ -282,7 +282,10 @@ documented defaults there, `skills` included (retested 2026-09-09; a
 `chat.*Locations` settings are marked deprecated and "only used by the
 Local agent", which is the sidebar itself — so they are not inert but a
 live per-location on/off map, useful for silencing a skill that two
-roots both hold. It parses Claude's hook *format* but not its
+roots both hold. The Local agent is itself scheduled for removal,
+though, and its replacement reads `~/.claude` directly — so discovery
+survives that transition and the on/off map is the part that does not.
+It parses Claude's hook *format* but not its
 semantics — notably, matchers are read and ignored, so the
 matcher-scoped `security-reviewer` write guard runs far wider there
 than under Claude Code. It validates skill frontmatter against its own

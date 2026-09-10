@@ -200,6 +200,17 @@ stay separable:
     needs enabling — but anything can be **disabled**, which is how you
     stop a skill listing twice when two roots hold it.
 
+    **The Local agent is scheduled for removal**, which makes these
+    temporary in a way "deprecated" alone does not convey. The docs say
+    it about prompt files: they "continue to work with the Local agent
+    for now, but the Local agent will be removed in a future release."
+    Its replacement, Agent Host, "reads user-level customizations from
+    harness-agnostic folders like `~/.copilot` and `~/.claude`" — so
+    the payload keeps reaching Copilot without these settings at all.
+    Whether Agent Host honours them is **not** stated either way, and
+    their own note scopes them to the Local agent, so plan on the
+    switchboard going and the discovery staying. Checked 2026-09-09.
+
     Three traps. `chat.instructionsFilesLocations` accepts **folders
     only** — an entry for `~/.claude/CLAUDE.md` is silently ignored,
     and because `chat.useClaudeMdFile` loads that file anyway, the dead
