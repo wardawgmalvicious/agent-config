@@ -247,6 +247,32 @@ again**, and nothing says so. Repo layout, deployment mechanics and the
 reasoning behind them live in that repo's own `CLAUDE.md`, which loads
 in sessions there.
 
+### GitHub Copilot no longer inherits this payload
+
+Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
+root is `false` in VS Code user settings, and `chat.useClaudeMdFile` is
+off — so Copilot inherits none of `~/.claude`: not skills, rules,
+agents, hooks, or this file. It reads `~/.copilot/*` and a repo's
+`.github/*` instead, which `agent-config/scripts/copy-copilot.ps1`
+vendors into a repo (there is no user-scope Copilot payload; the
+`~/.copilot/*` roots are enabled but empty). Editing anything under
+`~/.claude` therefore changes Claude Code's behaviour alone. The Claude
+paths remain *documented defaults* on that surface — they are switched
+off deliberately, not unsupported.
+
+**An unlisted location keeps its default, and the default is on.** Each
+setting is a location → boolean map *over* the documented defaults, so
+turning inheritance off means writing every Claude root out as `false`.
+Omitting one leaves it enabled with nothing to show for it:
+`.claude/skills` and `.claude/rules` stayed live that way while every
+root listed beside them read `false`.
+
+**The Settings UI does not reliably persist these.** Object-valued
+`chat.*` settings edited through the UI can leave `settings.json`
+untouched with no error — measured 2026-09-09, repeated edits against
+an mtime four days stale. Edit `%APPDATA%\Code\User\settings.json`
+directly and check the mtime afterwards rather than trusting the UI.
+
 ### User-scope MCP servers are deliberately three
 
 `~/.claude.json` holds top-level `mcpServers`, and that key is reconciled
