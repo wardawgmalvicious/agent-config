@@ -5,7 +5,7 @@ when_to_use: Invoke when the user colors bars by a measure, fixes same-color-on-
 paths:
   - "**/visuals/**/visual.json"
   - "**/definition/reportExtensions.json"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

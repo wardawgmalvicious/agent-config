@@ -4,7 +4,7 @@ description: "Validate a drafted skill — write its trigger fixtures, update th
 when_to_use: "Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description`, `when_to_use` or `paths:` glob, or as the follow-on to `/author-skill`."
 argument-hint: "[skill-name]"
 disable-model-invocation: false
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 ---
 

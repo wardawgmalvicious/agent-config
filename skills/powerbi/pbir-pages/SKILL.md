@@ -5,7 +5,7 @@ when_to_use: Invoke when the user edits a page, adds a tooltip or drillthrough p
 paths:
   - "**/pages/**/page.json"
   - "**/pages/pages.json"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

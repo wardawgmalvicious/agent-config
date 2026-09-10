@@ -5,7 +5,7 @@ when_to_use: Invoke when the user adds a bookmark, builds show/hide toggle butto
 paths:
   - "**/bookmarks/bookmarks.json"
   - "**/bookmarks/*.bookmark.json"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

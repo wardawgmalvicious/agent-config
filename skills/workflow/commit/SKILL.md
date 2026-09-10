@@ -1,6 +1,6 @@
 ---
 name: commit
-model: sonnet
+# model: sonnet  # any model: value blocks Copilot slash invocation
 effort: xhigh
 disable-model-invocation: false
 description: "Splits working-tree changes into logical, self-consistent commits (ordering so nothing dangles, stepping files that straddle commits through intermediate states), writes conventional-commit messages (feat/fix/docs/refactor/chore) with motivation in the body, stages explicit paths only, uses git mv for renames, never pushes/amends/skips hooks unless explicitly asked, and ends by reporting the resulting hashes against a clean tree. Includes pre-commit checks for Fabric Git-synced repos (core.autocrlf, .gitattributes, whitespace-only portal diffs)."

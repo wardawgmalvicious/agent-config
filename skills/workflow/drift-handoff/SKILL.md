@@ -3,7 +3,7 @@ name: drift-handoff
 description: "Turn a completed drift-audit report into handoff briefs on disk. Use immediately after a /drift-audit run, or when the user asks to prepare handoffs, write up the findings, or capture the recommended actions from an audit. Writes one directory per run — docs/audits/<audit-date>/<source-id>/ — holding the audit report verbatim as 00-audit-report.md plus one numbered brief per recommended action, grouped so each brief covers a single kind of work with its own verification steps. Only recommended actions become briefs; every other finding stays a conversational read-through. Runs inline and reads the report from the current session, so it cannot reconstruct an audit it did not see."
 argument-hint: "[source-id]"
 allowed-tools: Read Write Glob Grep
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
 context: inline

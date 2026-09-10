@@ -2,7 +2,7 @@
 name: fabric-data-pipeline
 description: "Use for Microsoft Fabric Data Pipeline item definitions in Git — `pipeline-content.json`, `.platform`, `.schedules`. Covers the envelope (`properties.activities`, plus the `parameters`, `variables` and `libraryVariables` the REST schema omits), `dependsOn` conditions, the activity-type enum and Fabric-specific `typeProperties` (`TridentNotebook`, `PBISemanticModelRefresh`, `SqlServerStoredProcedure`, `ExecutePipeline`), `InvokePipeline` deprecated for `ExecutePipeline` and the GUID-vs-`referenceName` rebinding that migration forces, activity `policy` (the portal's 12-hour timeout vs the 7-day default when absent; preview `retryConditions`, whose interval elapses before the condition is tested), deactivation via `state: Inactive` + `onInactiveMarkAs`, the 120-activity cap, and `.schedules` — `jobType: Execute`, Cron/Daily/Weekly/Monthly where Cron is an interval in minutes, the mandatory end date that silently expires a schedule, and scheduler auto-disable after consecutive failures."
 disable-model-invocation: false
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort:  # inherits the session level
 paths:
   - "**/*.DataPipeline/**"

@@ -6,7 +6,7 @@ paths:
   - "**/report.json"
   - "**/pages/**/page.json"
   - "**/visuals/**/visual.json"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

@@ -3,7 +3,7 @@ name: fabric-spark-monitoring
 description: "Use for diagnosing Fabric Spark performance through the monitoring REST APIs — listing Livy sessions (/workspaces/{ws}/spark/livySessions with queuedDuration/runningDuration, HC_ session naming), pulling the Spark History Server mirror (notebooks, sparkJobDefinitions or lakehouses → .../livySessions/{livy}/applications/{appId}/jobs, plus /stages, /executors, /sql) for job timelines and gap analysis, attributing notebook wall-clock to queue/boot/work/teardown phases, verifying high-concurrency session reuse (sessionSource created vs reused), and the sibling log and resourceUsage routes (coreEfficiency, idleTime, Livy/driver/executor logs)."
 paths:
   - "**/*.Notebook/**"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

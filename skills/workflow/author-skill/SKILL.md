@@ -3,7 +3,7 @@ name: author-skill
 description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment and the link step a new skill needs. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
 context: inline

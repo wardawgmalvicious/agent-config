@@ -4,7 +4,7 @@ description: "Use for the Microsoft Fabric Operations Agent item (preview) — `
 when_to_use: "Fires on any file under `*.OperationsAgent/`. Not the same item as a Data Agent (fabric-data-agent): that one is read-only, user-initiated, conversational, up to 5 sources; this one is autonomous, single-source, unattended, and takes write actions. Data Factory's 'operations agent for pipelines' is a template that generates this same item, not a second type. For authoring the KQL database it monitors see fabric-eventhouse; for deterministic non-LLM alerting, that is Activator."
 paths:
   - "**/*.OperationsAgent/**"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

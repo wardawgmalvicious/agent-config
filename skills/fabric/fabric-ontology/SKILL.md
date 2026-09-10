@@ -4,7 +4,7 @@ description: "Use for the Microsoft Fabric Ontology item (preview, Fabric IQ wor
 when_to_use: "Fires on any file under `*.Ontology/`. Owns the ontology item itself — its definition files, generation, data binding, enrichment. Defers graph mechanics and GQL to fabric-graph (ontology is built on that item), agent configuration to fabric-data-agent and fabric-operations-agent (ontology is one source among theirs), and semantic-model authoring to fabric-tmdl. Preview workload: claims here are dated, and the item is not the Fabric IQ Plan item."
 paths:
   - "**/*.Ontology/**"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

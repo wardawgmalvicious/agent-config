@@ -1,7 +1,7 @@
 ---
 name: fabric-semantic-model-audit
 description: "Audit an existing Power BI or Fabric semantic model and report on its shape, relationship health, memory cost and downstream readiness — a review of a finished model, not authoring guidance. Use when asked to audit, review, assess or health-check a semantic model, to judge whether one is a real star schema, to explain why a model is slow or bloated, or to investigate inactive relationships, snowflake chains, role-playing dimensions, bidirectional filters, ambiguous filter paths, limited vs. regular relationships, or high-cardinality columns. Covers the three evidence tiers — TMDL on disk with no capacity, `INFO.VIEW.*` over executeQueries, and Best Practice Analyzer / Model Memory Analyzer via `sempy.fabric` in a Fabric notebook — and the storage-mode split that makes import-mode relationship guidance wrong for Direct Lake. For authoring TMDL use fabric-tmdl; for reviewing a diff use code-review; for scripting an open Desktop model use pbid-tom-live."
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: max   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

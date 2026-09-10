@@ -4,7 +4,7 @@ description: Use when editing visual.json inside a Power BI PBIR report's visual
 when_to_use: Invoke when the user edits visual.json, sets a visual property, debugs silently-ignored container props, or writes SQExpr literals. This skill owns visual.json structure and literal encoding, and co-fires with two neighbours on the same file — use pbir-conditional-formatting for colour, gradient, data bar and icon rules, and pbir-filters for the filterConfig.filters body. Report-wide defaults are not here — they live in the theme file.
 paths:
   - "**/visuals/**/visual.json"
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---

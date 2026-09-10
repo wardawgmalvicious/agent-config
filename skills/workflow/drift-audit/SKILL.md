@@ -4,7 +4,7 @@ description: "Audit registered upstream docs sources for drift since a prior com
 argument-hint: "[prior-sha-or-date] [--sources id,id]"
 arguments: prior_ref
 allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__github-mcp__search_repositories mcp__microsoft-learn-mcp__microsoft_docs_fetch
-model: inherit
+# model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
 ---
