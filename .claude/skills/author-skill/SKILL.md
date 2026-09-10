@@ -1,6 +1,6 @@
 ---
 name: author-skill
-description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and the junction deployment and the link step a new skill needs. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
+description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and which tree a new skill belongs in and its deploy step. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -42,6 +42,14 @@ A **platform** skill is the exception that proves the rule: `fabric` and
 `powerbi` are pruned from user scope here on purpose, so a new one stays
 unlinked by design and enters no session's payload. Nothing is broken
 when that happens, and no linker run changes it.
+
+**A project-scope skill needs the linker not at all**, which is the
+third case and the easiest to get wrong in the other direction. Nothing
+junctions `.claude/skills/` — Claude Code reads it in place — so a new
+skill there is live on save for sessions in this repo, with no deploy
+step to forget. Do not run the linker "to pick it up"; it selects out of
+`skills/` and will not see it. The trade is that it is live only here,
+which is the whole reason it is there.
 
 Once linked, a half-drafted skill is a live half-drafted skill; finish
 the frontmatter before walking away.
@@ -118,14 +126,34 @@ command, and every cross-reference.
 - **`powerbi-*` is reserved.** Those are vendored from
   `microsoft/skills-for-fabric` and keep upstream naming so re-sync
   diffs stay clean. Never take that prefix for a local skill.
-- **The namespace picks the group directory**, and the group directory
-  is load-bearing. `skills/fabric/` for `fabric-*`, `skills/powerbi/`
-  for `pbir-`, `pbid-`, `pbip-` and the vendored `powerbi-*`,
-  `skills/workflow/` for the behavioral ones. A skill placed flat at
-  `skills/<name>/SKILL.md` fails twice silently: the pre-commit hook
-  matches `^skills/[^/]+/[^/]+/SKILL\.md$` so the linter never sees it,
-  and Claude Code discovers skills exactly one level under the skills
-  root so the harness never loads it.
+- **Pick the TREE before the group**, and pick it by asking what the
+  skill acts on — not from the namespace, which cannot answer this.
+  **Does it act on this repo, or on the user's own work?**
+  - Acts on `agent-config` itself — its groups, its linter, its handoff
+    queue, its audit ledger: `.claude/skills/<name>/SKILL.md`, project
+    scope. No group directory. It deploys nowhere and no script reaches
+    it, which is the point: outside this working tree it has nothing to
+    act on, so shipping it to user scope would put it in the startup
+    listing of every client-repo session for no possible benefit.
+  - Acts on the user's work — code, Fabric items, reports, any repo:
+    `skills/<group>/<name>/SKILL.md`, deployable payload.
+
+  Getting this wrong is silent and costs listing budget everywhere. The
+  seven skills at project scope today (`author-skill`, `test-skill`,
+  `learn`, `drift-*`, `land`) were all at user scope until 2026-09-09
+  for exactly this reason.
+- **Within `skills/`, the namespace picks the group directory**, and the
+  group directory is load-bearing. `skills/fabric/` for `fabric-*`,
+  `skills/powerbi/` for `pbir-`, `pbid-`, `pbip-` and the vendored
+  `powerbi-*`, `skills/workflow/` for the behavioral ones — which now
+  means the repo-general verbs only, `code-review` and `commit`.
+- **Depth is pinned per tree and a misplacement fails twice silently.**
+  The pre-commit hook matches
+  `^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$` — two directories
+  under `skills/`, one under `.claude/skills/`. A skill placed flat at
+  `skills/<name>/SKILL.md`, or nested a level deeper in either tree, is
+  invisible to the linter *and* to Claude Code, which discovers skills
+  exactly one level under a skills root.
 - **Name the job, not the target**, where they differ. `drift-audit` is
   named that way because it audits rules, `CLAUDE.md`, and the MCP
   templates too — `skill-audit` would have named a quarter of its scope
@@ -221,7 +249,9 @@ Show the brief to the user before drafting from it.
 
 ## 6. Draft the SKILL.md
 
-Write `skills/<group>/<name>/SKILL.md` from the brief.
+Write the `SKILL.md` from the brief, at the path the tree decision in
+step 3 picked — `skills/<group>/<name>/SKILL.md` for payload,
+`.claude/skills/<name>/SKILL.md` for a skill that maintains this repo.
 
 **The `description` is the entire model-invoked trigger mechanism.**
 Write it to fire on the queries the skill should answer — the user's
@@ -243,8 +273,7 @@ the only pointer that works cold. Measured 2026-09-04: `pbir-filters`
 said "for filter-pane styling use `pbir-themes`", and their globs are
 disjoint.
 
-**Long detail goes to `skills/<group>/<name>/references/`, not the
-body.** Root `CLAUDE.md` is explicit about this. Command flag tables,
+**Long detail goes to the skill's own `references/`, not the body.** Root `CLAUDE.md` is explicit about this. Command flag tables,
 per-item-type matrices, and long worked examples belong in a reference
 file the body points at. The linter caps the body at 500 lines, but that
 is a backstop, not a target.
@@ -281,7 +310,7 @@ inline with the date and version, the way `/learn` does, so a later
 Run all four. Each catches something the others do not.
 
 ```
-uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
+uv run --with pyyaml scripts/lint-frontmatter.py <the SKILL.md you wrote>
 ```
 
 **Re-count the description.** The linter gates `description` at 1,024
@@ -290,7 +319,7 @@ truncation point — but it reports overflow only after the fact and
 never warns on a near miss:
 
 ```
-uv run --with pyyaml python -c "import sys,yaml; print(len(yaml.safe_load(open(sys.argv[1],encoding='utf-8').read().split('---')[1])['description']))" skills/<group>/<name>/SKILL.md
+uv run --with pyyaml python -c "import sys,yaml; print(len(yaml.safe_load(open(sys.argv[1],encoding='utf-8').read().split('---')[1])['description']))" <the SKILL.md you wrote>
 ```
 
 1,024 is the Agent Skills spec cap, and `description` is one of the six
@@ -380,8 +409,9 @@ back to back, and a cold run is the better one.
   `expected_activations.md` and runs both the static and the real-path
   activation test.
 - **No commit**, no push.
-- **Do not edit other skills.** Only `skills/<group>/<name>/`, the new
-  brief, and the single `skills/README.md` entry. `Edit` is available
+- **Do not edit other skills.** Only the new skill's own directory, the
+  new brief, and its single catalogue entry -- `skills/README.md` for a
+  payload skill, `.claude/skills/README.md` for a project-scope one. `Edit` is available
   for those two existing files and nothing else — adjacent cleanups are
   `/learn` and `/simplify` territory, and an unbriefed edit made here
   has no evidence behind it.
