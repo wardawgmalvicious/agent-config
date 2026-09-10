@@ -8,7 +8,7 @@ Last verified: 2026-09-01
 
 Personal scope, deployed by `scripts/link-claude.ps1`:
 
-- Repo: `skills/workflow/author-skill/SKILL.md`
+- Repo: `.claude/skills/author-skill/SKILL.md`
 - Deployed: `~/.claude/skills/author-skill/SKILL.md`
 
 The group directory (`workflow/`) is repo-side only and does not survive
@@ -221,7 +221,7 @@ loss of behaviour — it pins a floor, and the session already sits at
 - `learn` — (a) already converted. The disambiguation runs both ways:
   `/learn` folds a session learning into guidance that exists;
   `/author-skill` creates guidance that does not. Both skills point at
-  each other; `skills/workflow/learn/SKILL.md` gained its line as part
+  each other; `.claude/skills/learn/SKILL.md` gained its line as part
   of this work.
 - `commit` — (a) already converted. Handoff target.
 - `drift-audit` / `drift-handoff` / `drift-update` — (a) already

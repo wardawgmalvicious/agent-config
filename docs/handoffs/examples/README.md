@@ -8,7 +8,7 @@ from. A brief that is merely finished gets deleted instead; see the
 ## What's here
 
 - [author-skill.example.md](author-skill.example.md) — brief for
-  [skills/workflow/author-skill/](../../../skills/workflow/author-skill/SKILL.md).
+  [.claude/skills/author-skill/](../../../.claude/skills/author-skill/SKILL.md).
   Kept because that skill cites it as the reference for brief *form*:
   it carries exactly the two `> Guidance:` blocks that survive into a
   filled brief — the note under the title and the post-draft checklist
