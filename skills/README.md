@@ -33,6 +33,17 @@ internal cross-references stay intact.
   self-consistent commits: splitting rules, conventional-commit
   messages with motivation in the body, explicit-path staging,
   never-push/amend rails, Fabric Git-synced repo checks.
+- [linkedin-highlights/](workflow/linkedin-highlights/) — turn a repo
+  you worked in into the prose for one LinkedIn Experience role's
+  Highlights field: docs before history, an inventory that counts items
+  and not the dozens of files each serializes into, claims tiered by
+  evidence strength, and impact numbers asked for rather than inferred.
+  Named for the target rather than the job — the usual rule inverted,
+  because the 2,000-character cap and the register both come from
+  LinkedIn, which leaves a later resume skill a disjoint trigger
+  surface instead of a competing one. Ends by scrubbing the draft
+  against the identity denylist, which is the step nothing else covers:
+  `identity-guard` gates only `git commit` and `git push`.
 
 The seven skills that maintain *this* repo — `author-skill`,
 `test-skill`, `learn`, `drift-audit`, `drift-handoff`,
