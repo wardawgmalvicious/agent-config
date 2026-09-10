@@ -44,6 +44,23 @@ conformance checking.
 - [coding-expressions.md](coding-expressions.md) — Fabric pipeline
   expressions; idioms also apply to ADF, Synapse pipelines, Logic Apps,
   and Power Automate (Workflow Definition Language family)
+- [coding-markdown.md](coding-markdown.md) — hand-authored markdown:
+  READMEs, design notes, runbooks, handoff briefs, agent instruction
+  files. The only rule here scoped to `**/*.md`, so it loads in nearly
+  every session on the machine; it is held to 130 lines for that reason.
+  Covers wrap width and why it is chosen for the diff rather than the
+  reader, one form per element where markdown offers alternatives, and
+  the prose discipline that decides whether a document survives being
+  read six months later — one fact one home, date a measured claim,
+  correct in place rather than appending a contradiction. Conventions
+  were measured across this repo's 215 authored `.md` files on
+  2026-09-10, not imported from a style guide: `claude/rules/` and the
+  root docs already hard-wrap (p99 = 76 chars), `-` outnumbers `*` as a
+  list marker 4268 to 1, and `**bold**` outnumbers `__bold__` 4737 to
+  22. **It does not imply reformatting what exists.** `skills/` holds
+  ~2,000 unwrapped prose lines and they stay: a whitespace-only rewrap
+  rewrites `git blame` across files dense with dated measurements, which
+  is the same argument that kept `ruff format` out of pre-commit.
 - [fabric-git-serialization.md](fabric-git-serialization.md) — not a
   coding convention: portal serialization behavior for Fabric
   Git-synced repos (EOF newlines, mixed CRLF/LF, the auto-generated

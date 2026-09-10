@@ -1,6 +1,7 @@
 {
   "deferred": {
     "coding-bash": "Harness plumbing, not data work; also the leakiest rule (names this repo's hooks twice).",
+    "coding-markdown": "Universal syntax half, but the prose discipline is house voice measured from this repo's own 215 authored files -- not conventions to impose on a client repo's teammates. Also the only rule scoped `**/*.md`, so a port would load on every vendored and third-party doc in their tree. Port is a one-line flip if a team ever wants it.",
     "coding-powershell": "Data teammates do not write PowerShell here; references another personal repo.",
     "fabric-git-serialization": "Deferred pending review -- most-edited rule at 10 commits and the most Fabric-specific.",
     "vscode-scoping": "Machine setup guidance, not a coding convention; names another personal repo."
