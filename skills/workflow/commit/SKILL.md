@@ -22,6 +22,13 @@ happen only when explicitly requested, never as follow-through.
    files) well enough to explain *why* each change exists, not just
    what it touches. Never commit content you haven't looked at.
 
+**An empty `git status --short` is the whole answer.** Report that there
+is nothing to commit and stop; don't work through the diffs to confirm
+it. `git diff --stat` prints nothing on a clean tree, and reading that
+silence as a failed command rather than as the answer is a real failure
+mode — observed 2026-09-09, three tool calls spent re-asking the same
+question.
+
 ## Splitting into commits
 
 - **One logical unit per commit.** A rename, a new feature, and a
