@@ -76,8 +76,8 @@ skill: the artifact lives in `claude/agents/` and uses
 Before naming anything, find out whether the topic is already covered.
 
 ```
-grep -rli "<topic term>" skills/*/SKILL.md
-grep -rn -i "<topic term>" skills/fabric-gotchas/SKILL.md
+grep -li "<topic term>" skills/*/*/SKILL.md .claude/skills/*/SKILL.md
+grep -n -i "<topic term>" skills/fabric/fabric-gotchas/SKILL.md
 ```
 
 Check `fabric-gotchas` explicitly. `/learn` treats it as the default
