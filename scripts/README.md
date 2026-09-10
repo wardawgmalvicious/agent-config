@@ -101,6 +101,21 @@ Helper scripts for repo maintenance and observability.
   why, so a newly added rule surfaces as a decision to make rather than an
   omission. Re-record after a deliberate port with `--stamp`. Run by
   pre-commit.
+- [lint-skill-scopes.py](lint-skill-scopes.py) — enforce the flat skill-name
+  namespace across both trees. Claude Code addresses a skill by name alone —
+  no group segment, no scope qualifier — so two skills sharing a name is
+  never a merge, it is one of them winning. Runs over the whole set rather
+  than the changed files, because a collision belongs to a **pair**: neither
+  file is wrong on its own, so no per-file hook could ever see it. Catches
+  two cases with opposite noise levels. **Cross-scope** is the silent one: a
+  name in both `skills/` and `.claude/skills/` resolves to the user-scope
+  copy, and the project-scope one just stops loading, symptomless apart from
+  a skill behaving like an older version of itself. **Cross-group** is
+  already fatal in both deploy scripts; it is caught here only so it fails
+  before the commit instead of at the next deploy. Also fails — rather than
+  passing silently — when either tree is missing or empty, since both
+  collectors return nothing for an absent root and a check that compared
+  nothing must not report a pass. No dependencies. Run by pre-commit.
 - [skill-telemetry.py](skill-telemetry.py) — post-hoc answer to "which
   skills are earning their listing budget?". Three subcommands:
   `coverage` (per skill: how many startup listings it appeared in, how
