@@ -49,6 +49,23 @@
     before copying and reports a mismatch rather than shipping a skill
     Copilot will reject.
 
+    LINE ENDINGS ARE NORMALIZED TO LF, and that is the one respect in which
+    this is not a byte-faithful copy. It has to be: what is in THIS repo's
+    working tree flips between LF and CRLF on no schedule. `* text=auto` with
+    core.autocrlf false and core.eol unset means git rewrites a file to CRLF
+    every time it touches one -- checkout, switch, stash, pre-commit's own
+    stash/restore -- while the editors and tools that write the same files in
+    between leave LF. Copying that faithfully carried the flip into the client
+    repo, where a run showed every vendored file modified with nothing visibly
+    changed (159 of them, 2026-09-09). Normalizing makes a deploy a function of
+    content alone, and leaves the destination repo's own .gitattributes to
+    decide what its checkout looks like. Files containing a NUL byte are
+    treated as binary and copied untouched. The manifests get the same
+    treatment, for the same reason.
+
+    Expect ONE more whole-payload diff after this change landed: the run that
+    converts an already-vendored CRLF payload to LF. It is stable from then on.
+
     INSTRUCTIONS ARE PRE-TRANSLATED, NOT CONVERTED HERE. Skills need no
     transformation because SKILL.md is a shared format. Rules are the
     opposite: .github/instructions takes *.instructions.md with an applyTo
@@ -187,7 +204,7 @@
     read the file before adopting it, because -Force overwrites it.
 
 .EXAMPLE
-    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\Client\platform\.github -SkillGroups fabric,powerbi
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\Client\platform\.github -SkillGroups fabric,powerbi,workflow
     The normal call. Vendors the platform skills and every ported
     instruction into the client repo's .github as committable files,
     leaving anything the client authored untouched. Commit them and every
@@ -234,6 +251,51 @@ function Test-SamePath([string]$A, [string]$B) {
     [IO.Path]::GetFullPath($A).TrimEnd('\') -ieq [IO.Path]::GetFullPath($B).TrimEnd('\')
 }
 
+# UTF-8 with no BOM, and no newline translation on write. Set-Content and
+# Out-File both emit [Environment]::NewLine instead, which is CRLF here.
+$script:Utf8NoBom = [Text.UTF8Encoding]::new($false)
+
+function Get-PayloadContent {
+    # What ships: the file's content with every CRLF collapsed to LF.
+    #
+    # THIS IS NOT COSMETIC -- a byte-faithful copy churns the client repo.
+    # Content reaches this script with whatever line endings git last left in
+    # the working tree, and in THIS repo that is not stable: `* text=auto` with
+    # core.autocrlf false and core.eol unset (so `native`) means git rewrites a
+    # file to CRLF every time it touches one -- checkout, switch, stash, and
+    # pre-commit's own stash/restore around each commit -- while the editors and
+    # tools that write the same files in between leave LF. So a file's endings
+    # flip back and forth on no schedule and with nothing to see in a diff here.
+    # Copying those bytes faithfully propagated the flip into the client repo,
+    # where it lands as every vendored file modified with nothing visibly
+    # changed (159 of them on 2026-09-09, which is what prompted this).
+    #
+    # Normalizing makes a deploy depend on content alone. The destination repo's
+    # own .gitattributes then decides what its checkout looks like, which is
+    # where that decision belongs.
+    [OutputType([byte[]])]
+    param([string]$Path)
+
+    $raw = [IO.File]::ReadAllBytes($Path)
+    # A NUL byte means binary -- an image or archive shipped inside a skill.
+    # Newline normalization would corrupt it, so those pass through untouched.
+    if ($raw -contains 0) { return $raw }
+    $script:Utf8NoBom.GetBytes(([IO.File]::ReadAllText($Path) -replace "`r`n", "`n"))
+}
+
+function Test-FileMatch {
+    # Is the destination already exactly these bytes? Byte comparison rather
+    # than Get-FileHash on both sides, because the normalized source never
+    # exists on disk in the form being compared.
+    [OutputType([bool])]
+    param([string]$Path, [byte[]]$Bytes)
+
+    if (-not (Test-Path -LiteralPath $Path)) { return $false }
+    $existing = [IO.File]::ReadAllBytes($Path)
+    if ($existing.Length -ne $Bytes.Length) { return $false }
+    [Linq.Enumerable]::SequenceEqual([byte[]]$existing, [byte[]]$Bytes)
+}
+
 # Write only on real change. A timestamp field would dirty git on every run
 # in a client repo, so the manifests carry none and are compared before
 # writing. Shared by both payloads' manifests.
@@ -241,13 +303,14 @@ function Set-IfChanged {
     [CmdletBinding(SupportsShouldProcess)]
     [OutputType([bool])]
     param([string]$Path, [string]$Content, [string]$Label)
-    # Set-Content appends a trailing newline, so compare against the content
-    # plus one -- otherwise every run reports a change it did not make.
-    if ((Test-Path $Path) -and ((Get-Content $Path -Raw) -eq ($Content + [Environment]::NewLine))) {
-        return $false
-    }
+    # ConvertTo-Json emits CRLF between lines on Windows, so the manifests get
+    # the same LF normalization as the payload -- they are committed in the
+    # client repo too, and would churn there for the same reason. The trailing
+    # newline is added here because nothing else adds one.
+    $bytes = $script:Utf8NoBom.GetBytes((($Content -replace "`r`n", "`n") + "`n"))
+    if (Test-FileMatch -Path $Path -Bytes $bytes) { return $false }
     if ($PSCmdlet.ShouldProcess($Path, "Write $Label")) {
-        Set-Content -Path $Path -Value $Content -Encoding utf8NoBOM
+        [IO.File]::WriteAllBytes($Path, $bytes)
         return $true
     }
     return $false
@@ -494,8 +557,8 @@ function Sync-SkillFolder {
         $sourceRelatives[$relative] = $true
         $target = Join-Path $destFull $relative
 
-        if ((Test-Path $target) -and
-            ((Get-FileHash $file.FullName).Hash -eq (Get-FileHash $target).Hash)) {
+        $bytes = Get-PayloadContent $file.FullName
+        if (Test-FileMatch -Path $target -Bytes $bytes) {
             $same++
             continue
         }
@@ -503,7 +566,7 @@ function Sync-SkillFolder {
         if (-not (Test-Path $targetParent)) {
             New-Item -ItemType Directory -Path $targetParent -Force | Out-Null
         }
-        Copy-Item $file.FullName $target -Force
+        [IO.File]::WriteAllBytes($target, $bytes)
         $copied++
     }
 
@@ -680,8 +743,8 @@ if ($doInstructions) {
             continue
         }
 
-        $unchanged = $existsAtDest -and
-            ((Get-FileHash $src).Hash -eq (Get-FileHash $dest).Hash)
+        $bytes     = Get-PayloadContent $src
+        $unchanged = $existsAtDest -and (Test-FileMatch -Path $dest -Bytes $bytes)
         $action = if ($existsAtDest -and -not $isOurs) { 'Adopt and overwrite instruction' }
                   else { 'Copy instruction' }
 
@@ -689,7 +752,7 @@ if ($doInstructions) {
             if (-not $WhatIfPreference) { Write-Host "OK      $fileName (unchanged)" }
         }
         elseif ($PSCmdlet.ShouldProcess($dest, "$action from copilot/instructions/$fileName")) {
-            Copy-Item $src $dest -Force
+            [IO.File]::WriteAllBytes($dest, $bytes)
             $tag = if ($existsAtDest -and -not $isOurs) { ' (adopted)' } else { '' }
             Write-Host "Synced  $fileName$tag"
             $instructionsCopied++
