@@ -109,7 +109,7 @@ takedown alone, but not on that observation.
 `scripts/link-claude.ps1` to `~/.claude/agents/drift-fetch.md`.
 
 `claude/agents/` is **copied**, not junctioned, so the agent is not live until
-`./scripts/link-claude.ps1 -SkillGroups workflow` runs. It must sit directly
+`./scripts/link-claude.ps1 -SkillGroups workflow,social` runs. It must sit directly
 under `claude/agents/` — the directory is flat.
 
 Personal rather than project scope because `/drift-audit` is junctioned into

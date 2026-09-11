@@ -15,14 +15,14 @@
         {
             // The ONLY form of this command that should be run on this
             // machine. Running it bare re-links all 37 platform skills
-            // and silently undoes the workflow-only prune -- it reports
+            // and silently undoes the workflow,social prune -- it reports
             // "Done. All links verified." either way. Happened
             // 2026-08-31; see CLAUDE.md. -Force also pushes
             // claude/CLAUDE.md and claude/settings.json, which deploy by
             // copy rather than junction.
-            "label": "link-claude (workflow only)",
+            "label": "link-claude (workflow + social)",
             "type": "shell",
-            "command": "./scripts/link-claude.ps1 -SkillGroups workflow -Force",
+            "command": "./scripts/link-claude.ps1 -SkillGroups workflow,social -Force",
             "detail": "Deploy the payload. NEVER run link-claude.ps1 bare.",
             "problemMatcher": []
         },

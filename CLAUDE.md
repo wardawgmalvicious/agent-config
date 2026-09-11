@@ -115,23 +115,24 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 
 ```powershell
 # THIS MACHINE'S DEFAULT — always use this form. Deploys the workflow
-# group only (code-review, commit); fabric and powerbi are PRUNED from
-# ~/.claude/skills. This repo's own maintenance skills are NOT here and
-# are not deployed by anything — see .claude/skills/ above.
+# and social groups only (code-review, commit; linkedin-highlights);
+# fabric and powerbi are PRUNED from ~/.claude/skills, and so is social
+# if it is left off the list. This repo's own maintenance skills are NOT
+# here and are not deployed by anything — see .claude/skills/ above.
 # -Force also pushes claude/CLAUDE.md and claude/settings.json, and is
 # what allows deleting a target-only file under agents/hooks/rules/mcp.
 # Everything except skills/ deploys by copy, so a repo edit to a rule,
 # hook, agent or MCP template is NOT live until this runs.
-./scripts/link-claude.ps1 -SkillGroups workflow -Force
+./scripts/link-claude.ps1 -SkillGroups workflow,social -Force
 
 # Same, when neither copied file has changed.
-./scripts/link-claude.ps1 -SkillGroups workflow
+./scripts/link-claude.ps1 -SkillGroups workflow,social
 
 # Also reconcile user-scope MCP servers in ~/.claude.json down to the three
 # in claude/mcp/.mcp.global.template.json, PRUNING everything else there.
 # Off by default even under -Force; every run without it just reports the
 # drift. Re-run after a Docker Desktop update, which re-adds MCP_DOCKER.
-./scripts/link-claude.ps1 -SkillGroups workflow -GlobalMcp
+./scripts/link-claude.ps1 -SkillGroups workflow,social -GlobalMcp
 
 # Partial payload: push only the Fabric skills into a client repo's .claude,
 # without this machine's agents, hooks, or rules.

@@ -191,15 +191,15 @@ is confined to `tests/` and a throwaway directory; this writes to
 `~/.claude/skills`, which serves every session here.
 
 ```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow,fabric   # or workflow,powerbi
+./scripts/link-claude.ps1 -SkillGroups workflow,social,fabric   # or workflow,social,powerbi
 ```
 
 `-SkillGroups` **prunes** — a group not listed is removed. This
-machine's standing state is workflow-only, so you are temporarily
-undoing a deliberate prune and must put it back:
+machine's standing state is workflow and social only, so you are
+temporarily undoing a deliberate prune and must put it back:
 
 ```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow
+./scripts/link-claude.ps1 -SkillGroups workflow,social
 ls ~/.claude/skills | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
 ```
 

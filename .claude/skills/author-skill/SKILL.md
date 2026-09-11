@@ -35,7 +35,7 @@ a newly authored skill is invisible everywhere — absent from the
 listing, and `/<name>` answers `Unknown command`. Measured 2026-09-02:
 `land` was missing from a listing of 8 junctions immediately after its
 `SKILL.md` was written, and appeared only once the linker ran. On this
-machine the form is `./scripts/link-claude.ps1 -SkillGroups workflow`,
+machine the form is `./scripts/link-claude.ps1 -SkillGroups workflow,social`,
 **never bare** — see root `CLAUDE.md`.
 
 A **platform** skill is the exception that proves the rule: `fabric` and
@@ -146,7 +146,12 @@ command, and every cross-reference.
   group directory is load-bearing. `skills/fabric/` for `fabric-*`,
   `skills/powerbi/` for `pbir-`, `pbid-`, `pbip-` and the vendored
   `powerbi-*`, `skills/workflow/` for the behavioral ones — which now
-  means the repo-general verbs only, `code-review` and `commit`.
+  means the repo-general verbs only, `code-review` and `commit` — and
+  `skills/social/` for personal-profile writing (`linkedin-highlights`),
+  split out so a workplace Copilot deployment of `workflow` never
+  carries it. A new group needs adding to the machine's
+  `-SkillGroups` default everywhere that default is written, or the
+  next documented linker run prunes it.
 - **Depth is pinned per tree and a misplacement fails twice silently.**
   The pre-commit hook matches
   `^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$` — two directories

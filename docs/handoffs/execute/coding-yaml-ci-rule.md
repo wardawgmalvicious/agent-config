@@ -116,5 +116,5 @@ every session on the machine.
   plausible port — CI conventions are not house voice.
 - Add an entry to
   [claude/rules/README.md](../../../claude/rules/README.md).
-- `./scripts/link-claude.ps1 -SkillGroups workflow` — rules deploy by
+- `./scripts/link-claude.ps1 -SkillGroups workflow,social` — rules deploy by
   copy and are **not live until this runs**.

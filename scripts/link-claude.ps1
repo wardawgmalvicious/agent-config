@@ -161,18 +161,19 @@
     Same, and push drifted CLAUDE.md / settings.json to the target.
 
 .EXAMPLE
-    ./scripts/link-claude.ps1 -SkillGroups workflow
+    ./scripts/link-claude.ps1 -SkillGroups workflow,social
     THIS MACHINE'S DEFAULT. User scope, but only the repo-general verbs
-    (code-review, commit); fabric and powerbi are pruned from
-    ~/.claude/skills. This repo's own maintenance skills are not in this
-    group and are deployed by nothing -- see the .DESCRIPTION.
+    (code-review, commit) and the social group (linkedin-highlights);
+    fabric and powerbi are pruned from ~/.claude/skills, and so is social
+    whenever it is left off the list. This repo's own maintenance skills
+    are in no group and are deployed by nothing -- see the .DESCRIPTION.
 
 .EXAMPLE
-    ./scripts/link-claude.ps1 -SkillGroups workflow -Force
+    ./scripts/link-claude.ps1 -SkillGroups workflow,social -Force
     Same as above example but pushes drifted CLAUDE.md / settings.json to the target.
 
 .EXAMPLE
-    ./scripts/link-claude.ps1 -SkillGroups workflow -GlobalMcp
+    ./scripts/link-claude.ps1 -SkillGroups workflow,social -GlobalMcp
     Same, and reconcile ~/.claude.json's user-scope mcpServers down to the
     servers the global template declares.
 

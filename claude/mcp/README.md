@@ -45,7 +45,7 @@ Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, 
 
 ```powershell
 # Reports drift on every run; writes only with -GlobalMcp
-./scripts/link-claude.ps1 -SkillGroups workflow -GlobalMcp
+./scripts/link-claude.ps1 -SkillGroups workflow,social -GlobalMcp
 ```
 
 It substitutes `<USER>`, backs the file up, replaces the top-level `mcpServers` key, and **prunes servers this template does not declare** — leaving every other key in `~/.claude.json` untouched. Two things follow from that:

@@ -33,7 +33,24 @@ internal cross-references stay intact.
   self-consistent commits: splitting rules, conventional-commit
   messages with motivation in the body, explicit-path staging,
   never-push/amend rails, Fabric Git-synced repo checks.
-- [linkedin-highlights/](workflow/linkedin-highlights/) — turn a repo
+
+The seven skills that maintain *this* repo — `author-skill`,
+`test-skill`, `learn`, `drift-audit`, `drift-handoff`,
+`drift-update`, `land` — are **not here**. They live at project
+scope in [.claude/skills/](../.claude/skills/), which no deploy
+script reaches, because they can only ever act on this working
+tree. Being payload is what this directory means, and they are not
+payload. See [.claude/skills/README.md](../.claude/skills/README.md).
+
+## Social
+
+Personal-profile writing, in its own group so it can be deployed
+apart from `workflow`. It serves any repo, so Claude Code takes both
+groups at user scope; a workplace Copilot has no use for it, so
+`copy-copilot.ps1 -SkillGroups workflow` leaves it out by
+construction. Split out of `workflow` 2026-09-11.
+
+- [linkedin-highlights/](social/linkedin-highlights/) — turn a repo
   you worked in into the prose for one LinkedIn Experience role's
   Highlights field: docs before history, an inventory that counts items
   and not the dozens of files each serializes into, claims tiered by
@@ -44,14 +61,6 @@ internal cross-references stay intact.
   surface instead of a competing one. Ends by scrubbing the draft
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
-
-The seven skills that maintain *this* repo — `author-skill`,
-`test-skill`, `learn`, `drift-audit`, `drift-handoff`,
-`drift-update`, `land` — are **not here**. They live at project
-scope in [.claude/skills/](../.claude/skills/), which no deploy
-script reaches, because they can only ever act on this working
-tree. Being payload is what this directory means, and they are not
-payload. See [.claude/skills/README.md](../.claude/skills/README.md).
 
 ## Microsoft Fabric platform (29)
 

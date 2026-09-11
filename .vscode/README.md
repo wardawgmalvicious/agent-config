@@ -22,7 +22,7 @@ only:
 | File | Role |
 | --- | --- |
 | [settings.json](settings.json) | Schema binding for `claude/settings.json`, fixture file associations, markdown link validation. |
-| [tasks.json](tasks.json) | The commands from [CLAUDE.md](../CLAUDE.md#commands), in their safe form — notably `link-claude.ps1` with `-SkillGroups workflow`, never bare. |
+| [tasks.json](tasks.json) | The commands from [CLAUDE.md](../CLAUDE.md#commands), in their safe form — notably `link-claude.ps1` with `-SkillGroups workflow,social`, never bare. |
 | [extensions.json](extensions.json) | Extension recommendations matched to the file types actually in the repo. |
 
 Everything else in `.vscode/` is gitignored; the six files above are
