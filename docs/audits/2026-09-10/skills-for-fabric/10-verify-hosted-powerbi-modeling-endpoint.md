@@ -96,3 +96,26 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10, from a
 0.3.14 bullet. The endpoint URL comes from upstream's config file, not
 from documentation, which is why the report marked it "endpoint TBD —
 verify before template add".
+
+## Execution log
+
+- **Executed**: 2026-09-11 — applied; the gate closed, so nothing changed
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: none
+- **Verification**: the gate ran first. The brief's
+  `microsoft_docs_search` query returned no Learn result for
+  `/v1/mcp/powerbi/authoring`. The re-fetched overview page still lists
+  exactly two servers: the remote query server at `/v1/mcp/powerbi` and
+  the local `stdio` modeling server. There is no third row. The endpoint
+  is therefore **not on Learn as of 2026-09-11**, and per "What to do"
+  step 3 nothing changed. Steps 1 and 2 were run against the unchanged
+  template: `jq` parses, and `powerbi-remote-mcp`'s URL matches Learn's
+  exactly. Step 5 runs once at the end of the run.
+- **Deferred**: re-check on a later audit. The endpoint is live in
+  upstream's `.mcp.json`, so Learn may catch up. Brief 11 was escalated,
+  not applied, so the placement rule this brief defers to is unchanged.
+- **Deviations**: the optional dated "not on Learn" line in
+  `.vscode/README.md` was not added. A README note about an endpoint the
+  template does not carry would confuse more than it records, and this
+  stamp holds the dated result.

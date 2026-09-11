@@ -103,3 +103,20 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10, reading
 bucket (c) as the registry asks even when nothing maps: upstream hits
 these failures at a larger catalog size first, so its changelog is an
 early warning for this payload's own mechanics.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — escalated
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: none
+- **Verification**: none run. This is a decision brief, and
+  `/drift-update` does not execute those.
+- **Decision**: **queue both** the catalog-wide listing-budget check
+  and the cross-skill reference lint, as their own task. That task
+  settles the three open questions first: the real budget comes from
+  Claude Code's docs, not upstream's numbers; the budget is measured per
+  deployable group combination or at the worst case; and the reference
+  matching rule is fixed before any code is written.
+- **Deferred**: the open questions and all three verification steps.
+- **Deviations**: none.

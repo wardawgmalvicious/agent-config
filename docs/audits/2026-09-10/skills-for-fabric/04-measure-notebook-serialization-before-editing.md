@@ -166,3 +166,21 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10, from a
 is itself labelled unconfirmed — "not a finding by the registry's
 standard" — which is why this brief is a measurement rather than an
 edit.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — escalated
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: none
+- **Verification**: none run. This is a decision brief, and
+  `/drift-update` does not execute those. The problem and the
+  measurement plan were put to the user.
+- **Decision**: queue the measurement as a follow-up. The six checks
+  under "What to measure" run later as their own task, in a Git-synced
+  Fabric repo the user chooses, and the rule stays unchanged until the
+  results are in. The decision under "Decision after measuring" is still
+  open, and so is its knock-on to `claude/CLAUDE.md` and
+  `claude/rules/README.md`.
+- **Deferred**: the whole brief, pending that measurement.
+- **Deviations**: none.

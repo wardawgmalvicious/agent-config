@@ -118,3 +118,23 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10. The
 Learn page surfaced while drilling the hosted modeling endpoint, not
 from an upstream bullet. It bears on a premise of the audit skill
 itself, which is why the report raised it.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — escalated
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: none
+- **Verification**: none run. This is a research-then-decision brief,
+  and `/drift-update` does not execute those.
+- **Decision**: **queue the docs research** as a separate task. It
+  answers question 1 — whether Claude Code accepts a pre-registered
+  OAuth client ID for a remote HTTP server, and with what redirect URI —
+  from Claude Code's own docs or changelog, then brings any change to
+  the placement rule back to the user. A live probe is **not**
+  pre-approved.
+- **Deferred**: questions 1–3 and the decision. The three files that
+  state the rule are unchanged: `.claude/skills/drift-audit/SKILL.md`
+  line 118, `claude/mcp/README.md` line 12, and `.vscode/README.md`
+  lines 60–63.
+- **Deviations**: none.

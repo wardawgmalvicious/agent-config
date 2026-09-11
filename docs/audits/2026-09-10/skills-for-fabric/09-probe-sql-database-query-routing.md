@@ -88,3 +88,18 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10, from
 bucket (c). The three-context probe design is not from the audit: it
 follows from both skills being `paths:`-scoped, a property of this repo
 that a cold reader needs before designing the probe.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — escalated
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: none
+- **Verification**: none run. This is a measurement brief whose probe
+  needs cold sessions, so it is a separate task and not part of a
+  `/drift-update` run.
+- **Decision**: **queue the three-context probe** as a follow-up, run
+  with `test-skill` mechanics. The `fabric-database` description changes
+  only if context 3 misroutes.
+- **Deferred**: the probe and every verification step.
+- **Deviations**: none.

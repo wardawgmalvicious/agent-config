@@ -124,3 +124,23 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10. Three
 of the four candidates are consolidation renames that passed clause 1 on
 the new name alone. Whether renames should pass at all is D-5 in brief
 06; the answer changes which of these a future run would surface.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — escalated
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: none
+- **Verification**: none run. This is a decision brief, and
+  `/drift-update` does not execute those.
+- **Decision**: the user accepted **all four** for `/author-skill`:
+  `onelake-catalog-govern-cli`, `activator-cli`, `dataflows-cli` and
+  `deployment-pipelines-authoring-cli`. Each becomes its own
+  `/author-skill` run, started deliberately; none was started here.
+  Brief 06's D-5 kept the lexical test, so future consolidation renames
+  will keep surfacing.
+- **Deferred**: this brief's verification. No accepted candidate has an
+  `/author-skill` brief in `docs/handoffs/` or a row in
+  `docs/handoffs/execute/README.md` yet. None of the upstream claims
+  quoted above has been drilled.
+- **Deviations**: none.
