@@ -291,15 +291,23 @@ strictly less exposure to that class of bug.
 
 GitHub Copilot **deliberately inherits nothing from `~/.claude` on this
 machine** — a reversal of what stood here. Since 2026-09-09 every
-`chat.*Locations` entry naming a Claude root is `false` in VS Code user
-settings and `chat.useClaudeMdFile` is off, so Copilot reads `.github/*`
-and `~/.copilot/*` only. `rules`, `skills`, `agents`, `settings.json`
-and `CLAUDE.md` remain *documented defaults* on that surface (retested
-2026-09-09; a 2026-09-04 note here claimed `skills` did not resolve and
-was wrong) — they are switched off, not unsupported. So
-`scripts/copy-copilot.ps1` is the only route from this repo to Copilot,
-in a clone and on this machine alike, and `link-claude.ps1` now serves
-Claude Code alone.
+`chat.*Locations` entry naming a Claude root is `false`, so Copilot
+reads `.github/*` and `~/.copilot/*` only. `rules`, `skills`, `agents`,
+`settings.json` and `CLAUDE.md` remain *documented defaults* on that
+surface (retested 2026-09-09; a 2026-09-04 note here claimed `skills`
+did not resolve and was wrong) — they are switched off, not
+unsupported. So `scripts/copy-copilot.ps1` is the only route from this
+repo to Copilot, in a clone and on this machine alike, and
+`link-claude.ps1` now serves Claude Code alone.
+
+`chat.useClaudeMdFile` is the one exception, and it is **per profile**
+like every `chat.*` setting — each VS Code profile keeps its own
+`settings.json`. It is off in the profiles client repos open in and on
+in the one this repo opens in, so Copilot here gets this file and
+`~/.claude/CLAUDE.md`. Copilot still does not *write* here: learnings
+from client windows go to `~/handoff-inbox/` (see Working on this
+repo). Corrected 2026-09-11; this paragraph said it was off everywhere,
+which held for the Default profile only.
 
 Two traps in that switchboard, both silent. **An unlisted location keeps
 its default, and the default is on** — each setting is a location →
@@ -309,7 +317,8 @@ means writing every Claude root out as `false`; `.claude/skills` and
 them read `false`. And **the Settings UI does not reliably persist
 these**: object-valued `chat.*` settings edited through it can leave
 `settings.json` untouched with no error, measured 2026-09-09 against an
-mtime four days stale. Edit the file and check the mtime.
+mtime four days stale and again 2026-09-11. Edit the profile's file —
+`%APPDATA%\Code\User\settings.json` is Default's alone — and check it.
 
 The frontmatter facts below survive that change and now describe the
 **vendored** `.github/skills` payload rather than an inherited one.

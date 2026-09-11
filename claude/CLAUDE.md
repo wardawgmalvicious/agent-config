@@ -254,15 +254,23 @@ in sessions there.
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
-root is `false` in VS Code user settings, and `chat.useClaudeMdFile` is
-off — so Copilot inherits none of `~/.claude`: not skills, rules,
-agents, hooks, or this file. It reads `~/.copilot/*` and a repo's
-`.github/*` instead, which `agent-config/scripts/copy-copilot.ps1`
-vendors into a repo (there is no user-scope Copilot payload; the
-`~/.copilot/*` roots are enabled but empty). Editing anything under
-`~/.claude` therefore changes Claude Code's behaviour alone. The Claude
-paths remain *documented defaults* on that surface — they are switched
-off deliberately, not unsupported.
+root is `false`, so Copilot inherits none of `~/.claude`'s skills,
+rules, agents or hooks. It reads `~/.copilot/*` and a repo's
+`.github/*` instead, both filled by `agent-config/scripts/copy-copilot.ps1`
+— `~/.copilot` with the workflow skills and ported rules since
+2026-09-11. `chat.useClaudeMdFile` is the one deliberate exception: off
+in the profiles client repos open in, on in the one the personal config
+repos use, so Copilot there reads a repo's `CLAUDE.md` and this file.
+Editing anything else under `~/.claude` therefore changes Claude Code's
+behaviour alone. The Claude paths remain *documented defaults* on that
+surface — they are switched off deliberately, not unsupported.
+
+**These settings are per VS Code profile.** Each profile has its own
+`settings.json` under `%APPDATA%\Code\User\profiles\<id>\` unless it
+shares Default's; `%APPDATA%\Code\User\settings.json` is Default's
+alone, and the Settings UI edits the current window's profile. On
+2026-09-11 one profile carried none of the switches, so Copilot there
+still inherited the whole payload, hooks included.
 
 **An unlisted location keeps its default, and the default is on.** Each
 setting is a location → boolean map *over* the documented defaults, so
@@ -274,8 +282,10 @@ root listed beside them read `false`.
 **The Settings UI does not reliably persist these.** Object-valued
 `chat.*` settings edited through the UI can leave `settings.json`
 untouched with no error — measured 2026-09-09, repeated edits against
-an mtime four days stale. Edit `%APPDATA%\Code\User\settings.json`
-directly and check the mtime afterwards rather than trusting the UI.
+an mtime four days stale, and again 2026-09-11, when two of four
+object-valued settings set through the UI never reached the file. Edit
+the profile's `settings.json` directly and check it afterwards rather
+than trusting the UI.
 
 ### User-scope MCP servers are deliberately three
 

@@ -175,10 +175,12 @@ stay separable:
   enough, and Copilot was a second consumer of the Claude-format
   payload rather than a separate one. Since 2026-09-09 that inheritance
   is switched off deliberately: every `chat.*Locations` entry naming a
-  Claude root is `false` and `chat.useClaudeMdFile` is off, leaving
-  `.github/*` and `~/.copilot/*`. Claude for Claude, Copilot for
-  Copilot — so `copy-copilot.ps1` is the only route from this repo to
-  Copilot, on this machine as much as in a clone. The format facts
+  Claude root is `false`, leaving `.github/*` and `~/.copilot/*`.
+  Claude for Claude, Copilot for Copilot — so `copy-copilot.ps1` is the
+  only route from this repo to Copilot, on this machine as much as in a
+  clone. `chat.useClaudeMdFile` is the one exception, set per VS Code
+  profile like every `chat.*` setting: off where client repos open, on
+  in the profile the personal config repos use. The format facts
   measured under inheritance still hold, and now describe the vendored
   payload: on 2026-09-09 a `.sql` file open in a client repo loaded
   exactly two of the twelve rules in `~/.claude/rules`, the two whose
@@ -226,8 +228,18 @@ stay separable:
     `false`. And **the Settings UI does not reliably persist these**:
     object-valued `chat.*` settings edited through it can leave
     `settings.json` untouched with no error, caught only by an mtime
-    four days stale under repeated edits. Edit
-    `%APPDATA%\Code\User\settings.json` directly and check the mtime.
+    four days stale under repeated edits — and met again 2026-09-11,
+    when two of four object-valued settings set through the UI never
+    reached the file. Edit the file directly and check it afterwards.
+
+    **And every one of these is per profile.** Each VS Code profile
+    keeps its own `settings.json` under
+    `%APPDATA%\Code\User\profiles\<id>\` unless it is set to share
+    Default's; `%APPDATA%\Code\User\settings.json` is Default's alone,
+    and the Settings UI writes to the current window's profile. So a
+    switch-off is done once per profile, and a profile left untouched
+    inherits the whole Claude payload, hooks included — which is what
+    one profile here was found doing on 2026-09-11.
 
     **The Local agent is scheduled for removal**, which makes these
     temporary in a way "deprecated" alone does not convey. The docs say
