@@ -46,6 +46,12 @@ start, before/after tool use, on stop, etc.).
   not identities, and never reads a commit message (measured 2026-09-04
   on 8.30.1). Requires [jq](https://jqlang.org).
 
+  Those events see only commits Claude Code issues. The same script
+  also runs as a **git hook** (`--git-hook pre-commit|commit-msg|pre-push`,
+  no jq needed), which a repo opts into through its pre-commit config —
+  agent-config does — so a commit from Copilot, VS Code's Source Control
+  view or a terminal is gated too.
+
 ## Querying the logs
 
 Both logs feed [scripts/instructions-log](../../scripts/instructions-log)

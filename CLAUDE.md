@@ -368,6 +368,12 @@ deployed anywhere and loads only in sessions inside this repo.
   the leak. Its test in `tests/hooks/identity-guard/` is the one
   machine-checkable suite here; run it after any edit, and again
   against the deployed copy after `scripts/link-claude.ps1`.
+  **That hook sees Claude Code's commits only.** On 2026-09-10 a
+  Copilot-authored commit took a client name to public `main` past it,
+  so `.pre-commit-config.yaml` runs the same script as a git hook at
+  three stages — commit, message, push — whoever commits. A clone needs
+  `pre-commit install` (or `scripts/bootstrap-pre-commit`) re-run once
+  to gain the message and push stages.
 
 ## Working on this repo
 

@@ -16,6 +16,9 @@ if ! command -v pre-commit >/dev/null 2>&1; then
     uv tool install pre-commit
 fi
 
+# Installs every type in default_install_hook_types -- pre-commit,
+# commit-msg and pre-push. A clone wired before that list existed has only
+# the first; re-run this to add the identity guard's other two.
 echo "Installing git hooks..."
 pre-commit install
 

@@ -211,7 +211,11 @@ message back, and before a `git push` it scans every unpushed commit,
 all against `~/.config/identity-denylist.txt` — a local file, in no
 repo, because the list is itself the leak. It matches only what is on
 the list, so a new client name is still yours to catch, and to add;
-`exempt:` lines skip the client roots where the name belongs. gitleaks
+`exempt:` lines skip the client roots where the name belongs. It also
+sees only the commits **Claude Code** issues — Copilot, VS Code's
+Source Control view and a terminal all pass it — so a public repo wants
+the same script as a git hook, the way agent-config's
+`.pre-commit-config.yaml` wires it. gitleaks
 is not this guard: it matches secrets, not names, and never reads a
 message (measured 2026-09-04).
 

@@ -43,6 +43,23 @@
 #               second positional after `push` when one is given, else HEAD.
 #               This is the hard gate: nothing past it can be fixed cheaply.
 #
+# Git-hook mode: `identity-guard.sh --git-hook <stage> [<msg-file>]`, wired
+# by agent-config's .pre-commit-config.yaml. The Claude Code events above
+# only ever see commits Claude Code itself issues; a commit made by GitHub
+# Copilot, VS Code's Source Control view or a plain terminal passes none of
+# them. On 2026-09-10 a Copilot-authored commit carried a client name to
+# public main exactly that way. Git runs its own hooks whoever commits, so
+# this mode is the gate that has no such hole. Stages mirror the events:
+#   pre-commit  — added lines of the staged diff, as PreToolUse `git commit`
+#   commit-msg  — the message file git passes, `#` comment lines dropped;
+#               nothing is committed yet, so this one does block
+#   pre-push    — as PreToolUse `git push`, on pre-commit's
+#               PRE_COMMIT_TO_REF (HEAD when unset)
+# No JSON is read — stdin carries git's ref list on pre-push, which the
+# pre-commit framework has already consumed — and the mode reuses the
+# tokenizer below by handing it a synthetic command. An unknown stage
+# allows, like every other failure here.
+#
 # The denylist is ~/.config/identity-denylist.txt (IDENTITY_DENYLIST
 # overrides — the test harness uses that to keep the real list out of a
 # run). It lives outside every repo because the list is itself the thing
@@ -72,24 +89,37 @@
 
 set -uo pipefail
 
-IFS= read -r -d '' INPUT || true # builtin: no cat spawn on the fast path
-# Cheap pre-filter: only a shell tool's command that mentions git is worth
-# a jq spawn. Both shell tools put the command under tool_input.command.
-[[ "$INPUT" == *'"command"'* && "$INPUT" == *git* ]] || exit 0
-command -v jq >/dev/null 2>&1 || exit 0
+MSG_FILE=""
+if [[ "${1:-}" == --git-hook ]]; then
+    # Decided before stdin is touched: under git there is no JSON to read,
+    # and a read here would block on whatever stdin git left attached.
+    CWD="" # git runs hooks from the repo root
+    case "${2:-}" in
+    pre-commit) EVENT=PreToolUse CMD="git commit" ;;
+    commit-msg) EVENT=CommitMsg CMD="git commit" MSG_FILE="${3:-}" ;;
+    pre-push) EVENT=PreToolUse CMD="git push remote ${PRE_COMMIT_TO_REF:-HEAD}" ;;
+    *) exit 0 ;;
+    esac
+else
+    IFS= read -r -d '' INPUT || true # builtin: no cat spawn on the fast path
+    # Cheap pre-filter: only a shell tool's command that mentions git is worth
+    # a jq spawn. Both shell tools put the command under tool_input.command.
+    [[ "$INPUT" == *'"command"'* && "$INPUT" == *git* ]] || exit 0
+    command -v jq >/dev/null 2>&1 || exit 0
 
-# One jq call, four fields, tab-separated. @tsv escapes tabs, newlines and
-# backslashes inside the command, and printf %b puts them back. jq on
-# Windows ends the line with CRLF; the CR is stripped by expansion.
-JQ=(jq)
-if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
-RAW=$(printf '%s' "$INPUT" | "${JQ[@]}" -r \
-    '[.hook_event_name, .tool_name, .cwd, .tool_input.command] | map(. // "" | tostring) | @tsv' 2>/dev/null) || exit 0
-RAW=${RAW//$'\r'/}
-IFS=$'\t' read -r EVENT TOOL CWD CMD_ESC <<<"$RAW"
-case "$TOOL" in Bash | PowerShell) ;; *) exit 0 ;; esac
-CMD=$(printf '%b' "$CMD_ESC")
-[[ -n "$CMD" ]] || exit 0
+    # One jq call, four fields, tab-separated. @tsv escapes tabs, newlines and
+    # backslashes inside the command, and printf %b puts them back. jq on
+    # Windows ends the line with CRLF; the CR is stripped by expansion.
+    JQ=(jq)
+    if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
+    RAW=$(printf '%s' "$INPUT" | "${JQ[@]}" -r \
+        '[.hook_event_name, .tool_name, .cwd, .tool_input.command] | map(. // "" | tostring) | @tsv' 2>/dev/null) || exit 0
+    RAW=${RAW//$'\r'/}
+    IFS=$'\t' read -r EVENT TOOL CWD CMD_ESC <<<"$RAW"
+    case "$TOOL" in Bash | PowerShell) ;; *) exit 0 ;; esac
+    CMD=$(printf '%b' "$CMD_ESC")
+    [[ -n "$CMD" ]] || exit 0
+fi
 
 # Find every `git [global opts] <subcommand>` in the command by tokenizing
 # each shell segment, not by regex: an ERE with nested quantifiers over a
@@ -255,6 +285,12 @@ PostToolUse)
     WHAT="the message on HEAD"
     git log -1 --format='%B' 2>/dev/null >>"$SCAN"
     ;;
+CommitMsg)
+    WHAT="the commit message"
+    # git strips `#` lines only after this hook runs, and its status
+    # template lists paths the message itself will never carry.
+    [[ -f "$MSG_FILE" ]] && sed '/^#/d' "$MSG_FILE" >>"$SCAN"
+    ;;
 *) exit 0 ;;
 esac
 
@@ -270,6 +306,9 @@ HITS=$(grep -inF -m 20 -f "$TERMS" "$SCAN" 2>/dev/null)
     if [[ "$EVENT" == PostToolUse ]]; then
         echo "The commit exists locally and nothing has pushed it. Reword it now —"
         echo "git commit --amend on an unpushed commit is safe — and tell the user."
+    elif [[ "$EVENT" == CommitMsg ]]; then
+        echo "Nothing was committed. Reword the message (a placeholder, a role,"
+        echo "<client>) and commit again."
     else
         echo "Genericize the text (a placeholder, a role, <client>) or, if the term"
         echo "is legitimately part of this repo, take it off the denylist. Do not"

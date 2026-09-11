@@ -129,6 +129,53 @@ echo "contoso everywhere" >>"$E/a.txt"
 git -C "$E" add a.txt
 expect "repo under an exempt root is skipped" 0 "$(call PreToolUse Bash "$(cygpath -w "$E" 2>/dev/null || echo "$E")" 'git commit -m x')"
 
+# callgit <repo> <stage> [<msg-file>]  → prints exit code. Invokes the hook
+# the way .pre-commit-config.yaml does: from the repo root, no JSON, stdin
+# closed. PRE_COMMIT_TO_REF passes through when the caller sets it.
+callgit() {
+    (cd "$1" && IDENTITY_DENYLIST="${LIST:-}" ${HOOK_SHELL:-bash} "$HOOK" --git-hook "${@:2}" </dev/null >/dev/null 2>"$WORK/stderr")
+    echo $?
+}
+
+echo "-- git-hook mode (commits no Claude Code hook sees) --"
+G="$WORK/git-mode"
+mkrepo "$G"
+expect "pre-commit, nothing staged: allowed" 0 "$(callgit "$G" pre-commit)"
+echo "Contoso rollout" >>"$G/a.txt"
+git -C "$G" add a.txt
+expect "pre-commit, staged term: blocked" 2 "$(callgit "$G" pre-commit)"
+LIST_SAVE=$LIST
+LIST="$WORK/absent.txt"
+expect "pre-commit, missing denylist: allowed" 0 "$(callgit "$G" pre-commit)"
+LIST=$LIST_SAVE
+expect "unknown stage: allowed" 0 "$(callgit "$G" post-merge)"
+git -C "$G" reset -q --hard
+printf 'docs: fabrikam-tools note\n' >"$WORK/msg"
+expect "commit-msg with a term: blocked" 2 "$(callgit "$G" commit-msg "$WORK/msg")"
+if grep -q 'Nothing was committed' "$WORK/stderr"; then
+    PASS=$((PASS + 1))
+    echo "  ok   commit-msg feedback says nothing was committed"
+else
+    FAIL=$((FAIL + 1))
+    echo "  FAIL commit-msg feedback text"
+fi
+printf 'docs: note\n# On branch contoso-work\n' >"$WORK/msg"
+expect "commit-msg, term only in a # line: allowed" 0 "$(callgit "$G" commit-msg "$WORK/msg")"
+GB="$WORK/git-mode-origin.git"
+git init -q --bare "$GB"
+git -C "$G" remote add origin "$GB"
+git -C "$G" push -q -u origin HEAD 2>/dev/null
+echo x >>"$G/a.txt"
+git -C "$G" commit -qam "feat: contoso adapter"
+TIP=$(git -C "$G" rev-parse HEAD)
+expect "pre-push, unpushed term at PRE_COMMIT_TO_REF: blocked" 2 "$(PRE_COMMIT_TO_REF=$TIP callgit "$G" pre-push)"
+expect "pre-push, no PRE_COMMIT_TO_REF falls back to HEAD" 2 "$(callgit "$G" pre-push)"
+git -C "$G" push -q origin HEAD 2>/dev/null
+expect "pre-push, remote already has it: allowed" 0 "$(PRE_COMMIT_TO_REF=$TIP callgit "$G" pre-push)"
+echo "contoso everywhere" >>"$E/a.txt"
+git -C "$E" add a.txt
+expect "git-hook mode honours exempt roots" 0 "$(callgit "$E" pre-commit)"
+
 echo
 echo "$PASS passed, $FAIL failed"
 [ "$FAIL" = 0 ]

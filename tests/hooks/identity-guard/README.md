@@ -29,6 +29,18 @@ so the repo passing says nothing about what is live.
 | `git push origin <ref>` names a ref other than HEAD | that ref is what is scanned | 2 / 0 |
 | Everything already on the remote | `git push` | 0 |
 | Repo under an `exempt:` root | `git commit` with a term staged | 0 |
+| `--git-hook pre-commit`, a term staged / nothing staged / no denylist | git-hook mode | 2 / 0 / 0 |
+| `--git-hook commit-msg`, a term in the message / only in a `#` line | git-hook mode | 2 / 0 |
+| `--git-hook pre-push` at `PRE_COMMIT_TO_REF`, or HEAD when unset / after the remote has it | git-hook mode | 2 / 0 |
+| `--git-hook` with an unknown stage, or under an `exempt:` root | git-hook mode | 0 |
+
+Git-hook mode is what `.pre-commit-config.yaml` runs, so it gates
+commits the Claude Code events never see — Copilot, VS Code's Source
+Control view, a terminal. The suite calls it directly rather than
+through pre-commit. The wiring itself was checked end to end on
+2026-09-10 in a scratch clone: from PowerShell, `git commit` with a
+term staged, `git commit` with a term in the message and `git push`
+with an unpushed term were each refused by the matching stage.
 
 The denylist is generated with made-up terms (`contoso`,
 `fabrikam-tools`) and passed through `IDENTITY_DENYLIST`, so the run

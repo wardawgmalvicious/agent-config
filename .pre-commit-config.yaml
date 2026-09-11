@@ -1,3 +1,11 @@
+# Three git hooks, not one: the identity guard below also gates the commit
+# message and the push. `pre-commit install` reads this list, so a plain
+# install (or scripts/bootstrap-pre-commit) wires all three. default_stages
+# keeps every other hook on pre-commit only, where it ran before this list
+# existed -- without it, each would also run at commit-msg and pre-push.
+default_install_hook_types: [pre-commit, commit-msg, pre-push]
+default_stages: [pre-commit]
+
 repos:
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.1
@@ -84,3 +92,37 @@ repos:
         additional_dependencies: [pyyaml]
         files: '^(claude/rules/|copilot/)'
         pass_filenames: false
+
+      # The identity-guard Claude Code hook sees only commits Claude Code
+      # issues. A commit from Copilot, VS Code's Source Control view or a
+      # terminal passes none of its events -- which is how a client name
+      # reached public main on 2026-09-10. Git runs these whoever commits.
+      # Same script, same denylist (~/.config/identity-denylist.txt, never
+      # in any repo), so the list has one reader. No list -> allow, which is
+      # what makes this a no-op in CI rather than a failure.
+      #
+      # `bash` via language: system, not language: script -- the file is
+      # 100644 in git, and script would fail CI as not executable. On this
+      # machine that `bash` resolves to Git's, not WSL's, both under a git
+      # hook and from `pre-commit run` in PowerShell, where Get-Command
+      # bash names WSL (measured 2026-09-10: a staged term blocked both ways).
+      - id: identity-guard
+        name: Scan staged additions for denylisted identity strings
+        entry: bash claude/hooks/identity-guard.sh --git-hook pre-commit
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+      - id: identity-guard-message
+        name: Scan the commit message for denylisted identity strings
+        entry: bash claude/hooks/identity-guard.sh --git-hook commit-msg
+        language: system
+        always_run: true
+        stages: [commit-msg]
+      - id: identity-guard-push
+        name: Scan unpushed commits for denylisted identity strings
+        entry: bash claude/hooks/identity-guard.sh --git-hook pre-push
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
