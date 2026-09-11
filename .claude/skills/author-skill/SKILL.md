@@ -189,9 +189,10 @@ claim in the finished skill traces to something read during this run.
 - **Exact repo bytes, changelogs, release notes** — `github-mcp`.
 - **Anything else** — `WebFetch`.
 
-MCP servers are deliberately absent from this skill's `allowed-tools`
-so it does not fail closed on a machine without them. Prefer them when
-present; fall back without ceremony when not.
+MCP tools are not in this skill's `allowed-tools`, which only
+pre-approves and never restricts (Claude Code skills docs, verified
+2026-09-11), so leaving them out costs at most a permission prompt.
+Prefer them when present; fall back without ceremony when not.
 
 **Record what was drilled and what was not.** The undrilled set is what
 bounds the draft, and it is the part that gets lost if it is not written

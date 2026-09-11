@@ -85,7 +85,7 @@ so both remain deployable.
   turn its report into `docs/audits/<date>/<source-id>/`, holding
   the report verbatim plus one brief per recommended action, grouped by
   shared verification steps. Split from `drift-audit` so the turn doing
-  the analysis has no write capability; runs inline because it reads the
+  the analysis has no reason to write; runs inline because it reads the
   report out of the current conversation. Only recommended actions
   become briefs — everything else stays conversational.
 - [drift-update/](drift-update/) — the third turn: execute the briefs

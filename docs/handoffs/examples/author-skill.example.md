@@ -93,11 +93,11 @@ the tool list doing it. **`context: inline`** because the name, the
 namespace, and the "is this actually one skill or two" call are all
 decisions the user should see before drilling begins.
 
-MCP tools are deliberately absent from `allowed-tools`: the drilling step
-should prefer `microsoft-learn-mcp` / `github-mcp` when they are
-available and fall back to `WebFetch` when they are not, and pinning MCP
-server names into frontmatter would make the skill fail closed on a
-machine without them.
+MCP tools are not in `allowed-tools`: the drilling step should prefer
+`microsoft-learn-mcp` / `github-mcp` when they are available and fall
+back to `WebFetch` when they are not. `allowed-tools` only pre-approves
+and never restricts, so leaving them out costs at most a permission
+prompt — it does not make the skill fail either open or closed.
 
 **`model`, `effort` and `disable-model-invocation` postdate this brief.**
 They were written out across all 44 skills on 2026-09-01 by the

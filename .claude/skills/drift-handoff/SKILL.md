@@ -13,11 +13,11 @@ context: inline
 
 Turn a completed `/drift-audit` report into files on disk: the report itself, plus one brief per recommended action, each self-contained enough for a later session to pick up cold.
 
-`/drift-audit` is read-only by contract and writes nothing — its findings live only in the conversation that produced them. This skill is the write half of that pair, split deliberately so the turn doing the analysis has no write capability and the turn doing the writing has no analysis pressure. Executing what gets written is a third turn again, `/drift-update`, and belongs to a later session.
+`/drift-audit` is read-only by contract and writes nothing — its findings live only in the conversation that produced them. This skill is the write half of that pair, split deliberately so the turn doing the analysis has no reason to write and the turn doing the writing has no analysis pressure. Executing what gets written is a third turn again, `/drift-update`, and belongs to a later session.
 
 **Transcribe decisions already made; do not re-open them.** If a finding looks wrong while writing it up, say so in chat and leave the brief faithful to the report.
 
-**Creates files only.** `Edit` is deliberately absent from `allowed-tools` — this skill never modifies an existing file.
+**Creates files only.** This skill never modifies an existing file. `allowed-tools` does not enforce that: it pre-approves the tools it lists for the invoking turn and removes none (Claude Code skills docs, verified 2026-09-11). The guard is this rule plus the `Glob`-first check in step 2, and that check matters more than `Edit`'s absence — `Write` replaces a file as surely as `Edit` changes one.
 
 Paths below are relative to the repo root. This skill is project scope — it lives in `.claude/skills/`, deployed nowhere since 2026-09-09 — so it only fires in sessions inside this repo, which is also where its output lands.
 
@@ -40,7 +40,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 - `<audit-date>` — the date the audit **ran**, ISO format. Not the window floor.
 - `<source-id>` — the registry id from `.claude/skills/drift-audit/references/sources.md` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
 
-`Write` creates missing parent directories, so there is no separate mkdir step — and no `Bash` in `allowed-tools` to run one.
+`Write` creates missing parent directories, so there is no separate mkdir step and no reason to reach for `Bash`.
 
 **Before writing anything, `Glob` the target directory.** If files already exist there, `Read` them and stop to ask. Two audits of one source on one day are different audits; silently overwriting the first one's briefs destroys the only copy. Offer to suffix the directory rather than overwrite.
 
