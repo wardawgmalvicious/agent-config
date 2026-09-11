@@ -32,7 +32,7 @@ fire together, a description routing to a skill that is not there.
 
 ### 1. Routing integrity — a skill names a skill that does not exist
 
-**The cheapest signal and the only one that is always a bug.** Measured
+**The cheapest signal and the only one that is a bug by default.** Measured
 by collecting every backticked name with a platform prefix (`fabric-`,
 `pbir-`, `pbid-`, `pbip-`, `powerbi-`) across `skills/`,
 `.claude/skills/` and `claude/rules/`, and subtracting the skills on
@@ -66,8 +66,9 @@ after earlier merges. That is evidence the check is worth running, not
 just possible.
 
 **Candidate pre-commit hook.** A description naming a missing skill is
-always a bug, so this half can gate commits the way
-`lint-skill-scopes.py` does. A body mention is weaker — prose may
+a bug unless it is a recorded override — the two vendored descriptions
+are, per the settled decision below — so this half can gate commits the
+way `lint-skill-scopes.py` does. A body mention is weaker — prose may
 discuss a skill that was deliberately not installed — so report those
 without failing.
 
@@ -180,28 +181,33 @@ coverage checker.
 
 ## Acceptance — known answers
 
-- **Routing** reports `powerbi-report-planning`, in two descriptions,
-  and `powerbi-report-management`. It reports **none** of the eleven
-  noise names above, nor `fabric-skills`.
+- **Routing** finds `powerbi-report-planning`, in two descriptions,
+  and `powerbi-report-management`, and reports both as accepted
+  overrides rather than failures — see the settled decision below. It
+  reports **none** of the eleven noise names above, nor
+  `fabric-skills`. A fixture naming a genuinely missing skill fails it.
 - **Trigger overlap** ranks `powerbi-report-authoring` against the five
   `pbir-*` skills near the top of its list.
 - **Inventory**: `skill-telemetry.py coverage` lists every skill in both
   trees. Re-derive the count; don't copy it from this brief.
 - **No output line recommends deletion.** Same contract as `verdict()`.
 
-## A decision this will surface — not part of this work
+## The decision this surfaced — settled 2026-09-11
 
 `powerbi-report-planning` is routed to from both vendored descriptions
-and is not installed. Two ways out, and it is the user's call:
+and is not installed. **The local override stays.** The skill was left
+out on purpose when the pair was vendored — `1fa3061`, 2026-08-25: "The
+largely-overlapping planning and management skills were not vendored" —
+and each *Local vendoring note* routes to `pbir-report-workflow`
+instead. Vendoring it now would put two descriptions on one request,
+which is what signal 2 exists to flag.
 
-- **Vendor `powerbi-report-planning` too.** It is upstream at the same
-  version, so the route resolves.
-- **Keep the local override** in each *Local vendoring note*, and accept
-  that the description still routes there.
-
-Editing the vendored description text is not a third option: the note
-says to diff against upstream on re-sync and re-apply that section
-only, so a description edit is silently lost on the next re-sync.
+So the routing check still **finds** both names — they are its known
+answer — but reports them as accepted overrides citing `1fa3061`, and a
+commit gate must not fail on them. Editing the vendored description
+text was not an option either way: the note says to diff against
+upstream on re-sync and re-apply that section only, so a description
+edit is silently lost on the next re-sync.
 
 ## Post-draft checklist
 
