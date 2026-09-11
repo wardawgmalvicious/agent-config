@@ -241,6 +241,15 @@ brief's problem and evidence in front of the user, ask, and stamp the answer
 into the execution log as `escalated`. Whatever work the answer implies is a
 separate task, started deliberately — not something to fold into this run.
 
+**That task needs a home before the run ends.** The stamp makes every later
+run skip the brief, and `docs/handoffs/execute/README.md` reads a stamped brief
+as done, so work recorded only in the brief's own log is invisible to both.
+Add it to that file's audit follow-up table, under what it needs — re-reading
+the file immediately first, since it is the most contended one here. The same
+goes for a deferral that leaves work rather than a re-check, and for an
+adjacent finding. Found 2026-09-11, when two runs' follow-ups turned out to be
+in no queue.
+
 ## 5. Report and hand off
 
 Close with:
@@ -278,7 +287,8 @@ next source's briefs. Both are separate, deliberate invocations.
 - **Briefs come from disk.** Never from the transcript, a summary, or memory.
 - **The brief set is the scope.** No unbriefed edits, no adjacent fixes, no
   re-opened reasoning.
-- **Kind decides.** Decision briefs are escalated, never executed.
+- **Kind decides.** Decision briefs are escalated, never executed — and
+  anything a run leaves for later gets a queue row.
 - **Stale splits two ways, and neither is improvising.** A missing quoted
   line means the fix already landed (stamp `already-applied`) or the target
   moved (stop the run). Never substitute a line that looks close enough.
