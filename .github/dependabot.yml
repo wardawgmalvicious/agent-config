@@ -7,10 +7,6 @@ updates:
     groups:
       actions:
         patterns: ["*"]
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-    groups:
-      python:
-        patterns: ["*"]
+# No pip entry: Python dependencies here are inline (`uv run --with pyyaml`),
+# so there is no manifest to read. The entry that stood here found nothing
+# and failed on every scheduled run.
