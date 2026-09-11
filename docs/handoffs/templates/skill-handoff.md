@@ -18,7 +18,7 @@ Last verified: {{YYYY-MM-DD}}
 
 ## Sources drilled
 
-> Guidance: What was read during this run, and — the half that gets lost — what was deliberately not read. The undrilled set is what bounds the draft: a brief that says "the REST surface was not drilled; nothing in this skill describes it" is what stops the next reader treating the omission as an oversight. Cite each source as a URL or repo path plus what it established. If this brief replaces one already at the target path, carry the prior undrilled set forward rather than restarting it.
+> Guidance: What was read during this run, and — the half that gets lost — what was deliberately not read. The undrilled set is what bounds the draft: a brief that says "the REST surface was not drilled; nothing in this skill describes it" is what stops the next reader treating the omission as an oversight. Cite each source as a URL or repo path plus what it established. If this brief replaces one already at the target path, carry the prior undrilled set forward rather than restarting it. Evidence observed in a client's estate is cited **by kind, never by name** — no client, workspace, item, table, column or repo name, not even in a list of names to genericize later; this repo is public.
 
 Drilled: {{sources-and-what-each-established}}
 

@@ -197,6 +197,17 @@ assuming the omission was an oversight. The template's **Sources
 drilled** section is where both halves go — not Notes, and not a
 sentence buried in Scope.
 
+**Evidence from a client's estate is cited by kind, never by name.**
+Observed platform behaviour often comes from client work, and the
+behaviour is generic where the names are not. Write "a client sandbox
+workspace" and "a directory of upload files", not the workspace, item,
+table, column or repo names you saw — and never write a list of names
+"to genericize at draft time", which is the leak itself. This repo is
+public, a pushed name cannot be fixed forward, and the identity guard
+matches only names already on the denylist. On 2026-09-10 a brief
+reached public `main` carrying a client's workspace and table names in
+exactly such a list.
+
 Stop drilling when new pages stop changing the outline, not when the
 source list is exhausted.
 
