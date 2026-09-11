@@ -37,10 +37,11 @@ run is pending work this table does not list. A brief there with no
 brief it escalates, so the next run skips it and the rule above reads it
 as done, while the work its answer implies — or a deferral it recorded —
 lives only in that brief's log. Found 2026-09-11: everything below had
-been stranded that way, one of them a decision still open. Entries are
-grouped by what each needs, not ordered; delete one in the commit that
-lands its work. Deferred re-checks are not listed — the next audit of
-that source is what performs them.
+been stranded that way. Entries are grouped by what each needs, not
+ordered; delete one in the commit that lands its work. Deferred re-checks
+are not listed — the next audit of that source is what performs them.
+Read a brief's log to its end before listing it: a decision can sit in a
+subsection after the stamp, as powerbi 07's 2026-09-08 decline did.
 
 | Needs | Audit briefs |
 | --- | --- |
@@ -51,7 +52,6 @@ that source is what performs them.
 | Claude Code docs research, then a decision | [skills-for-fabric 11](../../audits/2026-09-10/skills-for-fabric/11-verify-claude-code-preregistered-oauth.md) |
 | An `/author-skill` run each | [skills-for-fabric 07](../../audits/2026-09-10/skills-for-fabric/07-decide-new-skill-candidates.md)'s four accepted candidates |
 | Three open questions settled, then lint code | [skills-for-fabric 08](../../audits/2026-09-10/skills-for-fabric/08-decide-catalog-budget-and-reference-lints.md): a catalog listing-budget check, and a reference lint that is [skill-overlap-script.md](skill-overlap-script.md)'s routing signal — build that half there |
-| A decision | [powerbi 07](../../audits/2026-09-07/powerbi/07-fold-in-granular-refresh-controls.md): a `fabric-gotchas` row, or `fabric-semantic-model-audit` |
 | Only an edit | [powerbi 02](../../audits/2026-09-07/powerbi/02-retire-fluent2-preview-framing.md)'s adjacent finding, a retired dialog name at `theming.md:241` |
 
 ## Filenames are stable; order lives here
