@@ -123,3 +123,29 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10, from a
 0.3.11 `eventstream-cli` bullet. The resume body and the CI/CD reset are
 confirmed on Learn. The bodyless pause and the endpoint order are
 upstream's claims only.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — applied
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: `skills/fabric/fabric-eventstream/SKILL.md`
+- **Verification**: the constraint's fetches ran first. Pause Eventstream
+  documents no request body, so bodyless pause is now Learn-confirmed.
+  The Topology operation group lists source- and destination-level pause
+  and resume too. All four pages fetched: pause bodyless, resume taking
+  the same required `startType` body. No endpoint order is documented
+  anywhere, and none was encoded. The CI/CD reset was re-confirmed by
+  search. Steps 1–4 passed: `startType` at lines 106–123 with all three
+  values, the CI/CD row in `## Gotchas` (line 177), the resume enum
+  unchanged on re-fetch, lint clean. Step 5 runs once at the end of the
+  run.
+- **Deferred**: behavioural confirmation of the edited skill needs a
+  fresh session.
+- **Deviations**: the section's REST table carries the source- and
+  destination-level paths alongside the stream-level ones. The brief
+  named only the resume endpoint, but its constraint anticipated those
+  pages, and all four are Learn-confirmed. The section follows
+  `## Workspace monitoring (preview)`. The description was left alone.
+  The CDC-snapshot routing gap was left out, because the section does
+  not plainly need it.

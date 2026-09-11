@@ -89,6 +89,45 @@ during authoring, the editor's **Data insights** tab needs no monitoring setup.
 Worked KQL queries and the full shared-dimension list:
 [references/monitoring.md](references/monitoring.md).
 
+## Pause and resume
+
+Pausing (**Deactivate**) stops data flowing through a supported node without
+touching its configuration; resuming (**Activate**) restarts it. In the portal
+that is **Deactivate All** / **Activate All** on the menu bar, or the per-node
+toggle. Over REST every call is a `POST` under
+`https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/eventstreams/{eventstreamId}`:
+
+| Scope | Pause | Resume |
+|---|---|---|
+| Whole stream | `/pause` | `/resume` |
+| One source | `/sources/{sourceId}/pause` | `/sources/{sourceId}/resume` |
+| One destination | `/destinations/{destinationId}/pause` | `/destinations/{destinationId}/resume` |
+
+Pause takes no body. **Resume requires one** — omitting `startType` is the
+easy mistake:
+
+```json
+{ "startType": "CustomTime", "customStartDateTime": "2026-09-11T08:00:00Z" }
+```
+
+`startType` is `Now`, `WhenLastStopped`, or `CustomTime`; the optional
+`customStartDateTime` is UTC, `YYYY-MM-DDTHH:mm:ssZ`. Learn marks the enum
+open — "additional start types may be added over time". Scope
+`Eventstream.ReadWrite.All` or `Item.ReadWrite.All`; user, service principal,
+and managed identity all work.
+
+**Not every node can pause, and resume options differ per node.** The Custom
+endpoint and Eventhouse (Direct Ingestion) nodes have no toggle at all, and most
+CDC and Kafka-family sources resume only from when streaming was last stopped.
+Check [Learn's per-node table](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/pause-resume-data-streams)
+before picking a `startType`.
+
+**CI/CD does not carry pause state.** After a Git sync or a deployment-pipeline
+deploy, every node in the target eventstream comes back **active** unless it
+fails on connection or configuration
+([Eventstream CI/CD](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/eventstream-cicd)).
+Re-pause after deploying if the stream should stay down.
+
 ## Kafka custom CA / mTLS
 
 Kafka, Amazon MSK, and Confluent Cloud sources can take a custom CA certificate
@@ -135,6 +174,7 @@ of it is on Microsoft Learn.
 | Connector behind firewall fails | Source not publicly reachable | Use [Eventstream connector VNet injection](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/streaming-connector-private-network-support-guide) |
 | DeltaFlow not available on a CDC source | Currently scoped to Azure SQL / SQL MI / SQL Server VM / PostgreSQL CDC | Use raw mode for other CDC sources and flatten Debezium yourself |
 | Events pushed to a schema-associated custom endpoint are dropped | Wrong CloudEvents envelope, `dataschema` version, or per-environment registry host | See [references/cloudevents-producer.md](references/cloudevents-producer.md) — four distinct failure modes |
+| Paused nodes are running again after a deploy | Git integration and deployment pipelines don't carry pause/resume state — after CI/CD every node in the target eventstream becomes **active** | Re-pause after the deploy (portal toggle or the REST `/pause` calls — see Pause and resume) |
 
 ## Reference
 
