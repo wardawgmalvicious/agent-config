@@ -32,9 +32,12 @@ fires in sessions inside this repo.
 **Fresh session is the intended way to run this.** A brief is written to be
 read cold; running cold is what proves it was written well.
 
-Check whether a `/drift-audit` report is present in the conversation — its own
-structure (`## Audit window` plus `## Recommended actions`), not a mention of
-one. If it is, this is a **warm** run. Warm is allowed, with two limits:
+Check whether `/drift-audit` or `/drift-handoff` **ran in this session**. If
+either did, this is a **warm** run. A report that is merely present does not
+count: an @-mention or a path argument loads `00-audit-report.md` with its
+`## Audit window` and `## Recommended actions` intact, but none of the audit
+turn's context the limits below exist for. Runs on 2026-09-08 and 2026-09-11
+both met this and stamped themselves fresh. Warm is allowed, with two limits:
 
 - **Refuse a brief whose targets include `.claude/skills/drift-audit/`,
   `.claude/skills/drift-handoff/`, or `.claude/skills/drift-update/`.** Editing
