@@ -285,7 +285,7 @@ against `agent-config/claude/mcp/.mcp.global.template.json` by
 `-Force`, because that file is Claude Code's runtime state rather than
 payload. User scope is `microsoft-learn-mcp`, `azure-mcp` and
 `dockerhub-mcp`: servers useful in any repo. **Everything Fabric and
-Power BI is project scope** (`<fabric-repo>/.mcp.json` and the like), so
+Power BI is project scope**, in each Fabric repo's own `.mcp.json`, so
 those tools are absent here and that is not a fault to fix. Reach for a
 project's `.mcp.json` rather than promoting a server to user scope.
 
