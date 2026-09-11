@@ -6,7 +6,7 @@ Last verified: {{YYYY-MM-DD}}
 
 ## Artifact path
 
-> Guidance: Where the drafted SKILL.md lands, and where it deploys. In this repo a skill is authored at `skills/<group>/{{skill-name}}/SKILL.md` — `<group>` is `fabric`, `powerbi`, or `workflow` — and `scripts/link-claude.ps1` junctions it to `~/.claude/skills/{{skill-name}}/SKILL.md`, one junction per skill. The group directory is not optional and its absence has no error path: the pre-commit hook matches `^skills/[^/]+/[^/]+/SKILL\.md$`, and Claude Code discovers skills exactly one level under the skills root, so a file placed flat at `skills/{{skill-name}}/SKILL.md` is both unlinted and undiscoverable. A skill authored straight into a client repo instead takes the project-scope path `<repo-root>/.claude/skills/{{skill-name}}/SKILL.md`.
+> Guidance: Where the drafted SKILL.md lands, and where it deploys. Two trees. A skill that acts on the user's work is payload at `skills/<group>/{{skill-name}}/SKILL.md` — `<group>` is `fabric`, `powerbi`, or `workflow` — and deploys **by group**: `scripts/link-claude.ps1` junctions a group's skills to `~/.claude/skills/<name>/` only for the groups it is given, and on this machine that is `workflow` alone, so a `fabric` or `powerbi` skill is pruned from user scope by design. Those reach a client repo through `link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups <group>` or `copy-copilot.ps1 -SkillGroups <group>`, which picks up a new skill in the group automatically and writes its own `.managed-skills.json` — never edit that manifest by hand. A skill that maintains this repo goes in `.claude/skills/{{skill-name}}/SKILL.md` instead: project scope, no group directory, deployed nowhere. The group directory is not optional under `skills/` and its absence has no error path: the pre-commit hook matches `^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$`, and Claude Code discovers skills exactly one level under a skills root, so a file placed flat at `skills/{{skill-name}}/SKILL.md` is both unlinted and undiscoverable.
 
 {{path}}
 
@@ -26,7 +26,7 @@ Not drilled: {{deliberate-omissions-and-why}}
 
 ## Frontmatter
 
-> Guidance: Fill every field you intend to set. `model`, `effort` and `disable-model-invocation` are **always present**, even where the value is the default — the point is that the flip point for each lever is visible in the file instead of being an absent field (`effort` may be carried as a commented-out placeholder, which is how a skill inherits the session level). Delete lines only for the *other* optional fields you are not using — don't leave those as empty placeholders. Constraint comments stay as inline YAML `#` comments so the filled brief carries its own reference.
+> Guidance: Fill every field you intend to set. `model`, `effort` and `disable-model-invocation` are **always present**, even where the value is the default — the point is that the flip point for each lever is visible in the file instead of being an absent field. `model` is always carried **commented out** (`# model: inherit`): an active `model:` key of any value stops GitHub Copilot dispatching the skill as a slash command, and `lint-frontmatter.py` rejects it. `effort` may be carried as a commented-out placeholder, which is how a skill inherits the session level. Delete lines only for the *other* optional fields you are not using — don't leave those as empty placeholders. Constraint comments stay as inline YAML `#` comments so the filled brief carries its own reference.
 
 ```yaml
 ---
@@ -39,13 +39,13 @@ disable-model-invocation: {{false}}  # ALWAYS PRESENT; true = manual-only (/comm
 user-invocable: {{true}}  # optional; false hides from / menu for background-knowledge skills; description stays in context
 allowed-tools: {{Bash(git add *) Bash(git commit *) Read Grep}}  # optional; permission pre-approval for the invoking turn only (clears on the next user message); does NOT restrict other tools; space/comma string or YAML list; write each Bash specifier in space form — `Bash(git diff *)`, never `Bash(git diff*)`, which word-boundaries differently
 disallowed-tools: {{AskUserQuestion}}  # optional; removes tools from the pool while the skill is active; clears on the next user message
-model: {{inherit}}  # ALWAYS PRESENT; sonnet / opus / haiku / full model ID / inherit; turn-scoped — the session model resumes on the next prompt; with context: fork, sets the subagent's model instead. Repo policy: inherit everywhere except commit (sonnet)
+# model: {{inherit}}  # ALWAYS PRESENT, ALWAYS COMMENTED — an active model: key of any value blocks Copilot slash invocation and fails lint-frontmatter.py; the value documents intent only. sonnet / opus / haiku / full model ID / inherit. Repo policy: inherit everywhere except commit (sonnet)
 effort: {{max}}  # ALWAYS PRESENT, as a value or a commented-out placeholder — there is no `inherit` value, so omitting the field IS the inherit; low / medium / high / xhigh / max, an unsupported level silently falls back to the highest supported one below it, and `ultracode` is not a level. Repo policy: max on the workflow skills that drive this repo, commented on platform skills
 context: {{inline}}  # optional; "fork" runs the skill body as a subagent's prompt — in the background by default, with the narrower background toolset, and /rewind won't undo its edits
 background: {{true}}  # optional; fork only; false waits for the fork's result in the invoking turn
 agent: {{general-purpose}}  # optional; fork only; Explore / Plan / general-purpose (default) / custom subagent name — Explore and Plan skip CLAUDE.md
 hooks: {{null}}  # optional; registered at invocation, persist for the rest of the session; `once` supported
-paths: {{src/**/*.ts}}  # optional; comma-separated string or YAML list; glob patterns for path-scoped auto-activation. A wrong glob has no error path — the skill just never loads — so the linter rejects the silent narrowers: a backslash separator, a leading `/`, and a bare `*.ext` (which matches repo-root files only; `**/*.ext` matches those and nested ones)
+paths: {{src/**/*.ts}}  # optional; comma-separated string or YAML list; glob patterns for path-scoped auto-activation. It NARROWS activation rather than adding a route: the skill is withheld from the startup listing until a matching file is Read, so until then its description cannot match and /<name> answers Unknown command. Copilot ignores the key, so the skill is unconditional there. A wrong glob has no error path — the skill just never loads — so the linter rejects the silent narrowers: a backslash separator, a leading `/`, and a bare `*.ext` (which matches repo-root files only; `**/*.ext` matches those and nested ones)
 shell: {{bash}}  # optional; "bash" (default) or "powershell" for !`cmd` blocks; the PowerShell tool is on by default on Windows; elsewhere needs CLAUDE_CODE_USE_POWERSHELL_TOOL=1
 metadata: {{null}}  # optional; free-form YAML map for your own tooling; Claude Code ignores the contents (repo precedent: powerbi-report-authoring)
 ---
@@ -84,7 +84,7 @@ and hard-fails on any other key.
 
 ## Portability caveats
 
-> Guidance: Call out Claude Code-only frontmatter the author relied on — `shell: powershell`, `context: fork`, fine-grained `allowed-tools` Bash syntax, `effort` levels beyond standard, any hooks. Required content for `publishable`; `personal` can answer `N/A — personal scope`.
+> Guidance: Call out Claude Code-only frontmatter the author relied on — `shell: powershell`, `context: fork`, fine-grained `allowed-tools` Bash syntax, `effort` levels beyond standard, any hooks. Under GitHub Copilot, `paths:`, `effort:` and `when_to_use:` warn and are ignored, so a `paths:`-scoped skill loads **unconditionally** there — a skill whose design leans on its glob behaves differently in a client repo's vendored copy. `copy-copilot.ps1` applies no frontmatter transformation. Required content for `publishable`; `personal` can answer `N/A — personal scope`.
 
 {{caveats-or-na}}
 
