@@ -149,6 +149,17 @@ Helper scripts for repo maintenance and observability.
   surface anywhere at 187 files across seven repos. Needs `pyyaml` and
   `wcmatch`. Not run by pre-commit; there is no pass/fail here to gate on.
 
+- [repo-settings.ps1](repo-settings.ps1) — keep this repo's GitHub
+  settings in [.github/repo-settings.json](../.github/repo-settings.json):
+  `-Export` snapshots the live repo into it, `-Check` (the default) reports
+  drift and exits 1 on any, `-Apply` restores the file's values. Exists
+  because GitHub holds settings server-side only: the 2026-09-10
+  delete-and-recreate reset every toggle to its default, and there was no
+  record of the old values to restore from. **Export after changing a
+  setting in the UI**, or the file silently stops describing the repo.
+  Visibility and the social preview image are deliberately outside it.
+  `-Apply` refuses unless `gh` acts as the repo's owner.
+
 - [skill-telemetry.py](skill-telemetry.py) — post-hoc answer to "which
   skills are earning their listing budget?". Three subcommands:
   `coverage` (per skill: how many startup listings it appeared in, how

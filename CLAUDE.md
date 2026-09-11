@@ -144,6 +144,10 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 # -Payload skills|instructions does one half; a payload left out is left
 # ALONE, unlike -SkillGroups, where a group left out is PRUNED.
 ./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric,powerbi
+
+# This repo's GitHub settings vs .github/repo-settings.json. Check is the
+# default and read-only; -Export after a UI change; -Apply to restore.
+./scripts/repo-settings.ps1
 ```
 
 **Never run the script bare on this machine** — neither
