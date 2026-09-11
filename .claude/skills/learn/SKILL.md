@@ -69,7 +69,7 @@ Output a short table: `learning → owning skill/rule → section`.
 | Domain procedure, API shape, syntax, gotcha for one product area | `skills/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<name>/references/REFERENCE.md` |
 | Cross-product troubleshooting symptom (error text → cause) | `skills/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `rules/coding-<lang>.md` (path-scoped via `paths:`) |
-| Environment or machine-wide constraint for every session | `claude/CLAUDE.md` (then re-run `scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md` — it is a copy, not a junction) |
+| Environment or machine-wide constraint for every session | `claude/CLAUDE.md` — a copy, not live until the linker pushes it; see Step 7 |
 | Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars, see `scripts/lint-frontmatter.py`) |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
 
@@ -147,9 +147,12 @@ commit yourself). Suggested subject shape:
 - `fix(fabric-gotchas): correct cause of 24556 snapshot conflict`
 - `feat(rules): add KQL materialize() guidance`
 
-If `claude/CLAUDE.md` changed, remind the user to re-run
-`scripts/link-claude.ps1 -Force` to push it to `~/.claude/CLAUDE.md`
-(it is a copy, not a junction). Root `CLAUDE.md` is the repo's only
+Anything under `claude/` deploys by copy, so an edit there is not live
+until the linker runs: remind the user to run
+`./scripts/link-claude.ps1 -SkillGroups workflow,social`, with `-Force`
+when `claude/CLAUDE.md` or `claude/settings.json` changed. **Never the
+bare form** — without `-SkillGroups` it silently re-links every platform
+skill (root `CLAUDE.md`). Root `CLAUDE.md` is the repo's only
 project-scope instruction file — there is no `AGENTS.md` mirror — so
 there is never a hand-sync step.
 

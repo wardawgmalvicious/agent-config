@@ -773,8 +773,8 @@ it if they hadn't.
   machine. Keep it lean: machine environment and pointers only. If
   guidance has a narrower trigger (a file type, a product area),
   prefer a path-scoped rule or a skill instead. After editing it,
-  re-run `scripts/link-claude.ps1 -Force` to push it to
-  `~/.claude/CLAUDE.md`.
+  re-run `./scripts/link-claude.ps1 -SkillGroups workflow,social -Force`
+  — never bare, see Commands — to push it to `~/.claude/CLAUDE.md`.
 
 ## Validating a change
 
