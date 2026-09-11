@@ -158,3 +158,32 @@ Surfaced by the first `/drift-audit --sources skills-for-fabric` run on
 bullet: it surfaced while drilling the caching page. Both recommended
 actions touch one skill and are checked by one verification pass, which
 is why they share this brief.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — applied
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**:
+  `skills/fabric/fabric-warehouse-monitoring/SKILL.md`,
+  `skills/fabric/fabric-warehouse-monitoring/references/REFERENCE.md`
+- **Verification**: the constraint's T-SQL reference fetched first. It
+  documents the same `2` / `1` / `0` encoding with no negative values,
+  so the sources agree and only one encoding was written. Steps 1–4
+  passed: step 1 no hit, step 2 one hit stating "no longer maps", both
+  Learn pages re-fetched with the quoted text intact, lint clean.
+  `fabric-warehouse/SKILL.md` line 223 re-read, still true. Step 5 runs
+  once at the end of the run.
+- **Deferred**: behavioural confirmation of the edited skill needs a
+  fresh session.
+- **Deviations**: (1) `REFERENCE.md` line 19 also asserted the old
+  encoding — "`result_cache_hit` (negative codes for skip reasons)" —
+  about the T-SQL page the constraint named. It is claim 2 of this
+  brief, and the list of edits missed it. Step 1's regex misses its
+  word order too. The parenthetical was dropped, because leaving it
+  would have left the file asserting both encodings. (2) The disabled
+  state is dated 2026-09-11, the day it was re-confirmed, not the
+  brief's example date of 2026-09-10. (3) The two `REFERENCE.md`
+  annotations point at `SKILL.md` for the encoding rather than
+  restating it, so the fact has one home. The interval query sits in
+  `## Top Expensive Queries`.

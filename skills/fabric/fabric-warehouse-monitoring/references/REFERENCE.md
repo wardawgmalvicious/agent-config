@@ -16,7 +16,7 @@ The 3 highest-leverage entry points (Monitor Fabric DW overview, Query Insights,
 
 ## queryinsights views — per-view T-SQL reference
 
-- [queryinsights.exec_requests_history (Transact-SQL)](https://learn.microsoft.com/sql/relational-databases/system-views/queryinsights-exec-requests-history-transact-sql?view=fabric) — every column: `distributed_statement_id`, `query_hash`, `label`, `command`, timing, CPU, data scanned (memory/disk/remote), `result_cache_hit` (negative codes for skip reasons).
+- [queryinsights.exec_requests_history (Transact-SQL)](https://learn.microsoft.com/sql/relational-databases/system-views/queryinsights-exec-requests-history-transact-sql?view=fabric) — every column: `distributed_statement_id`, `query_hash`, `label`, `command`, timing, CPU, data scanned (memory/disk/remote), `result_cache_hit`.
 - [queryinsights.exec_sessions_history (Transact-SQL)](https://learn.microsoft.com/sql/relational-databases/system-views/queryinsights-exec-sessions-history-transact-sql?view=fabric) — completed-session log, login info.
 - [queryinsights.long_running_queries (Transact-SQL)](https://learn.microsoft.com/sql/relational-databases/system-views/queryinsights-long-running-queries-transact-sql?view=fabric) — aggregate by `query_hash`, median vs last-run elapsed time.
 - [queryinsights.frequently_run_queries (Transact-SQL)](https://learn.microsoft.com/sql/relational-databases/system-views/queryinsights-frequently-run-queries-transact-sql?view=fabric) — recurring patterns by run count.
@@ -26,14 +26,14 @@ The 3 highest-leverage entry points (Monitor Fabric DW overview, Query Insights,
 
 - [Performance guidelines in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/guidelines-warehouse-performance) — pairs the query-metadata views with tuning recommendations. Useful when interpreting `data_scanned_remote_storage_mb` or `allocated_cpu_time_ms` outliers.
 - [Statistics in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/statistics) — auto-stats limitations and when manual `UPDATE STATISTICS` recovers from the rolled-back-large-INSERT skew the SKILL.md gotcha mentions.
-- [Result set caching in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/result-set-caching) — what makes queries cache-eligible, why `GETDATE()` / `NEWID()` block caching, the negative `result_cache_hit` codes.
+- [Result set caching in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/result-set-caching) — what makes queries cache-eligible, why `GETDATE()` / `NEWID()` block caching, what each `result_cache_hit` value means. The feature is currently disabled; see the parent SKILL.md for the dated state and the encoding.
 
 ## Capacity-level monitoring (throttling, overage)
 
 - [Microsoft Fabric Capacity Metrics app (overview)](https://learn.microsoft.com/fabric/enterprise/metrics-app) — install + page tour: Health, Compute, Storage, Timepoint. Capacity-admin tool, complements the per-query `queryinsights` views.
 - [The Fabric throttling policy](https://learn.microsoft.com/fabric/enterprise/throttling) — overage/carryforward/burndown model, the four policies (overage protection / interactive delay / interactive rejection / background rejection), `CapacityLimitExceeded` error.
 - [Smoothing and throttling in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/compute-capacity-smoothing-throttling) — Warehouse-specific throttling: SQL error code `24801` from SSMS / VS Code MSSQL when capacity rejects.
-- [How to: Observe Fabric Data Warehouse utilization trends](https://learn.microsoft.com/fabric/data-warehouse/how-to-observe-utilization) — drill from Metrics app `Operation Id` → `dist_statement_id` in `sys.dm_exec_requests` and `distributed_statement_id` in `queryinsights.exec_requests_history` for end-to-end traceability.
+- [How to: Observe Fabric Data Warehouse utilization trends](https://learn.microsoft.com/fabric/data-warehouse/how-to-observe-utilization) — drill through the Metrics app to the billing intervals with the highest CU. Its `Operation Id` **no longer maps** to `distributed_statement_id`; correlate an interval with queries by its start and end times against `queryinsights.exec_requests_history` instead (sample query in the parent SKILL.md).
 - [Troubleshooting: Diagnose and resolve "capacity limit exceeded" errors](https://learn.microsoft.com/fabric/enterprise/capacity-planning-troubleshoot-errors) — staged decision tree for capacity admins.
 - [Troubleshooting: Determine source of report slowness](https://learn.microsoft.com/fabric/enterprise/capacity-planning-troubleshoot-throttling) — companion guide for report-slowness root cause.
 

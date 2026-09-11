@@ -43,6 +43,22 @@ ORDER BY allocated_cpu_time_ms DESC;
 
 Aggregate by `query_hash` over the last 7 days to find recurring expensive patterns.
 
+To find the queries behind a Capacity Metrics billing interval, correlate by time, not by ID: the Metrics app's **Operation Id** no longer maps to `distributed_statement_id` (Learn, confirmed 2026-09-11). Take the interval's **Start** and **End** from the app's Background operations table, then select the requests that overlapped it:
+
+```sql
+DECLARE @Start_Time DATETIME2(0) = '2026-08-04 8:00:00'
+        ,@End_Time DATETIME2(0) = '2026-08-04 9:00:00'
+
+SELECT [database_name],
+       sql_pool_name,
+       distributed_statement_id,
+       login_name,
+       allocated_cpu_time_ms / 1000.0 AS vcore_seconds
+FROM queryinsights.exec_requests_history
+WHERE start_time < @End_Time
+AND end_time > @Start_Time;
+```
+
 ## DMVs (Live State)
 
 | DMV | Shows | Min Role |
@@ -80,9 +96,11 @@ EXEC sys.sp_dw_refresh_ext_table 'dbo.<table>';
 
 Schema changes (add/drop tables or columns, type changes) need the full-item Refresh SQL endpoint metadata REST API instead. Full preview note — enablement, architecture, limitations — lives in the **fabric-spark skill**; the slow-SQLEP gotcha cross-references it in the **fabric-gotchas skill**.
 
-## Result Set Caching (Preview)
+## Result Set Caching (currently disabled)
 
-`result_cache_hit` field in `exec_requests_history`: `1` = cache hit, `0` = miss, **negative values** = reason caching was skipped. Non-deterministic functions (`GETDATE()`, `NEWID()`) prevent caching. Cache auto-invalidates when underlying data changes.
+**Disabled in Fabric Data Warehouse and the SQL analytics endpoint as of 2026-09-11, per Learn** — see the [known issue](https://aka.ms/fabricdwrscki). Don't recommend it as a tuning step while that stands. The feature is disabled, not retired, so the rules below apply again when it returns.
+
+`result_cache_hit` field in `exec_requests_history`: `2` = cache hit, `1` = the query created the cache, `0` = not applicable for cache creation or use. Learn documents only these three values. Non-deterministic functions (`GETDATE()`, `NEWID()`) prevent caching. Cache auto-invalidates when underlying data changes.
 
 ## Statistics
 
