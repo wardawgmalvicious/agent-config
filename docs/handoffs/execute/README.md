@@ -12,6 +12,9 @@ Seven items remain on the queue: three open, four deferred.
 | [coding-yaml-ci-rule.md](coding-yaml-ci-rule.md) | **Deferred 2026-09-10 — not declined**, and wanted. Blocked on evidence rather than on anything here: eleven `.yml`/`.yaml` files existed across every repo on this machine as of that date, which is not a corpus to measure conventions from, and `coding-markdown.md` only worked because 215 files were. The brief scopes it to CI workflow **semantics** rather than YAML syntax — permissions inheritance, mutable action tags, `pull_request_target`, expression injection, a `paths:` filter that silently skips — every one a case where the run is green and the thing you wanted did not happen. Re-open when a workflow is actually being written or debugged; the ones that already exist are not the trigger and never were. |
 | [skill-portfolio-audit.md](skill-portfolio-audit.md) | **Deferred 2026-09-10 — not declined.** A skill to find similar skills before authoring, and to recommend consolidation and deprecation across the set. Every part found a cheaper home: the pre-authoring check goes into `author-skill` §2 via [skill-overlap-script.md](skill-overlap-script.md), repos the payload does not cover are `payload-coverage.py`'s, and the outside-repo scope collapsed to the one authoritative catalog — now `drift-audit`'s `skills-for-fabric` source — because ~2,800 outside `SKILL.md` hits were mostly aggregator copies. **Listing cost is not the reason**, unlike the 2026-09-03 telemetry-skill decline: project scope removed it. Re-open when a script run needs more than its legend, or a second authoritative catalog appears. Depends on the script. |
 
+Re-measured 2026-09-11: none of the three open rows has moved, and none
+of the four deferral triggers has fired.
+
 This is the **only** place the execution order lives — each brief carries
 its own dependencies but not its position — so read this before starting a
 session here.
