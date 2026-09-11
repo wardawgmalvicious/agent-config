@@ -46,6 +46,30 @@ conformance checking.
 - [coding-expressions.md](coding-expressions.md) — Fabric pipeline
   expressions; idioms also apply to ADF, Synapse pipelines, Logic Apps,
   and Power Automate (Workflow Definition Language family)
+- [coding-csharp.md](coding-csharp.md) — C# on current .NET, plus
+  `.csproj`, because the package choices it covers are made there. Opens
+  by deferring to a repo's `.editorconfig`, `Directory.Build.props` and
+  analyzers, and so says nothing about layout. What remains is only the
+  forks an unguided model answers differently each session: nullability
+  at boundaries and EF Core reading it, `ConfigureAwait` by code kind,
+  DI disposal ownership, Azure SDK client and credential lifetime,
+  SqlClient's `Encrypt` default, `DbContext` lifetime, and
+  `System.Text.Json`'s silent defaults. Built from Learn and
+  `dotnet/runtime` rather than measured, since no corpus comparable to
+  the markdown one exists in reach. The three forks no source settles —
+  `var`, `CancellationToken`, JSON default — were put to the user and
+  decided 2026-09-10.
+- [coding-xaml.md](coding-xaml.md) — XAML markup, code-behind
+  (`*.xaml.cs`) and view models (`*ViewModel.cs`, a naming heuristic).
+  Opens by making the reader check the framework first, since WinUI,
+  UWP, WPF and MAUI all use `.xaml` and differ exactly where this rule
+  speaks. Covers `{x:Bind}` defaulting to `OneTime` (compiles clean, then
+  never updates), `ThemeResource` vs `StaticResource`, the page as the
+  one sanctioned service-locator site, `DispatcherQueue` threading, and
+  MVVM Toolkit partial properties over fields (MVVMTK0045). With
+  coding-csharp.md it took the reference WinUI repo from 2% to 80%
+  covered, measured by `payload-coverage.py` on 2026-09-10; the
+  remainder is packaging and config files, which no rule claims.
 - [coding-markdown.md](coding-markdown.md) — hand-authored markdown:
   READMEs, design notes, runbooks, handoff briefs, agent instruction
   files. The only rule here scoped to `**/*.md`, so it loads in nearly

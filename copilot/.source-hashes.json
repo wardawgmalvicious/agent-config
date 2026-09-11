@@ -9,6 +9,7 @@
     "vscode-scoping": "Machine setup guidance, not a coding convention; names another personal repo."
   },
   "translated": {
+    "coding-csharp": "e5be9ed50ceabbaae3363d6d78f530f9b947217c7607192e9a79cd07eded4650",
     "coding-dax": "e0fc63ab316156590a1c9fa0e8160a99205baf9161ba164bc8eca08dfa05b339",
     "coding-expressions": "6ce255530034a3fcb98caefdada47431be427db6643639d9cef495de13cbc1fb",
     "coding-kql": "19fb84bc316bc792a93ca5108fc0c4ae9e07802480a159f983f58e060115c533",
@@ -16,6 +17,7 @@
     "coding-python": "55deb0d60986c79092348e23063de7e860629535f530fd16841a78486f0b0d35",
     "coding-sparksql": "19e0925a29d7a0581cb7f86b8dc63db83833f7adf63274104ff1355c543a0171",
     "coding-tmdl": "c67973fe7259f23ecb74f99dfa5c9f30552d1f105a09ed69dc396a5d939c3636",
-    "coding-tsql": "4c7c26ff94170c88e265910a189e052e65d85d0e23ec07e47488db5b108b4191"
+    "coding-tsql": "4c7c26ff94170c88e265910a189e052e65d85d0e23ec07e47488db5b108b4191",
+    "coding-xaml": "e4acf727da88c21037428cfd644213d574310a7e9131b89817c08d285e962d2c"
   }
 }
