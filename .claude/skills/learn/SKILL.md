@@ -1,6 +1,6 @@
 ---
 name: learn
-description: "Use when the user says 'learn!', 'capture this', 'update the skill', 'remember this for next time', or when a session surfaces a non-obvious pitfall, a doc-vs-reality gap, or a missing step in a skill/rule that was in use. Routes session learnings back into this repo's persistent guidance — skills/*/SKILL.md (+ references/), rules/coding-*.md, CLAUDE.md — rather than auto-memory. Automatically identifies which skills and rules were loaded during the session, checks for existing coverage (especially fabric-gotchas), verifies the learning against official docs before encoding it, proposes the edit at the right heading as a diff for approval, then hands off to /commit. Never edits silently, never writes domain knowledge to memory."
+description: "Use when the user says 'learn!', 'capture this', 'update the skill', 'remember this for next time', or when a session surfaces a non-obvious pitfall, a doc-vs-reality gap, or a missing step in a skill/rule that was in use. Routes session learnings back into this repo's persistent guidance — skills/<group>/<name>/SKILL.md (+ references/), claude/rules/*.md, CLAUDE.md — rather than auto-memory. Automatically identifies which skills and rules were loaded during the session, checks for existing coverage (especially fabric-gotchas), verifies the learning against official docs before encoding it, proposes the edit at the right heading as a diff for approval, then hands off to /commit. Never edits silently, never writes domain knowledge to memory."
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
@@ -48,11 +48,12 @@ Do **not** ask the user which skill was used. Reconstruct it:
 1. **Skills invoked this session** — every `Skill` tool call and every
    skill whose content appears in context (the `<command-name>` /
    loaded-skill blocks). Record the `name:` of each.
-2. **Rules auto-loaded** — any `rules/coding-*.md` content present in
-   context, triggered by files in session scope (`paths:` globs).
+2. **Rules auto-loaded** — any `claude/rules/*.md` content present in
+   context, triggered by files in session scope (`paths:` globs). It
+   appears under its deployed path, `~/.claude/rules/`.
 3. **Global CLAUDE.md or rule sections** relied on — e.g. the `uv`
    guidance (`claude/CLAUDE.md`) or the Fabric serialization rule
-   (`rules/fabric-git-serialization.md`).
+   (`claude/rules/fabric-git-serialization.md`).
 4. **Tools used** — MCP servers / CLIs (`fab`, `pbir`, fabric-cicd,
    Fabric REST) point at the skill that owns them even if it wasn't
    explicitly invoked. Map by the skill's `description`.
@@ -66,9 +67,9 @@ Output a short table: `learning → owning skill/rule → section`.
 
 | Learning is… | Destination |
 | --- | --- |
-| Domain procedure, API shape, syntax, gotcha for one product area | `skills/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<name>/references/REFERENCE.md` |
-| Cross-product troubleshooting symptom (error text → cause) | `skills/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
-| Language / style convention that should apply whenever a file type is open | `rules/coding-<lang>.md` (path-scoped via `paths:`) |
+| Domain procedure, API shape, syntax, gotcha for one product area | `skills/<group>/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<group>/<name>/references/REFERENCE.md` |
+| Cross-product troubleshooting symptom (error text → cause) | `skills/fabric/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
+| Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
 | Environment or machine-wide constraint for every session | `claude/CLAUDE.md` — a copy, not live until the linker pushes it; see Step 7 |
 | Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars, see `scripts/lint-frontmatter.py`) |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
@@ -83,7 +84,7 @@ reader finds it where they'd look.
 Before writing anything:
 
 ```
-grep -rn -i "<key term>" skills/ rules/ CLAUDE.md claude/CLAUDE.md
+grep -rn -i "<key term>" skills/ .claude/skills/ claude/rules/ CLAUDE.md claude/CLAUDE.md
 ```
 
 - Already covered correctly → nothing to do; say so.
@@ -135,8 +136,11 @@ Wait for approval. Apply only what is approved, using `Edit` so the
 rest of the file is untouched. Then run:
 
 ```
-uv run --with pyyaml scripts/lint-frontmatter.py skills/<name>/SKILL.md
+uv run --with pyyaml scripts/lint-frontmatter.py skills/<group>/<name>/SKILL.md
 ```
+
+The same linter takes `.claude/skills/<name>/SKILL.md` and
+`claude/rules/<name>.md`.
 
 ## Step 7 — Hand off
 
@@ -170,7 +174,7 @@ folder name with space skipped silently → fabric-cicd → "Per-item-type cavea
 
 Proposal:
 
-> **skills/fabric-cicd/SKILL.md → ## Per-item-type caveats**
+> **skills/fabric/fabric-cicd/SKILL.md → ## Per-item-type caveats**
 > ```diff
 > + - **Folder names must match the item display name exactly** — a
 > +   mismatch (including whitespace) is skipped with no error; check
