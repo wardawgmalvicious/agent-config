@@ -148,3 +148,27 @@ First `/drift-audit --sources skills-for-fabric` run, 2026-09-10, from a
 0.3.11 `mlv-operations-cli` bullet. The execution-definition API is
 confirmed on Learn; the job-type mismatch is not, and Learn's samples
 point the other way.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — applied
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**: `skills/fabric/fabric-mlv/SKILL.md`,
+  `skills/fabric/fabric-mlv/references/REFERENCE.md`
+- **Verification**: steps 1–4 passed. Step 1: CRUD paths at lines
+  223–227 and `mlvExecutionDefinitionId` at 253. Step 2: no bare
+  `MaterializedLakeViews`. Step 3: the Learn page re-fetched, with every
+  path, status code, field name, the PATCH merge and the
+  linked-schedule deletion as the brief quotes them. Every job-instance
+  sample there still reads `RefreshMaterializedLakeViews`. Step 4: lint
+  clean. The REST reference link was fetched before adding it; it
+  resolves to the five execution-definition operations. Step 5 runs once
+  at the end of the run.
+- **Deferred**: behavioural confirmation of the edited skill needs a
+  fresh session.
+- **Deviations**: optional item 3 skipped. The description measured
+  exactly 1,024 characters on 2026-09-11, and nothing gives way without
+  an unbriefed trigger rewrite. The new material is a `###` subsection
+  closing `## REST API (job scheduler)`. Line 195 is unchanged, and only
+  `Optimal` / `Full` are named.

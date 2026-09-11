@@ -214,6 +214,50 @@ POST /v1/workspaces/{ws}/lakehouses/{lh}/jobs/instances/{jobInstanceId}/cancel
 
 Polling pattern: take `Location` from the 202, poll the `Get Item Job Instance` endpoint until `status` ≠ `InProgress`. Job-scheduler limits cap schedules-per-lakehouse and visible historical instances.
 
+### Scoping a refresh — MLV execution definitions
+
+Without `executionData`, the on-demand refresh and a schedule created over REST refresh the whole lineage. An **MLV execution definition** is a saved selection — which MLVs, which upstream lakehouses, the refresh mode and the Spark environment — that a run or a schedule can be scoped to instead.
+
+```http
+# Execution definition CRUD
+POST   /v1/workspaces/{ws}/lakehouses/{lh}/mlvexecutiondefinitions        → 201 Created, Location
+GET    /v1/workspaces/{ws}/lakehouses/{lh}/mlvexecutiondefinitions        → 200
+GET    /v1/workspaces/{ws}/lakehouses/{lh}/mlvexecutiondefinitions/{id}   → 200
+PATCH  /v1/workspaces/{ws}/lakehouses/{lh}/mlvexecutiondefinitions/{id}   → 200
+DELETE /v1/workspaces/{ws}/lakehouses/{lh}/mlvexecutiondefinitions/{id}   → 200
+```
+
+Create body, from Learn's sample:
+
+```json
+{
+  "displayName": "Gold Chain – Sales",
+  "description": "Nightly refresh for the Sales gold-layer views",
+  "settings": {
+    "environment": { "referenceType": "ById", "itemId": "<ENVIRONMENT_ID>", "workspaceId": "<ENVIRONMENT_WORKSPACE_ID>" },
+    "refreshMode": "Optimal"
+  },
+  "currentLakehouseExecutionContext": {
+    "mode": "Selected",
+    "selectedMlvs": ["dbo.gold_sales_summary", "dbo.gold_sales_daily"]
+  },
+  "extendedLineageExecutionContext": { "mode": "All" }
+}
+```
+
+`refreshMode` is `Optimal` or `Full`. Each execution context takes a `mode` of `All` or `Selected` — `selectedMlvs` for the current lakehouse, `selectedLakehouses` (`referenceType` / `itemId` / `workspaceId`) for extended lineage.
+
+To scope a run, send `executionData` with the on-demand refresh (`POST .../jobs/RefreshMaterializedLakeViews/instances` → `202 Accepted`, `Location`, `Retry-After: 60`), or with a schedule create (`POST .../schedules` → `201`) or update (`PATCH .../schedules/{id}` → `200`), where it sits beside `enabled` and `configuration`:
+
+```json
+{ "executionData": { "mlvExecutionDefinitionId": "<mlvExecutionDefinitionId>" } }
+```
+
+Two behaviours a caller won't guess:
+
+- **PATCH merges.** Only the fields in the body are updated; omitted fields keep their existing values.
+- **Deleting a definition deletes its schedules.** Any schedule linked to it is removed with it.
+
 ## Data quality report
 
 Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. Lakehouse → **Manage materialized lake views** → **Data quality report** → **Generate report**.

@@ -36,6 +36,7 @@ The 3 highest-leverage entry points (concept overview, Spark SQL reference, opti
 ## REST API (job scheduler — `RefreshMaterializedLakeViews`)
 
 - [Manage and refresh materialized lake views in Fabric with APIs](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/materialized-lake-views-public-api) — every endpoint (Create / Get / List / Update / Delete schedule, Run on-demand, List / Get / Cancel job instances) with `{jobType}=RefreshMaterializedLakeViews`, the schedule-limits-per-lakehouse caveat, the Skipped-vs-Canceled status mismatch between Monitoring hub and lineage view.
+- [Lakehouse — Materialized Lake Views (REST reference)](https://learn.microsoft.com/rest/api/fabric/lakehouse/materialized-lake-views) — the five MLV execution definition operations (Create / List / Get / Update / Delete on `mlvexecutiondefinitions`), whose id scopes an on-demand refresh or a schedule through `executionData.mlvExecutionDefinitionId`.
 - [Job scheduler — Run On Demand Item Job](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/run-on-demand-item-job?tabs=HTTP) — the underlying generic on-demand endpoint the MLV API binds to.
 - [Job scheduler — Create Item Schedule](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/create-item-schedule?tabs=HTTP) — the underlying generic schedule CRUD.
 - [Job scheduler — Get Item Job Instance](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/get-item-job-instance?tabs=HTTP) — for polling a returned `Location` header to completion.
