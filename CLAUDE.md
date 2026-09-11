@@ -431,6 +431,22 @@ starting a session here. Those briefs are *not* numbered the way
 individually as each is spent, and cross-linked by filename, so the
 filename has to stay stable and the ordering lives in the queue file.
 
+**Learnings from other repos arrive through `~/handoff-inbox/`**, a
+local folder in no repo. Copilot sessions in client windows write their
+notes there instead of editing this repo — a hand-written instruction at
+`~/.copilot/instructions/cross-repo-handoffs.instructions.md` tells
+them to — and a session here turns a note into a brief with
+`/author-skill`, or into an edit with `/learn`. Notes are raw: they
+carry the names of the workspace they came from, so nothing is copied
+out of one verbatim, and client evidence is cited by kind, as the
+handoff template's Sources guidance requires. Remove a note once its
+content has landed. It sits outside the repo on purpose: a gitignored
+folder under `docs/handoffs/` would leave one ignore line between those
+names and a public repo, and would turn "Copilot never writes here"
+into a rule with a carve-out. Set up 2026-09-11, after a Copilot
+session open on a client repo wrote a brief straight into
+`docs/handoffs/execute/`.
+
 ## Branching and concurrent sessions
 
 **Skill saves are live; nothing else is** — but *how far* they reach now
