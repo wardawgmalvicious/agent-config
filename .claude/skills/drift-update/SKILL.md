@@ -1,6 +1,6 @@
 ---
 name: drift-update
-description: "Execute the handoff briefs a /drift-handoff run wrote to docs/audits/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Use when the user says to execute, apply, action, or work through the drift handoffs or briefs, or points at a docs/audits directory. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
+description: "Execute the handoff briefs a /drift-handoff run wrote to docs/audits/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Use when the user says to execute, apply, action, or work through the drift handoffs or briefs, or points at a docs/audits directory. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision or an investigation rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
 argument-hint: "[audit-date | source-id | path] [brief-number]"
 allowed-tools: Read Edit Write Glob Grep Bash
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -104,6 +104,15 @@ metadata block's most load-bearing field and it classifies the brief:
   brief's problem and evidence to the user, ask the question it poses, and
   record the answer per step 4.6. A skill that cheerfully writes a new skill
   because a brief mentioned one has misread its only instruction.
+- **Investigation** — the Kind says measurement, probe, research or an
+  empirical step, and no edit is authorized until it reports. Split it by
+  what it needs. A **doc lookup** settles like an edit's own fetch: run it,
+  and apply the edit only if the page establishes it. **Anything more** —
+  a person at a GUI, a tenant, a cold probe session, a repo the user
+  chooses — is not run here: escalate it per step 4.6 with the brief's
+  method named, so it runs later as its own task. This kind went unnamed
+  until 2026-09-11, and runs improvised it: one probed for a running
+  Desktop before escalating, another relabelled a measurement as a decision.
 - **Self-referential** — the target is the drift skills' own machinery, most
   often `.claude/skills/drift-audit/references/sources.md`. Apply it, but
   understand what verification is available: such a brief typically specifies
@@ -236,8 +245,9 @@ Emit one line — brief number, outcome, files touched — then continue. Do not
 batch the reporting to the end; a run that fails at brief five should already
 have shown what briefs one through four did.
 
-For an escalated decision brief, the checkpoint is the question itself. Put the
-brief's problem and evidence in front of the user, ask, and stamp the answer
+For an escalated brief, the checkpoint is the question itself. For a decision,
+put the brief's problem and evidence in front of the user and ask; for an
+investigation, say what it needs and ask where it should run. Stamp the answer
 into the execution log as `escalated`. Whatever work the answer implies is a
 separate task, started deliberately — not something to fold into this run.
 
@@ -287,8 +297,8 @@ next source's briefs. Both are separate, deliberate invocations.
 - **Briefs come from disk.** Never from the transcript, a summary, or memory.
 - **The brief set is the scope.** No unbriefed edits, no adjacent fixes, no
   re-opened reasoning.
-- **Kind decides.** Decision briefs are escalated, never executed — and
-  anything a run leaves for later gets a queue row.
+- **Kind decides.** Decision and investigation briefs are escalated, never
+  executed — and anything a run leaves for later gets a queue row.
 - **Stale splits two ways, and neither is improvising.** A missing quoted
   line means the fix already landed (stamp `already-applied`) or the target
   moved (stop the run). Never substitute a line that looks close enough.
