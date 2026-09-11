@@ -216,23 +216,26 @@ Helper scripts for repo maintenance and observability.
   [expected_findings.md](../tests/skills/fabric-semantic-model-audit/expected_findings.md).
 
 There is still deliberately **no `link-copilot.ps1`**, and
-`copy-copilot.ps1` is not one. Every artifact Copilot needs already
-reaches it through the `~/.claude` paths `link-claude.ps1` creates —
-rules, hooks, subagents, skills and user-scope instructions alike, all
-documented defaults on the VS Code agent surface. A linker would be
-copying files to where they already are. What `copy-copilot.ps1` does
-instead is the one thing a junction cannot: produce **committable**
-files, so a teammate cloning a client repo gets the skills without this
-repo, without a script, and without a machine that has either.
+`copy-copilot.ps1` is not one: it copies rather than links, for the
+reasons its header gives. It has two targets. A client repo's `.github`
+gets **committable** files, so a teammate cloning it gets the skills
+without this repo, without a script, and without a machine that has
+either. And `~/.copilot` is this machine's user scope:
 
-That reasoning holds for **rules** too, and it was measured rather than
-assumed: on 2026-09-09 a `.sql` file open in a client repo loaded exactly
-two of the twelve rules in `~/.claude/rules` — `coding-tsql` and
-`fabric-git-serialization` — so Copilot evaluates `paths:` the way Claude
-Code does, from user scope, with nothing deployed. The instructions
-payload is therefore not for you; it is for teammates, and for the day
-this machine stops running Claude Code. See the Tool support section of
-the [root README](../README.md#tool-support).
+```powershell
+./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow
+```
+
+That second target was pointless until 2026-09-09, because Copilot read
+the `~/.claude` paths `link-claude.ps1` creates — measured that day, when
+a `.sql` file open in a client repo loaded exactly the two rules in
+`~/.claude/rules` whose globs matched. The same day every Claude root was
+switched off for Copilot, so `~/.copilot` is now the only way this
+payload reaches it outside a repo. First deployed 2026-09-11. Copies are
+not live: re-run it after editing `commit`, `code-review` or a ported
+rule. `workflow` alone, never `social` — a workplace Copilot has no use
+for `linkedin-highlights`. See the Tool support section of the
+[root README](../README.md#tool-support).
 
 ## Pre-commit
 

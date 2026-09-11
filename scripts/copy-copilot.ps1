@@ -12,17 +12,18 @@
     <CopilotDir>/skills, and instructions from copilot/instructions/ into
     <CopilotDir>/instructions. Both default on.
 
-    IT EXISTS FOR THE ONE THING A JUNCTION CANNOT DO. Copilot reads
-    ~/.claude/skills and .claude/skills directly -- measured 2026-09-09 by
-    toggling ~/.claude/skills off in chat.agentSkillsLocations and watching
-    the VS Code sidebar drop them -- so link-claude.ps1's junctions already
-    serve Copilot on the machine that runs it, and a user-scope copy here
-    would only duplicate them. What a junction cannot be is COMMITTED: it
-    points at a personal repo on one machine, so a teammate cloning a client
-    repo gets nothing from it. Real files under .github/skills travel with
-    the clone. That is this script's whole reason to exist, and the reason
-    -CopilotDir is mandatory with no user-scope default: deploying there is
-    the case this design rejects.
+    TWO TARGETS, ONE MECHANISM. A repo's .github, so a teammate cloning a
+    client repo gets real, committed files -- a junction points at a
+    personal repo on one machine and travels nowhere. And ~/.copilot, this
+    machine's user scope. That second target used to be rejected here:
+    Copilot read ~/.claude/skills and ~/.claude/rules directly (measured
+    2026-09-09 by toggling ~/.claude/skills in chat.agentSkillsLocations and
+    watching the sidebar drop them), so a user-scope copy only duplicated
+    link-claude.ps1's junctions. The same day every Claude root was switched
+    off for Copilot, which left ~/.copilot as the only user-scope route; it
+    was first deployed 2026-09-11 with -SkillGroups workflow, which is why
+    linkedin-highlights moved to its own social group. -CopilotDir stays
+    mandatory with no default, so every run names its target.
 
     WHY COPIES AND NOT JUNCTIONS. link-claude junctions one reparse point
     per skill because Claude Code hot-reloads them, which makes edit-to-live
@@ -474,6 +475,9 @@ if ($doInstructions) {
 # write to, so a name present in both is listed twice. One formula covers
 # every scope: ~/.copilot sits beside ~/.claude exactly as <repo>/.github
 # sits beside <repo>/.claude.
+# It reads directories, not VS Code settings, so it cannot tell a sibling
+# root that chat.*Locations has switched off -- every Claude root on this
+# machine since 2026-09-09, where the warning is therefore moot.
 # A STANDING CONDITION, not drift, so none of this touches $DriftCount: a repo
 # that runs both agents wants .claude/ populated, and a warning that can never
 # be cleared would make a nonzero exit meaningless. Report it and let the exit

@@ -140,11 +140,16 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 
 # Vendor a COMMITTABLE payload into a client repo for teammates: platform
 # skills into <repo>/.github/skills, ported rules into
-# <repo>/.github/instructions. Needed by nobody on this machine -- Copilot
-# already reads ~/.claude directly -- only by people cloning that repo.
+# <repo>/.github/instructions.
 # -Payload skills|instructions does one half; a payload left out is left
 # ALONE, unlike -SkillGroups, where a group left out is PRUNED.
 ./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric,powerbi
+
+# Copilot's user scope on THIS machine, the only route there since every
+# Claude root was switched off for Copilot on 2026-09-09. workflow only,
+# never social. Copies, so re-run after editing commit, code-review or a
+# ported rule.
+./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow
 
 # This repo's GitHub settings vs .github/repo-settings.json. Check is the
 # default and read-only; -Export after a UI change; -Apply to restore.
