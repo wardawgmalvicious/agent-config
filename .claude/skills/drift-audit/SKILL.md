@@ -3,7 +3,7 @@ name: drift-audit
 description: "Audit registered upstream docs sources for drift since a prior commit SHA or date — detect new GA / preview features, syntax additions, deprecations, and harness or tooling changes that affect existing skills, rules, CLAUDE.md, settings.json, hooks, or the MCP templates. Sources live in a registry (references/sources.md): Microsoft Fabric (incl. RTI) and Power BI What's New, the VS Code agent-customization docs behind the GitHub Copilot wiring, Microsoft's skills-for-fabric catalog, and the anthropics/claude-code CHANGELOG — the harness the rest runs inside. Use when running a monthly Fabric / Power BI staleness check, checking whether VS Code moved the chat.*Locations settings, checking whether a Claude Code release renamed a hook event or moved a ~/.claude path, or auditing what changed on the registered pages between two points in time. Narrow a run with --sources <id,id>. Prefers github-mcp for exact bytes and commit patches, falling back to WebFetch. Findings only — no edits."
 argument-hint: "[prior-sha-or-date] [--sources id,id]"
 arguments: prior_ref
-allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__github-mcp__search_repositories mcp__microsoft-learn-mcp__microsoft_docs_fetch
+allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__github-mcp__search_repositories mcp__microsoft-learn-mcp__microsoft_docs_fetch mcp__microsoft-learn-mcp__microsoft_docs_search
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false

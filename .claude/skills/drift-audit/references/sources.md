@@ -519,32 +519,87 @@ CHANGELOG is **not a complete record of file changes**, measured
 - `list_commits` filtered to either vendored skill's directory returns the
   `v0.3.3`, `v0.3.7` and `v0.3.12` release commits. The changelog names
   those skills under `0.3.3` and `0.3.7` only — `v0.3.12` changed both
-  with no bullet.
+  under a catalog-wide bullet that names no skill. Its only change to
+  either was stripping the "Update Check" blockquote from `SKILL.md`,
+  which `0.3.12` announces for every skill at once; `references/` and
+  `assets/` were untouched (verified 2026-09-11 by diffing each
+  `SKILL.md` at `65cb0bce` and `ab33f1da`). Clause 2 matches by name, so
+  a catalog-wide bullet slips past it either way.
 - `0.3.14` says every skill description was rewritten. Neither vendored
   skill's path history shows a `0.3.14` commit.
 
 So for the vendored pair, run `list_commits` with `path:
-skills/<name>` and `since:` the vendored tag's date, once per skill, and
-treat any commit as a re-sync candidate whatever the changelog says. At
-registration both returned nothing after `v0.3.12`: the vendored copies
-were current through `v0.3.15`.
+skills/<name>` and `since:` the vendored merge's time — `b8d541c`,
+2026-08-20T13:22:57Z, not the release heading's date — once per skill,
+and treat any commit as a re-sync candidate whatever the changelog says.
+At registration both returned nothing after `v0.3.12`: the vendored
+copies were current through `v0.3.15`.
 
-#### Fetch — HEAD once, read the sections above the floor
+**An empty list is not proof on its own.** A moved or deleted path
+returns the same `[]`, the trap `powerbi` documents for forks. Confirm it
+with tree SHAs: list `skills` at the vendored merge commit and at HEAD
+with `get_file_contents`, `fields: ["name","sha"]`; equal tree SHAs prove
+the content unchanged. One call per ref also covers the two routed-to
+skills clause 2 names. Measured 2026-09-10, identical at `b8d541c` and
+`65902bae`:
+
+| Upstream skill | Tree SHA |
+| --- | --- |
+| `powerbi-report-authoring` | `d160d140` |
+| `powerbi-report-design` | `b9fe475b` |
+| `powerbi-report-management` | `9b609076` |
+| `powerbi-report-planning` | `4f847fca` |
+
+#### Fetch — one `CHANGELOG.md` patch per commit, isolated by file pagination
 
 Each release lands as one squashed commit, `Release vX from internal
-repo`, roughly weekly — `0.3.12` through `0.3.15` shipped 2026-08-13,
-08-20, 08-26 and 09-04. A per-commit patch would therefore drag a whole
-release's file set in to read a few bullets, the same trap `powerbi`'s
-squashed release sets. The version headings are dated
-(`## [0.3.15] - 2026-09-04`), so the window resolves from the headings:
-fetch `CHANGELOG.md` at HEAD once and read every version section dated
-after the floor. No prior-ref fetch is needed while the file stays
-prepend-only, which is **assumed, not verified** — the first run should
-confirm that the floor ref's version sections reappear unchanged in
-HEAD's, as `claude-code`'s did.
+repo`, on a `release/vX` branch, roughly weekly — `0.3.12` through
+`0.3.15` shipped 2026-08-13, 08-20, 08-26 and 09-04. It reaches `main`
+by a PR merge, sometimes days later, and a path-filtered `list_commits`
+shows the **branch commit, not the merge** — history simplification
+hides the merge from a path filter:
 
-Price: 1 call for HEAD, 2 for the vendored path checks, and 1 per
-upstream `SKILL.md` read for context.
+| Release | Branch commit | Merge to `main` |
+| --- | --- | --- |
+| v0.3.13 | `22cafc90`, 2026-08-20 08:34Z | `b8d541c` (PR #75), 2026-08-20 13:22Z |
+| v0.3.15 | `65902bae`, 2026-09-04 13:13Z | `74f3262c` (PR #86), 2026-09-06 07:01Z |
+
+So a date floor can miss a release whose branch commit predates the floor
+but whose merge follows it. Floor the next run at the last-seen branch
+commit's date plus one day, or pass that commit's SHA.
+
+**The file is not prepend-only**, unlike `claude-code`'s. The first run,
+2026-09-10, found `CHANGELOG.md` edited in place after release:
+`9d5fe403` rewrote `0.3.11` and the pre-floor `0.3.10`, `0.3.6` and
+`0.3.5` sections, `af9aff33` removed two `0.3.11` bullets, and
+`a5e82199` moved a heading. A HEAD-only read cannot see a removal — the
+two bullets `af9aff33` removed now exist only in history — so read the
+history:
+
+1. `list_commits`, `path: CHANGELOG.md`, `since: <floor>`,
+   `fields: ["sha"]`. Then `get_commit`, `detail: "stats"`,
+   `perPage: 10` per SHA, for `CHANGELOG.md`'s position in the file list
+   and its +/- counts.
+2. `get_commit`, `detail: "full_patch"`, `perPage: 1`,
+   `page: <position>` returns **only** that file's patch out of a
+   squashed release — verified 2026-09-10 on `22cafc90`, where page 3
+   returned the `CHANGELOG.md` patch alone out of a release touching
+   ~1,960 lines. A commit whose only file is `CHANGELOG.md` needs no
+   pagination.
+3. Fetch the whole file once at the **base** ref — the last commit
+   touching the path before the floor — for clause 1's "no earlier
+   version section mentions" test: ~44 KB at `v0.3.10`, against 58 KB at
+   HEAD.
+4. Net a pair of whole-file rewrites (+N/−N on every line) by comparing
+   the file's blob SHA at the two refs from a root listing —
+   `get_file_contents`, `path: "/"`, `fields: ["name","sha"]` — instead
+   of reading either patch. That is how the `d231b957` / `e4dfaebd`
+   line-ending flip and its revert were cleared: blob `3fd6c501` at both
+   `2b3530e8` and `e4dfaebd`.
+
+Price, from the 2026-09-10 run: about 10 stats calls, 7 isolated
+patches, 1 base fetch and 4 directory listings, plus 1 call per upstream
+`SKILL.md` read for context.
 
 #### Counterparts here — matched by name only
 
@@ -557,12 +612,21 @@ upstream `SKILL.md` read for context.
 | `sqldb-cli` | `fabric-database` |
 | `variable-library-cli` | `fabric-variable-library` |
 | `fabriciq`, `fabriciq-ontology-cli` | `fabric-ontology` |
-| `semantic-model-authoring` | `fabric-tmdl`, `fabric-tmdl-api` |
+| `semantic-model-authoring` | `fabric-tmdl`, `fabric-tmdl-api`; `fabric-semantic-model-ai-instructions` for Prep data for AI |
+| `mlv-operations-cli` (retired upstream) | `fabric-mlv` |
 | `deployment-pipelines-authoring-cli` | `fabric-cicd` (partial) |
 | `git-integration-operations-cli` | `fabric-cicd` (partial), `fabric-git-serialization` rule |
 
 Matched by name on 2026-09-10, from the `skills/` listing and the
-changelog, **without reading either side's content**. Upstream's `-cli`
+changelog, **without reading either side's content**. The listing cannot
+see a retired name, so the first run found two gaps and they were added
+2026-09-11: `mlv-operations-cli` (added `0.3.5`) is gone from HEAD's
+`skills/`, its MLV work routed to `spark-cli` by `0.3.14`, yet its
+`0.3.11` bullet still mapped to `fabric-mlv`; and
+`semantic-model-authoring`'s Prep data for AI work maps to
+`fabric-semantic-model-ai-instructions`. **A retired upstream name can
+still have a live local counterpart** — check a bullet naming a skill
+absent from HEAD against this table before dropping it. Upstream's `-cli`
 suffix suggests CLI procedures where ours are mostly reference and gotcha
 content, so a counterpart is a place to look rather than a duplicate. An
 upstream skill with no counterpart is reported under clause 1 of the
@@ -583,11 +647,16 @@ skills risked being known by name alone. Upstream hits these problems at
 a larger catalog size first, which makes its changelog an early warning
 for this payload's own mechanics.
 
-**Unvalidated.** Step 5 of *Adding a source* — a run against a window
-with a known answer — has not been done. One exists: with the floor at
-2026-08-20, both vendored path checks must return nothing, clause 1 must
-surface `onelake-catalog-govern-cli`, and it must **not** surface
-`databricks-migration`.
+**Step 5 of *Adding a source* passed on a superset window, 2026-09-10.**
+The first run, floor 2026-08-06, met all three known-answer assertions
+on the `0.3.13`–`0.3.15` sections: both vendored path checks empty and
+tree-SHA proven, clause 1 surfacing `onelake-catalog-govern-cli`, and
+clause 1 **not** surfacing `databricks-migration` (mentioned in `0.3.0`
+and `0.3.9`). The exact known-answer floor, 2026-08-20, has not been run.
+Judge it on commits up to `65902bae` (`v0.3.15`) only: `v0.3.16`
+(`f1802196`, 2026-09-10T14:27Z) touched both vendored skills after that
+run, so a run today also returns that commit per vendored path —
+correctly, as a re-sync candidate, but outside the known answer.
 
 ## Shape contracts
 

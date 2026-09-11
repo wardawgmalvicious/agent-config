@@ -229,3 +229,45 @@ registered (`8d91a3b`). Every defect surfaced during that run rather
 than by review: D-1 to D-4 and D-8 as things the run had to work around,
 D-5 and D-6 while applying the filter to the in-window sections. D-7 is
 bookkeeping on the run's own result.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session, so the
+  warm run's self-edit refusal did not apply)
+- **Files changed**: `.claude/skills/drift-audit/references/sources.md`,
+  `.claude/skills/drift-audit/SKILL.md`
+- **Verification**:
+  - Step 1: the entry was re-read before editing and the quote is in
+    `HEAD` (line 542). Every cited line still matched its target.
+  - Steps 2 and 3: lint clean, and `lint-skill-scopes.py` reports 51
+    unique names. Step 5 runs once at the end of the run.
+  - D-6 was verified before its claim was restated. For both vendored
+    skills, v0.3.12 changed only `SKILL.md`, with identical
+    `references/` and `assets/` tree SHAs at `65cb0bce` and `ab33f1da`,
+    and the whole diff is the six-line "Update Check" blockquote.
+- **D-5**: put to the user, who chose to **keep the lexical test**.
+  Clause 1 is unchanged, and the decision implies no edit.
+- **Deferred**:
+  - Step 4, the behavioural check. It needs a fresh-session
+    `/drift-audit 2026-08-20 --sources skills-for-fabric`, and this run
+    cannot re-audit against its own just-edited registry. That run must
+    judge the vendored assertion on commits up to `65902bae`: upstream
+    `v0.3.16` (`f1802196`, 2026-09-10T14:27Z) touched both vendored
+    skills after the audit, so today it returns one commit per
+    vendored path.
+  - D-1's knock-on, generalizing file pagination into SKILL.md § 4a.
+    The brief puts it out of scope; decide it separately.
+- **Deviations**:
+  1. D-7's known-answer is bounded at `65902bae`, for the `v0.3.16`
+     reason above. Unbounded, the registry would record an assertion
+     that fails for every run after 2026-09-10.
+  2. D-4's `semantic-model-authoring` counterpart joined its existing
+     row rather than a second row with the same key.
+  3. D-2's knock-on landed in D-3's sentence: the vendored `since:`
+     now names the merge time.
+  4. D-6 compared against `65cb0bce`, the last commit touching the path
+     before v0.3.12, rather than `2b3530e8`. The two raw files were
+     diffed locally, over anonymous HTTPS, after github-mcp's tree
+     listings had narrowed the change to `SKILL.md`.
