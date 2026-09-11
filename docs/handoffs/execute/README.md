@@ -26,6 +26,21 @@ file was pruned to the open work on 2026-09-03 rather than letting the
 struck rows accumulate; `git log -p -- docs/handoffs/execute/README.md`
 has them in full if a closed decision ever needs re-reading.
 
+## Audit briefs are a second queue
+
+`/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`
+walks those briefs in their own numbered order — so an unexecuted audit
+run is pending work this table does not list. A brief there with no
+`## Execution log` section has not been executed.
+
+As of 2026-09-11 one run is wholly unexecuted:
+[2026-09-10/skills-for-fabric/](../../audits/2026-09-10/skills-for-fabric/),
+all 11 briefs, six of them measurements, research or decisions rather
+than edits. Its brief 02 edits `fabric-eventstream`, the same skill
+[fabric-event-schema-set.md](fabric-event-schema-set.md) has to qualify,
+so sequence the two rather than running them side by side. Drop this
+paragraph once that run is stamped.
+
 ## Filenames are stable; order lives here
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`
