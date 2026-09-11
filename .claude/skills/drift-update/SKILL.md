@@ -1,7 +1,7 @@
 ---
 name: drift-update
 description: "Execute the handoff briefs a /drift-handoff run wrote to docs/audits/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Use when the user says to execute, apply, action, or work through the drift handoffs or briefs, or points at a docs/audits directory. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision or an investigation rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
-argument-hint: "[audit-date | source-id | path] [brief-number]"
+argument-hint: "[audit-date | source-id | path] [brief-number[,brief-number...]]"
 allowed-tools: Read Edit Write Glob Grep Bash
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
@@ -65,7 +65,11 @@ Argument forms, all optional:
   source directory, apply the multi-source rule below.
 - **Source id** (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …) — that
   source under the most recent audit date that has one.
-- **Trailing integer** — restrict the run to that single numbered brief.
+- **Trailing brief numbers** — one integer, or a comma-separated list
+  (`1,2,3,5`), restricts the run to those briefs, still walked in numbered
+  order. Without them a cold run has no cap and walks every unstamped brief
+  in one pass; name numbers to keep a session to a batch one `/commit` can
+  review.
 - **No argument** — the most recent date directory under `docs/audits/`.
 
 **Multiple source directories under one date are separate runs of work, not one
