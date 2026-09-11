@@ -309,6 +309,17 @@ stay separable:
     [lint-frontmatter.py](scripts/lint-frontmatter.py) rejects an active
     one so it cannot return silently.
 
+    **A skill is slash-invocable in Copilot**, whatever Copilot Chat
+    says about itself. Asked why `/commit` did not work, it answered
+    that only `.github/prompts/*.prompt.md` is, and that was wrong: the
+    docs say skills "are available as slash commands in chat, alongside
+    prompt files", and `user-invocable` defaults to `true`. The hang was
+    the `model:` key above. Don't build a prompt-file wrapper for a
+    skill — prompt files are deprecated for Agent Host, and VS Code ships
+    a migration converting them *into* skills. Checked 2026-09-09; both
+    `commit` and `code-review` confirmed in the `/` menu from
+    `~/.copilot/skills` on 2026-09-11.
+
     Copilot does hard-
     require one thing Claude Code never checks: a skill's **directory
     name must equal its frontmatter `name:`**. All 50 here comply, and
