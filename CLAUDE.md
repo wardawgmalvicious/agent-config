@@ -378,6 +378,14 @@ deployed anywhere and loads only in sessions inside this repo.
   three stages — commit, message, push — whoever commits. A clone needs
   `pre-commit install` (or `scripts/bootstrap-pre-commit`) re-run once
   to gain the message and push stages.
+- **`scripts/push-gate.sh` refuses any push not issued from Claude
+  Code**, as a pre-push hook beside that one. The identity guard only
+  knows names already on its list; the gate stops everything else
+  another harness wrote from reaching this public repo before a Claude
+  session has reviewed it. Pushes from here pass on `CLAUDECODE=1`, so
+  `/land` and a plain `git push` in a session are unaffected. The human
+  override is one command long: `git -c agentconfig.push=reviewed push
+  ...`. Added 2026-09-11.
 
 ## Working on this repo
 

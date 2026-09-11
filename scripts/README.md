@@ -149,6 +149,14 @@ Helper scripts for repo maintenance and observability.
   surface anywhere at 187 files across seven repos. Needs `pyyaml` and
   `wcmatch`. Not run by pre-commit; there is no pass/fail here to gate on.
 
+- [push-gate.sh](push-gate.sh) — the pre-push hook that refuses any
+  push not issued from a Claude Code session, so nothing another
+  harness wrote reaches this public repo unreviewed. Keys on
+  `CLAUDECODE=1`; a human override lasts one command,
+  `git -c agentconfig.push=reviewed push ...`, in either shell. Wired by
+  [.pre-commit-config.yaml](../.pre-commit-config.yaml); the header
+  says why the override is not an environment variable and why the
+  marker is not `CLAUDE_CODE_SSE_PORT`.
 - [repo-settings.ps1](repo-settings.ps1) — keep this repo's GitHub
   settings in [.github/repo-settings.json](../.github/repo-settings.json):
   `-Export` snapshots the live repo into it, `-Check` (the default) reports
@@ -235,7 +243,8 @@ scripts/bootstrap-pre-commit
 ```
 
 That installs `pre-commit` via `uv tool install`, then runs `pre-commit install`
-to wire `.git/hooks/pre-commit`. The configured hooks live in
+to wire `.git/hooks/pre-commit`, `commit-msg` and `pre-push` — the three
+types `default_install_hook_types` lists. The configured hooks live in
 [.pre-commit-config.yaml](../.pre-commit-config.yaml).
 
 ### `claude plugin validate` — evaluated 2026-08-31, declined

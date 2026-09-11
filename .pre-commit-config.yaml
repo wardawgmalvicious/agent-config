@@ -126,3 +126,16 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-push]
+
+      # The identity guard catches names already on the list; this catches
+      # everything else by refusing any push not issued from a Claude Code
+      # session, so nothing another harness wrote goes public unreviewed.
+      # Override for one push: `git -c agentconfig.push=reviewed push ...`.
+      # Why that form and why CLAUDECODE is the marker: the script header.
+      - id: push-gate
+        name: Refuse pushes not issued from Claude Code
+        entry: bash scripts/push-gate.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
