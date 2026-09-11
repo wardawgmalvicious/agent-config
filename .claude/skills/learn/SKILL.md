@@ -20,10 +20,10 @@ guidance that already exists, `/author-skill` creates guidance that has
 no home yet. If the right destination for a learning turns out to be a
 skill this repo does not have, that is an `/author-skill` job.
 
-This repo lives at `C:\Repos\Personal\agent-config`; `~/.claude/skills`
-holds one junction per skill into it, so `/learn` may fire from a
-session in any repo. All repo-relative paths and commands below (grep, the lint
-script, `/commit`) run from that repo root, not the session's cwd.
+This skill is project scope: it lives in `.claude/skills/` and fires only
+in sessions inside this repo, so the paths and commands below (grep, the
+lint script, `/commit`) run from the repo root. Learnings from other repos
+arrive as notes in `~/handoff-inbox/` — see root `CLAUDE.md`.
 
 ## Step 1 — Identify what was learned
 
@@ -68,6 +68,7 @@ Output a short table: `learning → owning skill/rule → section`.
 | Learning is… | Destination |
 | --- | --- |
 | Domain procedure, API shape, syntax, gotcha for one product area | `skills/<group>/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<group>/<name>/references/REFERENCE.md` |
+| This repo's own procedure — the drift pipeline, authoring, testing, landing | `.claude/skills/<name>/SKILL.md` — project scope, live on save, no linker step |
 | Cross-product troubleshooting symptom (error text → cause) | `skills/fabric/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
 | Environment or machine-wide constraint for every session | `claude/CLAUDE.md` — a copy, not live until the linker pushes it; see Step 7 |

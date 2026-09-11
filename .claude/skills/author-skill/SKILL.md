@@ -20,11 +20,10 @@ This skill is house-style. It encodes how *this* repo builds skills; the
 generic mechanics of the Agent Skills format are somebody else's job
 (see step 1).
 
-Repo-relative paths below are relative to the agent-config repo
-(`C:\Repos\Personal\agent-config`), not the session's cwd.
-`~/.claude/skills` is a real directory holding **one junction per
-skill** into that repo, so this skill can fire from a session in any
-repo — resolve paths against agent-config regardless of where it fired.
+Paths below are relative to the repo root. This skill is project scope and
+fires only in sessions here, but a skill it authors in `skills/` deploys
+through `~/.claude/skills` — a real directory holding **one junction per
+skill** in that tree.
 
 **An edit is immediate; a new skill needs the linker once.** The
 asymmetry follows from those per-skill junctions. Editing an

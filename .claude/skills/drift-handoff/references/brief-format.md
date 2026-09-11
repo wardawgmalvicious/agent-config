@@ -181,7 +181,7 @@ Four files. Each states or implies the same wrong causality.
    deliberately **no `link-copilot.ps1`**", containing:
    > VS Code 1.135 made `~/.claude/skills` a first-class location
 
-3. **`skills/drift-audit/references/sources.md`** — the `vscode-agent`
+3. **`.claude/skills/drift-audit/references/sources.md`** — the `vscode-agent`
    entry prose, which carries **both** errors:
    > `~/.claude/skills` became a first-class `chat.agentSkillsLocations`
    > entry in VS Code 1.135, which retired a whole linker script whose

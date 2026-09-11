@@ -23,10 +23,9 @@ the content of any edit.
 conversation, from memory of an audit, or from a summary, even when this
 session produced it. The file is the contract; the transcript is not.
 
-Repo-relative paths below are relative to the agent-config repo
-(`C:\Repos\Personal\agent-config`), not the session's cwd. `~/.claude/skills`
-is a junction into that repo, so this skill can fire from a session in any
-repo — resolve paths against agent-config regardless of where it fired.
+Paths below are relative to the repo root. This skill is project scope — it
+lives in `.claude/skills/`, deployed nowhere since 2026-09-09 — so it only
+fires in sessions inside this repo.
 
 ## 1. Preconditions and session posture
 
@@ -37,11 +36,11 @@ Check whether a `/drift-audit` report is present in the conversation — its own
 structure (`## Audit window` plus `## Recommended actions`), not a mention of
 one. If it is, this is a **warm** run. Warm is allowed, with two limits:
 
-- **Refuse a brief whose targets include `skills/drift-audit/`,
-  `skills/drift-handoff/`, or `skills/drift-update/`.** Editing the skill that
-  produced the briefs, in the session that produced them, is the one case where
-  warm is actually unsound. Name the brief, say why it was skipped, and tell
-  the user to run it from a fresh session.
+- **Refuse a brief whose targets include `.claude/skills/drift-audit/`,
+  `.claude/skills/drift-handoff/`, or `.claude/skills/drift-update/`.** Editing
+  the skill that produced the briefs, in the session that produced them, is the
+  one case where warm is actually unsound. Name the brief, say why it was
+  skipped, and tell the user to run it from a fresh session.
 - **Cap the run at three briefs.** The audit turn is the expensive one; its
   fetched sources and artifact sweep are still resident. Apply the first three
   eligible briefs, stop, and report the remainder as pending a fresh session.
@@ -106,12 +105,12 @@ metadata block's most load-bearing field and it classifies the brief:
   record the answer per step 4.6. A skill that cheerfully writes a new skill
   because a brief mentioned one has misread its only instruction.
 - **Self-referential** — the target is the drift skills' own machinery, most
-  often `skills/drift-audit/references/sources.md`. Apply it, but understand
-  what verification is available: such a brief typically specifies "verified by
-  re-running an audit, not by grepping prose", and this skill cannot re-run an
-  audit against its own just-edited registry. Run the gates that do apply, then
-  record the behavioural check as **deferred to the next `/drift-audit` run**
-  in the execution log and in the closing report.
+  often `.claude/skills/drift-audit/references/sources.md`. Apply it, but
+  understand what verification is available: such a brief typically specifies
+  "verified by re-running an audit, not by grepping prose", and this skill
+  cannot re-run an audit against its own just-edited registry. Run the gates
+  that do apply, then record the behavioural check as **deferred to the next
+  `/drift-audit` run** in the execution log and in the closing report.
 
 A sub-sectioned brief (`## D-1`, `## D-2`, …) is triaged per defect. A defect
 carrying an **Open question** blocks that defect only — ask the user about it,

@@ -19,7 +19,7 @@ Turn a completed `/drift-audit` report into files on disk: the report itself, pl
 
 **Creates files only.** `Edit` is deliberately absent from `allowed-tools` — this skill never modifies an existing file.
 
-Repo-relative paths below are relative to the agent-config repo (`C:\Repos\Personal\agent-config`), not the session's cwd. `~/.claude/skills` is a junction into that repo, so this skill can fire from a session in any repo; the output always lands in agent-config, where the `.gitignore` entry covering it lives.
+Paths below are relative to the repo root. This skill is project scope — it lives in `.claude/skills/`, deployed nowhere since 2026-09-09 — so it only fires in sessions inside this repo, which is also where its output lands.
 
 ## 1. Preconditions
 
@@ -38,7 +38,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 `docs/audits/<audit-date>/<source-id>/`
 
 - `<audit-date>` — the date the audit **ran**, ISO format. Not the window floor.
-- `<source-id>` — the registry id from `skills/drift-audit/references/sources.md` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
+- `<source-id>` — the registry id from `.claude/skills/drift-audit/references/sources.md` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
 
 `Write` creates missing parent directories, so there is no separate mkdir step — and no `Bash` in `allowed-tools` to run one.
 
