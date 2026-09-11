@@ -251,6 +251,7 @@ Hard limit. Plan for it.
 - **No upload from file in Desktop.** Currently, instructions must be pasted into the dialog.
 - **Visual modifications and theming are out of scope.** Instructions don't affect report visuals.
 - **Cannot disable or deprioritize other Copilot features.** Instructions influence how existing capabilities respond; they don't turn capabilities on or off.
+- **Changes arriving by Git or a deployment pipeline need a service refresh.** AI instructions and AI data schemas save to the model's linguistic schema (LSDL). An LSDL change that arrives through Git sync or a deployment pipeline takes effect only after the model is refreshed in the Power BI service, and DirectQuery and Direct Lake models sync it only once a day ([Prep data for AI](https://learn.microsoft.com/power-bi/create-reports/copilot-prepare-data-ai), Considerations and limitations; confirmed 2026-09-11). Until that refresh, a shipped instructions change looks as if it silently failed.
 
 ---
 

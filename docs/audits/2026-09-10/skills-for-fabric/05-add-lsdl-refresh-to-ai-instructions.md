@@ -109,3 +109,34 @@ refresh requirement surfaced while drilling a 0.3.15
 `semantic-model-authoring` bullet whose own claim was already covered.
 The collision was noticed while writing this brief, not during the
 audit.
+
+## Execution log
+
+- **Executed**: 2026-09-11 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in the session)
+- **Files changed**:
+  `skills/fabric/fabric-semantic-model-ai-instructions/SKILL.md`
+- **Verification**: steps 1–4 passed. Step 1: the requirement is at
+  line 254, in `## Limitations to be aware of`. Step 2: "not stored in
+  TMDL" is still present (now line 263) and the collision is escalated,
+  as recorded below. Step 3: items 11 and 13 re-fetched verbatim. Step
+  4: lint clean. Step 5 runs once at the end of the run.
+- **Collision**: unresolved, so it was escalated. Learn does not say
+  where the instructions serialize: not on the Prep data for AI page,
+  the PBIP semantic model folder page, or the Git source-code-format
+  page. The only real semantic-model export on this machine, in a client
+  repo, has a stub culture file (122 bytes; `linguisticMetadata` holds
+  only `Version` and `Language`). That model never had instructions
+  set, so it cannot show where they land. No `*.SemanticModel/Copilot/`
+  folder exists anywhere under the repos root.
+- **Decision**: the user chose to add the requirement under
+  `## Limitations to be aware of`, a section away from line 263. The
+  TMDL line is left untouched.
+- **Deferred**: the collision. Settle it by exporting a model that has
+  AI instructions set and searching its `cultures/*.tmdl`
+  `linguisticMetadata` for the instructions text. If the text is there,
+  correcting line 263 is its own change. Behavioural confirmation of
+  the edited skill also needs a fresh session.
+- **Deviations**: none. The brief named Limitations as an acceptable
+  home.
