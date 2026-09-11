@@ -225,7 +225,7 @@ auto-approval scope.
 ## Provenance
 
 The first `/drift-audit` run against this source, on the day it was
-registered (`c1db517`). Every defect surfaced during that run rather
+registered (`8d91a3b`). Every defect surfaced during that run rather
 than by review: D-1 to D-4 and D-8 as things the run had to work around,
 D-5 and D-6 while applying the filter to the in-window sections. D-7 is
 bookkeeping on the run's own result.

@@ -56,7 +56,7 @@
   - Source: skills-for-fabric / 0.3.11 Changed
 - **`deployment-pipelines-authoring-cli`**: `fabric-cicd` covers deployment pipelines with one table row. The upstream bullet lists many limits (300-item cap, one deploy per pipeline, `Pipeline.Deploy` scope, `lastDeploymentTime` semantics). Not drilled, per the rule for this bucket.
   - Source: skills-for-fabric / 0.3.11 Added
-- **`eventschemaset-cli`**: already queued as `docs/handoffs/execute/fabric-event-schema-set.md` (`fcbbc29`, today). No action.
+- **`eventschemaset-cli`**: already queued as `docs/handoffs/execute/fabric-event-schema-set.md` (`5bded54`, today). No action.
   - Source: skills-for-fabric / 0.3.12 Changed
 
 ## MCP / tooling / CLI additions

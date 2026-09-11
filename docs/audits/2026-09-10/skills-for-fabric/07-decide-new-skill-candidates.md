@@ -108,7 +108,7 @@ data.
 ## Excluded
 
 `eventschemaset-cli` also passed clause 1, but it is already queued as
-`docs/handoffs/execute/fabric-event-schema-set.md` (`fcbbc29`,
+`docs/handoffs/execute/fabric-event-schema-set.md` (`5bded54`,
 2026-09-10).
 
 ## Verification

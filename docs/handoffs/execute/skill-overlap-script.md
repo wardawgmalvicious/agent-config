@@ -205,7 +205,7 @@ only, so a description edit is silently lost on the next re-sync.
 
 ## Post-draft checklist
 
-- `ruff check` — pre-commit runs it since `be6296f`.
+- `ruff check` — pre-commit runs it since `ae472da`.
 - An entry in [scripts/README.md](../../../scripts/README.md), and a
   line in root `CLAUDE.md`'s Commands block beside `payload-coverage.py`.
 - If routing integrity becomes a hook: add it to
