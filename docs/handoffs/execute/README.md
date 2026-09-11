@@ -33,13 +33,26 @@ walks those briefs in their own numbered order — so an unexecuted audit
 run is pending work this table does not list. A brief there with no
 `## Execution log` section has not been executed.
 
-As of 2026-09-11 one run is wholly unexecuted:
-[2026-09-10/skills-for-fabric/](../../audits/2026-09-10/skills-for-fabric/),
-all 11 briefs, six of them measurements, research or decisions rather
-than edits. Its brief 02 edits `fabric-eventstream`, the same skill
-[fabric-event-schema-set.md](fabric-event-schema-set.md) has to qualify,
-so sequence the two rather than running them side by side. Drop this
-paragraph once that run is stamped.
+**A stamped brief can still be pending.** `/drift-update` stamps every
+brief it escalates, so the next run skips it and the rule above reads it
+as done, while the work its answer implies — or a deferral it recorded —
+lives only in that brief's log. Found 2026-09-11: everything below had
+been stranded that way, one of them a decision still open. Entries are
+grouped by what each needs, not ordered; delete one in the commit that
+lands its work. Deferred re-checks are not listed — the next audit of
+that source is what performs them.
+
+| Needs | Audit briefs |
+| --- | --- |
+| A person driving Power BI Desktop | [powerbi 04](../../audits/2026-09-07/powerbi/04-catalog-new-visual-formatting-properties.md) with [10](../../audits/2026-09-07/powerbi/10-supply-drilled-evidence-for-matrix-properties.md) and [13](../../audits/2026-09-07/powerbi/13-propagate-new-formatting-to-authoring-skills.md) D-1 · [06](../../audits/2026-09-07/powerbi/06-verify-pbip-autodetect-vs-reload-bridge.md), which also needs the `powerbi-desktop` bridge CLI · [02](../../audits/2026-09-07/powerbi/02-retire-fluent2-preview-framing.md)'s 1280×720 carve-out |
+| A model export with AI instructions set | [skills-for-fabric 05](../../audits/2026-09-10/skills-for-fabric/05-add-lsdl-refresh-to-ai-instructions.md)'s TMDL collision |
+| A Git-synced Fabric repo to measure in | [skills-for-fabric 04](../../audits/2026-09-10/skills-for-fabric/04-measure-notebook-serialization-before-editing.md) |
+| A cold probe session, with `test-skill` mechanics | [skills-for-fabric 09](../../audits/2026-09-10/skills-for-fabric/09-probe-sql-database-query-routing.md) |
+| Claude Code docs research, then a decision | [skills-for-fabric 11](../../audits/2026-09-10/skills-for-fabric/11-verify-claude-code-preregistered-oauth.md) |
+| An `/author-skill` run each | [skills-for-fabric 07](../../audits/2026-09-10/skills-for-fabric/07-decide-new-skill-candidates.md)'s four accepted candidates |
+| Three open questions settled, then lint code | [skills-for-fabric 08](../../audits/2026-09-10/skills-for-fabric/08-decide-catalog-budget-and-reference-lints.md): a catalog listing-budget check, and a reference lint that is [skill-overlap-script.md](skill-overlap-script.md)'s routing signal — build that half there |
+| A decision | [powerbi 07](../../audits/2026-09-07/powerbi/07-fold-in-granular-refresh-controls.md): a `fabric-gotchas` row, or `fabric-semantic-model-audit` |
+| Only an edit | [powerbi 02](../../audits/2026-09-07/powerbi/02-retire-fluent2-preview-framing.md)'s adjacent finding, a retired dialog name at `theming.md:241` |
 
 ## Filenames are stable; order lives here
 
