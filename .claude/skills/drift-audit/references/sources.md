@@ -662,11 +662,19 @@ run, so a run today also returns that commit per vendored path —
 correctly, as a re-sync candidate, but outside the known answer.
 
 **One of those three assertions expired on 2026-09-12**, when
-`onelake-catalog-govern-cli` gained a counterpart above. Clause 1 no
-longer surfaces it, by design, so "clause 1 surfacing
-`onelake-catalog-govern-cli`" holds only for a run reproducing the
-earlier state. A replacement known answer is needed before step 5 is
-re-run — pick an upstream skill that still has no counterpart here.
+`onelake-catalog-govern-cli` gained a counterpart above — and any
+name-based positive control expires the same way, because clause 1
+fires on *absence from the counterpart table*, and authoring the
+counterpart is what this pipeline exists to do. Naming one of the
+remaining brief 07 candidates would only reset the same fuse.
+
+Assert the stable half instead. `00-audit-report.md` in the 2026-09-10
+run directory records that window's full clause-1 outcome: the hits
+that already had counterparts, under No-op, and those that did not, as
+new-skill candidates. Upstream history at those SHAs cannot rot, so the
+expected output is that recorded set minus whatever the counterpart
+table holds at run time. Checking the subtraction is the assertion —
+and unlike naming one skill, it proves the table was consulted.
 
 ## Shape contracts
 
