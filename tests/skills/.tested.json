@@ -1,0 +1,219 @@
+{
+  "_note": "Written by scripts/skill-status.py --stamp and read by the same script. Do not hand-edit: each entry hashes the part of a skill that a test phase covered, and the verdict is derived by comparing it with the skill now.",
+  "skills": {
+    "fabric-activator": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "b86587d3e87b7b1d"
+      },
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "routing": "d282a0868907f459",
+        "body": "2efcf1c3f7713d92",
+        "references": "a6f6b68ecffdc5e2"
+      }
+    },
+    "fabric-catalog-governance": {
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "1a6c068",
+        "routing": "18770fd1c861ea09",
+        "body": "bcb8ad60411a942d",
+        "references": "4f01ee8ace74ed99"
+      }
+    },
+    "fabric-copy-job": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "c19b3201b989ba48"
+      }
+    },
+    "fabric-data-agent": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "ef33e47a8cb818bb"
+      }
+    },
+    "fabric-data-pipeline": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "894a66668f5336a8"
+      }
+    },
+    "fabric-database": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "2de395b103ca8fbd"
+      }
+    },
+    "fabric-error-handling": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "5b66c4a51bea08b1"
+      }
+    },
+    "fabric-eventhouse": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "a05eb41ecdfcb0ba"
+      }
+    },
+    "fabric-eventstream": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "9523948940741796"
+      }
+    },
+    "fabric-graph": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "a89979bf51a7edd4"
+      }
+    },
+    "fabric-mirroring": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "7250b8455d9643a0"
+      }
+    },
+    "fabric-ontology": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "036dc694616dd7a6"
+      }
+    },
+    "fabric-operations-agent": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "e7b1036c77193ed9"
+      }
+    },
+    "fabric-realtime-dashboard": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "6b3fa9fee9e3d90e"
+      }
+    },
+    "fabric-semantic-model-ai-instructions": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "43c11cb71913a822"
+      }
+    },
+    "fabric-semantic-model-audit": {
+      "behaviour": {
+        "date": "2026-09-03",
+        "commit": "243c779",
+        "routing": "b4bd9e345432feb3",
+        "body": "9eb113704da30660",
+        "references": "127b40cbb55fb4a8"
+      }
+    },
+    "fabric-spark": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "5b66c4a51bea08b1"
+      }
+    },
+    "fabric-spark-monitoring": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "5b66c4a51bea08b1"
+      }
+    },
+    "fabric-tmdl": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "409f354247e397aa"
+      }
+    },
+    "fabric-variable-library": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "5bc852842f6ba741"
+      }
+    },
+    "fabric-warehouse": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "760da7b30fc22ba3"
+      }
+    },
+    "fabric-warehouse-monitoring": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "75f1625",
+        "paths": "760da7b30fc22ba3"
+      }
+    },
+    "pbip-project-structure": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "f9256509871e120e"
+      }
+    },
+    "pbir-bookmarks": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "44da2c86b418e2ca"
+      }
+    },
+    "pbir-conditional-formatting": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "c36f96a205472b30"
+      }
+    },
+    "pbir-filters": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "219ce7ed51a33139"
+      }
+    },
+    "pbir-pages": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "6484187f7850e65a"
+      }
+    },
+    "pbir-themes": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "3f4fd6f420e032db"
+      }
+    },
+    "pbir-visual-json": {
+      "activation": {
+        "date": "2026-09-01",
+        "commit": "975b87f",
+        "paths": "3829a5fe257eab1a"
+      }
+    }
+  }
+}
