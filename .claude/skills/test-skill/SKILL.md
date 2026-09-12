@@ -4,7 +4,7 @@ description: "Validate a drafted skill — write its trigger fixtures, update th
 when_to_use: "Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description`, `when_to_use` or `paths:` glob, or as the follow-on to `/author-skill`."
 argument-hint: "[skill-name]"
 disable-model-invocation: false
-# model: inherit  # any model: value blocks Copilot slash invocation
+model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
 effort: max
 ---
 
@@ -209,6 +209,12 @@ run reported `Linked` 37 times and ended `Done. All links verified.`
 There is no output line that reads as wrong. The `ls` above is the only
 check that catches it.
 
+**Don't read the exit code as the verdict.** `link-claude.ps1` returns
+non-zero whenever any warning fires, and the standing `MCP_DOCKER` drift
+on this machine means a wholly successful deploy *and* a successful
+restore both exit 1. Read the `Skills N linked ...; M pruned` line and
+the `ls` above instead.
+
 ### 8. The cold behavioural session
 
 **Cold, always.** Skills hot-reload, but subagents, commands and rules
@@ -231,6 +237,18 @@ knows the domain, `--safe-mode` reproduces most of a good answer, so
 detail that is a claim **only the skill makes**. Measured 2026-09-04 on
 `pbir-filters`: both runs got `SourceRef.Source` and doubled quotes; only
 the payload wrote the skill's 20-char hex `name` (baseline: a 32-char GUID).
+
+**`--safe-mode` does not strip the web tools.** It removes the payload,
+not `WebFetch` and `WebSearch`, so against a skill that caches public
+docs the baseline can fetch its way to the same answer. Measured
+2026-09-12 on `fabric-deployment-pipelines`: the baseline fetched the
+exact five Learn pages the skill was drilled from and re-derived most of
+its content, the skill's own headline finding included. That is a
+second, distinct reason a baseline comes back close — the model is
+*reading the sources*, not recalling the domain — and its remedy
+differs. Compare on synthesis that sits on **no single page**, or add
+`--disallowedTools WebFetch,WebSearch` to measure the cache against
+unaided recall. Cost separates when content does not: 4 turns to 8.
 
 **Prove the baseline actually stripped the payload.** A `--safe-mode`
 run that silently kept the skill is indistinguishable from one where the
@@ -261,6 +279,14 @@ only thing in the way. Don't rely on it: pass
 the test nothing, because what is measured is what the skill *says*, not
 whether it can call an API. Added 2026-09-12, after
 `fabric-catalog-governance`'s own brief supplied both of those queries.
+
+**Give a trigger query enough context to be answerable.** A bare
+imperative in an empty probe directory routes to file exploration
+rather than to a skill: "Deploy my data pipeline to production." sent
+the session hunting for a pipeline on disk and loaded nothing, while
+the same sentence framed with a dev workspace reached the skill. The
+first measures the harness's file-hunting instinct, not the trigger
+surface. Measured 2026-09-12 on `fabric-deployment-pipelines`.
 
 **A conditional skill has neither path until a matching file is Read.**
 The `paths:` glob keeps it out of the startup listing, so its
@@ -332,6 +358,14 @@ until this test ran, and nothing else removes it: on 2026-09-12 a brief
 whose skill had been tested and landed that morning was still on disk
 that afternoon, reading as "authored, untested". Grep for links to it
 and re-point them in the same change.
+
+**An untracked brief is recorded first, then retired.** `/author-skill`
+may not have committed it, and deleting it on the spot keeps the
+drilling record — above all the table checking each upstream claim
+against the docs — out of history entirely, which is the half the
+finished skill cannot reconstruct. Hand `/commit` both steps as two
+commits, the shape `8fdf2ac` and `7be05e3` gave the fabric-dataflow
+brief 49 seconds apart. A brief already tracked is simply deleted.
 
 Report the static result, the real-path result with its counts, which
 trigger queries fired and which did not, and anything the `--safe-mode`

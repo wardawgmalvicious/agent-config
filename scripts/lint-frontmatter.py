@@ -121,6 +121,20 @@ def is_rule(path: Path) -> bool:
     return "rules" in path.as_posix().split("/")[:-1]
 
 
+def is_project_scope_skill(path: Path) -> bool:
+    """True for a skill under `.claude/skills/`, which no other tool consumes.
+
+    The `model:` ban below exists for GitHub Copilot's sake, and Copilot
+    cannot reach this tree from either direction: `scripts/copy-copilot.ps1`
+    selects out of `skills/`, so these are never vendored into a
+    `.github/skills` payload, and every VS Code profile on this machine sets
+    `".claude/skills": false` in `chat.agentSkillsLocations`, so the
+    beside-the-workspace-root auto-discovery is off as well.
+    """
+    parts = path.as_posix().split("/")[:-1]
+    return any(a == ".claude" and b == "skills" for a, b in zip(parts, parts[1:]))
+
+
 def lint_file(path: Path) -> list[str]:
     failures: list[str] = []
 
@@ -175,7 +189,17 @@ def lint_file(path: Path) -> list[str]:
         # `disable-model-invocation:` were all fine. Carry the value as a
         # commented placeholder instead; the field bought little even in
         # Claude Code, being slash-only and inert on conditional skills.
-        if "model" in fm:
+        #
+        # `.claude/skills/` is exempt, because the ban is a Copilot
+        # accommodation and Copilot cannot see that tree -- see
+        # is_project_scope_skill above for both halves of why. Those skills
+        # maintain this repo's own payload and run in Claude Code alone, so
+        # the field is live there and worth pinning: the slash-only limit is
+        # no limit at all when the documented way to reach every one of them
+        # is to type its name. No value whitelist is imposed -- the set of
+        # aliases Claude Code accepts is not documented anywhere this linter
+        # could check, and guessing it wrong would reject a working pin.
+        if "model" in fm and not is_project_scope_skill(path):
             fail(
                 "model-key",
                 f"`model: {fm['model']}` blocks Copilot from slash-invoking this skill "

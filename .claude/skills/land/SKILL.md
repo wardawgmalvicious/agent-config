@@ -1,6 +1,6 @@
 ---
 name: land
-# model: inherit  # any model: value blocks Copilot slash invocation
+model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
 effort: max
 disable-model-invocation: false
 description: "Take a committed branch from local to merged — push it, confirm which GitHub account each tool actually acts as in this repo, open the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."

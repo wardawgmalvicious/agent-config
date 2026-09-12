@@ -705,11 +705,27 @@ it if they hadn't.
   `effort` and `disable-model-invocation` **explicitly**, even where the
   value is the default, so the flip point for each lever is visible in
   the file rather than being an absent field. `model:` is carried the
-  same way but **commented out on every one** — an active `model:` key of
-  any value stops GitHub Copilot dispatching the skill as a slash
-  command, for which see below. The commented values are still the
-  documentation they always were: `# model: inherit` everywhere except
-  `commit` (`# model: sonnet`).
+  same way, but **active only in `.claude/skills/` and commented out
+  everywhere under `skills/`** — an active `model:` key of any value stops
+  GitHub Copilot dispatching the skill as a slash command, for which see
+  below. The split is that the ban is a Copilot accommodation and Copilot
+  cannot reach the project-scope tree from either direction:
+  `scripts/copy-copilot.ps1` selects out of `skills/`, so those seven are
+  never vendored into a `.github/skills` payload, and all four VS Code
+  profiles on this machine set `".claude/skills": false` in
+  `chat.agentSkillsLocations`, so the beside-the-workspace-root
+  auto-discovery is off too (both checked 2026-09-12).
+  `scripts/lint-frontmatter.py` enforces exactly that split, and its two
+  arms are proved the way a `files:` pattern is — one file, copied to both
+  paths, must fail at `skills/workflow/…` and pass at `.claude/skills/…`.
+  The seven read `model: inherit`; the commented values under `skills/`
+  are still the documentation they always were, `# model: inherit`
+  everywhere except `commit` (`# model: sonnet`).
+  Note what an active pin is worth there: `model:` is slash-only, and the
+  documented way to reach every one of those seven is to type its name, so
+  the limit that made the field near-useless under `skills/` does not
+  apply. It stays **turn-scoped** — the session model resumes on the next
+  prompt.
   Current policy: the session default is `"effortLevel": "max"` in
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
   this repo).
@@ -736,7 +752,9 @@ it if they hadn't.
   so an effort pin there governs your Fabric/Power BI turn rather than
   any discrete skill run.
 
-  **Uncommenting a `model:` key breaks GitHub Copilot.** An active
+  **Uncommenting a `model:` key under `skills/` breaks GitHub Copilot.**
+  Under `.claude/skills/` it does not, and that tree is pinned; the
+  paragraph above has the reasoning and the evidence. An active
   `model:` of *any* value — `inherit` and `sonnet` alike — stops VS Code
   dispatching that skill as a slash command: nothing is sent, no session
   is created, and it reads as a hang rather than an error, so there is
@@ -747,11 +765,11 @@ it if they hadn't.
   `disable-model-invocation:` were all harmless. `model` is a supported
   field on Copilot *prompt* files, where it selects the LLM, which is
   the likeliest reason a value it cannot resolve kills dispatch.
-  `scripts/lint-frontmatter.py` rejects an active `model:` key so this
-  cannot return silently.
+  `scripts/lint-frontmatter.py` rejects an active `model:` key under
+  `skills/` so this cannot return silently.
 
-  What follows is what the field did while it was active. It is kept
-  because it is the argument for how little was given up.
+  What follows is what the field does. It still governs the pinned seven,
+  and under `skills/` it is the argument for how little was given up.
 
   `model:` is **turn-scoped** — it applies while the skill is active
   and the session model resumes on the next prompt. But it is also
