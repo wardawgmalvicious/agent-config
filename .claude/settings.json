@@ -15,6 +15,7 @@
     "skillOverrides": {
         "fabric-ai-functions": "name-only",
         "fabric-auth": "name-only",
+        "fabric-catalog-governance": "name-only",
         "fabric-cicd": "name-only",
         "fabric-cli": "name-only",
         "fabric-copy-job": "name-only",

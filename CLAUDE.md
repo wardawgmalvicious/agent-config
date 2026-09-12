@@ -62,8 +62,13 @@ which is project scope here, so a user-scope listing advertised it in
 sessions whose tools could not run it.
 
 `.claude/settings.json` holds more than servers and permissions: a
-`skillOverrides` block collapses all 41 platform skill descriptions to
-`name-only` in sessions here. That is deliberate, and it stays even
+`skillOverrides` block collapses **every** platform skill description to
+`name-only` in sessions here. Don't restate that count — it read 41 and
+went stale the day the 42nd skill landed; derive it with
+`ls -d skills/{fabric,powerbi}/*/ | wc -l` and check the block covers
+all of them, because it is a by-name map with no pattern form, so a
+newly authored skill is silently uncovered. That is deliberate, and it
+stays even
 though the workflow-only prune already keeps those skills out of
 `~/.claude/skills` — it keeps them auditable from this repo and holds
 the shape ready for a future edit. Remember it when reasoning about
@@ -692,7 +697,7 @@ it if they hadn't.
   `author-skill`, `test-skill`, `learn`, `drift-update`,
   `drift-handoff`, `land` in `.claude/skills/` — `xhigh` on `commit`,
   and
-  left commented on all 41 platform skills, which therefore inherit
+  left commented on every platform skill, which therefore inherits
   `max`. The 2026-09-09 scope split moved six of the seven without
   changing any pin: `effort` applies on both the slash and
   model-invocation paths and is scope-independent, so a project-scope
