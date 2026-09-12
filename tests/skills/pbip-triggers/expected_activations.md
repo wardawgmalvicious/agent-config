@@ -46,8 +46,13 @@ negative half is proved in
 whose eleven non-PBIP `.platform` files pull no `pbip-project-structure`
 between them.
 
-**3. `control/notes.md` activates nothing.** If it does, the observation
-method is wrong. Check this before believing any other row.
+**3. `control/notes.md` activates no *skill*.** If one fires, the
+observation method is wrong — check this before believing any other row.
+It does pull the `coding-markdown` **rule**, whose glob is `**/*.md`; that
+is correct. This set carries no rules table to record it in, unlike
+[`../fabric-triggers/`](../fabric-triggers/expected_activations.md) — the
+rules pass has never been run over these fixtures, so the only rule
+documented here is the one that made this assertion wrong.
 
 **4. `pbir-filters` and `pbir-visual-json` never appear alone on
 `visual.json`.** All three `pbir-*` visual skills co-fire there and cannot

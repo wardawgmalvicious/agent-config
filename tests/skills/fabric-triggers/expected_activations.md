@@ -212,8 +212,17 @@ reachable from a `.VariableLibrary` folder and by `/fabric-variable-library`.
 **A Lakehouse therefore has no skill, and that is the finding**, not a gap
 waiting to be filled — a Git-synced Lakehouse is four files and no data.
 
-**5. `control/notes.md` activates nothing.** If it does, the observation
-method is wrong. Check this before believing any other row.
+**5. `control/notes.md` activates no *skill*.** If one fires, the
+observation method is wrong — check this before believing any other row.
+It does pull one **rule**: `coding-markdown` globs `**/*.md` and matches
+it. That is correct and is not a method failure.
+
+This assertion read "activates nothing" until 2026-09-12. `coding-markdown`
+landed 2026-09-10, ten days after this set and its rules table were
+measured, and nothing re-ran the rules pass — which is a static check the
+script does not carry, over prose no check reads. A negative control is
+exactly where a later payload addition goes unnoticed, because the file
+exists to assert an absence and nobody re-measures an absence.
 
 **6. All three DataPipeline files activate `fabric-data-pipeline`, and only
 `pipeline-content.json` also pulls a rule.** These three rows read *(none)*
@@ -285,11 +294,12 @@ fixture vouch for a shape on a doc sample alone.
 ## Rules load here too
 
 Extend the static check to `claude/rules/*.md` (same snippet, second glob
-set) and the picture changes. Measured 2026-08-31:
+set) and the picture changes. Measured 2026-08-31, re-measured 2026-09-12:
 
 | Fixture file | Rules |
 | --- | --- |
 | every item file except `control/notes.md` | `fabric-git-serialization` |
+| `control/notes.md` | `coding-markdown` **only** — no `fabric-git-serialization` |
 | `SampleNB.Notebook/notebook-content.py` | + `coding-python` |
 | `…/SampleKDB.KQLDatabase/DatabaseSchema.kql` | + `coding-kql` |
 | `…/SampleKDB.KQLDatabase/EmbeddedRealTimeQueryset.json` | + `coding-kql` |
