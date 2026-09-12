@@ -66,6 +66,15 @@
         "references": "3f74a59569594dd5"
       }
     },
+    "fabric-deployment-pipelines": {
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "22a5939",
+        "routing": "41bdc7a69ebb6caf",
+        "body": "178a94db26b184f2",
+        "references": "fd4751e8b50231fb"
+      }
+    },
     "fabric-error-handling": {
       "activation": {
         "date": "2026-09-12",
