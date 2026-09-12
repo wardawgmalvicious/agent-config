@@ -62,7 +62,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (29)
+## Microsoft Fabric platform (30)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -120,6 +120,22 @@ construction. Split out of `workflow` 2026-09-11.
   high-concurrency session reuse verification.
 - [fabric-security/](fabric/fabric-security/) — workspace roles, item-level
   permissions, SQL GRANT/DENY/REVOKE, RLS/CLS bypass via Spark/OneLake.
+- [fabric-catalog-governance/](fabric/fabric-catalog-governance/) — the
+  governance posture of a tenant, reached by REST: what the OneLake
+  catalog **Govern** tab reports, counted and remediated by API. Domains
+  and domain roles, workspace-to-domain and workspace-to-capacity
+  assignment, sensitivity-label coverage and the bulk label write, tags,
+  description and endorsement coverage, ownership. Everything is split by
+  caller tier — Fabric administrator versus data owner — because the tier
+  decides which endpoints *exist*, not merely which succeed: a domain
+  admin who is not a tenant admin has no API that returns their own
+  domain's posture, and the skill says so before counting anything.
+  Named for the job plus the surface that bounds it; a bare
+  `fabric-governance` would have claimed Purview, audit logs and tenant
+  settings, none of which it covers. Gates every irreversible write, and
+  routes the three fixes that have no write API at all — endorsement, DLP
+  policies, item ownership — to the person who can make them. Search is
+  `fabric-cli`'s; access and the label field are `fabric-security`'s.
 - [fabric-tmdl/](fabric/fabric-tmdl/) — TMDL semantic-model authoring.
 - [fabric-tmdl-api/](fabric/fabric-tmdl-api/) — Semantic Model Definition API
   (createItemWithDefinition, getDefinition, updateDefinition); the
