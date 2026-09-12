@@ -87,10 +87,12 @@ tests/skills/pbip-triggers/
     └── control/notes.md         (matches nothing — negative control)
 ```
 
-Ten of the repo's 27 conditional skills are covered here. The other seventeen
-are keyed to Fabric item types (`.Eventstream`, `.Warehouse`,
-`.Notebook`, …) and live in [`../fabric-triggers/`](../fabric-triggers/).
-Together the two sets cover all 27.
+Ten of the payload's conditional skills are covered here. The rest are
+keyed to Fabric item types (`.Eventstream`, `.Warehouse`, `.Notebook`, …)
+and live in [`../fabric-triggers/`](../fabric-triggers/). Together the two
+sets cover every one; the totals are owned by
+[`../fabric-triggers/expected_activations.md`](../fabric-triggers/expected_activations.md)
+and are not restated here.
 
 ## Running the test
 

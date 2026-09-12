@@ -5,8 +5,11 @@ Minimal but structurally real Fabric Git-synced item folders, used to test
 enters session scope.
 
 Companion to [`../pbip-triggers/`](../pbip-triggers/), which covers the
-Power BI half. Same contract, same method, disjoint skills: 10 there, 17
-here, and that is all 27 conditional skills in the payload.
+Power BI half. Same contract, same method, disjoint skill sets, and
+between them every conditional skill in the payload. The counts are
+owned by [expected_activations.md](expected_activations.md) and are
+deliberately not restated here — duplicated into six files, this one had
+drifted three ways at once by 2026-09-02.
 
 ## Why this exists
 
@@ -66,6 +69,11 @@ tests/skills/fabric-triggers/fixtures/
 │                                   shortcuts.metadata.json,
 │                                   alm.settings.json
 ├── SampleQS.KQLQueryset/           .platform, RealTimeQueryset.json
+├── SampleOA.OperationsAgent/       .platform, Configurations.json
+├── SampleOnt.Ontology/             .platform, definition.json,
+│                                   EntityTypes/<id>/definition.json,
+│                                   EntityTypes/<id>/DataBindings/<guid>.json,
+│                                   RelationshipTypes/<id>/definition.json
 └── control/notes.md                (matches nothing — negative control)
 ```
 
@@ -162,7 +170,7 @@ for f in sorted(base.rglob('*')):
 
 Compare against [expected_activations.md](expected_activations.md). Point
 it at `../pbip-triggers/fixtures` to check the other half; the union of the
-two runs must cover all 27 conditional skills.
+two runs must cover every conditional skill in the payload.
 
 **Run it a second time over `claude/rules/*.md`** — same code, swap the
 `skills/*/*/SKILL.md` glob for `claude/rules/*.md` and key on `p.stem`.
@@ -181,8 +189,9 @@ that load `fabric-git-serialization`.
 `scripts/test-activation.ps1` runs everything below in one command —
 deploy to a throwaway probe, one cold session, transcript assertion,
 teardown in a `finally`. **One session covers the whole set**: activation
-is a per-session cumulative delta, so 57 fixtures cost one session rather
-than 56. Both skill groups deploy for this set, because assertion 1 below
+is a per-session cumulative delta, so the whole fixture set costs one
+session rather than one per fixture. Both skill groups deploy for this
+set, because assertion 1 below
 needs `pbip-project-structure` to be *present* in order to prove it does
 not fire.
 
