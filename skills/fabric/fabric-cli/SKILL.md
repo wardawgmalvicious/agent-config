@@ -90,6 +90,8 @@ Role values by resource:
 | `fab start .capacities/<C>.Capacity` | Resume capacity |
 | `fab stop .capacities/<C>.Capacity -f` | Pause capacity (stops all workloads) |
 
+**The `.domains` verbs are tenant-admin only.** `ls`, `get`, `mkdir`, `rm`, `set`, `assign` and `unassign` against `.domains` all require tenant-level Fabric Administrator privileges (fab docs, 2026-09-12) — the capacity verbs above do not. A workspace admin holding a domain contributor role can still assign their own workspace through the Core API, which `fab` reaches only as a passthrough: `fab api -X post "workspaces/$WS_ID/assignToDomain" -i '{"domainId":"<id>"}'`. See the fabric-catalog-governance skill.
+
 ### Labels
 
 | Command | Purpose |
@@ -97,6 +99,8 @@ Role values by resource:
 | `fab label list-local` | Configured sensitivity labels |
 | `fab label set <path> --name <Label>` | Apply label |
 | `fab label rm <path> -f` | Remove label |
+
+**All `fab label` commands require tenant-level Fabric Administrator privileges**, and they resolve names from a local JSON file registered with `fab config set local_definition_labels <json_path>` — `list-local` lists that file, not the tenant's labels.
 
 ### Jobs
 
