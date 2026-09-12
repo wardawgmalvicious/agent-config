@@ -699,7 +699,7 @@ it if they hadn't.
   `effort` and `disable-model-invocation` **explicitly**, even where the
   value is the default, so the flip point for each lever is visible in
   the file rather than being an absent field. `model:` is carried the
-  same way but **commented out on all 50** — an active `model:` key of
+  same way but **commented out on every one** — an active `model:` key of
   any value stops GitHub Copilot dispatching the skill as a slash
   command, for which see below. The commented values are still the
   documentation they always were: `# model: inherit` everywhere except
@@ -757,10 +757,10 @@ it if they hadn't.
   xhigh`, and a plain-English commit request eleven minutes later ran
   `claude-opus-5 xhigh`. Two consequences. `commit`'s `model: sonnet`
   only saves anything when you actually type `/commit`. And a
-  `model:` pin is **inert on the 27 conditional platform skills** — a
+  `model:` pin is **inert on every conditional platform skill** — a
   `paths:` glob withholds them from the startup listing, so they are
   reached by path, and `/<name>` answers `Unknown command`. It is
-  **live on the other 14**, which carry no glob and slash normally
+  **live on the unconditional ones**, which carry no glob and slash normally
   (measured with `/fabric-gotchas`, 2026-09-02 on 2.1.252). All 41
   carried `model: inherit`, so nothing was broken either way. Corrected
   2026-09-02 — this previously said all of them were inert because they
@@ -769,7 +769,7 @@ it if they hadn't.
   So the whole cost of commenting the field out is that `/commit` now
   runs on the session model instead of Sonnet. That was the only
   load-bearing pin in the payload: 49 of 50 read `inherit`, which is the
-  default, and a pin is ignored entirely on the 27 conditional skills
+  default, and a pin is ignored entirely on every conditional skill
   and on any skill reached by description rather than by name.
   `effort:` has **no
   `inherit` value**; omitting the field *is* the inherit, which is why
@@ -842,18 +842,23 @@ Changing a `paths:` glob changes *whether a skill fires at all*, which
 none of the fixtures above test. That contract belongs to
 [tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
 [tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) —
-disjoint fixture sets that between them assert **all 27** conditional
-skills in the payload — 10 pbip, 17 fabric.
+disjoint fixture sets that between them assert **every** conditional
+skill in the payload.
 Assertions live in each set's `expected_activations.md`, which is where
-each figure is owned — **don't restate a total anywhere else.** This
-count was duplicated into six files, checked by nothing, and by
+each figure is owned — **don't restate a total anywhere else**, including
+here. This count was duplicated into six files, checked by nothing, and by
 2026-09-02 had drifted three ways at once (`tests/README.md` still said
 19). Both sets stayed exhaustive throughout; only the prose rotted.
 Derive it instead: `./scripts/test-activation.ps1 -Set fabric
--StaticOnly`, then `-Set pbip`. Recounted twice on 2026-09-02 — first to
-25 after workstream E moved five skills from unconditional to
-conditional, then to 26 when `fabric-operations-agent` landed, then to 27
-when `fabric-ontology` did.
+-StaticOnly`, then `-Set pbip`.
+
+**Exhaustiveness is the invariant; the number is not.** It moved three
+times on 2026-09-02 alone — to 25 when workstream E made five skills
+conditional, 26 when `fabric-operations-agent` landed, 27 when
+`fabric-ontology` did — and again on 2026-09-12 with `fabric-activator`.
+That cadence is the argument: a standing total here is wrong by the next
+authoring run, so this paragraph deliberately no longer carries one. Read
+it out of the owning file, or derive it with the command above.
 
 **No *log* records conditional activation, but the session transcript
 does.** `instructions-loaded.log` sees rules only; `skills-invoked.log`
