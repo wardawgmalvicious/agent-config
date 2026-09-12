@@ -249,7 +249,10 @@ def load_manifest() -> dict:
 def save_manifest(data: dict) -> None:
     data["_note"] = MANIFEST_NOTE
     data["skills"] = dict(sorted(data["skills"].items()))
-    MANIFEST.write_text(json.dumps(data, indent=2, ensure_ascii=False) + LF, encoding="utf-8")
+    # Bytes, not write_text: on Windows text mode turns every LF into CRLF,
+    # and .gitattributes pins this file to LF -- so each stamp would flip the
+    # working copy and git would warn "CRLF will be replaced by LF" on add.
+    MANIFEST.write_bytes((json.dumps(data, indent=2, ensure_ascii=False) + LF).encode("utf-8"))
 
 
 # --- verdicts --------------------------------------------------------------
