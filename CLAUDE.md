@@ -109,6 +109,12 @@ uv run scripts/lint-skill-scopes.py
 # new skill plus a settings file nobody changed, which no per-file hook sees.
 uv run scripts/lint-skill-overrides.py
 
+# Which skills have been tested, and what has changed in each since. Derived
+# from the stamps /test-skill writes to tests/skills/.tested.json, never kept
+# by hand: --stale is the to-do list, --check the pre-commit orphan check.
+# Record a run with --stamp <skill> --phase activation,behaviour (or real-use).
+uv run --with pyyaml scripts/skill-status.py --stale
+
 # Which of a repo's files activate no rule and no skill at all. One repo,
 # or --sweep a parent for every repo under it, ranked by weight. Counts
 # per FILE, not per extension. Findings are candidates, not work.
@@ -121,7 +127,7 @@ uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py --sweep C
 uv run --with pyyaml scripts/lint-instructions.py
 
 # All checks, the way CI runs them (gitleaks, ruff, frontmatter, scopes,
-# skillOverrides coverage, instructions, identity)
+# skillOverrides coverage, test-stamp orphans, instructions, identity)
 pre-commit run --all-files
 pre-commit run lint-skills --all-files     # one hook only
 
@@ -801,6 +807,16 @@ it if they hadn't.
 There is no automated test suite here — `pre-commit` covers frontmatter
 and secrets, and nothing else is machine-checkable. Behavior is verified
 by hand against the fixtures in `tests/`.
+
+**Which skills have had that verification is derived, not listed.**
+`/test-skill` stamps each run into `tests/skills/.tested.json` with a
+hash of what the phase tested, and `scripts/skill-status.py` compares
+the stamp with the skill now — so its verdict says whether an edit
+needs a retest at all: a `paths:` change does, a `description` or
+`when_to_use` change does, a body change does on a behavioural skill,
+and a `references/` change never does. Don't write a "still untested"
+list anywhere; the README carried one for four months and every skill
+on it had been edited since. Run `--stale` instead.
 
 After changing a skill, rule, subagent, or enforcement hook, follow the
 procedure in [tests/skills/code-review/README.md](tests/skills/code-review/README.md),

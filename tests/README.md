@@ -33,6 +33,12 @@ Run manually; not wired into CI.
   load-bearing ones are the two halves of the A1 fix — `visual.json`
   must *not* pull `pbip-project-structure`, and neither may a
   `.platform` outside a `.Report`/`.SemanticModel` folder.
+- `skills/.tested.json` — the test stamps. `/test-skill` writes one
+  per run through `scripts/skill-status.py --stamp`, recording the date,
+  the commit and a hash of the part each phase tested; the same script
+  derives which skills are untested or have been edited since. Never
+  hand-edited, and never restated as a list anywhere — see root
+  `CLAUDE.md`, "Validating a change".
 - [agents/security-reviewer/](agents/security-reviewer/) — fixtures
   for the [security-reviewer agent](../claude/agents/security-reviewer.md).
   Synthetic files with seeded credential exposure, injection, and

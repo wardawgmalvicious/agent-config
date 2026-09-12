@@ -310,12 +310,34 @@ Expect no modifications. Fixtures are read-only by validation contract;
 a run that edits its own inputs invalidates every later comparison. If
 one changed, revert it and find out which mode did it.
 
-### 10. Report and hand off
+### 10. Stamp, retire the brief, report and hand off
+
+**Stamp the run first**, so the record does not depend on this
+session's report ever being read:
+
+```bash
+uv run --with pyyaml scripts/skill-status.py --stamp <skill-name> --phase activation,behaviour
+```
+
+Name only the phases that ran: an unconditional skill stamps
+`behaviour` alone, and the script refuses `activation` for it with the
+same reason Phase A was skipped. The stamp hashes what each phase tested
+from the **working tree** — which is what this skill ran against — and
+`scripts/skill-status.py` derives from it whether a later edit needs a
+retest. Nothing else records a test, so a run without a stamp did not
+happen as far as the next session can tell.
+
+**Then delete the brief.** It stayed queued in `docs/handoffs/execute/`
+until this test ran, and nothing else removes it: on 2026-09-12 a brief
+whose skill had been tested and landed that morning was still on disk
+that afternoon, reading as "authored, untested". Grep for links to it
+and re-point them in the same change.
 
 Report the static result, the real-path result with its counts, which
 trigger queries fired and which did not, and anything the `--safe-mode`
-baseline already did without the payload. Then hand off to `/commit`.
-Do not commit here.
+baseline already did without the payload. Then hand off to `/commit`,
+naming the manifest and the deleted brief among the paths. Do not
+commit here.
 
 ## Reading a failure
 

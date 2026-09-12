@@ -95,6 +95,20 @@ repos:
         files: '^(skills/|\.claude/settings\.json$)'
         pass_filenames: false
 
+      # The test stamps in tests/skills/.tested.json are keyed by skill name,
+      # like skillOverrides, so a rename or deletion strands an entry the same
+      # way. This checks only that. An UNTESTED skill is a legitimate state
+      # and not a failure: /author-skill commits before /test-skill runs, by
+      # design. `files:` spans the trees and the manifest so either side of
+      # a rename re-checks the pair.
+      - id: lint-skill-status
+        name: Check test stamps name skills that still exist
+        entry: python scripts/skill-status.py --check
+        language: python
+        additional_dependencies: [pyyaml]
+        files: '^(skills/|\.claude/skills/|tests/skills/\.tested\.json$)'
+        pass_filenames: false
+
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
       # so lint-frontmatter.py would reject every one and is scoped away from
       # them. This validates them instead, blocks a personal-repo name or
