@@ -617,6 +617,7 @@ patches, 1 base fetch and 4 directory listings, plus 1 call per upstream
 | `deployment-pipelines-authoring-cli` | `fabric-cicd` (partial) |
 | `git-integration-operations-cli` | `fabric-cicd` (partial), `fabric-git-serialization` rule |
 | `onelake-catalog-govern-cli` | `fabric-catalog-governance` |
+| `activator-cli` | `fabric-activator` |
 
 Matched by name on 2026-09-10, from the `skills/` listing and the
 changelog, **without reading either side's content**. The listing cannot
@@ -636,6 +637,19 @@ run. `onelake-catalog-govern-cli` is the worked case: surfaced from
 `0.3.15`, accepted, and authored here as `fabric-catalog-governance` on
 2026-09-12 — so it now has a counterpart and clause 1 will not surface
 it again.
+
+`activator-cli` is the **second** worked case and a different one, which
+is why both rows are worth keeping in view. It was not a new topic: the
+`0.3.11` bullet consolidated `activator-authoring-cli` and
+`activator-consumption-cli`, both named since `0.3.1`, so it passed
+clause 1 on the **new name alone** — exactly the behaviour brief 06's
+D-5 deliberately kept. Accepted 2026-09-11 with the other three
+candidates and authored here as `fabric-activator` on 2026-09-12. So a
+consolidation rename has now produced a real skill once, which is the
+evidence D-5 was waiting on: the lexical test earns its false positives.
+Two of the four accepted candidates remain unauthored — `dataflows-cli`
+and `deployment-pipelines-authoring-cli`, the latter already holding a
+partial counterpart row above.
 
 The repo also ships `.claude-plugin/` and `plugins/`, and `0.3.14` names
 two bundles, `fabric-skills` and `powerbi-authoring`. Installing a bundle
