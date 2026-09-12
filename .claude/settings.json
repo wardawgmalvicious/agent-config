@@ -23,6 +23,7 @@
         "fabric-data-agent": "name-only",
         "fabric-data-pipeline": "name-only",
         "fabric-database": "name-only",
+        "fabric-dataflow": "name-only",
         "fabric-error-handling": "name-only",
         "fabric-eventhouse": "name-only",
         "fabric-eventstream": "name-only",

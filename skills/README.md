@@ -62,7 +62,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (31)
+## Microsoft Fabric platform (32)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -89,6 +89,19 @@ construction. Split out of `workflow` 2026-09-11.
 - [fabric-copy-job/](fabric/fabric-copy-job/) — Copy job item: full vs
   incremental modes, watermark vs CDC incremental, JSON definition,
   REST + on-demand runs, Activator invocation.
+- [fabric-dataflow/](fabric/fabric-dataflow/) — the Dataflow Gen2 item as
+  Git and REST see it: the `.Dataflow` folder's `mashup.pq` and
+  `queryMetadata.json`, the typed `/dataflows` namespace, the three CI/CD
+  patterns, the Gen1 upgrade routes, and the refresh, publish and cost
+  limits. Named for the item type, which is `Dataflow` — the folder, the
+  `ItemType` enum and the API all drop the "Gen2" that every user types,
+  so the generation earns its place in the description as a trigger token
+  instead of in the name. Two findings shape it: `getDefinition` needs
+  **write** permission, so there is no read-only route to a definition,
+  and the definition format requires a composite `connectionId` whose
+  `ClusterId` half **no documented endpoint returns** — which is why
+  authoring a bound dataflow purely over REST is not a supported path.
+  M style stays in the `coding-m` rule, which co-loads on `mashup.pq`.
 - [fabric-mirroring/](fabric/fabric-mirroring/) — Mirroring: the three kinds
   (database replication, metadata-over-shortcuts, open mirroring's landing
   zone), which kind each source uses, the `MirroredDatabase` REST surface,
