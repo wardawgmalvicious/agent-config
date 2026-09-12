@@ -62,7 +62,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (30)
+## Microsoft Fabric platform (31)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -101,6 +101,20 @@ construction. Split out of `workflow` 2026-09-11.
 - [fabric-database/](fabric/fabric-database/) — Fabric SQL database.
 - [fabric-eventhouse/](fabric/fabric-eventhouse/) — Fabric Eventhouse + KQL.
 - [fabric-eventstream/](fabric/fabric-eventstream/) — Fabric Eventstream.
+- [fabric-activator/](fabric/fabric-activator/) — the Activator item, which
+  the API and Git both call `Reflex`: `ReflexEntities.json` as a flat array
+  of entities wired by `uniqueIdentifier`, the escaped-JSON-string trap in
+  `definition.instance`, the `/reflexes` REST namespace, rule sources and
+  actions, the preview remote MCP server, and the limits, CU meters and
+  lifecycle-management exclusions. Named for the portal name rather than the
+  item type, inverting the usual rule: every request arrives saying
+  "Activator", so `fabric-reflex` would have been named after the half of
+  the vocabulary nobody types — `Reflex` earns its place in the description
+  as a trigger token instead. Two findings decide how it reads: reading a
+  definition needs **write** permission, there being no read-only route to
+  one, and **stopping a rule does not stop its billed event listener** —
+  only deleting it does. Wiring Activator as an Eventstream destination
+  stays `fabric-eventstream`'s.
 - [fabric-realtime-dashboard/](fabric/fabric-realtime-dashboard/) — Real-Time
   Dashboard (KQLDashboard) JSON authoring: baseQueries wiring,
   load-time validation rules, 24-column grid, visual options,
