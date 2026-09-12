@@ -232,6 +232,16 @@ detail that is a claim **only the skill makes**. Measured 2026-09-04 on
 `pbir-filters`: both runs got `SourceRef.Source` and doubled quotes; only
 the payload wrote the skill's 20-char hex `name` (baseline: a 32-char GUID).
 
+**Prove the baseline actually stripped the payload.** A `--safe-mode`
+run that silently kept the skill is indistinguishable from one where the
+base model already knew the answer — both read as "the skill adds
+nothing". In a `-p` probe the `system`/`init` record names
+`slash_commands` and `tools`: assert the skill is absent from it and
+that the count dropped. Measured 2026-09-12 on
+`fabric-catalog-governance` — 21 commands with the skill absent against
+33 with it present — which is what made "the baseline reproduced this
+finding unaided" a result rather than a guess.
+
 Then, in a normal session, run the trigger queries from step 1. Test
 **both** invocation paths, because they do not behave alike: a `model:`
 pin is honoured on `/slash` invocation and silently dropped on
@@ -241,6 +251,16 @@ does the right thing but ignores its own scope guard has failed.
 `tests/skills/code-review/README.md` has the four-mode matrix
 (slash review, NL review, slash adversarial, NL adversarial) to copy
 from.
+
+**Disable write tools when a trigger query names a destructive action.**
+A behavioural probe runs with this machine's credentials — an `az login`
+survives across tool calls — so "Delete the Marketing domain" or a bulk
+label write can reach a real tenant, and the skill's own refusal is the
+only thing in the way. Don't rely on it: pass
+`--disallowedTools "Bash,PowerShell,Edit,Write,NotebookEdit"`. It costs
+the test nothing, because what is measured is what the skill *says*, not
+whether it can call an API. Added 2026-09-12, after
+`fabric-catalog-governance`'s own brief supplied both of those queries.
 
 **A conditional skill has neither path until a matching file is Read.**
 The `paths:` glob keeps it out of the startup listing, so its
@@ -265,6 +285,12 @@ In a `-p` probe where `/context` is unavailable, use the transcript: a
 model-invoked skill appears as a `Skill` tool_use, while a slash-invoked
 one is **inlined as a command expansion** and produces no `Skill` call —
 so an absent `Skill` record disproves nothing on the slash path.
+`--output-format stream-json --verbose` is the cheaper route to those
+records — it carries the `tool_use` blocks and the `init` record inline,
+so nothing has to locate a session id under `~/.claude/projects/`. Read
+the answers rather than grepping them for expected phrases: on
+2026-09-12 an `/owns|owned/` scan missed "items you own" and nearly
+recorded a passing assertion as a failure.
 
 **Launch a slash probe from PowerShell**, not the Bash tool. MSYS2
 rewrites a leading-slash argument to `C:/Program Files/Git/<name>`, so
