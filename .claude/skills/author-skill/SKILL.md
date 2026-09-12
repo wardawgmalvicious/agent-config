@@ -213,6 +213,15 @@ matches only names already on the denylist. On 2026-09-10 a brief
 reached public `main` carrying a client's workspace and table names in
 exactly such a list.
 
+**Delegating the drill is fine; delegating the verification is not.** A
+large surface splits cleanly across subagents by source family, and each
+one must return a verbatim quote per claim rather than a summary. Then
+re-read the quotes behind anything load-bearing — a permission, a limit,
+a path, a gate — yourself, before it reaches the draft. Observed
+2026-09-11: a subagent marked a claim CONFIRMED against a quote that did
+not support it, and the firsthand re-reads also caught a wrong endpoint
+path that two shipped skills had been carrying.
+
 Stop drilling when new pages stop changing the outline, not when the
 source list is exhausted.
 
