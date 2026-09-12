@@ -189,9 +189,11 @@ URL path is `/jobs/{jobType}/schedules` — NOT `/jobs/instances/schedules`. Bod
 
 | Category | Approximate limit |
 |---|---|
-| Admin APIs | 200 req/hour per principal per tenant |
+| Admin APIs | Varies by endpoint — 200/hour (List Items, List Workspaces, activity events), 25/min (domains, tenant settings, role assignments), 25/hour (bulk labels). Check the endpoint's own Throttling section |
 | OneLake (ADLS) | Standard Azure Storage throttling, per workspace |
 | Warehouse TDS | ~128 concurrent connections (varies by SKU) |
+
+**Two limits apply to every call.** A per-identity **unified quota** of 200 calls/min is evaluated *and* the endpoint's own limit — most restrictive wins. Platform, Job Scheduler and Long-Running Operations APIs get separate 200/min buckets, and the 60-second window refills all at once, so bursting at the start leaves you throttled for the rest of it. A `429` carries one of two `errorCode`s: `RequestBlocked` (your request rate — honour `Retry-After`) or `CapacityLimitExceeded` (the tenant's capacity is overloaded — retrying immediately will not help). (Verified 2026-09-12.)
 
 Watch `x-ms-ratelimit-remaining-*` response headers to back off before hitting the limit.
 
