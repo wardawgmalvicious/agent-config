@@ -78,6 +78,23 @@ repos:
         files: '^(skills/|\.claude/skills/)'
         pass_filenames: false
 
+      # Coverage of the skillOverrides block is a property of the SET, like
+      # the name collision above: the new skill's directory is not wrong and
+      # settings.json is not wrong, the pair is -- so no per-file hook can
+      # see it. That is how it went silent twice running, once per
+      # /author-skill run (1c64590 for fabric-catalog-governance, then
+      # fabric-activator the same day) -- the first caught only after the
+      # skill had landed, the second by a hand-written probe before it
+      # committed. `files:` spans both halves so editing either side re-checks
+      # the pair, and settings.json is pinned with $ so settings.local.json
+      # does not match it.
+      - id: lint-skill-overrides
+        name: Check platform skills are collapsed to name-only
+        entry: python scripts/lint-skill-overrides.py
+        language: python
+        files: '^(skills/|\.claude/settings\.json$)'
+        pass_filenames: false
+
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
       # so lint-frontmatter.py would reject every one and is scoped away from
       # them. This validates them instead, blocks a personal-repo name or

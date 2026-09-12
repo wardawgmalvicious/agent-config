@@ -64,11 +64,20 @@ sessions whose tools could not run it.
 `.claude/settings.json` holds more than servers and permissions: a
 `skillOverrides` block collapses **every** platform skill description to
 `name-only` in sessions here. Don't restate that count — it read 41 and
-went stale the day the 42nd skill landed; derive it with
-`ls -d skills/{fabric,powerbi}/*/ | wc -l` and check the block covers
-all of them, because it is a by-name map with no pattern form, so a
-newly authored skill is silently uncovered. That is deliberate, and it
-stays even
+went stale the day the 42nd skill landed. **`scripts/lint-skill-overrides.py`
+now checks the coverage**, in pre-commit, over the whole set: the block is
+a by-name map with no pattern form, so a newly authored platform skill is
+silently uncovered, and the pair — new skill plus unchanged settings file
+— is invisible to any per-file hook. That went wrong twice in a row, once
+per `/author-skill` run: `1c64590` fixed `fabric-catalog-governance` only
+after the skill had landed, and `fabric-activator` the same day was
+uncovered the same way, caught mid-session by a hand-written probe rather
+than by anything that would catch it next time.
+The check also catches a value that is not `name-only`, an override left
+behind by a rename, and a **new skill group** it cannot classify — add one
+to `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS` in that script, since
+`workflow` and `social` must *not* be collapsed. Collapsing is deliberate,
+and stays even
 though the workflow-only prune already keeps those skills out of
 `~/.claude/skills` — it keeps them auditable from this repo and holds
 the shape ready for a future edit. Remember it when reasoning about
@@ -95,6 +104,11 @@ uv run --with pyyaml scripts/lint-frontmatter.py claude/rules/<name>.md
 # whole set, not changed files: a collision is a property of a pair.
 uv run scripts/lint-skill-scopes.py
 
+# Check every fabric/ and powerbi/ skill has a name-only skillOverrides
+# entry in .claude/settings.json. Whole set too — the uncovered pair is a
+# new skill plus a settings file nobody changed, which no per-file hook sees.
+uv run scripts/lint-skill-overrides.py
+
 # Which of a repo's files activate no rule and no skill at all. One repo,
 # or --sweep a parent for every repo under it, ranked by weight. Counts
 # per FILE, not per extension. Findings are candidates, not work.
@@ -106,7 +120,8 @@ uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py --sweep C
 # from. --stamp re-records the hashes after a deliberate re-port.
 uv run --with pyyaml scripts/lint-instructions.py
 
-# All checks, the way CI runs them (gitleaks, frontmatter, scopes, instructions)
+# All checks, the way CI runs them (gitleaks, ruff, frontmatter, scopes,
+# skillOverrides coverage, instructions, identity)
 pre-commit run --all-files
 pre-commit run lint-skills --all-files     # one hook only
 
