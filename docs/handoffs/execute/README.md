@@ -89,6 +89,17 @@ the order.
 So add a row when a brief in `execute/` **outlives the session that wrote
 it**, and not before. Same-day work does not need one.
 
+Since 2026-09-12 `/test-skill` deletes the brief at its last step, so a
+skill brief here beside a skill that exists means the test has not run.
+Before that, nothing removed one: the `fabric-catalog-governance` brief
+outlived its test by a day with no row here and no reader. The test
+state itself is never tracked in this file. Derive it, at the start of
+a session here and alongside reading this table:
+
+```bash
+uv run --with pyyaml scripts/skill-status.py --stale
+```
+
 ## Re-measure a row before acting on it
 
 The queue's two most expensive lessons, and the only ones that still
