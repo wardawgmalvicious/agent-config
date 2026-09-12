@@ -52,6 +52,20 @@
         "paths": "2de395b103ca8fbd"
       }
     },
+    "fabric-dataflow": {
+      "activation": {
+        "date": "2026-09-12",
+        "commit": "49e54cf",
+        "paths": "09632a711539bfa4"
+      },
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "49e54cf",
+        "routing": "0f9fc2706411efe3",
+        "body": "868ffe27407e1b64",
+        "references": "3f74a59569594dd5"
+      }
+    },
     "fabric-error-handling": {
       "activation": {
         "date": "2026-09-12",
