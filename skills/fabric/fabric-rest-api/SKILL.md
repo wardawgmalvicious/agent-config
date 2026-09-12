@@ -37,7 +37,7 @@ As of March 2026 GA, `List Items` / `Get Item` / `Update Item` responses include
 
 The `sensitivityLabel` object carries **only the label GUID** — there is no `displayName` / `name` on the response. Resolving the GUID to a human-readable label name requires a separate call (Microsoft Graph `/security/informationProtection/sensitivityLabels` or Purview). The `sensitivityLabel` field is omitted entirely on unlabeled items.
 
-**Read-only on these endpoints.** The `Update Item` PATCH body schema (`UpdateItemRequest`) accepts only `displayName` and `description` — it does NOT accept a `sensitivityLabel` field. To apply, change, or remove labels programmatically, call the admin APIs `POST /v1/admin/labels/bulkSetLabels` / `bulkRemoveLabels` (require `Tenant.ReadWrite.All` + Fabric admin role; ≤ 25 req/hour, ≤ 2000 items/request).
+**Read-only on these endpoints.** The `Update Item` PATCH body schema (`UpdateItemRequest`) accepts only `displayName` and `description` — it does NOT accept a `sensitivityLabel` field. To apply, change, or remove labels programmatically, call the admin APIs `POST /v1/admin/items/bulkSetLabels` / `bulkRemoveLabels` — the path is under `items` even though Learn files the reference under Labels (verified 2026-09-12). They require `Tenant.ReadWrite.All` + Fabric admin role, are **`User` only** (service principals and managed identities are rejected), cap at ≤ 25 req/hour, ≤ 2000 items/request, and report status per item rather than all-or-nothing. Coverage audits and the write gate: fabric-catalog-governance skill.
 
 ## Item IDs: Runtime vs logicalId
 

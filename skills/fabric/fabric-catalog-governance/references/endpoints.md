@@ -66,7 +66,8 @@ verified). A 200 on the request says nothing about any item.
 
 **Note the path.** It is `/v1/admin/items/bulkSetLabels`, under *items*,
 even though the Learn reference files it under Labels. `fabric-rest-api`
-and `fabric-security` both currently say `/v1/admin/labels/…`, which is
+and `fabric-security` both carried `/v1/admin/labels/…` until
+2026-09-12; a vendored copy of either predating that date still has it
 wrong.
 
 Create Domain's non-preview form is documented as "a release version of
