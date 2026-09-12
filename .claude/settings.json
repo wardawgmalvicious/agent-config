@@ -24,6 +24,7 @@
         "fabric-data-pipeline": "name-only",
         "fabric-database": "name-only",
         "fabric-dataflow": "name-only",
+        "fabric-deployment-pipelines": "name-only",
         "fabric-error-handling": "name-only",
         "fabric-eventhouse": "name-only",
         "fabric-eventstream": "name-only",
