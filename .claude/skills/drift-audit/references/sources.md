@@ -616,6 +616,7 @@ patches, 1 base fetch and 4 directory listings, plus 1 call per upstream
 | `mlv-operations-cli` (retired upstream) | `fabric-mlv` |
 | `deployment-pipelines-authoring-cli` | `fabric-cicd` (partial) |
 | `git-integration-operations-cli` | `fabric-cicd` (partial), `fabric-git-serialization` rule |
+| `onelake-catalog-govern-cli` | `fabric-catalog-governance` |
 
 Matched by name on 2026-09-10, from the `skills/` listing and the
 changelog, **without reading either side's content**. The listing cannot
@@ -630,9 +631,11 @@ absent from HEAD against this table before dropping it. Upstream's `-cli`
 suffix suggests CLI procedures where ours are mostly reference and gotcha
 content, so a counterpart is a place to look rather than a duplicate. An
 upstream skill with no counterpart is reported under clause 1 of the
-filter once, in the window that introduces it —
-`onelake-catalog-govern-cli` first appears in `0.3.15` — and not again
-on every run.
+filter once, in the window that introduces it, and not again on every
+run. `onelake-catalog-govern-cli` is the worked case: surfaced from
+`0.3.15`, accepted, and authored here as `fabric-catalog-governance` on
+2026-09-12 — so it now has a counterpart and clause 1 will not surface
+it again.
 
 The repo also ships `.claude-plugin/` and `plugins/`, and `0.3.14` names
 two bundles, `fabric-skills` and `powerbi-authoring`. Installing a bundle
@@ -657,6 +660,13 @@ Judge it on commits up to `65902bae` (`v0.3.15`) only: `v0.3.16`
 (`f1802196`, 2026-09-10T14:27Z) touched both vendored skills after that
 run, so a run today also returns that commit per vendored path —
 correctly, as a re-sync candidate, but outside the known answer.
+
+**One of those three assertions expired on 2026-09-12**, when
+`onelake-catalog-govern-cli` gained a counterpart above. Clause 1 no
+longer surfaces it, by design, so "clause 1 surfacing
+`onelake-catalog-govern-cli`" holds only for a run reproducing the
+earlier state. A replacement known answer is needed before step 5 is
+re-run — pick an upstream skill that still has no counterpart here.
 
 ## Shape contracts
 
