@@ -14,7 +14,9 @@ this table previously read as though a match loaded the bodies.)
 Shapes are modelled on a production Fabric Git-synced repo — *the
 reference repo* below — except `GraphModel`, `SQLDatabase` and
 `DataAgent`, which are modelled on the public Git-synced exports pinned
-in the README. No fixture here rests on an unverified shape.
+in the README. One fixture rests on an unverified shape and says so:
+`SampleAct.Activator/`, whose folder suffix no export produces — see
+assertion 7.
 
 **This table lists skills only.** Rules in `claude/rules/` have `paths:`
 globs of their own and load on the same files — `fabric-git-serialization`
@@ -90,9 +92,12 @@ an apparent one.
 | `SampleOnt.Ontology/EntityTypes/8813598896083/definition.json` | `fabric-ontology` | 2,746 |
 | `…/DataBindings/66253a71-c26f-4c9d-877f-3af5632a4be2.json` | `fabric-ontology` | 2,746 |
 | `SampleOnt.Ontology/RelationshipTypes/3110733855942077719/definition.json` | `fabric-ontology` | 2,746 |
+| `SampleRX.Reflex/.platform` | `fabric-activator` | 5,205 |
+| `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
+| `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
 
-Together with `../pbip-triggers/`, all **27** conditional skills in the
-payload are now covered — 10 there, 17 here.
+Together with `../pbip-triggers/`, all **28** conditional skills in the
+payload are now covered — 10 there, 18 here.
 
 ## Assertions that carry weight
 
@@ -229,6 +234,25 @@ Both are real; the pairing is not. `endDateTime` is mandatory in both,
 which is why the `Weekly` block carries the far-future `9999-12-31`
 workaround and the `Cron` block carries a deliberately expired one.
 
+**7. `SampleAct.Activator/` is synthetic, and is the only fixture here
+that is.** `fabric-activator` globs two arms, and only one is observed.
+`.Reflex` is the suffix Fabric writes — the Git-integration docs show
+only that form, and so did the one real item measured 2026-09-12, whose
+`.platform` carries `metadata.type: "Reflex"`; the portal name reaches
+neither the folder nor the type. `**/*.Activator/**` is therefore
+defensive, no export backs it, and without a fixture the glob would be
+vouching for itself. This row is what makes dropping that arm a visible
+decision: remove it and the static check fails. Do not read the fixture
+as evidence Fabric produces `.Activator` folders.
+
+`SampleRX.Reflex/` is the opposite case and is modelled byte-for-byte on
+that real item. `ReflexEntities.json` is the two bytes `[]` — the empty
+state of the documented entity array for an Activator created but never
+configured, not a stub standing in for content. Both files are LF with
+no final newline, which is `fabric-git-serialization`'s canonical form
+for JSON parts; most older fixtures here carry a trailing newline, so
+this pair is the one that follows the co-loading rule exactly.
+
 ## Rules load here too
 
 Extend the static check to `claude/rules/*.md` (same snippet, second glob
@@ -340,12 +364,15 @@ over-broad.
 
 ## Known gaps
 
-- **No `Environment`, `Reflex`, `MirroredDatabase`, `CopyJob` or
-  `SparkJobDefinition` fixture.** None has a conditional skill today.
-  Several were candidates for a `paths:` glob under Workstream E of the
-  retired `skill-context-cost.md`, which closed 2026-09-01 having written
-  five globs; these item types were not among them because no export
-  confirmed a fixture. Add the fixture *with* the glob, in the same commit.
+- **No `Environment` or `SparkJobDefinition` fixture.** Neither has a
+  conditional skill today. Several item types were candidates for a
+  `paths:` glob under Workstream E of the retired `skill-context-cost.md`,
+  which closed 2026-09-01 having written five globs; these two were not
+  among them because no export confirmed a fixture. Add the fixture *with*
+  the glob, in the same commit. `MirroredDatabase`, `CopyJob` and `Reflex`
+  were on this list and have each left it that way — the first two with
+  `fabric-mirroring` and `fabric-copy-job`, and `Reflex` with
+  `fabric-activator` on 2026-09-12.
 - **`fabric-git-serialization`'s item-type list is only partly verified.**
   Carried forward from `rule-glob-gaps.md` when that brief was deleted:
   three names (`GraphModel`, `UserDataFunction`, `ApacheAirflowJob`) were

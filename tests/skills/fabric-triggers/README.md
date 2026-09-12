@@ -74,6 +74,10 @@ tests/skills/fabric-triggers/fixtures/
 │                                   EntityTypes/<id>/definition.json,
 │                                   EntityTypes/<id>/DataBindings/<guid>.json,
 │                                   RelationshipTypes/<id>/definition.json
+├── SampleRX.Reflex/                .platform, ReflexEntities.json
+│                                   (ReflexEntities.json is the two bytes [])
+├── SampleAct.Activator/            .platform
+│                                   (synthetic folder suffix — see below)
 └── control/notes.md                (matches nothing — negative control)
 ```
 
@@ -112,6 +116,17 @@ fixture set); `"type": "AISkill"` — the legacy name still carried in
 fabric-cli's `ItemType` enum and in the portal's `/aiskills/` URL — returns
 **none**. The portal name did not follow the item type into Git.
 
+`SampleRX.Reflex/` comes from neither source. It is modelled on a real
+`.Reflex` item in a Git-synced Fabric workspace, inspected 2026-09-12 and
+cited by kind — no workspace, item or column name from it appears here or
+in the skill. That item fixed the folder suffix, the two-file contents,
+`metadata.type: "Reflex"` rather than `Activator`, and
+`ReflexEntities.json` being the two bytes `[]` for an Activator created
+but never configured. Learn's
+[Activator Git integration](https://learn.microsoft.com/fabric/real-time-intelligence/git-activator)
+page corroborates the same `{.platform, ReflexEntities.json}` pair.
+`SampleAct.Activator/` has no item behind it at all — see below.
+
 Two deliberate deviations from those sources. The real `.SQLDatabase`
 `.gitignore` is the full ~480-line `dotnet new gitignore`; the fixture
 carries a three-line stand-in that says so in its own header. And every
@@ -129,7 +144,16 @@ strings, so the allowlist cannot catch a real one that lands here.
 
 ### Fixtures built on an unverified shape
 
-None, as of 2026-08-31. Three of these were, until then: their folder names
+One, as of 2026-09-12: **`SampleAct.Activator/`**. `fabric-activator`
+globs `**/*.Reflex/**` and `**/*.Activator/**`, and only the first arm is
+observed. The second is defensive against the portal name ever being used
+for a folder, and no export produces one, so the fixture exists to keep
+that arm from being asserted solely by the glob that defines it — it is
+the control that makes dropping the arm visible, not evidence that Fabric
+writes `.Activator` directories. Its `.platform` says so in its own
+`description`.
+
+Three others were built this way until 2026-08-31: their folder names
 came from their own skills' claims, so the fixture could only prove that
 the glob and the assumed path agreed with each other — never that the
 assumption was right, which is the thing that fails silently. A wrong
