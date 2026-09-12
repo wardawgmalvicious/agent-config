@@ -52,13 +52,19 @@ for future use as individual artifacts validate through real-use and
 earn promotion. Promoting to `publishable` is per-artifact and
 requires content review, not just a tag flip.
 
-The following four skills haven't been real-use tested yet — extra
-unproven, even by `personal` standards:
+Which skills have been tested, and what has changed in each since, is
+derived rather than listed here:
 
-- [fabric-eventhouse](skills/fabric/fabric-eventhouse/)
-- [fabric-eventstream](skills/fabric/fabric-eventstream/)
-- [fabric-mlv](skills/fabric/fabric-mlv/)
-- [fabric-variable-library](skills/fabric/fabric-variable-library/)
+```bash
+uv run --with pyyaml scripts/skill-status.py
+```
+
+It reads the stamps `/test-skill` writes and compares each with the
+skill as it stands, so its `real-use` column is where this section's
+"real-use tested" fact lives. A list of four untested skills stood here
+from May until 2026-09-12; by the time anyone checked, every skill on
+it had been edited since, which is why it is a command now and not a
+list.
 
 ## Contents
 
