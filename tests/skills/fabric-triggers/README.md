@@ -65,6 +65,8 @@ tests/skills/fabric-triggers/fixtures/
 ├── SampleCJ.CopyJob/               .platform, copyjob-content.json
 ├── SamplePL.DataPipeline/          .platform, pipeline-content.json,
 │                                   .schedules
+├── SampleDF.Dataflow/              .platform, mashup.pq,
+│                                   queryMetadata.json
 ├── SampleLH.Lakehouse/             .platform, lakehouse.metadata.json,
 │                                   shortcuts.metadata.json,
 │                                   alm.settings.json
@@ -108,6 +110,7 @@ take this file's word:
 | `SampleSparkNB.Notebook/` | `edkreuk/FMD_FRAMEWORK` @ `ebe97d4` | the `sqldatawarehouse` counterpart in `LanreAdetola/wwi_fabric_dw` @ `493bea1`, which fixes the `-- META` header as the only dialect discriminator |
 | `SampleCJ.CopyJob/` | `microsoft/fabric-cicd` @ `sample/workspace` | 89 public exports carry `"type": "CopyJob"` inside a `.platform`; the two-part `.platform` + `copyjob-content.json` shape is the whole item |
 | `SampleMD.MirroredDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace` | 30 public exports carry `"type": "MirroredDatabase"` inside a `.platform`; `mirroring.json` is the single definition part the skill's description already names |
+| `SampleDF.Dataflow/` | `microsoft/fabric-cicd` @ `534efeb`, `sample/workspace/Hello Dataflow.Dataflow/` | 200 public exports carry `"type": "Dataflow"` inside a `.platform` and 220 carry a `queryMetadata.json`; the three-file `{.platform, mashup.pq, queryMetadata.json}` set is the whole item, and `formatVersion: "202502"` matches the [Dataflow definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/dataflow-definition) reference |
 
 The three `metadata.type` values were checked directly rather than assumed.
 A GitHub code search for `"type": "DataAgent"` inside `.platform` files

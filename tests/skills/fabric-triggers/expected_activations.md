@@ -79,6 +79,9 @@ an apparent one.
 | `SamplePL.DataPipeline/.platform` | `fabric-data-pipeline` | 3,141 |
 | `SamplePL.DataPipeline/pipeline-content.json` | `fabric-data-pipeline` | 3,141 |
 | `SamplePL.DataPipeline/.schedules` | `fabric-data-pipeline` | 3,141 |
+| `SampleDF.Dataflow/.platform` | `fabric-dataflow` | 5,844 |
+| `SampleDF.Dataflow/queryMetadata.json` | `fabric-dataflow` | 5,844 |
+| `SampleDF.Dataflow/mashup.pq` | `fabric-dataflow` | 5,844 |
 | `SampleLH.Lakehouse/.platform` | *(none)* | 0 |
 | `SampleLH.Lakehouse/lakehouse.metadata.json` | *(none)* | 0 |
 | `SampleLH.Lakehouse/alm.settings.json` | *(none)* | 0 |
@@ -96,8 +99,8 @@ an apparent one.
 | `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
 | `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
 
-Together with `../pbip-triggers/`, all **28** conditional skills in the
-payload are now covered — 10 there, 18 here.
+Together with `../pbip-triggers/`, all **29** conditional skills in the
+payload are now covered — 10 there, 19 here.
 
 ## Assertions that carry weight
 
@@ -253,6 +256,32 @@ no final newline, which is `fabric-git-serialization`'s canonical form
 for JSON parts; most older fixtures here carry a trailing newline, so
 this pair is the one that follows the co-loading rule exactly.
 
+**8. The Dataflow fixture is verified end to end, and `mashup.pq` is the
+row that carries weight.** It is the opposite case to assertion 7: the
+folder suffix, the three-file shape and `metadata.type: "Dataflow"` are
+all observed, in `microsoft/fabric-cicd` @ `534efeb`
+(`sample/workspace/Hello Dataflow.Dataflow/`) and in 200 further public
+exports carrying `"type": "Dataflow"` inside a `.platform`. Nothing here
+rests on the skill's own claims.
+
+The load-bearing row is `mashup.pq`, the only file in this set that pulls
+`coding-m`. `fabric-dataflow` deliberately does **not** restate M style —
+it names the rule and stops — so the rule reaching this file is what
+makes that omission correct rather than a hole. Same shape as assertion
+6, with `coding-m` in `coding-expressions`' place: an item-scoped skill
+on all three files, a file-scoped rule on exactly one. If `coding-m`
+stopped globbing `**/*.pq`, a dataflow author would get no M conventions
+at all and nothing else in the payload would notice.
+
+**There is deliberately no `.mdf` fixture.** The skill documents the
+optional Mapping Data Flow part, but `**/*.Dataflow/**` is folder-scoped
+and no rule globs `.mdf`, so such a file would be glob-identical to
+`queryMetadata.json` and would test nothing the static check can see —
+the same reasoning that declines a second `sqldatawarehouse` notebook in
+the README. The real export has no `.mdf` part either; the shape is
+documented on Learn but unobserved here, and this set does not let a
+fixture vouch for a shape on a doc sample alone.
+
 ## Rules load here too
 
 Extend the static check to `claude/rules/*.md` (same snippet, second glob
@@ -267,6 +296,7 @@ set) and the picture changes. Measured 2026-08-31:
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | + `coding-kql` |
 | `SampleDash.KQLDashboard/RealTimeDashboard.json` | + `coding-kql` |
 | `SamplePL.DataPipeline/pipeline-content.json` | + `coding-expressions` |
+| `SampleDF.Dataflow/mashup.pq` | + `coding-m` |
 | `SampleWH.Warehouse/**/*.sql`, `SampleSQL.SQLDatabase/**/*.sql` | + `coding-tsql` |
 | `SampleSparkNB.Notebook/notebook-content.sql` | + `coding-sparksql`, `coding-tsql` |
 
