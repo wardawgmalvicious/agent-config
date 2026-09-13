@@ -228,6 +228,15 @@
         "references": "5feeebe9b925d077"
       }
     },
+    "land": {
+      "behaviour": {
+        "date": "2026-09-13",
+        "commit": "92a5723",
+        "routing": "cd671efda30bfee6",
+        "body": "ec6c86e9f3bfc373",
+        "references": "4f53cda18c2baa0c"
+      }
+    },
     "pbip-project-structure": {
       "activation": {
         "date": "2026-09-01",
