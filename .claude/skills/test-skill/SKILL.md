@@ -275,6 +275,17 @@ skill cites" (2026-09-12: with web off on both, the payload still
 produced the Learn fact). Cost separates when content does not: 4 turns
 to 8.
 
+**Those two flags do not turn the web off on this machine, and the gap
+is one-sided.** `microsoft-learn-mcp` is **user scope**, so a payload
+probe reaches Learn through it whatever `--disallowedTools` says, while
+`--safe-mode` strips MCP with the payload and the baseline cannot —
+leaving the very confound the flags were meant to remove. Add
+`--strict-mcp-config` to the payload arm (with no `--mcp-config` it
+drops every server) and check the `init` record's `tools` count: 29 with
+the servers, 22 without, matching the baseline. Measured 2026-09-13:
+`fabric-eventstream`'s first payload run blocked both web tools and
+still fetched all four drilled Learn pages.
+
 **Prove the baseline actually stripped the payload.** A `--safe-mode`
 run that silently kept the skill is indistinguishable from one where the
 base model already knew the answer — both read as "the skill adds
