@@ -301,6 +301,13 @@ that the count dropped. Measured 2026-09-12 on
 33 with it present — which is what made "the baseline reproduced this
 finding unaided" a result rather than a guess.
 
+**Assert on a name only the payload provides.** `code-review` stays
+listed under `--safe-mode` because the CLI ships a built-in of that
+name, so a grep for it reads as a leaked payload — and when
+`code-review` itself is under test, its absence cannot be read off the
+list at all; assert its sibling payload names instead (measured
+2026-09-13, `references/reading-a-failure.md`).
+
 Then, in a normal session, run the trigger queries from step 1. Test
 **both** invocation paths, because they do not behave alike: a `model:`
 pin is honoured on `/slash` invocation and silently dropped on
@@ -316,10 +323,22 @@ A behavioural probe runs with this machine's credentials — an `az login`
 survives across tool calls — so "Delete the Marketing domain" or a bulk
 label write can reach a real tenant, and the skill's own refusal is the
 only thing in the way. Don't rely on it: pass
-`--disallowedTools "Bash,PowerShell,Edit,Write,NotebookEdit"`. It costs
-the test nothing, because what is measured is what the skill *says*, not
-whether it can call an API. Added 2026-09-12, after
-`fabric-catalog-governance`'s own brief supplied both of those queries.
+`--disallowedTools "Bash,PowerShell,Monitor,Agent,Edit,Write,NotebookEdit"`
+plus `--strict-mcp-config`. The shell tools are not the only way out —
+`Monitor` runs its `command` in Bash's own shell environment, `Agent`
+spawns a subagent with its own tools, and the user-scope `MCP_DOCKER`
+gateway re-exports `merge_pull_request` and `push_files` — and two
+`land` probes run with the shorter list proved the point by declining
+to abuse `Monitor` unprompted (`references/reading-a-failure.md`).
+Added 2026-09-12, after `fabric-catalog-governance`'s own brief
+supplied both of those queries.
+
+**What is measured is what the skill *says*, not whether it can call an
+API** — free on a query that asks for an explanation, and a real cost on
+one that asks the skill to *act*: it stops at the first command it
+cannot issue, and every later step goes unmeasured on that arm. Phrase
+one arm as a walkthrough ("the exact commands, start to finish");
+`land`, 2026-09-13, is the measurement.
 
 **Give a trigger query enough context to be answerable.** A bare
 imperative in an empty probe directory routes to file exploration
