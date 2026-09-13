@@ -204,21 +204,13 @@ Prefer the built-in task for new pipelines (less boilerplate, service-connection
 
 ## Deployment Pipelines (Power BI service-side)
 
-For the service-side stage-to-stage deployment pipelines (different feature from `fab deploy`), there are no native verbs — use `fab api -A powerbi`:
-
-```bash
-fab api -A powerbi pipelines                                     # user pipelines
-fab api -A powerbi admin/pipelines                               # all tenant
-fab api -A powerbi "pipelines/$PIPELINE_ID/stages"
-fab api -A powerbi "pipelines/$PIPELINE_ID/operations"
-
-fab api -X post "deploymentPipelines/$PIPELINE_ID/stages/$STAGE_ID/assignWorkspace" -i '{"workspaceId":"<ws>"}'
-fab api -X post "deploymentPipelines/$PIPELINE_ID/deploy" -i '{
-  "sourceStageOrder": 0,
-  "targetStageOrder": 1,
-  "options": {"allowCreateArtifact": true, "allowOverwriteArtifact": true}
-}'
-```
+No native `fab` verbs — use `fab api`, and **mind the audience**, because
+two different APIs reach this feature: the Fabric Core surface
+(`deploymentPipelines/...`) is the default with no `-A` flag, the older
+Power BI surface (`pipelines/...`) needs `-A powerbi`, and crossing them
+is a 404 that reads like a missing feature. Request shapes, scopes, item
+pairing, rules and limits are the **fabric-deployment-pipelines** skill's.
+`fab deploy` is the Git-driven surface and a different thing entirely.
 
 ## Export / Import Formats
 
