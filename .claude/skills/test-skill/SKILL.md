@@ -257,8 +257,12 @@ its content, the skill's own headline finding included. That is a
 second, distinct reason a baseline comes back close — the model is
 *reading the sources*, not recalling the domain — and its remedy
 differs. Compare on synthesis that sits on **no single page**, or add
-`--disallowedTools WebFetch,WebSearch` to measure the cache against
-unaided recall. Cost separates when content does not: 4 turns to 8.
+`--disallowedTools WebFetch,WebSearch` **to both runs** to measure the
+cache against unaided recall — on the payload side too, or a pass cannot
+separate "the skill delivered it" from "the model fetched the page the
+skill cites" (2026-09-12: with web off on both, the payload still
+produced the Learn fact). Cost separates when content does not: 4 turns
+to 8.
 
 **Prove the baseline actually stripped the payload.** A `--safe-mode`
 run that silently kept the skill is indistinguishable from one where the
