@@ -94,6 +94,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "9523948940741796"
+      },
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "1a9fbf2",
+        "routing": "72ba9379f335ce7d",
+        "body": "2685909e9dff5cec",
+        "references": "1a6338310de40ee9"
       }
     },
     "fabric-graph": {

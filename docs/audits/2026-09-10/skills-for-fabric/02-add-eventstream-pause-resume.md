@@ -140,8 +140,42 @@ upstream's claims only.
   values, the CI/CD row in `## Gotchas` (line 177), the resume enum
   unchanged on re-fetch, lint clean. Step 5 runs once at the end of the
   run.
-- **Deferred**: behavioural confirmation of the edited skill needs a
-  fresh session.
+- **Behavioural confirmation**: 2026-09-12 via `/test-skill`, closing
+  the deferral. Activation was already stamped current and the `paths:`
+  glob is unchanged by this content-only edit, so Phase A re-ran its
+  static half only: PASS on all 70 fabric fixtures, with the rules pass
+  confirming `fabric-git-serialization` co-loads on the Eventstream
+  files. Cold `-p` probe in a scratch directory outside this repo (the
+  in-repo `name-only` collapse would have guaranteed a false negative),
+  against a `--safe-mode` baseline. The payload run model-invoked the
+  skill (`Skill` tool_use) and stated every fact this brief added:
+  bodyless pause, resume requiring `startType` with all three values,
+  `customStartDateTime` as UTC, the per-node restriction, and the CI/CD
+  reset. Stamped `behaviour` in `tests/skills/.tested.json`.
+- **The baseline got the REST detail wrong, specifically.** With the
+  docs surface disabled it invented `startType: "LastStoppedTime"`,
+  routed the per-node calls through a `/topology/` segment addressed by
+  node *name* rather than GUID, and expected `202 Accepted` with
+  operation polling instead of `200`. It flagged its own uncertainty on
+  exactly those points. It *did* reach the CI/CD conclusion unaided, by
+  inferring that pause state appears nowhere in the item definition —
+  so that half of the brief is a weaker discriminator than the REST
+  half, though the skill states it as documented fact rather than
+  inference.
+- **`--disallowedTools WebFetch,WebSearch` does not block Microsoft
+  Learn on this machine.** The first payload probe fetched the four
+  Learn pages this brief was drilled from through the user-scope
+  `microsoft-learn-mcp` server, confounding the measurement; the run
+  had to be repeated with the MCP surface disallowed and
+  `--strict-mcp-config`. Cost separated once it was: 9 turns against
+  18.
+- **One imprecision surfaced in the skill's own text.** Deprived of the
+  docs, the payload run read `Eventhouse (Direct Ingestion)` in the new
+  section as covering the Eventhouse node outright and called it
+  non-pausable, where the fixture is `ProcessedIngestion` and *is*
+  pausable — the docs-fetched run drew that distinction correctly. The
+  parenthetical is accurate but compresses enough to be read past. Not
+  corrected here; recorded for a later `/learn`.
 - **Deviations**: the section's REST table carries the source- and
   destination-level paths alongside the stream-level ones. The brief
   named only the resume endpoint, but its constraint anticipated those
