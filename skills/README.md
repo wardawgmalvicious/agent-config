@@ -33,10 +33,16 @@ internal cross-references stay intact.
   self-consistent commits: splitting rules, conventional-commit
   messages with motivation in the body, explicit-path staging,
   never-push/amend rails, Fabric Git-synced repo checks.
+- [land/](workflow/land/) — the step after `/commit`: push the branch,
+  confirm which GitHub account each tool actually acts as, open the PR
+  through the one that matches, then fast-forward `main` and verify CI.
+  Stops for confirmation before the write to `main`. Guards the silent
+  failure where `gh` and `github-mcp` authenticate as different
+  accounts and the PR lands under the wrong identity.
 
-The seven skills that maintain *this* repo — `author-skill`,
+The six skills that maintain *this* repo — `author-skill`,
 `test-skill`, `learn`, `drift-audit`, `drift-handoff`,
-`drift-update`, `land` — are **not here**. They live at project
+`drift-update` — are **not here**. They live at project
 scope in [.claude/skills/](../.claude/skills/), which no deploy
 script reaches, because they can only ever act on this working
 tree. Being payload is what this directory means, and they are not

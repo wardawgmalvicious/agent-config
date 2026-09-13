@@ -1,6 +1,6 @@
 # This repo's own maintenance skills
 
-Seven skills that operate on `agent-config` itself. They live here at
+Six skills that operate on `agent-config` itself. They live here at
 **project scope** rather than in [skills/](../../skills/), and the
 distinction is not filing — it is what the two directories mean.
 
@@ -97,21 +97,15 @@ so both remain deployable.
   never from the conversation, which is what keeps `drift-handoff`'s
   cold-read contract honest: a brief that can't be executed without
   opening the audit report is reported as a brief-format defect.
-- [land/](land/) — the step after `/commit`: push the branch, verify
-  which GitHub account is actually authenticated, open the PR through
-  `github-mcp`, then fast-forward `main` and check CI. Stops for
-  confirmation before the push to `main`, the one irreversible step.
-  Named `land` because root [CLAUDE.md](../../CLAUDE.md) already says to
-  "land a branch locally rather than through the merge button" — the
-  repo's own vocabulary. Earns its place because two steps fail
-  *silently*: `gh` and `github-mcp` can authenticate as different
-  accounts, so a PR lands under the wrong identity with no error.
-
-  `land` is here for a **different reason from the other six**, and is
-  the one most likely to be moved back. It is not repo-specific — any
-  repo has branches to land. It is *dependency*-specific: it is built on
-  `github-mcp` throughout, and that server is project scope here, so a
-  user-scope listing was advertising it in sessions whose tools could
-  not run it. It is also acknowledged as unpolished and seldom used.
-  Project scope is where its tools actually are; polish it before
-  promoting it.
+`land` was here too, and **moved back to
+[skills/workflow/](../../skills/workflow/land/) on 2026-09-13** — the
+move this file predicted. The reason recorded for demoting it did not
+survive checking: it was said to be built on `github-mcp`, which is
+project scope, so a user-scope listing advertised it where its tools
+could not run. But client repos declare `github-mcp` in their own
+`.mcp.json` too, the skill treats a confirmed `gh` as a first-class
+route rather than a fallback, and its only real use was in a client
+repo ten hours before the demotion. Project scope put it in the one
+repo whose convention is to commit straight to `main` and never open a
+PR, and removed it from the repos that do. The dependency argument does
+not apply to it; the other six are repo-specific in a way it never was.

@@ -46,20 +46,29 @@ deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
 `.claude/skills/` is that third category too, and is the one place where
-it holds *skills* rather than settings. Seven skills live there —
+it holds *skills* rather than settings. Six skills live there —
 `author-skill`, `test-skill`, `learn`, `drift-audit`, `drift-handoff`,
-`drift-update`, `land` — because their whole subject is maintaining this
+`drift-update` — because their whole subject is maintaining this
 repo's own payload, so they can never usefully fire anywhere else. They
 are authored at project scope, deployed nowhere, and reached by no
 script: `link-claude.ps1` and `copy-copilot.ps1` both select out of
 `skills/`, so neither can see them and neither needed changing when they
 moved there (2026-09-09). That is the point rather than an omission — a
 `description` is the entire trigger mechanism and the listing has a
-budget, so six of these sitting at user scope were being offered to every
+budget, so these sitting at user scope were being offered to every
 client-repo session on this machine, where they could only ever be noise.
-`land` joined them for a different reason: it is built on `github-mcp`,
-which is project scope here, so a user-scope listing advertised it in
-sessions whose tools could not run it.
+
+**`land` was a seventh and moved back to `skills/workflow/` on
+2026-09-13.** The reason recorded for demoting it — that it is built on
+`github-mcp`, which is project scope, so a user-scope listing advertised
+it where its tools could not run — did not survive checking. Client
+repos declare `github-mcp` in their own `.mcp.json` too, the skill
+treats a confirmed `gh` as a first-class route rather than a fallback,
+and its one real use was in a client repo ten hours before the
+demotion landed. Project scope confined it to the repo whose own
+convention is to commit straight to `main` and never open a PR — the
+only repo where it has nothing to do. The other six are repo-specific in
+a way it never was.
 
 `.claude/settings.json` holds more than servers and permissions: a
 `skillOverrides` block collapses **every** platform skill description to
@@ -232,9 +241,12 @@ Linting gotchas worth keeping:
   `(no files to check) Skipped`, which scans as a pass, so widening one
   is not self-verifying. Prove it against a path that must match and a
   path that must not:
-  `pre-commit run lint-skills --files .claude/skills/land/SKILL.md`
-  (expect `Passed`) and `... --files skills/land/SKILL.md` (expect
-  `Skipped`). Both were run when the second arm was added, 2026-09-09.
+  `pre-commit run lint-skills --files .claude/skills/learn/SKILL.md`
+  (expect `Passed`) and `... --files skills/learn/SKILL.md` (expect
+  `Skipped`). Both were run when the second arm was added, 2026-09-09,
+  and again 2026-09-13 — the example named `land` until it moved to
+  `skills/workflow/`, which would have left it asserting a path that no
+  longer exists.
 - **Skill names are one flat namespace across both trees**, since Claude
   Code addresses a skill by name alone — no group segment, no scope
   qualifier. `scripts/lint-skill-scopes.py` enforces it, and runs over
@@ -505,8 +517,8 @@ written for. The 2026-09-02 copy conversion took `rules`/`hooks`/
 `agents`/`mcp` out of it, and the 2026-09-09 scope split took seven of
 the nine workflow skills out of user scope — so a mid-edit save to
 `/learn` or `/drift-audit` can no longer reach a client-repo session at
-all. What is left at machine-wide blast radius is `code-review` and
-`commit`.
+all. What is left at machine-wide blast radius is `code-review`,
+`commit` and — since it moved back on 2026-09-13 — `land`.
 
 Every commit here is on `main`, and **no merge commit has ever existed**
 (measured 2026-09-02, 324 commits in). The first branch —
@@ -525,8 +537,9 @@ Reconsider if a second silent collision between concurrent sessions
 happens anyway.
 
 Note which skills that trigger actually covers, which the 2026-09-09
-scope split narrowed to two. It is `code-review` and `commit` — the only
-skills still junctioned into user scope, so each `SKILL.md` save is in
+scope split narrowed to two and `land`'s return on 2026-09-13 widened
+back to three. It is `code-review`, `commit` and `land` — the only
+skills junctioned into user scope, so each `SKILL.md` save is in
 every session's listing before the fixtures, the queue row and the rule
 catch up. A **platform** skill is pruned from user scope and junctioned
 nowhere, so authoring one changes no session's payload at any point and
@@ -618,11 +631,12 @@ results, in the order they matter:
 **The 2026-09-09 scope split reopens that last bullet, and it has not
 been re-measured.** The dichotomy held because every workflow skill was
 at user scope, where the shadowing rule made a worktree copy inert. The
-seven skills now in `.claude/skills/` are at project scope *only* — no
+six skills now in `.claude/skills/` are at project scope *only* — no
 user-scope copy exists to outrank them — so a worktree plausibly does
 isolate them, which would be the in-between case the bullet says cannot
-exist. Treat the conclusion as covering `code-review` and `commit`, and
-re-run the worktree probe before relying on it for the other seven.
+exist. Treat the conclusion as covering `code-review`, `commit` and
+`land`, and re-run the worktree probe before relying on it for the
+other six.
 
 Two supporting facts, both measured the same day. `-SkillGroups` does
 **not** prune user scope when `-ClaudeDir` is given — the prune loop
@@ -744,8 +758,8 @@ one or the other accordingly rather than restoring the duplicate.
   `scripts/lint-frontmatter.py` enforces exactly that split, and its two
   arms are proved the way a `files:` pattern is — one file, copied to both
   paths, must fail at `skills/workflow/…` and pass at `.claude/skills/…`.
-  Of the seven, `learn`, `author-skill` and `drift-audit` read
-  `model: fable` and the other four `model: inherit` — the split is where
+  Of the six, `learn`, `author-skill` and `drift-audit` read
+  `model: fable` and the other three `model: inherit` — the split is where
   irreducible judgment sits rather than where the checklist is longest,
   so routing a learning to the right file and wording a `description`
   get the better model while executing a numbered brief does not.
@@ -779,13 +793,14 @@ one or the other accordingly rather than restoring the duplicate.
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
   this repo).
   `effort` is `max` on the eight skills that drive this repo —
-  `code-review` in `skills/workflow/`, and `drift-audit`,
+  `code-review` and `land` in `skills/workflow/`, and `drift-audit`,
   `author-skill`, `test-skill`, `learn`, `drift-update`,
-  `drift-handoff`, `land` in `.claude/skills/` — `xhigh` on `commit`,
+  `drift-handoff` in `.claude/skills/` — `xhigh` on `commit`,
   and
   left commented on every platform skill, which therefore inherits
-  `max`. The 2026-09-09 scope split moved six of the seven without
-  changing any pin: `effort` applies on both the slash and
+  `max`. No scope move has changed a pin — neither the 2026-09-09 split
+  nor `land` coming back on 2026-09-13: `effort` applies on both the
+  slash and
   model-invocation paths and is scope-independent, so a project-scope
   skill keeps its floor exactly as a user-scope one does.
   Note what that means: *while the session actually sits at* `max`,

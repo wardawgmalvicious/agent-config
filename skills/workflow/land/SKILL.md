@@ -1,6 +1,6 @@
 ---
 name: land
-model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
+# model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
 description: "Take a committed branch from local to merged — push it, confirm which GitHub account each tool actually acts as in this repo, open the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."
@@ -45,23 +45,31 @@ git remote -v                   # who owns the repo
 Then `github-mcp` → `get_me` when that server is loaded, and compare
 every login against the repo owner. Use the tool whose account matches.
 
-On this machine `gh` is **folder-scoped** (since 2026-09-04): both
-shell profiles wrap it to act as the account named by the repo's
-`user.name`, resolved per call through a scoped `GH_TOKEN`, so a
-personal repo gets the personal account and a client root gets the
-client one. Two consequences. `gh auth status` reports the keyring's
-*active* account, not the one the wrapper will use — `gh api user` is
-the honest probe. And the wrapper is a profile function, so a `gh` run
-from a script or hook that skips the profile falls back to the active
-account; probe through the same shell the PR command will use.
+`gh` may be **folder-scoped**, and whether it is changes what the probe
+means. On the machine this skill was written for it is (since
+2026-09-04): both shell profiles wrap `gh` to act as the account named
+by the repo's `user.name`, resolved per call through a scoped
+`GH_TOKEN`, so a personal repo gets the personal account and a client
+root gets the client one. Three consequences.
+
+- `gh auth status` reports the keyring's *active* account, not the one
+  the wrapper will use. **`gh api user -q .login` is the honest probe**
+  either way, which is why it is the command above.
+- The wrapper is a profile function, so a `gh` run from a script or
+  hook that skips the profile falls back to the active account. Probe
+  through the same shell the PR command will use.
+- **Where no such wrapper exists, `gh` simply acts as whichever account
+  is active** — which makes the probe more necessary, not less. Do not
+  read the absence of folder-scoping as safety.
 
 `github-mcp` is project scope (`.mcp.json`), bound to one token, and
 absent in any repo that does not declare it. Loaded and matching,
 prefer it — it is the identity the repo's own config chose. Absent, a
 `gh` whose *confirmed* login matches the repo is the right tool, not a
 fallback (2026-09-04, a client repo: no MCP, `gh` confirmed as the
-client account, PR opened cleanly). Root `CLAUDE.md` states the rule;
-what it cannot do is make the comparison happen.
+client account, PR opened cleanly). A `CLAUDE.md` may state the rule —
+this machine's user-scope one does; what it cannot do is make the
+comparison happen.
 
 **Nothing warns you.** `gh` is authenticated, it works, it reports
 success — the PR simply appears under the other account. A wrong-account
