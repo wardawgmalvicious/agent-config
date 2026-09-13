@@ -109,6 +109,22 @@ repos:
         files: '^(skills/|\.claude/skills/|tests/skills/\.tested\.json$)'
         pass_filenames: false
 
+      # docs/audits/<date>/<source>/README.md is GENERATED from the briefs
+      # beside it -- their metadata blocks and execution logs -- and this
+      # fails when one is stale or missing. Status is already recorded once,
+      # in each brief's own log; the index exists so that opening eleven
+      # files is not the only way to learn which of eleven briefs ran, and
+      # it stays a derived view rather than a second copy of the fact only
+      # because this hook refuses a commit where the two disagree. Whole
+      # set, not changed files: a stamp and its index are two files, and
+      # either one alone is the interesting case.
+      - id: lint-audit-index
+        name: Check each audit directory's README matches its briefs
+        entry: python scripts/audit-status.py --check
+        language: python
+        files: '^docs/audits/'
+        pass_filenames: false
+
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
       # so lint-frontmatter.py would reject every one and is scoped away from
       # them. This validates them instead, blocks a personal-repo name or

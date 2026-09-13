@@ -115,6 +115,11 @@ uv run scripts/lint-skill-overrides.py
 # Record a run with --stamp <skill> --phase activation,behaviour (or real-use).
 uv run --with pyyaml scripts/skill-status.py --stale
 
+# Where every drift-audit brief stands: a generated README.md in each
+# docs/audits/<date>/<source>/, derived from the briefs' metadata blocks
+# and execution logs. Never edited by hand; --check is the pre-commit gate.
+uv run scripts/audit-status.py
+
 # Which of a repo's files activate no rule and no skill at all. One repo,
 # or --sweep a parent for every repo under it, ranked by weight. Counts
 # per FILE, not per extension. Findings are candidates, not work.
@@ -127,7 +132,8 @@ uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py --sweep C
 uv run --with pyyaml scripts/lint-instructions.py
 
 # All checks, the way CI runs them (gitleaks, ruff, frontmatter, scopes,
-# skillOverrides coverage, test-stamp orphans, instructions, identity)
+# skillOverrides coverage, test-stamp orphans, audit indexes, instructions,
+# identity)
 pre-commit run --all-files
 pre-commit run lint-skills --all-files     # one hook only
 
