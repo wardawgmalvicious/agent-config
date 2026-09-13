@@ -10,7 +10,7 @@ disable-model-invocation: false
 
 Filesystem-style CLI over the Fabric + Power BI REST APIs. Paths use `Workspace.Workspace/Item.ItemType/...`. The `.ItemType` suffix is **mandatory** on items. Workspaces use `.Workspace`; hidden roots like `.capacities`, `.connections`, `.domains`, `.gateways` expose tenant resources.
 
-**Version / install:** v1.5 went GA March 2026; current is v1.6.x (April 2026+). Install with `pip install ms-fabric-cli` or `uv tool install ms-fabric-cli`. Requires Python 3.10, 3.11, 3.12, or 3.13. Pre-installed in Fabric Notebooks (no install step needed when running `!fab ...` from a notebook cell). Confirm version with `fab --version`. Canonical per-command reference: [microsoft.github.io/fabric-cli](https://microsoft.github.io/fabric-cli/). Release notes: [github.com/microsoft/fabric-cli/releases](https://github.com/microsoft/fabric-cli/releases).
+**Version / install:** v1.5 went GA March 2026; current is v1.7.x (v1.7.0 shipped 2026-08-18, after v1.6.1 on 2026-04-29). Install with `pip install ms-fabric-cli` or `uv tool install ms-fabric-cli`. Requires Python 3.10, 3.11, 3.12, or 3.13. Pre-installed in Fabric Notebooks (no install step needed when running `!fab ...` from a notebook cell). Confirm version with `fab --version`. Canonical per-command reference: [microsoft.github.io/fabric-cli](https://microsoft.github.io/fabric-cli/). Release notes: [github.com/microsoft/fabric-cli/releases](https://github.com/microsoft/fabric-cli/releases).
 
 **Interactive (REPL) mode:** `fab config set mode interactive` switches `fab` to a persistent shell where commands no longer need the `fab` prefix and `cd` state survives between calls. Default is command-line mode.
 
@@ -60,6 +60,7 @@ Names with spaces or apostrophes work inside double quotes with no escaping: `"C
 | `fab cp <src> <dst> [-r] [-f] [-bpc]` | Copy item or files; `-bpc` blocks cross-folder same-name conflicts |
 | `fab mv <src> <dst> [-r] [-f]` | Move / rename |
 | `fab export <path> -o <dir> [-a] [-f] [--format py]` | Export item definition; `-a` entire workspace |
+| `fab bulk-export <path> -o <dir> --recursive [-f]` | Export every supported item in a `.Workspace` or `.Folder`, folder structure kept (**v1.7+**); `--recursive` is required for both targets, and `-f` also waves through a non-empty output dir |
 | `fab import <path> -i <dir> -f` | Import definition from local folder (`-f` required for non-interactive) |
 | `fab ln <link-path> --target <target-path>` | Create a OneLake shortcut (alias `mklink`) |
 
@@ -160,7 +161,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" -X post -i '{"ty
 One-command CI/CD that wraps the [fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/) Python library. Deploys items from local source folders to a target workspace, with environment-aware parameterization. Use this — not `fab api` — for code-first workspace promotion from a Git checkout.
 
 ```bash
-fab deploy --config <config_file> [-tenv <env>] [-P '<json-array>'] [-f] [--output_format <fmt>]
+fab deploy --config <config_file> [-tenv <env>] [-P '<json-array>'] [-f] [--output_format <fmt>] [--bulk_publish]
 ```
 
 | Flag | Purpose |
@@ -170,6 +171,7 @@ fab deploy --config <config_file> [-tenv <env>] [-P '<json-array>'] [-f] [--outp
 | `-P`, `--params '<json>'` | JSON-array of override parameters: `'[{"p1":"v1","p2":"v2"}]'`. **Quote the whole array** — single object form (`-P key=value`) is *not* what this verb accepts (that's `fab find`'s param style — they differ). |
 | `-f`, `--force` | Skip interactive confirmation (required in CI). |
 | `--output_format <fmt>` | Override output format (json / text / etc.). |
+| `--bulk_publish` | **Experimental, v1.7+.** Publish every item in one bulk-import API call instead of one at a time. |
 
 Examples:
 
