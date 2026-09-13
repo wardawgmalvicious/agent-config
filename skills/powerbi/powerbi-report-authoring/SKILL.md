@@ -419,6 +419,17 @@ Vendored verbatim from [microsoft/skills-for-fabric](https://github.com/microsof
 v0.3.13, commit `b8d541c`, MIT-licensed ([LICENSE.upstream](LICENSE.upstream)).
 When re-syncing, diff against upstream and re-apply this section only.
 
+**Currency — checked 2026-09-13, not re-synced.** The pin above is still
+the exact commit these bytes came from: `SKILL.md` blob `e8dff43c` and
+`references/` tree `c19654d1` are identical at `b8d541c` and at `main`,
+so the text is current through v0.3.16 (`f1802196`) by construction. That
+release's only change on this path is a generated `apm.yml` (587 B), and
+it is deliberately **not** vendored — Claude Code reads `SKILL.md`, never
+`apm.yml`, which exists to drive `apm install`, an acquisition route this
+repo does not use. Nothing here would lint it either: both
+`scripts/lint-frontmatter.py` and `scripts/lint-skill-scopes.py` select
+on `SKILL.md`. Expect it in a re-sync diff and skip it.
+
 Local deviations from the upstream routing:
 
 - `powerbi-report-planning` is **not installed** — use `pbir-report-workflow`
