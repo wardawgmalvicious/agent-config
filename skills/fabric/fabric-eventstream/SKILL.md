@@ -117,7 +117,10 @@ open — "additional start types may be added over time". Scope
 and managed identity all work.
 
 **Not every node can pause, and resume options differ per node.** The Custom
-endpoint and Eventhouse (Direct Ingestion) nodes have no toggle at all, and most
+endpoint (source and destination alike) has no toggle at all. An Eventhouse
+destination depends on its `dataIngestionMode`: `DirectIngestion` cannot pause,
+while `ProcessedIngestion` — event processing before ingestion — offers all
+three resume options. Most
 CDC and Kafka-family sources resume only from when streaming was last stopped.
 Check [Learn's per-node table](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/pause-resume-data-streams)
 before picking a `startType`.
