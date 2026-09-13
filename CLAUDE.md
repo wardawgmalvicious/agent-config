@@ -659,6 +659,31 @@ shipped with that reference knowingly stale and a note saying so. The
 other session fixed it themselves — the note is what would have carried
 it if they hadn't.
 
+**The index is shared too, so staging is not isolation — only a commit
+is.** An uncommitted change of yours to a file the other session also
+commits can vanish, staged or not, and `git status` afterwards looks
+innocent. On 2026-09-12 a `skill-status.py --stamp` entry in
+`tests/skills/.tested.json` was lost twice to the other session's
+commits — once from the working tree, once from the working tree *and*
+the index while it sat staged — and a `git add <path>` in between swept
+in a hunk they had written seconds earlier. Which step of their commit
+cycle discarded it was not established; pre-commit's stash/restore
+around a commit is the likely one. What worked, in order:
+
+- **Write and commit in one chained command.** Re-run the write
+  immediately before `git add`, and `git diff --stat <path>` must show
+  your hunk alone; the gap between checking and staging is where the
+  sweep happened.
+- **Stage one hunk with `git apply --cached <patch>`** when theirs is
+  already in the file. It applies a hand-cut patch to the index without
+  touching the working tree, so `git diff --cached` shows yours alone and
+  their hunk stays on disk for them — the non-interactive `git add -p`,
+  which the tool shells cannot run. It helps only when your hunk is
+  separable from theirs; a line inside their added block is still the
+  blind spot above.
+- **`fatal: Unable to create '.git/index.lock': File exists` is their
+  commit in flight**, not a stale lock. Wait and retry; never delete it.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

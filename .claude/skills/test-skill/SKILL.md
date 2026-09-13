@@ -369,6 +369,13 @@ from the **working tree** — which is what this skill ran against — and
 retest. Nothing else records a test, so a run without a stamp did not
 happen as far as the next session can tell.
 
+**The stamp is a working-tree write that another live session's commit
+can discard**, staged or not — it happened twice on 2026-09-12 before a
+re-stamp chained straight into `git add` and `git commit` landed. When a
+second session is live in this tree, hand `/commit` the stamp command to
+re-run immediately before staging, and re-check the verdict after the
+commit (root `CLAUDE.md`, Branching and concurrent sessions).
+
 **Then delete the brief.** It stayed queued in `docs/handoffs/execute/`
 until this test ran, and nothing else removes it: on 2026-09-12 a brief
 whose skill had been tested and landed that morning was still on disk
