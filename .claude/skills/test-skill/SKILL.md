@@ -432,11 +432,17 @@ second session is live in this tree, hand `/commit` the stamp command to
 re-run immediately before staging, and re-check the verdict after the
 commit (root `CLAUDE.md`, Branching and concurrent sessions).
 
-**Then delete the brief.** It stayed queued in `docs/handoffs/execute/`
-until this test ran, and nothing else removes it: on 2026-09-12 a brief
-whose skill had been tested and landed that morning was still on disk
-that afternoon, reading as "authored, untested". Grep for links to it
-and re-point them in the same change.
+**Then delete the brief — if it is still there.** An `/author-skill`
+brief stays queued in `docs/handoffs/execute/` until this test runs,
+and nothing else removes it: on 2026-09-12 a brief whose skill had been
+tested and landed that morning was still on disk that afternoon,
+reading as "authored, untested". Grep for links to it and re-point them
+in the same change. An **edit** brief runs the other way — the queue
+retires it in the commit that lands its work, so its absence is correct
+and the edited skill carries no "untested" marker on disk at all;
+`skill-status.py --stale` is the only thing that says so. `land`,
+2026-09-13: `31d2f4f` implemented `land-branch-cleanup.md` and deleted
+it in one commit, and the skill went twelve commits unstamped.
 
 **A `docs/audits/` brief is recorded, not deleted.** That directory is
 a ledger (`docs/audits/README.md`) — deleting from it loses the entry.
