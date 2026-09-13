@@ -175,6 +175,16 @@ down in a `finally`.
 cumulative delta, so 56 fixtures cost one session rather than 56. That
 is what makes this affordable enough to actually run.
 
+**Skip this step when the activation stamp is already current.** The
+stamp hashes `paths:` alone, so on a retest after a body or
+`description` edit `scripts/skill-status.py` still rates activation
+current and a cold session would re-prove an unchanged fact; the static
+check in step 5 is the whole regression, and the Phase B probe witnesses
+activation anyway because a conditional skill is unreachable until a
+matching file is Read. First applied 2026-09-12 on
+`fabric-semantic-model-ai-instructions` — activation stamped
+2026-09-01, static 16/16, no session spent.
+
 The script already refuses the dangerous shapes, so do not re-implement
 guards around it: it rejects a `ProbeRoot` inside this repo, refuses
 user scope as a deploy target, and will not reuse a directory lacking
