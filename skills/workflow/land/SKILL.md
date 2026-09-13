@@ -3,14 +3,15 @@ name: land
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
-description: "Take a committed branch from local to merged — push it, confirm which GitHub account each tool actually acts as in this repo, open the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forward main and check CI. Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in; the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before pushing main. To make the commits first use commit; to review before landing, code-review."
+description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forwards main and reports CI. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
+when_to_use: "Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in — the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them."
 ---
 
 # Landing a branch
 
 Take a branch that is **already committed** and get it merged. `commit`
-ends by reporting hashes "against a clean tree" with an explicit note
-that nothing was pushed; this starts exactly there.
+ends by reporting its hashes with an explicit note that nothing was
+pushed; this starts exactly there.
 
 Two things here are irreversible or outward-facing — opening the PR and
 pushing `main` — so the procedure gates each one.
@@ -18,13 +19,24 @@ pushing `main` — so the procedure gates each one.
 ## 1. Preflight
 
 ```bash
-git status --short              # must be clean
+git status --short              # see below — clean, or knowingly left
 git branch --show-current       # must not be main
 git log --oneline origin/main..HEAD
+git log --merges --oneline | wc -l   # baseline for step 8
 ```
 
-A dirty tree means `commit` has not finished. Nothing to land means
-there is nothing to do — say so rather than opening an empty PR.
+**A dirty tree is not automatically unfinished work.** `commit` ends on
+a clean tree *or* on remaining lines it names as intentionally left, so
+a leftover is a question rather than a stop: ask whether it belongs in
+this branch. Uncommitted work does not travel into the PR either way —
+what matters is that nothing which *should* have been committed is
+sitting unstaged. Anything you cannot account for, stop and ask.
+
+Record the merge count now. Step 8 asserts it is unchanged, and after
+the merge there is nothing left to compare against.
+
+Nothing to land means there is nothing to do — say so rather than
+opening an empty PR.
 
 **Ask whether another session is live in this working tree.** Step 7
 runs `git switch`, and one working tree has one HEAD, so the switch is
@@ -153,19 +165,39 @@ the merge button is never needed.
 
 Why not each alternative:
 
-- **The merge button / a merge commit** — adds a commit that this repo
-  has never had.
+- **The merge button** — whatever it is configured to do, it is not
+  this. Check what the repo actually offers before assuming the button
+  was an option at all: where only squash is enabled, the button can
+  *only* do the one thing this skill refuses, so there is no version of
+  pressing it that preserves the split.
+- **A merge commit** — adds a commit to a history that may never have
+  had one. `git log --merges --oneline | wc -l` from step 1 says
+  whether this repo is in that category; a `0` there makes a merge
+  commit a visible break in convention rather than a neutral choice.
 - **Squash** — collapses the logical split `commit` just built. The
   whole point of separate commits is that each is independently
   revertible and citable. Asked for anyway? It is overridable, but not
   silently — see [Constraints](#constraints).
-- **Rebase merge** — rewrites SHAs, and may be disabled outright. Read
-  the setting rather than assuming it: `gh api repos/<owner>/<repo>
-  --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge}'`.
-  Unauthenticated, those fields come back `null` — so a check without a
-  token proves nothing and a rejection surfaces at merge time. A repo's
-  answer is not durable either: a delete-and-recreate resets all three
-  to GitHub's defaults.
+- **Rebase merge** — rewrites SHAs, and may be disabled outright.
+
+Read the three merge settings rather than assuming them. **Prefer a
+committed answer where the repo keeps one** — a repo that version-
+controls its own settings (agent-config keeps them in
+`.github/repo-settings.json`, reconciled by `scripts/repo-settings.ps1
+-Check`) gives you the value someone intended, for free. Otherwise ask
+GitHub:
+
+```bash
+gh api repos/<owner>/<repo> \
+  --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge}'
+```
+
+Unauthenticated, those fields come back `null` — so a check without a
+token proves nothing and a rejection surfaces at merge time. A repo's
+answer is not durable either: a delete-and-recreate resets all three to
+GitHub's defaults, so a committed file and the live repo can disagree
+after one. When they do, the live repo is what the merge obeys and the
+committed file is what needs reapplying.
 
 **`--ff-only` fails loudly rather than inventing a merge commit.** If it
 fails, `main` has moved: stop, reconcile deliberately, and never reach
@@ -173,13 +205,24 @@ for `--force`.
 
 ## 8. Verify
 
-- `pull_request_read` method `get` → expect `merged: true` and a
-  `merged_by` that matches the identity from step 2.
-- `pull_request_read` method `get_check_runs` → read the conclusions.
-  A review bot (for example `copilot-pull-request-reviewer`) is **not** a
-  gate; a `pre-commit` style job is.
-- `git log --merges --oneline | wc -l` — unchanged from before the
-  merge.
+Through the same tool step 2 confirmed — **both routes verify, and the
+`gh` one is not optional.** A PR opened with `gh` and then verified with
+nothing is the half of this skill that used to be missing.
+
+| Check | `github-mcp` | `gh` |
+| --- | --- | --- |
+| Merged, and by whom | `pull_request_read` method `get` | `gh pr view <n> --json state,mergedBy` |
+| CI conclusions | `pull_request_read` method `get_check_runs` | `gh pr checks <n>` |
+
+- Expect `merged: true` and a merging identity that matches step 2.
+- Read the check conclusions rather than the summary. A review bot (for
+  example `copilot-pull-request-reviewer`) is **not** a gate; a
+  `pre-commit` style job is.
+- **`gh pr checks` exits non-zero by design** — documented exit code 8
+  is *checks pending*, and a failure is likewise non-zero. That is the
+  answer, not a broken command; do not retry it as if it had failed.
+- `git log --merges --oneline | wc -l` — unchanged from the step 1
+  baseline.
 - `main` and `origin/main` at the same SHA.
 
 Report the PR number, the merged state, and the CI conclusions. If CI is
