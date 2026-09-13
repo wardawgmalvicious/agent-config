@@ -397,6 +397,16 @@ nothing about any file. `instructions-loaded.log`, `skills-invoked.log`
 and `skillUsage` all count *invocations*, and a path-triggered skill is
 loaded, never invoked — a zero there means nothing.
 
+**The transcript also witnesses which *model* served a turn**, which is
+what checks a `model:` pin in `.claude/skills/`. Each assistant record
+carries `message.model`; a real API turn carries a `msg_…` id and
+non-zero `usage`, while a client-side refusal reads `<synthetic>` with a
+UUID id and zero tokens. Check that value, not the console: a pin can
+resolve to a *different* model than the one named and still answer
+perfectly (`model: fable` ran `claude-fable-5` on CLI 2.1.252), and a
+`[claude-code:unrecognized_model]` warning can print on a call that
+nevertheless succeeds. Measured 2026-09-12.
+
 Directory properties do **not** affect activation: a scratch directory
 outside any repo behaves exactly as this one does. If a run only
 reproduces in one directory, the variable is the tool, not the location.
