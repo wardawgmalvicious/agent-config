@@ -141,6 +141,18 @@ fab api -X post "<endpoint>" -i '<json>|<file>'    # POST with body
 fab api "<endpoint>" -q "value[0].id"              # JMESPath filter
 ```
 
+**`-i` sets `Content-Type: application/json` for you — don't pass `-H` for
+it.** `fab api -i` hands the body to the client as `json=`, and the client
+sets that header on every request that is not a multipart upload; only the
+separate `--file` path skips it, where `requests` supplies its own boundary
+type. A `-H` you pass is merged *after* the default, so it overrides rather
+than supplies. Measured 2026-09-13 against `fab` **1.7.0**
+(`client/fab_api_client.py`, `commands/api/fab_api_request.py`). Upstream's
+`skills-for-fabric` adds `-H "Content-Type=application/json"` to its own
+POST example and Learn's `fab api` example carries it too — on this version
+that is redundant, not required. If you do pass it, the form is `key=value`
+(`=`, not `:` — that is `fab` syntax, not HTTP syntax).
+
 | Audience | Flag | Base URL | Use Cases |
 |---|---|---|---|
 | Fabric | *(default)* | `api.fabric.microsoft.com` | Items, workspaces, operations, admin |
