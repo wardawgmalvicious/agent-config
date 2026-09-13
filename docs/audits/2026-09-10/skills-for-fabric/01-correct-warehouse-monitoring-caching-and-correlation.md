@@ -174,8 +174,20 @@ is why they share this brief.
   Learn pages re-fetched with the quoted text intact, lint clean.
   `fabric-warehouse/SKILL.md` line 223 re-read, still true. Step 5 runs
   once at the end of the run.
-- **Deferred**: behavioural confirmation of the edited skill needs a
-  fresh session.
+- **Behavioural confirmation**: 2026-09-12, `/test-skill` in a fresh
+  session; the deferral below is discharged. Static activation check
+  passed on all 70 fabric fixtures. Cold probe outside this repo: a
+  `Read` of a `.Warehouse/**/*.sql` fixture activated the skill, which
+  then model-invoked as a `Skill` tool_use. All three corrected claims
+  held — caching reported disabled and declined as a tuning step
+  (dated, with the known-issue link), `result_cache_hit` given as
+  `2`/`1`/`0` with no negative values, and Operation Id described as no
+  longer mapping, with the interval-overlap query. A `--safe-mode`
+  baseline with the web tools disabled got all three wrong, which is
+  what makes this a result: it offered
+  `ALTER DATABASE ... SET RESULT_SET_CACHING ON`, encoded `1` as a miss
+  and invented negative reason codes, and joined the Operation Id
+  straight to `distributed_statement_id`.
 - **Deviations**: (1) `REFERENCE.md` line 19 also asserted the old
   encoding — "`result_cache_hit` (negative codes for skip reasons)" —
   about the T-SQL page the constraint named. It is claim 2 of this
