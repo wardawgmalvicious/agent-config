@@ -352,11 +352,21 @@ In a `-p` probe where `/context` is unavailable, use the transcript: a
 model-invoked skill appears as a `Skill` tool_use, while a slash-invoked
 one is **inlined as a command expansion** and produces no `Skill` call —
 so an absent `Skill` record disproves nothing on the slash path.
+The positive witness is the pair: run the slash probe on the query the
+NL arm answered through a `Skill` call, and a slash run with **no**
+`Skill` call that still carries the skill's own detail has proved the
+expansion — without it the model would have had to call `Skill` as the
+NL run did. Use a query the skill answers itself: on one it delegates,
+the only `Skill` call is the delegate's and the run reads as ambiguous.
+Measured 2026-09-13 on `fabric-cli` — NL 3 turns with `Skill
+fabric-cli`, slash 1 turn with none, the same GUID-vs-friendly-name
+table in both; the first slash run, on a section that hands off to
+`fabric-deployment-pipelines`, showed only that skill's call.
 `--output-format stream-json --verbose` is the cheaper route to those
 records — it carries the `tool_use` blocks, the `init` record and, for a
 conditional skill, the `commands_changed` record that witnesses the
-matching `Read` (see Reading a failure) inline, so nothing has to locate
-a session id under `~/.claude/projects/`. Read
+matching `Read` (`references/reading-a-failure.md`) inline, so nothing
+has to locate a session id under `~/.claude/projects/`. Read
 the answers rather than grepping them for expected phrases: on
 2026-09-12 an `/owns|owned/` scan missed "items you own" and nearly
 recorded a passing assertion as a failure.
@@ -449,45 +459,10 @@ activated". Work down this table before touching a glob:
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally |
 
-**The transcript is one of two witnesses.** It is at
-`~/.claude/projects/<project>/<session-id>.jsonl`; an activation is a
-record whose `attachment.type` is `skill_listing` with `isInitial`
-**false**. The `isInitial: true` record is the startup listing and says
-nothing about any file. `instructions-loaded.log`, `skills-invoked.log`
-and `skillUsage` all count *invocations*, and a path-triggered skill is
-loaded, never invoked — a zero there means nothing.
-
-**A `-p` probe has the cheaper witness inline.** With
-`--output-format stream-json --verbose`, the `Read` of a matching file
-emits a `system` record of `subtype` `commands_changed` — between the
-`tool_use` and its `tool_result`, before any `Skill` call — whose
-`commands` snapshot names the skill where `init.slash_commands` did not.
-No session id to locate. It is a **snapshot, not a delta**: a second
-`Read` of the same file re-emits it unchanged, so count names, never
-records; and MCP prompts that connect after startup land in the same
-snapshot, so assert the names you expect rather than diffing it whole
-against `init`. **Undocumented** on 2.1.268 — not on the headless page
-or in the changelog, with an open upstream issue asking for the message
-types to be listed — so a `drift-audit` may find it renamed. Measured
-2026-09-12 across two files and three skills: `cultures/en-US.tmdl`
-took the listing from 67 to 73 with the cultures skill present;
-`model.tmdl` to 72 with `fabric-tmdl` and `fabric-tmdl-api` present and
-the cultures skill correctly absent. The `--safe-mode` baseline and a
-cold slash probe emitted none.
-
-**The transcript also witnesses which *model* served a turn**, which is
-what checks a `model:` pin in `.claude/skills/`. Each assistant record
-carries `message.model`; a real API turn carries a `msg_…` id and
-non-zero `usage`, while a client-side refusal reads `<synthetic>` with a
-UUID id and zero tokens. Check that value, not the console: a pin can
-resolve to a *different* model than the one named and still answer
-perfectly (`model: fable` ran `claude-fable-5` on CLI 2.1.252), and a
-`[claude-code:unrecognized_model]` warning can print on a call that
-nevertheless succeeds. Measured 2026-09-12.
-
-Directory properties do **not** affect activation: a scratch directory
-outside any repo behaves exactly as this one does. If a run only
-reproduces in one directory, the variable is the tool, not the location.
+The witnesses behind that table — the transcript record, the `-p`
+`commands_changed` record, which *model* served a turn, and why the
+directory is not the variable — are in
+[references/reading-a-failure.md](references/reading-a-failure.md).
 
 ## Constraints
 
