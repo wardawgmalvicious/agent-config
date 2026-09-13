@@ -31,7 +31,9 @@ has them in full if a closed decision ever needs re-reading.
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`
 walks those briefs in their own numbered order — so an unexecuted audit
 run is pending work this table does not list. A brief there with no
-`## Execution log` section has not been executed.
+`## Execution log` section has not been executed, and each directory's
+generated `README.md` says which those are in one table — read it before
+opening briefs.
 
 **A stamped brief can still be pending.** `/drift-update` stamps every
 brief it escalates, so the next run skips it and the rule above reads it
@@ -42,6 +44,9 @@ ordered; delete one in the commit that lands its work. Deferred re-checks
 are not listed — the next audit of that source is what performs them.
 Read a brief's log to its end before listing it: a decision can sit in a
 subsection after the stamp, as powerbi 07's 2026-09-08 decline did.
+When a row's work lands, append a `**Closed**: <date> — <how>` line to
+that brief's log in the same commit that deletes the row, so the
+directory index shows the brief as `closed` rather than open forever.
 
 | Needs | Audit briefs |
 | --- | --- |

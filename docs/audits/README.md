@@ -13,8 +13,8 @@ of what upstream looked like that day.
 | Stage | Skill | What lands here |
 | --- | --- | --- |
 | Audit | `/drift-audit` | nothing — findings only, emitted to the conversation |
-| Handoff | `/drift-handoff` | the directory: `00-audit-report.md` + `NN-*.md` briefs |
-| Execute | `/drift-update` | an execution log appended to each brief it runs |
+| Handoff | `/drift-handoff` | the directory: `00-audit-report.md` + `NN-*.md` briefs + a generated `README.md` index |
+| Execute | `/drift-update` | an execution log appended to each brief it runs, and the index regenerated |
 | Commit | `/commit` | the directory, then the stamps alongside the edits they describe |
 
 Commit the directory **before** executing it, even when the same
@@ -50,6 +50,16 @@ and they are exactly what stops a later audit re-litigating a decision.
 
 ## Reading an old directory
 
+- **Start at the directory's `README.md`.** It is one table, a row per
+  brief with the actions it covers, its Kind and its status, generated
+  by `scripts/audit-status.py` from the briefs' own metadata blocks and
+  execution logs. It is never edited by hand — the `lint-audit-index`
+  pre-commit hook fails a commit whose index disagrees with its briefs —
+  so it is a derived view of the logs and not a second copy of them. An
+  `escalated` row links to the follow-up queue; a `closed` date means a
+  later session discharged the brief and recorded it with a `**Closed**:`
+  line in the log. Added 2026-09-13, after eleven briefs in one directory
+  meant eleven files to open to learn which had run.
 - **`/drift-update` with no argument takes the most recent date
   directory.** Retention does not change that, but it does mean older
   directories are now sitting there to be named explicitly. Pass a path
