@@ -97,6 +97,11 @@ discriminating claim for Phase B**: the detail only the skill makes.
 The brief is a ledger entry and is never deleted (step 10). First run
 2026-09-12 on `fabric-semantic-model-ai-instructions` from brief 05.
 
+Such a brief is a **content** edit by construction — Kind says so and
+the `paths:` glob is untouched — so the activation stamp stands and
+**Phase A needs only its static half**. `skill-status.py` says
+`retest-activation` when a glob really moved; trust it over re-running.
+
 The one thing you may never do is invent expectations the skill was
 never written to meet. Reading them off the shipped frontmatter is not
 that; making them up is.
