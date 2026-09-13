@@ -69,9 +69,13 @@ gh api repos/<owner>/<repo> \
   --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge, delete_branch_on_merge}'
 ```
 
-Measured on the consuming repo 2026-09-13: `false`, so the refs there
-genuinely needed removing. The value is not assumed uniform — reading it
-is the point.
+Measured 2026-09-13 on two repos, which **disagree**: `false` on the
+consuming repo, whose refs therefore genuinely needed removing by hand,
+and `true` on this one — where GitHub deletes the head branch itself as
+soon as the PR is marked merged, so the step's remote half has to be
+skipped rather than attempted. The divergence was found while landing
+this brief, on the second repo the step would ever have run in. The
+value is not uniform, which is the whole reason to read it.
 
 ### 4. Say why this outward action is not gated like the others
 
@@ -171,5 +175,9 @@ prompt" is right for a single-contributor repo, and is the half this
 brief cannot validate for client repos. The `delete_branch_on_merge`
 probe is the hedge: where the answer differs by repo, read it.
 
-**Evidence: M.** Two runs, one repo, one day. Everything about shared
-branches and reviewer workflows is reasoned, not observed.
+**Evidence: M, and better on one axis than it was.** The behaviour is
+two runs in one repo on one day, which is thin. But
+`delete_branch_on_merge` is now measured on two repos with opposite
+values, so the case for probing it is observed rather than argued.
+Everything about shared branches and reviewer workflows remains reasoned,
+not observed.
