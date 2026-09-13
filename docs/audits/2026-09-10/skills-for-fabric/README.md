@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 11 — applied 4 · applied with deferrals 2 · escalated 5
+Briefs: 11 — applied 4 · applied with deferrals 2 · closed 1 · escalated 4
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -15,7 +15,7 @@ Briefs: 11 — applied 4 · applied with deferrals 2 · escalated 5
 | [04 measure Fabric's notebook serialization before changing the git-serialization rule](04-measure-notebook-serialization-before-editing.md) | 5 | measurement, then a decision | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [05 add the Git-deploy refresh requirement to fabric-semantic-model-ai-instructions](05-add-lsdl-refresh-to-ai-instructions.md) | 6 | content addition to a platform skill, from Microsoft Learn | applied with deferrals 2026-09-11 |
 | [06 repair the skills-for-fabric registry entry](06-repair-skills-for-fabric-registry-entry.md) | 7 | changes how `/drift-audit` fetches, filters and verifies this source, plus one… | applied with deferrals 2026-09-11 |
-| [07 decide which new-skill candidates to author](07-decide-new-skill-candidates.md) | 8 | decision | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [07 decide which new-skill candidates to author](07-decide-new-skill-candidates.md) | 8 | decision | escalated 2026-09-11 · closed 2026-09-12 |
 | [08 decide on a catalog-wide listing-budget check and a cross-skill reference lint](08-decide-catalog-budget-and-reference-lints.md) | 9 (first half) | decision, then possibly new lint code in `scripts/` wired into pre-commit | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [09 probe whether "query my Fabric SQL database" reaches fabric-database](09-probe-sql-database-query-routing.md) | 9 (second half) | measurement of trigger behaviour | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [10 verify the hosted Power BI modeling MCP endpoint before adding it](10-verify-hosted-powerbi-modeling-endpoint.md) | 10 (first half) | research gate, then at most one template entry | applied 2026-09-11 |

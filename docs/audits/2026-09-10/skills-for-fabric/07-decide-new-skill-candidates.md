@@ -144,3 +144,14 @@ the new name alone. Whether renames should pass at all is D-5 in brief
   `docs/handoffs/execute/README.md` yet. None of the upstream claims
   quoted above has been drilled.
 - **Deviations**: none.
+- **Closed**: 2026-09-12 — all four accepted candidates were authored,
+  discharging this brief's verification: `onelake-catalog-govern-cli` as
+  `fabric-catalog-governance` (`1a6c068`), `activator-cli` as
+  `fabric-activator` (`b5454d2`), `dataflows-cli` as `fabric-dataflow`
+  (`9153d3d`), and `deployment-pipelines-authoring-cli` as
+  `fabric-deployment-pipelines` (`529fce7`). The upstream claims quoted
+  above reached those skills through `/author-skill`'s own drilling —
+  the three `deployment-pipelines-authoring-cli` facts at lines 80–91
+  are all present in the authored `SKILL.md` — and **not** through any
+  re-drill by the 2026-09-12 audit, which did not independently confirm
+  them.

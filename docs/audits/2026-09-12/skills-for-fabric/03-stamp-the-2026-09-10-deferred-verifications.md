@@ -159,3 +159,30 @@ execution logs while establishing its own window, which is how the two
 open deferrals surfaced; brief 07's closure is a side effect of the four
 `/author-skill` runs that happened between the two audits rather than
 anything this audit did.
+
+## Execution log
+
+- **Executed**: 2026-09-13 — applied
+- **Session**: fresh, and not a `/drift-update` run. The brief was read
+  off disk after a review of where the 2026-09-10 directory stood; no
+  audit or handoff ran in the session. Executed ahead of the rest of
+  this directory at the user's direction, so the pending `/drift-update`
+  run skips it rather than appending the bullets a second time.
+- **Files changed**:
+  `docs/audits/2026-09-10/skills-for-fabric/06-repair-skills-for-fabric-registry-entry.md`,
+  `docs/audits/2026-09-10/skills-for-fabric/07-decide-new-skill-candidates.md`
+- **Verification**: steps 1–4 passed. Step 1: both files carry the new
+  dated bullet. Step 2: `Step 4, the behavioural` is present and
+  unedited — the closures are additions, as this brief requires. Step 3:
+  `file pagination into SKILL.md` still returns `1`, so the second
+  deferral survived. Step 4: all four skills exist. Step 5:
+  `skill-status.py --check` clean. Step 6: `pre-commit run --all-files`
+  clean at commit time.
+- **Deviations**: one. Brief 07 got a `**Closed**:` key, so the
+  2026-09-10 index now reads `closed` for it; brief 06 deliberately did
+  **not**, because its D-1 knock-on is still open and this brief's own
+  "Out of scope" section keeps it that way. A `**Closed**:` key there
+  would have flipped its row to `closed` and stranded the one item the
+  brief says to leave standing. The bullet says so in the log.
+- **Sequencing**: honoured. Brief 02 was not bundled; nothing in the
+  live registry entry was touched.

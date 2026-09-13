@@ -5,12 +5,12 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 5 — pending 5
+Briefs: 5 — applied 1 · pending 4
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
 | [01 re-site the hosted Fabric MCP placement rule](01-resite-the-hosted-fabric-mcp-placement-rule.md) | 1 and 6 | an investigation that gates a prose correction in four files and a template decision | pending |
 | [02 repair the skills-for-fabric registry entry](02-repair-the-skills-for-fabric-registry-entry.md) | 2 | content repair to one registry entry | pending |
-| [03 stamp the 2026-09-10 deferred verifications](03-stamp-the-2026-09-10-deferred-verifications.md) | 3 | bookkeeping in a committed dated ledger | pending |
+| [03 stamp the 2026-09-10 deferred verifications](03-stamp-the-2026-09-10-deferred-verifications.md) | 3 | bookkeeping in a committed dated ledger | applied 2026-09-13 |
 | [04 decide the vendored `apm.yml` manifests](04-decide-the-vendored-apm-manifests.md) | 4 | a decision | pending |
 | [05 measure the `fab api` Content-Type header](05-measure-the-fab-api-content-type-header.md) | 5 | an investigation | pending |

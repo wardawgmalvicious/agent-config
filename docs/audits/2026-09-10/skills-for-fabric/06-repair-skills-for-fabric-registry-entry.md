@@ -271,3 +271,25 @@ bookkeeping on the run's own result.
      before v0.3.12, rather than `2b3530e8`. The two raw files were
      diffed locally, over anonymous HTTPS, after github-mcp's tree
      listings had narrowed the change to `SKILL.md`.
+- **Step 4 discharged**: 2026-09-12. The deferred behavioural check ran
+  as its own fresh-session `/drift-audit 2026-08-20 --sources
+  skills-for-fabric` — the exact invocation this log names, at the exact
+  known-answer floor, bounded at `65902bae`. All four of the brief's
+  step-4 criteria passed. D-1's no-whole-file rule held: one
+  `CHANGELOG.md` patch per commit via `get_commit` pagination, and the
+  44,935-byte base file went to the scratchpad over `curl` and never
+  entered the conversation. D-3's tree-SHA check ran, with all four
+  `powerbi-report-*` trees identical at `b8d541c` and `65902bae`.
+  Known-answer assertion 1 returned `[]` on both vendored paths since
+  `2026-08-20T13:22:57Z`, and unbounded returned `f1802196` on both, as
+  this log predicted. Assertions 2 and 3 passed — the sole in-window
+  lexical hit, `onelake-catalog-govern-cli`, was subtracted by the
+  counterpart table, and the retired names stayed in bucket (d). The run
+  is `docs/audits/2026-09-12/skills-for-fabric/`.
+- **Still deferred**: D-1's knock-on alone — generalizing `get_commit`
+  file pagination into `SKILL.md` § 4a. The 2026-09-12 run used
+  pagination eleven times without a failure, which is evidence for it,
+  but that run's report did not promote it to a recommended action, so
+  it stays a separate decision. This brief therefore carries **no**
+  `Closed` key while that stands: the index must keep reading `applied
+  with deferrals`, not `closed`.
