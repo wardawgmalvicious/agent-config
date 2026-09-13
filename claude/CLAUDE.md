@@ -102,6 +102,17 @@ delimiters are passed through as literal text. Put them in a `.ps1`
 written by a quoted heredoc and run that file instead. Silent case
 verified 2026-09-02.
 
+### Counting carriage returns
+
+**`grep -c $'\r'` cannot count carriage returns in the Bash tool, and it
+fails in both directions.** Bare, it returns 0 on a CRLF file; inside
+`$(...)` the `$'\r'` arrives empty and the empty pattern matches every
+line, so an LF file reads as CRLF throughout. Both look like answers.
+Count bytes instead — `tr -cd '\r' < file | wc -c` is right in both
+contexts — or ask git, whose `git ls-files --eol <path>` reports `w/lf`
+or `w/crlf` for anything tracked. Measured 2026-09-13 against known LF
+and CRLF files in both contexts.
+
 ### A leading `/` argument becomes a Git install path
 
 MSYS2 rewrites any Bash-tool argument starting with a slash into a
