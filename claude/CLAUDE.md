@@ -59,6 +59,15 @@ blocks silently until the tool timeout, or — if stdin is `NUL` — loops on
 (`uv run python - <<'PYEOF'`) or a pipe is fine: it makes stdin a real
 file, `isatty()` goes False, and the script runs.
 
+Python's stdout is **cp1252** in both tool shells — `sys.stdout.encoding`,
+measured 2026-09-13 under `python3.13` and `uv run python` alike. A
+character outside that set raises `UnicodeEncodeError` **mid-print**, so
+the script dies partway with its output half-written; one inside it
+prints mangled. Em dashes and curly quotes are enough, which makes this
+routine when parsing a transcript or any prose this repo wrote. Set
+`PYTHONIOENCODING=utf-8` on anything printing non-ASCII, or write to a
+file with `encoding='utf-8'` and Read that instead.
+
 The same stdin reaches anything that prompts — `git rebase -i`, `fab`
 without `-f`, `Read-Host`. Expect a block until the tool timeout rather
 than a clean failure, and note that `Read-Host` under `pwsh
