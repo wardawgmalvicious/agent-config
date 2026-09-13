@@ -83,7 +83,10 @@ which is the same reason `/drift-handoff` gives them sibling directories.
 Then, in the resolved directory:
 
 - `Glob` the numbered briefs. `00-audit-report.md` is not a brief; it is
-  evidence, and step 4 governs when to open it.
+  evidence, and step 4 governs when to open it. `README.md` is not one
+  either: it is the generated index of the directory, worth a glance for
+  where things stand, but the `## Execution log` in each brief is the
+  resume mechanism, not the index's status column.
 - **Skip any brief already carrying an `## Execution log` section.** That is
   the resume mechanism. Report skipped-as-done briefs by name so a short run is
   never mistaken for an empty one.
@@ -242,6 +245,28 @@ steps, which were never run.
 Append; never rewrite the brief above it. The brief as written is the record of
 what was decided, and the log is the record of what happened — keeping them
 distinct is what makes the pair auditable.
+
+Then regenerate the directory's index:
+
+```bash
+uv run scripts/audit-status.py --dir <the resolved directory>
+```
+
+That rewrites its `README.md` from the briefs, so this brief's row moves from
+`pending` to the outcome and date just stamped. The index is derived, never
+edited, and the `lint-audit-index` pre-commit hook fails a commit whose index
+disagrees with its briefs — so a stamp and its regenerated README are one
+commit.
+
+**`- **Closed**: <ISO date> — <how>` is the one key added after the stamp**,
+by whichever later session discharges what the log left open — an
+`/author-skill` run that authored the accepted candidates, a `/drift-audit`
+run that performed the deferred behavioural check, a decision the user made.
+Append it to the existing log; the `Executed` and `Deferred` lines were
+accurate when written and stay as they are. The index reads it and shows the
+row as `closed`. Without it an escalated brief reads as open forever, which is
+how the four skills authored from 2026-09-10 brief 07 left no trace in the
+ledger until a later audit wrote a brief to record them.
 
 `docs/audits/` is tracked, so these stamps are history and not just working
 state: they make a re-run resumable, and they are also the record of what a

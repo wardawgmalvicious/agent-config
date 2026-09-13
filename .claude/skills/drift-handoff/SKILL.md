@@ -1,8 +1,8 @@
 ---
 name: drift-handoff
-description: "Turn a completed drift-audit report into handoff briefs on disk. Use immediately after a /drift-audit run, or when the user asks to prepare handoffs, write up the findings, or capture the recommended actions from an audit. Writes one directory per run — docs/audits/<audit-date>/<source-id>/ — holding the audit report verbatim as 00-audit-report.md plus one numbered brief per recommended action, grouped so each brief covers a single kind of work with its own verification steps. Only recommended actions become briefs; every other finding stays a conversational read-through. Runs inline and reads the report from the current session, so it cannot reconstruct an audit it did not see."
+description: "Turn a completed drift-audit report into handoff briefs on disk. Use immediately after a /drift-audit run, or when the user asks to prepare handoffs, write up the findings, or capture the recommended actions from an audit. Writes one directory per run — docs/audits/<audit-date>/<source-id>/ — holding the audit report verbatim as 00-audit-report.md plus one numbered brief per recommended action, grouped so each brief covers a single kind of work with its own verification steps, and a generated README.md indexing them. Only recommended actions become briefs; every other finding stays a conversational read-through. Runs inline and reads the report from the current session, so it cannot reconstruct an audit it did not see."
 argument-hint: "[source-id]"
-allowed-tools: Read Write Glob Grep
+allowed-tools: Read Write Glob Grep Bash
 model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
 effort: max
 disable-model-invocation: false
@@ -40,7 +40,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 - `<audit-date>` — the date the audit **ran**, ISO format. Not the window floor.
 - `<source-id>` — the registry id from `.claude/skills/drift-audit/references/sources.md` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
 
-`Write` creates missing parent directories, so there is no separate mkdir step and no reason to reach for `Bash`.
+`Write` creates missing parent directories, so there is no separate mkdir step. The only `Bash` call this skill makes is the index generation in step 7.
 
 **Before writing anything, `Glob` the target directory.** If files already exist there, `Read` them and stop to ask. Two audits of one source on one day are different audits; silently overwriting the first one's briefs destroys the only copy. Offer to suffix the directory rather than overwrite.
 
@@ -89,15 +89,24 @@ Write each brief to be read **cold**, by a session with none of this conversatio
 
 This boundary is the skill's main editorial rule, and it has a failure mode: an empty or short file set looks like a clean audit. So **say in chat which findings were deliberately left unwritten**, by name, with one line each on why they stayed conversational. A finding the user wants briefed after all is a new `/drift-audit` recommendation or an explicit request — not a judgment call made here.
 
-## 7. Report and stop
+## 7. Generate the index, report, and stop
 
-List the files written, one line each:
+Once every brief is on disk, generate the directory's index:
+
+```bash
+uv run scripts/audit-status.py --dir docs/audits/<audit-date>/<source-id>
+```
+
+That writes a `README.md` beside the briefs — one row per brief with the actions it covers, its Kind and its status, every row `pending` at this point — derived from the metadata blocks step 5 wrote. It is the one `Bash` call this skill makes, scoped with `--dir` so it creates this directory's index and touches no other. Never write the README by hand: it is generated, `/drift-update` regenerates it after every stamp, and the `lint-audit-index` pre-commit hook fails a commit whose index is missing or disagrees with its briefs. If the script reports a brief as `unparsed`, the metadata block is malformed — fix the brief, not the README.
+
+Then list the files written, one line each:
 
 ```
 docs/audits/2026-08-29/vscode-agent/
   00-audit-report.md                          audit report, verbatim
   01-correct-vscode-version-attribution.md    actions 1–2 · prose correction
   02-repair-vscode-agent-registry-entry.md    actions 3–4 · registry repair
+  README.md                                   generated index
 ```
 
 Then the deliberate omissions from step 6. Then stop.
