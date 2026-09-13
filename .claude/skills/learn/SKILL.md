@@ -1,7 +1,7 @@
 ---
 name: learn
 description: "Use when the user says 'learn!', 'capture this', 'update the skill', 'remember this for next time', or when a session surfaces a non-obvious pitfall, a doc-vs-reality gap, or a missing step in a skill/rule that was in use. Routes session learnings back into this repo's persistent guidance — skills/<group>/<name>/SKILL.md (+ references/), claude/rules/*.md, CLAUDE.md — rather than auto-memory. Automatically identifies which skills and rules were loaded during the session, checks for existing coverage (especially fabric-gotchas), verifies the learning against official docs before encoding it, proposes the edit at the right heading as a diff for approval, then hands off to /commit. Never edits silently, never writes domain knowledge to memory."
-model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
+model: fable  # judgment-heavy; alias not dated ID — see root CLAUDE.md
 effort: max
 disable-model-invocation: false
 ---

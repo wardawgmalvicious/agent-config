@@ -718,9 +718,20 @@ it if they hadn't.
   `scripts/lint-frontmatter.py` enforces exactly that split, and its two
   arms are proved the way a `files:` pattern is — one file, copied to both
   paths, must fail at `skills/workflow/…` and pass at `.claude/skills/…`.
-  The seven read `model: inherit`; the commented values under `skills/`
-  are still the documentation they always were, `# model: inherit`
-  everywhere except `commit` (`# model: sonnet`).
+  Of the seven, `learn`, `author-skill` and `drift-audit` read
+  `model: fable` and the other four `model: inherit` — the split is where
+  irreducible judgment sits rather than where the checklist is longest,
+  so routing a learning to the right file and wording a `description`
+  get the better model while executing a numbered brief does not.
+  `drift-update` and `test-skill` are deliberately unpinned on those
+  grounds, and `drift-update` most deliberately: it hands every decision
+  or investigation brief back rather than executing it, so its judgment
+  is externalized by design. Fable is the Opus tier at twice the price
+  (measured $10/$50 per MTok against $5/$25 on 2026-09-12), which is what
+  makes this a per-skill call and not a default.
+  The commented values under `skills/` are still the documentation they
+  always were, `# model: inherit` everywhere except `commit`
+  (`# model: sonnet`).
   Note what an active pin is worth there: `model:` is slash-only, and the
   documented way to reach every one of those seven is to type its name, so
   the limit that made the field near-useless under `skills/` does not
