@@ -82,8 +82,14 @@ Full permissions and per-action tables:
 
 ## Delegated scopes
 
-Scopes are **per operation** — provision a service principal with least
-privilege.
+Scopes are **per operation**, and they govern **delegated (user) access
+only**. A service principal or managed identity on client credentials
+requests `https://api.fabric.microsoft.com/.default` and is authorized
+by Fabric rather than Entra — the tenant setting *Service principals can
+use Fabric APIs*, pipeline Admin, and the workspace roles above. Skip API
+permissions on that app registration entirely, as the docs say outright;
+there is no `Pipeline.Deploy` to grant an SPN, and delegated scopes on
+the registration do nothing for its token.
 
 | Operation | Required delegated scope |
 |---|---|
@@ -172,12 +178,17 @@ path without it, is a 404 that reads like a missing feature.
 Write the body to a file rather than inlining it — a multi-line inline
 JSON body is mangled on Windows shells.
 
-**It is a long-running operation.** The call returns **`202 Accepted`**
-with the operation ID in the **`x-ms-operation-id` response header**
-(alongside `Location`, `deployment-id` and `Retry-After`) — *not* in the
-body. Poll `GET /v1/operations/{operationId}` until the state is terminal.
-For **24 hours** after completion the extended result is available from
-Get Operation Result.
+**It is a long-running operation with two success shapes.** Usually the
+call returns **`202 Accepted`** with an empty body and the operation ID
+in the **`x-ms-operation-id` response header** (alongside `Location`,
+`deployment-id` and `Retry-After`); poll `GET /v1/operations/{id}` until
+the state is terminal. The reference also documents **`200 OK`** with the
+`DeploymentPipelineOperationExtendedInfo` inline — `id`, `status`,
+`executionPlan` — and no headers to follow, so branch on the status code
+before reading a header. `deployment-id` is a **different** UUID from
+`x-ms-operation-id` — the samples show both — and is not the operation
+ID; poll with the latter. For **24 hours** after completion the extended
+result is available from Get Operation Result.
 
 `az rest` does not surface response headers cleanly; use `curl -i` or
 `requests` to capture the header, then poll.
