@@ -193,3 +193,46 @@ returned `f1802196` on both paths, and narrowing it by blob SHA — the
 step the registry's D-3 tree-SHA rule does not itself require — is what
 showed the delta to be one generated file rather than a content re-sync.
 That narrowing is also why this is a small decision and not a re-vendor.
+
+## Execution log
+
+- **Executed**: 2026-09-13 — escalated (D-1 decided by the user), then
+  D-2 applied
+- **Session**: fresh
+- **Files changed**: `skills/powerbi/powerbi-report-authoring/SKILL.md`,
+  `skills/powerbi/powerbi-report-design/SKILL.md`
+- **Decision (D-1)**: put to the user with both cases as the brief
+  frames them. **Answer: do not vendor `apm.yml`; record the exclusion.**
+  Rationale carried into both notes — Claude Code reads `SKILL.md` and
+  never `apm.yml`, which exists to drive `apm install`, a route this
+  repo does not use; and the file would be unlinted, since
+  `lint-frontmatter.py` and `lint-skill-scopes.py` both select on
+  `SKILL.md`. No file was added, so D-1's "Constraint if it is added"
+  does not apply. The either-way constraint holds and cost nothing: no
+  `dependencies` block was copied anywhere, and no
+  `claude/mcp/*.template.json` or `.vscode/mcp.template.json` gained a
+  per-server `tools` key.
+- **Verification**: step 1 — the premise was re-confirmed against
+  `main` before editing, on 2026-09-13, not taken from the brief. Both
+  directory listings match the Evidence table exactly: `SKILL.md` blobs
+  `e8dff43c` (37,182 B) and `316b1500` (16,869 B); trees `c19654d1`,
+  `aa6f21e1`, `9566a6c0`; `apm.yml` present upstream at 587 B and
+  538 B. Not stale. Step 2: the v0.3.16 currency line is in both
+  (authoring 425, design 244). Step 3: the original `b8d541c` pin
+  survives in both (419, 238) — extended, not overwritten. Step 4: not
+  applicable under the decision; `ls` confirms neither `apm.yml` exists
+  locally, which is the intended state. Step 5: `lint-frontmatter.py`
+  passed on both. Step 6: `lint-skill-overrides.py` — 45 platform
+  skills covered. Step 7 (`pre-commit run --all-files`) runs once at
+  the end of the run.
+- **Deferred**: nothing. The decision was taken rather than left open,
+  so no follow-up task falls out of this brief.
+- **Deviations**: the brief dates its SHA evidence 2026-09-12; the
+  currency lines say **2026-09-13**, the date this run actually
+  re-verified them against `main`. Per D-2's constraint, neither note
+  claims a re-sync or an update to v0.3.16 — both say "not re-synced"
+  and keep the v0.3.13 pin as the provenance.
+- **Closed**: 2026-09-13 — D-1 was put to the user in this run and
+  answered: do **not** vendor `apm.yml`. D-2's currency edit landed with
+  that disposition recorded in both vendoring notes, so nothing from
+  this brief is outstanding and it needs no queue row.

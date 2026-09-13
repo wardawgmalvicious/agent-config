@@ -157,3 +157,39 @@ bullet was only followed because the counterpart chain was walked by
 hand — noted here as context for why it nearly went unreported. Widening
 that list is **not** part of this brief and was not a recommended action
 of the run.
+
+## Execution log
+
+- **Executed**: 2026-09-13 — applied (measurement run, **outcome 1**)
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-cli/SKILL.md`
+- **Verification**: step 1 — the brief's grep, run against
+  `$(uv tool dir)/ms-fabric-cli/Lib/site-packages/fabric_cli` on
+  `fab` **1.7.0**. Result: `client/fab_api_client.py:124` sets
+  `headers["Content-Type"] = "application/json"` under `if files is
+  None:`, and merges any `-H` **after** it via `headers.update()`.
+  `commands/api/fab_api_request.py:18-24` shows `-i` routing to
+  `do_request(args, json=args.input)` — `files` stays `None` — while
+  only the separate `--file` flag passes `files=`, where `requests`
+  supplies its own multipart boundary type. So the header is set on
+  every `fab api -i` request. Step 2: `Content-Type` now appears at
+  lines 144 and 151, both inside the explanatory note; all five
+  `fab api -X post` examples (140, 168, 306, 332, and 94) are
+  unchanged and carry no `-H`. Step 3: `lint-frontmatter.py` passed.
+  Step 4: `lint-skill-overrides.py` — 45 platform skills covered.
+  Step 5 (`pre-commit run --all-files`) runs once at the end.
+- **Deferred**: nothing. The measurement is offline with no side
+  effects and needed no tenant, so it ran here rather than being
+  escalated — the brief's live-call escape hatch ("if the source is
+  ambiguous") was not reached: the source is unambiguous.
+- **Deviations**: outcome 1 says make no change to the two examples,
+  and none was made — but it also says to record the measurement, so
+  the run added a note rather than editing nothing. Per the
+  **Constraint on the fix**, `UnsupportedMediaType` is not encoded as
+  an expected error: the note says upstream's and Learn's header is
+  redundant on this version, not that omitting it fails. The
+  inline-JSON / `--body "@<file>"` half of upstream's bullet was not
+  imported. One scope note: the brief named lines 139 and 155, but the
+  file holds **five** `fab api -X post` examples, not two — the others
+  are at 94, 306 and 332. None needed changing under outcome 1, so the
+  undercount cost nothing here; it would have mattered under outcome 3.

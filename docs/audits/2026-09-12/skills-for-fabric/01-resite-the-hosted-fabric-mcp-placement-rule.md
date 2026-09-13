@@ -284,3 +284,49 @@ inferred from upstream's configuration, which is why D-1 stands without
 the probe. The 2026-09-10 brief 11 asked this same question and was
 escalated rather than answered; its three-file list was measured short
 here.
+
+## Execution log
+
+- **Executed**: 2026-09-13 — applied with deferrals (D-1 and D-4 applied;
+  D-2 and D-3 escalated)
+- **Session**: fresh
+- **Files changed**: `claude/mcp/README.md`, `.vscode/README.md`,
+  `.claude/skills/drift-audit/SKILL.md`,
+  `skills/fabric/fabric-eventhouse/SKILL.md`,
+  `skills/fabric/fabric-eventhouse/references/remote-mcp.md`
+- **Verification**: steps 1, 3 and 4 — the D-1-only set the brief
+  authorizes when D-2 is unapproved. Step 1 re-grep: every surviving
+  `DCR` hit is corrected, is the line-225 GitHub cross-reference
+  (reworded, its own claim untouched per the constraint), or is
+  `skills/fabric/fabric-data-agent/references/authentication.md:10`,
+  which describes the bearer-token route rather than asserting a Fabric
+  endpoint cannot work — no hit still asserts impossibility. Step 3:
+  `jq -e .` parsed all three templates. Step 4:
+  `lint-frontmatter.py` passed on the two edited `SKILL.md` files.
+  Step 5 (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: D-2, the live `headersHelper` probe against one
+  `api.fabric.microsoft.com/v1/mcp/*` endpoint — it authenticates
+  against a Fabric tenant under the user's identity and is not
+  pre-approved. D-3, per-server template placement, is gated on it and
+  defers with it. Method is D-2 steps 1–4 verbatim: `az account show`,
+  then the `--query expiresOn` helper check alone (never the
+  credential-producing form in chat), then `fabric-sqlendpoint` at
+  **local** scope, then `/mcp` for connection state, recorded per
+  endpoint with its date. **Put to the user on 2026-09-13, who chose to
+  leave it queued** rather than run it now — so this is a deliberate
+  deferral, not an unanswered escalation. Queued in
+  `docs/handoffs/execute/README.md` under "A Fabric tenant, for one
+  approved live MCP probe", where that row also records that this brief
+  supersedes question 1 of the 2026-09-10 brief 11.
+- **Deviations**: the brief's evidence table named six lines; per its own
+  instruction to find targets by grep rather than from the table, the
+  sweep found **ten**. Four beyond the table were corrected —
+  `claude/mcp/README.md:154` and `:155` (both asserting the block in a
+  server-inventory table row), and
+  `skills/fabric/fabric-eventhouse/SKILL.md:228` plus that skill's
+  `references/remote-mcp.md:4` summary line, which state the same
+  absolute without the DCR token and so are invisible to the brief's
+  own step-1 grep. D-4's "record the negative with its date" was read as
+  ungated ("hold both, whatever D-2 returns") and landed in
+  `claude/mcp/README.md`'s Power BI section, next to the flags it warns
+  against re-deriving.

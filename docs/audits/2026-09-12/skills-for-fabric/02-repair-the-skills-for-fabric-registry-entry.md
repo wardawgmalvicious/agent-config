@@ -224,3 +224,37 @@ tripped over while applying the filter — the counterpart table is what
 subtracts a clause-1 hit, so its staleness was load-bearing for the
 assertion in D-3. D-4's first item is how the run actually executed the
 entry's own step 3. Nothing here was found by review.
+
+## Execution log
+
+- **Executed**: 2026-09-13 — applied (D-1 through D-4, all four)
+- **Session**: fresh
+- **Files changed**: `.claude/skills/drift-audit/references/sources.md`
+- **Verification**: step 1 — `git show HEAD:` confirmed all three quoted
+  targets are committed, not another session's uncommitted work, and
+  `git status` showed the file clean before editing. Step 2: both
+  counterparts present, `dataflows-cli` on its own row (630) and
+  `fabric-deployment-pipelines` joined to the existing row (626) rather
+  than duplicating its key. Step 3: `Two of the four accepted` returns
+  no hit. Step 4: `lint-frontmatter.py` passed on the skill. Step 5:
+  `lint-skill-scopes.py` — 55 names unique across both trees. Step 6
+  (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: the behavioural check, to the next `/drift-audit` run.
+  This is a **self-referential** brief — its target is the registry that
+  skill reads at the start of every run — so the edits are verified by
+  an audit consuming them, not by the greps above, and this run cannot
+  re-audit against a registry it just edited. Specifically unproven
+  here: that the two new counterpart rows actually subtract
+  `dataflows-cli` and `deployment-pipelines-authoring-cli` from clause 1.
+  Nothing else is outstanding, and no queue row is needed — the next
+  audit of this source performs it. D-1's evidence was re-confirmed
+  against the tree rather than taken from the brief — both skill directories exist
+  and `git log --diff-filter=A` returns `529fce7` and `9153d3d`, both
+  2026-09-12, matching the brief's table.
+- **Deviations**: none to the edits. One note on the brief's own step 1:
+  its third grep pattern, `Installing a bundle is a third option`,
+  returns nothing against the file because the sentence is hard-wrapped
+  between `bundle` and `is`. The target is present and unmodified —
+  confirmed by re-running the grep over `tr '\n' ' '` output, which
+  returns 1. A future brief quoting wrapped prose should either quote
+  within one line or normalise the wrap.
