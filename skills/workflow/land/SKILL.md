@@ -3,7 +3,7 @@ name: land
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
-description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forwards main and reports CI. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
+description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forwards main, reports CI, and deletes the merged branch locally and on origin. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
 when_to_use: "Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in — the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them."
 ---
 
@@ -14,7 +14,9 @@ ends by reporting its hashes with an explicit note that nothing was
 pushed; this starts exactly there.
 
 Two things here are irreversible or outward-facing — opening the PR and
-pushing `main` — so the procedure gates each one.
+pushing `main` — so the procedure gates each one. A third, deleting the
+branch from `origin`, is outward-facing and deliberately **not** gated;
+step 9 says why, and why that reasoning does not generalise.
 
 ## 1. Preflight
 
@@ -146,7 +148,11 @@ before that command whether or not a PR exists: a PR that could not be
 opened is a reason to stop sooner, never a reason to carry on.
 
 Report where things stand — the PR URL, or what blocked it — and state
-exactly what happens next. **Then wait.**
+exactly what happens next: the fast-forward, the push to `main`, and
+**then deleting the branch locally and on `origin`** (step 9). The
+deletion is disclosed here rather than prompted for afterwards — one
+decision taken before the work, not a third gate on an action this
+recoverable. **Then wait.**
 
 Everything past this point writes to `main`. Do not continue on your own
 initiative, even when the merge looks routine, and even when the local
@@ -180,24 +186,26 @@ Why not each alternative:
   silently — see [Constraints](#constraints).
 - **Rebase merge** — rewrites SHAs, and may be disabled outright.
 
-Read the three merge settings rather than assuming them. **Prefer a
+Read the merge settings rather than assuming them — and read
+`delete_branch_on_merge` in the same breath, which step 9 needs and
+which is no more uniform across repos than the other three. **Prefer a
 committed answer where the repo keeps one** — a repo that version-
-controls its own settings (agent-config keeps them in
+controls its own settings (agent-config keeps all four in
 `.github/repo-settings.json`, reconciled by `scripts/repo-settings.ps1
 -Check`) gives you the value someone intended, for free. Otherwise ask
 GitHub:
 
 ```bash
 gh api repos/<owner>/<repo> \
-  --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge}'
+  --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge, delete_branch_on_merge}'
 ```
 
 Unauthenticated, those fields come back `null` — so a check without a
 token proves nothing and a rejection surfaces at merge time. A repo's
-answer is not durable either: a delete-and-recreate resets all three to
-GitHub's defaults, so a committed file and the live repo can disagree
-after one. When they do, the live repo is what the merge obeys and the
-committed file is what needs reapplying.
+answer is not durable either: a delete-and-recreate resets every one of
+them to GitHub's defaults, so a committed file and the live repo can
+disagree after one. When they do, the live repo is what the merge obeys
+and the committed file is what needs reapplying.
 
 **`--ff-only` fails loudly rather than inventing a merge commit.** If it
 fails, `main` has moved: stop, reconcile deliberately, and never reach
@@ -228,6 +236,84 @@ nothing is the half of this skill that used to be missing.
 Report the PR number, the merged state, and the CI conclusions. If CI is
 still running, say so rather than implying it passed.
 
+## 9. Delete the branch
+
+Step 8 has just proven the merge — `merged: true`, `--ff-only`
+succeeded, `main` and `origin/main` at one SHA — so the branch holds
+nothing that is not in `main`. That is what makes this cleanup rather
+than a judgement call, and it is the argument for `land` owning it: any
+other tool would have to establish from cold what this step has just
+watched happen.
+
+**That holds in a shared repo too**, which is the part worth spelling
+out: step 3's push would have been *rejected* as non-fast-forward had
+`origin/<branch>` carried commits the local branch lacked, so the run
+would never have reached here. A colleague therefore has nothing on this
+branch to lose — their own local copy is untouched, and their next
+`git fetch --prune` drops a remote-tracking ref to a branch that is
+merged. Reviewers lose nothing either: the PR, its diff and its comments
+outlive the branch. The residual risk is not "someone else works here",
+it is the specific exceptions below.
+
+```bash
+git branch -d <branch>          # -d, never -D
+
+# The remote half. Skip it whole where delete_branch_on_merge is true.
+git fetch origin
+git merge-base --is-ancestor origin/<branch> main   # guard — see below
+git push origin --delete <branch>
+```
+
+**`-d`, never `-D`.** It refuses a branch that is not fully merged, so
+the local half guards itself and the check costs nothing.
+
+**The remote half has no such guard, which is what the ancestor check
+is for.** `-d` answers off the *local* merge whatever is on `origin`, so
+a commit someone pushed to the branch after step 3 is invisible to it —
+and GitHub's *Restore branch* restores the PR's merge-time head, not
+that commit. `--is-ancestor` exits non-zero to mean *no*: that is the
+answer, not a broken command. A *no* is a stop worth reporting rather
+than a failure to retry — someone pushed to this branch after you landed
+it, and that work is not in `main`.
+
+**Skip the remote half where `delete_branch_on_merge` is `true`** —
+step 7 read it. GitHub deletes the head branch itself as soon as the PR
+is marked merged, so `push origin --delete` answers *"remote ref does
+not exist"*: a confusing error for a correct state. The setting is not
+uniform — measured 2026-09-13 on two repos with opposite values — which
+is the whole reason to read it rather than assume it.
+
+**`null` is unknown, not `false`.** Unauthenticated that field comes
+back `null` like the merge settings, so the probe can leave this
+undecided. Then attempt the delete and treat *"remote ref does not
+exist"* as success. The probe is what makes the **report** accurate;
+tolerating that one error is what makes the **action** correct.
+
+Do not delete, and say why, when:
+
+- The PR is not merged, or `--ff-only` failed. The branch is the
+  recovery path.
+- The user asked to keep it.
+- Another session is live in the tree, or is on this branch. Step 1
+  already asked; the answer applies here too.
+- **The branch is the base of another open PR.** Deleting it retargets
+  that PR or closes it. This is the only exception steps 7 and 8 do not
+  already establish — merge state does not show it — so it is the one
+  that needs its own call, through the tool step 2 confirmed:
+
+```bash
+gh pr list --base <branch> --state open
+```
+
+or `list_pull_requests` with `base`.
+
+**Why this outward action is not gated like the other two.** It is cheap
+*here specifically*: the commits are already reachable from `main`, the
+PR and its diff outlive the branch, and the branch is restorable from
+the PR page. None of that transfers to a remote delete in any other
+context. Read this as an exemption for a ref just proven redundant, not
+as a general licence to skip a gate because an action looks routine.
+
 ## Constraints
 
 **Two kinds, and the difference is the point.** The first are
@@ -254,8 +340,8 @@ to make the override informed, not to refuse it.
 
 ### Repo convention — overridable, but never silently
 
-A squash, a merge commit, and deleting the branch are **defaults, not
-laws.** The history is the user's to shape. When one is asked for:
+A squash and a merge commit are **defaults, not laws.** The history is
+the user's to shape. When one is asked for:
 
 1. **Say what it costs, specifically.** Name the commits that would be
    collapsed or the merge commit that would be this repo's first — not
@@ -267,3 +353,10 @@ laws.** The history is the user's to shape. When one is asked for:
 
 Then do it. A reaffirmed instruction is the answer; pressing the point
 twice is worse than the squash.
+
+**Deleting the merged branch is a default too, and it runs the other
+way.** Step 9 does it having disclosed it at step 6, so the request that
+arrives is to *keep* the branch — and that one costs nothing to honour.
+It needs no cost-and-wait round; it is simply one of the exceptions step
+9 already names. Say in the report that the branch was kept and why, or
+the next run reads the leftover ref as a bug.
