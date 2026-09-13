@@ -16,6 +16,7 @@ happen only when explicitly requested, never as follow-through.
 ## Survey first
 
 1. `git status --short` — full picture of modified, renamed, untracked.
+   Note anything **already staged that you did not stage**.
 2. `git log --oneline -10` — calibrate message style against this
    repo's actual history, not assumptions.
 3. Read the diffs (`git diff`, `git diff --stat`, plus untracked
@@ -58,6 +59,13 @@ question.
   commit only what is yours and leave the rest with a note.
 - **Stage explicit paths only.** No `git add -A` / `git add .` — they
   silently sweep in untracked or unrelated files.
+- **Verify the index before each commit.** `git diff --cached --
+  <paths>` must show your change and nothing else. The diff you read in
+  the survey is not what `git add` staged: the file can change in
+  between, and `git add <path>` takes every hunk in the file, not the
+  hunk you meant. `--stat` is not enough — a foreign hunk in a file you
+  also edited has a stat line that looks exactly right. This is the last
+  point at which a swept-in change is free to fix.
 - **Renames go through `git mv`** (or are staged so git detects the
   rename) so history follows the file.
 
@@ -77,8 +85,9 @@ question.
   the quoting entirely. **Crossing the two exits 0** — a PowerShell
   here-string handed to `-m` in the Bash tool commits `@` as the
   subject with the delimiters in the body, and neither the hooks nor
-  the exit code says so. Confirm with `git log -1 --format=%B` before
-  reporting the commit.
+  the exit code says so. Confirm with `git log -1 --format=%B --stat`
+  before reporting the commit — one call gives both the message actually
+  recorded and the files actually in it.
 
 ## Safety rails
 
@@ -106,6 +115,30 @@ question.
   nothing above is checked for you and the scan is entirely yours. Even
   where it does run it knows only what is on the list, so a name it has
   never seen is yours to catch, and then to add.
+
+## When another session shares this tree
+
+Two sessions in one working tree share every file **and the index**, so
+neither staging nor a branch isolates you — only a commit does. Suspect
+it when the survey shows a path you never touched, when something is
+already staged that you did not stage, when `git diff --cached` holds a
+hunk you cannot account for from this conversation, or when the user
+says so. **Rule out the two innocent explanations first**: your own
+stepping edits, and a hook that rewrites files, which leaves its rewrite
+*unstaged*. Neither is contention.
+
+- **Write, stage and commit in one chained command.** The gap between
+  reading a diff and running `git add` is where their hunk gets swept
+  in.
+- **`fatal: Unable to create '.git/index.lock': File exists` is their
+  git command in flight**, not a stale lock. Wait and retry; never
+  delete it.
+- **Record what you left.** Commit only what is yours, and name the
+  deferred piece in the commit message so `git log` carries it rather
+  than this conversation.
+
+Staging one hunk out of a file they are also writing:
+[references/concurrent-sessions.md](references/concurrent-sessions.md).
 
 ## Fabric Git-synced repos
 
