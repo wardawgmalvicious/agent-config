@@ -589,7 +589,14 @@ history:
 3. Fetch the whole file once at the **base** ref — the last commit
    touching the path before the floor — for clause 1's "no earlier
    version section mentions" test: ~44 KB at `v0.3.10`, against 58 KB at
-   HEAD.
+   HEAD. It need not enter context: `curl` it to the scratchpad over
+   anonymous HTTPS
+   (`https://raw.githubusercontent.com/microsoft/skills-for-fabric/<sha>/CHANGELOG.md`)
+   and run `grep -c` per name against the local copy, as the 2026-09-12
+   run did — 44,935 bytes on disk, none of it in the conversation, where
+   `get_file_contents` would have put all of it. Same exemption the
+   `changelog` shape contract already states for a two-ref diff, applied
+   to the base read.
 4. Net a pair of whole-file rewrites (+N/−N on every line) by comparing
    the file's blob SHA at the two refs from a root listing —
    `get_file_contents`, `path: "/"`, `fields: ["name","sha"]` — instead
@@ -597,9 +604,11 @@ history:
    line-ending flip and its revert were cleared: blob `3fd6c501` at both
    `2b3530e8` and `e4dfaebd`.
 
-Price, from the 2026-09-10 run: about 10 stats calls, 7 isolated
-patches, 1 base fetch and 4 directory listings, plus 1 call per upstream
-`SKILL.md` read for context.
+Price, from the 2026-09-12 run: 31 github-mcp calls — 7 `list_commits`,
+8 directory and file listings, 5 `stats`, 11 isolated patches — plus 1
+raw HTTPS base fetch, 4 Learn searches and 1 WebFetch. (The 2026-09-10
+run, for comparison: ~10 stats calls, 7 isolated patches, 1 base fetch
+and 4 directory listings, plus 1 call per upstream `SKILL.md` read.)
 
 #### Counterparts here — matched by name only
 
@@ -614,10 +623,11 @@ patches, 1 base fetch and 4 directory listings, plus 1 call per upstream
 | `fabriciq`, `fabriciq-ontology-cli` | `fabric-ontology` |
 | `semantic-model-authoring` | `fabric-tmdl`, `fabric-tmdl-api`; `fabric-semantic-model-ai-instructions` for Prep data for AI |
 | `mlv-operations-cli` (retired upstream) | `fabric-mlv` |
-| `deployment-pipelines-authoring-cli` | `fabric-cicd` (partial) |
+| `deployment-pipelines-authoring-cli` | `fabric-deployment-pipelines`; `fabric-cicd` (partial) |
 | `git-integration-operations-cli` | `fabric-cicd` (partial), `fabric-git-serialization` rule |
 | `onelake-catalog-govern-cli` | `fabric-catalog-governance` |
 | `activator-cli` | `fabric-activator` |
+| `dataflows-cli` | `fabric-dataflow` |
 
 Matched by name on 2026-09-10, from the `skills/` listing and the
 changelog, **without reading either side's content**. The listing cannot
@@ -647,14 +657,18 @@ D-5 deliberately kept. Accepted 2026-09-11 with the other three
 candidates and authored here as `fabric-activator` on 2026-09-12. So a
 consolidation rename has now produced a real skill once, which is the
 evidence D-5 was waiting on: the lexical test earns its false positives.
-Two of the four accepted candidates remain unauthored — `dataflows-cli`
-and `deployment-pipelines-authoring-cli`, the latter already holding a
-partial counterpart row above.
+Every candidate accepted on 2026-09-11 was authored here on 2026-09-12
+and now holds a counterpart row above, so clause 1 will not surface any
+of them again.
 
 The repo also ships `.claude-plugin/` and `plugins/`, and `0.3.14` names
 two bundles, `fabric-skills` and `powerbi-authoring`. Installing a bundle
 is a third option beside vendoring and authoring; it was not evaluated
-here.
+here. `0.3.16` adds a fourth: a root `apm.yml` plus a generated
+`skills/<name>/apm.yml` per skill, so `apm install
+microsoft/skills-for-fabric --skill <name>` installs one skill rather
+than a whole bundle. Also unevaluated — no claim that `apm` is installed
+here, or that a single-skill install beats vendoring.
 
 **Read bucket (c) even when nothing maps.** `0.3.14` fixed three
 failures this repo also guards against: skills pointing at skills that had
@@ -669,11 +683,30 @@ The first run, floor 2026-08-06, met all three known-answer assertions
 on the `0.3.13`–`0.3.15` sections: both vendored path checks empty and
 tree-SHA proven, clause 1 surfacing `onelake-catalog-govern-cli`, and
 clause 1 **not** surfacing `databricks-migration` (mentioned in `0.3.0`
-and `0.3.9`). The exact known-answer floor, 2026-08-20, has not been run.
+and `0.3.9`).
+
+**The exact known-answer floor, 2026-08-20, was run on 2026-09-12 and
+passed in the stable form below.** All three assertions held. The
+vendored pair came back empty and tree-SHA proven when bounded at
+`65902bae` — `[]` on both paths since `2026-08-20T13:22:57Z`, and the
+four `powerbi-report-*` tree SHAs (`d160d140`, `b9fe475b`, `9b609076`,
+`4f847fca`) identical at `b8d541c` and `65902bae`. The clause-1
+subtraction passed: the sole in-window lexical hit,
+`onelake-catalog-govern-cli`, was subtracted by the counterpart table
+and reported under No-op, for zero new-skill candidates — which is what
+proves the table was consulted. And no retired name produced a false
+positive: `databricks-migration` (4 base mentions) stayed in bucket (d),
+as did the six retired names `0.3.14` cites, each with 2–5.
+
 Judge it on commits up to `65902bae` (`v0.3.15`) only: `v0.3.16`
 (`f1802196`, 2026-09-10T14:27Z) touched both vendored skills after that
 run, so a run today also returns that commit per vendored path —
-correctly, as a re-sync candidate, but outside the known answer.
+correctly, as a re-sync candidate, but outside the known answer. That
+run measured the unbounded case too: all four `powerbi-report-*` tree
+SHAs moved at `v0.3.16`, yet blob SHAs show `SKILL.md`, `references/`
+and `assets/` byte-identical to `b8d541c` — the entire delta is one
+generated `apm.yml` per directory. A moved tree SHA is a **trigger, not
+a verdict**; narrow by blob SHA before reading any patch.
 
 **One of those three assertions expired on 2026-09-12**, when
 `onelake-catalog-govern-cli` gained a counterpart above — and any
