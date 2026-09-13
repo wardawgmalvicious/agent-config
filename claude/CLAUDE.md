@@ -102,6 +102,14 @@ trailing text, and **it fails silently** — nothing reports the mangling.
 Prefix with `MSYS2_ARG_CONV_EXCL='*'`, or run from PowerShell. (Probing
 a skill's *slash* path has further traps; `test-skill` covers them.)
 
+### `$TMPDIR` is unset, so `"$TMPDIR/x"` writes to the Git install
+
+Neither shell sets it. In Bash the path collapses to `/x`, which MSYS2
+maps to the Git install root, so `mkdir -p "$TMPDIR/probe"` answers
+`mkdir: cannot create directory '/probe': Permission denied` — an error
+that reads as a permissions problem and is an unset variable. Use the
+scratchpad path the harness provides instead. Observed 2026-09-12.
+
 ### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open
