@@ -24,6 +24,15 @@
         "references": "4f01ee8ace74ed99"
       }
     },
+    "fabric-cli": {
+      "behaviour": {
+        "date": "2026-09-13",
+        "commit": "1ae9e9f",
+        "routing": "5a5d7be6ca890167",
+        "body": "219eb4cddd78efe4",
+        "references": "805f80b73f3992a6"
+      }
+    },
     "fabric-copy-job": {
       "activation": {
         "date": "2026-09-12",
