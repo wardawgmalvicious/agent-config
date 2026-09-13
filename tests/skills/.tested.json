@@ -117,6 +117,15 @@
         "paths": "7250b8455d9643a0"
       }
     },
+    "fabric-mlv": {
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "8c862ee",
+        "routing": "3040260ca3e79a2c",
+        "body": "ddd8b0b49c405385",
+        "references": "dfaa30fd268d644a"
+      }
+    },
     "fabric-ontology": {
       "activation": {
         "date": "2026-09-12",

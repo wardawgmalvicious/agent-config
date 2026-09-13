@@ -165,8 +165,23 @@ point the other way.
   clean. The REST reference link was fetched before adding it; it
   resolves to the five execution-definition operations. Step 5 runs once
   at the end of the run.
-- **Deferred**: behavioural confirmation of the edited skill needs a
-  fresh session.
+- **Behavioural confirmation**: deferred here, run 2026-09-12 by
+  `/test-skill fabric-mlv` in a fresh session. Phase A was skipped —
+  `fabric-mlv` carries no `paths:` glob, so it has no activation
+  contract to fixture. Four `-p` probes outside this repo with MCP and
+  web stripped (`--strict-mcp-config`, `WebFetch`/`WebSearch`
+  disallowed), so the answers measure the skill rather than a re-fetch
+  of the Learn page it was drilled from. The `--safe-mode` baseline —
+  payload proven absent, 54 slash commands against 67 — declined all
+  three claims outright and offered to go read the docs instead.
+  Model-invocation and `/fabric-mlv` each returned the
+  `mlvexecutiondefinitions` casing, the PATCH merge and the
+  linked-schedule deletion. Neither invented a rule for the nested
+  `settings` merge Learn leaves open; both flagged it as unverified.
+- **Optional item 3 measured rather than assumed**: a subset-refresh
+  question naming neither "execution definition" nor
+  `mlvExecutionDefinitionId` still model-invoked the skill, so leaving
+  the description at its 1,024-character cap cost no triggering.
 - **Deviations**: optional item 3 skipped. The description measured
   exactly 1,024 characters on 2026-09-11, and nothing gives way without
   an unbriefed trigger rewrite. The new material is a `###` subsection
