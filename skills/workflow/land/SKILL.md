@@ -262,6 +262,8 @@ git branch -d <branch>          # -d, never -D
 git fetch origin
 git merge-base --is-ancestor origin/<branch> main   # guard — see below
 git push origin --delete <branch>
+
+git fetch origin --prune        # both paths, including the skipped one
 ```
 
 **`-d`, never `-D`.** It refuses a branch that is not fully merged, so
@@ -288,6 +290,15 @@ back `null` like the merge settings, so the probe can leave this
 undecided. Then attempt the delete and treat *"remote ref does not
 exist"* as success. The probe is what makes the **report** accurate;
 tolerating that one error is what makes the **action** correct.
+
+**Prune on both paths — especially the one that skipped the remote
+half.** Where GitHub auto-deleted the branch, `origin/<branch>` is gone
+from the remote and this clone's *remote-tracking* ref to it is not:
+`git branch -a` still lists it, and a plain `git fetch` will not remove
+it. That is the leftover ref this step exists to prevent, one
+indirection out — and it survives precisely where the step did the least
+work. Observed 2026-09-13 on the first real run of this step, against a
+repo with `delete_branch_on_merge: true`.
 
 Do not delete, and say why, when:
 
