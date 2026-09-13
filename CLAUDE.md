@@ -668,21 +668,16 @@ commits — once from the working tree, once from the working tree *and*
 the index while it sat staged — and a `git add <path>` in between swept
 in a hunk they had written seconds earlier. Which step of their commit
 cycle discarded it was not established; pre-commit's stash/restore
-around a commit is the likely one. What worked, in order:
+around a commit is the likely one.
 
-- **Write and commit in one chained command.** Re-run the write
-  immediately before `git add`, and `git diff --stat <path>` must show
-  your hunk alone; the gap between checking and staging is where the
-  sweep happened.
-- **Stage one hunk with `git apply --cached <patch>`** when theirs is
-  already in the file. It applies a hand-cut patch to the index without
-  touching the working tree, so `git diff --cached` shows yours alone and
-  their hunk stays on disk for them — the non-interactive `git add -p`,
-  which the tool shells cannot run. It helps only when your hunk is
-  separable from theirs; a line inside their added block is still the
-  blind spot above.
-- **`fatal: Unable to create '.git/index.lock': File exists` is their
-  commit in flight**, not a stale lock. Wait and retry; never delete it.
+What worked is now the procedure in `/commit` — the chained
+write-stage-commit, verifying `git diff --cached` before committing,
+treating `.git/index.lock` as their git command in flight rather than a
+stale lock, and the hand-cut patch in
+`skills/workflow/commit/references/concurrent-sessions.md`. **This
+section keeps the evidence; the skill keeps the procedure**, because the
+skill is the copy that reaches repos where this file never loads. Edit
+one or the other accordingly rather than restoring the duplicate.
 
 ## Editing conventions
 
