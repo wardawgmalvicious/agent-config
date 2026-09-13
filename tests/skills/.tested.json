@@ -152,6 +152,13 @@
         "date": "2026-09-01",
         "commit": "975b87f",
         "paths": "43c11cb71913a822"
+      },
+      "behaviour": {
+        "date": "2026-09-12",
+        "commit": "100e432",
+        "routing": "f2977112e07c92ce",
+        "body": "fb346eafea4a6996",
+        "references": "d88a07e46797f757"
       }
     },
     "fabric-semantic-model-audit": {

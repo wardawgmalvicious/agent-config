@@ -140,3 +140,19 @@ audit.
   the edited skill also needs a fresh session.
 - **Deviations**: none. The brief named Limitations as an acceptable
   home.
+- **Behavioural confirmation**: 2026-09-12 via `/test-skill`, closing the
+  deferral above. Cold `-p` probe in a scratch directory outside this
+  repo, against a `--safe-mode` baseline, both sides with `WebFetch` and
+  `WebSearch` disallowed so the baseline measured unaided recall rather
+  than re-fetching the Learn page. The payload run invoked the skill
+  (`Skill` tool_use) and stated both halves of the new bullet — the
+  service refresh and the once-a-day DirectQuery / Direct Lake sync; the
+  baseline reached only a vague "Copilot's grounding can lag a change"
+  and named neither the LSDL nor the refresh requirement. Stamped
+  `behaviour` in `tests/skills/.tested.json`.
+- **Collision: still deferred, and now behaviourally visible.** The
+  payload run answered that the blob should "round-trip back to Git so
+  the culture file carries it in `linguisticMetadata`" — the direct
+  contradiction of line 263's "It is not stored in TMDL". The skill now
+  supports both readings in one session. Left untouched, as this brief
+  directs; the export evidence named above is still what settles it.
