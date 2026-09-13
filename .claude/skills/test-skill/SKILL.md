@@ -50,7 +50,7 @@ manufacture a fixture to make the phase look done.
 
 ### 1. Read the trigger contract from disk
 
-Two entry paths, and they take their inputs from different files.
+Three entry paths, and they take their inputs from different files.
 Establish which one you are on before reading anything.
 
 **A newly drafted skill, arriving from `/author-skill`:**
@@ -85,6 +85,17 @@ queries from the `description` and **say in the report which ones you
 derived** — a derived query tests the skill against the trigger surface
 it actually ships, which is the point, but the reader needs to know no
 brief vouched for it.
+
+**An executed drift brief in `docs/audits/<date>/<source>/`, whose
+execution log deferred behavioural confirmation to a fresh session:**
+`/drift-update` cannot exercise a skill it just edited, so its log ends
+with the deferral and this skill is the follow-on. Inputs come from the
+shipped artifacts exactly as in the row above — it is not an
+`/author-skill` brief and names no trigger queries — but its *What to
+change* section names the one thing the edit added, and **that is the
+discriminating claim for Phase B**: the detail only the skill makes.
+The brief is a ledger entry and is never deleted (step 10). First run
+2026-09-12 on `fabric-semantic-model-ai-instructions` from brief 05.
 
 The one thing you may never do is invent expectations the skill was
 never written to meet. Reading them off the shipped frontmatter is not
@@ -382,6 +393,15 @@ whose skill had been tested and landed that morning was still on disk
 that afternoon, reading as "authored, untested". Grep for links to it
 and re-point them in the same change.
 
+**A `docs/audits/` brief is recorded, not deleted.** That directory is
+a ledger (`docs/audits/README.md`) — deleting from it loses the entry.
+Append a `**Behavioural confirmation**:` bullet to the brief's execution
+log naming the date, the probe design, which claim separated from the
+baseline, and that the stamp was written; if the brief deferred a
+collision or open question, say whether the run made it visible and
+leave it deferred. Commit shape: `test(<skill>): …` over the brief and
+the manifest.
+
 **An untracked brief is recorded first, then retired.** `/author-skill`
 may not have committed it, and deleting it on the spot keeps the
 drilling record — above all the table checking each upstream claim
@@ -393,7 +413,8 @@ brief 49 seconds apart. A brief already tracked is simply deleted.
 Report the static result, the real-path result with its counts, which
 trigger queries fired and which did not, and anything the `--safe-mode`
 baseline already did without the payload. Then hand off to `/commit`,
-naming the manifest and the deleted brief among the paths. Do not
+naming the manifest and the deleted — or, for a ledger brief, the
+appended — brief among the paths. Do not
 commit here.
 
 ## Reading a failure

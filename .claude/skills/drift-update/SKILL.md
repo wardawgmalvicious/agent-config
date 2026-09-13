@@ -212,7 +212,10 @@ can see what happened.
 reload mid-session on Windows, so no brief that edits a skill can have its
 behaviour validated in the session that applied it. Lint and prose checks pass;
 behavioural confirmation is a fresh-session task. Say so rather than implying
-the skill was exercised.
+the skill was exercised, and name the task: `/test-skill <skill> @<brief>`,
+which takes the brief's *What to change* as the claim to separate from the
+baseline and appends its confirmation to this execution log rather than
+deleting the brief.
 
 ### 4.5 Stamp
 
