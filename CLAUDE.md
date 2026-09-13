@@ -726,6 +726,18 @@ it if they hadn't.
   the limit that made the field near-useless under `skills/` does not
   apply. It stays **turn-scoped** — the session model resumes on the next
   prompt.
+  **Pin the alias, not the dated ID — and check the CLI before trusting
+  a reading.** The CLI carries its own model table, so a stale one
+  resolves an alias to an older release silently: on 2.1.252
+  `model: fable` ran `claude-fable-5`, while the dated
+  `claude-fable-5-1` ran but printed `[claude-code:unrecognized_model]`
+  first; on 2.1.268 both run `claude-fable-5-1` clean. Same files,
+  opposite readings, so any measurement of model routing is only as
+  current as `claude --version` — compare it against
+  `winget list --id Anthropic.ClaudeCode` first. Prefer the alias: a
+  dated ID freezes the pin on one release once the next ships. Measured
+  2026-09-12. (`machine-config/setup.ps1` has why the CLI was stale — an
+  npm global shadowing the winget install on PATH — and the cleanup.)
   Current policy: the session default is `"effortLevel": "max"` in
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
   this repo).
