@@ -9,7 +9,7 @@ Two starter configurations for Model Context Protocol (MCP) servers in Claude Co
 
 Claude Code supports three MCP scopes: **user** (across every project on the machine), **project** (per-repo, shared via `.mcp.json`), and **local** (per-repo, private, stored under `projects.<path>.mcpServers` inside `~/.claude.json`). These two templates cover the scopes worth sharing; local scope is per-machine by definition and has no template.
 
-Both templates contain **only servers that actually work from Claude Code**. The Fabric-hosted endpoints at `api.fabric.microsoft.com/v1/mcp/*` do not — Microsoft's auth stack requires OAuth Dynamic Client Registration (DCR) that Claude Code doesn't support, so they fail to connect. They work from VS Code Copilot and the GitHub Copilot CLI, which use first-party client IDs, and they now live in the workspace template alone (see [.vscode/README.md](../../.vscode/README.md)). They used to be carried here as reference entries, which only produced templates whose own install instructions had to say "skip these seven." `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
+Both templates contain **only servers that actually work from Claude Code**. The Fabric-hosted endpoints at `api.fabric.microsoft.com/v1/mcp/*` are not among them — Claude Code's **automatic** OAuth flow cannot register with them, because Microsoft's auth stack requires Dynamic Client Registration (DCR) that the flow doesn't perform, and the connection fails. That is a fact about one flow, not a property of the endpoints: Claude Code documents two routes around DCR — `headersHelper`, a command that supplies the `Authorization` header directly, and `claude mcp add --client-id … --client-secret` for a pre-registered Entra app — and upstream's `skills-for-fabric` ships a `headersHelper` configuration for three of them. **Neither route has been measured here** — docs read 2026-09-12, no probe run — so the templates stay as they are until one is. The endpoints work from VS Code Copilot and the GitHub Copilot CLI, which use first-party client IDs, and they now live in the workspace template alone (see [.vscode/README.md](../../.vscode/README.md)). They used to be carried here as reference entries, which only produced templates whose own install instructions had to say "skip these seven." `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
 
 VS Code / GitHub Copilot also uses a different schema — a top-level `servers` key instead of `mcpServers`, and a workspace file at `.vscode/mcp.json`.
 
@@ -151,8 +151,8 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | --- | --- | --- |
 | `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
-| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. The working Claude Code alternative to the DCR-blocked hosted Fabric Core endpoint. |
-| `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Covers most RTI workflows without the hosted KQL endpoints, which don't connect from Claude Code. |
+| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. The working Claude Code alternative to the hosted Fabric Core endpoint, which automatic OAuth can't register with. |
+| `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Covers most RTI workflows without the hosted KQL endpoints, which Claude Code's automatic OAuth flow can't reach. |
 | `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
 | `sql-mcp` | stdio (`dab start --mcp-stdio`) | Data API Builder exposing the repo's Azure SQL schema as MCP tools. Uses `Active Directory Interactive` auth by default; override via the `DAB_CONNECTION_STRING` env var. |
 | `azure-devops-mcp` | stdio (`npx @azure-devops/mcp`) | Azure DevOps work items, repos, pipelines scoped to the configured org + project. |
@@ -191,8 +191,8 @@ and a client that doesn't implement it would fail or hang exactly where a
 `--skipconfirmation` workaround looks tempting. Claude Code **2.1.252
 does** implement it: the bundle registers an `elicitation/create` request
 handler with both `form` and `url` modes. So leave the confirmations on.
-This is *not* the DCR situation that blocks the hosted Fabric endpoints —
-different protocol, different answer.
+This is *not* the DCR situation that blocks automatic OAuth against the
+hosted Fabric endpoints — different protocol, different answer.
 
 Two access facts that are easy to attribute to the wrong layer:
 
@@ -218,11 +218,23 @@ README and the Learn [MCP servers
 overview](https://learn.microsoft.com/power-bi/developer/mcp/mcp-servers-overview);
 re-read the repo README when the server goes GA.
 
+**The remote modeling endpoint stays off every template.** Upstream's
+`skills-for-fabric` plugin registers `powerbi-modeling-mcp` as an `http`
+server at `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring`, but
+Learn does not document that endpoint — its MCP servers overview lists
+exactly two Power BI servers, the remote *query* server at `/v1/mcp/powerbi`
+and the local stdio modeling server above. Checked 2026-09-11 and again
+2026-09-12: two dated negatives. The standing verdict is **endpoint TBD,
+verify before template add** — don't re-derive it, and don't add the server
+on upstream's configuration alone. The same hold covers FabricIQ's
+`X-VARIANTS: Fabric.Routing.PowerBIDataExploration` header: the
+`fabricaihub/integrations/m365` URL pattern is on Learn, the header is not.
+
 ---
 
 ### GitHub and multiple accounts
 
-GitHub's hosted server is reached at `https://api.githubcopilot.com/mcp/`. Claude Code **cannot** complete its OAuth flow — the same Dynamic Client Registration gap that blocks the Fabric endpoints, reported as `Incompatible auth server: does not support dynamic client registration`. A bearer token sidesteps the flow entirely and the server accepts it, so the template sends one:
+GitHub's hosted server is reached at `https://api.githubcopilot.com/mcp/`. Claude Code **cannot** complete its OAuth flow — the same Dynamic Client Registration gap that blocks automatic OAuth against the Fabric endpoints, reported as `Incompatible auth server: does not support dynamic client registration`. A bearer token sidesteps the flow entirely and the server accepts it, so the template sends one:
 
 ```json
 "headers": { "Authorization": "Bearer ${<GITHUB_PAT_VAR>}" }

@@ -225,12 +225,14 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 ## Remote MCP server (preview)
 
 A hosted HTTP MCP server per KQL database gives schema discovery, NL→KQL, and
-query execution. **Claude Code cannot connect to it** — the
-`api.fabric.microsoft.com/v1/mcp/*` endpoints require OAuth Dynamic Client
-Registration it doesn't support, so it appears in config and silently fails to
-connect. From Claude Code use the local `fabric-rti-mcp`
-(`uvx microsoft-fabric-rti-mcp`); the hosted server's working home is
-`.vscode/mcp.json` for VS Code Copilot. URL pattern, auth requirements, and the
+query execution. **Claude Code's automatic OAuth flow can't connect to it** —
+the `api.fabric.microsoft.com/v1/mcp/*` endpoints require OAuth Dynamic Client
+Registration it doesn't perform, so the server appears in config and silently
+fails to connect. Two documented routes sidestep DCR — a `headersHelper`
+command and `--client-id`/`--client-secret` — but neither is measured against
+this endpoint (docs read 2026-09-12). Until one is, use the local
+`fabric-rti-mcp` (`uvx microsoft-fabric-rti-mcp`) from Claude Code; the hosted
+server's measured working home is `.vscode/mcp.json` for VS Code Copilot. URL pattern, auth requirements, and the
 config block: [references/remote-mcp.md](references/remote-mcp.md).
 
 ## Reference

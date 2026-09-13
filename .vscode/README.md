@@ -59,10 +59,17 @@ root-level `.mcp.json` / `.github/mcp.json` (`copilot mcp add`) or
 
 [mcp.template.json](mcp.template.json) is the starter set for the Fabric-hosted
 MCP endpoints that fail with OAuth Dynamic Client Registration (DCR) errors
-from Claude Code but work fine from VS Code Copilot / GitHub Copilot CLI, which
-use first-party client IDs. That asymmetry is the whole reason this file
-exists: these servers have no working home on the Claude Code side, so they are
-not carried in the Claude templates at all.
+under Claude Code's **automatic** OAuth flow but work fine from VS Code Copilot
+/ GitHub Copilot CLI, which use first-party client IDs. That asymmetry is the
+whole reason this file exists: these servers have no *measured* working route
+on the Claude Code side, so they are not carried in the Claude templates.
+
+Claude Code documents two routes around DCR — a `headersHelper` command that
+supplies the `Authorization` header directly, and `--client-id` /
+`--client-secret` for a pre-registered Entra app — and neither has been probed
+here (docs read 2026-09-12). This template is unaffected either way: VS Code
+reaches these servers by its own first-party client ID, so it stays whatever a
+probe returns.
 
 It intentionally excludes the *generic* servers (GitHub, Azure, Microsoft Docs,
 the Fabric core/RTI stdio servers) — those are better installed once per
