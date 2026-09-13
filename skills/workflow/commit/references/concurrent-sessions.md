@@ -38,6 +38,17 @@ line N`, which reads like a broken file rather than a miscount.
 Whole-hunk deletion is safe: each surviving hunk relocates by its
 context lines, and git absorbs the offset.
 
+**Cut the patch in binary.** On Windows a text-mode write turns every
+`\n` into `\r\n` — Python's `write_text`, or `open()` without
+`newline=""` — and the CR lands on every context line, so
+`git apply --cached` answers `patch does not apply` at the hunk's first
+line. That reads as a stale base or a moved `HEAD`, and both check out:
+the base is right and the bytes are wrong. Use `read_bytes` /
+`write_bytes`, and count CRs before applying —
+`tr -cd '\r' < hunk.patch | wc -c` must print `0`. Measured
+2026-09-13: `git diff` wrote none, the cut copy carried one per line,
+and the binary rewrite applied first time.
+
 ## The limit
 
 A line *inside* their added block is not separable. It has no `HEAD`
