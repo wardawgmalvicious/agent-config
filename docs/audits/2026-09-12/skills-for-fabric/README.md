@@ -5,11 +5,11 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 5 — applied 3 · applied with deferrals 1 · closed 1
+Briefs: 5 — applied 3 · closed 2
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
-| [01 re-site the hosted Fabric MCP placement rule](01-resite-the-hosted-fabric-mcp-placement-rule.md) | 1 and 6 | an investigation that gates a prose correction in four files and a template decision | applied with deferrals 2026-09-13 |
+| [01 re-site the hosted Fabric MCP placement rule](01-resite-the-hosted-fabric-mcp-placement-rule.md) | 1 and 6 | an investigation that gates a prose correction in four files and a template decision | applied with deferrals 2026-09-13 · closed 2026-09-14 |
 | [02 repair the skills-for-fabric registry entry](02-repair-the-skills-for-fabric-registry-entry.md) | 2 | content repair to one registry entry | applied 2026-09-13 |
 | [03 stamp the 2026-09-10 deferred verifications](03-stamp-the-2026-09-10-deferred-verifications.md) | 3 | bookkeeping in a committed dated ledger | applied 2026-09-13 |
 | [04 decide the vendored `apm.yml` manifests](04-decide-the-vendored-apm-manifests.md) | 4 | a decision | escalated 2026-09-13 · closed 2026-09-13 |

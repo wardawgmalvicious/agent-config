@@ -330,15 +330,20 @@ here.
   account identifier is recorded here or in any file this run touched.
 - **Method addition, not in the brief**: a **negative control**. "Connected"
   only carries information if a bad credential yields "not connected", so
-  the same URL was registered a second time with a helper emitting a bogus
-  bearer — result, `✘ Incompatible auth server: does not support dynamic
-  client registration`. That is the exact error the original rule was built
-  on, produced against an endpoint demonstrably reachable a minute earlier.
-  D-1 inferred this from upstream's README; it is now measured here. A
-  second, accidental confirmation followed when an interactive shell's
+  the same URL was registered a second time with a helper that yielded no
+  usable credential — result, `✘ Incompatible auth server: does not support
+  dynamic client registration`. That is the exact error the original rule was
+  built on, produced against an endpoint demonstrably reachable a minute
+  earlier. D-1 inferred this from upstream's README; it is now measured here.
+  A second, accidental confirmation followed when an interactive shell's
   profile ran `az account clear` mid-session: the unchanged working
   configuration flipped to the same DCR error. Any re-probe should carry
-  the control.
+  the control. **This bullet described that helper as "emitting a bogus
+  bearer", and that cannot be what it did** — corrected later the same day
+  from the 2x2 in the D-3 entry below, where a *well-formed* bogus bearer
+  against this same bare URL returns an explicit `HTTP 401` text rather than
+  the DCR error. To reproduce the DCR error deliberately, use a helper that
+  cannot run at all.
 - **D-3 applied in part**: `fabric-sqlendpoint` added to
   `claude/mcp/.mcp.project.template.json` — workload-bound by the rule's
   own test, so project scope, matching the brief's table. The **unbound**
@@ -365,10 +370,83 @@ here.
   absent credential. One lead survives: under that same absent credential
   the bound URLs failed with `Error dialing …` rather than the DCR error, a
   different failure class that may not concern auth at all.
-- **Still deferred**: D-3 for every endpoint except `sqlEndpoint`. The user
-  chose on 2026-09-14 to place that one and come back to the rest, so this
-  brief stays `applied with deferrals` and carries no `Closed` key. Re-probe
-  needs a live `az login` and should re-run the negative control.
+- **D-3 discharged in full**: 2026-09-14, later the same day, same warm
+  session and the same live `az login` (re-confirmed with `az account show`
+  and a `--query expiresOn` helper check before probing). The two endpoints
+  the queue still listed were probed one at a time, register-and-check chained
+  into a single shell invocation per server, each against its own control:
+  - **`/v1/mcp/powerbi`** — `✔ Connected`. This is Learn's **remote Power BI
+    query server**, documented across three pages, and distinct from the
+    `powerbi/authoring` URL D-4 holds. Every one of its four tools takes a
+    semantic model ID or a report ID as a required input, so it is
+    workload-bound on the rule's own test → project template, as
+    `powerbi-remote-mcp`. Note Learn states its installation "requires Visual
+    Studio Code and GitHub Copilot" and its auth as Entra OAuth; connecting it
+    from Claude Code on an `az` CLI bearer goes beyond what Learn documents,
+    so this is a local measurement rather than a supported contract.
+  - **Activator reflex**, `/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>`
+    — `✔ Connected`. Note the shape: no `dataPlane` segment, and `reflexes`
+    rather than `items`. Workspace/item-bound → project template as
+    `activator-remote-mcp`, carrying the placeholders. It is templated despite
+    per-repo ids **because it has no bare form** — leaving it out would leave
+    the shape recorded nowhere reachable from the Claude side.
+  The item probed was the tenant's only `Reflex`, found through the admin
+  items API; its readability under the signed-in user's own delegated token
+  was confirmed first, so a failure would not have been an access confound.
+- **The 2x2 that corrects the negative-control method.** The `powerbi` control
+  returned a text neither previously recorded nor predicted — `Server rejected
+  the Authorization header minted by the configured headersHelper (HTTP 401)`,
+  which also says "OAuth fallback is disabled when the helper supplies
+  Authorization". That explains every earlier observation and falsifies the
+  characterisation of the morning's control, so the full grid was measured:
+
+  | Helper outcome | Bare URL | Workspace/item-bound URL |
+  | --- | --- | --- |
+  | emits nothing (nonexistent command) | DCR error | `Error dialing <url>` |
+  | emits a credential the server rejects | HTTP 401 text | the same 401 text |
+
+  So **URL shape selects the text only when the helper emits nothing**; once a
+  header exists, OAuth is out of the path and both shapes surface the server's
+  own 401. A bogus bearer is therefore the *wrong* control — it exercises the
+  self-diagnosing row. The earlier bullet is corrected in place above.
+  Incidental: Claude Code redacts the ids out of the `Error dialing` URL, so
+  that text cannot be used to check which workspace or item was dialled.
+- **Placement, final.** Project template gains `fabric-kqlendpoint` (bare
+  `dataPlane/kqlEndpoint`, measured that morning but never placed),
+  `powerbi-remote-mcp` and `activator-remote-mcp`. The workspace/item-bound
+  `kqlEndpoint` connects but is **deliberately not templated**: its ids are
+  per-repo and its bare sibling is now in the template, so the shape is
+  discoverable without a second placeholder-laden entry — the Activator
+  exception above is exactly the case where that reasoning does not hold. The
+  bound `sqlEndpoint` stays out on measurement: `MCP endpoint not found` for
+  Warehouse, SQLEndpoint and Lakehouse ids alike in the one tenant probed,
+  while the bound `kqlEndpoint` beside it connects and both ids resolve
+  through the Fabric REST API — a tenant-side gap in that variant. D-4 holds
+  untouched; `powerbi/authoring` and `FabricIQ` were not added.
+- **Files changed (D-3 discharge)**: `claude/mcp/.mcp.project.template.json`
+  (three servers added), `claude/mcp/README.md` (line 12, project-scope
+  prerequisites, the placeholder table, four server-table rows — two of which
+  still described the hosted endpoints as unreachable — and the DCR section's
+  error tables), `.vscode/README.md`, `.claude/skills/drift-audit/SKILL.md`
+  line 118, and `skills/fabric/fabric-eventhouse/SKILL.md` plus
+  `references/remote-mcp.md`. That last pair was **not** in any target list and
+  was the most wrong thing left: it still said neither route had been measured
+  against the KQL endpoint, and its Claude Code config block carried no
+  `headersHelper` at all, so anyone following it would have configured a server
+  that could never authenticate.
+- **Verification (D-3)**: step 1 re-grep — every surviving `DCR` hit is a
+  corrected statement, the out-of-scope GitHub cross-reference, the data-agent
+  bearer description, or a `breaDCRumb` false positive; none asserts a Fabric
+  endpoint cannot work from Claude Code. Step 3: `jq -e .` parsed all three
+  templates, plus the JSON fence in `remote-mcp.md`. Step 4:
+  `lint-frontmatter.py` passed on both edited `SKILL.md` files. Step 5:
+  `pre-commit run --all-files` at the end of the run. All seven probe servers
+  were removed from local scope afterwards; `claude mcp list` shows none left.
+- **Closed**: 2026-09-14 — D-1 through D-4 all discharged. Every hosted
+  endpoint this brief named has been probed; the only route still unmeasured is
+  `--client-id` / `--client-secret`, which is a *route* rather than an endpoint
+  and is recorded as unmeasured in `claude/mcp/README.md` rather than left as
+  queued work.
 - **Deviations**: the brief's evidence table named six lines; per its own
   instruction to find targets by grep rather than from the table, the
   sweep found **ten**. Four beyond the table were corrected —
