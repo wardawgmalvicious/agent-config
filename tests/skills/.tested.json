@@ -295,6 +295,15 @@
         "paths": "3829a5fe257eab1a"
       }
     },
+    "prune-branches": {
+      "behaviour": {
+        "date": "2026-09-14",
+        "commit": "ec683d6",
+        "routing": "092b318d6e74df5f",
+        "body": "62acbe8ed52c1088",
+        "references": "4f53cda18c2baa0c"
+      }
+    },
     "test-skill": {
       "behaviour": {
         "date": "2026-09-14",
