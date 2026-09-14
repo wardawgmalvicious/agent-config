@@ -449,11 +449,17 @@ function Sync-GlobalMcp {
     # docker gateway starts, fails to resolve Docker Desktop's per-user
     # state, and surfaces as a server that will not connect.
     $profileName  = Split-Path -Leaf $HOME
-    $templateText = (Get-Content $TemplatePath -Raw).Replace('<USER>', $profileName)
+    $rawTemplate  = Get-Content $TemplatePath -Raw
+    $templateText = $rawTemplate.Replace('<USER>', $profileName)
     # Reconstructing the path only holds while AppData sits under the
     # profile. Say so rather than emitting a silently wrong value.
+    #
+    # Gated on the placeholder actually being present: since the global
+    # template went Docker-free (2026-09-14) no server carries an env block,
+    # so an ungated check would warn - and bump DriftCount - about a
+    # substitution that no longer happens.
     $expectedLocalAppData = Join-Path $HOME 'AppData\Local'
-    if ($env:LOCALAPPDATA -and $env:LOCALAPPDATA -ine $expectedLocalAppData) {
+    if ($rawTemplate -match '<USER>' -and $env:LOCALAPPDATA -and $env:LOCALAPPDATA -ine $expectedLocalAppData) {
         Write-Warning ("LOCALAPPDATA is '$env:LOCALAPPDATA', not '$expectedLocalAppData' - " +
             "the <USER> substitution assumes AppData lives under the profile. " +
             "Edit the env block in $TemplatePath by hand.")

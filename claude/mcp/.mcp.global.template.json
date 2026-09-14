@@ -10,34 +10,16 @@
             "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
         },
         "azure-mcp": {
-            "command": "docker",
+            "type": "stdio",
+            "command": "cmd",
             "args": [
-                "mcp",
-                "gateway",
-                "run",
-                "--servers",
-                "azure"
-            ],
-            "env": {
-                "LOCALAPPDATA": "C:\\Users\\<USER>\\AppData\\Local",
-                "ProgramData": "C:\\ProgramData",
-                "ProgramFiles": "C:\\Program Files"
-            }
-        },
-        "dockerhub-mcp": {
-            "command": "docker",
-            "args": [
-                "mcp",
-                "gateway",
-                "run",
-                "--servers",
-                "dockerhub"
-            ],
-            "env": {
-                "LOCALAPPDATA": "C:\\Users\\<USER>\\AppData\\Local",
-                "ProgramData": "C:\\ProgramData",
-                "ProgramFiles": "C:\\Program Files"
-            }
+                "/c",
+                "npx",
+                "-y",
+                "@azure/mcp@latest",
+                "server",
+                "start"
+            ]
         }
     }
 }
