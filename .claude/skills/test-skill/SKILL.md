@@ -214,7 +214,9 @@ inspection.
 
 **This is the one step that can damage the machine.** Everything else
 is confined to `tests/` and a throwaway directory; this writes to
-`~/.claude/skills`, which serves every session here.
+`~/.claude/skills`, which serves every session here. Only a platform
+skill needs it — `workflow` and `social` are deployed already and
+`.claude/skills/` is read in place — so for anything else skip to step 8.
 
 ```powershell
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,fabric   # or workflow,social,powerbi
@@ -264,21 +266,13 @@ detail that is a claim **only the skill makes**. Measured 2026-09-04 on
 `pbir-filters`: both runs got `SourceRef.Source` and doubled quotes; only
 the payload wrote the skill's 20-char hex `name` (baseline: a 32-char GUID).
 
-**`--safe-mode` does not strip the web tools.** It removes the payload,
-not `WebFetch` and `WebSearch`, so against a skill that caches public
-docs the baseline can fetch its way to the same answer. Measured
-2026-09-12 on `fabric-deployment-pipelines`: the baseline fetched the
-exact five Learn pages the skill was drilled from and re-derived most of
-its content, the skill's own headline finding included. That is a
-second, distinct reason a baseline comes back close — the model is
-*reading the sources*, not recalling the domain — and its remedy
-differs. Compare on synthesis that sits on **no single page**, or add
-`--disallowedTools WebFetch,WebSearch` **to both runs** to measure the
-cache against unaided recall — on the payload side too, or a pass cannot
-separate "the skill delivered it" from "the model fetched the page the
-skill cites" (2026-09-12: with web off on both, the payload still
-produced the Learn fact). Cost separates when content does not: 4 turns
-to 8.
+**`--safe-mode` does not strip the web tools.** A baseline can fetch the
+Learn pages a skill was drilled from and re-derive it — a second reason
+it comes back close. Add `--disallowedTools WebFetch,WebSearch` **to
+both runs**, the payload side too, or a pass cannot separate "the skill
+delivered it" from "the model fetched the page the skill cites"; or
+compare on synthesis that sits on **no single page**. Measured 2026-09-12
+on `fabric-deployment-pipelines` (`references/reading-a-failure.md`).
 
 **Those two flags do not turn the web off on this machine, and the gap
 is one-sided.** `microsoft-learn-mcp` is **user scope**, so a payload
@@ -358,11 +352,14 @@ The four-mode matrix above applies as written only to an
 `/fabric-data-pipeline` was `Unknown command` while `/fabric-gotchas` —
 same session shape, no `paths:` — ran normally.
 
-**Run the behavioural session outside this repo.**
-`.claude/settings.json` here collapses every platform skill
+**Run the behavioural session outside this repo — for a platform
+skill.** `.claude/settings.json` here collapses every platform skill
 description to `name-only`, and the description *is* the trigger — so
 an in-repo run is a guaranteed false negative that looks exactly like a
-broken skill.
+broken skill. **A project-scope skill must run here**, where the payload
+is on disk and root `CLAUDE.md` duplicates it: disallow the file tools
+(`Read,Glob,Grep,ToolSearch`) on both arms, then add a third arm with
+`Skill` disallowed too — `references/reading-a-failure.md`, 2026-09-13.
 
 Confirm the skill actually loaded with `/context` rather than by asking
 the session — self-report is unreliable, and once omitted an
@@ -483,6 +480,7 @@ activated". Work down this table before touching a glob:
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally |
+| The baseline scores nearly as high as the payload | It read the payload off disk, or root `CLAUDE.md` carries the same claims. Disallow the file tools on both arms, then ablate with `Skill` disallowed |
 
 The witnesses behind that table — the transcript record, the `-p`
 `commands_changed` record, which *model* served a turn, and why the

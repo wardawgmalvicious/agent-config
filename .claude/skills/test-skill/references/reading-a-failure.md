@@ -3,11 +3,11 @@
 `SKILL.md` keeps the symptom table; this file keeps the evidence behind
 it — where an activation is recorded, what a `-p` probe emits instead,
 how to tell which model served a turn, why the directory a probe runs
-in is never the variable, what the write-tool flags leave open, and
-what the `--safe-mode` list still carries. Moved out of the skill body
-on 2026-09-13 when that body reached the linter's 500-line cap, the
-moved text unchanged; the last three sections landed the same day, when
-the cap was hit again.
+in is never the variable, what the write-tool flags leave open, what
+the `--safe-mode` list still carries, and what it leaves within reach.
+Moved out of the skill body on 2026-09-13 when that body reached the
+linter's 500-line cap, the moved text unchanged; later sections landed
+the same day, each time the cap was hit again.
 
 **The transcript is one of two witnesses.** It is at
 `~/.claude/projects/<project>/<session-id>.jsonl`; an activation is a
@@ -89,3 +89,42 @@ grep for `code-review` reads as a leaked payload when nothing leaked,
 and on the day `code-review` itself is under test its absence cannot be
 read off the list — assert its siblings instead, and read the count
 drop as the payload minus one.
+
+**`--safe-mode` does not strip the web tools.** It removes the payload,
+not `WebFetch` and `WebSearch`, so against a skill that caches public
+docs the baseline can fetch its way to the same answer. Measured
+2026-09-12 on `fabric-deployment-pipelines`: the baseline fetched the
+exact five Learn pages the skill was drilled from and re-derived most of
+its content, the skill's own headline finding included. That is a
+second, distinct reason a baseline comes back close — the model is
+*reading the sources*, not recalling the domain — and its remedy
+differs. Compare on synthesis that sits on **no single page**, or add
+`--disallowedTools WebFetch,WebSearch` **to both runs** to measure the
+cache against unaided recall — on the payload side too, or a pass cannot
+separate "the skill delivered it" from "the model fetched the page the
+skill cites" (2026-09-12: with web off on both, the payload still
+produced the Learn fact). Cost separates when content does not: 4 turns
+to 8.
+
+**`--safe-mode` strips what the harness loads — not the working
+directory, and not the project instructions.** Both confounds surface
+on a project-scope skill, which `.claude/skills/` loads nowhere but this
+repo, so the probe runs where the payload sits. Measured 2026-09-13 on
+`test-skill`, one walkthrough query throughout. With `Read` available
+the baseline opened the skill's own `SKILL.md`, `test-activation.ps1`
+and `expected_activations.md` from the cwd, scored 7 of 9
+discriminating claims and quoted the skill's sentences back, down to
+`activation-expect.py:331`. With `Read,Glob,Grep,ToolSearch` added to
+`--disallowedTools` on both arms it tried `find … -name SKILL.md`
+through Bash, was denied, and scored 0 against the payload's 11 — and
+that gap is still not the skill's margin, because root `CLAUDE.md` is
+stripped with the payload and carried 15 of the skill's 16 claims; only
+the MSYS2 trap was skill-only. The ablation is the payload arm with
+`Skill` added to `--disallowedTools`, everything else identical: the
+listing entry stays, the body cannot load, and `CLAUDE.md` stays in
+context. It scored 9 of 12 to the skill arm's 11. Read the skill's
+contribution off that gap, and expect it to be narrow where root
+`CLAUDE.md` is the evidence file for the same procedure — that split is
+deliberate, so a narrow margin is not a redundant skill. It is the shape
+root `CLAUDE.md` (Validating a change) gives the false-positive guard,
+with the body ablated instead of the guard.

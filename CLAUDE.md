@@ -927,6 +927,10 @@ or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/REA
   reference to the guard: a half-strip leaves the skill
   self-contradictory, and a run that notices hedges, which biases the
   result toward standing down.
+  It is the wrong control a second way for this repo's own skills:
+  `--safe-mode` strips root `CLAUDE.md` with the payload, and that file
+  carries most of what those skills say — `/test-skill` step 8 has the
+  ablation for that case (measured 2026-09-13 on `test-skill`).
 - Compare against `expected_findings.md` rather than judging the output
   on its own — the fixtures encode what should be caught *and* what
   should not be.
