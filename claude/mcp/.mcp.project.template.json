@@ -7,6 +7,11 @@
                 "Authorization": "Bearer ${<GITHUB_PAT_VAR>}"
             }
         },
+        "fabric-sqlendpoint": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
         "powerbi-modeling-mcp": {
             "type": "stdio",
             "command": "cmd",
