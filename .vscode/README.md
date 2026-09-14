@@ -67,10 +67,12 @@ Claude-Code-impossible.
 `dataPlane/sqlEndpoint` **does** connect from Claude Code, through a
 `headersHelper` command supplying an `az` bearer rather than through OAuth —
 measured 2026-09-14 on CLI 2.1.268 — and it is now carried in the Claude
-project template as `fabric-sqlendpoint`. The other six entries here are
-unprobed rather than proven unreachable, and the second documented route,
-`--client-id` / `--client-secret` for a pre-registered Entra app, is unprobed
-too. See [claude/mcp/README.md](../claude/mcp/README.md#the-dcr-error-is-a-credential-failure)
+project template as `fabric-sqlendpoint`. So do `core`, the bare
+`dataPlane/kqlEndpoint`, and a **workspace/item-bound** `kqlEndpoint` of the
+same shape as the entries here — the bound form is not second-class. Only
+`powerbi` and the Activator reflex URL remain unprobed, along with the second
+documented route, `--client-id` / `--client-secret` for a pre-registered Entra
+app. See [claude/mcp/README.md](../claude/mcp/README.md#the-dcr-error-is-a-credential-failure)
 for the measurement, and for why a DCR error is a credential failure rather
 than evidence against the route. This template is unaffected either way: VS
 Code reaches these servers by its own first-party client ID, so it stays

@@ -95,6 +95,7 @@ And a live session rewrites this file from memory on its own schedule, so a writ
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `microsoft-learn-mcp` | http (`learn.microsoft.com/api/mcp`) | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). Zero-dependency and useful in any repo — the clearest user-scope case in the set. |
+| `fabric-core` | http (`api.fabric.microsoft.com/v1/mcp/core`) | Fabric control plane — workspaces, items, capacities. Bound to no workspace, which is what puts it at user scope. Authenticates through `headersHelper`, so it needs the Azure CLI and a live `az login`; without one it fails in **every** session on the machine. Measured connecting 2026-09-14. |
 | `azure-mcp` | stdio (Docker MCP Gateway → `azure`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. |
 | `dockerhub-mcp` | stdio (Docker MCP Gateway → `dockerhub`) | Docker Hub repos, tags, namespaces, search; useful for image discovery and registry housekeeping. The most droppable entry here — keep it only if you actually manage images. |
 
@@ -152,7 +153,7 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
-| `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Hosted Fabric SQL-endpoint data plane. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). The only hosted endpoint with a measured Claude Code route. |
+| `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Hosted Fabric SQL-endpoint data plane. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). Workspace/item-bound URLs work the same way; use one in a repo's own `.mcp.json` when the target is fixed. |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
 | `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. The working Claude Code alternative to the hosted Fabric Core endpoint, which automatic OAuth can't register with. |
 | `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Covers most RTI workflows without the hosted KQL endpoints, which Claude Code's automatic OAuth flow can't reach. |
@@ -174,9 +175,30 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 
 The third row was accidental — the login was wiped mid-session by an interactive shell, whose profile runs `az account clear` — and it is the useful one: the same configuration flips between connected and the DCR error on credential availability alone. Upstream's `skills-for-fabric` README says the same thing in prose; this is that claim measured here.
 
+**A missing credential prints two different errors, depending on the URL shape.** This is the trap that outlived the one above, because the second text reads like a network or URL fault rather than an auth one:
+
+| URL shape | Text when the helper yields no credential |
+| --- | --- |
+| bare, e.g. `dataPlane/sqlEndpoint` | `Incompatible auth server: does not support dynamic client registration` |
+| workspace/item-bound, e.g. `dataPlane/workspaces/<id>/items/<id>/kqlEndpoint` | `Error dialing <url>` |
+
+Both mean the same thing. A genuinely absent endpoint is a third text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL.
+
+**Both URL shapes work.** Measured 2026-09-14: bare `dataPlane/sqlEndpoint`, bare `dataPlane/kqlEndpoint`, `core`, and a workspace/item-bound `kqlEndpoint` all connect with the helper, each against its own no-helper control, the bound one over two repeated rounds. The bound shape is not second-class, and nothing needs rewriting to the bare form to work from Claude Code.
+
+**Do not batch-probe.** Registering and health-checking several servers back to back fires a `claude` process and an `az` process per step, and the helper is abandoned at 10 seconds. A run of twelve spawns produced `Error dialing` on a bound endpoint that connects reliably when probed alone — a false negative indistinguishable from a real one. Probe one server at a time, and chain its register-and-check into a single shell invocation so the working directory cannot change between them (see [the casing note](#local-scope-keys-are-case-split)).
+
 **So diagnose the helper before believing the error.** Run it alone first — `az account get-access-token --resource https://api.fabric.microsoft.com --query expiresOn --output tsv`, which prints an expiry and never a token. Warm, it returns in 1.2–1.6 s against a **10-second** abandon threshold, so a cold acquisition can plausibly exceed it. Never run the credential-producing form in a session transcript.
 
-**What is not measured.** Only `dataPlane/sqlEndpoint` has been probed. `core`, `powerbi`, the unbound `dataPlane/kqlEndpoint`, and the workspace/item-bound forms were attempted in one batch on 2026-09-14 that ran after the login was cleared, so that batch measured nothing and is not evidence either way. One lead survives it: under an absent credential the **bound** URLs failed with `Error dialing …` rather than the DCR error, a different failure class that may not be about auth at all. Re-probe with a live login before drawing anything from it.
+**What is not measured.** `powerbi` and the Activator reflex URL are unprobed, and so is the second documented route, `--client-id` / `--client-secret`. Everything else named above was measured on 2026-09-14.
+
+### Local-scope keys are case-split
+
+`~/.claude.json` keys local-scope config by working-directory path, and **the drive letter's case is not normalized**, so one repo can hold several entries — `c:/Repos/...` and `C:/Repos/...` — with different servers, different `disabledMcpServers`, and different trust state in each. Observed 2026-09-14 with three keys for one repo.
+
+Worse, the case can differ *between tool calls inside a single session*: a registration landed under `c:/` and a health check moments later read `C:/` and reported the server missing. The VS Code extension passes a lowercase drive letter; a `claude` spawned from a shell gets the uppercase one from the OS.
+
+Two consequences worth designing around. Chain a register-and-check into **one** shell invocation, so the directory cannot change between them. And prefer a committed `.mcp.json` over local scope wherever the config can live in the repo — project scope reads the repo file and never touches these keys, which sidesteps the split entirely.
 
 ---
 
