@@ -273,9 +273,25 @@ lands determines when it goes live:
 | `claude/agents/`, `claude/hooks/`, `claude/rules/` | `~/.claude/agents`, `hooks`, `rules` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/mcp/` | `~/.claude/mcp` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
-| `claude/settings.json` | `~/.claude/settings.json` | plain copy, key-level merge | after `scripts/link-claude.ps1 -Force` |
+| `claude/settings.json` | `~/.claude/settings.json` | key-level merge, target-only keys kept | after `scripts/link-claude.ps1 -Force` |
 | `claude/mcp/.mcp.global.template.json` | `~/.claude.json` (top-level `mcpServers` only) | single-key reconcile, prunes | after `scripts/link-claude.ps1 -GlobalMcp` |
 | `copilot/instructions/` | `<repo>/.github/instructions` | file copy (`scripts/copy-copilot.ps1`) | in a teammate's clone, once committed there |
+
+**`settings.json` is a merge, not a copy, and `-Force` cannot lose a
+runtime key.** That row read "plain copy, key-level merge" until
+2026-09-14 — a contradiction, and a brief reasoned from the "copy" half
+to conclude that the one flag needed to deploy a `CLAUDE.md` edit would
+silently discard the four `/config`-owned keys the live file carries and
+the repo copy does not (`theme`, `agentPushNotifEnabled`, `tui`,
+`model`). It does not. `scripts/link-claude.ps1` special-cases the file:
+repo keys are added or replaced at the top level and **every target-only
+key is kept**. Measured 2026-09-14 by running that merge branch verbatim
+against a copy of the live file — all four survived with their values —
+and again by a real `-Force` run, which left the file byte-identical
+because every repo key already matched. What `-Force` *does* replace is
+a **shared** key, whole, so a runtime edit nested inside a key the repo
+also owns would be lost; all eight shared keys were byte-identical when
+that was checked, so nothing was at risk either way.
 
 The last row is the odd one and deliberately so. `~/.claude.json` sits
 **beside** `~/.claude`, not inside it, and is not payload at all — it is
