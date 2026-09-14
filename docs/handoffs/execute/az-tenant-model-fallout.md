@@ -80,16 +80,42 @@ Whichever lands, consider giving the script a `-WhatIf` in the same
 pass. It writes to `$HOME` and prunes skill groups, and machine-config
 treats dry-run as a maintained contract on exactly that kind of script.
 
-## Item 2: two files still say the profiles clear the Azure account
+## Item 2: two places still say the profiles clear the Azure account
 
-**`docs/handoffs/execute/README.md`**, the row for the hosted-MCP
-probes, tells a future session to "confirm the login survives, since an
-interactive shell's profile runs `az account clear` and a cleared login
-produces that same DCR error on a working config."
+**This item's original citation was wrong, corrected 2026-09-14.** It
+named "the row for the hosted-MCP probes" in [README.md](README.md) and
+quoted it as telling a future session to "confirm the login survives,
+since an interactive shell's profile runs `az account clear`". No such
+row exists. That file's only mention of the clear is this brief's own
+summary row; the row immediately below it — which the summary calls the
+hosted-MCP one — is the MSIX packaging brief; and the quoted sentence
+appears nowhere in the repo. The forward-looking advice it describes is
+real, but it lives in an audit record, named under "Deliberately not to
+be changed" below. **Confirm each target below before editing it.**
 
-The mechanism it names is gone, but **do not replace it with "the login
-now survives"** — a functionally identical failure is still reachable by
-a different route, and on a probe whose entire difficulty was separating
+### 2a. `README.md`, this brief's own summary row
+
+The queue row for this brief carries both defects. It points at the
+hosted-MCP probe row that is not there, and it restates the premise
+item 2 was written on — that the stale text "would send a probe session
+chasing a failure mode that no longer exists", which 2c corrects. Edit
+those two clauses; the row is long and the rest of it still holds.
+
+### 2b. `claude/mcp/README.md:185`
+
+Records a measurement whose third row was an accident, explained in the
+present tense as "an interactive shell, whose profile runs `az account
+clear`". The measurement itself still stands; only the mechanism named
+in the aside is gone. Either put that clause in the past tense or mark
+it as a record of behaviour that has since been removed — do not delete
+the row, since it is the one that established the finding. (Cited here
+as `:180` until 2026-09-14; the line had drifted by five.)
+
+### 2c. What replaces the premise, wherever it is restated
+
+The mechanism is gone, but **do not replace it with "the login now
+survives"** — a functionally identical failure is still reachable by a
+different route, and on a probe whose entire difficulty was separating
 credential absence from configuration error, getting that wrong costs
 time in precisely the session least able to spare it.
 
@@ -97,19 +123,10 @@ What actually holds, measured 2026-09-14: a tool shell runs with **no
 profile at all**, so it never receives the pin, and `az` in a tool call
 reads the shared `~/.azure` rather than the tenant directory `AzLogin`
 writes. The two stores had already diverged on this machine while both
-still answered exit 0. So the row should tell a future session to set
-`AZURE_CONFIG_DIR` explicitly before probing, and to read an empty
+still answered exit 0. So a session probing this should set
+`AZURE_CONFIG_DIR` explicitly first, and read an empty
 `$env:AZURE_CONFIG_DIR` as "the profile never ran" rather than as "no
-tenant selected". The negative control in that row is unaffected and
-should stay.
-
-**`claude/mcp/README.md:180`** records a measurement whose third row was
-an accident, explained in the present tense as "an interactive shell,
-whose profile runs `az account clear`". The measurement itself still
-stands; only the mechanism named in the aside is gone. Either put that
-clause in the past tense or mark it as a record of behaviour that has
-since been removed — do not delete the row, since it is the one that
-established the finding.
+tenant selected".
 
 ### Deliberately not to be changed
 
@@ -120,10 +137,26 @@ date, and this repo keeps dated ledgers rather than rewriting them.
 Leave both. If a reader needs the update, it belongs in this brief and
 in `claude/CLAUDE.md`, not in a backdated record.
 
+**Know what that costs, because one of them is not a record.**
+`01-resite-the-hosted-fabric-mcp-placement-rule.md:182-184` is step 1 of
+a re-probe procedure — "Both shell profiles skip `az account clear` when
+`CLAUDECODE` is set, so an existing `az login` survives across tool
+calls" — and it is the forward-looking advice item 2 was reaching for.
+It is now wrong twice: the `CLAUDECODE` carve-out is gone, and a tool
+shell gets no pin either way. Leaving it stands, because the ledger rule
+is the stronger convention and `claude/CLAUDE.md` now carries the
+correct statement — but this is the judgement call in item 2, and a
+future reader re-probing from that record alone gets bad advice. Flip it
+only deliberately.
+
 ## Post-change checklist
 
-- `grep -rn "az account clear" --include=*.md .` returns only the two
-  audit records.
+- No file outside `docs/audits/` states in the **present tense** that a
+  shell profile runs `az account clear`. The bare
+  `grep -rn "az account clear" --include=*.md .` is not that check and
+  never was: it legitimately matches `claude/CLAUDE.md` twice — the
+  past-tense opener and the tenant-scoped note — and this brief five
+  times. Read the matches rather than counting them.
 - For item 1, a deploy run leaves the four runtime keys in
   `~/.claude/settings.json` intact, verified by diffing before and
   after rather than by reading the code.
