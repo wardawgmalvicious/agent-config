@@ -322,7 +322,13 @@ against `agent-config/claude/mcp/.mcp.global.template.json` by
 `scripts/link-claude.ps1 -GlobalMcp` — off by default even under
 `-Force`, because that file is Claude Code's runtime state rather than
 payload. User scope is `microsoft-learn-mcp`, `azure-mcp` and
-`dockerhub-mcp`: servers useful in any repo. **Everything Fabric and
+`fabric-core`: servers useful in any repo, and **none of them needs
+Docker** since 2026-09-14 — `dockerhub-mcp` was dropped and `azure-mcp`
+moved from the Docker MCP Gateway to `npx @azure/mcp`, so nothing at
+user scope depends on a UI-configured gateway this repo cannot express.
+`fabric-core` is the one Fabric exception to what follows, and it earns
+it by being bound to no workspace; it needs a live `az login`, and
+without one it fails in every session. **Everything else Fabric and
 Power BI is project scope**, in each Fabric repo's own `.mcp.json`, so
 those tools are absent here and that is not a fault to fix. Reach for a
 project's `.mcp.json` rather than promoting a server to user scope.

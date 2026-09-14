@@ -287,9 +287,11 @@ this file (a project's equivalent is a committed `.mcp.json` at its repo
 root, which the linker does not deploy). Drift is *reported* on every run
 regardless, because this is a reconciler rather than an install: Docker
 Desktop's MCP Toolkit re-adds an unfiltered `MCP_DOCKER` gateway entry
-whenever it connects a client, and that entry re-exports every
-`azure-mcp` and `dockerhub-mcp` tool a second time into every session on
-the machine. The switch replaces exactly one key and round-trips the rest
+whenever it connects a client, re-exporting a whole Azure, Docker Hub and
+GitHub tool surface into every session on the machine. Since the global
+template went Docker-free on 2026-09-14 nothing here needs that gateway
+at all, so the entry is pure noise and the reconcile deletes it — but it
+still returns on the next connect. The switch replaces exactly one key and round-trips the rest
 untouched — see [claude/mcp/README.md](claude/mcp/README.md) for the two
 `ConvertFrom-Json` switches that make that round trip lossless, both of
 which fail silently when omitted.

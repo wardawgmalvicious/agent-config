@@ -33,9 +33,14 @@ The Fabric and Power BI servers sit in the project template for exactly this rea
 ### Prerequisites (user scope)
 
 - **Hosted http endpoints** (`microsoft-learn-mcp`) need no local runtime and no credential.
-- **Docker MCP Gateway servers** (`azure-mcp`, `dockerhub-mcp`) need [Docker Desktop](https://www.docker.com/products/docker-desktop/) **with the MCP Toolkit extension installed and the relevant gateway servers enabled**. Browse, install, and toggle gateway servers from the Docker Desktop **MCP Toolkit** view. When Docker Desktop isn't running these fail to connect, and Claude Code reports it at session start.
+- **`fabric-core`** needs the Azure CLI on `PATH` and a live `az login`, and nothing else — see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure).
+- **`azure-mcp`** needs [Node.js](https://nodejs.org/) on `PATH`; `npx` fetches the package on first launch. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux invoke `npx` directly.
 
-Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) so the gateway process can resolve Docker's per-user state. Replace `<USER>` with your Windows **profile directory** name before merging — which is not always the account name, see [`<USER>` placeholder](#user-placeholder-global-template) below. On macOS / Linux, omit the `env` block (Docker Desktop resolves these from the OS).
+**This template is deliberately Docker-free** (2026-09-14). `azure-mcp` used to be a Docker MCP Gateway server and `dockerhub-mcp` sat beside it; both are gone, so nothing at user scope depends on Docker Desktop running, on the MCP Toolkit extension being installed, or on gateway servers being toggled on in a UI. That last point is the reason: gateway membership is configured by clicking in Docker Desktop, which no file in this repo can express, so a machine could never be rebuilt from the repo alone. `dockerhub-mcp` was dropped outright rather than replaced — it was already documented here as the most droppable entry in the set.
+
+The trade is that `@azure/mcp` is **prerelease** (`3.0.0-beta.43` when this landed), against a Docker gateway that was stable. Accepted deliberately; revisit if the beta proves unreliable. Measured connecting 2026-09-14.
+
+The removal also retires the `<USER>` placeholder, which existed only inside those gateways' Windows `env` blocks. `scripts/link-claude.ps1` still performs the substitution, now gated on the placeholder actually appearing, so its `LOCALAPPDATA` warning cannot fire for a substitution that no longer happens.
 
 > **`github-mcp` is not here.** It is in the project template instead, because on a machine with more than one GitHub account the token *is* workload-bound — see [GitHub and multiple accounts](#github-and-multiple-accounts) below.
 
@@ -48,9 +53,9 @@ Each Docker entry passes three Windows env vars (`LOCALAPPDATA`, `ProgramData`, 
 ./scripts/link-claude.ps1 -SkillGroups workflow,social -GlobalMcp
 ```
 
-It substitutes `<USER>`, backs the file up, replaces the top-level `mcpServers` key, and **prunes servers this template does not declare** — leaving every other key in `~/.claude.json` untouched. Two things follow from that:
+It backs the file up, replaces the top-level `mcpServers` key, and **prunes servers this template does not declare** — leaving every other key in `~/.claude.json` untouched. Two things follow from that:
 
-- **It is a reconciler, not a one-time install.** Docker Desktop's MCP Toolkit writes an unfiltered `MCP_DOCKER` gateway entry into `~/.claude.json` whenever it connects a client. That entry has no `--servers` filter, so it re-exports the whole gateway — every `azure-mcp` and `dockerhub-mcp` tool a second time, plus a full GitHub surface — into every session on the machine. Expect it back after a Docker Desktop update and re-run the linker.
+- **It is a reconciler, not a one-time install.** Docker Desktop's MCP Toolkit writes an unfiltered `MCP_DOCKER` gateway entry into `~/.claude.json` whenever it connects a client, re-exporting a whole tool surface — Azure, Docker Hub and a full GitHub set — into every session on the machine. Nothing in this template needs Docker any more, so that entry is now pure noise and the reconcile deletes it outright. It still returns whenever Docker Desktop connects a client again; re-run the linker, or disconnect Claude Code in the MCP Toolkit view to stop it at the source.
 - **Prune before you're pruned.** Anything removed from user scope is gone everywhere; move a server you still want into the owning repo's `.mcp.json` *first*.
 
 Or merge the `mcpServers` object into the **top level** of `~/.claude.json` by hand (on Windows: `C:\Users\<you>\.claude.json`):
@@ -60,8 +65,8 @@ Or merge the `mcpServers` object into the **top level** of `~/.claude.json` by h
     // ...existing top-level fields...
     "mcpServers": {
         "microsoft-learn-mcp": { /* from template */ },
-        "azure-mcp":           { /* from template */ },
-        "dockerhub-mcp":       { /* from template */ }
+        "fabric-core":         { /* from template */ },
+        "azure-mcp":           { /* from template */ }
     },
     "projects": { /* ...existing per-project local-scope entries stay here... */ }
 }
@@ -96,8 +101,7 @@ And a live session rewrites this file from memory on its own schedule, so a writ
 | --- | --- | --- |
 | `microsoft-learn-mcp` | http (`learn.microsoft.com/api/mcp`) | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). Zero-dependency and useful in any repo — the clearest user-scope case in the set. |
 | `fabric-core` | http (`api.fabric.microsoft.com/v1/mcp/core`) | Fabric control plane — workspaces, items, capacities. Bound to no workspace, which is what puts it at user scope. Authenticates through `headersHelper`, so it needs the Azure CLI and a live `az login`; without one it fails in **every** session on the machine. Measured connecting 2026-09-14. |
-| `azure-mcp` | stdio (Docker MCP Gateway → `azure`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. |
-| `dockerhub-mcp` | stdio (Docker MCP Gateway → `dockerhub`) | Docker Hub repos, tags, namespaces, search; useful for image discovery and registry housekeeping. The most droppable entry here — keep it only if you actually manage images. |
+| `azure-mcp` | stdio (`npx @azure/mcp server start`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. Prerelease — see [Prerequisites](#prerequisites-user-scope). |
 
 ---
 
@@ -305,7 +309,7 @@ Then **fully restart VS Code** — processes inherit the environment when they s
 
 Prefer a real PAT (classic or fine-grained) over `gh auth token`: the `gho_` token the `gh` CLI holds is rotated, so a value copied out of it goes stale. Scope it to what the MCP tools actually need — `repo` and `read:org` cover issues, PRs, and code search.
 
-If you would rather not manage tokens, the Docker MCP Gateway's `github-official` server reuses your local `gh` credentials instead. It works, and it is what this repo used before, but it makes GitHub access depend on Docker Desktop and it authenticates as whichever single account `gh` is currently logged into — which is the multi-account problem again, just less visible.
+If you would rather not manage tokens, the Docker MCP Gateway's `github-official` server reuses your local `gh` credentials instead. It works, and it is what this repo used before, but it authenticates as whichever single account `gh` is currently logged into — the multi-account problem again, just less visible. **It is also no longer an option here**: the reasoning that moved `github-mcp` off that gateway — that it makes access depend on Docker Desktop — is now the whole template's policy, so going back would reintroduce the dependency deliberately removed on 2026-09-14.
 
 ---
 
@@ -313,27 +317,15 @@ If you would rather not manage tokens, the Docker MCP Gateway's `github-official
 
 JSON files don't support comments, so substitution instructions live here.
 
-### `<USER>` placeholder (global template)
+### `<USER>` placeholder (retired 2026-09-14)
 
-[.mcp.global.template.json](.mcp.global.template.json) contains literal `<USER>` strings inside the `LOCALAPPDATA` env-var paths for the two Docker MCP Gateway servers (`azure-mcp`, `dockerhub-mcp`). `scripts/link-claude.ps1 -GlobalMcp` substitutes it for you; do it by hand only when merging the template manually.
+The global template no longer contains one. It existed only inside the `LOCALAPPDATA` env-var paths of the two Docker MCP Gateway servers, and both left with the Docker-free change above.
 
-**It is the profile *directory* name, not the account name, and this file used to say otherwise.** The two are the same on most machines and differ whenever a Windows account was renamed after its profile folder was created — which is the case here. The placeholder sits inside a path, so reading `$env:USERNAME` builds `C:\Users\<account>\AppData\Local`, a directory that does not exist. Nothing reports that: the gateway starts, fails to resolve Docker Desktop's per-user state, and surfaces later as a server that will not connect.
+The substitution machinery stays in `scripts/link-claude.ps1` because the placeholder may return in a future template, and one hard-won detail is worth keeping with it: **it was the profile *directory* name, never the account name.** The two are identical on most machines and diverge whenever a Windows account is renamed after its profile folder is created — the case here. Because the placeholder sat inside a path, `$env:USERNAME` built `C:\Users\<account>\AppData\Local`, a directory that does not exist, and nothing reported it: the gateway started, failed to resolve its per-user state, and surfaced later as a server that would not connect. `Split-Path -Leaf $HOME` is the correct source; `basename "$USERPROFILE"` in Git Bash.
 
-Take it from the profile path instead:
+The linker's guard against a redirected AppData is now gated on the placeholder actually being present, so it cannot warn about a substitution that no longer happens.
 
-```powershell
-# PowerShell — the directory, not the account
-Split-Path -Leaf $HOME        # or: Split-Path -Leaf $env:USERPROFILE
-```
-
-```bash
-# Git Bash
-basename "$USERPROFILE"
-```
-
-So `C:\\Users\\<USER>\\AppData\\Local` becomes whatever `$env:LOCALAPPDATA` already reads as. **Check them against each other** — if `$env:LOCALAPPDATA` is not `$HOME\AppData\Local`, AppData has been redirected and the whole `env` block needs editing by hand rather than substituting. The linker warns when it sees that rather than writing a path it guessed.
-
-The entire `env` block (`LOCALAPPDATA`, `ProgramData`, `ProgramFiles`) is **Windows-specific** — it tells the gateway process where to find Docker Desktop's per-user state on Windows. On Linux / macOS, Docker Desktop resolves these from the OS, so omit the `env` block entirely. The `cmd /c npx ...` wrapper in the project template is likewise Windows-specific and should be replaced with a direct `npx` invocation elsewhere.
+Platform note that outlives all of that: the `cmd /c npx ...` wrapper used by `azure-mcp` here and by several project-template servers is **Windows-specific**, and should be a direct `npx` invocation on macOS / Linux.
 
 ### Project-template placeholders
 
@@ -350,7 +342,7 @@ Neither template sets a timeout. Two upstream sources disagree about the field a
 - **`timeout`** (milliseconds) is the real key. It is accepted on every transport and is what `claude mcp get <name>` echoes back as `Timeout:`.
 - **`request_timeout_ms`** — named in the 2.1.206 changelog — is an internal remote-transport hint, declared in the bundle as `@internal CCR backend wire hint; folded into timeout at parse`. On an `http` / `sse` / `ws` server it folds into `timeout`, capped at 300000 ms. On a **stdio** server it is not in the schema at all and is **silently dropped**. Never put it in a template.
 
-`timeout` is left out too, because the default is not 60 seconds. Claude Code overrides the MCP SDK's 60s default with `timeout ?? MCP_TOOL_TIMEOUT ?? 1e8` — roughly **27.8 hours** — so the docker-gateway servers' container start has no deadline worth raising. What does bite is unrelated and unreachable from here: a call running past `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (default 120000) moves to a background task without being aborted, and no `timeout` value changes that.
+`timeout` is left out too, because the default is not 60 seconds. Claude Code overrides the MCP SDK's 60s default with `timeout ?? MCP_TOOL_TIMEOUT ?? 1e8` — roughly **27.8 hours** — so a slow stdio start, such as `npx` fetching `@azure/mcp` on first launch, has no deadline worth raising. What does bite is unrelated and unreachable from here: a call running past `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (default 120000) moves to a background task without being aborted, and no `timeout` value changes that.
 
 Verified against Claude Code **2.1.251** (2026-08-31) by reading the shipped config schema and round-tripping a scratch `.mcp.json` through `claude mcp get`. Re-check on a major version bump.
 
