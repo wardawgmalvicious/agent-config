@@ -182,10 +182,38 @@ PowerShell modules available: `Az`, `MicrosoftPowerBIMgmt`, `SqlServer`,
 `SecretStore`, `PSFzf`. Pester has a version trap that reads as a syntax
 error — see `~/.claude/rules/coding-powershell.md` before writing tests.
 
-`az account clear` runs in interactive shells only: both profiles skip it
-when `CLAUDECODE` is set, so an existing `az login` survives across tool
-calls. Check `az account show` before assuming a login is needed — and
-before assuming one exists.
+### Azure CLI state is per tenant, and pinned by folder
+
+The profiles no longer run `az account clear`. It routed nothing — it
+emptied the drawer so a wrong-tenant command failed loudly instead of
+succeeding quietly — and it cost 1.63 s of every interactive shell while
+destroying a working login roughly every time one existed. The
+`CLAUDECODE` carve-out that spared agent shells from it is gone with it.
+
+Each tenant now gets its own Azure CLI config directory under
+`~/.azure-tenants/<name>/`, selected through `AZURE_CONFIG_DIR`, so
+profile and MSAL token cache never collide and a login survives across
+shells. A shell resolves which one at startup, in this order: an
+`AZURE_CONFIG_DIR` already in the environment; then the `repoRoot` a
+tenant claims in `~/.config/az-tenants.json`, which is the same folder
+scoping `includeIf gitdir:` gives git below; then the last `AzLogin`,
+recorded in `~/.config/az-current-tenant`. The startup banner names the
+result, and `(repo)` on it means the folder decided rather than the
+remembered selection.
+
+Three things follow for a tool call. **An agent shell inherits the pin**,
+so `az account show` reports the tenant the user actually chose rather
+than whatever survived, and `$env:AZURE_CONFIG_DIR` answers "which
+tenant" without running anything. **`az account clear` is now
+tenant-scoped** — it empties the pinned directory, not every login on the
+machine. And **Az PowerShell ignores `AZURE_CONFIG_DIR`**:
+`(Get-AzContextAutosaveSetting).ContextDirectory` still reads `~/.Azure`,
+so none of this reaches the module, only the CLI.
+
+Still check `az account show` before assuming a login is needed — and
+before assuming one exists. A pin is a directory, not a credential: a
+shell can sit pinned to a tenant it has never logged into, which is what
+the banner's "has no config dir, run AzLogin" wording is telling you.
 
 ### Git identity is folder-scoped
 
