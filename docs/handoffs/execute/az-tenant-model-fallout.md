@@ -87,13 +87,21 @@ probes, tells a future session to "confirm the login survives, since an
 interactive shell's profile runs `az account clear` and a cleared login
 produces that same DCR error on a working config."
 
-That is not merely stale. It instructs the reader to suspect a failure
-mode that can no longer occur, on a probe whose entire difficulty was
-separating credential absence from configuration error — so it costs
-time in precisely the session least able to spare it. What replaces it:
-a login now survives across shells, and `$env:AZURE_CONFIG_DIR` names
-the tenant a shell is pinned to without running a command. The negative
-control in that row is unaffected and should stay.
+The mechanism it names is gone, but **do not replace it with "the login
+now survives"** — a functionally identical failure is still reachable by
+a different route, and on a probe whose entire difficulty was separating
+credential absence from configuration error, getting that wrong costs
+time in precisely the session least able to spare it.
+
+What actually holds, measured 2026-09-14: a tool shell runs with **no
+profile at all**, so it never receives the pin, and `az` in a tool call
+reads the shared `~/.azure` rather than the tenant directory `AzLogin`
+writes. The two stores had already diverged on this machine while both
+still answered exit 0. So the row should tell a future session to set
+`AZURE_CONFIG_DIR` explicitly before probing, and to read an empty
+`$env:AZURE_CONFIG_DIR` as "the profile never ran" rather than as "no
+tenant selected". The negative control in that row is unaffected and
+should stay.
 
 **`claude/mcp/README.md:180`** records a measurement whose third row was
 an accident, explained in the present tense as "an interactive shell,
@@ -119,5 +127,11 @@ in `claude/CLAUDE.md`, not in a backdated record.
 - For item 1, a deploy run leaves the four runtime keys in
   `~/.claude/settings.json` intact, verified by diffing before and
   after rather than by reading the code.
-- `claude/CLAUDE.md` needs no further edit for either item; it already
-  describes the current model.
+- `claude/CLAUDE.md` **did** need an edit, made 2026-09-14 and not
+  outstanding. Its description of the tenant model was accurate, but the
+  "**An agent shell inherits the pin**" claim beneath it was false: tool
+  shells load no profile, so they get no pin. That sentence now says the
+  opposite, and the file's opening "Both profiles print a two-line
+  banner" claim — older than this change, same root cause — was corrected
+  with it. The deployed `~/.claude/CLAUDE.md` was refreshed by copying
+  that one file, per item 1.
