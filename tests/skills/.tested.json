@@ -285,6 +285,15 @@
         "commit": "975b87f",
         "paths": "3829a5fe257eab1a"
       }
+    },
+    "test-skill": {
+      "behaviour": {
+        "date": "2026-09-13",
+        "commit": "280192b",
+        "routing": "f514d6e3ed0be58f",
+        "body": "66a235ffff339417",
+        "references": "9cd51a4d840db663"
+      }
     }
   }
 }
