@@ -5,9 +5,13 @@ When the user asks about Power BI / Fabric / TMDL topics, prefer skill content o
 ## Local environment
 
 Windows 11. Two shells, each spawned fresh and non-interactive per tool
-call: PowerShell 7.6 (`pwsh`) and Git Bash (mingw64). Both profiles print
-a two-line banner (`Profile and functions loaded…`) ahead of your
-command's output — that is the profile, not your command.
+call: PowerShell 7.6 (`pwsh`) and Git Bash (mingw64). **Neither loads a
+profile** — `pwsh` starts without one, bash is non-interactive with
+`BASH_ENV` unset — so the `Profile and functions loaded…` banner is
+absent, and so is every function, alias and environment pin the
+profiles set. A nested `pwsh -Command` or `bash -lc` does load one, and
+prints the banner. Corrected 2026-09-14; this said the banner prefixes
+your output, which held when it was written.
 `C:\Repos\Personal\machine-config` is the source of truth for what is
 installed here and how it is configured.
 
@@ -201,10 +205,15 @@ recorded in `~/.config/az-current-tenant`. The startup banner names the
 result, and `(repo)` on it means the folder decided rather than the
 remembered selection.
 
-Three things follow for a tool call. **An agent shell inherits the pin**,
-so `az account show` reports the tenant the user actually chose rather
-than whatever survived, and `$env:AZURE_CONFIG_DIR` answers "which
-tenant" without running anything. **`az account clear` is now
+Three things follow for a tool call. **A tool shell gets no pin at
+all** — it runs with no profile, so an empty `$env:AZURE_CONFIG_DIR`
+means the profile never ran rather than "no tenant selected", and `az`
+here reads the shared `~/.azure` rather than the tenant the user
+chose. Both stores can answer exit 0 while holding different logins,
+so nothing surfaces the mismatch — set `AZURE_CONFIG_DIR` explicitly
+before any `az` call whose answer must match the user's. Measured
+2026-09-14: `AzLogin` undefined in `pwsh`, `$-` without `i` in bash,
+and the two stores already diverged. **`az account clear` is now
 tenant-scoped** — it empties the pinned directory, not every login on the
 machine. And **Az PowerShell ignores `AZURE_CONFIG_DIR`**:
 `(Get-AzContextAutosaveSetting).ContextDirectory` still reads `~/.Azure`,
