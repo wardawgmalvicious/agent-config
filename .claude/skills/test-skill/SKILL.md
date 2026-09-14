@@ -359,7 +359,9 @@ an in-repo run is a guaranteed false negative that looks exactly like a
 broken skill. **A project-scope skill must run here**, where the payload
 is on disk and root `CLAUDE.md` duplicates it: disallow the file tools
 (`Read,Glob,Grep,ToolSearch`) on both arms, then add a third arm with
-`Skill` disallowed too — `references/reading-a-failure.md`, 2026-09-13.
+`Skill` disallowed too — **model-invoked, never slash**, or the
+expansion inlines the body straight past the denial and the arm is
+inert. `references/reading-a-failure.md`, 2026-09-13.
 
 Confirm the skill actually loaded with `/context` rather than by asking
 the session — self-report is unreliable, and once omitted an
