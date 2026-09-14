@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 11 — applied 4 · applied with deferrals 2 · closed 1 · escalated 4
+Briefs: 11 — applied 4 · applied with deferrals 2 · closed 2 · escalated 3
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -19,4 +19,4 @@ Briefs: 11 — applied 4 · applied with deferrals 2 · closed 1 · escalated 4
 | [08 decide on a catalog-wide listing-budget check and a cross-skill reference lint](08-decide-catalog-budget-and-reference-lints.md) | 9 (first half) | decision, then possibly new lint code in `scripts/` wired into pre-commit | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [09 probe whether "query my Fabric SQL database" reaches fabric-database](09-probe-sql-database-query-routing.md) | 9 (second half) | measurement of trigger behaviour | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [10 verify the hosted Power BI modeling MCP endpoint before adding it](10-verify-hosted-powerbi-modeling-endpoint.md) | 10 (first half) | research gate, then at most one template entry | applied 2026-09-11 |
-| [11 check whether a pre-registered OAuth client lets Claude Code reach Fabric-hosted MCP servers](11-verify-claude-code-preregistered-oauth.md) | 10 (second half) | research, then a decision | escalated 2026-09-11 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [11 check whether a pre-registered OAuth client lets Claude Code reach Fabric-hosted MCP servers](11-verify-claude-code-preregistered-oauth.md) | 10 (second half) | research, then a decision | escalated 2026-09-11 · closed 2026-09-14 |

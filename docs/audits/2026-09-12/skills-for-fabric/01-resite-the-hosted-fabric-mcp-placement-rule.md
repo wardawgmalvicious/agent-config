@@ -318,6 +318,57 @@ here.
   `docs/handoffs/execute/README.md` under "A Fabric tenant, for one
   approved live MCP probe", where that row also records that this brief
   supersedes question 1 of the 2026-09-10 brief 11.
+- **D-2 discharged**: 2026-09-14, approved by the user and run in a warm
+  session. `dataPlane/sqlEndpoint`, `type: http`, `headersHelper` verbatim
+  from the Evidence block, registered at **local** scope on CLI 2.1.268:
+  `✔ Connected`, read twice independently (`claude mcp get` and `claude
+  mcp list`), with no browser prompt at any point. Helper latency 1.2–1.6 s
+  warm against the 10 s abandon threshold. The tenant's Fabric MCP preview
+  is enabled for a subset of the org including the operator, checked in the
+  admin portal **before** the probe so a negative would have been
+  attributable. Tenant is a client tenant; no tenant, workspace, item or
+  account identifier is recorded here or in any file this run touched.
+- **Method addition, not in the brief**: a **negative control**. "Connected"
+  only carries information if a bad credential yields "not connected", so
+  the same URL was registered a second time with a helper emitting a bogus
+  bearer — result, `✘ Incompatible auth server: does not support dynamic
+  client registration`. That is the exact error the original rule was built
+  on, produced against an endpoint demonstrably reachable a minute earlier.
+  D-1 inferred this from upstream's README; it is now measured here. A
+  second, accidental confirmation followed when an interactive shell's
+  profile ran `az account clear` mid-session: the unchanged working
+  configuration flipped to the same DCR error. Any re-probe should carry
+  the control.
+- **D-3 applied in part**: `fabric-sqlendpoint` added to
+  `claude/mcp/.mcp.project.template.json` — workload-bound by the rule's
+  own test, so project scope, matching the brief's table. The **unbound**
+  `dataPlane/sqlEndpoint` URL is what is carried, because that is what was
+  measured; the workspace/item-bound form is not. D-4 holds untouched:
+  `powerbi-modeling-mcp` and `FabricIQ` were not added.
+- **Files changed (2026-09-14)**: `claude/mcp/.mcp.project.template.json`,
+  `claude/mcp/README.md` (line 12, the project-scope prerequisites and
+  server table, plus a new `### The DCR error is a credential failure`
+  section carrying the measurement), `.vscode/README.md`,
+  `.claude/skills/drift-audit/SKILL.md` (the Phase 2 placement rule, which
+  said these endpoints belong *only* in the workspace template).
+- **Deviation from the brief's method**: step 3 says register with the
+  `headersHelper`, which `claude mcp add` cannot do — there is no helper
+  flag on 2.1.268, only `--header`, `--client-id`, `--client-secret` and
+  `--callback-port`. `claude mcp add-json`, passing the whole server object,
+  is the only route. Step 4's "read `/mcp`" was replaced by `claude mcp
+  list`, which health-checks approved servers from the shell and so needs
+  no interactive session or restart.
+- **Invalid batch, recorded so it is not mistaken for evidence**: a second
+  run probing `core`, `powerbi`, unbound `dataPlane/kqlEndpoint` and two
+  workspace/item-bound URLs executed after the login was cleared and
+  therefore measured nothing. Every failure in it is explained by the
+  absent credential. One lead survives: under that same absent credential
+  the bound URLs failed with `Error dialing …` rather than the DCR error, a
+  different failure class that may not concern auth at all.
+- **Still deferred**: D-3 for every endpoint except `sqlEndpoint`. The user
+  chose on 2026-09-14 to place that one and come back to the rest, so this
+  brief stays `applied with deferrals` and carries no `Closed` key. Re-probe
+  needs a live `az login` and should re-run the negative control.
 - **Deviations**: the brief's evidence table named six lines; per its own
   instruction to find targets by grep rather than from the table, the
   sweep found **ten**. Four beyond the table were corrected —

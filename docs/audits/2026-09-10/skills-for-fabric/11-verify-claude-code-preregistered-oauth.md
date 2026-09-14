@@ -138,3 +138,16 @@ itself, which is why the report raised it.
   line 118, `claude/mcp/README.md` line 12, and `.vscode/README.md`
   lines 60–63.
 - **Deviations**: none.
+- **Closed**: 2026-09-14 — the premise this brief was written to test is
+  settled, by a different route than the one it proposed. Question 1 was
+  already superseded by the 2026-09-12 brief 01, which read both
+  DCR-free routes off first-party Claude Code docs. The rest is now moot:
+  a live probe that day connected `dataPlane/sqlEndpoint` from Claude
+  Code using `headersHelper`, so the placement rule this brief existed to
+  challenge has been corrected in all four files on evidence, and no
+  Entra app registration was needed to do it. The `--client-id` /
+  `--client-secret` route remains unprobed — deliberately, since the
+  simpler route works — and if it is ever wanted, it belongs to brief
+  01's surviving D-3 deferral rather than here. Measurement and method
+  are in that brief's execution log; the result is in
+  `claude/mcp/README.md` under "The DCR error is a credential failure".
