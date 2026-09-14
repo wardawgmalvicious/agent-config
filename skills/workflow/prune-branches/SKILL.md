@@ -83,8 +83,11 @@ git ls-remote --heads origin
 `git branch -a` shows neither of the two findings that live here.
 
 **A branch pinned by a worktree cannot be deleted at all.** The error
-names the worktree path, and removing the worktree is the fix — that
-removal is a write, so propose it, do not run it.
+names the worktree path, and removing the worktree is the fix:
+`git worktree remove <path>` while the directory exists,
+`git worktree prune` when it was deleted by hand and only its entry
+under `.git/worktrees` survives — `git worktree list` shows which. Both
+are writes, so propose them, do not run them.
 
 **A remote-tracking ref is not evidence the branch is still on the
 remote.** `origin/<name>` can survive locally long after the branch is
@@ -114,8 +117,13 @@ Anything with commits ahead goes to rung 2.
 gh pr list --state all --limit 100 --json number,headRefName,state,title
 ```
 
-Key on `headRefName`. A merged PR whose head was this branch is the
-merge evidence, and the branch is safe.
+Key on `headRefName`. A PR whose head was this branch **and whose state
+is `MERGED`** is the merge evidence, and the branch is safe; `CLOSED` is
+not — that is work someone declined, still only on the branch.
+`--limit 100` returns the hundred most recent, so an old branch's PR can
+fall outside it and read as no PR. That sends it to rung 3, the safe
+direction but not a free one; raise the limit, or confirm a missing one
+with `gh pr list --state all --head <branch>`.
 
 **`git branch --merged` and `git cherry` are both wrong here, and wrong
 in the dangerous direction.** Squashing rewrites the commits, so
