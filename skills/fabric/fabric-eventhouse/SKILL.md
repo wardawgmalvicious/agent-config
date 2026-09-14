@@ -225,18 +225,18 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 ## Remote MCP server (preview)
 
 A hosted HTTP MCP server per KQL database gives schema discovery, NL→KQL, and
-query execution. **Claude Code's automatic OAuth flow can't connect to it** —
-that flow registers via OAuth Dynamic Client Registration and Microsoft's auth
-server doesn't support it, so the server appears in config and fails with
-`Incompatible auth server: does not support dynamic client registration`. Two
-documented routes sidestep DCR — a `headersHelper` command and
-`--client-id`/`--client-secret` — and the first is measured working against the
-sibling `dataPlane/sqlEndpoint` (2026-09-14), so the barrier is the automatic
-flow, not the endpoint family. Neither is measured against *this* endpoint.
-Until one is, use the local
-`fabric-rti-mcp` (`uvx microsoft-fabric-rti-mcp`) from Claude Code; the hosted
-server's measured working home is `.vscode/mcp.json` for VS Code Copilot. URL pattern, auth requirements, and the
-config block: [references/remote-mcp.md](references/remote-mcp.md).
+query execution. **It connects from Claude Code** — through a `headersHelper`
+command supplying an `az` bearer at the `https://api.fabric.microsoft.com`
+audience, measured 2026-09-14 on CLI 2.1.268 against this exact
+workspace/item-bound shape over two rounds. What fails is Claude Code's
+**automatic** OAuth flow, which registers via Dynamic Client Registration that
+Microsoft's auth server doesn't support — a fact about the flow, not about the
+endpoint. Watch the failure text on this URL shape: a helper that yields no
+credential prints `Error dialing <url>`, which reads like a network fault and
+is an auth one. The local `fabric-rti-mcp` (`uvx microsoft-fabric-rti-mcp`)
+stays worth preferring for breadth rather than reachability — it also reaches
+ADX and Eventstream. URL pattern, auth requirements, and the config block:
+[references/remote-mcp.md](references/remote-mcp.md).
 
 ## Reference
 
