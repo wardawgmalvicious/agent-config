@@ -4,6 +4,11 @@
             "type": "http",
             "url": "https://learn.microsoft.com/api/mcp"
         },
+        "fabric-core": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/core",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
         "azure-mcp": {
             "command": "docker",
             "args": [
