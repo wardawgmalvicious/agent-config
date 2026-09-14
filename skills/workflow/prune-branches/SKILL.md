@@ -27,6 +27,15 @@ time — observed on four branches that had already been verified safe. A
 verified recommendation is where the value actually is *and* where the
 permission model already allows it to land.
 
+**The local half is not the soft half.** In a squash repo
+`git branch -d` refuses the very branches the audit clears — its merged
+check is the one rung 2 says is wrong — so the only local deletion that
+works is `-D`, the forced form, on a verdict git itself disputes.
+Measured 2026-09-14: after `git merge --squash`,
+`git branch --merged main` omitted the branch and `-d` answered
+`not fully merged`. Not local, not remote: both go in the command
+string.
+
 So the output is a table and a command string. The user runs it.
 
 **The `allowed-tools` line encodes that split, and it pre-approves
@@ -213,6 +222,7 @@ Emit three things:
 3. **The exact deletion command**, for the user to run:
 
    ```bash
+   git branch -D <branch> <branch> ...            # -d refuses squash-merged branches
    git push origin --delete <branch> <branch> ...
    ```
 
