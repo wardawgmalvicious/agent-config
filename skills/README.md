@@ -39,6 +39,16 @@ internal cross-references stay intact.
   Stops for confirmation before the write to `main`. Guards the silent
   failure where `gh` and `github-mcp` authenticate as different
   accounts and the PR lands under the wrong identity.
+- [prune-branches/](workflow/prune-branches/) — audit every branch a
+  repo carries, local, remote and worktree-pinned, and sort them into
+  safe to delete, stale, and carrying unmerged work, rescuing the last
+  group onto a fresh verified branch. Exists because the obvious tools
+  mislead in a squash-merge repo: `git branch --merged` and `git cherry`
+  both report merged branches as unmerged, since patch-ids never survive
+  the squash, so merge evidence has to come from the PR list. Audits and
+  recommends; never deletes. The complement of `land` — that one stops
+  this debris accumulating on the happy path, this cleans up what never
+  took it.
 
 The six skills that maintain *this* repo — `author-skill`,
 `test-skill`, `learn`, `drift-audit`, `drift-handoff`,
