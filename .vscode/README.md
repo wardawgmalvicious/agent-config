@@ -60,16 +60,21 @@ root-level `.mcp.json` / `.github/mcp.json` (`copilot mcp add`) or
 [mcp.template.json](mcp.template.json) is the starter set for the Fabric-hosted
 MCP endpoints that fail with OAuth Dynamic Client Registration (DCR) errors
 under Claude Code's **automatic** OAuth flow but work fine from VS Code Copilot
-/ GitHub Copilot CLI, which use first-party client IDs. That asymmetry is the
-whole reason this file exists: these servers have no *measured* working route
-on the Claude Code side, so they are not carried in the Claude templates.
+/ GitHub Copilot CLI, which use first-party client IDs. That asymmetry is why
+this file exists — but it is no longer total, and the entries here are not all
+Claude-Code-impossible.
 
-Claude Code documents two routes around DCR — a `headersHelper` command that
-supplies the `Authorization` header directly, and `--client-id` /
-`--client-secret` for a pre-registered Entra app — and neither has been probed
-here (docs read 2026-09-12). This template is unaffected either way: VS Code
-reaches these servers by its own first-party client ID, so it stays whatever a
-probe returns.
+`dataPlane/sqlEndpoint` **does** connect from Claude Code, through a
+`headersHelper` command supplying an `az` bearer rather than through OAuth —
+measured 2026-09-14 on CLI 2.1.268 — and it is now carried in the Claude
+project template as `fabric-sqlendpoint`. The other six entries here are
+unprobed rather than proven unreachable, and the second documented route,
+`--client-id` / `--client-secret` for a pre-registered Entra app, is unprobed
+too. See [claude/mcp/README.md](../claude/mcp/README.md#the-dcr-error-is-a-credential-failure)
+for the measurement, and for why a DCR error is a credential failure rather
+than evidence against the route. This template is unaffected either way: VS
+Code reaches these servers by its own first-party client ID, so it stays
+whatever a probe returns.
 
 It intentionally excludes the *generic* servers (GitHub, Azure, Microsoft Docs,
 the Fabric core/RTI stdio servers) — those are better installed once per

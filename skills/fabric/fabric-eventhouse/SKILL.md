@@ -226,11 +226,14 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 
 A hosted HTTP MCP server per KQL database gives schema discovery, NL→KQL, and
 query execution. **Claude Code's automatic OAuth flow can't connect to it** —
-the `api.fabric.microsoft.com/v1/mcp/*` endpoints require OAuth Dynamic Client
-Registration it doesn't perform, so the server appears in config and silently
-fails to connect. Two documented routes sidestep DCR — a `headersHelper`
-command and `--client-id`/`--client-secret` — but neither is measured against
-this endpoint (docs read 2026-09-12). Until one is, use the local
+that flow registers via OAuth Dynamic Client Registration and Microsoft's auth
+server doesn't support it, so the server appears in config and fails with
+`Incompatible auth server: does not support dynamic client registration`. Two
+documented routes sidestep DCR — a `headersHelper` command and
+`--client-id`/`--client-secret` — and the first is measured working against the
+sibling `dataPlane/sqlEndpoint` (2026-09-14), so the barrier is the automatic
+flow, not the endpoint family. Neither is measured against *this* endpoint.
+Until one is, use the local
 `fabric-rti-mcp` (`uvx microsoft-fabric-rti-mcp`) from Claude Code; the hosted
 server's measured working home is `.vscode/mcp.json` for VS Code Copilot. URL pattern, auth requirements, and the
 config block: [references/remote-mcp.md](references/remote-mcp.md).
