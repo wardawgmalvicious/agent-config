@@ -535,6 +535,12 @@ that is the trigger, not "am I in a session". **Settled 2026-09-02: it
 stays the trigger, and branching stays the exception.** Committing
 straight to `main` remains the default; the measurement behind that is
 the worktree section below, which found no isolation a branch could buy.
+
+This is a deliberate override, not a divergence to reconcile.
+`claude/CLAUDE.md` § "Branch naming" carries the machine-wide default —
+branch when the work exceeds one commit — and closes by saying a repo's
+own committed convention wins. This section is that convention, and the
+one worked example the payload names. Edit the two together.
 Reconsider if a second silent collision between concurrent sessions
 happens anyway.
 

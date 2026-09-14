@@ -304,6 +304,25 @@ A repo's own committed convention wins over this one. Check
 `CONTRIBUTING.md`, or `git branch -a` for what the repo already does,
 before naming the first branch in an unfamiliar repo.
 
+**When** to branch is a separate question, and the answer here is
+*narrower* than the harness's — this clause relaxes a blanket rule
+rather than tightening one. Claude Code's built-in Bash-tool prose says
+"If on the default branch, branch first", which is unconditional,
+advisory and gated by nothing. What is actually in force: branch when
+the work is more than one commit, or when an intermediate state would be
+broken while deployed. A single self-contained commit does not need one.
+The branch is also what makes `/land` usable — its preflight requires
+`git branch --show-current` to be something other than `main`, and its
+`--ff-only` integration is what preserves the logical commit split
+`/commit` just wrote — so work heading for a PR wants a branch from its
+first commit rather than a rescue branch cut afterwards.
+
+The precedence sentence above governs this too, and that is what keeps
+it honest: where a repo has committed its own convention, that wins.
+`agent-config` is the worked example — every commit there is on `main`
+by design, and its own `CLAUDE.md` § "Branching and concurrent sessions"
+carries the dated reasoning.
+
 ## Agent config source
 
 `~/.claude` is deployed from `C:\Repos\Personal\agent-config` by
