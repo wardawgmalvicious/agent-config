@@ -1,6 +1,15 @@
 {
   "_note": "Written by scripts/skill-status.py --stamp and read by the same script. Do not hand-edit: each entry hashes the part of a skill that a test phase covered, and the verdict is derived by comparing it with the skill now.",
   "skills": {
+    "commit": {
+      "behaviour": {
+        "date": "2026-09-13",
+        "commit": "92a5723",
+        "routing": "e032978f56b554d4",
+        "body": "a1f309bae450b54b",
+        "references": "2a15b6873df7111d"
+      }
+    },
     "fabric-activator": {
       "activation": {
         "date": "2026-09-12",
