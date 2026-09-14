@@ -64,19 +64,35 @@ under Claude Code's **automatic** OAuth flow but work fine from VS Code Copilot
 this file exists — but it is no longer total, and the entries here are not all
 Claude-Code-impossible.
 
-`dataPlane/sqlEndpoint` **does** connect from Claude Code, through a
-`headersHelper` command supplying an `az` bearer rather than through OAuth —
-measured 2026-09-14 on CLI 2.1.268 — and it is now carried in the Claude
-project template as `fabric-sqlendpoint`. So do `core`, the bare
-`dataPlane/kqlEndpoint`, and a **workspace/item-bound** `kqlEndpoint` of the
-same shape as the entries here — the bound form is not second-class. Only
-`powerbi` and the Activator reflex URL remain unprobed, along with the second
-documented route, `--client-id` / `--client-secret` for a pre-registered Entra
-app. See [claude/mcp/README.md](../claude/mcp/README.md#the-dcr-error-is-a-credential-failure)
-for the measurement, and for why a DCR error is a credential failure rather
-than evidence against the route. This template is unaffected either way: VS
-Code reaches these servers by its own first-party client ID, so it stays
-whatever a probe returns.
+**Every endpoint here has now been probed from Claude Code, and all but one
+connect** — through a `headersHelper` command supplying an `az` bearer rather
+than through OAuth, measured 2026-09-14 on CLI 2.1.268. `dataPlane/sqlEndpoint`,
+`dataPlane/kqlEndpoint`, `core`, `powerbi`, a **workspace/item-bound**
+`kqlEndpoint` and the workspace-bound Activator reflex URL all connected; five
+of the seven entries below are carried in the Claude templates as a result.
+The bound form is not second-class.
+
+`eventhouse-remote-mcp` is the first entry not carried, and that is a choice
+rather than a failure: it connects, but its ids are per-repo and its bare
+sibling `kql-global-mcp` is already in the template as `fabric-kqlendpoint`,
+so the shape is discoverable without a second placeholder-laden entry.
+`activator-remote-mcp` *is* carried despite the same ids, because it has no
+bare form — leaving it out would leave the shape written down nowhere.
+
+The real exception is `warehouse-remote-mcp`, the workspace/item-bound
+`dataPlane/sqlEndpoint`: it answered `MCP endpoint not found` for every item
+type tried — Warehouse, SQLEndpoint and Lakehouse — in a tenant where the
+bound `kqlEndpoint` beside it connected and both ids resolved through the
+Fabric REST API. That reads as the variant not serving in that tenant rather
+than a bad URL, so it stays here and out of the Claude project template. The
+second documented route, `--client-id` / `--client-secret` for a pre-registered
+Entra app, is still unprobed.
+
+See [claude/mcp/README.md](../claude/mcp/README.md#the-dcr-error-is-a-credential-failure)
+for the measurement, and for the three error texts a credential problem can
+produce — one of which reads like a network fault. This template is unaffected
+either way: VS Code reaches these servers by its own first-party client ID, so
+it stays whatever a probe returns.
 
 It intentionally excludes the *generic* servers (GitHub, Azure, Microsoft Docs,
 the Fabric core/RTI stdio servers) — those are better installed once per

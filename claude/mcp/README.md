@@ -9,7 +9,7 @@ Two starter configurations for Model Context Protocol (MCP) servers in Claude Co
 
 Claude Code supports three MCP scopes: **user** (across every project on the machine), **project** (per-repo, shared via `.mcp.json`), and **local** (per-repo, private, stored under `projects.<path>.mcpServers` inside `~/.claude.json`). These two templates cover the scopes worth sharing; local scope is per-machine by definition and has no template.
 
-Both templates contain **only servers that actually work from Claude Code**. One Fabric-hosted endpoint now qualifies: `api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint` **connects from Claude Code via `headersHelper`** — measured 2026-09-14 on CLI 2.1.268, and carried in the project template as `fabric-sqlendpoint`. What fails is Claude Code's **automatic** OAuth flow, which cannot register with these endpoints because Microsoft's auth stack requires Dynamic Client Registration (DCR) that the flow doesn't perform. That is a fact about one flow, not a property of the endpoints, and the two documented routes around it are `headersHelper`, a command supplying the `Authorization` header directly, and `claude mcp add --client-id … --client-secret` for a pre-registered Entra app. Only the first has been probed here — see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure) for what was measured and what was not. The endpoints also work from VS Code Copilot and the GitHub Copilot CLI, which use first-party client IDs, and the ones with no measured Claude Code route stay in the workspace template alone (see [.vscode/README.md](../../.vscode/README.md)). They used to be carried here as reference entries, which only produced templates whose own install instructions had to say "skip these seven." `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
+Both templates contain **only servers that actually work from Claude Code**. The Fabric-hosted endpoints now qualify: every one probed **connects from Claude Code via `headersHelper`** — `dataPlane/sqlEndpoint`, `dataPlane/kqlEndpoint`, `core`, `powerbi`, and the workspace-bound `kqlEndpoint` and Activator reflex forms, measured 2026-09-14 on CLI 2.1.268 and carried in the templates. What fails is Claude Code's **automatic** OAuth flow, which cannot register with these endpoints because Microsoft's auth stack requires Dynamic Client Registration (DCR) that the flow doesn't perform. That is a fact about one flow, not a property of the endpoints, and the two documented routes around it are `headersHelper`, a command supplying the `Authorization` header directly, and `claude mcp add --client-id … --client-secret` for a pre-registered Entra app. Only the first has been probed here — see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure) for what was measured and what was not. The endpoints also work from VS Code Copilot and the GitHub Copilot CLI, which use first-party client IDs, and [.vscode/mcp.template.json](../../.vscode/mcp.template.json) still carries the full set for that client — including the workspace/item-bound `sqlEndpoint`, the one variant that answered `MCP endpoint not found` for every item type tried in the tenant probed (see [.vscode/README.md](../../.vscode/README.md)). They used to be carried here as reference entries, which only produced templates whose own install instructions had to say "skip these seven." `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
 
 VS Code / GitHub Copilot also uses a different schema — a top-level `servers` key instead of `mcpServers`, and a workspace file at `.vscode/mcp.json`.
 
@@ -121,7 +121,7 @@ Three runtimes, needed only for the servers you keep:
 
 `sql-mcp` additionally needs the Data API Builder CLI (`dab`) on `PATH`.
 
-`fabric-sqlendpoint` needs no runtime, but it does need the **Azure CLI on `PATH` and a live `az login`** — its `headersHelper` shells out on every connection, and Claude Code does not cache the result. Without a login it fails with a DCR error that reads like an unsupported auth flow; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the Fabric MCP preview enabled for the signed-in user.
+**The four hosted `http` endpoints** — `fabric-sqlendpoint`, `fabric-kqlendpoint`, `powerbi-remote-mcp` and `activator-remote-mcp` — need no runtime, but each needs the **Azure CLI on `PATH` and a live `az login`**: the `headersHelper` shells out on every connection, and Claude Code does not cache the result. Without a login they fail with an error that reads like an unsupported auth flow or a network fault rather than a missing credential; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the relevant preview enabled for the signed-in user — the Fabric MCP preview, and for `powerbi-remote-mcp` the tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*.
 
 ### Install (project scope)
 
@@ -141,6 +141,8 @@ Three runtimes, needed only for the servers you keep:
     | `<OrgName>` | Azure DevOps organization. |
     | `<ProjectName>` | Azure DevOps project. |
     | `<GITHUB_PAT_VAR>` | Name of the environment variable holding this repo's GitHub token — see below. Note this is a variable *name*, not the token. |
+    | `<WorkspaceId>` | Fabric workspace GUID holding the Activator reflex. |
+    | `<ActivatorId>` | Activator (reflex) item GUID for `activator-remote-mcp`. |
 
 3. Commit `.mcp.json` to version control.
 
@@ -157,10 +159,13 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
-| `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Hosted Fabric SQL-endpoint data plane. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). Workspace/item-bound URLs work the same way; use one in a repo's own `.mcp.json` when the target is fixed. |
+| `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Hosted Fabric SQL-endpoint data plane. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). The workspace/item-bound form of *this* URL is the one variant measured not serving; the bare form here is what works. |
+| `fabric-kqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint`) | Hosted Fabric KQL data plane — Eventhouse / KQL database queries. Same `headersHelper` auth. The workspace/item-bound form works too; use one in a repo's own `.mcp.json` when the target Eventhouse is fixed. |
+| `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The remote Power BI MCP server: execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user with RLS enforced. Distinct from `powerbi-modeling-mcp` below, and from the undocumented `/v1/mcp/powerbi/authoring` URL. |
+| `activator-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>`) | Fabric Activator, pre-scoped to one reflex — rule creation and lifecycle (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). The only one of these with no bare form: the ids are in the URL, so it is per-repo by construction. |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
-| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. The working Claude Code alternative to the hosted Fabric Core endpoint, which automatic OAuth can't register with. |
-| `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Covers most RTI workflows without the hosted KQL endpoints, which Claude Code's automatic OAuth flow can't reach. |
+| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. It used to be here as the only Claude-Code-reachable stand-in for the hosted Fabric Core endpoint; that endpoint now connects and sits at user scope as `fabric-core`, so this server is carried for its **write** surface and its OneLake and docs tools rather than as a substitute. |
+| `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Its breadth is the reason to keep it now that `fabric-kqlendpoint` and `activator-remote-mcp` connect: those two are hosted and need only `az`, while this one also reaches ADX and Eventstream. Pick by surface, not by reachability. |
 | `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
 | `sql-mcp` | stdio (`dab start --mcp-stdio`) | Data API Builder exposing the repo's Azure SQL schema as MCP tools. Uses `Active Directory Interactive` auth by default; override via the `DAB_CONNECTION_STRING` env var. |
 | `azure-devops-mcp` | stdio (`npx @azure-devops/mcp`) | Azure DevOps work items, repos, pipelines scoped to the configured org + project. |
@@ -174,27 +179,29 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | Condition | Result |
 | --- | --- |
 | Helper returning a live `az` token | `✔ Connected`, two independent readings |
-| Same URL, helper returning a bogus bearer | `✘ Incompatible auth server: does not support dynamic client registration` |
+| Same URL, helper command that fails and prints nothing | `✘ Incompatible auth server: does not support dynamic client registration` |
 | Same URL and helper, `az` login cleared | the identical DCR error |
 
 The third row was accidental — the login was wiped mid-session by an interactive shell, whose profile runs `az account clear` — and it is the useful one: the same configuration flips between connected and the DCR error on credential availability alone. Upstream's `skills-for-fabric` README says the same thing in prose; this is that claim measured here.
 
-**A missing credential prints two different errors, depending on the URL shape.** This is the trap that outlived the one above, because the second text reads like a network or URL fault rather than an auth one:
+**Whether the helper emits a header at all is what selects the error text.** When it writes an `Authorization` header, Claude Code disables OAuth fallback and you get the server's own rejection; when it writes nothing, Claude Code falls back to OAuth and the failure text depends on the URL shape. Measured as a full 2x2 on 2026-09-14, one server at a time:
 
-| URL shape | Text when the helper yields no credential |
-| --- | --- |
-| bare, e.g. `dataPlane/sqlEndpoint` | `Incompatible auth server: does not support dynamic client registration` |
-| workspace/item-bound, e.g. `dataPlane/workspaces/<id>/items/<id>/kqlEndpoint` | `Error dialing <url>` |
+| Helper outcome | Bare URL | Workspace/item-bound URL |
+| --- | --- | --- |
+| emits nothing | `Incompatible auth server: does not support dynamic client registration` | `Error dialing <url>` |
+| emits a credential the server rejects | `Server rejected the Authorization header minted by the configured headersHelper (HTTP 401)` | the same 401 text |
 
-Both mean the same thing. A genuinely absent endpoint is a third text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL.
+**So a bogus bearer is the wrong negative control** — it exercises the bottom row, which is the case that diagnoses itself. This corrects the middle row of the table above, recorded earlier that day as "helper returning a bogus bearer": a *well-formed* bogus bearer returns the 401 text on that same bare URL, so whatever produced the DCR error was the emits-nothing condition. Use a helper that cannot run (a nonexistent command) to reproduce the DCR error deliberately.
 
-**Both URL shapes work.** Measured 2026-09-14: bare `dataPlane/sqlEndpoint`, bare `dataPlane/kqlEndpoint`, `core`, and a workspace/item-bound `kqlEndpoint` all connect with the helper, each against its own no-helper control, the bound one over two repeated rounds. The bound shape is not second-class, and nothing needs rewriting to the bare form to work from Claude Code.
+The bound-URL text is the trap, because it reads like a network or URL fault rather than an auth one. A genuinely absent endpoint is a fourth text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL. Claude Code redacts the ids out of the `Error dialing` URL it prints, so that text cannot tell you which workspace or item was dialled.
+
+**Both URL shapes work, and every hosted endpoint probed so far connects.** Measured 2026-09-14, each against its own control: bare `dataPlane/sqlEndpoint`, bare `dataPlane/kqlEndpoint`, `core`, `powerbi`, a workspace/item-bound `kqlEndpoint` (two repeated rounds), and a workspace/reflex-bound Activator URL. The bound shape is not second-class, and nothing needs rewriting to the bare form to work from Claude Code. The one measured failure is a workspace/item-bound `dataPlane/sqlEndpoint`, which returns `MCP endpoint not found` for every item type tried in one tenant while the bound `kqlEndpoint` beside it connects — a tenant-side gap in that variant, not a credential or client problem.
 
 **Do not batch-probe.** Registering and health-checking several servers back to back fires a `claude` process and an `az` process per step, and the helper is abandoned at 10 seconds. A run of twelve spawns produced `Error dialing` on a bound endpoint that connects reliably when probed alone — a false negative indistinguishable from a real one. Probe one server at a time, and chain its register-and-check into a single shell invocation so the working directory cannot change between them (see [the casing note](#local-scope-keys-are-case-split)).
 
 **So diagnose the helper before believing the error.** Run it alone first — `az account get-access-token --resource https://api.fabric.microsoft.com --query expiresOn --output tsv`, which prints an expiry and never a token. Warm, it returns in 1.2–1.6 s against a **10-second** abandon threshold, so a cold acquisition can plausibly exceed it. Never run the credential-producing form in a session transcript.
 
-**What is not measured.** `powerbi` and the Activator reflex URL are unprobed, and so is the second documented route, `--client-id` / `--client-secret`. Everything else named above was measured on 2026-09-14.
+**What is not measured.** The second documented route, `--client-id` / `--client-secret` against a pre-registered Entra app, is still unprobed — every result above uses `headersHelper`. Two endpoints stay out of the templates on documentation grounds rather than measurement: `powerbi/authoring` and `FabricIQ`'s `X-VARIANTS` header, neither of which Learn carries (see [`powerbi-modeling-mcp` is a write tool](#powerbi-modeling-mcp-is-a-write-tool)). Everything else named above was measured on 2026-09-14.
 
 ### Local-scope keys are case-split
 
@@ -269,7 +276,10 @@ server at `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring`, but
 Learn does not document that endpoint — its MCP servers overview lists
 exactly two Power BI servers, the remote *query* server at `/v1/mcp/powerbi`
 and the local stdio modeling server above. Checked 2026-09-11 and again
-2026-09-12: two dated negatives. The standing verdict is **endpoint TBD,
+2026-09-12: two dated negatives. **Keep the two URLs apart.** The query
+server at `/v1/mcp/powerbi` is fully documented, connects from Claude Code,
+and is in the project template as `powerbi-remote-mcp`; `/v1/mcp/powerbi/authoring`
+is one path segment further on and has none of that. The standing verdict is **endpoint TBD,
 verify before template add** — don't re-derive it, and don't add the server
 on upstream's configuration alone. The same hold covers FabricIQ's
 `X-VARIANTS: Fabric.Routing.PowerBIDataExploration` header: the
