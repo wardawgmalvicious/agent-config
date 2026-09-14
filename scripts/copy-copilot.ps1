@@ -205,7 +205,7 @@
     read the file before adopting it, because -Force overwrites it.
 
 .EXAMPLE
-    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\Client\platform\.github -SkillGroups fabric,powerbi,workflow
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric,powerbi,workflow
     The normal call. Vendors the platform skills and every ported
     instruction into the client repo's .github as committable files,
     leaving anything the client authored untouched. Commit them and every
@@ -213,12 +213,12 @@
     of this repo.
 
 .EXAMPLE
-    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\Client\platform\.github -Payload instructions
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -Payload instructions
     Coding conventions only -- no skills. Useful where a team wants the
     house style without the Fabric/Power BI skill surface.
 
 .EXAMPLE
-    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\Client\platform\.github -SkillGroups fabric -WhatIf
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric -WhatIf
     Preview: show what would be copied, pruned or skipped, writing nothing.
 
 .NOTES
