@@ -128,3 +128,16 @@ contribution off that gap, and expect it to be narrow where root
 deliberate, so a narrow margin is not a redundant skill. It is the shape
 root `CLAUDE.md` (Validating a change) gives the false-positive guard,
 with the body ablated instead of the guard.
+
+**A new workflow skill has no junction until the linker runs once.**
+`~/.claude/skills` holds one junction per skill, so a directory
+`/author-skill` just wrote is invisible everywhere until
+`link-claude.ps1 -SkillGroups workflow,social` runs — absent from the
+listing, `/<name>` answering `Unknown command` the way a conditional
+skill does cold, from a different cause. The group being deployed says
+nothing about the skill. Measured 2026-09-14 on `prune-branches`:
+`ls ~/.claude/skills` showed four junctions and no `prune-branches`
+immediately after the draft, while its brief said "live on save and
+needs no deploy step". The run is the standing form, so there is no
+prune to restore; `/author-skill` carries the same rule from `land`,
+2026-09-02.
