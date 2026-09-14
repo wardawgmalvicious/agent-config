@@ -182,7 +182,7 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | Same URL, helper command that fails and prints nothing | `✘ Incompatible auth server: does not support dynamic client registration` |
 | Same URL and helper, `az` login cleared | the identical DCR error |
 
-The third row was accidental — the login was wiped mid-session by an interactive shell, whose profile runs `az account clear` — and it is the useful one: the same configuration flips between connected and the DCR error on credential availability alone. Upstream's `skills-for-fabric` README says the same thing in prose; this is that claim measured here.
+The third row was accidental — the login was wiped mid-session by an interactive shell, whose profile at the time ran `az account clear` (removed 2026-09-14, replaced by the per-tenant `AZURE_CONFIG_DIR` directories described in `claude/CLAUDE.md`) — and it is the useful one: the same configuration flips between connected and the DCR error on credential availability alone. Upstream's `skills-for-fabric` README says the same thing in prose; this is that claim measured here.
 
 **Whether the helper emits a header at all is what selects the error text.** When it writes an `Authorization` header, Claude Code disables OAuth fallback and you get the server's own rejection; when it writes nothing, Claude Code falls back to OAuth and the failure text depends on the URL shape. Measured as a full 2x2 on 2026-09-14, one server at a time:
 
