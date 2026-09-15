@@ -94,6 +94,19 @@ at 76 columns, so a multi-word term is routinely split across lines and
 reported absent what was sitting in the file, wrapped after "Microsoft
 365" — a false "not covered" that would have landed as a duplicate.
 
+**When Step 3 left the destination genuinely ambiguous** — two skills
+both look like the owner — ask which of them already holds the
+vocabulary rather than choosing by feel:
+
+```
+uv run --with pyyaml scripts/skill-overlap.py overlap --skill <candidate>
+```
+
+A high-scoring pair between the two candidates says they already compete
+for the same requests, and that the learning belongs in whichever of them
+the shared tokens came from. Only reach for this when the mapping is
+actually unclear; where Step 3 gave one obvious owner, it adds nothing.
+
 - Already covered correctly → nothing to do; say so.
 - Covered but wrong or stale → the edit is a **correction**; quote the
   current text in the proposal.

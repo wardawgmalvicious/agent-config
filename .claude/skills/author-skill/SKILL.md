@@ -99,6 +99,31 @@ genuinely covered under vocabulary you did not grep for; skim the
 `skills/README.md` section list for the relevant domain as a second
 pass.
 
+**A grep finds a word; the script finds a competitor.** The second
+outcome below — two descriptions that both half-match one request — is
+invisible to a grep, because neither description need contain the other's
+vocabulary. Run it against the nearest existing skill the topic would sit
+beside:
+
+```
+uv run --with pyyaml scripts/skill-overlap.py overlap --skill <nearest-skill>
+```
+
+It ranks that skill's pairs by shared distinctive tokens, so what already
+clusters around your topic shows up before you have written a line. There
+is no way to score a description that does not exist yet, which is why
+this runs against the neighbour rather than the candidate. Read its output
+into the three outcomes; it changes what you find, not what you do about
+it.
+
+**Before authoring a *platform* skill, check upstream first.** Microsoft
+ships a catalog at `microsoft/skills-for-fabric`, and vendoring one of
+its skills is sometimes the better answer than authoring a parallel one.
+`drift-audit`'s `skills-for-fabric` registry entry carries the
+counterpart table as a starting map. Decide vendor-versus-author
+deliberately; the failure this prevents is a local skill and an upstream
+one competing for the same request, with no record of why both exist.
+
 Three outcomes:
 
 - **Covered correctly** — stop. Say where, and that nothing is needed.
