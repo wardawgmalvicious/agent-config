@@ -298,9 +298,9 @@
     "prune-branches": {
       "behaviour": {
         "date": "2026-09-14",
-        "commit": "ec683d6",
+        "commit": "0ba36c3",
         "routing": "092b318d6e74df5f",
-        "body": "62acbe8ed52c1088",
+        "body": "35a038cd88e4b35b",
         "references": "4f53cda18c2baa0c"
       }
     },
