@@ -116,6 +116,17 @@ def _rel(p: pathlib.Path) -> str:
     return p.relative_to(REPO).as_posix()
 
 
+def rule_names() -> set[str]:
+    """Rule stems from claude/rules/. Shared by allowlist() and the overlap signal.
+
+    Two callers want this for opposite reasons -- routing needs to know a name
+    is legitimately not a skill, overlap needs to know it is a cross-reference
+    rather than a subject word -- so deriving it twice would let them disagree
+    about what a rule is.
+    """
+    return {p.stem for p in (REPO / "claude" / "rules").glob("*.md")}
+
+
 def allowlist() -> dict[str, str]:
     """Prefixed names that are legitimately not skills, with where each came from.
 
@@ -125,8 +136,8 @@ def allowlist() -> dict[str, str]:
     """
     out = {name: f"hand list ({why})" for name, why in HAND_ALLOWLIST.items()}
 
-    for p in sorted((REPO / "claude" / "rules").glob("*.md")):
-        out.setdefault(p.stem, "rule")
+    for name in sorted(rule_names()):
+        out.setdefault(name, "rule")
 
     # MCP server names, from the templates this repo deploys and from its own
     # project-scope config. `fabric-kqlendpoint` reaches the allowlist this
@@ -294,24 +305,72 @@ STOPWORDS = {
 }
 
 
-def distinctive_tokens(s: _skill_inventory.Skill) -> set[str]:
-    """Tokens from the routing text, with backticked and quoted terms kept whole.
+_BACKTICKED = re.compile(r"`([^`]{2,60})`")
+_SINGLE_QUOTED = re.compile(r"'([^']{3,60})'")
+_DOUBLE_QUOTED = re.compile(r'"([^"]{3,60})"')
+_WORD = re.compile(r"[A-Za-z][A-Za-z0-9-]{2,}")
+
+
+def distinctive_tokens(
+    s: _skill_inventory.Skill, cross_refs: frozenset[str] = frozenset()
+) -> tuple[set[str], set[str]]:
+    """Split the routing text into (subject tokens, cross-references).
 
     Deterministic and dependency-free ON PURPOSE. An embedding score cannot be
     re-run and reviewed the way this can, and the output here is a ranked list
     for a person rather than a verdict.
+
+    TWO SEPARATE THINGS ARE COUNTED SEPARATELY, both learned from reading the
+    v1 output on 2026-09-15, when `fabric-activator` + `fabric-dataflow` ranked
+    FIRST in the whole payload at 89.83 -- clear of the pbir-* cluster beneath
+    it -- on shared tokens that were almost all the names of OTHER skills.
+
+    1. Quoted and backticked terms are kept whole, and the bare-word pass now
+       runs over the text with those spans REMOVED. Before, it ran over the
+       full text, so every backticked term scored TWICE -- once whole and once
+       as the identical bare word. That contradicted this docstring and was
+       worth 16.39 points to the pair above, though it was not what put it
+       first.
+    2. A token naming an installed skill or rule is a CROSS-REFERENCE, not a
+       subject word, and is reported beside the pair instead of scored into
+       it. Two skills routing to the same third skill is a different fact from
+       two skills claiming the same subject, and only the second is a reason
+       to look at merging them. This is what actually demoted the pair above,
+       to rank 2 -- and the three names behind it (`fabric-cli`,
+       `fabric-rest-api`, `fabric-cicd`) now show as what they are.
+
+    Rules count as cross-references alongside skills: a description pointing
+    at `fabric-git-serialization` is routing to other payload, which is the
+    same fact whichever kind of artifact answers. MCP server names and
+    drift-audit source ids are deliberately NOT included -- those are closer
+    to subject nouns, and the allowlist they share with routing exists for a
+    different question.
     """
     text = f"{s.description} {s.when_to_use}"
     toks: set[str] = set()
-    for m in re.findall(r"`([^`]{2,60})`", text):
-        toks.add("`" + m.strip().lower() + "`")
-    for m in re.findall(r"'([^']{3,60})'", text) + re.findall(r'"([^"]{3,60})"', text):
-        toks.add("'" + m.strip().lower() + "'")
-    for w in re.findall(r"[A-Za-z][A-Za-z0-9-]{2,}", text):
+    refs: set[str] = set()
+
+    def place(token: str, bare: str) -> None:
+        if bare in cross_refs:
+            refs.add(bare)
+        else:
+            toks.add(token)
+
+    for m in _BACKTICKED.findall(text):
+        bare = m.strip().lower()
+        place("`" + bare + "`", bare)
+    for m in _SINGLE_QUOTED.findall(text) + _DOUBLE_QUOTED.findall(text):
+        bare = m.strip().lower()
+        place("'" + bare + "'", bare)
+
+    # The bare-word pass sees only what was NOT already taken whole above.
+    stripped = _DOUBLE_QUOTED.sub(" ", _SINGLE_QUOTED.sub(" ", _BACKTICKED.sub(" ", text)))
+    for w in _WORD.findall(stripped):
         w = w.lower()
-        if w not in STOPWORDS:
-            toks.add(w)
-    return toks
+        if w in STOPWORDS:
+            continue
+        place(w, w)
+    return toks, refs
 
 
 def _usage_by_name() -> dict[str, dict]:
@@ -351,7 +410,12 @@ USAGE_CAVEATS = (
 
 def cmd_overlap(args) -> int:
     inv = _skill_inventory.skills()
-    toks = {s.name: distinctive_tokens(s) for s in inv}
+    # Every name the payload can route to, so a mention of one is scored as a
+    # cross-reference rather than as shared subject matter.
+    cross_refs = frozenset({s.name for s in inv} | rule_names())
+    split = {s.name: distinctive_tokens(s, cross_refs) for s in inv}
+    toks = {name: t for name, (t, _) in split.items()}
+    refs = {name: r for name, (_, r) in split.items()}
     by_name = {s.name: s for s in inv}
     n = len(inv)
 
@@ -392,6 +456,10 @@ def cmd_overlap(args) -> int:
                     "score": round(score, 2),
                     "shape": shape,
                     "shared": sorted(shared, key=lambda t: -weight[t])[:8],
+                    # Unscored on purpose -- see distinctive_tokens(). Carried
+                    # so a high score that is really shared routing can be
+                    # recognised as such instead of read as competition.
+                    "shared_refs": sorted(refs[a] & refs[b]),
                 }
             )
 
@@ -415,6 +483,8 @@ def cmd_overlap(args) -> int:
     for p in pairs:
         print(f"{p['score']:>7.2f}  {p['a']} + {p['b']}   [{p['shape']}]")
         print(f"         shared: {', '.join(p['shared'])}")
+        if p["shared_refs"]:
+            print(f"         both route to (unscored): {', '.join(p['shared_refs'])}")
         for k in (p["a"], p["b"]) if usage else ():
             u = usage.get(k)
             if u:
@@ -433,6 +503,10 @@ def cmd_overlap(args) -> int:
     print("tokens -- deterministic, so it can be re-run and reviewed. A high")
     print("score is a question for a person, not a verdict, and nothing here")
     print("recommends deleting or merging anything.")
+    print()
+    print("Names of installed skills and rules are NOT scored -- they are")
+    print("listed separately as `both route to`. Two skills pointing at the")
+    print("same third skill is shared routing, not shared subject matter.")
     if usage:
         print()
         print(USAGE_CAVEATS)
