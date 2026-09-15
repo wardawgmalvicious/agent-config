@@ -4,14 +4,25 @@ When the user asks about Power BI / Fabric / TMDL topics, prefer skill content o
 
 ## Local environment
 
-Windows 11. Two shells, each spawned fresh and non-interactive per tool
-call: PowerShell 7.6 (`pwsh`) and Git Bash (mingw64). **Neither loads a
-profile** — `pwsh` starts without one, bash is non-interactive with
-`BASH_ENV` unset — so the `Profile and functions loaded…` banner is
-absent, and so is every function, alias and environment pin the
-profiles set. A nested `pwsh -Command` or `bash -lc` does load one, and
-prints the banner. Corrected 2026-09-14; this said the banner prefixes
-your output, which held when it was written.
+Windows 11. Two shells, each spawned fresh per tool call: PowerShell 7.6
+(`pwsh`) and Git Bash (mingw64). **They differ on the profile.** `pwsh`
+is launched `-NoProfile` and genuinely has none — `AzLogin` undefined,
+`$env:AZURE_CONFIG_DIR` empty. **Bash is launched `bash -c -l`**, a
+login shell, so it sources the profile, prefixes your output with the
+`Profile and functions loaded…` banner, and carries every function,
+alias and environment pin the profile sets.
+
+**`$-` and `BASH_ENV` cannot tell you this**, and trusting them is what
+put the opposite claim here on 2026-09-14: a login shell is still
+non-interactive (`$-` reads `hBc`, no `i`) and still has `BASH_ENV`
+empty, while the profile has demonstrably run. The tell is
+`shopt -q login_shell`, or `/proc/$$/cmdline`.
+
+Measured 2026-09-15 on 2.1.268, and it had flipped within a day — the
+2026-09-14 reading of `$-` was `hmtBc` against today's `hBc`, so the
+invocation changed on a CLI version that did not. **Why is unverified.**
+Re-check rather than assuming either state is permanent.
+
 `C:\Repos\Personal\machine-config` is the source of truth for what is
 installed here and how it is configured.
 
@@ -217,17 +228,22 @@ recorded in `~/.config/az-current-tenant`. The startup banner names the
 result, and `(repo)` on it means the folder decided rather than the
 remembered selection.
 
-Three things follow for a tool call. **A tool shell gets no pin at
-all** — it runs with no profile, so an empty `$env:AZURE_CONFIG_DIR`
-means the profile never ran rather than "no tenant selected", and `az`
-here reads the shared `~/.azure` rather than the tenant the user
-chose. Both stores can answer exit 0 while holding different logins,
-so nothing surfaces the mismatch — set `AZURE_CONFIG_DIR` explicitly
-before any `az` call whose answer must match the user's. Measured
-2026-09-14: `AzLogin` undefined in `pwsh`, `$-` without `i` in bash,
-and the two stores already diverged. **`az account clear` is now
-tenant-scoped** — it empties the pinned directory, not every login on the
-machine. And **Az PowerShell ignores `AZURE_CONFIG_DIR`**:
+Three things follow for a tool call. **The two tool shells disagree
+about the pin**, so which one you reach for changes which login
+answers. Bash is a login shell (see Local environment), so the
+profile's resolution has already run and `AZURE_CONFIG_DIR` is set — on
+2026-09-15 it named a real `~/.azure-tenants/<name>/` directory. `pwsh`
+is `-NoProfile`, so the variable is empty there, and empty means the
+profile never ran rather than "no tenant selected": `az` reads the
+shared `~/.azure` instead of the tenant the user chose. Both stores can
+answer exit 0 while holding different logins, so nothing surfaces the
+mismatch — set `AZURE_CONFIG_DIR` explicitly before any `az` call from
+`pwsh` whose answer must match the user's, and check rather than assume
+it in bash. Measured 2026-09-15; the 2026-09-14 entry read `$-` and
+concluded both shells were unpinned, which was wrong for bash. **`az
+account clear` is now tenant-scoped** — it empties the pinned
+directory, not every login on the machine. And **Az PowerShell ignores
+`AZURE_CONFIG_DIR`**:
 `(Get-AzContextAutosaveSetting).ContextDirectory` still reads `~/.Azure`,
 so none of this reaches the module, only the CLI.
 
