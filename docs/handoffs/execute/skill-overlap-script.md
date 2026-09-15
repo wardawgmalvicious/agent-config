@@ -8,10 +8,16 @@
   [skill-telemetry.py](../../../scripts/skill-telemetry.py) that lands
   first; and two small edits to project-scope skills that consume the
   script.
-- **Status**: **open, written 2026-09-10.** The script is not drafted.
-  Its prerequisite — the `skill-telemetry.py` inventory — **landed
-  2026-09-15**; see that section for what it cost beyond the estimate
-  and the counting rule it leaves behind.
+- **Status**: **the script landed 2026-09-15**; the two consumer edits
+  below have not. `scripts/skill-overlap.py` implements all four signals,
+  `routing` gates commits as `lint-skill-routing`, and its negative case
+  is proved by `tests/scripts/skill-overlap/test-routing.sh` — the live
+  tree passing says nothing, since a gate firing on nothing looks
+  identical. The design fork is settled below. The prerequisite — the
+  `skill-telemetry.py` inventory — landed the same day; see that section
+  for what it cost beyond the estimate and the counting rule it leaves
+  behind. **What remains is Consumers**, which is why this brief is not
+  yet deleted.
 - **Run in**: this repo, in a fresh session.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
@@ -49,7 +55,8 @@ name is.
 | --- | --- | --- |
 | MCP servers | derived — `claude/mcp/`, `.mcp.json` | `fabric-rti-mcp`, `powerbi-modeling-mcp`, `fabric-data-factory-mcp`, `fabric-kqlendpoint` |
 | rules | derived — `claude/rules/*.md` | `fabric-git-serialization` |
-| drift-audit source ids | derived — the `` ### `<id>` `` headings in `sources.md` | `fabric-iq-ontology`, `powerbi-docs`, `powerbi-docs-powershell`, `fabric-toolbox` |
+| drift-audit source ids | derived — the `` ### `<id>` `` headings in `sources.md` | `fabric-iq-ontology` |
+| GitHub repo names | hand list | `powerbi-docs`, `powerbi-docs-powershell`, `fabric-toolbox` |
 | CLIs | hand list | `powerbi-desktop`, `powerbi-report-author` |
 | upstream bundle names | hand list | `fabric-skills`, `powerbi-authoring` |
 | counterfactual names in `skills/README.md`'s naming rationale | excluded by path | `fabric-pipeline`, `fabric-reflex`, `fabric-governance`, `fabric-deployment-pipeline` — one per authoring run that explains a name *not* chosen |
@@ -76,9 +83,16 @@ The other two land in classes that change the work:
 
 **Derive the allowlist rather than hand-keeping it** where a machine
 source exists, per the Allowlist source column. That leaves a hand list
-of **four** — two CLIs and two bundle names — which is the whole
-maintenance burden, and every other class is derived or excluded by
-path. The naming-rationale class has no source either and, unlike the
+of **seven** — two CLIs, two bundle names and three GitHub repo names —
+which is the whole maintenance burden, and every other class is derived
+or excluded by path. Only `fabric-iq-ontology` is an actual source id:
+the three repo names were grouped with it while this table was being
+regrouped by source, and they have no heading to derive from. Checked
+against `sources.md` on 2026-09-15, the six `` ### `` headings are
+`fabric`, `powerbi`, `vscode-agent`, `claude-code`, `fabric-iq-ontology`
+and `skills-for-fabric`, and only the fifth carries a platform prefix —
+so that arm earns its place by being future-proof for the next source
+registered, not by what it catches today. The naming-rationale class has no source either and, unlike the
 CLIs, grows with every authoring run, so the lean is to exclude that
 file's naming section by path rather than keep listing the names it
 invents. `fabric-deployment-pipeline` is the sharpest case for that:
@@ -210,6 +224,39 @@ Lean: the subcommand, because it avoids the third copy without touching
 the scripts that already work. Revisit if the subcommand's arguments
 stop reading like the same tool.
 
+**Settled 2026-09-15 on the third option, by the lean's own test.** The
+subcommand's arguments do not read like the same tool.
+`payload-coverage.py` is a flat parser whose first positional is `repos`
+with `nargs="+"`, so a subcommand name and a repo path are ambiguous
+without restructuring a working CLI — and the existing
+`payload-coverage.py <repo>` form would break. The deeper objection is
+the one the lean asked to be tested: `payload-coverage.py <repo>` answers
+a question *about a repo*, and signals 1, 2 and 4 take no repo argument
+at all. Only signal 3 sweeps repos. Three of four signals would sit under
+a parser demanding an argument they never use.
+
+Scoped tighter than this option was written, though — it touches **one**
+working script, not three. `scripts/_skill_inventory.py` holds the walk
+and the flags; `scripts/skill-overlap.py` imports it; and of the existing
+walkers only `skill-telemetry.py` was migrated, because its `_skill_meta`
+had to widen to carry description *text* regardless, and migrating a
+second consumer is what proves the module is not shaped only for its
+first. `payload-coverage.py` and `activation-expect.py` were left alone:
+neither needs anything else the module offers, and a refactor with no
+caller is risk without payoff.
+
+Two constraints found while building it, both worth keeping:
+
+- **The module returns a list, not a dict keyed by name.**
+  `lint-skill-scopes.py` exists to find two skills sharing one name, so a
+  name-keyed inventory silently drops one of every pair it looks for.
+  `by_name()` is there for callers that know uniqueness is gated.
+- **`payload-coverage.py`'s recorded reason for duplicating `GLOB_FLAGS`
+  was backwards.** Its docstring says the two scripts "cannot share the
+  code" because a hyphen makes `activation-expect.py` un-importable. A
+  hyphenated script cannot be imported *from*; it can import. The
+  constraint never existed, and a shared module was always available.
+
 ## Consumers — the edits that make it pay
 
 Neither of these adds a trigger, so the payload does not gain a third
@@ -234,14 +281,37 @@ coverage checker.
   reports **none** of the 17 noise names in the table above. A fixture
   naming a genuinely missing skill fails it. Re-derive the raw count
   before trusting it; 19 was true on 2026-09-15 and the counterfactual
-  class grows with every authoring run.
+  class grows with every authoring run. **Met 2026-09-15** — 56 skills,
+  45 allowlisted names, zero unknowns, exit 0. `powerbi-report-planning`
+  is found in the descriptions of both `powerbi-report-authoring` and
+  `powerbi-report-design`, `powerbi-report-management` in prose, and all
+  are reported as accepted overrides citing `1fa3061`. The negative case
+  is `tests/scripts/skill-overlap/test-routing.sh` case 2, which fails a
+  fixture whose description names a skill that does not exist; all five
+  cases pass.
 - **Trigger overlap** ranks `powerbi-report-authoring` against the five
-  `pbir-*` skills near the top of its list.
+  `pbir-*` skills near the top of its list. **Met 2026-09-15**, at ranks
+  3, 4, 5, 9 and 11 of its 40 scored pairs, above every cross-domain
+  pair. It took one tuning pass to get there, and the reason is worth
+  keeping: the first run ranked `drift-update` and `test-skill` above
+  four of the five, scoring on `verify`, `edit`, `brief`, `first` and
+  `user` alone. **Vocabulary about invoking a skill is in every
+  description by construction**, so it distinguishes nothing and belongs
+  in the stoplist — which is the same reasoning as inverse document
+  frequency, applied to a class frequency alone does not separate. The
+  global top 15 was captured before and after and is unchanged in
+  composition, which is what says the metric was tuned rather than
+  fitted to its own acceptance test.
 - **Inventory**: `skill-telemetry.py coverage` lists every skill in both
   trees. Re-derive the count; don't copy it from this brief. **Met
   2026-09-15** — row count equals the two trees' `SKILL.md` count, and
   no row reports more listings than its scope had sessions.
 - **No output line recommends deletion.** Same contract as `verdict()`.
+  **Met** — each subcommand's legend says so explicitly, and the
+  `--usage` join prints `skill-telemetry.py`'s caveats verbatim,
+  including that rarely used is not unused. Conditional skills are
+  annotated `conditional` on the usage line so a `listed 0` is not read
+  as a finding.
 
 ## The decision this surfaced — settled 2026-09-11
 
