@@ -28,7 +28,12 @@ shown side by side rather than averaged:
   ``~/.claude/logs/skills-invoked.log``  the PostToolUse hook. A **floor,
       not a total**: it can only see invocations routed through the ``Skill``
       tool, so a slash run the harness expands inline writes no row.
-  ``skills/*/*/SKILL.md``  what exists, and whether it is conditional.
+  ``skills/*/*/SKILL.md`` and ``.claude/skills/*/SKILL.md``  what exists,
+      whether it is conditional, and which **scope** it deploys at. Scope
+      decides what a listing count can mean: a user-scope skill is offered
+      in every session on this machine, a project-scope one only in
+      sessions inside this repo. The two are therefore counted against
+      different denominators and must never be compared directly.
 
 Usage:
     uv run --with pyyaml python scripts/skill-telemetry.py coverage
@@ -63,6 +68,15 @@ import yaml
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 PROJECTS = pathlib.Path(os.path.expanduser("~/.claude/projects"))
+
+# Claude Code names a project directory after its cwd with ":" and the
+# separators rewritten to "-", preserving the drive letter's case as the
+# cwd happened to carry it -- both `c--Repos-...` and `C--Users-...` exist
+# under ~/.claude/projects, so this is compared case-insensitively. Match
+# the whole name, never a substring: a scratchpad session carries this
+# repo's name *inside* a longer directory, runs outside the repo, and is
+# therefore not a session a project-scope skill could be listed in.
+PROJECT_KEY = str(REPO).replace(":", "-").replace(os.sep, "-").lower()
 CLAUDE_JSON = pathlib.Path(os.path.expanduser("~/.claude.json"))
 HOOK_LOG = pathlib.Path(os.path.expanduser("~/.claude/logs/skills-invoked.log"))
 
@@ -100,34 +114,59 @@ SLASH_FLOOR = 3
 MIN_SESSIONS = 20
 
 
+def _skill_meta(d: pathlib.Path) -> dict | None:
+    """Frontmatter of one skill directory, or None if it holds no SKILL.md."""
+    f = d / "SKILL.md"
+    if not f.is_file():
+        return None
+    text = f.read_text(encoding="utf-8", errors="replace")
+    meta = {}
+    if text.startswith("---"):
+        end = text.find("\n---", 3)
+        if end != -1:
+            try:
+                meta = yaml.safe_load(text[3:end]) or {}
+            except yaml.YAMLError:
+                meta = {}
+    return {
+        # A `paths:` glob withholds the skill from the startup listing, so
+        # "never listed" is expected rather than a finding. Conflating the
+        # two is exactly the error that produced this repo's one retracted
+        # telemetry finding.
+        "conditional": bool(meta.get("paths")),
+        "desc_chars": len(str(meta.get("description") or ""))
+        + len(str(meta.get("when_to_use") or "")),
+    }
+
+
 def skills_on_disk() -> dict[str, dict]:
-    """Map skill name -> {group, conditional} from skills/<group>/<name>/."""
+    """Map skill name -> {group, scope, conditional} across BOTH skill trees.
+
+    ``skills/<group>/<name>/`` deploys to user scope and is offered in every
+    session on this machine; ``.claude/skills/<name>/`` is read in place at
+    project scope and is offered only in sessions inside this repo. Walking
+    the first alone was this function's bug until 2026-09-15: the six
+    project-scope skills were absent from ``coverage`` entirely, so they
+    could never be flagged, while ``triggers`` showed them because it reads
+    transcripts rather than disk -- which is what made the gap easy to miss.
+
+    Name is the key because Claude Code addresses a skill by name alone, and
+    ``lint-skill-scopes.py`` enforces that the two trees never share one.
+    """
     out = {}
-    root = REPO / "skills"
-    for group in sorted(p for p in root.iterdir() if p.is_dir()):
+    for group in sorted(p for p in (REPO / "skills").iterdir() if p.is_dir()):
         for d in sorted(p for p in group.iterdir() if p.is_dir()):
-            f = d / "SKILL.md"
-            if not f.is_file():
-                continue
-            text = f.read_text(encoding="utf-8", errors="replace")
-            meta = {}
-            if text.startswith("---"):
-                end = text.find("\n---", 3)
-                if end != -1:
-                    try:
-                        meta = yaml.safe_load(text[3:end]) or {}
-                    except yaml.YAMLError:
-                        meta = {}
-            out[d.name] = {
-                "group": group.name,
-                # A `paths:` glob withholds the skill from the startup
-                # listing, so "never listed" is expected rather than a
-                # finding. Conflating the two is exactly the error that
-                # produced this repo's one retracted telemetry finding.
-                "conditional": bool(meta.get("paths")),
-                "desc_chars": len(str(meta.get("description") or ""))
-                + len(str(meta.get("when_to_use") or "")),
-            }
+            meta = _skill_meta(d)
+            if meta is not None:
+                out[d.name] = {"group": group.name, "scope": "user", **meta}
+    project_root = REPO / ".claude" / "skills"
+    if project_root.is_dir():
+        for d in sorted(p for p in project_root.iterdir() if p.is_dir()):
+            meta = _skill_meta(d)
+            if meta is not None:
+                # No group segment exists at this scope -- the tree is flat,
+                # which is what Claude Code's one-level discovery requires.
+                out[d.name] = {"group": None, "scope": "project", **meta}
     return out
 
 
@@ -255,6 +294,14 @@ def hook_log() -> dict[str, int]:
 def aggregate(sessions):
     agg = {
         "listed": collections.Counter(),
+        # Listings from sessions inside this repo only. A project-scope skill
+        # is offered nowhere else *now*, but six of them were at user scope
+        # until the 2026-09-09 split, so their machine-wide count spans a
+        # period when they were a different kind of skill. Counting those
+        # against this repo's session total produced "229 of 131" on the
+        # first run of this fix -- the numerator and denominator have to be
+        # drawn from the same set of sessions or neither means anything.
+        "listed_here": collections.Counter(),
         "delta": collections.Counter(),
         "delta_clean": collections.Counter(),
         "attrib": collections.Counter(),
@@ -263,8 +310,11 @@ def aggregate(sessions):
     }
     for s in sessions:
         if s["initial"]:
+            here = s["project"].lower() == PROJECT_KEY
             for n in set(s["initial"]["names"]):
                 agg["listed"][n] += 1
+                if here:
+                    agg["listed_here"][n] += 1
         for d in s["deltas"]:
             suspect = set(d.get("reload_suspect") or ())
             for n in d["names"]:
@@ -283,11 +333,21 @@ def cmd_coverage(args):
     agg = aggregate(sessions)
     usage, hook = skill_usage(), hook_log()
     nsessions = sum(1 for s in sessions if s["initial"])
+    # A project-scope skill can only ever be listed in a session inside this
+    # repo, so every count about one is out of this smaller denominator. Both
+    # are printed, and `verdict` is given whichever applies to the row.
+    nsessions_here = sum(
+        1 for s in sessions if s["initial"] and s["project"].lower() == PROJECT_KEY
+    )
 
     rows = []
     for name in sorted(disk):
         info = disk[name]
-        listed = agg["listed"][name]
+        project = info["scope"] == "project"
+        denom = nsessions_here if project else nsessions
+        listed = agg["listed_here"][name] if project else agg["listed"][name]
+        # Machine-wide listings a project-scope skill can no longer earn.
+        elsewhere = agg["listed"][name] - listed if project else 0
         chosen = (
             agg["attrib"][name]
             + agg["tooluse"][name]
@@ -298,6 +358,9 @@ def cmd_coverage(args):
             {
                 "skill": name,
                 "group": info["group"],
+                "scope": info["scope"],
+                "sessions_possible": denom,
+                "listed_elsewhere": elsewhere,
                 "conditional": info["conditional"],
                 "listed_in": listed,
                 "activations": agg["delta_clean"][name],
@@ -306,30 +369,44 @@ def cmd_coverage(args):
                 "skill_tool": agg["tooluse"][name],
                 "usage_count": usage.get(name, 0),
                 "hook_rows": hook.get(name, 0),
-                "flag": verdict(info, listed, chosen, agg, name, nsessions),
+                "flag": verdict(info, listed, chosen, agg, name, denom, elsewhere),
             }
         )
     if args.json:
         print(json.dumps({"sessions": nsessions, "rows": rows}, indent=2))
         return
-    print(f"{nsessions} sessions with a recorded listing, {len(disk)} skills on disk")
-    if nsessions < MIN_SESSIONS:
+    nproject = sum(1 for i in disk.values() if i["scope"] == "project")
+    print(
+        f"{nsessions} sessions with a recorded listing, {len(disk)} skills on disk"
+    )
+    print(
+        f"of those, {nsessions_here} sessions in this repo and {nproject} skills at"
+        " project\nscope -- the denominator every `proj` row below is counted"
+        " against."
+    )
+    thin = [
+        f"{label} ({n} of {MIN_SESSIONS})"
+        for label, n in (("machine-wide", nsessions), ("this repo", nsessions_here))
+        if n < MIN_SESSIONS
+    ]
+    if thin:
         print(
-            f"\nToo few sessions to flag anything (need {MIN_SESSIONS}). Counts\n"
-            "below are real; the flag column is suppressed rather than filled\n"
-            "with findings that only reflect missing history.\n"
+            f"\nToo few sessions to flag {' and '.join(thin)}. Counts below are\n"
+            "real; the flag column is suppressed for those rows rather than\n"
+            "filled with findings that only reflect missing history.\n"
         )
     else:
         print()
     head = (
-        f'{"skill":<38}{"cond":>5}{"listed":>7}{"activ":>6}'
+        f'{"skill":<38}{"scope":>6}{"cond":>5}{"listed":>7}{"activ":>6}'
         f'{"slash":>6}{"tool":>5}{"usage":>6}  flag'
     )
     print(head)
     print("-" * len(head))
     for r in rows:
         print(
-            f'{r["skill"]:<38}{("y" if r["conditional"] else "-"):>5}'
+            f'{r["skill"]:<38}{("proj" if r["scope"] == "project" else "user"):>6}'
+            f'{("y" if r["conditional"] else "-"):>5}'
             f'{r["listed_in"]:>7}{r["activations"]:>6}{r["slash"]:>6}'
             f'{r["skill_tool"]:>5}{r["usage_count"]:>6}  {r["flag"]}'
         )
@@ -337,14 +414,40 @@ def cmd_coverage(args):
     print(legend())
 
 
-def verdict(info, listed, chosen, agg, name, nsessions):
+def verdict(info, listed, chosen, agg, name, possible, elsewhere=0):
     """Flags describe evidence, never a recommendation.
 
     "Zero invocations" is not disuse. A conditional skill withheld all
     session is expected; a rare-but-critical skill is doing its job. So
     nothing here says "delete" -- the flags name which question to ask.
+
+    ``possible`` is the number of sessions that could have listed *this*
+    skill, which is scope-dependent: every recorded session for a user-scope
+    skill, only this repo's for a project-scope one. LISTED_FLOOR is left
+    absolute against it rather than scaled to a proportion, because the
+    floor asks "has it had enough chances to be chosen", and a chance is a
+    chance at either scope. What the denominator changes is what the number
+    *means* to a reader, so it is printed rather than left implied.
+
+    ``elsewhere`` is listings a project-scope skill earned before the
+    2026-09-09 split, when it was deployed machine-wide. It annotates the
+    flag rather than replacing it: those listings are real history and
+    explain a low current count, but they are not evidence about the skill
+    as it is deployed now, and suppressing a live finding behind them would
+    hide exactly what widening this inventory was meant to surface.
     """
-    if nsessions < MIN_SESSIONS:
+    return _annotate(_verdict(info, listed, chosen, agg, name, possible), elsewhere)
+
+
+def _annotate(flag: str, elsewhere: int) -> str:
+    if not elsewhere:
+        return flag
+    note = f"[+{elsewhere} pre-split listings machine-wide]"
+    return f"{flag}  {note}" if flag else note
+
+
+def _verdict(info, listed, chosen, agg, name, possible):
+    if possible < MIN_SESSIONS:
         return ""
     if info["conditional"]:
         if listed:
@@ -360,7 +463,10 @@ def verdict(info, listed, chosen, agg, name, nsessions):
     # being paid continuously. LISTED_FLOOR keeps a recently authored skill
     # off this flag -- it cannot have accumulated sessions it did not exist for.
     if listed >= LISTED_FLOOR and chosen == 0:
-        return f"LISTED-NEVER-CHOSEN  in {listed} listings, never once used"
+        return (
+            f"LISTED-NEVER-CHOSEN  in {listed} of {possible} listings,"
+            " never once used"
+        )
     if agg["tooluse"][name] == 0 and agg["slash"][name] >= SLASH_FLOOR:
         return "SLASH-ONLY  reached by name only; description never matched"
     return ""
@@ -368,6 +474,15 @@ def verdict(info, listed, chosen, agg, name, nsessions):
 
 def legend():
     return (
+        "scope  = user (junctioned from skills/, offered in every session on\n"
+        "         this machine) or proj (.claude/skills/, offered only in\n"
+        "         sessions inside this repo). A `proj` row's counts are out\n"
+        "         of a smaller denominator -- never compare the two columns\n"
+        "         across scopes as if they measured the same thing. A `proj`\n"
+        "         row's `listed` counts this repo's sessions only; a\n"
+        "         [+N pre-split] note is listings it earned machine-wide\n"
+        "         before the 2026-09-09 scope split, which it cannot earn\n"
+        "         again and which say nothing about it as deployed now.\n"
         "cond   = carries a `paths:` glob, so it is withheld from the startup\n"
         "         listing by design. Never-listed is expected, not a finding.\n"
         "activ  = non-initial listing attachments, EXCLUDING those a SKILL.md\n"
@@ -413,6 +528,17 @@ def cmd_listing(args):
     unconditional = {n for n, i in disk.items() if not i["conditional"]}
     ever = set().union(*(v["names"] for v in by_project.values())) if by_project else set()
     missing = sorted(unconditional - ever)
+    # Absence means different things at the two scopes, so they are reported
+    # apart. A user-scope skill is offered in every session and has no other
+    # reason to be missing. A project-scope one is offered only in sessions
+    # inside this repo, so its absence is a truncation signal only once this
+    # repo has a history of its own -- otherwise it is missing data, which is
+    # the same mistake MIN_SESSIONS exists to stop making machine-wide.
+    here_n = next(
+        (v["n"] for k, v in by_project.items() if k.lower() == PROJECT_KEY), 0
+    )
+    missing_user = [m for m in missing if disk[m]["scope"] == "user"]
+    missing_proj = [m for m in missing if disk[m]["scope"] == "project"]
     print()
     if len(withlisting) < MIN_SESSIONS:
         print(
@@ -421,13 +547,32 @@ def cmd_listing(args):
             " every skill looks\nnever-listed, which is missing data rather than"
             " a dropped skill."
         )
-    elif missing:
-        print("Unconditional skills that have NEVER appeared in a listing:")
-        for m in missing:
+        return
+    if missing_user:
+        print("Unconditional user-scope skills that have NEVER been listed:")
+        for m in missing_user:
             print(f"  {m}")
         print("\nThat is the truncation signal -- an unconditional skill has no")
         print("other reason to be absent. Check it deployed before concluding.")
-    else:
+    sessions_word = "session" if here_n == 1 else "sessions"
+    if missing_proj and here_n >= MIN_SESSIONS:
+        print(
+            f"\nUnconditional project-scope skills never listed in any of the"
+            f"\n{here_n} recorded {sessions_word} in this repo:"
+        )
+        for m in missing_proj:
+            print(f"  {m}")
+        print("\nThese are read in place and deployed by nothing, so a missing")
+        print("one is truncation or a malformed SKILL.md, never a failed link.")
+    elif missing_proj:
+        n = len(missing_proj)
+        print(
+            f"\n{n} project-scope {'skill is' if n == 1 else 'skills are'}"
+            f" unlisted, but this repo has\nonly {here_n} recorded"
+            f" {sessions_word} (need {MIN_SESSIONS}) -- too thin to call"
+            " that truncation."
+        )
+    if not missing_user and not missing_proj:
         print("Every unconditional skill on disk has appeared in some listing.")
         print("No evidence of listing truncation.")
 

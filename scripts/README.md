@@ -191,6 +191,21 @@ Helper scripts for repo maintenance and observability.
   every conditional skill otherwise reads as never-activated and every
   unconditional one as evidence of truncation, which is missing history
   and not a finding.
+  Its inventory walks **both** skill trees and carries the scope, which
+  the `coverage` table shows as `user` or `proj`. Scope is not decoration:
+  a user-scope skill is offered in every session on this machine while a
+  project-scope one is offered only in sessions inside this repo, so the
+  two are counted against different denominators and a `proj` row's
+  `listed` counts this repo's sessions alone. The six skills at project
+  scope were at user scope until the 2026-09-09 split, and the listings
+  they earned before it are reported as a separate `[+N pre-split]` note
+  rather than added in — a count drawn from a period when a skill was a
+  different kind of skill explains a low number without being evidence
+  about the skill as it is deployed now. Walking `skills/` alone was this
+  script's own bug until 2026-09-15: project-scope skills were absent
+  from `coverage` entirely and so could never be flagged, while
+  `triggers` listed them throughout because it reads transcripts rather
+  than disk — which is precisely what made the gap survive unnoticed.
 - [test-activation.ps1](test-activation.ps1) — the real-path test for
   `paths:` activation: does Claude Code actually load the conditional
   skills the globs say it should? Deploys the platform skills to a
