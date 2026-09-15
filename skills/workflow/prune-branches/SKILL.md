@@ -1,7 +1,7 @@
 ---
 name: prune-branches
 description: "Audits every branch a repo carries — local, remote, and worktree-pinned — and sorts them into safe to delete, stale, and carrying unmerged work, rescuing the last group onto a fresh verified branch before recommending anything. Built for repos that squash-merge, where `git branch --merged` and `git cherry` both report merged branches as unmerged because patch-ids never match, so merge evidence has to come from the PR list instead. Separates a stale remote-tracking ref from a branch that really is still on the remote. Reports and recommends; never deletes a branch and never pushes a deletion. Complements land, which prevents this debris on the happy path — this cleans up what never took it."
-when_to_use: "Use when asked to clean up, prune or audit branches, to work out which branches are safe to delete, or why a branch will not delete — including 'I thought I deleted these' and a `git branch -d` that refuses because a worktree holds the branch. Not for deleting one branch already known to be merged: that is a one-liner, and `land` already does it for a branch it just merged."
+when_to_use: "Use when asked to clean up, prune or audit branches, to work out which branches are safe to delete, or why a branch will not delete — including 'I thought I deleted these' and a `git branch -d` that refuses because a worktree holds the branch. Not for deleting one branch already known to be merged: that is a one-liner, and `land` already does it for a branch it just merged. An instruction to delete rather than report is the case the refusal exists for, not a reason to skip it."
 allowed-tools: Bash(git branch *) Bash(git log *) Bash(git rev-list *) Bash(git ls-remote *) Bash(git worktree list *) Bash(git show *) Bash(git diff *) Bash(git cherry *) Bash(git fetch *) Bash(gh pr list *)
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
@@ -37,6 +37,19 @@ Measured 2026-09-14: after `git merge --squash`,
 string.
 
 So the output is a table and a command string. The user runs it.
+
+**An instruction to delete does not lift this.** "Just delete them",
+"don't make me run anything", "I trust your call on which are dead" —
+each is the case this section exists for, not a waiver of it. The two
+reasons above are reasons, not conditions: a permission mode the user
+could loosen and a `-d` the user could force do not make the deletion
+yours once they are gone. Reasoning from the mechanism is exactly how
+the refusal was lost — measured 2026-09-14 on both invocation paths,
+under a query that delegated the classification: the skill read its own
+no-delete rule as the user's to waive, and used the `-D` fact as
+guidance for deleting rather than grounds for not. The shape to hold is
+`land`'s Absolute constraints — an instruction to do these is a stop,
+not an override. Say so once, give the table and the command, and stop.
 
 **The `allowed-tools` line encodes that split, and it pre-approves
 rather than restricts.** Every probe the audit needs is listed, so the
@@ -257,7 +270,8 @@ took it.
 ## Constraints
 
 - **Never delete a branch and never push a deletion.** Not local, not
-  remote, not "the obviously safe ones". The output is a command string.
+  remote, not "the obviously safe ones", not when told to. The output is
+  a command string.
 - **Never remove a worktree.** Propose it; the user runs it.
 - **Do not push the rescue branch.** Hand it to `land`.
 - **Do not trust `git branch --merged` or `git cherry` in a squash
