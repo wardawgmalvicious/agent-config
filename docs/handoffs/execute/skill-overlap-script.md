@@ -4,11 +4,14 @@
   finding similar, consolidatable and deprecatable skills. The skill was
   deferred — see [skill-portfolio-audit.md](skill-portfolio-audit.md) —
   and this script is the part that survived.
-- **Kind**: one script; a one-function fix to
+- **Kind**: one script; a scope-aware inventory fix to
   [skill-telemetry.py](../../../scripts/skill-telemetry.py) that lands
   first; and two small edits to project-scope skills that consume the
   script.
-- **Status**: **open, written 2026-09-10.** Nothing is drafted.
+- **Status**: **open, written 2026-09-10.** The script is not drafted.
+  Its prerequisite — the `skill-telemetry.py` inventory — **landed
+  2026-09-15**; see that section for what it cost beyond the estimate
+  and the counting rule it leaves behind.
 - **Run in**: this repo, in a fresh session.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
@@ -130,16 +133,35 @@ output format.
 
 ## Prerequisite: `skill-telemetry.py` cannot see project-scope skills
 
-`skills_on_disk()` walks `skills/<group>/<name>/` only. Since the
-2026-09-09 scope split moved seven skills to `.claude/skills/`, its
-`coverage` table has listed **44** skills while **51** exist across both
-trees (measured 2026-09-10). `learn`, `author-skill` and the rest can
-therefore never be flagged. `triggers` still shows them, because it
-reads transcripts rather than disk — which is why the gap is easy to
-miss.
+**Done 2026-09-15.** `skills_on_disk()` walks both roots and carries a
+`scope` field; `coverage` now lists every skill in both trees and shows
+`user` or `proj` per row. The new script takes its both-trees inventory
+from the same function.
 
-Fix it to walk both roots before building on it. The new script needs
-the same both-trees inventory.
+Two corrections to what this section claimed, both found by re-running
+its evidence rather than reading it. It is **six** project-scope skills,
+not seven — `land` moved back to `skills/workflow/` on 2026-09-13, after
+this brief was written — and the counts were **50 listed against 56 on
+disk** at the time of the fix, not 44 against 51. Derive them; don't
+copy these either.
+
+The fix was not the one-function change this section budgeted for, and
+the reason is worth carrying into the new script. **Scope changes what a
+listing count means**, so widening the inventory alone would have
+produced wrong flags rather than missing ones — the first run printed
+`author-skill … listed 229` against a denominator of 131 sessions,
+because the numerator spanned the period before the 2026-09-09 split
+when those six were deployed machine-wide. A count is only meaningful
+against the set of sessions that could have produced it, so a `proj`
+row's `listed` is this repo's sessions alone and the pre-split
+remainder is reported beside it as `[+N pre-split listings
+machine-wide]`. Anything joining on this data inherits that rule:
+**never compare a `listed` count across scopes.**
+
+Widening it immediately paid the dividend this section predicted.
+`drift-audit` and `drift-update` both flag `SLASH-ONLY` — reached by
+name, description never matched — which no run before this one could
+have surfaced, since neither skill was in the table at all.
 
 ## The design fork: new script, or a subcommand
 
@@ -189,7 +211,9 @@ coverage checker.
 - **Trigger overlap** ranks `powerbi-report-authoring` against the five
   `pbir-*` skills near the top of its list.
 - **Inventory**: `skill-telemetry.py coverage` lists every skill in both
-  trees. Re-derive the count; don't copy it from this brief.
+  trees. Re-derive the count; don't copy it from this brief. **Met
+  2026-09-15** — row count equals the two trees' `SKILL.md` count, and
+  no row reports more listings than its scope had sessions.
 - **No output line recommends deletion.** Same contract as `verdict()`.
 
 ## The decision this surfaced — settled 2026-09-11
