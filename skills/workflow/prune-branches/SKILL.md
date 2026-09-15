@@ -131,8 +131,11 @@ gh pr list --state all --limit 100 --json number,headRefName,state,title
 ```
 
 Key on `headRefName`. A PR whose head was this branch **and whose state
-is `MERGED`** is the merge evidence, and the branch is safe; `CLOSED` is
-not — that is work someone declined, still only on the branch.
+is `MERGED`** is the merge evidence, and the branch is safe. The other
+two states both mean keep, for different reasons: `CLOSED` is work
+someone declined, still only on the branch, and goes on to rung 3;
+`OPEN` is work in flight — keep it, say so, and stop there, since a
+branch someone is actively landing needs no content archaeology.
 `--limit 100` returns the hundred most recent, so an old branch's PR can
 fall outside it and read as no PR. That sends it to rung 3, the safe
 direction but not a free one; raise the limit, or confirm a missing one
@@ -158,7 +161,8 @@ one `gh` will act as in this repo. Nothing here writes, so the full
 identity procedure in `land` is not needed — just do not tell the user
 that `gh auth status` says who they are.
 
-Commits ahead **and** no PR goes to rung 3.
+Commits ahead **and** no merge evidence — no PR, or a `CLOSED` one —
+goes to rung 3.
 
 ## 5. Rung 3 — content recency
 
@@ -216,7 +220,14 @@ units.
 
 ## 7. Rescue before recommending deletion
 
-Any branch still holding real work after rung 4 is rescued, not deleted.
+Any branch still holding real work after rung 4 is rescued, not deleted
+— but the rescue is an **extraction**, not a relocation. It exists to
+lift the survivors out of a branch that also holds junk, so the junk
+branch can go. A branch whose every commit survived, already named to
+convention, has nothing to extract: leave it where it is and say so.
+Cherry-picking it onto a fresh branch manufactures the very debris this
+audit is for. Observed 2026-09-14 on a one-commit branch with no PR: the
+whole branch was the survivor, and the right output was "keep".
 
 ```bash
 git switch main && git pull --ff-only
@@ -230,6 +241,14 @@ exists. A rescue that has not been run against the repo's own checks is
 a claim, not a result.
 
 Report the new branch and hand the landing to `land`. Do not push it.
+
+**A kept branch is handed over the same way, and it is usually behind
+`main`** — the rescue above is cut from fresh `main` and cannot be, but
+a branch left in place predates every merge since its fork point, and
+`land`'s `--ff-only` refuses that rather than fixing it: it stops and
+says `main` has moved. `git merge-base --is-ancestor main <branch>`
+answers it (exit 0 means fine); if not, rebase onto `main` before the
+handoff and say so, so the SHAs `land` reports are not a surprise.
 
 ## 8. Report, and stop
 
@@ -247,12 +266,19 @@ Emit three things:
    git push origin --delete <branch> <branch> ...
    ```
 
+   When nothing cleared, say so in as many words. An empty set is a
+   verdict, not a missing step — observed 2026-09-14 on a two-branch
+   repo where both carried work.
+
 Then stop. Do not run it, and do not offer to.
 
 **A cheap upstream fix exists.** Enabling auto-delete-on-merge and
 branch protection stops most of this debris accumulating in the first
 place; worth one closing sentence to the user when the audit found a
-large set.
+large set — and worth checking even when it found none, since a clean
+list can be `land` deleting what it merged rather than the setting:
+`gh api repos/:owner/:repo --jq .delete_branch_on_merge` read `false`
+on a repo with no debris at all, 2026-09-14.
 
 ## Boundary with `land`
 
