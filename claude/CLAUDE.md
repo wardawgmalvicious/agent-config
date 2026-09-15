@@ -134,6 +134,18 @@ maps to the Git install root, so `mkdir -p "$TMPDIR/probe"` answers
 that reads as a permissions problem and is an unset variable. Use the
 scratchpad path the harness provides instead. Observed 2026-09-12.
 
+### `/tmp` is two directories, one per side of the MSYS boundary
+
+Bash resolves `/tmp` to `%TEMP%`, so `cmd > /tmp/x` succeeds. A Windows
+process Bash then spawns — `uv run python`, `node`, anything native —
+resolves the same literal to `C:\tmp\x`, so opening `/tmp/x` there fails
+with `FileNotFoundError: [Errno 2] No such file or directory:
+'/tmp/x'` on a file that was written seconds earlier. **Each half is
+right on its own and only the pair is wrong**, so nothing in either
+error names the boundary. Use the scratchpad path, which is a Windows
+path both sides read identically, or `cygpath -w /tmp/x` before handing
+one across. Measured 2026-09-15.
+
 ### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open
