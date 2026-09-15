@@ -250,6 +250,10 @@ findings here do not depend on the fork being trustworthy.
     the same dialog→pane rename as D-3. That file is not in this brief's
     **Target**, and no other brief in this set names it, so it was left
     alone and is reported as an adjacent finding instead.
+    **Resolved 2026-09-15** — that adjacent finding was carried on the
+    `execute/` queue and executed from there. The line, by then at 241,
+    now reads "editable in the **Text** section of the Theme pane",
+    matching D-3's wording.
   - **The "initial page stays 1280x720" carve-out is unverified.** The audit's
     recommended action 5 asks for it to be re-verified against a real new
     report, and the GA page carries no initial-page exception. D-1 and D-5

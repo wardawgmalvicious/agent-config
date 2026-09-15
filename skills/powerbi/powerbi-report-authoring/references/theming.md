@@ -238,7 +238,7 @@ for the complete checklist (filter pane, stylePreset override, fillCustom+id sel
 
 ## 5. Text Classes (`textClasses`)
 
-**4 primary classes** (editable in Customize Theme dialog):
+**4 primary classes** (editable in the **Text** section of the Theme pane):
 
 | Class | Key | Default Font | Default Size | Used By |
 |-------|-----|-------------|-------------|---------|

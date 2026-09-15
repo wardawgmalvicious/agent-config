@@ -55,7 +55,6 @@ directory index shows the brief as `closed` rather than open forever.
 | A Git-synced Fabric repo to measure in | [skills-for-fabric 04](../../audits/2026-09-10/skills-for-fabric/04-measure-notebook-serialization-before-editing.md) |
 | A cold probe session, with `test-skill` mechanics | [skills-for-fabric 09](../../audits/2026-09-10/skills-for-fabric/09-probe-sql-database-query-routing.md) |
 | Three open questions settled, then lint code | [skills-for-fabric 08](../../audits/2026-09-10/skills-for-fabric/08-decide-catalog-budget-and-reference-lints.md): a catalog listing-budget check, and a reference lint that is [skill-overlap-script.md](skill-overlap-script.md)'s routing signal — build that half there |
-| Only an edit | [powerbi 02](../../audits/2026-09-07/powerbi/02-retire-fluent2-preview-framing.md)'s adjacent finding, a retired dialog name at `theming.md:241` |
 
 ## Filenames are stable; order lives here
 
