@@ -120,3 +120,32 @@ early warning for this payload's own mechanics.
   matching rule is fixed before any code is written.
 - **Deferred**: the open questions and all three verification steps.
 - **Deviations**: none.
+
+### Half landed 2026-09-15 — the reference lint
+
+Not a close: this brief queued **two** checks and only one exists.
+
+The cross-skill reference lint shipped as `scripts/skill-overlap.py
+routing`, wired into `.pre-commit-config.yaml` as `lint-skill-routing`,
+built under [../../../handoffs/execute/skill-overlap-script.md](../../../handoffs/execute/skill-overlap-script.md)
+rather than here — the queue routed it there deliberately, since that
+brief owned the same signal.
+
+That settles this brief's third open question, *what counts as a
+reference*. The answer is a backticked platform-prefixed name
+(`fabric-`, `pbir-`, `pbid-`, `pbip-`, `powerbi-`), scanned in
+descriptions and in prose separately: only a **description** fails,
+because a body may legitimately discuss a skill that was deliberately not
+installed. The false-positive class this brief predicted — "the
+`fabric-cicd` *library* against the `fabric-cicd` skill" — turned out to
+be the smaller half of the problem. On 2026-09-15, 17 of 19 raw hits were
+non-skills, and they resolve by class rather than case by case: MCP
+servers, rules and drift-audit source ids are **derived** from their own
+files, seven names are hand-kept, and `skills/README.md` is excluded by
+path because its bullets explain names this repo considered and rejected
+— one more per authoring run.
+
+**Still open: the catalog-wide listing-budget check**, and with it the
+first two open questions. Neither has moved. The budget must come from
+Claude Code's docs rather than upstream's figures, and the catalog to
+measure is still per deployable group combination or the worst case.

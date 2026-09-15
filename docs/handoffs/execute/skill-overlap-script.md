@@ -8,16 +8,21 @@
   [skill-telemetry.py](../../../scripts/skill-telemetry.py) that lands
   first; and two small edits to project-scope skills that consume the
   script.
-- **Status**: **the script landed 2026-09-15**; the two consumer edits
-  below have not. `scripts/skill-overlap.py` implements all four signals,
+- **Status**: **spent 2026-09-15 — every part of the Kind above has
+  landed**, script and both consumers. `scripts/skill-overlap.py` implements all four signals,
   `routing` gates commits as `lint-skill-routing`, and its negative case
   is proved by `tests/scripts/skill-overlap/test-routing.sh` — the live
   tree passing says nothing, since a gate firing on nothing looks
   identical. The design fork is settled below. The prerequisite — the
   `skill-telemetry.py` inventory — landed the same day; see that section
   for what it cost beyond the estimate and the counting rule it leaves
-  behind. **What remains is Consumers**, which is why this brief is not
-  yet deleted.
+  behind. The consumer edits are in `author-skill` §2 and `learn` Step 4,
+  and neither skill gains retest debt: both were already `untested` per
+  `skill-status.py`. **This brief is kept only until the v1 output format
+  has been used in anger** — signal 5, body duplication, was deferred
+  until signals 1-4 proved that format, and nothing has yet exercised it
+  outside its own acceptance run. Delete it, and its queue row, once
+  something has.
 - **Run in**: this repo, in a fresh session.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
@@ -259,8 +264,16 @@ Two constraints found while building it, both worth keeping:
 
 ## Consumers — the edits that make it pay
 
-Neither of these adds a trigger, so the payload does not gain a third
-coverage checker.
+**Both landed 2026-09-15.** Neither adds a trigger, so the payload did
+not gain a third coverage checker.
+
+One thing was learned in the doing. The brief says to run the script
+"against the candidate's draft description or topic", and there is no way
+to do that: the script reads skills off disk, so a description that does
+not exist yet cannot be scored. `author-skill` §2 therefore runs it
+against the **nearest existing skill** the topic would sit beside, which
+answers the same question — what already clusters here — from a starting
+point that exists.
 
 1. **`author-skill` §2.** Run the script against the candidate's draft
    description or topic alongside the existing grep, and act on its
