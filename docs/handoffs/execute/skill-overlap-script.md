@@ -41,13 +41,18 @@ by collecting every backticked name with a platform prefix (`fabric-`,
 `.claude/skills/` and `claude/rules/`, and subtracting the skills on
 disk in both trees: **13 unknown names, 11 of them noise.**
 
-| Noise class | Names |
-| --- | --- |
-| MCP servers | `fabric-rti-mcp`, `powerbi-modeling-mcp`, `fabric-data-factory-mcp` |
-| CLIs | `powerbi-desktop`, `powerbi-report-author` |
-| rules | `fabric-git-serialization` |
-| drift-audit source ids, repo names | `fabric-iq-ontology`, `powerbi-docs`, `powerbi-docs-powershell`, `fabric-toolbox` |
-| counterfactual names in `skills/README.md`'s naming rationale | `fabric-pipeline`; by 2026-09-15 also `fabric-reflex`, `fabric-deployment-pipeline`, `fabric-governance` — one per authoring run that explains a name *not* chosen |
+The table is grouped by **where the allowlist entry comes from**, because
+that is what the script has to implement — not by what kind of thing the
+name is.
+
+| Noise class | Allowlist source | Names |
+| --- | --- | --- |
+| MCP servers | derived — `claude/mcp/`, `.mcp.json` | `fabric-rti-mcp`, `powerbi-modeling-mcp`, `fabric-data-factory-mcp`, `fabric-kqlendpoint` |
+| rules | derived — `claude/rules/*.md` | `fabric-git-serialization` |
+| drift-audit source ids | derived — the `` ### `<id>` `` headings in `sources.md` | `fabric-iq-ontology`, `powerbi-docs`, `powerbi-docs-powershell`, `fabric-toolbox` |
+| CLIs | hand list | `powerbi-desktop`, `powerbi-report-author` |
+| upstream bundle names | hand list | `fabric-skills`, `powerbi-authoring` |
+| counterfactual names in `skills/README.md`'s naming rationale | excluded by path | `fabric-pipeline`, `fabric-reflex`, `fabric-governance`, `fabric-deployment-pipeline` — one per authoring run that explains a name *not* chosen |
 
 The 2 real ones are `powerbi-report-planning` and
 `powerbi-report-management`, both in the vendored `powerbi-report-*`
@@ -55,16 +60,33 @@ pair — and `powerbi-report-planning` is in **both descriptions**, the
 surface triggers are matched against. The skill's own *Local vendoring
 note* says it is not installed.
 
-The noise classes grow: the `skills-for-fabric` registry entry written
-the same day added `fabric-skills`, an upstream bundle name, so a re-run
-now finds 14. **Derive the allowlist rather than hand-keeping it** where
-a machine source exists — rule names from `claude/rules/*.md`, MCP
-server names from `claude/mcp/` and `.mcp.json`, source ids from the
-`` ### `<id>` `` headings in `drift-audit/references/sources.md`. CLIs and
-external repo names have no such source and need a short hand list.
-The naming-rationale class has no source either and, unlike CLIs, grows
-with every authoring run — so the lean is to exclude that file's naming
-section by path rather than keep listing the names it invents.
+The noise classes grow, and the table above is the **2026-09-15 re-run
+classified in full**: 19 raw hits, 17 noise, the 2 real ones unchanged.
+An earlier pass recorded 19 but accounted for only 17 of them and put
+four of the five new names in the counterfactual class. Only three are.
+The other two land in classes that change the work:
+
+- `fabric-kqlendpoint` is an **MCP server**, not a skill — it is in
+  `claude/mcp/.mcp.project.template.json`, so the derived allowlist
+  catches it with no hand-keeping at all.
+- `powerbi-authoring` is a second **upstream bundle name** beside
+  `fabric-skills`, both in `drift-audit/references/sources.md`. So that
+  class is two rather than a one-off, and needs a hand list entry rather
+  than being waved through.
+
+**Derive the allowlist rather than hand-keeping it** where a machine
+source exists, per the Allowlist source column. That leaves a hand list
+of **four** — two CLIs and two bundle names — which is the whole
+maintenance burden, and every other class is derived or excluded by
+path. The naming-rationale class has no source either and, unlike the
+CLIs, grows with every authoring run, so the lean is to exclude that
+file's naming section by path rather than keep listing the names it
+invents. `fabric-deployment-pipeline` is the sharpest case for that:
+it is the **singular** at `skills/README.md:103` — "Plural, and not
+`fabric-deployment-pipeline`" — against the `fabric-deployment-pipelines`
+skill that does exist. A singular/plural near-miss is both the most
+convincing false positive and, anywhere but that file, exactly the real
+bug this signal is for.
 
 Upstream shipped the same fix. `microsoft/skills-for-fabric` `0.3.14`,
 under Fixed: three skills "pointed you at skills that no longer exist"
@@ -209,8 +231,10 @@ coverage checker.
 - **Routing** finds `powerbi-report-planning`, in two descriptions,
   and `powerbi-report-management`, and reports both as accepted
   overrides rather than failures — see the settled decision below. It
-  reports **none** of the eleven noise names above, nor
-  `fabric-skills`. A fixture naming a genuinely missing skill fails it.
+  reports **none** of the 17 noise names in the table above. A fixture
+  naming a genuinely missing skill fails it. Re-derive the raw count
+  before trusting it; 19 was true on 2026-09-15 and the counterfactual
+  class grows with every authoring run.
 - **Trigger overlap** ranks `powerbi-report-authoring` against the five
   `pbir-*` skills near the top of its list.
 - **Inventory**: `skill-telemetry.py coverage` lists every skill in both
