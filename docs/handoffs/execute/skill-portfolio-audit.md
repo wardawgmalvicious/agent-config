@@ -5,8 +5,9 @@
 - **Kind**: one project-scope skill in `.claude/skills/`.
 - **Status**: **deferred 2026-09-10 — not declined.** Every part of it
   found a cheaper home; see below. Depends on
-  [skill-overlap-script.md](skill-overlap-script.md), which it would
-  wrap.
+  [`scripts/skill-overlap.py`](../../../scripts/skill-overlap.py), which
+  it would wrap — shipped 2026-09-15, and its brief spent and deleted
+  the same day.
 - **Run in**: this repo.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
@@ -21,7 +22,7 @@ set, recommends consolidating and deprecating skills.
 
 | Part | Home |
 | --- | --- |
-| Similar skills here, before authoring or updating | `author-skill` §2 and `learn` Step 4, calling the script in [skill-overlap-script.md](skill-overlap-script.md) |
+| Similar skills here, before authoring or updating | `author-skill` §2 and `learn` Step 4, calling [`scripts/skill-overlap.py`](../../../scripts/skill-overlap.py) |
 | Similar skills in outside repos | one `drift-audit` source, `skills-for-fabric` |
 | Repos the payload does not cover | `payload-coverage.py` |
 | Consolidate and deprecate, across the set | the script's output, read with `skill-telemetry.py`'s `verdict()` rubric |

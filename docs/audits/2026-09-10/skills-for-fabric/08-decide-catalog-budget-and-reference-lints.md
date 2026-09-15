@@ -127,7 +127,8 @@ Not a close: this brief queued **two** checks and only one exists.
 
 The cross-skill reference lint shipped as `scripts/skill-overlap.py
 routing`, wired into `.pre-commit-config.yaml` as `lint-skill-routing`,
-built under [../../../handoffs/execute/skill-overlap-script.md](../../../handoffs/execute/skill-overlap-script.md)
+built under the `skill-overlap-script` brief (spent and deleted
+2026-09-15; `git log -- docs/handoffs/execute/skill-overlap-script.md`)
 rather than here — the queue routed it there deliberately, since that
 brief owned the same signal.
 
