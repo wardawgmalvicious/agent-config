@@ -136,9 +136,13 @@ Helper scripts for repo maintenance and observability.
 
   Its matcher must agree with [activation-expect.py](activation-expect.py) —
   wcmatch, `GLOBSTAR | DOTGLOB` — or it reports coverage the activation
-  harness would not confirm. The two cannot share the code, because a hyphen
-  in that filename makes it un-importable, so the flags are duplicated
-  deliberately. **Change them together.**
+  harness would not confirm. Both still hold their own copy of the flags, so
+  **change them together** — but the reason recorded here until 2026-09-15,
+  that a hyphen in the filename makes the code unshareable, was backwards. A
+  hyphenated script cannot be imported *from*; it can import. The canonical
+  value now lives in [_skill_inventory.py](_skill_inventory.py)'s
+  `glob_flags()`, and neither script was migrated only because neither needs
+  anything else that module offers.
 
   Findings are candidates, not work. `NON_TEXT` filters what cannot carry a
   convention (images, binaries, signing material) and deliberately stops
@@ -148,6 +152,56 @@ Helper scripts for repo maintenance and observability.
   matching any of its 200 files, and `.md` came back the largest uncovered
   surface anywhere at 187 files across seven repos. Needs `pyyaml` and
   `wcmatch`. Not run by pre-commit; there is no pass/fail here to gate on.
+
+- [_skill_inventory.py](_skill_inventory.py) — one walk of both skill
+  trees, imported by the scripts that need more than names. Underscore-named
+  because it is a module rather than a command; it has no CLI.
+
+  **Returns a list, not a dict keyed by name**, and that is load-bearing:
+  [lint-skill-scopes.py](lint-skill-scopes.py) exists to find two skills
+  sharing one name, and a name-keyed inventory silently drops one of every
+  pair it is looking for. `by_name()` is there for callers that know
+  uniqueness is already gated. Needs `pyyaml` only — `glob_flags()` imports
+  wcmatch lazily so a pyyaml-only caller never pays for a dependency it does
+  not use.
+
+- [skill-overlap.py](skill-overlap.py) — measure skills as **pairs**, which
+  is the unit every other checker here misses. `lint-frontmatter.py` caps one
+  description, `payload-coverage.py` asks what matches one file,
+  `skill-telemetry.py` asks whether one skill was listed. Consolidation is a
+  property of a pair, the way a name collision is: neither file is wrong on
+  its own.
+
+  Three subcommands. `routing` finds a skill whose text names a skill that is
+  not installed — the only signal here that is a bug by default, and the one
+  wired into pre-commit. `overlap` ranks pairs of descriptions by shared
+  distinctive tokens, weighted by inverse document frequency, so two skills
+  that both half-match one request surface without embeddings: a
+  deterministic score can be re-run and reviewed, a model score can be
+  neither. `coactivation REPO...` sweeps real repos for conditional skills
+  whose globs match the same files, and reports subset and identical
+  relations — if every file matching A also matches B, the harness never sees
+  A apart from B. `overlap --usage` joins `skill-telemetry.py coverage`
+  by name and prints its caveats verbatim, because they decide whether a zero
+  means anything.
+
+  **Only a description fails the gate.** A prose mention is reported and
+  never gates, because a body may legitimately discuss a skill that was
+  deliberately not installed — the two vendored `powerbi-report-*`
+  descriptions route to `powerbi-report-planning`, which was left unvendored
+  on purpose in `1fa3061`, and the script reports that as an accepted
+  override citing the commit. The signal is only as good as its allowlist:
+  on 2026-09-15, 17 of 19 raw hits were MCP servers, rules, CLIs, GitHub
+  repos, drift-audit source ids, or names `skills/README.md` invents to
+  explain a name it did **not** choose. Everything with a machine source is
+  derived; seven names are hand-kept and `skills/README.md` is excluded by
+  path, because a list that grows by hand goes stale silently.
+
+  The gate's negative case is proved by
+  [tests/scripts/skill-overlap/test-routing.sh](../tests/scripts/skill-overlap/test-routing.sh),
+  which builds throwaway payloads — the live repo passing says nothing,
+  since a gate that never fires produces the same output. Needs `pyyaml`;
+  `coactivation` also needs `wcmatch`.
 
 - [push-gate.sh](push-gate.sh) — the pre-push hook that refuses any
   push not issued from a Claude Code session, so nothing another

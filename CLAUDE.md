@@ -135,6 +135,20 @@ uv run scripts/audit-status.py
 uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py <repo>
 uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py --sweep C:/Repos/Personal
 
+# Skills as PAIRS, which every other checker here misses. `routing` is the
+# only signal that is a bug by default and the only one wired into
+# pre-commit: a DESCRIPTION naming a skill that is not installed fails, a
+# prose mention is reported and never gates. `overlap` ranks two
+# descriptions that half-match one request; `coactivation` finds conditional
+# skills whose globs always fire together. Nothing here says delete.
+uv run --with pyyaml scripts/skill-overlap.py routing
+uv run --with pyyaml scripts/skill-overlap.py overlap --skill <name>
+uv run --with pyyaml --with wcmatch python scripts/skill-overlap.py coactivation <repo>
+
+# The routing gate's NEGATIVE case, against throwaway payloads. The live
+# tree passing says nothing -- a gate firing on nothing looks identical.
+bash tests/scripts/skill-overlap/test-routing.sh
+
 # Validate the Copilot instruction ports: applyTo frontmatter, no leaked
 # repo name or profile path, and no drift from the rule each was ported
 # from. --stamp re-records the hashes after a deliberate re-port.

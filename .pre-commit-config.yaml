@@ -95,6 +95,25 @@ repos:
         files: '^(skills/|\.claude/settings\.json$)'
         pass_filenames: false
 
+      # A description naming a skill that is not installed strands the
+      # request at the surface triggers are matched against, so it is a bug
+      # by default -- upstream shipped exactly this fix in skills-for-fabric
+      # 0.3.14, where three skills "pointed you at skills that no longer
+      # exist". Whole set, like the two above: routing is a property of a
+      # PAIR, and the skill naming a missing one is not wrong on its own.
+      # Only DESCRIPTIONS fail; a prose mention is reported and never gates,
+      # because a body may discuss a skill that was deliberately not
+      # installed. `files:` spans the allowlist's derived sources too --
+      # deleting a rule or an MCP server can turn a passing description into
+      # a failing one, and that edit touches neither skill tree.
+      - id: lint-skill-routing
+        name: Check descriptions route to skills that exist
+        entry: python scripts/skill-overlap.py routing
+        language: python
+        additional_dependencies: [pyyaml]
+        files: '^(skills/|\.claude/skills/|claude/rules/|claude/mcp/|\.mcp\.json$)'
+        pass_filenames: false
+
       # The test stamps in tests/skills/.tested.json are keyed by skill name,
       # like skillOverrides, so a rename or deletion strands an entry the same
       # way. This checks only that. An UNTESTED skill is a legitimate state
