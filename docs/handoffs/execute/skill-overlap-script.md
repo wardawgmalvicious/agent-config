@@ -47,7 +47,7 @@ disk in both trees: **13 unknown names, 11 of them noise.**
 | CLIs | `powerbi-desktop`, `powerbi-report-author` |
 | rules | `fabric-git-serialization` |
 | drift-audit source ids, repo names | `fabric-iq-ontology`, `powerbi-docs`, `powerbi-docs-powershell`, `fabric-toolbox` |
-| a naming rationale | `fabric-pipeline`, in `skills/README.md` |
+| counterfactual names in `skills/README.md`'s naming rationale | `fabric-pipeline`; by 2026-09-15 also `fabric-reflex`, `fabric-deployment-pipeline`, `fabric-governance` — one per authoring run that explains a name *not* chosen |
 
 The 2 real ones are `powerbi-report-planning` and
 `powerbi-report-management`, both in the vendored `powerbi-report-*`
@@ -62,6 +62,9 @@ a machine source exists — rule names from `claude/rules/*.md`, MCP
 server names from `claude/mcp/` and `.mcp.json`, source ids from the
 `` ### `<id>` `` headings in `drift-audit/references/sources.md`. CLIs and
 external repo names have no such source and need a short hand list.
+The naming-rationale class has no source either and, unlike CLIs, grows
+with every authoring run — so the lean is to exclude that file's naming
+section by path rather than keep listing the names it invents.
 
 Upstream shipped the same fix. `microsoft/skills-for-fabric` `0.3.14`,
 under Fixed: three skills "pointed you at skills that no longer exist"
