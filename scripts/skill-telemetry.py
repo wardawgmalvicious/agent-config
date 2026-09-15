@@ -64,7 +64,7 @@ import pathlib
 import re
 import sys
 
-import yaml
+import _skill_inventory
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 PROJECTS = pathlib.Path(os.path.expanduser("~/.claude/projects"))
@@ -114,33 +114,8 @@ SLASH_FLOOR = 3
 MIN_SESSIONS = 20
 
 
-def _skill_meta(d: pathlib.Path) -> dict | None:
-    """Frontmatter of one skill directory, or None if it holds no SKILL.md."""
-    f = d / "SKILL.md"
-    if not f.is_file():
-        return None
-    text = f.read_text(encoding="utf-8", errors="replace")
-    meta = {}
-    if text.startswith("---"):
-        end = text.find("\n---", 3)
-        if end != -1:
-            try:
-                meta = yaml.safe_load(text[3:end]) or {}
-            except yaml.YAMLError:
-                meta = {}
-    return {
-        # A `paths:` glob withholds the skill from the startup listing, so
-        # "never listed" is expected rather than a finding. Conflating the
-        # two is exactly the error that produced this repo's one retracted
-        # telemetry finding.
-        "conditional": bool(meta.get("paths")),
-        "desc_chars": len(str(meta.get("description") or ""))
-        + len(str(meta.get("when_to_use") or "")),
-    }
-
-
-def skills_on_disk() -> dict[str, dict]:
-    """Map skill name -> {group, scope, conditional} across BOTH skill trees.
+def skills_on_disk() -> dict[str, _skill_inventory.Skill]:
+    """Map skill name -> skill, across BOTH trees.
 
     ``skills/<group>/<name>/`` deploys to user scope and is offered in every
     session on this machine; ``.claude/skills/<name>/`` is read in place at
@@ -151,23 +126,11 @@ def skills_on_disk() -> dict[str, dict]:
     transcripts rather than disk -- which is what made the gap easy to miss.
 
     Name is the key because Claude Code addresses a skill by name alone, and
-    ``lint-skill-scopes.py`` enforces that the two trees never share one.
+    ``lint-skill-scopes.py`` enforces that the two trees never share one. The
+    walk itself moved to ``_skill_inventory`` when skill-overlap.py needed the
+    same records; keying by name is this caller's choice, not the module's.
     """
-    out = {}
-    for group in sorted(p for p in (REPO / "skills").iterdir() if p.is_dir()):
-        for d in sorted(p for p in group.iterdir() if p.is_dir()):
-            meta = _skill_meta(d)
-            if meta is not None:
-                out[d.name] = {"group": group.name, "scope": "user", **meta}
-    project_root = REPO / ".claude" / "skills"
-    if project_root.is_dir():
-        for d in sorted(p for p in project_root.iterdir() if p.is_dir()):
-            meta = _skill_meta(d)
-            if meta is not None:
-                # No group segment exists at this scope -- the tree is flat,
-                # which is what Claude Code's one-level discovery requires.
-                out[d.name] = {"group": None, "scope": "project", **meta}
-    return out
+    return _skill_inventory.by_name()
 
 
 def scan_transcripts() -> list[dict]:
@@ -343,7 +306,7 @@ def cmd_coverage(args):
     rows = []
     for name in sorted(disk):
         info = disk[name]
-        project = info["scope"] == "project"
+        project = info.scope == "project"
         denom = nsessions_here if project else nsessions
         listed = agg["listed_here"][name] if project else agg["listed"][name]
         # Machine-wide listings a project-scope skill can no longer earn.
@@ -357,11 +320,11 @@ def cmd_coverage(args):
         rows.append(
             {
                 "skill": name,
-                "group": info["group"],
-                "scope": info["scope"],
+                "group": info.group,
+                "scope": info.scope,
                 "sessions_possible": denom,
                 "listed_elsewhere": elsewhere,
-                "conditional": info["conditional"],
+                "conditional": info.conditional,
                 "listed_in": listed,
                 "activations": agg["delta_clean"][name],
                 "reload_deltas": agg["delta"][name] - agg["delta_clean"][name],
@@ -375,7 +338,7 @@ def cmd_coverage(args):
     if args.json:
         print(json.dumps({"sessions": nsessions, "rows": rows}, indent=2))
         return
-    nproject = sum(1 for i in disk.values() if i["scope"] == "project")
+    nproject = sum(1 for i in disk.values() if i.scope == "project")
     print(
         f"{nsessions} sessions with a recorded listing, {len(disk)} skills on disk"
     )
@@ -449,7 +412,7 @@ def _annotate(flag: str, elsewhere: int) -> str:
 def _verdict(info, listed, chosen, agg, name, possible):
     if possible < MIN_SESSIONS:
         return ""
-    if info["conditional"]:
+    if info.conditional:
         if listed:
             # It carries a glob *now*. Those listings predate the glob --
             # five skills moved unconditional -> conditional in one pass --
@@ -529,7 +492,7 @@ def cmd_listing(args):
     print("-" * 80)
     for proj, v in sorted(by_project.items(), key=lambda kv: -kv[1]["max_chars"]):
         print(f'{proj:<52}{v["n"]:>9}{v["max_count"]:>10}{v["max_chars"]:>9}')
-    unconditional = {n for n, i in disk.items() if not i["conditional"]}
+    unconditional = {n for n, i in disk.items() if not i.conditional}
     ever = set().union(*(v["names"] for v in by_project.values())) if by_project else set()
     missing = sorted(unconditional - ever)
     # Absence means different things at the two scopes, so they are reported
@@ -541,8 +504,8 @@ def cmd_listing(args):
     here_n = next(
         (v["n"] for k, v in by_project.items() if k.lower() == PROJECT_KEY), 0
     )
-    missing_user = [m for m in missing if disk[m]["scope"] == "user"]
-    missing_proj = [m for m in missing if disk[m]["scope"] == "project"]
+    missing_user = [m for m in missing if disk[m].scope == "user"]
+    missing_proj = [m for m in missing if disk[m].scope == "project"]
     print()
     if len(withlisting) < MIN_SESSIONS:
         print(
