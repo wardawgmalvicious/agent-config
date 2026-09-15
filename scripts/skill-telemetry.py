@@ -468,7 +468,7 @@ def _verdict(info, listed, chosen, agg, name, possible):
             " never once used"
         )
     if agg["tooluse"][name] == 0 and agg["slash"][name] >= SLASH_FLOOR:
-        return "SLASH-ONLY  reached by name only; description never matched"
+        return "SLASH-ONLY  never model-invoked; description unmatched or untested"
     return ""
 
 
@@ -489,6 +489,10 @@ def legend():
         "         write or a link-claude run in the same session can explain.\n"
         "         A raw delta count over-reports badly in this repo.\n"
         "slash  = <command-name> expansions;  tool = Skill-tool dispatches.\n"
+        "SLASH-ONLY is a question, not a defect: the description has either\n"
+        "         never matched a prose request or never been given one. For\n"
+        "         a skill whose documented entry is typing its name -- this\n"
+        "         repo's pipeline steps -- the second is the likelier answer.\n"
         "usage  = ~/.claude.json skillUsage, lifetime, never reset.\n"
         "No flag recommends deleting anything -- see `verdict` in this file."
     )
@@ -579,8 +583,9 @@ def cmd_listing(args):
 
 def cmd_triggers(args):
     """Slash vs auto, per skill. A slash-only skill is a description that
-    is not earning its trigger -- the user reached for it by name because
-    the model never offered it."""
+    has never earned its trigger -- either it does not match how requests
+    are phrased, or no request has been phrased, which for a skill run
+    deliberately as a pipeline step is the likelier reading."""
     disk = skills_on_disk()
     sessions = scan_transcripts()
     agg = aggregate(sessions)
