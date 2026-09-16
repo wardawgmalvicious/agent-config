@@ -36,7 +36,7 @@ Measured 2026-09-16 across the three repos.
 | Repo | Visibility | Briefs | Index | A brief is about |
 | --- | --- | --- | --- | --- |
 | this one | public | 6 open in `execute/`, plus `docs/audits/` | yes — `execute/README.md` | payload: skills, rules, hooks |
-| `machine-config` | private | 1, written 2026-09-16 | no | machine setup: shells, PATH, installed tooling |
+| `machine-config` | private | 1, in `execute/` | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
 | client estate repo | internal | 3 | no | estate work |
 
 **The brief shape is already converging without coordination.** All
@@ -44,10 +44,12 @@ three of the client repo's briefs carry a `**Status:**` line; two cite a
 measured or verified claim; the `machine-config` brief was written to
 the same shape from this repo. Nobody standardized that.
 
-**What is missing everywhere but here is the index**, and that is the
-part this repo learned the hard way — that ordering must live in exactly
-one file, that positions churn so filenames must not carry them, and
-that a spent brief left in a queue invites re-execution.
+**The index was missing everywhere but here**, and that is the part this
+repo learned the hard way — that ordering must live in exactly one file,
+that positions churn so filenames must not carry them, and that a spent
+brief left in a queue invites re-execution. `machine-config` closed that
+gap the same day, leaving the estate repo as the only one without an
+index.
 
 So the deliverable is **not a shared brief template.** A template would
 have to span skill authoring, shell configuration and estate work, and
@@ -194,9 +196,27 @@ Copilot-only and describes writing to it, never reading, and
 would have to be repeated in every repo including ones that do not
 exist yet — so it is now a paragraph in `claude/CLAUDE.md` § "Agent
 config source", a copy that is live only after
-`link-claude.ps1 -SkillGroups workflow,social,meta -Force` runs. The
-per-repo *index* pointer is the mirror of it at project scope, and is
-the user's to make in each repo.
+`link-claude.ps1 -SkillGroups workflow,social,meta -Force` runs — done
+and verified against the deployed file the same day. The per-repo
+*index* pointer is the mirror of it at project scope; `machine-config`
+made its own in `beb9e67`, and each remaining repo owns the rest.
+
+**Q1's stub has a worked instance, written by another session.**
+`machine-config` indexed its handoff directory on 2026-09-16 to exactly
+this shape — direction (inbound and local), visibility (private, and
+explicitly *not* a licence to skip scrubbing), a one-row index, and the
+lifecycle rules **linked here rather than restated**, so there is no
+second copy to drift. That answers Q1's "drifts three ways" objection in
+practice rather than in argument, and it was built before the invariants
+reference below exists, which is the harder test.
+
+It settles the **template** question the same way. `templates/` and
+`example/` were created there and removed unfilled: a template derived
+from one brief freezes a guess about which headings recur, and a
+fabricated example would carry invented measurement dates in a document
+culture whose rules turn on a claim having actually been checked. The
+committed brief is the reference shape instead. Revisit at three or four
+briefs, when the common headings can be observed rather than guessed.
 
 ## Open questions
 
@@ -230,9 +250,19 @@ repo — including the estate repo, whose subject matter is furthest from
 this one and is the real test of whether the core generalized or just
 described this repo in general-sounding words.
 
+Two corrections to that criterion. It is **one file plus one command**:
+the in-repo index answers what is open *here*, and
+`ls ~/handoff-inbox/<repo>/` answers what has been routed here and not
+yet triaged. And `machine-config` became testable on 2026-09-16, so the
+estate repo is the only leg still blocked.
+
 ## Dependencies
 
-- `machine-config/docs/handoffs/gh-account-path-shim.md` is the first
-  instance and is currently unindexed. Whatever lands should index it.
+- **Settled 2026-09-16.** The first instance moved to
+  `machine-config/docs/handoffs/execute/gh-account-path-shim.md` and is
+  indexed by a stub written to this brief's Q1 shape, with that repo's
+  `CLAUDE.md` pointing at it. Verified here against the three commits
+  (`d5476c9`, `d53310a`, `beb9e67`) and the files themselves, rather
+  than taken on report.
 - No dependency on the shim brief's *outcome* — this is about the
   convention, and stands whether that change is made or declined.
