@@ -510,6 +510,12 @@ deployed anywhere and loads only in sessions inside this repo.
   2026-09-02 on 2.1.252.
 - **Rules** (`claude/rules/*.md`) have no `name` or `description`, only
   `paths:` — they auto-load when a matching file enters session scope.
+  A rule therefore cannot govern **creating** a file: activation is
+  keyed to `Read` (§ "Validating a change"), and the first file in a
+  directory has nothing matching to read. Guidance about *making*
+  something needs a skill description, which matches intent, or a
+  hook. Reasoned 2026-09-16 from the 2026-09-01 measurement; not
+  separately measured.
 - **Hooks** (`claude/hooks/*.sh`) fire on events registered in
   `claude/settings.json`. Their commands are hardcoded to
   `$HOME/.claude/...` and only resolve because the link script
