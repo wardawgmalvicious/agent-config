@@ -274,6 +274,14 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
   `Test-X $a -or Test-X $b` binds `-or` and everything after it as
   positional args to the first call, and the guard fails open. Wrap
   each call: `(Test-X $a) -or (Test-X $b)`.
+- A comparison whose **left operand is a collection** — `$arr -eq $x`
+  returns the matching *elements*, not a boolean, and no match returns
+  an empty array that is falsy, so a malformed comparison is
+  indistinguishable from a legitimate negative. Coerce to a scalar
+  first, or use `-contains` / `-in`, which always return a boolean.
+  `-match` behaves the same way and additionally leaves `$Matches`
+  unpopulated. `PSPossibleIncorrectComparisonWithNull` catches only
+  the `$null` slice.
 - `Write-Host` for data. It writes to the host, not the pipeline; use
   `Write-Output` for values and reserve `Write-Host` for the deliberate
   human-facing status lines described above.
