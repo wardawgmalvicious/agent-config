@@ -61,7 +61,7 @@ SETTINGS_REL = ".claude/settings.json"
 # required to be. Anything else fails as unclassified -- see the module
 # docstring.
 PLATFORM_GROUPS = {"fabric", "powerbi"}
-BEHAVIOURAL_GROUPS = {"workflow", "social"}
+BEHAVIOURAL_GROUPS = {"workflow", "social", "meta"}
 
 # The one value this repo uses. Kept as a constant so a deliberate policy
 # change is one edit here plus the CLAUDE.md line, rather than a drifting

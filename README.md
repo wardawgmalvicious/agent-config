@@ -75,13 +75,15 @@ rearranging the root.
 
 ### Shared content
 
-- [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, and the two
-  repo-general behavioral verbs (`code-review`, `commit`). Consumed by
-  Claude Code and GitHub Copilot. See
+- [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, the
+  repo-general behavioral verbs (`code-review`, `commit`, `land`,
+  `prune-branches`) and the `meta` group (`learn`), whose subject is the
+  agent payload itself and which is never vendored to Copilot. Consumed
+  by Claude Code and GitHub Copilot. See
   [skills/README.md](skills/README.md).
 
 The skills that maintain *this* repo — `author-skill`, `test-skill`,
-`learn`, `drift-audit`, `drift-handoff`, `drift-update`, `land` — are
+`drift-audit`, `drift-handoff`, `drift-update` — are
 deliberately **not** here. They live at project scope in
 `.claude/skills/`, deploy nowhere, and are covered in
 [CLAUDE.md](CLAUDE.md). Being payload is what `skills/` means, and they

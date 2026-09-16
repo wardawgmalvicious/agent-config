@@ -50,7 +50,7 @@ The removal also retires the `<USER>` placeholder, which existed only inside tho
 
 ```powershell
 # Reports drift on every run; writes only with -GlobalMcp
-./scripts/link-claude.ps1 -SkillGroups workflow,social -GlobalMcp
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -GlobalMcp
 ```
 
 It backs the file up, replaces the top-level `mcpServers` key, and **prunes servers this template does not declare** — leaving every other key in `~/.claude.json` untouched. Two things follow from that:

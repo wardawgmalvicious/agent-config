@@ -1,0 +1,16 @@
+This group is never vendored into a GitHub Copilot payload.
+
+Read by scripts/copy-copilot.ps1, which excludes a marked group from
+-SkillGroups entirely — including a bare run, which otherwise selects
+every group — and by scripts/lint-frontmatter.py, which allows an active
+`model:` key here because the ban on it exists only for Copilot's sake.
+
+The marker is a file rather than a list in either script so the two
+cannot drift apart: there is one fact, it lives in the group directory,
+and both readers resolve it from there. A new group opts out by adding
+this file; nothing else needs editing.
+
+Why this group. `skills/meta/` holds skills whose subject is the agent
+configuration itself, rather than the user's code or repo. Copilot keeps
+its own payload in a different tree filled by a different script, so a
+skill that edits Claude's payload has nothing to act on there.

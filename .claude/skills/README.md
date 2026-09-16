@@ -1,13 +1,13 @@
 # This repo's own maintenance skills
 
-Six skills that operate on `agent-config` itself. They live here at
+Five skills that operate on `agent-config` itself. They live here at
 **project scope** rather than in [skills/](../../skills/), and the
 distinction is not filing — it is what the two directories mean.
 
 `skills/` is **payload**: content deployed elsewhere, by
 `scripts/link-claude.ps1` into `~/.claude/skills` as one junction per
 skill, or by `scripts/copy-copilot.ps1` into a client repo's
-`.github/skills` as committed files. These seven are not payload. Their
+`.github/skills` as committed files. These five are not payload. Their
 whole subject is this repo's own structure — its groups, its linter, its
 handoff queue, its audit ledger — so outside this working tree they have
 nothing to act on.
@@ -40,9 +40,11 @@ Being here means:
   deploy script can see the first case — `link-claude.ps1` never reads
   this directory, correctly, since nothing here deploys.
 
-`/commit` and `/code-review` are the two that stayed in
-[skills/workflow/](../../skills/workflow/): both are useful in any repo,
-so both remain deployable.
+The deployed groups are the counter-case: useful in any repo, so
+deployable. `/commit` and `/code-review` never left
+[skills/workflow/](../../skills/workflow/); `/land` came back to it and
+`/learn` left for [skills/meta/](../../skills/meta/), for which see the
+last section.
 
 ## The skills
 
@@ -67,10 +69,6 @@ so both remain deployable.
   context, so it runs cold like `/drift-update` instead of depending on
   the authoring run. Skills only; subagents and hooks keep the manual
   procedure in [tests/](../../tests/).
-- [learn/](learn/) — "learn!": capture a session learning into the
-  skill / rule / CLAUDE.md that should have covered it. Auto-detects
-  which guidance was in use, checks existing coverage, verifies against
-  docs, proposes a diff for approval, hands off to `/commit`.
 - [drift-audit/](drift-audit/) — audit registered upstream docs sources
   for skill staleness, drift in existing skills, new-skill candidates,
   and MCP/tooling additions. Findings only — no edits. Sources are a
@@ -97,6 +95,9 @@ so both remain deployable.
   never from the conversation, which is what keeps `drift-handoff`'s
   cold-read contract honest: a brief that can't be executed without
   opening the audit report is reported as a brief-format defect.
+
+## The two that left
+
 `land` was here too, and **moved back to
 [skills/workflow/](../../skills/workflow/land/) on 2026-09-13** — the
 move this file predicted. The reason recorded for demoting it did not
@@ -108,4 +109,34 @@ route rather than a fallback, and its only real use was in a client
 repo ten hours before the demotion. Project scope put it in the one
 repo whose convention is to commit straight to `main` and never open a
 PR, and removed it from the repos that do. The dependency argument does
-not apply to it; the other six are repo-specific in a way it never was.
+not apply to it.
+
+`learn` **moved to [skills/meta/](../../skills/meta/learn/) on
+2026-09-15**, and its demotion was the more costly mistake of the two,
+because the thing it broke is silent. `learn` was filed here on the
+reasoning that its *destination* is this repo's payload. True, and
+beside the point: a learning is produced wherever the problem was hit,
+which is usually a client repo, and project scope meant `/learn` was
+not in that session's listing at all. Nothing reports a learning that
+was never captured. The evidence is
+`~/handoff-inbox/2026-09-15-kusto-streaming-and-warehouse-git-serialization.md`,
+nine Fabric learnings whose preamble diagnoses it directly: "`/learn`
+is project scope and fires only in sessions inside `agent-config`. This
+arrived from a client repo."
+
+It is payload now because it carries a **mode split** rather than a
+repo assumption — edit mode inside this checkout, note mode everywhere
+else, writing to `~/handoff-inbox/` instead of editing. It went to a new
+`skills/meta/` group rather than `workflow/` because its subject is the
+agent payload rather than the user's repo — the same subject as the five
+here, differing only in needing to run everywhere. The group's
+`.no-copilot` marker is what lets it **keep** its `model: fable` pin as
+deployed payload.
+
+**The general lesson for this directory**, paid for twice: the test for
+project scope is *where the skill runs*, not *where its output lands*.
+`land` was filed here for its dependency and `learn` for its
+destination; both were reasons that a skill's own body, not its scope,
+should answer. The remaining five act on this working tree's structure
+— its groups, its linter, its queue, its ledger — which is the only
+thing that has held.

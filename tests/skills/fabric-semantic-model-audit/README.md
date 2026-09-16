@@ -71,7 +71,7 @@ automated, and the script's one heuristic says so at the point it prints.
 What it does, and why each part is the way it is:
 
 - **Deploys project-scoped, never into user scope.** The obvious form —
-  `-SkillGroups workflow,fabric -Force` — pushes 29 skills into
+  `-SkillGroups workflow,social,meta,fabric -Force` — pushes 29 skills into
   `~/.claude/skills`, visible to *every session on this machine* until a
   restoring run happens; a forgotten restore is exactly the 2026-08-31
   failure. None of it is necessary: **project scope only adds names user

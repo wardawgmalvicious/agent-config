@@ -84,7 +84,7 @@ PHASES = ("activation", "behaviour", "real-use")
 # body edit changes what the skill DOES and Phase B is the test. Project
 # scope (.claude/skills/) is behavioural by construction -- every skill
 # there is this repo's own operating procedure.
-BEHAVIOURAL_GROUPS = {"workflow", "social"}
+BEHAVIOURAL_GROUPS = {"workflow", "social", "meta"}
 
 # Platform skills that are behavioural despite their group: each has a
 # guard or a procedure and a fixture suite under tests/ proving it. Add a

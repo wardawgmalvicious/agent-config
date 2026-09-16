@@ -46,8 +46,8 @@ deliberate exception — it sits in `.vscode/` next to the live file
 because that is exactly where it deploys.
 
 `.claude/skills/` is that third category too, and is the one place where
-it holds *skills* rather than settings. Six skills live there —
-`author-skill`, `test-skill`, `learn`, `drift-audit`, `drift-handoff`,
+it holds *skills* rather than settings. Five skills live there —
+`author-skill`, `test-skill`, `drift-audit`, `drift-handoff`,
 `drift-update` — because their whole subject is maintaining this
 repo's own payload, so they can never usefully fire anywhere else. They
 are authored at project scope, deployed nowhere, and reached by no
@@ -67,8 +67,56 @@ treats a confirmed `gh` as a first-class route rather than a fallback,
 and its one real use was in a client repo ten hours before the
 demotion landed. Project scope confined it to the repo whose own
 convention is to commit straight to `main` and never open a PR — the
-only repo where it has nothing to do. The other six are repo-specific in
-a way it never was.
+only repo where it has nothing to do.
+
+**`learn` moved to a new `skills/meta/` group on 2026-09-15**, for the
+same shape of reason and a sharper symptom. The 2026-09-09 split filed
+it with the maintenance skills because its *destination* is this repo's
+payload — but that is where the edit lands, not where the learning
+happens. A learning is produced in the session that hit the problem,
+which is routinely a client repo, and project scope meant `/learn` was
+not in that session's listing at all. The failure was silent in the
+worst way: nothing is reported, the learning is simply not captured.
+It surfaced on 2026-09-15, in the inbox note
+`2026-09-15-kusto-streaming-and-warehouse-git-serialization.md` —
+nine Fabric learnings out of a client estate, whose preamble records
+the diagnosis itself: "`/learn` is project scope and fires only in
+sessions inside `agent-config`. This arrived from a client repo."
+
+`learn` now carries a **mode split** rather than a repo assumption.
+Inside this checkout it edits the payload and hands off to `/commit`,
+exactly as before. Anywhere else it does the whole analysis — what was
+learned, which guidance owns it, coverage, verification — and writes a
+note to `~/handoff-inbox/` instead of editing, which is the same route
+the Copilot instruction already sends client-window sessions down. So
+the inbox gains a second writer and keeps one reader.
+
+**Why a new group rather than `workflow/`.** The split is subject
+matter: `commit`, `code-review`, `land` and `prune-branches` act on
+*your repo*, while `learn` acts on *the agent payload* — the same
+subject as the five that stayed at project scope. `learn` is simply the
+one payload-maintenance skill that has to run everywhere, because
+learnings happen everywhere. The group also earns its keep mechanically:
+it carries a **`.no-copilot` marker file**, so `copy-copilot.ps1`
+excludes it from every run including a bare one, and
+`lint-frontmatter.py` reads that same file to allow an active `model:`
+key. That is what lets `learn` keep `model: fable` — the `model:` ban
+exists only for Copilot's sake, and now asks the question it actually
+means (*can Copilot reach this file?*) rather than *which tree is it
+in*, which over-applied the ban to `social` as well. The marker is a
+file rather than a list in each script precisely so the two cannot
+disagree; see [skills/meta/.no-copilot](skills/meta/.no-copilot).
+
+**The cost is a prune hazard, and it is the reason every documented
+invocation had to change.** `-SkillGroups` deletes what it does not
+list, so a stale `workflow,social` string does not merely fail to deploy
+`meta` — it removes it. Sixteen command strings across ten files carried
+the old form; the live ones were all updated to `workflow,social,meta`
+on 2026-09-15. The spent briefs under `docs/audits/` were deliberately
+left alone, being a dated ledger rather than instructions.
+
+That leaves the remaining five repo-specific in a way neither `land`
+nor `learn` was.
 
 `.claude/settings.json` holds more than servers and permissions: a
 `skillOverrides` block collapses **every** platform skill description to
@@ -85,7 +133,7 @@ than by anything that would catch it next time.
 The check also catches a value that is not `name-only`, an override left
 behind by a rename, and a **new skill group** it cannot classify — add one
 to `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS` in that script, since
-`workflow` and `social` must *not* be collapsed. Collapsing is deliberate,
+`workflow`, `social` and `meta` must *not* be collapsed. Collapsing is deliberate,
 and stays even
 though the workflow-only prune already keeps those skills out of
 `~/.claude/skills` — it keeps them auditable from this repo and holds
@@ -169,25 +217,26 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 ```
 
 ```powershell
-# THIS MACHINE'S DEFAULT — always use this form. Deploys the workflow
-# and social groups only (code-review, commit; linkedin-highlights);
-# fabric and powerbi are PRUNED from ~/.claude/skills, and so is social
-# if it is left off the list. This repo's own maintenance skills are NOT
-# here and are not deployed by anything — see .claude/skills/ above.
+# THIS MACHINE'S DEFAULT — always use this form. Deploys workflow, social
+# and meta only (code-review, commit, land, prune-branches;
+# linkedin-highlights; learn); fabric and powerbi are PRUNED from
+# ~/.claude/skills, and so is any listed group left off the list.
+# The five skills in .claude/skills/ are NOT here and are deployed by
+# nothing — see .claude/skills/ above.
 # -Force also pushes claude/CLAUDE.md and claude/settings.json, and is
 # what allows deleting a target-only file under agents/hooks/rules/mcp.
 # Everything except skills/ deploys by copy, so a repo edit to a rule,
 # hook, agent or MCP template is NOT live until this runs.
-./scripts/link-claude.ps1 -SkillGroups workflow,social -Force
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force
 
 # Same, when neither copied file has changed.
-./scripts/link-claude.ps1 -SkillGroups workflow,social
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
 
 # Also reconcile user-scope MCP servers in ~/.claude.json down to the three
 # in claude/mcp/.mcp.global.template.json, PRUNING everything else there.
 # Off by default even under -Force; every run without it just reports the
 # drift. Re-run after a Docker Desktop update, which re-adds MCP_DOCKER.
-./scripts/link-claude.ps1 -SkillGroups workflow,social -GlobalMcp
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -GlobalMcp
 
 # Partial payload: push only the Fabric skills into a client repo's .claude,
 # without this machine's agents, hooks, or rules.
@@ -202,8 +251,9 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 
 # Copilot's user scope on THIS machine, the only route there since every
 # Claude root was switched off for Copilot on 2026-09-09. workflow only,
-# never social. Copies, so re-run after editing commit, code-review or a
-# ported rule.
+# never social. meta CANNOT be named here — it carries a .no-copilot
+# marker and the script refuses it, bare runs included. Copies, so re-run
+# after editing commit, code-review or a ported rule.
 ./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow
 
 # This repo's GitHub settings vs .github/repo-settings.json. Check is the
@@ -255,12 +305,17 @@ Linting gotchas worth keeping:
   `(no files to check) Skipped`, which scans as a pass, so widening one
   is not self-verifying. Prove it against a path that must match and a
   path that must not:
-  `pre-commit run lint-skills --files .claude/skills/learn/SKILL.md`
-  (expect `Passed`) and `... --files skills/learn/SKILL.md` (expect
-  `Skipped`). Both were run when the second arm was added, 2026-09-09,
-  and again 2026-09-13 — the example named `land` until it moved to
-  `skills/workflow/`, which would have left it asserting a path that no
-  longer exists.
+  `pre-commit run lint-skills --files .claude/skills/author-skill/SKILL.md`
+  (expect `Passed`) and `... --files skills/author-skill/SKILL.md`
+  (expect `Skipped`). Both were run when the second arm was added,
+  2026-09-09, and re-proved on each rewrite since. **This example has
+  now been invalidated twice by a scope move** — it named `land` until
+  2026-09-13 and `learn` until 2026-09-15, each time left asserting a
+  path that no longer existed. `author-skill` is chosen because its
+  whole subject is this repo's own authoring conventions, so it is the
+  project-scope skill least likely to become payload; if it ever moves,
+  repoint this to whatever is still in `.claude/skills/` and re-run both
+  arms rather than trusting the text.
 - **Skill names are one flat namespace across both trees**, since Claude
   Code addresses a skill by name alone — no group segment, no scope
   qualifier. `scripts/lint-skill-scopes.py` enforces it, and runs over
@@ -290,6 +345,14 @@ lands determines when it goes live:
 | `claude/settings.json` | `~/.claude/settings.json` | key-level merge, target-only keys kept | after `scripts/link-claude.ps1 -Force` |
 | `claude/mcp/.mcp.global.template.json` | `~/.claude.json` (top-level `mcpServers` only) | single-key reconcile, prunes | after `scripts/link-claude.ps1 -GlobalMcp` |
 | `copilot/instructions/` | `<repo>/.github/instructions` | file copy (`scripts/copy-copilot.ps1`) | in a teammate's clone, once committed there |
+
+`scripts/copy-copilot.ps1` also vendors `skills/<group>/` into a
+`.github/skills` or `~/.copilot/skills` payload — **except a group
+carrying a `.no-copilot` marker file**, which it excludes from every
+run, a bare one included, and refuses by name if asked for explicitly.
+`skills/meta/` is the only marked group. That marker is the same file
+`scripts/lint-frontmatter.py` reads to allow an active `model:` key, so
+the exclusion and the exemption cannot drift apart.
 
 **`settings.json` is a merge, not a copy, and `-Force` cannot lose a
 runtime key.** That row read "plain copy, key-level merge" until
@@ -482,21 +545,25 @@ deployed anywhere and loads only in sessions inside this repo.
 
 This repo's own operating procedure lives in `.claude/skills/` at
 project scope — these are not generic helpers, and outside this repo
-they have nothing to act on. `/commit` and `/code-review` are the
-exceptions and stay deployable in `skills/workflow/`, being useful in
-any repo:
+they have nothing to act on. `/commit`, `/code-review`, `/land` and
+`/learn` are the exceptions and stay deployable — the first three in
+`skills/workflow/`, `/learn` in `skills/meta/` — being useful in any
+repo:
 
 - `/author-skill` — new skill end to end: coverage check, naming, doc
   drilling, a filled brief in `docs/handoffs/`, then the draft
   and post-draft checks. Stops at a linted draft; writes no fixtures
   and does not commit.
-- `/learn` — fold a session learning into guidance that already
-  exists (a `SKILL.md`, a rule, `claude/CLAUDE.md`).
 - `/drift-audit` → `/drift-handoff` → `/drift-update` → `/commit` —
   the upstream-staleness pipeline. The audit is findings-only; the
   handoff writes briefs to `docs/audits/<date>/<source-id>/`; the
   update executes them in numbered order and stamps each done.
 - `/commit` — split the working tree into logical commits.
+- `/learn` — fold a session learning into guidance that already
+  exists (a `SKILL.md`, a rule, `claude/CLAUDE.md`). Payload since
+  2026-09-15, so it also fires in client-repo sessions; there it
+  analyses the learning and writes a note to `~/handoff-inbox/`
+  instead of editing. In a session *here* it behaves as it always did.
 
 `docs/audits/` is a **tracked, dated ledger** — one directory per run,
 committed when written and kept after it is spent. See
@@ -517,11 +584,14 @@ individually as each is spent, and cross-linked by filename, so the
 filename has to stay stable and the ordering lives in the queue file.
 
 **Learnings from other repos arrive through `~/handoff-inbox/`**, a
-local folder in no repo. Copilot sessions in client windows write their
-notes there instead of editing this repo — a hand-written instruction at
+local folder in no repo. It has **two writers and one reader**. Copilot
+sessions in client windows write their notes there instead of editing
+this repo — a hand-written instruction at
 `~/.copilot/instructions/cross-repo-handoffs.instructions.md` tells
-them to — and a session here turns a note into a brief with
-`/author-skill`, or into an edit with `/learn`. Notes are raw: they
+them to — and since 2026-09-15 `/learn` writes there too whenever it
+fires outside this checkout, which is its whole note mode. Either way a
+session here turns a note into a brief with `/author-skill`, or into an
+edit with `/learn` in its edit mode. Notes are raw: they
 carry the names of the workspace they came from, so nothing is copied
 out of one verbatim, and client evidence is cited by kind, as the
 handoff template's Sources guidance requires. Remove a note once its
@@ -536,8 +606,8 @@ session open on a client repo wrote a brief straight into
 
 **Skill saves are live; nothing else is** — but *how far* they reach now
 depends on which tree they are in, and the difference is the whole point
-of the split. A skill under `skills/workflow/` is junctioned into user
-scope, so an edit changes the payload for **every session on this
+of the split. A skill under any deployed group — `skills/workflow/`,
+`skills/social/`, `skills/meta/` — is junctioned into user scope, so an edit changes the payload for **every session on this
 machine the moment it hits disk**, committed or not. A skill under
 `.claude/skills/` is live just as immediately, and only in **sessions
 inside this repo**. `rules`, `hooks`, `agents` and `mcp` were junctions
@@ -548,9 +618,12 @@ Two conversions have therefore eaten most of the hazard this section was
 written for. The 2026-09-02 copy conversion took `rules`/`hooks`/
 `agents`/`mcp` out of it, and the 2026-09-09 scope split took seven of
 the nine workflow skills out of user scope — so a mid-edit save to
-`/learn` or `/drift-audit` can no longer reach a client-repo session at
-all. What is left at machine-wide blast radius is `code-review`,
-`commit` and — since it moved back on 2026-09-13 — `land`.
+`/author-skill` or `/drift-audit` can no longer reach a client-repo
+session at all. What is left at machine-wide blast radius is
+`code-review`, `commit`, `prune-branches`, and the two that moved back:
+`land` on 2026-09-13 and `learn` on 2026-09-15. Read that list out of
+the deployed groups rather than from here — it has been wrong twice,
+and both times because a skill moved *into* them.
 
 Every commit here is on `main`, and **no merge commit has ever existed**
 (measured 2026-09-02, 324 commits in). The first branch —
@@ -574,10 +647,13 @@ one worked example the payload names. Edit the two together.
 Reconsider if a second silent collision between concurrent sessions
 happens anyway.
 
-Note which skills that trigger actually covers, which the 2026-09-09
-scope split narrowed to two and `land`'s return on 2026-09-13 widened
-back to three. It is `code-review`, `commit` and `land` — the only
-skills junctioned into user scope, so each `SKILL.md` save is in
+Note which skills that trigger actually covers: whatever the deployed
+groups hold at the time, since that is the set junctioned into user
+scope. The 2026-09-09 split narrowed it to two, `land` widened it on
+2026-09-13 and `learn` on 2026-09-15 (into its own `skills/meta/`), and
+`prune-branches` was authored in — so enumerate the directories rather
+than trusting a list here:
+`ls skills/workflow skills/social skills/meta`. Each `SKILL.md` save in it is in
 every session's listing before the fixtures, the queue row and the rule
 catch up. A **platform** skill is pruned from user scope and junctioned
 nowhere, so authoring one changes no session's payload at any point and
@@ -669,12 +745,12 @@ results, in the order they matter:
 **The 2026-09-09 scope split reopens that last bullet, and it has not
 been re-measured.** The dichotomy held because every workflow skill was
 at user scope, where the shadowing rule made a worktree copy inert. The
-six skills now in `.claude/skills/` are at project scope *only* — no
+five skills now in `.claude/skills/` are at project scope *only* — no
 user-scope copy exists to outrank them — so a worktree plausibly does
 isolate them, which would be the in-between case the bullet says cannot
-exist. Treat the conclusion as covering `code-review`, `commit` and
-`land`, and re-run the worktree probe before relying on it for the
-other six.
+exist. Treat the conclusion as covering everything in
+the deployed groups, and re-run the worktree probe before relying on it
+for the five that are not.
 
 Two supporting facts, both measured the same day. `-SkillGroups` does
 **not** prune user scope when `-ClaudeDir` is given — the prune loop
@@ -788,7 +864,7 @@ one or the other accordingly rather than restoring the duplicate.
   GitHub Copilot dispatching the skill as a slash command, for which see
   below. The split is that the ban is a Copilot accommodation and Copilot
   cannot reach the project-scope tree from either direction:
-  `scripts/copy-copilot.ps1` selects out of `skills/`, so those seven are
+  `scripts/copy-copilot.ps1` selects out of `skills/`, so those five are
   never vendored into a `.github/skills` payload, and all four VS Code
   profiles on this machine set `".claude/skills": false` in
   `chat.agentSkillsLocations`, so the beside-the-workspace-root
@@ -796,17 +872,31 @@ one or the other accordingly rather than restoring the duplicate.
   `scripts/lint-frontmatter.py` enforces exactly that split, and its two
   arms are proved the way a `files:` pattern is — one file, copied to both
   paths, must fail at `skills/workflow/…` and pass at `.claude/skills/…`.
-  Of the six, `learn`, `author-skill` and `drift-audit` read
-  `model: fable` and the other three `model: inherit` — the split is where
+  Of the five, `author-skill` and `drift-audit` read `model: fable` and
+  the other three `model: inherit` — the split is where
   irreducible judgment sits rather than where the checklist is longest,
-  so routing a learning to the right file and wording a `description`
-  get the better model while executing a numbered brief does not.
+  so wording a `description` gets the better model while executing a
+  numbered brief does not.
   `drift-update` and `test-skill` are deliberately unpinned on those
   grounds, and `drift-update` most deliberately: it hands every decision
   or investigation brief back rather than executing it, so its judgment
   is externalized by design. Fable is the Opus tier at twice the price
   (measured $10/$50 per MTok against $5/$25 on 2026-09-12), which is what
   makes this a per-skill call and not a default.
+
+  **`learn` keeps `model: fable` as deployed payload**, which is the
+  point of `skills/meta/` carrying a `.no-copilot` marker. The ban on an
+  active `model:` key exists only because Copilot cannot resolve one, so
+  as of 2026-09-15 `lint-frontmatter.py` asks whether Copilot can reach
+  the file — `reaches_copilot()` — rather than which tree it sits in.
+  `.claude/skills/` is unreachable by tree; a marked group is
+  unreachable because `copy-copilot.ps1` excludes it from every run,
+  bare ones included, and throws a named error if one is requested. Both
+  arms were proved on 2026-09-15: the same file passes at
+  `skills/meta/learn/SKILL.md`, fails when copied to
+  `skills/workflow/`, and fails again at its own path with the marker
+  temporarily removed — which is what shows the marker, not the group
+  name, is doing the work.
   The commented values under `skills/` are still the documentation they
   always were, `# model: inherit` everywhere except `commit`
   (`# model: sonnet`).
@@ -830,14 +920,16 @@ one or the other accordingly rather than restoring the duplicate.
   Current policy: the session default is `"effortLevel": "max"` in
   `claude/settings.json`. DMI is `false` everywhere (it is not used in
   this repo).
-  `effort` is `max` on the eight skills that drive this repo —
-  `code-review` and `land` in `skills/workflow/`, and `drift-audit`,
-  `author-skill`, `test-skill`, `learn`, `drift-update`,
-  `drift-handoff` in `.claude/skills/` — `xhigh` on `commit`,
-  and
-  left commented on every platform skill, which therefore inherits
-  `max`. No scope move has changed a pin — neither the 2026-09-09 split
-  nor `land` coming back on 2026-09-13: `effort` applies on both the
+  `effort` is `max` on every behavioural skill in both trees except
+  `commit`, which is `xhigh`, and left commented on every platform
+  skill, which therefore inherits `max`. **Don't restate the count
+  here** — it read "eight" while the real figure was ten, having missed
+  `prune-branches` and `linkedin-highlights` when each was authored.
+  Derive it:
+  `grep -rln "^effort: max" skills/ .claude/skills/`.
+  No scope move has changed an **`effort`** pin — not the
+  2026-09-09 split, not `land` in 2026-09-13, not `learn` in
+  2026-09-15: `effort` applies on both the
   slash and
   model-invocation paths and is scope-independent, so a project-scope
   skill keeps its floor exactly as a user-scope one does.
@@ -848,7 +940,7 @@ one or the other accordingly rather than restoring the duplicate.
   value shows (observed 2026-09-01: both copies of `settings.json`
   read `max` while the session ran at `xhigh`, switched by accident
   while browsing the level list). Whenever it sits below `max` the
-  seven pins start *raising* effort rather than matching it, which is
+  `max` pins start *raising* effort rather than matching it, which is
   exactly the *floor* they were written for. Platform skills stay
   unpinned **on purpose**: they auto-trigger alongside your real work,
   so an effort pin there governs your Fabric/Power BI turn rather than
@@ -919,7 +1011,7 @@ one or the other accordingly rather than restoring the duplicate.
   machine. Keep it lean: machine environment and pointers only. If
   guidance has a narrower trigger (a file type, a product area),
   prefer a path-scoped rule or a skill instead. After editing it,
-  re-run `./scripts/link-claude.ps1 -SkillGroups workflow,social -Force`
+  re-run `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`
   — never bare, see Commands — to push it to `~/.claude/CLAUDE.md`.
 
 ## Validating a change

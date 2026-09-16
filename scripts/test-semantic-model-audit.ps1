@@ -50,7 +50,7 @@
        here and the residual count is asserted to be zero.
 
     DEPLOYMENT IS PROJECT-SCOPED, ON PURPOSE. The obvious route --
-    `link-claude.ps1 -SkillGroups workflow,fabric -Force` -- pushes 29 skills
+    `link-claude.ps1 -SkillGroups workflow,social,meta,fabric -Force` -- pushes 29 skills
     into ~/.claude/skills, visible to every session on this machine until a
     restoring run happens; a forgotten restore is the 2026-08-31 failure.
     None of it is needed: project scope only ADDS names user scope lacks, and

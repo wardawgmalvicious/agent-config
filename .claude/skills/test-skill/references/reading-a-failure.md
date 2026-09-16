@@ -132,7 +132,7 @@ with the body ablated instead of the guard.
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
 `/author-skill` just wrote is invisible everywhere until
-`link-claude.ps1 -SkillGroups workflow,social` runs — absent from the
+`link-claude.ps1 -SkillGroups workflow,social,meta` runs — absent from the
 listing, `/<name>` answering `Unknown command` the way a conditional
 skill does cold, from a different cause. The group being deployed says
 nothing about the skill. Measured 2026-09-14 on `prune-branches`:

@@ -50,8 +50,35 @@ internal cross-references stay intact.
   this debris accumulating on the happy path, this cleans up what never
   took it.
 
-The six skills that maintain *this* repo — `author-skill`,
-`test-skill`, `learn`, `drift-audit`, `drift-handoff`,
+## Meta
+
+Skills whose subject is **the agent configuration itself**, rather than
+the user's code or repo. Split out of `workflow` on 2026-09-15, on the
+same reasoning that split out `social`: the group is a unit of
+deployment, and this one is deployed to Claude Code's user scope and to
+nothing else.
+
+It carries a [`.no-copilot`](meta/.no-copilot) marker file, which
+`scripts/copy-copilot.ps1` reads to exclude it from every run — a bare
+one included, where every other group is selected — and which
+`scripts/lint-frontmatter.py` reads to allow an active `model:` key,
+since the ban on that field exists only because Copilot cannot resolve
+it. One file, two readers, so the exclusion and the exemption cannot
+disagree.
+
+- [learn/](meta/learn/) — "learn!": capture a session learning into the
+  skill, rule or `CLAUDE.md` that should have covered it. Detects which
+  guidance was actually in use, checks existing coverage, verifies
+  against docs, and proposes a diff for approval — never edits silently.
+  Carries a **mode split**, because the guidance it edits lives in one
+  repo while learnings happen in every repo: inside the payload checkout
+  it edits and hands off to `/commit`; anywhere else it does the same
+  analysis and writes a note to `~/handoff-inbox/` rather than editing
+  outside the current workspace. Pinned `model: fable` — routing a
+  learning to the right file is the judgment the pin is for.
+
+The five skills that maintain *this* repo — `author-skill`,
+`test-skill`, `drift-audit`, `drift-handoff`,
 `drift-update` — are **not here**. They live at project
 scope in [.claude/skills/](../.claude/skills/), which no deploy
 script reaches, because they can only ever act on this working

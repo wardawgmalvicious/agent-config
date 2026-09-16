@@ -220,7 +220,7 @@ skill needs it — `workflow` and `social` are deployed already and
 is **new**, which has no junction until the standing form below runs once.
 
 ```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow,social,fabric   # or workflow,social,powerbi
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta,fabric   # or ...,powerbi
 ```
 
 `-SkillGroups` **prunes** — a group not listed is removed. This
@@ -228,7 +228,7 @@ machine's standing state is workflow and social only, so you are
 temporarily undoing a deliberate prune and must put it back:
 
 ```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow,social
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
 ls ~/.claude/skills | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
 ```
 

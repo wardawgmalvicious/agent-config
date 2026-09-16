@@ -16,7 +16,7 @@ into the deployed name: `~/.claude/skills` is a real directory holding
 **one junction per skill**, because Claude Code discovers a skill exactly
 one level under the skills root. The skill is live the moment the file
 lands — no `-Force` needed, since junctioned payload is the same file on
-both sides. A run must name `-SkillGroups workflow` on this machine; a
+both sides. A run must name `-SkillGroups workflow,social,meta` on this machine; a
 bare run re-links all 44 skills and silently undoes the platform-skill
 prune.
 

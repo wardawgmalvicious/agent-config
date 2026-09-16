@@ -34,7 +34,7 @@ a newly authored skill is invisible everywhere — absent from the
 listing, and `/<name>` answers `Unknown command`. Measured 2026-09-02:
 `land` was missing from a listing of 8 junctions immediately after its
 `SKILL.md` was written, and appeared only once the linker ran. On this
-machine the form is `./scripts/link-claude.ps1 -SkillGroups workflow,social`,
+machine the form is `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta`,
 **never bare** — see root `CLAUDE.md`.
 
 A **platform** skill is the exception that proves the rule: `fabric` and
