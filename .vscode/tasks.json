@@ -14,15 +14,17 @@
     "tasks": [
         {
             // The ONLY form of this command that should be run on this
-            // machine. Running it bare re-links all 37 platform skills
-            // and silently undoes the workflow,social prune -- it reports
-            // "Done. All links verified." either way. Happened
-            // 2026-08-31; see CLAUDE.md. -Force also pushes
-            // claude/CLAUDE.md and claude/settings.json, which deploy by
-            // copy rather than junction.
-            "label": "link-claude (workflow + social)",
+            // machine. Running it bare re-links every platform skill and
+            // silently undoes the prune -- it reports "Done. All links
+            // verified." either way. Happened 2026-08-31; see CLAUDE.md.
+            // -SkillGroups also PRUNES a group left off the list, so a
+            // stale form here does not merely fail to deploy a group, it
+            // deletes it: meta was added 2026-09-15 and this string had to
+            // change with it. -Force also pushes claude/CLAUDE.md and
+            // claude/settings.json, which deploy by copy not junction.
+            "label": "link-claude (workflow + social + meta)",
             "type": "shell",
-            "command": "./scripts/link-claude.ps1 -SkillGroups workflow,social -Force",
+            "command": "./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force",
             "detail": "Deploy the payload. NEVER run link-claude.ps1 bare.",
             "problemMatcher": []
         },
@@ -30,7 +32,7 @@
             "label": "verify skill prune held",
             "type": "shell",
             "command": "Get-ChildItem ~/.claude/skills -Name",
-            "detail": "Should list the seven workflow skills and nothing else.",
+            "detail": "Should list the deployed groups' skills and no fabric-/pbir-/pbid-/powerbi- prefix.",
             "problemMatcher": []
         },
         {
