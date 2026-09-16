@@ -124,6 +124,12 @@ mandatory `DBCC CHECKIDENT(..., RESEED)`):
 - **INSERT...SELECT over singleton INSERT...VALUES** at scale — singletons
   create tiny Parquet files. Remediate existing fragmentation with
   `CREATE TABLE T_Clean AS SELECT * FROM T; DROP TABLE T; EXEC sp_rename 'T_Clean', 'T';`
+- **Never put a hand-authored `.sql` inside a `*.Warehouse` folder.**
+  Fabric treats that folder as the serialization of the live warehouse,
+  so a script the warehouse does not contain is drift to be deleted —
+  13 of them (~3,300 lines) left a trunk in a single portal commit.
+  Keep them outside anything Fabric syncs. See the
+  `fabric-git-serialization` rule.
 - **Keep transactions short** to shrink the conflict window. Error 24556 / 24706
   = snapshot conflict → serialize and retry with exponential backoff.
   `PARQUET` / `CSV` / `JSONL` (JSONL April 2026). Needs Storage Blob Data Reader
@@ -196,6 +202,10 @@ Recycle bin are three separate mechanisms with three different windows — see
 
 
 `Latin1_General_100_BIN2_UTF8` — case-sensitive, binary. Case-insensitive alternative: `Latin1_General_100_CI_AS_KS_WS_SC_UTF8`. Use explicit `COLLATE` in comparisons if case-insensitive is needed.
+
+Because it is case-sensitive, **write built-in type names lowercase in
+item definitions** — `sysname`, never `SYSNAME`. See `coding-tsql` —
+*Casing*.
 
 ## Pipeline Integration
 
