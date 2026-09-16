@@ -245,6 +245,19 @@ None blocks drafting.
    than a wrong answer and dearer than reading a file yourself, so the
    rule should say *the answer is in another repo*, not *the answer is
    elsewhere*.
+5. **Nothing maps a commit back to the session that made it**, so the
+   notification most worth sending is the one that cannot be addressed.
+   Found while landing this brief: another session in this tree stamped
+   `learn` as tested in `401dd85`, this session edited `learn`'s body
+   minutes later and invalidated that stamp, and no message could be
+   routed. The address space is keyed to the **repo** — five sessions
+   all carried `agent-config-` — and the `ListAgents` ref is not the
+   transcript's session id either (`agent-config-a8 [62e667]` against a
+   transcript `cea8b1e2-…`, observed 2026-09-16), so neither identifier
+   correlates with a commit. Broadcasting to all five is exactly the
+   tax question 4 describes. A git trailer written by `/commit` naming
+   the session is the cheap candidate; whether that traceability earns
+   a line in every commit message is the real question.
 
 ## Not checked
 
