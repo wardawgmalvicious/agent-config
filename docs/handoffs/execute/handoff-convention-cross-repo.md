@@ -1,8 +1,11 @@
 # Brief: a cross-repo handoff convention
 
-**Status:** Open, written 2026-09-16. Nothing drafted. Four open
-questions below must be answered before anything is written, and one of
-them decides the artifact's form.
+**Status:** Open, written 2026-09-16. Nothing drafted. **Q1 and Q2 were
+answered the same day** — see [Decisions](#decisions--2026-09-16), which
+also records four findings that reframed Q1 and retracts one of this
+brief's own arguments. Q3 and Q4 remain open and neither blocks
+drafting: under the chosen form both are per-repo policy that the
+directory declares for itself.
 
 **Scope.** Generalize the handoff discipline this repo already runs to
 the other repos on this machine, which have started growing their own
@@ -111,23 +114,103 @@ A directory should say which of these it accepts. Today none does.
 - No change to `docs/audits/`. The queue-versus-ledger split here is
   already correct and documented.
 
-## Open questions — answer before drafting
+## Decisions — 2026-09-16
 
-1. **What form does the convention take?** A `README.md` in each repo's
-   handoff directory duplicates prose three ways and will drift, which
-   is the argument that killed this repo's second instruction file. A
-   path-scoped rule (`claude/rules/`) auto-loads when a brief is opened
-   in any repo and lives in one place — but it is guidance for a human
-   convention, which is not what rules have been used for. A `/handoff`
-   skill would be reachable everywhere, like `/learn`, and could write
-   the brief *and* update the index — but skills are verbs, and this may
-   not be one. **This is the question that decides everything else**,
-   and it is a genuine three-way call.
-2. **Does the inbox stay payload-only?** It is documented as such, with
-   two writers and one reader. A learning routed from the estate repo to
-   `machine-config` currently has nowhere to land, which is what
-   produced a direct cross-repo write on 2026-09-16. Widening it means a
-   second reader and a routing decision per note.
+Answered the day the brief was written, after checking four things the
+brief itself had not.
+
+**Four findings, in the order they moved the decision.**
+
+1. **This brief's own argument against the rule form was wrong, and is
+   retracted.** Q1 said a path-scoped rule "is guidance for a human
+   convention, which is not what rules have been used for." Three of the
+   eighteen rules are exactly that: `claude-config-scoping.md`,
+   `git-identity-scoping.md` and `vscode-scoping.md` each open with
+   *what belongs where*, and none is a language convention.
+2. **A harder blocker rules it out anyway, and this is the one worth
+   keeping.** `permissions.defaultMode` is `auto` at user scope, and
+   activation is keyed to the `Read` tool — auto mode prefers `cat`, so
+   a `paths:` rule is live but dormant through a whole session that
+   never `Read`s. And the trigger here is **writing** a brief, not
+   reading one: the case that produced this brief was a session writing
+   the first file into an empty `machine-config/docs/handoffs/`, where
+   nothing matching existed to read. A glob is structurally blind to it.
+3. **A fourth artifact already in production went uncounted.**
+   `~/.copilot/instructions/cross-repo-handoffs.instructions.md` already
+   encodes both of the two genuinely new rules above — inbound routing
+   to the inbox, and the scrubbing split ("record what you observed
+   plainly… a later session in the target repository decides what
+   survives into anything published"). It is hand-written, at user
+   scope, in no repo, versioned by nothing, and Copilot-only. So Q1 was
+   never "invent a form" — it is "where does that content live so it is
+   versioned and both harnesses see it."
+4. **The skill form has a measurable cost.**
+   `uv run --with pyyaml scripts/skill-overlap.py overlap --skill learn`
+   puts `author-skill + learn` at 32.88, the top pair across 56 skills.
+   A `/handoff` skill that writes a brief and updates an index lands
+   between those two and pushes that cluster higher.
+
+**Q1 — extend `/learn`, rather than any of the three forms proposed.**
+The trigger analysis favours the skill *mechanism*: a description is
+matched against intent, not against a file read, which is why `/learn`
+works where a rule would not. But `/learn` is already that skill, and
+already writes a dated cross-repo note. So the deliverable is three
+edits rather than a new artifact:
+
+- the eight invariants go in `skills/meta/learn/references/`, read on
+  invocation, at no listing cost;
+- the Copilot instruction is ported into `copilot/instructions/`, so it
+  stops being an unversioned hand-written file and gains the Claude side
+  it never had;
+- each repo's handoff directory gets a **stub** `README.md` carrying
+  direction, visibility and the index table — nothing else. The "drifts
+  three ways" objection was against duplicated *prose*; there is none to
+  duplicate once the contract lives in one place and the stub links it.
+
+**Q2 — the inbox widens, routed by a directory per destination.** A note
+lives under the repo it is addressed to; a session in that repo lists
+that one directory. That closes the gap which produced the direct
+cross-repo write on 2026-09-16.
+
+A destination *field* in a flat inbox was recorded here first and
+**reversed the same day**, on the failure mode rather than on taste: a
+field that is missing or misspelled looks identical to every other note
+and is invisible to every filter — which is how three notes sat unread
+from 2026-09-15. A note loose in the inbox root is visibly un-routed,
+and routing by path costs no reads to filter.
+
+**Done 2026-09-16.** `~/handoff-inbox/agent-config/` holds all three
+notes — each declared its own target in a `**For:**` line, so none
+needed triage — and `~/handoff-inbox/README.md` carries the layout, the
+three opening lines a note owes, and the scrubbing rule.
+
+**The reader pointer landed the same day**, via `/learn`: nothing on the
+machine had told a session to *read* the inbox — the only file that
+mentioned it was
+`~/.copilot/instructions/cross-repo-handoffs.instructions.md`, which is
+Copilot-only and describes writing to it, never reading, and
+`claude/CLAUDE.md` did not mention it at all. The check belongs at
+**user scope** — the inbox is machine environment, and a per-repo line
+would have to be repeated in every repo including ones that do not
+exist yet — so it is now a paragraph in `claude/CLAUDE.md` § "Agent
+config source", a copy that is live only after
+`link-claude.ps1 -SkillGroups workflow,social,meta -Force` runs. The
+per-repo *index* pointer is the mirror of it at project scope, and is
+the user's to make in each repo.
+
+## Open questions
+
+Q3 and Q4 below are still open. Neither blocks drafting — under the form
+chosen above, both are per-repo policy that each directory's stub
+declares for itself, so the contract only has to say *that* a directory
+declares them, not which way.
+
+1. **Answered 2026-09-16 — extend `/learn`.** See
+   [Decisions](#decisions--2026-09-16). The argument this question
+   originally made against the rule form is retracted there; the rule
+   form is ruled out on activation mechanics instead.
+2. **Answered 2026-09-16 — the inbox widens**, routed by destination.
+   See Decisions.
 3. **Does delete-when-spent suit a client repo?** Estate work plausibly
    wants the ledger rule instead — an audit trail of what was done and
    when. If so the split is per-repo rather than universal, and
