@@ -393,9 +393,25 @@ $InstructionsManifest = Join-Path $DestInstructions '.managed-instructions.json'
 # under skills/, a skill is <group>/<name>/SKILL.md, and names collapse into
 # one flat namespace at the destination so a duplicate across groups is an
 # error.
-$availableGroups = @(if ($doSkills) {
-    Get-ChildItem $SkillsRoot -Directory | Select-Object -ExpandProperty Name | Sort-Object
-} else { @() })
+# A group carrying a `.no-copilot` marker file is never vendored, and the
+# exclusion has to hold for the BARE run -- omitting -SkillGroups selects
+# every group, so a group that is merely "never listed by convention" is one
+# forgotten flag away from shipping. The marker is read from disk rather than
+# hardcoded here because scripts/lint-frontmatter.py reads the same file to
+# decide whether an active `model:` key is allowed; a list in each script
+# would be two facts that can disagree. The marker's own contents say why
+# the group it sits in opted out.
+$allGroupDirs = @(if ($doSkills) { Get-ChildItem $SkillsRoot -Directory } else { @() })
+$noCopilotGroups = @(
+    $allGroupDirs |
+        Where-Object { Test-Path (Join-Path $_.FullName '.no-copilot') } |
+        Select-Object -ExpandProperty Name | Sort-Object
+)
+$availableGroups = @(
+    $allGroupDirs |
+        Where-Object { $noCopilotGroups -notcontains $_.Name } |
+        Select-Object -ExpandProperty Name | Sort-Object
+)
 
 if (-not $doSkills) {
     if ($SkillGroups) {
@@ -404,6 +420,17 @@ if (-not $doSkills) {
     $selectedGroups = @()
 }
 elseif ($SkillGroups) {
+    # Naming an excluded group explicitly is an error with its own message.
+    # Letting it fall through to "Unknown skill group(s)" would be a lie: the
+    # group exists, and the reason it cannot be vendored is the thing the
+    # caller needs told.
+    $excluded = @($SkillGroups | Where-Object { $noCopilotGroups -contains $_ })
+    if ($excluded.Count -gt 0) {
+        throw ("Skill group(s) '$($excluded -join ', ')' are marked .no-copilot and are " +
+               "never vendored into a Copilot payload. Their subject is the agent " +
+               "configuration itself, which Copilot keeps in a different tree. " +
+               "Remove the marker file deliberately if that has changed.")
+    }
     $unknown = @($SkillGroups | Where-Object { $availableGroups -notcontains $_ })
     if ($unknown.Count -gt 0) {
         throw ("Unknown skill group(s): $($unknown -join ', '). " +

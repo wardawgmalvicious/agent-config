@@ -124,15 +124,45 @@ def is_rule(path: Path) -> bool:
 def is_project_scope_skill(path: Path) -> bool:
     """True for a skill under `.claude/skills/`, which no other tool consumes.
 
-    The `model:` ban below exists for GitHub Copilot's sake, and Copilot
-    cannot reach this tree from either direction: `scripts/copy-copilot.ps1`
-    selects out of `skills/`, so these are never vendored into a
-    `.github/skills` payload, and every VS Code profile on this machine sets
-    `".claude/skills": false` in `chat.agentSkillsLocations`, so the
-    beside-the-workspace-root auto-discovery is off as well.
+    Copilot cannot reach this tree from either direction:
+    `scripts/copy-copilot.ps1` selects out of `skills/`, so these are never
+    vendored into a `.github/skills` payload, and every VS Code profile on
+    this machine sets `".claude/skills": false` in
+    `chat.agentSkillsLocations`, so the beside-the-workspace-root
+    auto-discovery is off as well.
     """
     parts = path.as_posix().split("/")[:-1]
     return any(a == ".claude" and b == "skills" for a, b in zip(parts, parts[1:]))
+
+
+def is_no_copilot_group(path: Path) -> bool:
+    """True for a skill in a `skills/<group>/` whose group is never vendored.
+
+    A group opts out by carrying a `.no-copilot` marker file, which
+    `scripts/copy-copilot.ps1` reads to exclude it from `-SkillGroups`
+    entirely -- the bare run included. This function reads that same file
+    rather than keeping a list of group names, because a list here and a
+    list there are two facts that can disagree, and the direction they would
+    disagree in is silent: a group excluded from vendoring but still banned
+    from `model:` merely loses a pin, while the reverse ships a `model:` key
+    into a Copilot payload and breaks slash dispatch with no error.
+
+    The marker sits beside the skill directories, so for
+    `skills/<group>/<name>/SKILL.md` the group directory is two levels up.
+    """
+    group_dir = path.resolve().parent.parent
+    return (group_dir / ".no-copilot").is_file()
+
+
+def reaches_copilot(path: Path) -> bool:
+    """True if this skill could be vendored into a Copilot payload.
+
+    The `model:` ban exists only for Copilot's sake, so this is the exact
+    question that should gate it -- not which tree the file sits in, which is
+    what gated it until 2026-09-15 and over-applied the ban to every
+    never-vendored group under `skills/`.
+    """
+    return not is_project_scope_skill(path) and not is_no_copilot_group(path)
 
 
 def lint_file(path: Path) -> list[str]:
@@ -190,16 +220,18 @@ def lint_file(path: Path) -> list[str]:
         # commented placeholder instead; the field bought little even in
         # Claude Code, being slash-only and inert on conditional skills.
         #
-        # `.claude/skills/` is exempt, because the ban is a Copilot
-        # accommodation and Copilot cannot see that tree -- see
-        # is_project_scope_skill above for both halves of why. Those skills
-        # maintain this repo's own payload and run in Claude Code alone, so
-        # the field is live there and worth pinning: the slash-only limit is
-        # no limit at all when the documented way to reach every one of them
-        # is to type its name. No value whitelist is imposed -- the set of
-        # aliases Claude Code accepts is not documented anywhere this linter
-        # could check, and guessing it wrong would reject a working pin.
-        if "model" in fm and not is_project_scope_skill(path):
+        # Two kinds of skill are exempt, and the test is whether Copilot can
+        # reach the file at all -- see reaches_copilot above. `.claude/skills/`
+        # is unreachable by tree; a `skills/<group>/` carrying a `.no-copilot`
+        # marker is unreachable because copy-copilot.ps1 excludes it from every
+        # run, bare ones included. Both maintain this repo's own payload and
+        # run in Claude Code alone, so the field is live there and worth
+        # pinning: the slash-only limit is no limit at all when the documented
+        # way to reach every one of them is to type its name. No value
+        # whitelist is imposed -- the set of aliases Claude Code accepts is not
+        # documented anywhere this linter could check, and guessing it wrong
+        # would reject a working pin.
+        if "model" in fm and reaches_copilot(path):
             fail(
                 "model-key",
                 f"`model: {fm['model']}` blocks Copilot from slash-invoking this skill "
