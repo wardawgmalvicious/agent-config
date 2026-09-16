@@ -42,4 +42,16 @@ For programmatic create/update via Fabric REST (see fabric-rest-api skill for th
 }
 ```
 
-`DatabaseSchema.kql` is an optional KQLDatabase part — KQL management commands run at deploy time. Use to seed tables, materialized views, functions, and ingestion mappings as part of the definition (e.g. `.create-merge table MyLogs (...)` blocks).
+`DatabaseSchema.kql` is an optional KQLDatabase part, and it is executed
+in **two** situations that are easy to conflate: at deploy time for a
+REST create/update, and *"when syncing to your Fabric Workspace"* under
+git integration. Use it to seed tables, materialized views, functions
+and ingestion mappings (e.g. `.create-merge table MyLogs (...)` blocks).
+
+Under git integration the supported commands are a closed list — table
+*create-or-merge*; function, materialized view and ingestion mapping
+*create-or-alter*; table update policy and column encoding policy
+*alter*. **No drop and no rename appear anywhere in it**, so git → portal
+is additive-only and a subtraction cannot be represented at all. The
+branching consequences, and the recreate-as-empty-tables corollary after
+a live rename, are in the `fabric-git-serialization` rule.

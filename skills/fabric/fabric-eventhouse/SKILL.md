@@ -67,6 +67,24 @@ availability off, change, toggle back on. Full matrix:
 **Streaming ingestion is per-table and must be enabled first**:
 `.alter table Events policy streamingingestion enable`.
 
+**Pair every DDL change on a streaming-ingested table with a cache
+clear.** Nodes cache each table's streaming-ingestion schema. The
+refresh after a `.create-merge` is automatic but asynchronous and takes
+minutes, and until it lands every ingest keeps writing the old shape —
+a new column arrives **empty on every row, with a success response and
+a matching record count.** Nothing errors anywhere.
+
+```kql
+.clear table T cache streamingingestion schema      // one table
+.clear database cache streamingingestion schema     // every table, one call
+```
+
+Reach for the database-scoped form after a bulk operation — one call
+across 19 renamed tables against 19 round trips. It also collapses the
+cold-table window in which a freshly created table answers `520` to
+every ingest (measured 76 s, 2026-09-14). Both return one row per node;
+a `Status=Failed` row is safely retryable.
+
 > **Schema-associated Eventstream destinations** auto-create one table per schema
 > named `{CloudEventType}_{CloudEventSchemaVersion}` (e.g. `Orders_v1`) — don't
 > create these by hand. See `fabric-eventstream`.
@@ -221,6 +239,8 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 | External table returns no data | Path / format / schema mismatch | Verify `abfss://` path, `dataformat=`, and column types match source |
 | Retention deleting data too soon | Table-level policy overrides DB default | `.show table T policy retention` |
 | `dcount()` returns approximate value | HyperLogLog by design | `dcount(col, 4)` for higher accuracy (costly), or `T \| distinct col \| count` for exact |
+| `.show tables details` reports `TotalRowCount 0` for every table after a rename or other structural change | Cached, asynchronously-recomputed statistic — the data is untouched | Verify before concluding anything: `union withsource=SourceTable T1, T2, … \| summarize count() by SourceTable`. Reproduced 2026-09-15 across 19 tables |
+| `.show database policy mirroring` / `policy update` → *"Syntax error: A recognition error occurred"* | Those policy `.show` commands are **table-scoped only** — unlike the streaming-ingestion cache clear, which is database-scoped | `.show table T policy mirroring`. There is no multi-table form either — `.show tables (A, B) policy mirroring` fails the same way |
 
 ## Remote MCP server (preview)
 
