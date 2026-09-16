@@ -42,6 +42,10 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
   `GROUP BY`, `ORDER BY`, `WITH`, `AS`, `IS NULL`, `CASE`/`WHEN`/`END`.
 - **Built-in functions**: UPPERCASE — `SUM()`, `COUNT()`, `COALESCE()`,
   `ISNULL()`, `CAST()`, `CONVERT()`.
+- **Built-in *type* names**: lowercase — `sysname`, `int`, `varchar`.
+  Under a case-sensitive model collation (Fabric Warehouse's default)
+  the uppercase form resolves as a missing user-defined type and fails
+  the whole DacFx build. Symptom and why it hides: `fabric-gotchas`.
 - **Identifiers** (tables, columns, schemas, parameters, variables,
   indexes, constraints, procs, functions): PascalCase.
 - **Aliases**: PascalCase, descriptive, not single letters except for
