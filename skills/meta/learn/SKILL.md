@@ -40,7 +40,7 @@ git rev-parse --show-toplevel
 | Where | Mode | What happens |
 | --- | --- | --- |
 | Inside the payload checkout | **edit** | Steps 1–5, then Step 6 proposes the diff, Step 8 hands off to `/commit` |
-| Any other repo, or none | **note** | Steps 1–5, then Step 7 writes a note to `~/handoff-inbox/` and stops |
+| Any other repo, or none | **note** | Steps 1–5, then Step 7 writes a note to `~/handoff-inbox/<target-repo>/` and notifies a live session there |
 
 **In note mode, edit nothing outside the current workspace** — not the
 payload checkout, not `~/.claude`, not another repo's files. Reading the
@@ -253,6 +253,18 @@ explicitly which parts are raw, because the session that lands this will
 be writing into a repo that may be public, and it is that session's job
 to scrub. A note that looks generalized but isn't is the failure mode.
 
+**Then ring the doorbell.** A correctly written note nobody reads is
+this inbox's own failure mode — three sat unread for a day from
+2026-09-15. If `ListAgents` shows a live session whose name begins with
+the target repo, `SendMessage` it one line: the note's path and what it
+covers. The note is the artifact; the message is only a pointer to it,
+so if no session is live there nothing is lost — the next one finds the
+note from the start-of-session check in `~/.claude/CLAUDE.md`.
+
+**Never ask that session to apply the note.** Landing it is that
+session's user's call, not yours, and a peer cannot grant the
+permission. The message names the note and stops.
+
 Shape:
 
 ```markdown
@@ -305,10 +317,10 @@ script runs** — remind the user, and check the repo's own instructions
 for the exact invocation, since running it bare can deploy more than
 intended.
 
-**Note mode.** Tell the user the note's full path and what it covers in
-one line, and that the next step is `/learn` in a session inside the
-payload repo. Do not copy the note into that repo yourself, and do not
-commit anything here.
+**Note mode.** Tell the user the note's full path, what it covers in one
+line, and whether a live session in the target repo was notified. The
+next step is `/learn` in a session inside the payload repo. Do not copy
+the note into that repo yourself, and do not commit anything here.
 
 ## Example (illustrative — not a real fabric-cicd fact)
 
