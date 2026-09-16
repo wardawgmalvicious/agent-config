@@ -249,9 +249,9 @@
     "learn": {
       "behaviour": {
         "date": "2026-09-16",
-        "commit": "b747e29",
+        "commit": "e6fac8f",
         "routing": "6124c8c9675e1f9a",
-        "body": "9bc7df7fde0f6388",
+        "body": "64b893bf84fb6817",
         "references": "4f53cda18c2baa0c"
       }
     },
