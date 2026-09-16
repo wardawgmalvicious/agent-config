@@ -246,6 +246,15 @@
         "references": "4f53cda18c2baa0c"
       }
     },
+    "learn": {
+      "behaviour": {
+        "date": "2026-09-16",
+        "commit": "b747e29",
+        "routing": "6124c8c9675e1f9a",
+        "body": "9bc7df7fde0f6388",
+        "references": "4f53cda18c2baa0c"
+      }
+    },
     "pbip-project-structure": {
       "activation": {
         "date": "2026-09-01",
