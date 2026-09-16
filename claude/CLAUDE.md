@@ -363,6 +363,22 @@ again**, and nothing says so. Repo layout, deployment mechanics and the
 reasoning behind them live in that repo's own `CLAUDE.md`, which loads
 in sessions there.
 
+**A learning for a repo the session is not in goes to
+`~/handoff-inbox/<target-repo>/`**, a local folder in no repo, and
+nothing else tells a session to look there. At the start of a session
+check the directory for the repo you are in — nothing back is the
+normal case:
+
+```bash
+ls ~/handoff-inbox/$(basename "$(git rev-parse --show-toplevel)")/
+```
+
+A note loose in the inbox root is un-routed. The folder's own
+`README.md` carries the layout and what a note owes; read it before
+writing one. Three notes sat unread for a day from 2026-09-15 because
+the one file that mentioned the inbox was Copilot-only and described
+writing to it, never reading.
+
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
