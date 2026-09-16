@@ -64,6 +64,58 @@ When editing these files:
   A brand-new view has no way to know its hash in advance — omit the
   header and accept one round-trip.
 
+## A portal commit serializes live state — absence is a deletion
+
+Above is how bytes round-trip; this is what content survives at all. A
+portal commit is not an authored change but a serialization of *that
+workspace's* live state, so anything in the folder the live item does
+not contain is drift to be removed. Three ways that bites, all observed
+Sept 2026, all silent:
+
+- **Hand-authored files in an item folder are deleted** — 13 `.sql`
+  scripts (~3,300 lines) left a trunk in one commit because the live
+  warehouse held no matching shared queries. Keep such scripts outside
+  anything Fabric syncs.
+- **Deleting an item deletes its definition** — 35 files (~2,000 lines)
+  in one commit. Recreating it commits back only `.platform`,
+  `.gitignore` and `.sqlproj`, and the live item comes back empty too,
+  so neither side warns you.
+- **A branch-out or sandbox workspace commits *its* reality onto your
+  branch** — `shortcuts.metadata.json` 19 shortcuts → 1 and
+  `DatabaseSchema.kql` 19 tables → 1, because that sandbox genuinely
+  held one table.
+
+Recover a deleted definition with
+`git checkout <commit-before-the-delete> -- <item path>`, but **keep the
+new `.platform`**: a recreated item has a different `logicalId`, and
+restoring the old one re-points the folder at an item that no longer
+exists. Sequence a deliberate delete-and-recreate as note the commit →
+delete → recreate → sync → restore definitions → rewire the item GUID
+wherever it is referenced.
+
+**Before merging a branch carrying portal commits**, diff the
+environment-bound files — shortcut manifests, database schema, item
+bindings — against the **target environment's live state**, not just
+against the target branch. Repo CI is unlikely to catch it: a shortcut
+naming a table the target lacks fails the *entire* Lakehouse git update
+(`InvalidShortcutPayloadBatchErrors`, "Target path doesn't exist"),
+while a live table with no shortcut is at most a warning.
+
+### git → portal is not uniformly a no-op
+
+"Portal → git only" is the wrong mental model, and which way it runs
+decides whether a class of work can be branched. A KQL database's
+`DatabaseSchema.kql` *"is executed when syncing to your Fabric
+Workspace"* — but only as create-or-merge / create-or-alter / alter,
+with **no drop and no rename**, so additions apply and subtractions
+cannot be expressed at all. Use git sync for additive schema change and
+do drops and renames live. And because sync *executes* `.create-merge`,
+a branch still carrying those lines for renamed-away tables
+**recreates them as empty tables** on the next sync — after a live
+rename that file is a hazard until it is updated. Per-object detail:
+the `fabric-eventhouse` skill. (Docs:
+`fabric/real-time-intelligence/git-eventhouse-kql-database`.)
+
 ## Line endings: every Fabric repo needs a `.gitattributes`
 
 Fabric writes some lines CRLF and some LF **inside the same file** —
