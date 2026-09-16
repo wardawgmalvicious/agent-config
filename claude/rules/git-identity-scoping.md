@@ -108,6 +108,11 @@ see or review. Setting it per repo, in a file everyone clones, is.
 - **The GitHub API actor.** `gh` and an MCP GitHub server authenticate
   from their own tokens and can resolve to a *different* account than the
   `includeIf` author on the commits, with nothing warning that a PR
-  landed under the wrong identity. Nothing in this file influences that —
-  confirm it separately with `gh api user -q .login` before opening or
-  merging anything.
+  landed under the wrong identity. This file reaches `gh` only where
+  something wraps it to read `user.name` and select a matching token;
+  this machine's shell profiles do, so the `includeIf` identity picks
+  the `gh` account in a shell that sourced a profile and has no effect
+  in one that did not — a `-NoProfile` `pwsh` acts as the keyring's
+  active account instead. Nothing reaches the MCP server. Confirm
+  separately with `gh api user -q .login`, run in the shell that will
+  act, before opening or merging anything.
