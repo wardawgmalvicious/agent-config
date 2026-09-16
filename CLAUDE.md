@@ -584,7 +584,11 @@ individually as each is spent, and cross-linked by filename, so the
 filename has to stay stable and the ordering lives in the queue file.
 
 **Learnings from other repos arrive through `~/handoff-inbox/`**, a
-local folder in no repo. It has **two writers and one reader**. Copilot
+local folder in no repo with **one subdirectory per target repo** —
+this repo's is `~/handoff-inbox/agent-config/`, a note loose in the
+root is un-routed, and the folder's own `README.md` carries the layout
+(since 2026-09-16; it was flat and payload-only before). Two writers
+feed this repo's directory. Copilot
 sessions in client windows write their notes there instead of editing
 this repo — a hand-written instruction at
 `~/.copilot/instructions/cross-repo-handoffs.instructions.md` tells

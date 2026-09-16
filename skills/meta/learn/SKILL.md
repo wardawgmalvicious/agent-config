@@ -58,7 +58,8 @@ thing note mode gives up is applying the edit.
 A learning about the **current** repo's own committed guidance — its
 `CONTRIBUTING.md`, its `.claude/rules/`, its own `CLAUDE.md` — is that
 repo's business, not this skill's. Say so and let the user decide; don't
-route it to the inbox, which is for the machine payload alone.
+route it to the inbox, which carries a learning to a repo the session is
+*not* in.
 
 ## Step 1 — Identify what was learned
 
@@ -232,11 +233,18 @@ Skip this in edit mode.
 
 The learning is real and analysed, and the repo that owns its
 destination is not this one. Write it to the local handoff inbox, which
-is a plain folder in no repo:
+is a plain folder in no repo, **one subdirectory per target repo**:
 
 ```
-~/handoff-inbox/<yyyy-mm-dd>-<topic>.md
+~/handoff-inbox/<target-repo>/<yyyy-mm-dd>-<topic>.md
 ```
+
+`<target-repo>` is the directory name of the checkout the note is
+addressed to — for this skill, the payload checkout that
+`~/.claude/CLAUDE.md` names. Create the directory if it is not there.
+The directory is the routing: a note loose in the inbox root is
+un-routed, and that is the signal. The inbox's own `README.md` carries
+the layout; read it before writing.
 
 **The inbox is private and local, so record what you observed plainly,
 including names from this workspace** — the whole point of it sitting

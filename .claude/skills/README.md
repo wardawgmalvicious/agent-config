@@ -119,7 +119,7 @@ beside the point: a learning is produced wherever the problem was hit,
 which is usually a client repo, and project scope meant `/learn` was
 not in that session's listing at all. Nothing reports a learning that
 was never captured. The evidence is
-`~/handoff-inbox/2026-09-15-kusto-streaming-and-warehouse-git-serialization.md`,
+`~/handoff-inbox/agent-config/2026-09-15-kusto-streaming-and-warehouse-git-serialization.md`,
 nine Fabric learnings whose preamble diagnoses it directly: "`/learn`
 is project scope and fires only in sessions inside `agent-config`. This
 arrived from a client repo."
