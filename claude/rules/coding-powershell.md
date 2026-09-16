@@ -140,6 +140,29 @@ if ($LASTEXITCODE -ne 0) { Fail "npm install $pkg exited $LASTEXITCODE" }
 (Hit live Sep 2026: an npm E401 registry rejection logged as
 `[INSTALL]` success in a machine-config bootstrap run.)
 
+**That check is unreliable when the command is piped into an operator
+that stops the pipeline early.** `Select-Object -First` and `-Index`
+tear the upstream command down as soon as they have enough objects, so
+it never exits and `$LASTEXITCODE` keeps its **previous** value —
+reporting success for a command that failed. Operators that drain the
+stream (`-Last`, `-Skip`, `Where-Object`, `ForEach-Object`) are
+unaffected, and `-First N -Wait` opts out of the optimization.
+
+```powershell
+# Bad — reads the PREVIOUS command's exit code, not this one's
+& some.exe args | Select-Object -First 1
+if ($LASTEXITCODE -ne 0) { Fail 'some.exe failed' }
+
+# Good — capture first, filter after
+$out = & some.exe args
+if ($LASTEXITCODE -ne 0) { Fail "some.exe exited $LASTEXITCODE" }
+$first = $out | Select-Object -First 1
+```
+
+Also **`$LASTEXITCODE` is `$null`, not `0`, before any native command
+runs**, so the same guard reports a failure that never happened.
+(Measured 2026-09-16, pwsh 7.6.)
+
 For multi-step machine scripts, prefer **accumulating** failures and
 printing a summary over throwing on the first one — a half-applied
 change the user cannot see is worse than a complete report with three
