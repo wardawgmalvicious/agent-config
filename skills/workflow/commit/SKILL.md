@@ -127,6 +127,13 @@ says so. **Rule out the two innocent explanations first**: your own
 stepping edits, and a hook that rewrites files, which leaves its rewrite
 *unstaged*. Neither is contention.
 
+- **Ask them.** `ListAgents` names every live session `<repo>-<hash>`
+  and `SendMessage` reaches one. A peer is the only source for what is
+  in its working tree and not in `HEAD` — "are you editing `<path>`
+  right now?" is the question this section could not answer before.
+  Ask before cutting a patch, not after a collision. What they say
+  about *committed* state is as old as their session, so check that
+  yourself.
 - **Write, stage and commit in one chained command.** The gap between
   reading a diff and running `git add` is where their hunk gets swept
   in.
