@@ -154,3 +154,17 @@ stage the manifest. The `body` hash should not move across that
 re-stamp, and that it does not is the proof that the committed content
 is the tested content. `land`, 2026-09-17: stamped at `343003d`,
 re-stamped at `a7b855c`, `body` `5b24a04f96e79be7` both times.
+
+**Pick the discriminating claim after reading the baseline, not before.**
+The claim that reads as a skill's sharpest is not thereby one only the
+skill makes, and choosing it up front biases a run toward measuring
+nothing. On `land`, 2026-09-17, the `--delete-branch` trap was picked a
+priori — a subtle `gh` behaviour, and so a plausible-looking
+discriminator — and *both* `--safe-mode` arms volunteered it
+unprompted, mechanism included ("gh checks out the base branch first").
+The claim that did separate was visible only in what the baseline got
+*wrong*: asked to land a 3-commit branch in a shared tree, it answered
+`gh pr merge --squash` — "Default to squash." — where the payload
+answered `git push origin BRANCH:main`, preserving every SHA. Read the
+baseline first, diff the two answers, and let the discriminator fall out
+of the disagreement.
