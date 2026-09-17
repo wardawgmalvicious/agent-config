@@ -3,7 +3,7 @@ name: land
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
-description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forwards main, reports CI, and deletes the merged branch locally and on origin. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration is a local --ff-only merge because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
+description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forwards main, reports CI, and deletes the merged branch locally and on origin. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration preserves every SHA — a local --ff-only merge by default, or a no-checkout ref fetch where another session holds the tree or main is protected — because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
 when_to_use: "Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in — the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them."
 ---
 
@@ -14,7 +14,7 @@ ends by reporting its hashes with an explicit note that nothing was
 pushed; this starts exactly there.
 
 Two things here are irreversible or outward-facing — opening the PR and
-pushing `main` — so the procedure gates each one. A third, deleting the
+writing to `main` — so the procedure gates each one. A third, deleting the
 branch from `origin`, is outward-facing and deliberately **not** gated;
 step 9 says why, and why that reasoning does not generalise.
 
@@ -25,6 +25,8 @@ git status --short              # see below — clean, or knowingly left
 git branch --show-current       # must not be main
 git log --oneline origin/main..HEAD
 git log --merges --oneline | wc -l   # baseline for step 8
+git worktree list               # separate trees, or one shared HEAD?
+git branch -vv                  # where HEAD is, and each branch's tip
 ```
 
 **A dirty tree is not automatically unfinished work.** `commit` ends on
@@ -40,10 +42,20 @@ the merge there is nothing left to compare against.
 Nothing to land means there is nothing to do — say so rather than
 opening an empty PR.
 
-**Ask whether another session is live in this working tree.** Step 7
-runs `git switch`, and one working tree has one HEAD, so the switch is
-not scoped to you — it moves the branch under anyone else working here.
-If someone is, stop after step 6 and let them finish.
+**Check whether another session is live in this working tree, then
+ask.** Step 7's default runs `git switch`, and one working tree has one
+HEAD, so the switch is not scoped to you — it moves the branch under
+anyone else working here. `git worktree list` and `git branch -vv`
+answer this; the question alone does not. Asked directly, a user
+answers about *subject matter* — "working on something else that won't
+touch your edits" is truthful and entirely compatible with sharing this
+HEAD, which is what it turned out to mean on 2026-09-15. A branch tip
+equal to your own is the tell that someone cut their branch from yours,
+which is what makes the merge method at step 7 load-bearing.
+
+Someone being live is **not** a reason to abandon the landing — step 7
+has a no-checkout route for exactly this case. Disclose it at step 6
+and take it.
 
 ## 2. Establish the identity before anything outward
 
@@ -159,7 +171,8 @@ before that command whether or not a PR exists: a PR that could not be
 opened is a reason to stop sooner, never a reason to carry on.
 
 Report where things stand — the PR URL, or what blocked it — and state
-exactly what happens next: the fast-forward, the push to `main`, and
+exactly what happens next: which route step 7 will take, its write to
+`main`, and
 **then deleting the branch locally and on `origin`** (step 9). The
 deletion is disclosed here rather than prompted for afterwards — one
 decision taken before the work, not a third gate on an action this
@@ -170,7 +183,7 @@ initiative, even when the merge looks routine, and even when the local
 half would plainly succeed on its own — this checkpoint is the skill's
 whole reason for not being one command.
 
-## 7. Land by fast-forward
+## 7. Integrate — preserving every SHA
 
 ```bash
 git switch main && git merge --ff-only <branch> && git push origin main
@@ -225,6 +238,36 @@ and the committed file is what needs reapplying.
 fails, `main` has moved: stop, reconcile deliberately, and never reach
 for `--force`.
 
+### Variant — land without a checkout
+
+**`git switch` is not required to move `main`.** Where another session
+holds this working tree (step 1), or a ruleset refuses a direct push,
+the merge happens server-side and the local `main` **ref** moves
+without the tree ever changing:
+
+```bash
+gh pr merge <n> --merge         # or --squash/--rebase per the repo's settings
+git fetch origin --quiet
+git fetch origin main:main      # moves the local main REF; HEAD untouched
+git merge-base --is-ancestor <branch> main
+```
+
+`git fetch <remote> <src>:<dst>` has the two properties that make this
+safe rather than clever — both reproduced 2026-09-16:
+
+- **It refuses to update a branch that is currently checked out** in a
+  non-bare repo: `fatal: refusing to fetch into branch
+  'refs/heads/main' checked out at ...`, exit 128. So it is legal
+  *precisely* when someone else's branch is HEAD, and it fails loudly
+  in the one case where it would be unsafe.
+- **It refuses a non-fast-forward** without a leading `+`:
+  `! [rejected] main -> main (non-fast-forward)`, exit 1. So it cannot
+  rewrite local `main`, only advance it. **Never add the `+`** — that
+  is the `--force` of this route.
+
+This route is still gated by step 6: merging the PR is the write to
+`main`, whoever performs it.
+
 ## 8. Verify
 
 Through the same tool step 2 confirmed — **both routes verify, and the
@@ -269,8 +312,8 @@ still running, say so rather than implying it passed.
 
 ## 9. Delete the branch
 
-Step 8 has just proven the merge — `merged: true`, `--ff-only`
-succeeded, `main` and `origin/main` at one SHA — so the branch holds
+Step 8 has just proven the merge — the PR reads as merged, step 7's
+integration succeeded, `main` and `origin/main` at one SHA — so it holds
 nothing that is not in `main`. That is what makes this cleanup rather
 than a judgement call, and it is the argument for `land` owning it: any
 other tool would have to establish from cold what this step has just
@@ -300,7 +343,10 @@ git fetch origin --prune
 ```
 
 **`-d`, never `-D`.** It refuses a branch that is not fully merged, so
-the local half guards itself and the check costs nothing.
+the local half guards itself and the check costs nothing. It also
+refuses the branch you are *on* — so on the no-checkout route it
+succeeds only because HEAD is elsewhere, which is the same condition
+that made that route legal in the first place.
 
 **The remote half has no such guard, which is what the ancestor check
 is for.** `-d` answers off the *local* merge whatever is on `origin`, so
@@ -351,7 +397,8 @@ Do not delete, and say why, when:
   recovery path.
 - The user asked to keep it.
 - Another session is live in the tree, or is on this branch. Step 1
-  already asked; the answer applies here too.
+  already checked; the answer applies here too. Note this blocks the
+  *deletion*, not the landing — step 7's variant covers that.
 - **The branch is the base of another open PR.** Deleting it retargets
   that PR or closes it. This is the only exception steps 7 and 8 do not
   already establish — merge state does not show it — so it is the one
@@ -390,9 +437,13 @@ to make the override informed, not to refuse it.
 - **Never write to `main` before step 6.** Opening a PR and pushing
   `main` are two decisions, not one.
 - **Never `git switch` while another session is live in the tree.**
-- If the repo is not one the authenticated identity owns, or `main` is
-  protected in a way that blocks a direct push, stop and report rather
-  than working around it.
+- If the repo is not one the authenticated identity owns, stop and
+  report rather than working around it. **A protected `main` is not
+  that case** — a ruleset requiring pull requests is the repo working
+  as intended, and step 7's variant lands inside it rather than around
+  it. What stays banned is the workaround: an admin bypass that also
+  skips every required status check is worse than the rejection it
+  evades.
 
 ### Repo convention — overridable, but never silently
 
@@ -414,6 +465,16 @@ correctly gets followed loosely.
 
 Then do it. A reaffirmed instruction is the answer; pressing the point
 twice is worse than the squash.
+
+**Squash has a second cost whenever someone branched from your tip**,
+and that one is not about your history. Preserving the SHAs —
+`--ff-only` or a merge commit, either — leaves their base reachable
+from `main`, so `git log main..<their-branch>` comes back empty and
+their branch sits on `main` with nothing to rebase. A squash writes a
+new SHA, leaving your commits unreachable from `main`: their branch
+carries them as duplicates and their next PR re-proposes your whole
+diff as theirs. Step 1's `git branch -vv` is what shows this — a branch
+tip equal to your own (observed 2026-09-15).
 
 **A merge commit gets one clause and proceeds.** It collapses nothing:
 every SHA survives, and every commit stays independently revertible and
