@@ -39,6 +39,15 @@ supersedes this one.
 - **Parameters**: PascalCase — `$PackageId`, `$OldRoot`, `$Execute`.
 - **Local variables**: camelCase — `$packages`, `$oldQualifier`,
   `$blockers`.
+- **Case is not a namespace.** Variable names are case-insensitive, so
+  a local `$arms` *is* the parameter `$Arms` — the convention above
+  reads as two variables and PowerShell sees one. Assigning the local
+  silently overwrites the argument, and a typed parameter coerces the
+  new value on the way in (`[string[]]$Arms` turned an array of
+  hashtables into `"System.Collections.Hashtable"` strings, so a
+  `-notin $Arms` filter skipped every item with no error). Give a local
+  a different *word* from any parameter, not a different case.
+  Reproduced 2026-09-17 on pwsh 7.6.
 - **Script-scope state**: `$script:PascalCase` — `$script:Failures`.
 - Full words. `$sourcePath`, not `$srcPth`.
 
