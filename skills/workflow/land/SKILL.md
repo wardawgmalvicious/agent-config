@@ -188,9 +188,12 @@ Why not each alternative:
   *only* do the one thing this skill refuses, so there is no version of
   pressing it that preserves the split.
 - **A merge commit** — adds a commit to a history that may never have
-  had one. `git log --merges --oneline | wc -l` from step 1 says
-  whether this repo is in that category; a `0` there makes a merge
-  commit a visible break in convention rather than a neutral choice.
+  had one, and collapses nothing: every SHA survives. `git log --merges
+  --oneline | wc -l` from step 1 says whether this repo is in that
+  category; a `0` there makes a merge commit a visible break in
+  convention rather than a neutral choice, and a non-zero makes it
+  close to a neutral one. Asked for, it costs a clause of disclosure
+  and not a round — see [Constraints](#constraints).
 - **Squash** — collapses the logical split `commit` just built. The
   whole point of separate commits is that each is independently
   revertible and citable. Asked for anyway? It is overridable, but not
@@ -252,8 +255,13 @@ nothing is the half of this skill that used to be missing.
   exits **0** (observed 2026-09-16). "Exit 0, nothing configured" and
   "exit 0, checks passed" are different states, and this skill's refusal
   to imply a green CI depends on reporting which one it saw.
-- `git log --merges --oneline | wc -l` — unchanged from the step 1
-  baseline.
+- `git log --merges --oneline | wc -l` against the step 1 baseline —
+  and **what counts as correct depends on the route taken**: unchanged
+  after a fast-forward, exactly baseline + 1 after a sanctioned
+  `--no-ff`. More than +1 is the real problem on either path, and is
+  what this check exists to catch. Asserting "unchanged" flat fails a
+  run that did exactly what was asked (observed 2026-09-16: baseline 1,
+  post-merge 2).
 - `main` and `origin/main` at the same SHA.
 
 Report the PR number, the merged state, and the CI conclusions. If CI is
@@ -389,18 +397,38 @@ to make the override informed, not to refuse it.
 ### Repo convention — overridable, but never silently
 
 A squash and a merge commit are **defaults, not laws.** The history is
-the user's to shape. When one is asked for:
+the user's to shape. But the two do not cost the same, so they do not
+get the same gate: one calibrated for the expensive mechanism turns the
+cheap one into ceremony, and guidance that is annoying to follow
+correctly gets followed loosely.
+
+**A squash keeps the full round.** It collapses the logical split
+`commit` just built, and that is not recoverable.
 
 1. **Say what it costs, specifically.** Name the commits that would be
-   collapsed or the merge commit that would be this repo's first — not
-   "squashing loses information" but "this collapses 3 commits that
-   separate the rule change from its fixtures".
+   collapsed — not "squashing loses information" but "this collapses 3
+   commits that separate the rule change from its fixtures".
 2. **Then wait.** A request that named the mechanism up front has not
    heard the cost yet, so it is not yet a reaffirmation. One round.
 3. **Record it in the PR body**, so the history explains its own shape.
 
 Then do it. A reaffirmed instruction is the answer; pressing the point
 twice is worse than the squash.
+
+**A merge commit gets one clause and proceeds.** It collapses nothing:
+every SHA survives, and every commit stays independently revertible and
+citable. Its whole cost is one extra commit and a non-linear graph — so
+state that and the step 1 `--merges` baseline in the same turn, record
+it in the PR body, and do it. **No wait**, because the round cannot
+tell the operator anything the clause did not, and holding one is the
+"pressing the point twice" this section already warns against. Reasoned
+2026-09-16, on a repo whose baseline was already `1` and where a merge
+commit therefore broke no convention at all.
+
+One trap in carrying that out: **`git merge -F -` does not read
+stdin.** It fails `error: could not read file '-'` (exit 129) where
+`git commit -F -` succeeds, so a merge message has to go through a real
+file. Reproduced 2026-09-16.
 
 **Deleting the merged branch is a default too, and it runs the other
 way.** Step 9 does it having disclosed it at step 6, so the request that
