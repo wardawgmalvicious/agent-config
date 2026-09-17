@@ -248,10 +248,10 @@
     },
     "learn": {
       "behaviour": {
-        "date": "2026-09-16",
-        "commit": "e6fac8f",
+        "date": "2026-09-17",
+        "commit": "1f729c6",
         "routing": "6124c8c9675e1f9a",
-        "body": "64b893bf84fb6817",
+        "body": "e4575c0ed0d6d81e",
         "references": "4f53cda18c2baa0c"
       }
     },
