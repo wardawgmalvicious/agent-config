@@ -141,3 +141,16 @@ immediately after the draft, while its brief said "live on save and
 needs no deploy step". The run is the standing form, so there is no
 prune to restore; `/author-skill` carries the same rule from `land`,
 2026-09-02.
+
+**The stamp's `commit` field can name a commit that lacks what was
+tested.** `--stamp` writes `rev-parse --short HEAD`, so a run against an
+uncommitted edit — the ordinary case, since the skill is junctioned and
+therefore already live — records the commit *before* it. The verdict is
+unaffected: it is derived from the content hashes, and nothing in
+`skill-status.py` reads `commit` back. What it costs is provenance, and
+the `test(…)` message is where that shows. So when the edit and the
+stamp land in one `/commit` run, commit the skill first, re-stamp, then
+stage the manifest. The `body` hash should not move across that
+re-stamp, and that it does not is the proof that the committed content
+is the tested content. `land`, 2026-09-17: stamped at `343003d`,
+re-stamped at `a7b855c`, `body` `5b24a04f96e79be7` both times.
