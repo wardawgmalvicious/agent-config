@@ -281,12 +281,14 @@ it is the specific exceptions below.
 ```bash
 git branch -d <branch>          # -d, never -D
 
-# The remote half. Skip it whole where delete_branch_on_merge is true.
-git fetch origin
+# The remote half — probe, don't infer. GitHub may have done it already.
+git fetch origin --prune
+git ls-remote --heads origin <branch>               # empty = already gone
+
+# Only when that came back non-empty:
 git merge-base --is-ancestor origin/<branch> main   # guard — see below
 git push origin --delete <branch>
-
-git fetch origin --prune        # both paths, including the skipped one
+git fetch origin --prune
 ```
 
 **`-d`, never `-D`.** It refuses a branch that is not fully merged, so
@@ -301,21 +303,33 @@ answer, not a broken command. A *no* is a stop worth reporting rather
 than a failure to retry — someone pushed to this branch after you landed
 it, and that work is not in `main`.
 
-**Skip the remote half where `delete_branch_on_merge` is `true`** —
-step 7 read it. GitHub deletes the head branch itself as soon as the PR
-is marked merged, so `push origin --delete` answers *"remote ref does
-not exist"*: a confusing error for a correct state. The setting is not
-uniform — measured 2026-09-13 on two repos with opposite values — which
-is the whole reason to read it rather than assume it.
+**Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
+Step 7 reads that setting for *planning* and for the step 6 disclosure,
+which is the right thing to read there. It is the wrong thing to act on
+here, because it is a read at one time driving an action at another and
+the value can change in between — including by the operator, mid-run,
+between two gated steps. Observed 2026-09-16: it read `false` at step 7,
+was flipped to `true` before the merge, and **took effect on the PR
+already open**. GitHub deleted the head branch itself, and
+`git fetch --prune` reported `- [deleted] (none) -> origin/<branch>`.
+The setting is not uniform either — measured 2026-09-13 on two repos
+with opposite values.
 
-**`null` is unknown, not `false`.** Unauthenticated that field comes
-back `null` like the merge settings, so the probe can leave this
-undecided. Then attempt the delete and treat *"remote ref does not
-exist"* as success. The probe is what makes the **report** accurate;
-tolerating that one error is what makes the **action** correct.
+`git ls-remote --heads origin <branch>` answers the question this step
+actually has. **Empty means GitHub already deleted it**: nothing to do,
+and say *that* in the report rather than claiming the session deleted
+it. The action was right either way — the skill already tolerates the
+error — but the report is what a later session reads to decide whether
+the cleanup happened, and it should not describe work it did not do.
+Non-empty means the delete is yours, and the `--is-ancestor` guard
+applies. This is step 2's `gh api user -q .login` move again: probe the
+thing, not the thing that usually implies it. A ref probe also has no
+`null` state, which that setting does when read unauthenticated. Keep
+treating *"remote ref does not exist"* as success if it still appears —
+probing narrows the window, it does not close it.
 
-**Prune on both paths — especially the one that skipped the remote
-half.** Where GitHub auto-deleted the branch, `origin/<branch>` is gone
+**Prune on both paths — which is why the block above opens with one.**
+Where GitHub auto-deleted the branch, `origin/<branch>` is gone
 from the remote and this clone's *remote-tracking* ref to it is not:
 `git branch -a` still lists it, and a plain `git fetch` will not remove
 it. That is the leftover ref this step exists to prevent, one
