@@ -16,7 +16,8 @@ pushed; this starts exactly there.
 Two things here are irreversible or outward-facing — opening the PR and
 writing to `main` — so the procedure gates each one. A third, deleting the
 branch from `origin`, is outward-facing and deliberately **not** gated;
-step 9 says why, and why that reasoning does not generalise.
+step 9 and [references/branch-deletion.md](references/branch-deletion.md)
+say why, and why that reasoning does not generalise.
 
 ## 1. Preflight
 
@@ -193,89 +194,33 @@ This preserves the exact SHAs, keeps `main` linear, and adds no merge
 commit. GitHub marks the PR merged once its commits are reachable, so
 the merge button is never needed.
 
-Why not each alternative:
-
-- **The merge button** — whatever it is configured to do, it is not
-  this. Check what the repo actually offers before assuming the button
-  was an option at all: where only squash is enabled, the button can
-  *only* do the one thing this skill refuses, so there is no version of
-  pressing it that preserves the split.
-- **A merge commit** — adds a commit to a history that may never have
-  had one, and collapses nothing: every SHA survives. `git log --merges
-  --oneline | wc -l` from step 1 says whether this repo is in that
-  category; a `0` there makes a merge commit a visible break in
-  convention rather than a neutral choice, and a non-zero makes it
-  close to a neutral one. Asked for, it costs a clause of disclosure
-  and not a round — see [Constraints](#constraints).
-- **Squash** — collapses the logical split `commit` just built. The
-  whole point of separate commits is that each is independently
-  revertible and citable. Asked for anyway? It is overridable, but not
-  silently — see [Constraints](#constraints).
-- **Rebase merge** — rewrites SHAs, and may be disabled outright.
-
-Read the merge settings rather than assuming them — and read
-`delete_branch_on_merge` in the same breath, which step 9 needs and
-which is no more uniform across repos than the other three. **Prefer a
-committed answer where the repo keeps one** — a repo that version-
-controls its own settings (agent-config keeps all four in
-`.github/repo-settings.json`, reconciled by `scripts/repo-settings.ps1
--Check`) gives you the value someone intended, for free. Otherwise ask
-GitHub:
-
-```bash
-gh api repos/<owner>/<repo> \
-  --jq '{allow_squash_merge, allow_merge_commit, allow_rebase_merge, delete_branch_on_merge}'
-```
-
-Unauthenticated, those fields come back `null` — so a check without a
-token proves nothing and a rejection surfaces at merge time. A repo's
-answer is not durable either: a delete-and-recreate resets every one of
-them to GitHub's defaults, so a committed file and the live repo can
-disagree after one. When they do, the live repo is what the merge obeys
-and the committed file is what needs reapplying.
-
 **`--ff-only` fails loudly rather than inventing a merge commit.** If it
 fails, `main` has moved: stop, reconcile deliberately, and never reach
 for `--force`.
 
-### Variant — land without a checkout
+Any other state routes elsewhere. Read the repo's merge settings before
+deciding — and `delete_branch_on_merge` with them, which step 6's
+disclosure needs:
 
-**`git switch` is not required to move `main`.** The two conditions that
-call for this route want different writes, and the difference is a merge
-commit. Where **another session holds the tree** (step 1) and nothing
-refuses a direct push, the write is the branch pushed *to* `main` — the
-default's fast-forward minus the checkout. Where **a ruleset refuses
-that push**, the merge goes server-side, and only the first line changes:
+| State | Route |
+| --- | --- |
+| You hold the tree, `main` accepts a push | the default above |
+| Another session holds the tree (step 1) | `git push origin <branch>:main` |
+| A ruleset refuses that push | `gh pr merge <n> -R <owner>/<repo> --merge` |
+| A squash was asked for | name what it collapses, then wait |
+| A merge commit was asked for | one clause of disclosure, then proceed |
 
-```bash
-git push origin <branch>:main   # the write — ff-enforced by default
-# refused by a ruleset? swap line 1 for: gh pr merge <n> -R <owner>/<repo> --merge
-git fetch origin --quiet
-git fetch origin main:main      # moves the local main REF; HEAD untouched
-git merge-base --is-ancestor <branch> main
-```
+**Anything but the first row — read
+[references/integration-routes.md](references/integration-routes.md)
+before the step 6 disclosure**, not after it. Step 6 states which route
+step 7 will take, so the mechanics have to be in hand while that
+disclosure is being written. That file carries why each alternative is
+not the default, the refspec mechanics of the no-checkout route and its
+two silent traps, the `gh api` settings read with its `null` caveat, and
+what a squash or a merge commit costs.
 
-**Push first, fall through on a rejection — not the reverse.** The
-server-side `--merge` adds a merge commit — a visible break where the
-step 1 `--merges` baseline is `0`, and a shared tree alone needs none.
-**Pass `-R <owner>/<repo>` on the fallback**: it clears gh's
-`CanDeleteLocalBranch`, which gates every local-git path, so the merge
-cannot switch the tree; step 9 owns the delete. Read in gh v2.101.0.
-
-Both refspec forms **refuse a non-fast-forward without a leading `+`**
-— `! [rejected] <src> -> main (non-fast-forward)`, exit 1 — so neither
-can rewrite `main`, only advance it. **Never add the `+`**; that is the
-`--force` of this route. The fetch has one more (pair reproduced
-2026-09-16, push 2026-09-17 on git 2.55):
-
-- **It refuses to update a branch that is currently checked out** in a
-  non-bare repo: `fatal: refusing to fetch into branch
-  'refs/heads/main' checked out at ...`, exit 128. So it is legal
-  *precisely* when someone else's branch is HEAD, and it fails loudly
-  in the one case where it would be unsafe.
-
-This route is still gated by step 6: whichever line writes `main`, the
-push or the PR merge, is the write, whoever performs it.
+Whichever line writes `main` — the local merge, the refspec push, or the
+PR merge — is the write step 6 gates, whoever performs it.
 
 ## 8. Verify
 
@@ -324,19 +269,11 @@ still running, say so rather than implying it passed.
 Step 8 has just proven the merge — the PR reads as merged, step 7's
 integration succeeded, `main` and `origin/main` at one SHA — so it holds
 nothing that is not in `main`. That is what makes this cleanup rather
-than a judgement call, and it is the argument for `land` owning it: any
-other tool would have to establish from cold what this step has just
-watched happen.
-
-**That holds in a shared repo too**, which is the part worth spelling
-out: step 3's push would have been *rejected* as non-fast-forward had
-`origin/<branch>` carried commits the local branch lacked, so the run
-would never have reached here. A colleague therefore has nothing on this
-branch to lose — their own local copy is untouched, and their next
-`git fetch --prune` drops a remote-tracking ref to a branch that is
-merged. Reviewers lose nothing either: the PR, its diff and its comments
-outlive the branch. The residual risk is not "someone else works here",
-it is the specific exceptions below.
+than a judgement call, and why it is disclosed at step 6 instead of
+gated here.
+[references/branch-deletion.md](references/branch-deletion.md) carries
+that argument in full, including why it still holds in a shared repo and
+why the exemption does not generalise to any other remote delete.
 
 ```bash
 git branch -d <branch>          # -d, never -D
@@ -353,58 +290,39 @@ git fetch origin --prune
 
 **`-d`, never `-D`.** It refuses a branch that is not fully merged, so
 the local half guards itself and the check costs nothing. It also
-refuses the branch you are *on* — so on the no-checkout route it
-succeeds only because HEAD is elsewhere, which is the same condition
-that made that route legal in the first place.
+refuses the branch you are *on*, which is why it stays legal on the
+no-checkout route.
 
 **The remote half has no such guard, which is what the ancestor check
 is for.** `-d` answers off the *local* merge whatever is on `origin`, so
-a commit someone pushed to the branch after step 3 is invisible to it —
-and GitHub's *Restore branch* restores the PR's merge-time head, not
-that commit. `--is-ancestor` exits non-zero to mean *no*: that is the
-answer, not a broken command. A *no* is a stop worth reporting rather
-than a failure to retry — someone pushed to this branch after you landed
-it, and that work is not in `main`.
+a commit someone pushed to the branch after step 3 is invisible to it.
+`--is-ancestor` exits non-zero to mean *no*: that is the answer, not a
+broken command, and it is a stop worth reporting rather than a failure
+to retry — someone pushed to this branch after you landed it, and that
+work is not in `main`.
 
 **Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
-Step 7 reads that setting for *planning* and for the step 6 disclosure,
-which is the right thing to read there. It is the wrong thing to act on
-here, because it is a read at one time driving an action at another and
-the value can change in between — including by the operator, mid-run,
-between two gated steps. Observed 2026-09-16: it read `false` at step 7,
-was flipped to `true` before the merge, and **took effect on the PR
-already open**. GitHub deleted the head branch itself, and
-`git fetch --prune` reported `- [deleted] (none) -> origin/<branch>`.
-The setting is not uniform either — measured 2026-09-13 on two repos
-with opposite values.
-
-`git ls-remote --heads origin <branch>` answers the question this step
-actually has. **Empty means GitHub already deleted it**: nothing to do,
-and say *that* in the report rather than claiming the session deleted
-it. The action was right either way — the skill already tolerates the
-error — but the report is what a later session reads to decide whether
-the cleanup happened, and it should not describe work it did not do.
-Non-empty means the delete is yours, and the `--is-ancestor` guard
-applies. This is step 2's `gh api user -q .login` move again: probe the
-thing, not the thing that usually implies it. A ref probe also has no
-`null` state, which that setting does when read unauthenticated. Keep
-treating *"remote ref does not exist"* as success if it still appears —
-probing narrows the window, it does not close it.
+Step 7 reads that setting for planning; it is the wrong thing to act on
+here, because the value can change between the two — observed mid-run,
+2026-09-16. **Empty from `ls-remote` means GitHub already deleted the
+branch**: nothing to do, and say *that* in the report rather than
+claiming the session did it. Non-empty means the delete is yours, and
+the `--is-ancestor` guard applies.
 
 **Prune on both paths — which is why the block above opens with one.**
-Where GitHub auto-deleted the branch, `origin/<branch>` is gone
-from the remote and this clone's *remote-tracking* ref to it is not:
-`git branch -a` still lists it, and a plain `git fetch` will not remove
-it. That is the leftover ref this step exists to prevent, one
-indirection out — and it survives precisely where the step did the least
-work. Observed 2026-09-13 on the first real run of this step, against a
-repo with `delete_branch_on_merge: true`.
+Where GitHub auto-deleted the branch, this clone's *remote-tracking* ref
+survives it: `git branch -a` still lists it, and a plain `git fetch`
+will not remove it.
+
+The reference has the evidence behind each of those three, and why
+probing beats inferring even though it only narrows the window.
 
 Do not delete, and say why, when:
 
 - The PR is not merged, or `--ff-only` failed. The branch is the
   recovery path.
-- The user asked to keep it.
+- The user asked to keep it. Honour that with no round — it costs
+  nothing, and the reference says why.
 - Another session is live in the tree, or is on this branch. Step 1
   already checked; the answer applies here too. Note this blocks the
   *deletion*, not the landing — step 7's variant covers that.
@@ -418,13 +336,6 @@ gh pr list --base <branch> --state open
 ```
 
 or `list_pull_requests` with `base`.
-
-**Why this outward action is not gated like the other two.** It is cheap
-*here specifically*: the commits are already reachable from `main`, the
-PR and its diff outlive the branch, and the branch is restorable from
-the PR page. None of that transfers to a remote delete in any other
-context. Read this as an exemption for a ref just proven redundant, not
-as a general licence to skip a gate because an action looks routine.
 
 ## Constraints
 
@@ -462,47 +373,22 @@ get the same gate: one calibrated for the expensive mechanism turns the
 cheap one into ceremony, and guidance that is annoying to follow
 correctly gets followed loosely.
 
-**A squash keeps the full round.** It collapses the logical split
-`commit` just built, and that is not recoverable.
-
-1. **Say what it costs, specifically.** Name the commits that would be
-   collapsed — not "squashing loses information" but "this collapses 3
-   commits that separate the rule change from its fixtures".
-2. **Then wait.** A request that named the mechanism up front has not
-   heard the cost yet, so it is not yet a reaffirmation. One round.
-3. **Record it in the PR body**, so the history explains its own shape.
+- **A squash keeps the full round.** Name the specific commits it would
+  collapse — not "squashing loses information" but "this collapses 3
+  commits that separate the rule change from its fixtures" — then wait,
+  then record it in the PR body. A request that named the mechanism up
+  front has not heard the cost yet, so it is not yet a reaffirmation.
+- **A merge commit gets one clause and proceeds.** State its cost and
+  the step 1 `--merges` baseline in the same turn, record it, do it. No
+  wait: the round cannot tell the operator anything the clause did not.
+- **Keeping the merged branch costs nothing to honour.** No round — it
+  is simply one of the exceptions step 9 already names. Say in the
+  report that the branch was kept and why, or the next run reads the
+  leftover ref as a bug.
 
 Then do it. A reaffirmed instruction is the answer; pressing the point
 twice is worse than the squash.
-
-**Squash has a second cost whenever someone branched from your tip**,
-and that one is not about your history. Preserving the SHAs —
-`--ff-only` or a merge commit, either — leaves their base reachable
-from `main`, so `git log main..<their-branch>` comes back empty and
-their branch sits on `main` with nothing to rebase. A squash writes a
-new SHA, leaving your commits unreachable from `main`: their branch
-carries them as duplicates and their next PR re-proposes your whole
-diff as theirs. Step 1's `git branch -vv` is what shows this — a branch
-tip equal to your own (observed 2026-09-15).
-
-**A merge commit gets one clause and proceeds.** It collapses nothing:
-every SHA survives, and every commit stays independently revertible and
-citable. Its whole cost is one extra commit and a non-linear graph — so
-state that and the step 1 `--merges` baseline in the same turn, record
-it in the PR body, and do it. **No wait**, because the round cannot
-tell the operator anything the clause did not, and holding one is the
-"pressing the point twice" this section already warns against. Reasoned
-2026-09-16, on a repo whose baseline was already `1` and where a merge
-commit therefore broke no convention at all.
-
-One trap in carrying that out: **`git merge -F -` does not read
-stdin.** It fails `error: could not read file '-'` (exit 129) where
-`git commit -F -` succeeds, so a merge message has to go through a real
-file. Reproduced 2026-09-16.
-
-**Deleting the merged branch is a default too, and it runs the other
-way.** Step 9 does it having disclosed it at step 6, so the request that
-arrives is to *keep* the branch — and that one costs nothing to honour.
-It needs no cost-and-wait round; it is simply one of the exceptions step
-9 already names. Say in the report that the branch was kept and why, or
-the next run reads the leftover ref as a bug.
+[references/integration-routes.md](references/integration-routes.md)
+carries what each mechanism costs — including squash's second cost when
+someone branched from your tip, which is not about your history at all —
+and the `git merge -F -` trap in carrying one out.
