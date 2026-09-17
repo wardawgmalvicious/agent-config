@@ -299,14 +299,14 @@ nothing is the half of this skill that used to be missing.
 - Read the check conclusions rather than the summary. A review bot (for
   example `copilot-pull-request-reviewer`) is **not** a gate; a
   `pre-commit` style job is.
-- **`gh pr checks` exits non-zero by design** — documented exit code 8
-  is *checks pending*, and a failure is likewise non-zero. That is the
-  answer, not a broken command; do not retry it as if it had failed.
-  It is **not** always non-zero, and the exception matters: a repo with
-  no CI at all prints `no checks reported on the '<branch>' branch` and
-  exits **0** (observed 2026-09-16). "Exit 0, nothing configured" and
-  "exit 0, checks passed" are different states, and this skill's refusal
-  to imply a green CI depends on reporting which one it saw.
+- **`gh pr checks` exits non-zero by design** — exit code 8 is *checks
+  pending*, a failure is likewise non-zero, and a repo with **no CI at
+  all** exits **1**, printing `no checks reported on the '<branch>'
+  branch` to **stderr** with stdout empty (gh 2.101.0, measured
+  2026-09-17). That is the answer, not a broken command; do not retry
+  it. "No CI configured" and "checks passed" are different states the
+  exit code does **not** separate — only that stderr line does, so a
+  run that discarded stderr must report neither.
 - `git log --merges --oneline | wc -l` against the step 1 baseline —
   and **what counts as correct depends on the route taken**: unchanged
   after a fast-forward, exactly baseline + 1 after a sanctioned
