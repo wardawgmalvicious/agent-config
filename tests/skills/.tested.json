@@ -240,10 +240,10 @@
     "land": {
       "behaviour": {
         "date": "2026-09-17",
-        "commit": "a7b855c",
+        "commit": "10d6c84",
         "routing": "0bf1cc625799b890",
-        "body": "5b24a04f96e79be7",
-        "references": "4f53cda18c2baa0c"
+        "body": "48bb8d4f70f97687",
+        "references": "66c5ff14b65cbe66"
       }
     },
     "learn": {
