@@ -1,12 +1,12 @@
 # Brief: peer coordination — what is still open
 
 **Status:** Open, written 2026-09-17. Successor to
-[peer-session-coordination.md](peer-session-coordination.md), whose
-three edits landed 2026-09-16 and which was closed on 2026-09-17 after a
-verification run failed two of its four tests and disproved two of its
-premises. That brief is deleted once this lands;
-`git log -- docs/handoffs/execute/` is the archive, and its final
-committed revision carries the full results table.
+`peer-session-coordination.md`, whose three edits landed 2026-09-16 and
+which was closed on 2026-09-17 after a verification run failed two of
+its four tests and disproved two of its premises. That brief was deleted
+in the commit that added this one's queue row; its final revision,
+`80ca1fc`, carries the full results table, and
+`git log -- docs/handoffs/execute/` is the archive.
 
 **Scope.** One defect with a known cause and an undecided fix, plus four
 open questions. The routing rule, the request taxonomy and the read-only
