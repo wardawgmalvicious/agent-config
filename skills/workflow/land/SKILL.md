@@ -85,6 +85,17 @@ client account, PR opened cleanly). A `CLAUDE.md` may state the rule —
 this machine's user-scope one does; what it cannot do is make the
 comparison happen.
 
+**A confirmed identity is not a confirmed capability.** `get_me` proves
+which account a token acts as and nothing about what it may do, so a
+403 *"Resource not accessible by personal access token"* at step 5 or 8
+is a scope answer, not an identity one — do not re-debug step 2 when one
+appears. The gap is **per-resource, not read-versus-write**: on one
+token in one run (2026-09-16) `create_pull_request` succeeded while
+`pull_request_read` method `get_check_runs` returned 403, so a write
+having worked says nothing about the next read. Fall back to the `gh`
+whose login step 2 already confirmed — sanctioned here for an
+under-scoped MCP exactly as for an absent one.
+
 **Nothing warns you.** `gh` is authenticated, it works, it reports
 success — the PR simply appears under the other account. A wrong-account
 PR looks identical to a right-account one until someone reads the
@@ -222,13 +233,25 @@ nothing is the half of this skill that used to be missing.
 | Merged, and by whom | `pull_request_read` method `get` | `gh pr view <n> --json state,mergedBy` |
 | CI conclusions | `pull_request_read` method `get_check_runs` | `gh pr checks <n>` |
 
-- Expect `merged: true` and a merging identity that matches step 2.
+- Expect the PR to read as merged, and a merging identity that matches
+  step 2. **The two routes do not share a field name**: `merged: true`
+  is the MCP's, and `gh pr view <n> --json merged` answers *"Unknown
+  JSON field: merged"*. `state` (`MERGED`), `mergedAt` and `mergedBy`
+  are `gh`'s (confirmed against `gh pr view --json`, 2026-09-16).
+- **`get_check_runs` can 403 on a token that opened the PR** — step 2
+  says why. `gh pr checks <n>` is then the route, not a contradiction
+  of step 2's preference; without that fallback this row is unrunnable.
 - Read the check conclusions rather than the summary. A review bot (for
   example `copilot-pull-request-reviewer`) is **not** a gate; a
   `pre-commit` style job is.
 - **`gh pr checks` exits non-zero by design** — documented exit code 8
   is *checks pending*, and a failure is likewise non-zero. That is the
   answer, not a broken command; do not retry it as if it had failed.
+  It is **not** always non-zero, and the exception matters: a repo with
+  no CI at all prints `no checks reported on the '<branch>' branch` and
+  exits **0** (observed 2026-09-16). "Exit 0, nothing configured" and
+  "exit 0, checks passed" are different states, and this skill's refusal
+  to imply a green CI depends on reporting which one it saw.
 - `git log --merges --oneline | wc -l` — unchanged from the step 1
   baseline.
 - `main` and `origin/main` at the same SHA.
