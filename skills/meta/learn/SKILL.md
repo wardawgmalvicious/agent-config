@@ -188,6 +188,15 @@ at least one of:
 - A second reproduction in the session (different input, same result).
 - The user explicitly confirms it's known behaviour, not a fluke.
 
+**Check the shape of the command that took the measurement.** `$?`
+after a pipeline — `cmd 2>&1 | head; echo $?` — is `head`'s, with
+`cmd`'s error text laid beside it by the `2>&1`, so the message is real
+and the code is not; read the bare command or `${PIPESTATUS[0]}`. And
+record which **stream** a message was on: stderr is invisible to
+`$(...)` and to `| grep` without `2>&1`. This is how `gh pr checks` on a
+no-CI repo was noted as exit 0 on 2026-09-16, verbatim from the
+terminal, when it exits 1.
+
 If it can't be verified, still carry it forward but mark it clearly as
 **unverified** in the text (e.g. "Observed Aug 2026 with v1.3; not yet
 documented") so a future `drift-audit` can confirm or remove it.
