@@ -240,33 +240,42 @@ for `--force`.
 
 ### Variant — land without a checkout
 
-**`git switch` is not required to move `main`.** Where another session
-holds this working tree (step 1), or a ruleset refuses a direct push,
-the merge happens server-side and the local `main` **ref** moves
-without the tree ever changing:
+**`git switch` is not required to move `main`.** The two conditions that
+call for this route want different writes, and the difference is a merge
+commit. Where **another session holds the tree** (step 1) and nothing
+refuses a direct push, the write is the branch pushed *to* `main` — the
+default's fast-forward minus the checkout. Where **a ruleset refuses
+that push**, the merge goes server-side, and only the first line changes:
 
 ```bash
-gh pr merge <n> --merge         # or --squash/--rebase per the repo's settings
+git push origin <branch>:main   # the write — ff-enforced by default
+# refused by a ruleset? swap line 1 for: gh pr merge <n> --merge
 git fetch origin --quiet
 git fetch origin main:main      # moves the local main REF; HEAD untouched
 git merge-base --is-ancestor <branch> main
 ```
 
-`git fetch <remote> <src>:<dst>` has the two properties that make this
-safe rather than clever — both reproduced 2026-09-16:
+**Push first, fall through on a rejection — not the reverse.** The
+server-side `--merge` adds a merge commit that reads as a visible break
+where the step 1 `--merges` baseline is `0`, and a shared tree alone
+needs none. Never add the `--delete-branch` flag either — gh deletes
+the *local* branch too, switching the tree to do it (documented, not
+reproduced); step 9 covers it. Reasoned 2026-09-17.
+
+Both refspec forms **refuse a non-fast-forward without a leading `+`**
+— `! [rejected] <src> -> main (non-fast-forward)`, exit 1 — so neither
+can rewrite `main`, only advance it. **Never add the `+`**; that is the
+`--force` of this route. The fetch has one more (pair reproduced
+2026-09-16, push 2026-09-17 on git 2.55):
 
 - **It refuses to update a branch that is currently checked out** in a
   non-bare repo: `fatal: refusing to fetch into branch
   'refs/heads/main' checked out at ...`, exit 128. So it is legal
   *precisely* when someone else's branch is HEAD, and it fails loudly
   in the one case where it would be unsafe.
-- **It refuses a non-fast-forward** without a leading `+`:
-  `! [rejected] main -> main (non-fast-forward)`, exit 1. So it cannot
-  rewrite local `main`, only advance it. **Never add the `+`** — that
-  is the `--force` of this route.
 
-This route is still gated by step 6: merging the PR is the write to
-`main`, whoever performs it.
+This route is still gated by step 6: whichever line writes `main`, the
+push or the PR merge, is the write, whoever performs it.
 
 ## 8. Verify
 
