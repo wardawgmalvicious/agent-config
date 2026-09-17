@@ -249,18 +249,18 @@ that push**, the merge goes server-side, and only the first line changes:
 
 ```bash
 git push origin <branch>:main   # the write — ff-enforced by default
-# refused by a ruleset? swap line 1 for: gh pr merge <n> --merge
+# refused by a ruleset? swap line 1 for: gh pr merge <n> -R <owner>/<repo> --merge
 git fetch origin --quiet
 git fetch origin main:main      # moves the local main REF; HEAD untouched
 git merge-base --is-ancestor <branch> main
 ```
 
 **Push first, fall through on a rejection — not the reverse.** The
-server-side `--merge` adds a merge commit that reads as a visible break
-where the step 1 `--merges` baseline is `0`, and a shared tree alone
-needs none. Never add the `--delete-branch` flag either — gh deletes
-the *local* branch too, switching the tree to do it (documented, not
-reproduced); step 9 covers it. Reasoned 2026-09-17.
+server-side `--merge` adds a merge commit — a visible break where the
+step 1 `--merges` baseline is `0`, and a shared tree alone needs none.
+**Pass `-R <owner>/<repo>` on the fallback**: it clears gh's
+`CanDeleteLocalBranch`, which gates every local-git path, so the merge
+cannot switch the tree; step 9 owns the delete. Read in gh v2.101.0.
 
 Both refspec forms **refuse a non-fast-forward without a leading `+`**
 — `! [rejected] <src> -> main (non-fast-forward)`, exit 1 — so neither
