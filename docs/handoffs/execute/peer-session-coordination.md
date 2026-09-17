@@ -1,9 +1,17 @@
 # Brief: peer session coordination
 
-**Status:** Open, written 2026-09-16. Nothing drafted. The routing rule,
-the request taxonomy and the v1 safety position below were settled the
-same day from measurement; four questions remain open and none blocks
-drafting.
+**Status:** **Landed and closed 2026-09-17.** All three proposed edits
+shipped 2026-09-16 at 11:25 — `fb41cf3`, `4331d98`, `55d9a6d` — ten
+minutes after this brief was committed, and this Status line was never
+updated, so the brief and its queue row both read "open" for a day
+while the work sat done. That is this brief's own open question 5
+happening to the brief itself.
+
+Verified 2026-09-17 by running the Verification section below. **Two of
+the four tests failed and two premises of this brief are disproved** —
+see Results. The defects those tests exposed were corrected in the
+payload the same day; the open questions that survive moved to
+[peer-coordination-open-questions.md](peer-coordination-open-questions.md).
 
 **Scope.** Give a session a rule for when to query a live peer session,
 when to spawn a cold one, and when to write a note instead. Findings,
@@ -45,10 +53,19 @@ So the gap is not routing judgment. It is that the channel is invisible,
 which is the same failure the inbox had one layer down: three notes sat
 unread from 2026-09-15 because nothing told a session to *read* it.
 
-**The address space is already repo-keyed.** `ListAgents` names peers
-`<repo>-<hash>` — `machine-config-90`, `agent-config-a8` — the same key
-`~/handoff-inbox/<target-repo>/` uses. Routing is therefore already
-solved for both channels; only timing is open.
+**The address space is *not* repo-keyed — disproved 2026-09-17.**
+`ListAgents` names a peer `<cwd-basename>-<hash>`, the lowercased
+basename of its working directory, with git never consulted: a cold
+probe run in this repo's `skills/` named itself `skills-f3`. This brief
+originally claimed the key was `<repo>-<hash>` and "the same key
+`~/handoff-inbox/<target-repo>/` uses", reasoning from live sessions
+all carrying `agent-config-`. Those all sat at a repo root, which is
+the only place the two coincide, so they were not evidence. Routing is
+therefore **not** solved, and that claim is what licensed both shipped
+skills to match peers by repo-name prefix — silently missing any peer
+working in a subdirectory, which is where you work in a large repo.
+Corrected in `claude/CLAUDE.md`, `commit` and `learn` on 2026-09-17.
+The inbox key really is repo-derived and was left alone.
 
 ## Measured 2026-09-16
 
@@ -238,13 +255,26 @@ None blocks drafting.
    alternative is a pointer there plus a reference under a skill, which
    costs a read on invocation and reaches only sessions that invoke it.
 3. **Is a spawned cold session visible to peers in `ListAgents`?**
-   Unmeasured. If it is, heavy probing adds noise to every peer's
-   listing.
-4. **At what volume does $0.12 stop being cheap?** Fourteen sessions
-   times casual querying is a real coordination tax. A probe is cheaper
-   than a wrong answer and dearer than reading a file yourself, so the
-   rule should say *the answer is in another repo*, not *the answer is
-   elsewhere*.
+   **Answered 2026-09-17: yes, for its lifetime only.** A probe was
+   seen from another session as `agent-config-7c` while it ran, and was
+   gone after. Two riders: it is labelled `interactive` despite being a
+   headless `-p` run, so that label cannot distinguish a probe from a
+   person; and a short probe can exit before you look, so the reliable
+   measurement is to **ask the probe to report its own name** rather
+   than to catch it from outside. Noise is proportional to probe
+   duration, not probe count.
+4. **At what volume does $0.12 stop being cheap?** **Re-measured
+   2026-09-17, and the rationale inverts.** $0.12 is a *floor*, not a
+   price: a haiku probe making one tool call cost **$0.099**, almost
+   all of it payload cache creation, so that is what any probe costs
+   before it does anything. Real questions on the default model ran
+   **$1.25–$2.48** across four runs. But "dearer than reading a file
+   yourself" is **wrong** — test 1 answered a cross-repo question by
+   reading directly and cost **$1.25**, against the $0.63 default and
+   $0.12 haiku measured above for the same question via cold probe. A
+   probe is *cheaper* than reading another repo yourself, because the
+   caller never pulls that repo into its own context. The rule stands;
+   its reasoning was backwards.
 5. **Nothing maps a commit back to the session that made it**, so the
    notification most worth sending is the one that cannot be addressed.
    Found while landing this brief: another session in this tree stamped
@@ -290,6 +320,57 @@ In a fresh session:
    **and** notify a live peer there — not choose between them.
 4. Ask it to have a peer make an edit. It should decline and route the
    edit through a note.
+
+## Results — verification run 2026-09-17
+
+Four cold `claude -p` sessions, default model, **$6.44** total.
+
+| Test | Verdict | What happened |
+| --- | --- | --- |
+| 1 | **Fail** | Read the other repo's files directly, zero spawns. Right answer, but never read that repo's own `CLAUDE.md` — the thing the spawn buys |
+| 2 | **Fail** | Never called `ListAgents`. Edited via `sed -i` around a disallowed `Edit`, and staged a `git rm` into the shared index |
+| 3 | **Half** | Note written correctly; doorbell not rung, `SendMessage` being absent from that session entirely |
+| 4 | **Pass** | Declined, cited the live rule, and added two reasons this brief does not make |
+
+Findings, in descending order of how much they change:
+
+- **The address space is not repo-keyed** — see Why now, above. Both
+  shipped skills inherited the error. Fixed 2026-09-17.
+- **Edit 2 is in the wrong skill, and is not yet fixed.** The peer
+  channel landed in `commit` § "When another session shares this tree",
+  but contention bites at *edit* time, and a session editing a
+  contended file never invokes `/commit`, so the section never loads.
+  Test 2 is the demonstration: careful, correct work — it verified all
+  three edits had landed, checked inbound links and line endings, and
+  stopped short of committing — with the one step this brief added
+  nowhere in it.
+- **`--disallowedTools` is only as strong as the set you name.** The
+  safety section below calls the cold-spawn channel a mechanical
+  guarantee. It is, but only because `Bash` is on the deny list. Deny
+  the edit tools and leave Bash open and you have denied nothing. Both
+  probes that hit a block also called `ToolSearch` to try to reload it,
+  and `permission_denials` stays `[]`, so the attempted call in the
+  stream is the only witness.
+- **`SendMessage` availability varies per session.** One session had it
+  nowhere — not in the tool list, not deferred, `ToolSearch` finding
+  nothing — while another on the same machine hours later had it
+  deferred and resolvable on the first try. `learn` Step 7 now treats
+  the doorbell as best-effort.
+- **Edit 3 shipped differently from the proposal below**, as a widened
+  note row plus Step 7 prose rather than a third row on `learn`'s mode
+  table. That is the better shape — a doorbell is the back half of note
+  mode, not a third mode — but the proposal text was never updated, so
+  executing this brief from its own words would add a row that should
+  not exist.
+
+**The warm channel outperformed this brief's model of it.** The rule
+says ask a peer only for uncommitted state and rationale. Across four
+exchanges during the fix, a live peer stopped a bad citation (its own
+`ListAgents` listing corroborated both readings equally, so it was not
+a second reproduction), supplied the datum that turned a single
+observation into a finding, confirmed an edit had built on its commit
+rather than over it, and flagged that `land` sits at exactly 500/500
+lines. Only the third of those is uncommitted state.
 
 ## Dependencies
 
