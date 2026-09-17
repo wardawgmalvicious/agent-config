@@ -239,10 +239,10 @@
     },
     "land": {
       "behaviour": {
-        "date": "2026-09-13",
-        "commit": "92a5723",
-        "routing": "cd671efda30bfee6",
-        "body": "ec6c86e9f3bfc373",
+        "date": "2026-09-17",
+        "commit": "a70e43a",
+        "routing": "0bf1cc625799b890",
+        "body": "7e0601045d795aa9",
         "references": "4f53cda18c2baa0c"
       }
     },
