@@ -380,12 +380,19 @@ the one file that mentioned the inbox was Copilot-only and described
 writing to it, never reading.
 
 **Other sessions on this machine are addressable, and their staleness is
-structural.** `ListAgents` names every live one `<repo>-<hash>` — the
-same key the inbox uses — and `SendMessage` reaches one. But everything
-except `skills/` is a **copy read once at session start**, so a peer's
-rules and `CLAUDE.md` are as old as its session. Measured 2026-09-16:
-nine of fourteen live peers predated a user-scope deploy by hours, and
-one reported a landed change as still open.
+structural.** `ListAgents` names every live one `<cwd-basename>-<hash>` —
+the lowercased basename of its working directory, with git never
+consulted — and `SendMessage` reaches one. The name therefore matches the
+repo only while cwd is the repo root, and **filtering peers by repo-name
+prefix silently misses one working in a subdirectory**, which is the
+normal case in a large repo. It is not the inbox's key, which really is
+repo-derived, nor the transcript session id. Measured 2026-09-17,
+undocumented: a probe run in this repo's `skills/` named itself
+`skills-f3`. But everything except `skills/` is a **copy read once at
+session start**, so a peer's rules and `CLAUDE.md` are as old as its
+session. Measured 2026-09-16: nine of fourteen live peers predated a
+user-scope deploy by hours, and one reported a landed change as still
+open.
 
 **So ask a peer only for what exists nowhere but in its context** —
 uncommitted work, what it tried, why it chose a shape, a live login. For

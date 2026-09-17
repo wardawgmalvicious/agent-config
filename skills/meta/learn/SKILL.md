@@ -264,11 +264,25 @@ to scrub. A note that looks generalized but isn't is the failure mode.
 
 **Then ring the doorbell.** A correctly written note nobody reads is
 this inbox's own failure mode — three sat unread for a day from
-2026-09-15. If `ListAgents` shows a live session whose name begins with
-the target repo, `SendMessage` it one line: the note's path and what it
-covers. The note is the artifact; the message is only a pointer to it,
-so if no session is live there nothing is lost — the next one finds the
-note from the start-of-session check in `~/.claude/CLAUDE.md`.
+2026-09-15. If `ListAgents` shows a live session in the target repo,
+`SendMessage` it one line: the note's path and what it covers. **Match
+on the working directory, not a repo-name prefix** — a name is
+`<cwd-basename>-<hash>`, so a peer sitting in a subdirectory of the
+target repo carries that subdirectory's name and a prefix match skips it
+(measured 2026-09-17). The note is the artifact; the message is only a
+pointer to it, so if no session is live there nothing is lost — the next
+one finds the note from the start-of-session check in
+`~/.claude/CLAUDE.md`.
+
+**The doorbell is best-effort.** `SendMessage` does not always travel
+with `ListAgents`, and its availability varies **per session**: on
+2026-09-17 one session had peer discovery and no messaging tool at all
+— absent from the tool list and from the deferred set, with `ToolSearch`
+finding nothing — while another on the same machine hours later had it
+deferred and resolved it first try with `select:SendMessage`. So try
+`ToolSearch` once; if it is still missing, say so in the handoff report
+rather than reading it as "no live session". The note still lands
+either way.
 
 **Never ask that session to apply the note.** Landing it is that
 session's user's call, not yours, and a peer cannot grant the
