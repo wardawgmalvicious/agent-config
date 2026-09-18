@@ -38,7 +38,7 @@ Measured 2026-09-16 across the three repos.
 | Repo | Visibility | Briefs | Index | A brief is about |
 | --- | --- | --- | --- | --- |
 | this one | public | 6 open in `execute/`, plus `docs/audits/` | yes — `execute/README.md` | payload: skills, rules, hooks |
-| `machine-config` | private | 1, in `execute/` | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
+| `machine-config` | private | 2, in `docs/handoffs/` (1 in `execute/` when measured; spent, re-measured 2026-09-18) | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
 | client estate repo | internal | 3, in `execute/` | yes — `execute/README.md`, added 2026-09-16 | estate work |
 
 **The brief shape is already converging without coordination.** All
@@ -324,10 +324,14 @@ and does not fail on it, since a repo's own convention wins.
 ## Dependencies
 
 - **Settled 2026-09-16.** The first instance moved to
-  `machine-config/docs/handoffs/execute/gh-account-path-shim.md` and is
+  `machine-config/docs/handoffs/execute/gh-account-path-shim.md` and was
   indexed by a stub written to this brief's Q1 shape, with that repo's
   `CLAUDE.md` pointing at it. Verified here against the three commits
   (`d5476c9`, `d53310a`, `beb9e67`) and the files themselves, rather
-  than taken on report.
+  than taken on report. **The shim brief is spent**: its change landed
+  and `machine-config` deleted it the same day in `3959ee5`, so that
+  path no longer exists. `git show 3959ee5^:docs/handoffs/execute/gh-account-path-shim.md`
+  there recovers it. The stub outlived it and indexes that repo's
+  current briefs.
 - No dependency on the shim brief's *outcome* — this is about the
   convention, and stands whether that change is made or declined.
