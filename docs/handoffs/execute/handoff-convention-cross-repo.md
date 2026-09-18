@@ -119,9 +119,14 @@ A directory should say which of these it accepts. Today none does.
 ## What this does not propose
 
 - No shared template, for the reason above.
-- No shared tooling. This repo's `audit-status.py` and
+- No tooling copied into other repos. This repo's `audit-status.py` and
   `skill-status.py` derive indexes from metadata; that is worth copying
   only if a repo's brief count justifies it, and one brief does not.
+  **One tool reads them all instead, added 2026-09-18** at the user's
+  call: `scripts/handoff-status.py` sweeps every repo's index and inbox
+  directory from here and writes nothing, after the Q3/Q4 answers sat
+  unread in the estate repo for two days. It changes no repo's
+  convention, which is why it does not contradict the bullet above.
 - No change to `docs/audits/`. The queue-versus-ledger split here is
   already correct and documented.
 
@@ -307,6 +312,14 @@ the in-repo index answers what is open *here*, and
 yet triaged. And all three legs became testable on 2026-09-16, when
 `machine-config` and the estate repo each indexed their directories. No
 cold test has run in either yet.
+
+The **cross-repo** form of the question — what is open anywhere — is
+answered by `uv run scripts/handoff-status.py`. Its first run, on
+2026-09-18, read all three indexes, 13 indexed briefs and 5 inbox
+notes, with no unindexed brief and no dangling row. It also showed
+`machine-config` indexing with a bulleted list rather than a table and
+naming its briefs by date, against invariant 2; the sweep reports that
+and does not fail on it, since a repo's own convention wins.
 
 ## Dependencies
 
