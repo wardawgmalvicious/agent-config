@@ -304,7 +304,8 @@ name.>
 **Coverage:** <What Step 4 found, and which tree it was searched
 against, so it is not redone. Or: could not be checked, and why.>
 
-Delete this note once its content has landed.
+Delete this note once its content has landed, and only with the user's
+explicit approval.
 
 ---
 
