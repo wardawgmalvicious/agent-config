@@ -183,6 +183,13 @@ uv run scripts/audit-status.py
 uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py <repo>
 uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py --sweep C:/Repos/Personal
 
+# Every repo's open handoff briefs and inbox notes in one view, read out of
+# each repo's own index -- nothing kept here. Defaults to every repo two
+# levels under C:/Repos. --check exits 1 on an unindexed brief, a row whose
+# brief is gone, or an inbox note routed nowhere. Reads, never writes.
+uv run scripts/handoff-status.py
+bash tests/scripts/handoff-status/test-findings.sh   # its negative cases
+
 # Skills as PAIRS, which every other checker here misses. `routing` is the
 # only signal that is a bug by default and the only one wired into
 # pre-commit: a DESCRIPTION naming a skill that is not installed fails, a
