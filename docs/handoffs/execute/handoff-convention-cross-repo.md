@@ -1,11 +1,13 @@
 # Brief: a cross-repo handoff convention
 
-**Status:** Open, written 2026-09-16. Nothing drafted. **Q1 and Q2 were
-answered the same day** — see [Decisions](#decisions--2026-09-16), which
-also records four findings that reframed Q1 and retracts one of this
-brief's own arguments. Q3 and Q4 remain open and neither blocks
-drafting: under the chosen form both are per-repo policy that the
-directory declares for itself.
+**Status:** Open, written 2026-09-16. Nothing drafted. **All four
+questions are answered**: Q1 and Q2 the same day — see
+[Decisions](#decisions--2026-09-16), which also records four findings
+that reframed Q1 and retracts one of this brief's own arguments — and
+Q3 and Q4 by the estate repo's own index, also written 2026-09-16 and
+recorded here 2026-09-18 — see
+[Q3 and Q4](#q3-and-q4--answered-by-the-estate-repos-index). What
+remains is execution: Q1's three edits, none of which exists yet.
 
 **Scope.** Generalize the handoff discipline this repo already runs to
 the other repos on this machine, which have started growing their own
@@ -37,7 +39,7 @@ Measured 2026-09-16 across the three repos.
 | --- | --- | --- | --- | --- |
 | this one | public | 6 open in `execute/`, plus `docs/audits/` | yes — `execute/README.md` | payload: skills, rules, hooks |
 | `machine-config` | private | 1, in `execute/` | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
-| client estate repo | internal | 3 | no | estate work |
+| client estate repo | internal | 3, in `execute/` | yes — `execute/README.md`, added 2026-09-16 | estate work |
 
 **The brief shape is already converging without coordination.** All
 three of the client repo's briefs carry a `**Status:**` line; two cite a
@@ -47,9 +49,9 @@ the same shape from this repo. Nobody standardized that.
 **The index was missing everywhere but here**, and that is the part this
 repo learned the hard way — that ordering must live in exactly one file,
 that positions churn so filenames must not carry them, and that a spent
-brief left in a queue invites re-execution. `machine-config` closed that
-gap the same day, leaving the estate repo as the only one without an
-index.
+brief left in a queue invites re-execution. Both other repos closed that
+gap the same day — `machine-config` and then the estate repo, which was
+the last without one (the table above records it corrected 2026-09-18).
 
 So the deliverable is **not a shared brief template.** A template would
 have to span skill authoring, shell configuration and estate work, and
@@ -59,7 +61,8 @@ a short contract plus a per-repo index.
 
 ## Proposed: a minimal common core
 
-Eight invariants. Everything else stays per-repo.
+Nine invariants — eight as written 2026-09-16, and a ninth added
+2026-09-18 when Q4 was answered. Everything else stays per-repo.
 
 1. **One index per repo, and it is the only place order lives.** A
    brief carries its dependencies; it never carries its position.
@@ -75,9 +78,15 @@ Eight invariants. Everything else stays per-repo.
    lost. This repo's `skill-handoff.md` template already does it; it is
    the most portable idea in there.
 7. **Verification steps**, concrete enough to run without the author.
-8. **Delete when spent, or record the decision in place.** The queue
-   rule, not the ledger rule — with the ledger exception kept, see the
-   open questions.
+8. **Delete when spent, promoting durable measurement first.** The
+   queue rule, not the ledger rule, in every repo — but a measurement
+   that outlives the decision moves, dated, into the document that owns
+   it before the brief goes. A **no** is recorded in the deleting
+   commit; a **deferral** is the one outcome that leaves a file. See
+   [Q3](#q3-and-q4--answered-by-the-estate-repos-index).
+9. **The index says whether it is the backlog.** Either it is the only
+   one, or it is scoped to agent-executable work beside a named tracker.
+   Per-repo, declared in the stub beside direction and visibility.
 
 ## The two genuinely new rules
 
@@ -159,7 +168,7 @@ works where a rule would not. But `/learn` is already that skill, and
 already writes a dated cross-repo note. So the deliverable is three
 edits rather than a new artifact:
 
-- the eight invariants go in `skills/meta/learn/references/`, read on
+- the invariants go in `skills/meta/learn/references/`, read on
   invocation, at no listing cost;
 - the Copilot instruction is ported into `copilot/instructions/`, so it
   stops being an unversioned hand-written file and gains the Claude side
@@ -218,12 +227,53 @@ culture whose rules turn on a claim having actually been checked. The
 committed brief is the reference shape instead. Revisit at three or four
 briefs, when the common headings can be observed rather than guessed.
 
+## Q3 and Q4 — answered by the estate repo's index
+
+Both were framed as hypotheses about a client repo. The client repo
+settled them for itself on 2026-09-16, about an hour after this brief
+was committed, when it indexed its three briefs under `execute/` with a
+stub written to Q1's shape. Nobody here read that index until
+2026-09-18, which is why the questions stayed open for two days after
+they had been answered. Its content is cited by kind below, since this
+repo is public.
+
+**Q3 — delete-when-spent suits it; the ledger was never missing.** The
+hypothesis was that estate work would want an audit trail and so the
+ledger rule. The estate index keeps the queue rule instead, and adds
+**one carve-out**: some briefs are queue rows, worthless once executed,
+while others carry profiling that outlives the decision. Before a brief
+is deleted, any durable measurement is promoted, dated, into the
+document that already owns it — in that repo, a dated gotchas table in
+its agent instructions, or its architecture doc. The audit trail the
+hypothesis wanted already exists in two places: git history for the
+brief, and that table for the findings. So the split is **not**
+per-repo, and invariant 8 is rewritten to carry the promotion step
+everywhere. This repo already does the same thing without saying so —
+a finding lands in the skill, rule or `CLAUDE.md` that owns it, and
+then the brief goes.
+
+**Q4 — no collision today, and the index declares what happens if one
+appears.** Measured 2026-09-18: the repo has GitHub issues enabled and
+has never used them — `gh issue list --state all` is empty and the open
+count is 0, matching the index's own 2026-09-16 reading. It uses PRs,
+which are review rather than tracking. Its index says so under a
+heading of its own ("This index is the backlog") and states the
+condition in advance: if a tracker appears, scope the file to
+agent-executable work and let the tracker own the rest. That is the
+right shape for every repo, so it becomes invariant 9 and a third field
+in the stub, beside direction and visibility.
+
+**One follow-on for the Q1 draft.** The estate index carries a "Brief
+shape" section in prose, with a note to cut it to a link once the
+invariants land in `learn`'s `references/`. That is the one duplicated
+copy of the contract so far, and it is flagged by its own author. Cut
+it when the reference exists — it is that repo's edit, so it goes as a
+note to `~/handoff-inbox/<estate-repo>/`, not as a direct write.
+
 ## Open questions
 
-Q3 and Q4 below are still open. Neither blocks drafting — under the form
-chosen above, both are per-repo policy that each directory's stub
-declares for itself, so the contract only has to say *that* a directory
-declares them, not which way.
+None remain. All four are answered below, each pointing at where its
+answer is recorded.
 
 1. **Answered 2026-09-16 — extend `/learn`.** See
    [Decisions](#decisions--2026-09-16). The argument this question
@@ -231,15 +281,16 @@ declares them, not which way.
    form is ruled out on activation mechanics instead.
 2. **Answered 2026-09-16 — the inbox widens**, routed by destination.
    See Decisions.
-3. **Does delete-when-spent suit a client repo?** Estate work plausibly
-   wants the ledger rule instead — an audit trail of what was done and
-   when. If so the split is per-repo rather than universal, and
-   invariant 8 needs rewording.
-4. **Does a client repo's index collide with a real tracker?** This
-   repo has no Jira or Azure DevOps and its queue is the only backlog.
-   A client repo usually does have one, and an index that drifts into
-   project management duplicates it badly. The index may need to be
-   explicitly scoped to *agent-executable* work only.
+3. **Answered 2026-09-16 by the estate repo, recorded 2026-09-18 —
+   yes, with measurement promoted first.** Asked whether a client repo
+   wants the ledger rule instead. It does not, and the split is not
+   per-repo. See
+   [Q3 and Q4](#q3-and-q4--answered-by-the-estate-repos-index).
+4. **Answered the same way — no collision; the index declares its
+   relation to any tracker.** Asked whether a client repo's index
+   duplicates a real tracker. That repo has none, and its index names
+   the condition under which it would narrow to agent-executable work.
+   Now invariant 9.
 
 ## Verification
 
@@ -253,8 +304,9 @@ described this repo in general-sounding words.
 Two corrections to that criterion. It is **one file plus one command**:
 the in-repo index answers what is open *here*, and
 `ls ~/handoff-inbox/<repo>/` answers what has been routed here and not
-yet triaged. And `machine-config` became testable on 2026-09-16, so the
-estate repo is the only leg still blocked.
+yet triaged. And all three legs became testable on 2026-09-16, when
+`machine-config` and the estate repo each indexed their directories. No
+cold test has run in either yet.
 
 ## Dependencies
 
