@@ -67,5 +67,11 @@
   "autoUpdatesChannel": "latest",
   "permissions": {
     "defaultMode": "auto"
-  }
+  },
+  "env": {
+    "ENABLE_CLAUDEAI_MCP_SERVERS": "true"
+  },
+  "deniedMcpServers": [
+    { "serverName": "claude.ai Claude Docs" }
+  ]
 }
