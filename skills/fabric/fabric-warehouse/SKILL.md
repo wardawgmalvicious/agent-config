@@ -184,7 +184,10 @@ SELECT * FROM dbo.FactSales
 OPTION (FOR TIMESTAMP AS OF '2026-03-01T08:00:00.000');
 ```
 
-- 30 calendar days of history retained (Delta Lake versioning), no extra cost.
+- 30 days of history by default — configurable 1–120 per warehouse (preview);
+  the windows for all three mechanisms are in
+  [references/time-travel-and-recovery.md](references/time-travel-and-recovery.md).
+  No compute charge for retention; storage does bill.
 - Timestamp must be **UTC**.
 - Appears **once** per SELECT — all tables see the same point in time.
 - **Cannot** be used in `CREATE VIEW` definitions (you can query views with it).
