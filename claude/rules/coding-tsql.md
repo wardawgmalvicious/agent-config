@@ -56,6 +56,12 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
 - Don't bracket identifiers unless required (reserved word, special
   character, leading digit).
 - Schema-qualify every object: `dbo.Customer`, never bare `Customer`.
+- Never three-part-qualify an object in the **same** warehouse
+  (`[ThisWarehouse].dbo.Customer`): the engine accepts it, but the DacFx
+  build that runs on commit, sync and branch-out treats it as external and
+  defines the object twice. Three-part names are for a different warehouse
+  only — and there, alias-qualify every column once two or more of its
+  tables appear in one statement, or the build cannot bind them.
 
 ```sql
 -- Good
