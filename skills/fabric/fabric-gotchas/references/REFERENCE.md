@@ -40,6 +40,8 @@ The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface ar
 - [Data types in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/data-types) — the unsupported-types table with alternatives: `nvarchar` → `varchar` (UTF-8 collation), `datetime`/`smalldatetime` → `datetime2`, `money` → `decimal`, `image` → `varbinary`, `xml` → no equivalent, `json` → `varchar`, `geography`/`geometry` → varchar/varbinary with WKT/WKB.
 - [Tables in Fabric Data Warehouse — limitations](https://learn.microsoft.com/fabric/data-warehouse/tables) — no computed columns, indexed views, partitioned tables, sequences, sparse columns, synonyms, triggers, unique indexes, UDTs, external tables; 1024-column limit; >750k objects disable metadata caching.
 - [Fabric Migration Assistant for Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/migration-assistant) — workaround table (SQL auth → Entra, column-level encryption → DDM, scalar UDFs → inlineable only, identity columns differ).
+- [Troubleshoot Git integration for warehouse development](https://learn.microsoft.com/fabric/data-warehouse/troubleshoot-git-integration) — every DacFx build-time failure, with before/after SQL. These pass `sqlcmd` and fail only on commit / update / branch-out, which is why they read as a broken sync rather than a T-SQL error.
+- [Deploy a warehouse using pipelines](https://learn.microsoft.com/fabric/data-warehouse/deploy-pipelines) — the fixed deployment settings behind the `DataLoss` block and the success-with-skipped-drop rows above.
 - See `fabric-database` for which restrictions DON'T apply when the engine is Fabric SQL Database.
 
 ## COPY INTO authentication
