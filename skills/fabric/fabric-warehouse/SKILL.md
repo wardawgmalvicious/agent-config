@@ -1,6 +1,6 @@
 ---
 name: fabric-warehouse
-description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename, IDENTITY GA Aug 2026 (bigint, RESEED), transactional ALTER TABLE GA April 2026, CTAS workaround), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/variables), COPY INTO with AUTO_CREATE_TABLE + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry), DDL in transactions (Sch-M blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA, REST/portal), sp_get_table_health_metrics (SQLEP), GPU query acceleration (preview), Recycle-bin recovery, source control/CI-CD (preview, incl. SQLEP), pipeline calls via Script activity (NOT Stored Procedure)."
+description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename, IDENTITY GA Aug 2026 (bigint, RESEED), transactional ALTER TABLE GA April 2026, CTAS workaround), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/variables), COPY INTO with AUTO_CREATE_TABLE + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry), DDL in transactions (Sch-M blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA), sp_get_table_health_metrics (SQLEP), GPU acceleration (preview), Recycle-bin recovery, Git/CI-CD 2.0 (DacFx DataLoss sync block, .sqlproj SDK pin, SQLEP), pipeline calls via Script activity (NOT Stored Procedure)."
 paths:
   - "**/*.Warehouse/**/*.sql"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -66,18 +66,36 @@ ENFORCED` constraints. What constrains you:
 
 CTAS workaround **destroys time-travel history and security (GRANT/DENY)** on the original table — re-apply security after the swap.
 
-**Git sync can drop a table's data on a schema change.** Adding a nullable
-column to a table's DDL file and syncing from Git wiped the table's rows
-(observed 2026-09-03; sibling tables in the same schema untouched). The docs
-describe sync as DacFx incremental deployment but warn of "limitations with
-adding table constraints or columns", and the `IDENTITY_INSERT` bullet under
-*Limitations in Git integration* implies a table rebuild with re-insert —
-mechanism not documented. Treat any synced DDL change to a populated table as
-destructive: capture what you need first (for a control table, `MAX(Watermark)`
-per entity from its run log — only statuses that actually advance the cursor,
-not ones that merely park a pending window), then re-register from that, not
-from the script's seed values. Corollary: a register proc whose UPDATE branch
-assigns every column unconditionally NULLs any column the caller omits, so
+**What a Git sync does to a populated table depends on the warehouse's
+definition version** (`config.version` in `.platform`). Under **2.0** (Aug
+2026) DacFx deploys with `BlockOnPossibleDataLoss = true`, so a synced DDL
+change dropping a column from a populated table **refuses**: `DataLoss: The
+column [s].[t].[c] is being dropped`, then `Msg 50000 ... Rows were
+detected. The schema update is terminating`. The generated guard is
+`IF EXISTS (SELECT TOP 1 1 FROM [s].[t]) RAISERROR(...)` — it fires on **any
+row in the table**, so nulling the column first changes nothing. Run the
+destructive half by hand (`ALTER TABLE s.t DROP COLUMN c` on the live
+warehouse), then sync: the plan then holds no drop and no guard is
+generated. Nothing else is protecting that data, so capture it first.
+Documented for deployment pipelines and VS Code publish; observed on Git
+update Sept 2026, with the pre-drop remedy field-confirmed. The rest of the
+2.0 surface — the upgrade, the fixed DacFx settings, and the build-time
+failures that pass `sqlcmd` — is in
+[references/platform-features.md](references/platform-features.md).
+
+Under **1.0** the failure ran the other way: sync could drop the data
+silently. Adding a nullable column to a table's DDL file and syncing from
+Git wiped the table's rows (observed 2026-09-03; sibling tables in the same
+schema untouched). The docs describe sync as DacFx incremental deployment
+but warn of "limitations with adding table constraints or columns", and the
+`IDENTITY_INSERT` bullet under *Limitations in Git integration* implies a
+table rebuild with re-insert — mechanism not documented. On a 1.0 warehouse
+treat any synced DDL change to a populated table as destructive: capture
+what you need first (for a control table, `MAX(Watermark)` per entity from
+its run log — only statuses that actually advance the cursor, not ones that
+merely park a pending window), then re-register from that, not from the
+script's seed values. Corollary: a register proc whose UPDATE branch assigns
+every column unconditionally NULLs any column the caller omits, so
 re-registration scripts must carry every column they mean to keep.
 
 The `ALTER COLUMN` preview conversion matrix (what widening is actually allowed,
@@ -158,6 +176,12 @@ mandatory `DBCC CHECKIDENT(..., RESEED)`):
   CTAS, `sp_rename`, and every supported `ALTER TABLE` variant (including on
   distributed temp tables, and several in one transaction). **GA April 2026**: any failure rolls every schema change
   back atomically.
+- **That atomicity is yours only when you run the T-SQL.** Fabric's own Git
+  sync and deployment pipelines generate DacFx scripts with
+  `IncludeTransactionalScripts = false`, so a multi-statement schema change
+  applied *by sync* can stop half-way. (The `deploy-pipelines` page still
+  says warehouses "don't support wrapping DDL scripts inside transactions" —
+  stale against the April 2026 GA, but the setting is real.)
 - **DDL takes a Sch-M lock** at table level, blocking concurrent DML *and*
   SELECT — including queries against `sys.tables` / `sys.objects`. Schedule
   schema changes for maintenance windows; inspect contention with
@@ -223,7 +247,9 @@ item definitions** — `sysname`, never `SYSNAME`. See `coding-tsql` —
 - **Feature/GA matrix, GPU query acceleration, source control and CI/CD** —
   [references/platform-features.md](references/platform-features.md). Query
   Acceleration is a *workspace*-wide toggle on a higher billing meter that
-  cancels running queries when flipped.
+  cancels running queries when flipped. Source control covers **definition
+  2.0** (Aug 2026): the upgrade, the fixed DacFx deployment settings, and the
+  build-time failures that pass `sqlcmd` and fail the sync.
 
 ## Reference
 
