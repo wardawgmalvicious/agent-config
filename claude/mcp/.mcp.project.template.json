@@ -7,6 +7,23 @@
                 "Authorization": "Bearer ${<GITHUB_PAT_VAR>}"
             }
         },
+        "azure-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@azure/mcp@latest",
+                "server",
+                "start"
+            ]
+        },
+        "fabric-core": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/core",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
         "fabric-sqlendpoint": {
             "type": "http",
             "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint",
