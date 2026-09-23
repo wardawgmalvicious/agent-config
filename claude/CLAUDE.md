@@ -316,24 +316,33 @@ status` reports the keyring's active account, **not** the one `gh` will
 act as here — probe with `gh api user -q .login` and compare against the
 repo before acting. The full procedure is in the `land` skill.
 
-**That probe vouches only for `gh` typed bare.** The scoping is a
-wrapper, not `gh` config: machine-config's bash profile defines a `gh`
-function, and `~/scripts/gh.ps1` (since 2026-09-16) does the same for a
-`pwsh` with no profile. Each derives the account from the repo's
-`user.name` and runs the binary with a per-call `GH_TOKEN`, which is why
-`GH_CONFIG_DIR`, empty in both shells, is not the tell. So a bare `gh`
-acts as the repo's account in both tool shells, and a `.ps1` calling
-`gh` resolves to the shim as well (measured 2026-09-23). **Anything that
-launches `gh` as a separate program runs the raw binary as the
-keyring's active account**: `timeout`, `env`, `command`, `xargs`,
-`nohup`, a native program spawning it — and, in the Bash tool's snapshot
-mode, a bash script or `bash -c` too. `bash -lc` and a pinned `GH_TOKEN`
-keep the right account. Measured 2026-09-23 in a client repo, where the
-fallback could not see the repo and answered `Could not resolve to a
-Repository`; where it *can* see it, the call succeeds as the wrong
-account after a probe that passed. Bound a slow call with the Bash
-tool's own `timeout` parameter or `run_in_background`, never coreutils
-`timeout`, and where an exec is unavoidable pin the token first:
+**That probe vouches only for a `gh` that reaches the wrapper.** The
+scoping is a wrapper, not `gh` config, and machine-config deploys three
+copies: a `gh` function in its bash profile, `~/scripts/gh.ps1` (since
+2026-09-16) for a `pwsh` with no profile, and `~/scripts/gh` (since
+2026-09-23), that file's extensionless bash twin. Each derives the
+account from the repo's `user.name` and runs the binary with a per-call
+`GH_TOKEN`, which is why `GH_CONFIG_DIR`, empty in both shells, is not
+the tell. So the repo's account answers a bare `gh` in both tool shells
+and, through the twin, `timeout`, `env`, `command`, `xargs`, `nohup`, a
+bash script and `bash -c` in either Bash-tool mode (measured 2026-09-23
+from a repo bound to the keyring's non-active account). **The keyring's
+active account still answers in three cases.** A native program —
+Python's `subprocess`, anything else using Windows process creation —
+looks only for `gh.exe` and never runs an extensionless file. A
+`gh.exe` in any `PATH` directory ahead of `~/scripts` silently shadows
+both script copies, which a machine-scope GitHub CLI always does. And
+every copy falls through where the repo's `user.name` is unset, as in
+any clone outside both roots, or names no keyring login — silently,
+except that the two script copies warn on stderr for a name the keyring
+lacks (measured 2026-09-23). Where the active account can see the repo,
+the call succeeds as the wrong account; where it cannot, it reads as a
+bad slug — on 2026-09-23, before the twin existed, a client repo's
+`timeout gh pr checks --watch` answered `Could not resolve to a
+Repository`. Bound a slow call with the Bash tool's own `timeout`
+parameter or `run_in_background` rather than coreutils `timeout`, since
+both keep `gh` bare, on the path the probe vouched for; and pin the
+token before a native program execs `gh`:
 
 ```bash
 export GH_TOKEN="$(command gh auth token --user "$(git config user.name)")"
