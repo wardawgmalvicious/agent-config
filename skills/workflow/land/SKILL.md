@@ -91,22 +91,33 @@ every login against the repo owner. Use the tool whose account matches.
 
 `gh` may be **folder-scoped**, and whether it is changes what the probe
 means. On the machine this skill was written for it is (since
-2026-09-04): the shell profiles — and, for a `pwsh` with none, a
-`gh.ps1` on `PATH` — wrap `gh` to act as the account named
+2026-09-04): the shell profiles — and, for callers that never read one,
+wrapper files on `PATH` — wrap `gh` to act as the account named
 by the repo's `user.name`, resolved per call through a scoped
 `GH_TOKEN`, so a personal repo gets the personal account and a client
-root gets the client one. Three consequences.
+root gets the client one. Four consequences.
 
 - `gh auth status` reports the keyring's *active* account, not the one
   the wrapper will use. **`gh api user -q .login` is the honest probe**
   either way, which is why it is the command above.
-- The probe vouches only for `gh` typed bare. Anything that launches
-  `gh` as a separate program — `timeout`, `env`, `xargs`, a script —
-  can skip the wrapper and act as the keyring's active account, so the
-  probe passes while the action runs as someone else. **Probe through
-  the exact invocation the action will use.** The mechanism, and the
-  `GH_TOKEN` pin for an exec you cannot avoid, are in
-  `~/.claude/CLAUDE.md` § "Git identity is folder-scoped".
+- The probe vouches only for a `gh` that reaches the wrapper, and what
+  reaches it depends on how the wrapper is built. A shell function is
+  invisible to anything that execs `gh` — `timeout`, `env`, `xargs`, a
+  script. A wrapper file on `PATH` catches those unless a `gh.exe` sits
+  earlier on `PATH`, and never catches a native program, which on
+  Windows looks only for `gh.exe`. Whatever misses the wrapper acts as
+  the keyring's active account, so the probe passes while the action
+  runs as someone else. **Probe through the exact invocation the action
+  will use.** This machine's wrappers, and the `GH_TOKEN` pin for a
+  caller they cannot reach, are in `~/.claude/CLAUDE.md` § "Git identity
+  is folder-scoped".
+- **A wrapper that resolves nothing falls through to the active account
+  as well.** It has nothing to go on where `user.name` is unset — any
+  clone outside every identity root — or names no keyring login, and it
+  can do so without a word (measured 2026-09-23). The probe reports the
+  fallback honestly, so compare its answer with the owner in
+  `git remote -v`, never with `user.name`: that is empty there, or is
+  the very name that failed to resolve.
 - **Where no such wrapper exists, `gh` simply acts as whichever account
   is active** — which makes the probe more necessary, not less. Do not
   read the absence of folder-scoping as safety.
@@ -315,10 +326,13 @@ nothing is the half of this skill that used to be missing.
   exit code does **not** separate — only that stderr line does, so a
   run that discarded stderr must report neither.
 - **To wait for CI, give `gh pr checks <n> --watch` the Bash tool's
-  `timeout` parameter or `run_in_background` — never coreutils
-  `timeout`.** That runs the raw binary (step 2); in a client repo the
-  keyring's active account answered `Could not resolve to a
-  Repository`, which reads as a bad slug (2026-09-23).
+  `timeout` parameter or `run_in_background` rather than coreutils
+  `timeout`.** Those keep `gh` bare, on the path step 2's probe vouched
+  for, while `timeout gh` reaches a wrapper only where a wrapper file
+  sits on `PATH` ahead of `gh.exe`. Where none did, in a client repo,
+  the keyring's active account answered
+  `Could not resolve to a Repository`, which reads as a bad slug
+  (2026-09-23).
 - `git log --merges --oneline | wc -l` against the step 1 baseline —
   and **what counts as correct depends on the route taken**: unchanged
   after a fast-forward, exactly baseline + 1 after a sanctioned
