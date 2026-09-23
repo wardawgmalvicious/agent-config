@@ -26,7 +26,7 @@ git status --short              # see below — clean, or knowingly left
 git branch --show-current       # must not be main
 git log --oneline origin/main..HEAD
 git log --merges --oneline | wc -l   # baseline for step 8
-git worktree list               # separate trees, or one shared HEAD?
+git worktree list               # separate trees — not who shares this one
 git branch -vv                  # where HEAD is, and each branch's tip
 ```
 
@@ -46,17 +46,37 @@ opening an empty PR.
 **Check whether another session is live in this working tree, then
 ask.** Step 7's default runs `git switch`, and one working tree has one
 HEAD, so the switch is not scoped to you — it moves the branch under
-anyone else working here. `git worktree list` and `git branch -vv`
-answer this; the question alone does not. Asked directly, a user
-answers about *subject matter* — "working on something else that won't
-touch your edits" is truthful and entirely compatible with sharing this
-HEAD, which is what it turned out to mean on 2026-09-15. A branch tip
-equal to your own is the tell that someone cut their branch from yours,
-which is what makes the merge method at step 7 load-bearing.
+anyone else working here. **`ListAgents` answers this; the two git
+commands above cannot.** They report worktrees and refs, and print the
+same thing whether one session shares this HEAD or five — measured
+2026-09-22, when both came back clean while `ListAgents` named two live
+sessions in the tree. Read every row rather than matching on the repo's
+name: a session is named for its working directory, so one in a
+subdirectory shares this HEAD under another name. What the git commands
+do show is a branch tip equal to your own — the tell that someone cut
+their branch from yours, which is what makes the merge method at step 7
+load-bearing. Asked directly, a user answers about *subject matter* —
+"working on something else that won't touch your edits" is truthful and
+entirely compatible with sharing this HEAD, which is what it turned out
+to mean on 2026-09-15.
+
+**The answer expires.** It is a live condition, not a preflight fact
+like the merge-count baseline. Re-run `ListAgents` immediately before
+each command that moves HEAD — step 7's `git switch`, and step 9's when
+it has one — and read HEAD in the same command as the move, because a
+session that has *ended* is invisible to `ListAgents` while its moves of
+HEAD are not. On 2026-09-22 a session checked, agreed a HEAD move with
+the one peer it found, and switched to `main` to delete its branch — a
+switch step 9 did not prescribe. By then that peer had ended and two
+others had started, and the next commit one of them made landed on
+`main`, unnoticed for over an hour. The reflog records every move and
+never the mover, so the check comes before the move or not at all.
 
 Someone being live is **not** a reason to abandon the landing — step 7
 has a no-checkout route for exactly this case. Disclose it at step 6
-and take it.
+and take it. The structural answer is a worktree per session, each with
+its own HEAD — a decision about how sessions start, not one to make
+mid-landing.
 
 ## 2. Establish the identity before anything outward
 
@@ -209,9 +229,15 @@ deletion on the same SHA. The pin has been exercised once, passing
 exercised.
 
 ```bash
-[[ "$(git rev-parse <branch>)" == "<sha>" ]] \
+[[ "$(git branch --show-current)" == "<branch>" && "$(git rev-parse <branch>)" == "<sha>" ]] \
   && git switch main && git merge --ff-only <branch> && git push origin main
 ```
+
+Re-run `ListAgents` immediately before this, as step 1 says; the first
+half of the test catches what that cannot, since HEAD off `<branch>`
+means someone moved it, live or not. A peer who appeared after step 6
+moves you to the table's second row below — the same write, without the
+checkout — and is worth a line in the report.
 
 These guards are Bash. PowerShell's `&&` runs its right side whenever
 the left side *ran*, true or false — `(1 -eq 2) && Write-Output RAN`
@@ -346,18 +372,31 @@ route: is everything on the branch inside what merged?
   refuses by fetch history rather than by the merge. `-D` still refuses
   the branch HEAD is on.
 - **Remote.** The lease makes the delete conditional on `origin` still
-  holding `<sha>`. A refusal — `! [rejected] (delete) -> <branch> (stale
-  info)`, exit 1 — means someone pushed after the merge and that work is
-  not in `main`: the answer, not a command to retry, so stop and report.
-  A delete needs no force; the lease adds only the condition.
+  holding `<sha>`. A refusal —
+  `! [rejected] (delete) -> <branch> (stale info)`, exit 1 — means
+  someone pushed after the merge and that work is not in `main`: the
+  answer, not a command to retry, so stop and report. A delete needs no
+  force; the lease adds only the condition.
 
 **Run the halves as separate commands.** Chained, one half's refusal
 silently skips the other — measured 2026-09-22, when a chain of local
 delete, remote delete and prune lost both remote steps and reported
 success. And if `<sha>` is not in this clone — a workflow pushed to the
-PR branch after step 3 — `--is-ancestor` fails `fatal: Not a valid
-commit name`; `git fetch origin pull/<n>/head` brings it in, and that
-ref outlives the branch.
+PR branch after step 3 — `--is-ancestor` fails with
+`fatal: Not a valid commit name`; `git fetch origin pull/<n>/head`
+brings it in, and that ref outlives the branch.
+
+**HEAD on `<branch>` is the one local case that needs a move.** `-D`
+refuses it —
+`error: cannot delete branch '<branch>' used by worktree at '<path>'`
+— and the PR merge leaves you there when you hold the tree. Re-run
+`ListAgents` first. Alone in the tree, move and delete:
+`[[ "$(git branch --show-current)" == "<branch>" ]] && git switch main`
+reads HEAD in the same command, and local `main` is already current
+from step 7's `git fetch origin main:main`. With anyone else live, keep
+the local branch and say so in the report. Never switch just to make
+the delete succeed — that improvised switch is the 2026-09-22 failure
+in step 1.
 
 **Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
 Step 7 reads that setting for planning; it is the wrong thing to act on
@@ -381,9 +420,10 @@ Do not delete, and say why, when:
   recovery path.
 - The user asked to keep it. Honour that with no round — it costs
   nothing, and the reference says why.
-- Another session is live in the tree, or is on this branch. Step 1
-  already checked; the answer applies here too. Note this blocks the
-  *deletion*, not the landing — step 7's variant covers that.
+- Another session is live in the tree, or is on this branch — by a
+  `ListAgents` run now, since step 1's answer has expired. Note this
+  blocks the *deletion*, not the landing — step 7's variant covers
+  that.
 - **The branch is the base of another open PR.** Deleting it retargets
   that PR or closes it. This is the only exception steps 7 and 8 do not
   already establish — merge state does not show it — so it is the one
@@ -416,7 +456,9 @@ to make the override informed, not to refuse it.
   nothing anywhere else.
 - **Never write to `main` before step 6.** Opening a PR and pushing
   `main` are two decisions, not one.
-- **Never `git switch` while another session is live in the tree.**
+- **Never `git switch` while another session is live in the tree** —
+  live by a `ListAgents` run immediately before the switch, never by
+  step 1's.
 - If the repo is not one the authenticated identity owns, stop and
   report rather than working around it. **A protected `main` is not
   that case** — a ruleset requiring pull requests is the repo working
