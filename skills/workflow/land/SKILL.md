@@ -364,8 +364,9 @@ that argument in full, including why it still holds in a shared repo and
 why the exemption does not generalise to any other remote delete.
 
 ```bash
-# Local — keyed on <sha>, the head step 7 pinned
-git merge-base --is-ancestor <branch> <sha> && git branch -D <branch>
+# Local — move off <branch> first if HEAD is on it; alone by a ListAgents run now
+[[ "$(git branch --show-current)" == "<branch>" ]] && git switch main
+git merge-base --is-ancestor <branch> <sha> && git branch -D <branch>   # keyed on <sha>, step 7's pin
 
 # Remote — probe, don't infer. GitHub may have done it already.
 git ls-remote --heads origin <branch>        # empty = already gone
@@ -389,18 +390,17 @@ both misfire there.
   `main`: stop and report, don't retry. A delete needs no force; the
   lease adds only the condition.
 
-**Run the halves as separate commands** — chained, one half's refusal
-silently skips the other. A `<sha>` this clone lacks fails
+**Run each command separately** — chained, one refusal silently skips
+the rest. A `<sha>` this clone lacks fails
 `--is-ancestor` with `fatal: Not a valid commit name`;
 `git fetch origin pull/<n>/head` brings it in, and outlives the branch.
 
-**HEAD on `<branch>` is the one local case that needs a move**: `-D`
+**HEAD on `<branch>` is the one local case that needs the move**: `-D`
 refuses it, and the PR merge leaves you there when you hold the tree.
-Re-run `ListAgents`. Alone, move with
-`[[ "$(git branch --show-current)" == "<branch>" ]] && git switch main`
-— local `main` is current from step 7's fetch — then delete. With anyone
-else live, keep the local branch and say so. Never switch just to make
-the delete succeed: that is step 1's 2026-09-22 failure.
+With anyone else live, keep the local branch and say so. A refusing
+guard is an answer: HEAD on `main` needs no move, and on any other branch
+someone moved it — stop and report. Step 8 left local `main` current.
+Never switch just to make the delete succeed: step 1's 2026-09-22 failure.
 
 **Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
 Step 7 reads that setting for planning; it is the wrong thing to act on
