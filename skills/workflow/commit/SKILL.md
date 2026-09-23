@@ -76,7 +76,9 @@ question.
   between, and `git add <path>` takes every hunk in the file, not the
   hunk you meant. `--stat` is not enough — a foreign hunk in a file you
   also edited has a stat line that looks exactly right. This is the last
-  point at which a swept-in change is free to fix.
+  point at which a swept-in change is free to fix — and in a shared
+  tree it has to *gate* the commit rather than precede it; see
+  [below](#when-another-session-shares-this-tree).
 - **Renames go through `git mv`** (or are staged so git detects the
   rename) so history follows the file.
 
@@ -149,28 +151,41 @@ files, which leaves its rewrite *unstaged*. Neither is contention.
   question this section could not answer before. Ask before cutting a
   patch, not after a collision. What they say about *committed* state is
   as old as their session, so check that yourself.
-- **Write, stage and commit in one chained command — and read the
-  branch inside it.** The gap between reading a diff and running
-  `git add` is where their hunk gets swept in, and HEAD is shared the
-  same way: a peer's `git switch` moves the branch your commit lands
-  on, with no error on either side. `git status` cannot show it — it
-  reports files relative to HEAD, so a clean tree after someone moved
-  HEAD reads exactly like one before, and "the tree is clean, so
-  nothing is at risk" has been said and been wrong.
+- **Stage and read in one chained command, commit in a second, and
+  read the branch inside both** — with `git write-tree` carrying the
+  index you read into the commit. The gap between reading a diff and
+  running `git add` is where their hunk gets swept in, and HEAD is
+  shared the same way: a peer's `git switch` moves the branch your
+  commit lands on, with no error on either side. `git status` cannot
+  show it — it reports files relative to HEAD, so a clean tree after
+  someone moved HEAD reads exactly like one before, and "the tree is
+  clean, so nothing is at risk" has been said and been wrong. One
+  chain from `add` to `commit` closes that gap by dropping the index
+  check: nothing can be read between two `&&`, and a `git diff
+  --cached` printed mid-chain exits 0 and gates nothing (measured
+  2026-09-23: 3 of 3 probes on that form never verified the index).
 
   ```bash
   [[ "$(git branch --show-current)" == "<branch>" ]] \
-    && git add <paths> && git commit -F - <<'MSG'
+    && git add <paths> && git diff --cached && git write-tree
+  # read the diff -- your hunks and nothing else -- and note the tree id
+  [[ "$(git branch --show-current)" == "<branch>" \
+     && "$(git write-tree)" == "<tree>" ]] && git commit -F - <<'MSG'
   …
   MSG
   ```
 
-  From PowerShell the test has to be an `if`: pwsh's `&&` runs its
-  right side whenever the left side *ran*, true or false, so a literal
-  port never refuses (measured 2026-09-23, pwsh 7.6).
+  `git write-tree` hashes the whole index, so the second chain refuses
+  if anything reached it since you read — their hunk in your file, a
+  file of theirs — and ignores what they left unstaged, which `commit`
+  would not take either (all four cases measured 2026-09-23). From
+  PowerShell both tests have to be an `if`: pwsh's `&&` runs its right
+  side whenever the left side *ran*, true or false, so a literal port
+  never refuses (measured 2026-09-23, pwsh 7.6).
 
   ```powershell
-  if ((git branch --show-current) -eq '<branch>') { git add <paths> && git commit … }
+  if ((git branch --show-current) -eq '<branch>') { git add <paths> && git diff --cached && git write-tree }
+  if ((git branch --show-current) -eq '<branch>' -and (git write-tree) -eq '<tree>') { git commit … }
   ```
 
   A mismatch means someone moved HEAD: stop, `ListAgents`, ask —
