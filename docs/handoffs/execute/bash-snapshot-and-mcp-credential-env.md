@@ -5,9 +5,12 @@
   filed by a `machine-config` session and **re-verified independently**
   in this repo the same day before this brief was written.
 - **Kind**: payload edits to three files — `claude/CLAUDE.md`,
-  `claude/mcp/README.md`, `claude/rules/coding-bash.md` — plus one
-  correction to a second, still-unlanded inbox note. Mostly prose; no
+  `claude/mcp/README.md`, `claude/rules/coding-bash.md`. Mostly prose; no
   script, no skill, no fixture.
+- **Consolidated 2026-09-22**: findings 5 and 6 arrived from two other
+  inbox notes and are folded in here rather than briefed separately — see
+  [Provenance](#provenance) for why the first of them cannot be landed
+  apart from finding 1.
 - **Status**: **Open, nothing landed.** The config half of finding 3 is
   already done by the user (see below); every *prose* edit here is
   outstanding. Finding 2's remedies are **unverified by anyone** and must
@@ -19,7 +22,7 @@
 
 ## Evidence status, per finding
 
-The note is an inbound handoff from another session. Its four findings do
+Every finding here is an inbound handoff from another session. They do
 not carry equal weight and the brief should not flatten them.
 
 | Finding | Status |
@@ -28,6 +31,8 @@ not carry equal weight and the brief should not flatten them.
 | 2 — MCP servers authenticate from the harness environment | **Relayed, verified by nobody** — two sessions declined it deliberately, see below |
 | 3 — user-scope MCP prose is stale | **Verified** twice, and the stale surface is *wider* than the note said |
 | 4 — profile stdout captured into `PATH` | **Reproduced independently in three sessions**, at the same snapshot line in each; fix reported landed upstream, unconfirmed |
+| 5 — the two tool shells act as different GitHub accounts | **Reproduced once**, 2026-09-15, by the filing session only; its *mechanism* is corrected by finding 1 and its *conclusion* confirmed by it |
+| 6 — a quoted heredoc fails on apostrophes in prose | **Observed twice**, 2026-09-17 and 2026-09-22, in different sessions and different repos |
 
 **Three sessions, three different snapshot files.** The note was filed by
 a `machine-config` session; this repo re-measured it as `agent-config-be`;
@@ -224,18 +229,114 @@ worked example ships in present or past tense.
 
 ---
 
-## The sibling inbox note must be corrected in the same pass
+## 5. `claude/CLAUDE.md` § "Git identity is folder-scoped" — `gh` acts as a different account per shell
 
-`~/handoff-inbox/agent-config/2026-09-15-gh-account-differs-per-tool-shell.md`
-is **still unlanded** and its line 25 reads "Bash is a login shell and
-gets [the wrapper]". That framing is finding 1's error, and it happens to
-reach the right answer: the folder-scoping `gh` wrapper works in Bash
-because it is a **function**, and functions are exactly what the snapshot
-serializes. Land finding 1 without touching that note and the two will
-disagree in the payload.
+**This one cannot be landed apart from finding 1**, which is why it is a
+finding here rather than a brief beside this one. The note it came from
+states a mechanism finding 1 disproves and reaches a conclusion finding 1
+confirms. Land them separately and `claude/CLAUDE.md` carries the
+contradiction for however long separates them.
 
-Correct the mechanism in that note, or land the two together. **Do not
-delete either note** — see below.
+That section already says the profiles folder-scope `gh`, that
+`gh auth status` reports the keyring's active account rather than the one
+`gh` will act as, and to probe with `gh api user -q .login`. All of that
+held up. Three things it does not say:
+
+**The folder-scoping `gh` is a shell function, not a `gh` config
+mechanism.** It lives in `configs/bash/.bashrc` and
+`configs/powershell/profile.ps1` in `machine-config`, derives the account
+from the repo's `user.name`, and injects a per-call `GH_TOKEN`.
+
+**So the two tool shells act as different GitHub accounts, in the same
+directory, at the same moment.** Measured 2026-09-15 in one repo:
+`gh api user -q .login` returned an admin account under Bash and a
+different personal account under `pwsh`.
+
+The note attributed that to Bash being a login shell. It is not, and the
+real mechanism is **sharper**: a snapshot serializes the profile's
+*functions*, the `gh` wrapper is one of them, and finding 1's own
+snapshot read confirms it present as `eval $'…'`. `pwsh` runs
+`-NoProfile` and gets the raw binary on the keyring's active account. The
+split is real and survives the correction — only its cause changes, from
+"Bash sources the profile" to "the snapshot carries functions and not
+exported variables".
+
+**`GH_CONFIG_DIR` is not the tell.** It is empty in both shells, because
+the wrapper works through `GH_TOKEN` instead. Reading it suggests neither
+shell is scoped, which is wrong for Bash.
+
+**Any `.ps1` that shells out to `gh` inherits the wrong account, and the
+symptom is a bare `404 Not Found` on the repo itself** — not a 403 and
+not a permissions message. An account without admin cannot see the repo's
+settings endpoints, and GitHub reports absence rather than denial, so it
+reads as a broken script or a wrong repo slug. Set the token for the run
+rather than switching shells:
+
+```powershell
+$env:GH_TOKEN = (gh auth token --user <admin-account>)
+try { ./scripts/some-settings-script.ps1 } finally {
+    Remove-Item Env:GH_TOKEN -ErrorAction SilentlyContinue
+}
+```
+
+`gh auth token --user <name>` reads a non-active account out of the
+keyring, which is exactly what the bashrc wrapper does internally.
+Verified 2026-09-15: the script failed with the 404, then succeeded
+unchanged with `GH_TOKEN` set.
+
+**This repo has the worked instance, and it is already half-defended.**
+[`scripts/repo-settings.ps1`](../../../scripts/repo-settings.ps1) is a
+`.ps1` that shells out to `gh`, and its header already refuses `-Apply`
+unless `gh` acts as the repo's owner, on the stated grounds that gh is
+folder-scoped here. It also aborts on a `null` merge setting rather than
+recording the null as a value. So the *script* is covered; what is
+missing is the general statement and the `GH_TOKEN` remedy for the next
+script, which will not carry that header.
+
+**One thing to decide while landing.** The wrapper, the `GH_CONFIG_DIR`
+non-tell and the `GH_TOKEN` line belong in the `gh` paragraph under
+§ "Git identity is folder-scoped". The `pwsh` half could instead sit in
+§ "Local environment", where the `-NoProfile` asymmetry is established.
+**One fact, one home** — pick one and cross-reference. Finding 1 is
+already rewriting the Local environment paragraph, which argues for
+keeping the `gh` consequence with `gh`.
+
+**Not checked by anyone:** whether the same split hits other
+profile-wrapped commands. `az` is handled separately, and nothing beyond
+`gh` and `az` was tested.
+
+---
+
+## 6. `claude/CLAUDE.md` § "Writing files…" — a quoted heredoc fails on apostrophes in prose
+
+The smallest item here, and the one most likely to be declined for the
+slot. That section covers backslashes and warns that PowerShell
+here-strings cannot be used inline in the Bash tool. It does not cover
+the commoner failure: **apostrophe-rich prose breaks a `<<'EOF'`
+heredoc**, surfacing as ``unexpected EOF while looking for matching `'` ``
+— the body parsed as shell text rather than as heredoc content.
+
+What worked in the filing session was a PowerShell single-quoted
+here-string written to a `.ps1` and run, which left backticks, `$(...)`
+and em dashes intact. What worked here was the `Write` tool.
+
+**Observed twice, in different sessions and different repos.**
+2026-09-17, writing a handoff note in a session where `Write` was
+disabled. Again 2026-09-22, in this repo, writing a commit message —
+which is why the commit for `13fed79` went through `Write` and
+`git commit -F` rather than a heredoc.
+
+That is the case that actually fires here: every file this repo writes is
+prose full of `session's` and `peer's`, so the backslash framing the
+section leads with is the rarer half of its own subject.
+
+**Weigh the slot honestly.** Two lines at most, and the case for
+`claude/CLAUDE.md` over a skill is that it fires wherever prose is
+written to a file, which is everywhere. The case *against* is that the
+section's existing advice — use the Write/Edit tools, which are
+unaffected — is already the remedy, so this only adds the symptom to
+recognize. If it is refused, land nothing and record the refusal, because
+the alternative is rediscovering it a third time.
 
 ## Deployment
 
@@ -251,21 +352,55 @@ the prune held by name afterwards:
 `ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid)-'` must come back
 empty.
 
-## Do not delete the inbox notes
+## Provenance
 
-Both `2026-09-22-bash-snapshot-and-mcp-credential-env.md` and
-`2026-09-15-gh-account-differs-per-tool-shell.md` stay in
-`~/handoff-inbox/agent-config/` until their content has landed **and the
-user has explicitly approved the delete** — in this session or any other,
-on anyone's word including the filing peer's. That rule is
-`claude/CLAUDE.md`'s, decided 2026-09-18 in
+Consolidated 2026-09-22, during a sweep of the whole inbox. This brief
+now carries three notes:
+
+| Note | What it gave |
+| --- | --- |
+| `2026-09-22-bash-snapshot-and-mcp-credential-env.md` | findings 1–4, this brief's original scope |
+| `2026-09-15-gh-account-differs-per-tool-shell.md` | finding 5, whole |
+| `2026-09-17-listagents-names-cwd-not-repo.md` | finding 6 only — its other two learnings had already landed |
+
+The third is the interesting one to record, because it shows what a
+mostly-spent note looks like. Its learning 1 (`ListAgents` names a
+session after its cwd, not its repo) landed in three places —
+`claude/CLAUDE.md`, `commit/SKILL.md` and `learn/SKILL.md`, all carrying
+`<cwd-basename>-<hash>` today. Its learning 2 (a cold probe is visible to
+peers for its lifetime) landed as
+[peer-coordination-open-questions.md](peer-coordination-open-questions.md)'s
+answered Q3. Half of its learning 3 landed as `learn`'s *"The doorbell is
+best-effort"* paragraph. Finding 6 is the residue, and the note read as
+pending work for five days on the strength of it.
+
+## The notes were deleted, and this is now their only record
+
+All three were deleted from `~/handoff-inbox/agent-config/` on
+2026-09-22 **with the user's explicit approval**, asked for and given in
+the session that consolidated them. That approval is what the rule
+requires — `claude/CLAUDE.md`'s, decided 2026-09-18 in
 [peer-coordination-open-questions.md](peer-coordination-open-questions.md)
-§ Q3.
+§ Q3 — and it is never a peer's to give, nor implied by content having
+landed.
+
+**Consolidating a note into a brief is not landing it.** Findings 1–6
+are still outstanding payload edits; what changed is only where they are
+written down. If any of this needs the original wording, it is in this
+repo's history from the commit that added this section onward, and
+nowhere else.
 
 ## Dependencies
 
 - Sibling: [bash-snapshot-path-capture-probe.md](bash-snapshot-path-capture-probe.md)
   — non-blocking, decides finding 4's tense only.
+- **Internal, and the only hard one: finding 5 must land in the same
+  commit as finding 1.** Finding 1 rewrites the paragraph finding 5's
+  text depends on, and finding 5 states the consequence that makes
+  finding 1's mechanism worth the words. Either alone leaves
+  `claude/CLAUDE.md` asserting both that Bash sources the profile and
+  that it does not. Findings 2, 3, 4 and 6 are each independent and can
+  land or be declined on their own.
 - Touches `claude/CLAUDE.md`, which
   [peer-coordination-open-questions.md](peer-coordination-open-questions.md)
   also has a pending five-line edit against. Both are open; whichever
