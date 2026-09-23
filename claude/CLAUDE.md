@@ -5,23 +5,43 @@ When the user asks about Power BI / Fabric / TMDL topics, prefer skill content o
 ## Local environment
 
 Windows 11. Two shells, each spawned fresh per tool call: PowerShell 7.6
-(`pwsh`) and Git Bash (mingw64). **They differ on the profile.** `pwsh`
-is launched `-NoProfile` and genuinely has none — `AzLogin` undefined,
-`$env:AZURE_CONFIG_DIR` empty. **Bash is launched `bash -c -l`**, a
-login shell, so it sources the profile, prefixes your output with the
-`Profile and functions loaded…` banner, and carries every function,
-alias and environment pin the profile sets.
+(`pwsh`) and Git Bash (mingw64). **They differ on the profile, and Bash
+differs from itself.** `pwsh` is launched `-NoProfile` and genuinely has
+none — `AzLogin` undefined, `$env:AZURE_CONFIG_DIR` empty.
 
-**`$-` and `BASH_ENV` cannot tell you this**, and trusting them is what
-put the opposite claim here on 2026-09-14: a login shell is still
-non-interactive (`$-` reads `hBc`, no `i`) and still has `BASH_ENV`
-empty, while the profile has demonstrably run. The tell is
-`shopt -q login_shell`, or `/proc/$$/cmdline`.
+**The Bash tool starts in one of two modes, fixed per session, and you
+do not pick which.** `/proc/$$/cmdline` names it:
 
-Measured 2026-09-15 on 2.1.268, and it had flipped within a day — the
-2026-09-14 reading of `$-` was `hmtBc` against today's `hBc`, so the
-invocation changed on a CLI version that did not. **Why is unverified.**
-Re-check rather than assuming either state is permanent.
+- **Snapshot** — `bash -c source
+  ~/.claude/shell-snapshots/snapshot-bash-<id>.sh … && eval '<command>'`.
+  The profile ran **once**, at session start, in the shell that built
+  the snapshot. Its functions arrive (`AzLogin`, `gh`) but
+  **unexported**, and of its exported variables only `PATH` survives:
+  `AZURE_CONFIG_DIR` is empty, and a child `bash` inherits no function.
+- **Login** — `bash -c -l …`. The profile is sourced on every call, so
+  its variables are set and `gh` is an exported function that a child
+  `bash` inherits.
+
+Both occur on 2.1.268: five sessions across 2026-09-22 and 2026-09-23
+read the snapshot form, and one on 2026-09-23 read `-c -l`. The readings
+this section used to record as the CLI flipping split the same way —
+`$-` read `hmtBc` under a snapshot (2026-09-14, 2026-09-22) and `hBc`
+under a login shell (2026-09-15, 2026-09-23) — so it was sessions landing
+in different modes, not the invocation changing. **Why a session gets one
+or the other is unverified.** One lead: the 2026-09-23 login-mode session
+began 5 s before an 18 s snapshot build, where that day's others took
+10–14 s. Read the command line: `shopt -q login_shell` answering `no`
+under a snapshot means "profile ran once, variables gone", not "no
+profile", and `$-` and `BASH_ENV` say nothing about the mechanism.
+
+**So assume no profile-set variable in either shell, and no profile
+function in a child process.** Check a variable before relying on it —
+the Azure pin below is the one that bites — and note that nothing which
+execs a binary, `timeout` and `env` included, ever sees a function; the
+`gh` consequence is in § "Git identity is folder-scoped". The docs say
+only that a snapshot captures "functions, aliases, and shopt options";
+GitHub issues #57435, #25398, #68066, #24564 and #68349 corroborate the
+rest, as issues rather than specification.
 
 `C:\Repos\Personal\machine-config` is the source of truth for what is
 installed here and how it is configured.
@@ -228,22 +248,21 @@ recorded in `~/.config/az-current-tenant`. The startup banner names the
 result, and `(repo)` on it means the folder decided rather than the
 remembered selection.
 
-Three things follow for a tool call. **The two tool shells disagree
-about the pin**, so which one you reach for changes which login
-answers. Bash is a login shell (see Local environment), so the
-profile's resolution has already run and `AZURE_CONFIG_DIR` is set — on
-2026-09-15 it named a real `~/.azure-tenants/<name>/` directory. `pwsh`
-is `-NoProfile`, so the variable is empty there, and empty means the
-profile never ran rather than "no tenant selected": `az` reads the
-shared `~/.azure` instead of the tenant the user chose. Both stores can
-answer exit 0 while holding different logins, so nothing surfaces the
-mismatch — set `AZURE_CONFIG_DIR` explicitly before any `az` call from
-`pwsh` whose answer must match the user's, and check rather than assume
-it in bash. Measured 2026-09-15; the 2026-09-14 entry read `$-` and
-concluded both shells were unpinned, which was wrong for bash. **`az
-account clear` is now tenant-scoped** — it empties the pinned
-directory, not every login on the machine. And **Az PowerShell ignores
-`AZURE_CONFIG_DIR`**:
+Three things follow for a tool call. **Assume neither tool shell is
+pinned.** `pwsh` never is, and Bash is only in its login mode (see Local
+environment) — under a snapshot `AZURE_CONFIG_DIR` is empty exactly as
+in `pwsh`. Empty means the profile's resolution never reached this
+shell, not "no tenant selected": `az` reads the shared `~/.azure`
+instead of the tenant the user chose, and no per-call wrapper re-derives
+it the way one does for `gh` — `type -t az` reads `file`, and `pwsh`
+resolves only `az.cmd`. Both stores can answer exit 0 while holding
+different logins, so nothing surfaces the mismatch — check
+`AZURE_CONFIG_DIR` and set it explicitly before any `az` call whose
+answer must match the user's, in either shell. The 2026-09-14 and
+2026-09-15 entries here disagreed about Bash, and each was right for
+its session's mode. **`az account clear` is now tenant-scoped** — it
+empties the pinned directory, not every login on the machine. And **Az
+PowerShell ignores `AZURE_CONFIG_DIR`**:
 `(Get-AzContextAutosaveSetting).ContextDirectory` still reads `~/.Azure`,
 so none of this reaches the module, only the CLI.
 
@@ -281,6 +300,32 @@ the shell profiles **folder-scope `gh`** the way git is, so `gh auth
 status` reports the keyring's active account, **not** the one `gh` will
 act as here — probe with `gh api user -q .login` and compare against the
 repo before acting. The full procedure is in the `land` skill.
+
+**That probe vouches only for `gh` typed bare.** The scoping is a
+wrapper, not `gh` config: machine-config's bash profile defines a `gh`
+function, and `~/scripts/gh.ps1` (since 2026-09-16) does the same for a
+`pwsh` with no profile. Each derives the account from the repo's
+`user.name` and runs the binary with a per-call `GH_TOKEN`, which is why
+`GH_CONFIG_DIR`, empty in both shells, is not the tell. So a bare `gh`
+acts as the repo's account in both tool shells, and a `.ps1` calling
+`gh` resolves to the shim as well (measured 2026-09-23). **Anything that
+launches `gh` as a separate program runs the raw binary as the
+keyring's active account**: `timeout`, `env`, `command`, `xargs`,
+`nohup`, a native program spawning it — and, in the Bash tool's snapshot
+mode, a bash script or `bash -c` too. `bash -lc` and a pinned `GH_TOKEN`
+keep the right account. Measured 2026-09-23 in a client repo, where the
+fallback could not see the repo and answered `Could not resolve to a
+Repository`; where it *can* see it, the call succeeds as the wrong
+account after a probe that passed. Bound a slow call with the Bash
+tool's own `timeout` parameter or `run_in_background`, never coreutils
+`timeout`, and where an exec is unavoidable pin the token first:
+
+```bash
+export GH_TOKEN="$(command gh auth token --user "$(git config user.name)")"
+```
+
+Read a `404` or `Could not resolve to a Repository` on a repo you know
+exists as an identity question before a slug one.
 
 **Identity leaks through file content too, and the guard is a denylist.**
 `useConfigOnly` protects the author field only. An **organization's**
