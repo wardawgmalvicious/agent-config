@@ -11,10 +11,11 @@
   inbox notes and are folded in here rather than briefed separately — see
   [Provenance](#provenance) for why the first of them cannot be landed
   apart from finding 1.
-- **Status**: **Open, nothing landed.** The config half of finding 3 is
-  already done by the user (see below); every *prose* edit here is
-  outstanding. Finding 2's remedies are **unverified by anyone** and must
-  ship saying so.
+- **Status**: **Executed 2026-09-23, deploy pending.** Findings 1–5
+  landed and finding 6 was declined; finding 1 landed **corrected**,
+  because the executing session measured the other Bash mode. See
+  [Execution](#execution-2026-09-23). Nothing is live until the deploy
+  under Deployment runs.
 - **Run in**: this repo. `claude/CLAUDE.md` is deployed by copy, so an
   edit here is not live until the link script runs — see Deployment.
 - **Queue**: [README.md](README.md) has the execution order. This brief
@@ -423,10 +424,117 @@ nowhere else.
   `claude/CLAUDE.md` asserting both that Bash sources the profile and
   that it does not. Findings 2, 3, 4 and 6 are each independent and can
   land or be declined on their own.
-- Touches `claude/CLAUDE.md`, which
-  [peer-coordination-open-questions.md](peer-coordination-open-questions.md)
-  also has a pending five-line edit against. Both are open; whichever
-  lands second should re-read the section rather than trusting this
-  brief's quoted line numbers.
-- No skill, fixture or `paths:` glob changes, so nothing here needs
-  `/test-skill` or an activation run.
+- Touches `claude/CLAUDE.md`. The five-line edit this sentence once
+  said [peer-coordination-open-questions.md](peer-coordination-open-questions.md)
+  had pending against it **landed 2026-09-18** — the "Run `ListAgents`
+  before editing" paragraph in § "Agent config source".
+  [environment-silent-wrong-answers.md](environment-silent-wrong-answers.md)
+  is the one brief still queuing edits there, against § Local
+  environment and `claude/rules/coding-bash.md` as well; this pass
+  rewrote the first and added to the second without restructuring
+  either, so re-read both rather than trusting its quoted line numbers.
+- No `paths:` glob or fixture changes. The gh note added a `land`
+  body edit (steps 2 and 8), which needs a `/test-skill` retest; that
+  runs in its own fresh session after the deploy.
+
+## Execution, 2026-09-23
+
+Run by `agent-config-bb`. It folded in the whole of the inbox note
+`2026-09-23-gh-exec-wrapper-identity.md` and learning 4 of
+`2026-09-23-repo-settings-not-reached-for-after-recreate.md`, with
+corrections re-measured the same day by `agent-config-dd`.
+
+- Finding 1 — landed **corrected**: both Bash modes, below.
+- Finding 2 — landed as relayed, both remedies marked unverified.
+- Finding 3 — landed, over a wider surface than the brief listed.
+- Finding 4 — landed in past tense.
+- Finding 5 — landed, reconciled with the gh note.
+- Finding 6 — declined; it did not reproduce.
+
+**Finding 1 is two modes, not one.** Five sessions read the snapshot
+form: three on 2026-09-22, then `agent-config-dd` and the gh note's
+session on 2026-09-23, with all six readings identical. The executing
+session read the other mode on the same CLI, 2.1.268, at 2026-09-23
+11:25. `/proc/$$/cmdline` was `/usr/bin/bash -c -l …` and named no
+snapshot, `shopt -q login_shell` answered yes, `$-` read `hBc`,
+`AZURE_CONFIG_DIR` named a tenant directory, `gh` was an exported
+function (`BASH_FUNC_gh` present, and a child `bash` read `type -t gh`
+as `function`), and `PATH` was clean. So `claude/CLAUDE.md` now describes
+both modes with the command line as the tell, and "Bash is not a login
+shell" was never written. The `$-` readings on record line up with the
+modes, `hmtBc` for snapshot and `hBc` for login, which turns the
+section's three "flips" into sessions landing in different modes. Why
+a session gets one mode or the other is still unverified. The one lead
+recorded: this session began 5 s before an 18 s snapshot build, against
+10–14 s for the day's others. The login-shell claim and the
+`Profile and functions loaded…` banner claim are both gone. The banner
+has printed only to a terminal since `c9a2ed4`.
+
+**Finding 5 landed as the gh note's reading**, one fact per home:
+
+- the mechanism in `claude/CLAUDE.md` § "Git identity is
+  folder-scoped";
+- `land` step 2's old wrapper bullet, replaced by the land-specific
+  consequence and a cross-reference, with step 2's intro now naming
+  `gh.ps1`;
+- a step 8 bullet on waiting for CI without coreutils `timeout`.
+
+The note's "a bash script gets the raw binary" holds **in snapshot mode
+only**. In login mode the function is exported and a child `bash`
+inherits it, so the text says that.
+
+The 2026-09-15 `repo-settings.ps1` 404 predates `gh.ps1`, so it was not
+landed as current behaviour. Inside a `.ps1`, `Get-Command gh`
+resolves to the shim, both in-process and under a fresh
+`pwsh -NoProfile -File` (measured 2026-09-23). That measured resolution
+only: in a personal repo both routes answer as the same account, so
+which account a `.ps1` acts as was not measured separately.
+
+`az` has no wrapper in either shell: `type -t az` reads `file`, and
+`pwsh` lists only `az.cmd` and `az`. The unpinned-`az` guidance
+therefore stands for both shells.
+
+**Finding 3's surface was wider again.** The brief named four places in
+`claude/mcp/README.md`: the user-scope prerequisites, the install
+example, the user-scope table and the `microsoft-fabric-mcp` row. Six
+more were stale:
+
+- the "What belongs at which scope" bullets, which still offered "cloud
+  control plane" as a reason for user scope;
+- "all eight" in the project template's intro;
+- "the four hosted endpoints", which is five now that `fabric-core` is
+  among them;
+- the `npx` prerequisite list, which was missing `azure-mcp`;
+- the closing platform note;
+- root `CLAUDE.md`'s `-GlobalMcp` comment, "down to the three".
+
+The counts were replaced with lists or dropped rather than restated.
+`azure-mcp`'s prerelease caveat and `fabric-core`'s detail moved into
+the project table rather than being deleted.
+
+**Finding 6 declined.** `agent-config-dd` ran a quoted heredoc with
+apostrophes in its body three ways on bash 5.3.15 / CLI 2.1.268: on its
+own, chained as `[[ … ]] && cat <<'MSG'`, and inside `$(...)`. All three
+exited 0. Whatever broke the two earlier runs was not apostrophes alone,
+so nothing went into `claude/CLAUDE.md`.
+
+**The symptom then recurred in the executing session, in a different
+shape.** One Bash call wrote nine quoted heredocs, the commit helper and
+eight commit messages, about 165 lines in all. It failed with
+``-c: line 147: unexpected EOF while looking for matching `'`` in
+login mode on 2.1.268. The same nine bodies, written one per call,
+all exited 0, and so did a single heredoc with an unpaired apostrophe.
+So the trigger is the combination rather than any one body. Size,
+heredoc count and the harness's wrapping of the command are all
+candidates, and none was isolated. That strengthens the decline of the
+apostrophe line, which would have named the wrong cause. It is also a
+live lead if this is ever re-opened: split a multi-heredoc command, or
+use `Write`.
+
+**Repo-settings note, learning 4**, went into `claude/mcp/README.md` §
+"GitHub and multiple accounts" rather than `land` step 2, because `land`
+never deletes a repository. It conflicts with that file's
+`powerbi-modeling-mcp` claim that Claude Code implements elicitation. That
+claim was read from the 2.1.252 bundle and never seen working, so the
+text records the conflict rather than picking a side. The note's
+learnings 1–3 were left for the user; learning 1 needs their decision.
