@@ -57,6 +57,26 @@ and the committed file is what needs reapplying.
 remote ref instead of acting on this value, and
 [branch-deletion.md](branch-deletion.md) says why.
 
+## Pinning the write to one SHA
+
+"Checks passed" is a fact about a SHA, a merge is an action on a ref,
+and the ref can move between them — a workflow that pushes to PR
+branches, a peer committing onto your local branch, the author. That is
+why step 7 reads the PR head once, immediately before integrating, and
+every route refuses any other: unpinned, a moved head lands a commit CI
+never validated and nothing reports it. On the two local routes a
+workflow's push also stays off `main`, since what lands is the local
+tip rather than the PR head, and the PR stays open because its head is
+not reachable. A mismatch is the answer rather than an error to retry:
+find which side moved — `git log <sha>..<branch>` for the local branch,
+`git fetch origin pull/<n>/head` for the PR — before anything else.
+
+The pin has been exercised once, in the pass direction
+(`expectedHeadSha`, 2026-09-22); the refusal is API-documented and not
+exercised. `--match-head-commit` is present in gh 2.101.0, and the
+`merge_pull_request` schema carries `expectedHeadSha` (both checked
+2026-09-23).
+
 ## Reading what `main` requires
 
 **Route on what `main` requires, never on whether a push is refused.**

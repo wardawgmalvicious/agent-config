@@ -60,17 +60,14 @@ load-bearing. Asked directly, a user answers about *subject matter* —
 entirely compatible with sharing this HEAD, which is what it turned out
 to mean on 2026-09-15.
 
-**The answer expires.** It is a live condition, not a preflight fact
-like the merge-count baseline. Re-run `ListAgents` immediately before
-each command that moves HEAD — step 7's `git switch`, and step 9's when
-it has one — and read HEAD in the same command as the move, because a
+**The answer expires.** Re-run `ListAgents` immediately before each
+command that moves HEAD — step 7's `git switch`, and step 9's when it
+has one — and read HEAD in the same command as the move, because a
 session that has *ended* is invisible to `ListAgents` while its moves of
-HEAD are not. On 2026-09-22 a session checked, agreed a HEAD move with
-the one peer it found, and switched to `main` to delete its branch — a
-switch step 9 did not prescribe. By then that peer had ended and two
-others had started, and the next commit one of them made landed on
-`main`, unnoticed for over an hour. The reflog records every move and
-never the mover, so the check comes before the move or not at all.
+HEAD are not. On 2026-09-22 a switch made after the check, once the one
+peer it found had ended and two others had started, put one of their
+next commits on `main`, unnoticed for over an hour. The reflog records
+every move and never the mover, so the check comes before the move.
 
 Someone being live is **not** a reason to abandon the landing — step 7
 has a no-checkout route for exactly this case. Disclose it at step 6
@@ -218,35 +215,24 @@ and call it `<sha>`:
 gh pr view <n> --json headRefOid -q .headRefOid   # pull_request_read method get: head.sha
 ```
 
-"Checks passed" is a fact about a SHA, a merge is an action on a ref,
-and the ref can move between them — a workflow that pushes to PR
-branches, a peer committing onto your local branch, the author. So
-every route refuses any head but `<sha>`: the local ones compare it in
-the same command as the write, and the PR merge takes it as
+Every route then refuses any other head — the local ones by comparing
+in the same command as the write, the PR merge by
 `--match-head-commit <sha>` (gh) or `expectedHeadSha`
-(`merge_pull_request`). Unpinned, a moved head lands unvalidated and
-nothing reports it; on the local routes it can also leave a workflow's
-commit off `main` with the PR still open. A mismatch is the answer, not
-an error to retry — find which side moved first. Step 9 keys the
-deletion on the same SHA. The pin has been exercised once, passing
-(2026-09-22, `expectedHeadSha`); the refusal is API-documented and not
-exercised.
+(`merge_pull_request`) — and step 9 keys the deletion on it. A mismatch
+is the answer, not an error to retry; the reference below says why
+heads move and how to find which side did.
 
 ```bash
 [[ "$(git branch --show-current)" == "<branch>" && "$(git rev-parse <branch>)" == "<sha>" ]] \
   && git switch main && git merge --ff-only <branch> && git push origin main
 ```
 
-Re-run `ListAgents` immediately before this, as step 1 says; the first
-half of the test catches what that cannot, since HEAD off `<branch>`
-means someone moved it, live or not. A peer who appeared after step 6
-moves you to the table's second row below — the same write, without the
-checkout — and is worth a line in the report.
-
-These guards are Bash. PowerShell's `&&` runs its right side whenever
-the left side *ran*, true or false — `(1 -eq 2) && Write-Output RAN`
-prints `False`, then `RAN` — so a literal port never refuses; wrap the
-write in `if (…) { … }` instead (measured 2026-09-23, pwsh 7.6).
+Re-run `ListAgents` just before (step 1); HEAD off `<branch>` catches a
+mover it cannot see. A peer who appeared after step 6 moves you to the
+table's second row — the same write, without the checkout. These guards
+are Bash: PowerShell's `&&` runs its right side whenever the left side
+*ran*, true or false, so a literal port never refuses — use
+`if (…) { … }` (measured 2026-09-23, pwsh 7.6).
 
 This preserves the exact SHAs, keeps `main` linear, and adds no merge
 commit. GitHub marks the PR merged once its commits are reachable, so
@@ -275,12 +261,10 @@ gh api repos/<owner>/<repo>/branches/main --jq .protected            # classic p
 | A squash was asked for | name what it collapses, then wait |
 | A merge commit was asked for | one clause of disclosure, then proceed |
 
-**Route on the requirement, never on a refused push.** A refusal is the
-rules minus their bypass list, evaluated for whoever pushes, so an
-account that can bypass is never refused: its push lands on a protected
-`main` outside every required check and reports success. Succeeding is
-the failure mode. A `pull_request` type in the first read is the third
-row; `true` from the second needs the reference to interpret.
+**Route on the requirement, never on a refused push**: an account that
+can bypass is never refused, so its push lands outside every required
+check and reports success. A `pull_request` type from the first read
+is the third row; `true` from the second needs the reference.
 
 **Anything but the first row — read
 [references/integration-routes.md](references/integration-routes.md)
@@ -360,47 +344,32 @@ git push --force-with-lease=<branch>:<sha> origin --delete <branch>
 git fetch origin --prune                     # both paths
 ```
 
-**Both halves key on `<sha>`, never on reachability from `main`.** A
-squash or rebase merge leaves every branch SHA unreachable from `main`
-while every change is in it, so any merged test against `main` says
-*not merged* about a branch that is — and reads a foreign push into a
-landing that had none. `<sha>` asks what this step needs on every
-route: is everything on the branch inside what merged?
+**Both halves key on `<sha>`, never on reachability from `main`**, which
+a squash or rebase merge defeats while every change is in `main`. The
+reference has the measurements, including why `-d` and `git cherry`
+both misfire there.
 
 - **Local.** `--is-ancestor <branch> <sha>` exits 0 when every local
-  commit is in what merged, including when a workflow advanced the head
-  past your push. Non-zero means a commit reached the branch after the
-  pin: keep it and report. Behind that check `-D` is safe, and `-d` is
-  no guard — with its upstream present it passes whatever `main` holds,
-  and with the upstream pruned a squash defeats it, so it passes or
-  refuses by fetch history rather than by the merge. `-D` still refuses
-  the branch HEAD is on.
-- **Remote.** The lease makes the delete conditional on `origin` still
-  holding `<sha>`. A refusal —
-  `! [rejected] (delete) -> <branch> (stale info)`, exit 1 — means
-  someone pushed after the merge and that work is not in `main`: the
-  answer, not a command to retry, so stop and report. A delete needs no
-  force; the lease adds only the condition.
+  commit is in what merged; non-zero means one reached the branch after
+  the pin — keep it and report. Behind that check `-D` is safe.
+- **Remote.** The lease deletes only while `origin` still holds `<sha>`.
+  A refusal — `! [rejected] (delete) -> <branch> (stale info)`, exit 1
+  — means someone pushed after the merge, and that work is not in
+  `main`: stop and report, don't retry. A delete needs no force; the
+  lease adds only the condition.
 
-**Run the halves as separate commands.** Chained, one half's refusal
-silently skips the other — measured 2026-09-22, when a chain of local
-delete, remote delete and prune lost both remote steps and reported
-success. And if `<sha>` is not in this clone — a workflow pushed to the
-PR branch after step 3 — `--is-ancestor` fails with
-`fatal: Not a valid commit name`; `git fetch origin pull/<n>/head`
-brings it in, and that ref outlives the branch.
+**Run the halves as separate commands** — chained, one half's refusal
+silently skips the other. A `<sha>` this clone lacks fails
+`--is-ancestor` with `fatal: Not a valid commit name`;
+`git fetch origin pull/<n>/head` brings it in, and outlives the branch.
 
-**HEAD on `<branch>` is the one local case that needs a move.** `-D`
-refuses it —
-`error: cannot delete branch '<branch>' used by worktree at '<path>'`
-— and the PR merge leaves you there when you hold the tree. Re-run
-`ListAgents` first. Alone in the tree, move and delete:
+**HEAD on `<branch>` is the one local case that needs a move**: `-D`
+refuses it, and the PR merge leaves you there when you hold the tree.
+Re-run `ListAgents`. Alone, move with
 `[[ "$(git branch --show-current)" == "<branch>" ]] && git switch main`
-reads HEAD in the same command, and local `main` is already current
-from step 7's `git fetch origin main:main`. With anyone else live, keep
-the local branch and say so in the report. Never switch just to make
-the delete succeed — that improvised switch is the 2026-09-22 failure
-in step 1.
+— local `main` is current from step 7's fetch — then delete. With anyone
+else live, keep the local branch and say so. Never switch just to make
+the delete succeed: that is step 1's 2026-09-22 failure.
 
 **Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
 Step 7 reads that setting for planning; it is the wrong thing to act on

@@ -1,9 +1,9 @@
 # Deleting the merged branch
 
 Everything behind step 9: why the deletion is safe enough to run
-without its own gate, why both halves key on the SHA step 7 pinned, why
-the remote ref is probed rather than inferred, and why the prune runs on
-both paths.
+without its own gate, why both halves key on the SHA step 7 pinned, what
+HEAD on the branch needs, why the remote ref is probed rather than
+inferred, and why the prune runs on both paths.
 
 Step 9 carries the commands, the SHA key, the lease and the exception
 list. This file carries the reasoning and the evidence — read
@@ -96,6 +96,25 @@ refused `! [rejected] (delete) -> feat (stale info)`, exit 1, and the
 same delete expecting the current SHA went through. That refusal is the
 real *someone pushed after the merge* case — and GitHub's *Restore
 branch* restores the PR's merge-time head, not that commit.
+
+**Run the two halves as separate commands.** Chained, one half's
+refusal silently skips the other: measured 2026-09-22, a chain of local
+delete, remote delete and prune lost both remote steps and reported
+success, and only the branch listing showed it.
+
+## HEAD on the branch
+
+`-D` refuses the branch HEAD is on —
+`error: cannot delete branch '<branch>' used by worktree at '<path>'`,
+exit 1 (2026-09-23) — and step 7's PR merge leaves HEAD there whenever
+you hold the tree, so on that route this is the ordinary case rather
+than an edge. The move it needs is a HEAD move like any other: behind a
+fresh `ListAgents` and a same-command HEAD check, and never made just so
+the delete succeeds while anyone else is live. That improvised switch is
+the 2026-09-22 failure step 1 records — made for cleanup, after the one
+peer checked had ended. The text it replaced assumed the no-checkout
+route always leaves HEAD elsewhere, when that route is chosen because a
+peer is live and HEAD can still be on your branch.
 
 ## Why the remote ref is probed, not inferred
 
