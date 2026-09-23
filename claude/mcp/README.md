@@ -359,6 +359,22 @@ Prefer a real PAT (classic or fine-grained) over `gh auth token`: the `gho_` tok
 
 If you would rather not manage tokens, the Docker MCP Gateway's `github-official` server reuses your local `gh` credentials instead. It works, and it is what this repo used before, but it authenticates as whichever single account `gh` is currently logged into — the multi-account problem again, just less visible. **It is also no longer an option here**: the reasoning that moved `github-mcp` off that gateway — that it makes access depend on Docker Desktop — is now the whole template's policy, so going back would reintroduce the dependency deliberately removed on 2026-09-14.
 
+**`delete_repository` cannot succeed from Claude Code, whatever the
+token may do.** Its only parameters are `owner` and `repo`, and its
+description says it deletes "after the user confirms the exact
+owner/repository name", so the server asks at call time — and here the
+question never reached the user. Two calls on 2026-09-23, on a repo the
+caller owned, both returned `Repository deletion was not confirmed. The
+repository was not deleted.`; `gh repo delete <owner>/<repo> --yes`
+deleted two throwaway repos in the same session. Don't grant a token
+`Administration: read/write` to get past it: the permission is not what
+is missing, and it outlives the attempt. Which layer drops the
+confirmation is not established, and it sits uneasily with the
+[`powerbi-modeling-mcp`](#powerbi-modeling-mcp-is-a-write-tool) finding
+that Claude Code implements elicitation — read from the 2.1.252 bundle,
+never seen firing. If that server's write confirmations are dropped the
+same way, its writes fail closed.
+
 ---
 
 ## Customizing the templates
