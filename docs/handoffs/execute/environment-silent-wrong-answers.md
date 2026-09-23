@@ -340,8 +340,9 @@ evidence the `CLAUDE.md` edit did.
   — **three open briefs now queue edits against one file.** Whichever
   lands last should re-read the section rather than trusting any brief's
   quoted line numbers; all three quote them.
-- Item 3's fallback destination is `land` step 8, which
-  [land-commit-guard-corrections.md](land-commit-guard-corrections.md)
-  is also editing. If item 3 is refused its `CLAUDE.md` slot, land it in
-  that brief's pass rather than opening step 8 twice.
+- Item 3's fallback destination is `land` step 8. The land/commit
+  guard brief that was also editing it landed 2026-09-23 and is
+  deleted; its step 8 change is `570d6a5`, which named the command
+  behind the last bullet. If item 3 is refused its `CLAUDE.md` slot,
+  re-read step 8 as it now stands and add it there.
 - Blocks nothing.
