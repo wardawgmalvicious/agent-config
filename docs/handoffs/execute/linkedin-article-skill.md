@@ -138,19 +138,37 @@ two.
   lint. Keep it commented, as `linkedin-highlights` does.
 - Names are one flat namespace across both trees.
 
-## The peer-behaviour piece stays blocked, and the fix pays twice
+## The peer-behaviour piece stays blocked, and half its fix exists
 
 `2026-09-22-peer-session-behaviour.md` rests on one incident, with no
 control, and both sessions were the same model carrying the same
 instructions. Its own Limits section says so. 1,500 words on that is
 padding.
 
-The fix is the ablation that doc names as missing: two cold sessions in
-a shared tree with a scripted collision, once with the peer subsection
-loaded and once with it stripped. That is close to the cold-probe re-run
-[peer-coordination-open-questions.md](peer-coordination-open-questions.md)
-is still open for — **run it once and it settles both.** Whichever brief
-runs it should keep the transcript so the other does not repeat it.
+The fix is the ablation that doc names as missing: the same situation
+once with the peer subsection of `claude/CLAUDE.md` loaded and once
+with it stripped. **Only the loaded half has been run.** It is the
+2026-09-23 re-run that closed `peer-coordination-open-questions.md`:
+one cold session in the shared tree, two live peers there (one idle,
+one the session that launched it), and `ListAgents` called before the
+first edit. Its transcript is
+`695a54ec-b00c-4bc0-bd2b-139812127900`. That run proves the rule works
+when it is loaded, and nothing more. It tests contact timing, which is
+where the draft points its remedy, and not conduct after contact.
+
+**The stripped half is still missing.** The 2026-09-17 probe is not it:
+the peer subsection was loaded then too, and only the edit-time
+`ListAgents` paragraph was missing. No flag gives it cleanly, checked
+against `claude --help` on 2.1.268. `--bare` reads only
+`ANTHROPIC_API_KEY` or an `apiKeyHelper`, never OAuth, and skips
+`CLAUDE.md` discovery altogether. `--safe-mode` turns off the whole
+payload. The one exact form is a temporary edit of
+`~/.claude/CLAUDE.md`, which every new session on the machine would
+load while it stands, so it has not been run.
+
+Transcripts here are deleted after `cleanupPeriodDays`, which is 15,
+so the loaded half's transcript lasts until about 2026-10-08 unless
+it is copied out.
 
 The tenant draft is **not** blocked this way and should not wait on it.
 
@@ -166,8 +184,9 @@ The tenant draft is **not** blocked this way and should not wait on it.
 
 - `~/drafts/linkedin/` and its `README.md`, which carries both drafts'
   publishing state and is the index for that folder.
-- The ablation overlaps
-  [peer-coordination-open-questions.md](peer-coordination-open-questions.md).
+- The ablation's loaded half is the re-run that closed
+  `peer-coordination-open-questions.md` on 2026-09-23. Its stripped
+  half is still missing; see above.
 - The tenant draft's "small bug" section is now
   `claude/rules/coding-bash.md` § "Output streams", in **past tense**.
   machine-config `c9a2ed4` fixed it on 2026-09-22, and a snapshot taken

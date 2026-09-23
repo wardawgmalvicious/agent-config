@@ -234,14 +234,13 @@ and is listed here as a candidate, not a decision.
   queue's count line — landed 2026-09-23 in `7d31355` and its brief is
   deleted. It never blocked this one, and the two were deliberately not
   bundled: that was a repo-index deletion, this is a payload edit.
-- [peer-coordination-open-questions.md](peer-coordination-open-questions.md)
-  is open on one thing only — a cold re-run of the 2026-09-17 probe
-  showing `ListAgents` fires before a queue edit. **That is a different
-  setup from this one**: two cold sessions in a *shared* tree with a
-  scripted collision, against one session in a worktree. They can be run
-  in the same sitting; they are not the same run, and an earlier claim in
-  this session that one run settles three was wrong on that point. The
-  ablation blocking the peer-session article in
-  [linkedin-article-skill.md](linkedin-article-skill.md) *is* the same
-  setup as the peer-coordination re-run, and those two do settle
-  together.
+- `peer-coordination-open-questions.md` closed on 2026-09-23. Its
+  cold re-run of the 2026-09-17 probe called `ListAgents` before its
+  first edit (transcript `695a54ec`). **That was a different setup
+  from this one**: one cold session in the *shared* tree, live peers
+  and no scripted collision, against one session in a worktree. It
+  settles nothing here. Nor did it settle the ablation blocking the
+  peer-session article in
+  [linkedin-article-skill.md](linkedin-article-skill.md). It is only
+  that ablation's loaded half. The run with the peer subsection
+  stripped is still missing.

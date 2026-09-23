@@ -337,8 +337,9 @@ evidence the `CLAUDE.md` edit did.
 - **This is now the only open brief queuing edits against
   `claude/CLAUDE.md`.** Two others were listed here, and both have
   landed.
-  [peer-coordination-open-questions.md](peer-coordination-open-questions.md)'s
-  edit went in on 2026-09-18.
+  `peer-coordination-open-questions.md`'s edit went in on 2026-09-18,
+  and that brief closed on 2026-09-23 once a cold probe showed the
+  edit firing.
   `bash-snapshot-and-mcp-credential-env.md` was executed and deleted on
   2026-09-23. Its `c22ef8c` rewrote § Local environment around two
   Bash launch modes, one snapshot-sourced and one a login shell, and
