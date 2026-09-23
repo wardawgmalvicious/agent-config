@@ -186,9 +186,37 @@ whole reason for not being one command.
 
 ## 7. Integrate — preserving every SHA
 
+**Pin the write to one SHA first.** Read the PR's head immediately
+before integrating — after required checks pass, where `main` has any —
+and call it `<sha>`:
+
 ```bash
-git switch main && git merge --ff-only <branch> && git push origin main
+gh pr view <n> --json headRefOid -q .headRefOid   # pull_request_read method get: head.sha
 ```
+
+"Checks passed" is a fact about a SHA, a merge is an action on a ref,
+and the ref can move between them — a workflow that pushes to PR
+branches, a peer committing onto your local branch, the author. So
+every route refuses any head but `<sha>`: the local ones compare it in
+the same command as the write, and the PR merge takes it as
+`--match-head-commit <sha>` (gh) or `expectedHeadSha`
+(`merge_pull_request`). Unpinned, a moved head lands unvalidated and
+nothing reports it; on the local routes it can also leave a workflow's
+commit off `main` with the PR still open. A mismatch is the answer, not
+an error to retry — find which side moved first. Step 9 keys the
+deletion on the same SHA. The pin has been exercised once, passing
+(2026-09-22, `expectedHeadSha`); the refusal is API-documented and not
+exercised.
+
+```bash
+[[ "$(git rev-parse <branch>)" == "<sha>" ]] \
+  && git switch main && git merge --ff-only <branch> && git push origin main
+```
+
+These guards are Bash. PowerShell's `&&` runs its right side whenever
+the left side *ran*, true or false — `(1 -eq 2) && Write-Output RAN`
+prints `False`, then `RAN` — so a literal port never refuses; wrap the
+write in `if (…) { … }` instead (measured 2026-09-23, pwsh 7.6).
 
 This preserves the exact SHAs, keeps `main` linear, and adds no merge
 commit. GitHub marks the PR merged once its commits are reachable, so
@@ -211,8 +239,8 @@ gh api repos/<owner>/<repo>/branches/main --jq .protected            # classic p
 | State | Route |
 | --- | --- |
 | `main` requires no pull request, and you hold the tree | the default above |
-| `main` requires no pull request, and another session holds the tree (step 1) | `git push origin <branch>:main` |
-| `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge` |
+| `main` requires no pull request, and another session holds the tree (step 1) | `git push origin <branch>:main`, behind the same `<sha>` check |
+| `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha>` |
 | `main` also requires linear history | stop — every route inside the gate rewrites SHAs; name which, then wait |
 | A squash was asked for | name what it collapses, then wait |
 | A merge commit was asked for | one clause of disclosure, then proceed |
@@ -291,46 +319,61 @@ that argument in full, including why it still holds in a shared repo and
 why the exemption does not generalise to any other remote delete.
 
 ```bash
-git branch -d <branch>          # -d, never -D
+# Local — keyed on <sha>, the head step 7 pinned
+git merge-base --is-ancestor <branch> <sha> && git branch -D <branch>
 
-# The remote half — probe, don't infer. GitHub may have done it already.
-git fetch origin --prune
-git ls-remote --heads origin <branch>               # empty = already gone
+# Remote — probe, don't infer. GitHub may have done it already.
+git ls-remote --heads origin <branch>        # empty = already gone
+# Only when that came back non-empty; deletes only while origin holds <sha>:
+git push --force-with-lease=<branch>:<sha> origin --delete <branch>
 
-# Only when that came back non-empty:
-git merge-base --is-ancestor origin/<branch> main   # guard — see below
-git push origin --delete <branch>
-git fetch origin --prune
+git fetch origin --prune                     # both paths
 ```
 
-**`-d`, never `-D`.** It refuses a branch that is not fully merged, so
-the local half guards itself and the check costs nothing. It also
-refuses the branch you are *on*, which is why it stays legal on the
-no-checkout route.
+**Both halves key on `<sha>`, never on reachability from `main`.** A
+squash or rebase merge leaves every branch SHA unreachable from `main`
+while every change is in it, so any merged test against `main` says
+*not merged* about a branch that is — and reads a foreign push into a
+landing that had none. `<sha>` asks what this step needs on every
+route: is everything on the branch inside what merged?
 
-**The remote half has no such guard, which is what the ancestor check
-is for.** `-d` answers off the *local* merge whatever is on `origin`, so
-a commit someone pushed to the branch after step 3 is invisible to it.
-`--is-ancestor` exits non-zero to mean *no*: that is the answer, not a
-broken command, and it is a stop worth reporting rather than a failure
-to retry — someone pushed to this branch after you landed it, and that
-work is not in `main`.
+- **Local.** `--is-ancestor <branch> <sha>` exits 0 when every local
+  commit is in what merged, including when a workflow advanced the head
+  past your push. Non-zero means a commit reached the branch after the
+  pin: keep it and report. Behind that check `-D` is safe, and `-d` is
+  no guard — with its upstream present it passes whatever `main` holds,
+  and with the upstream pruned a squash defeats it, so it passes or
+  refuses by fetch history rather than by the merge. `-D` still refuses
+  the branch HEAD is on.
+- **Remote.** The lease makes the delete conditional on `origin` still
+  holding `<sha>`. A refusal — `! [rejected] (delete) -> <branch> (stale
+  info)`, exit 1 — means someone pushed after the merge and that work is
+  not in `main`: the answer, not a command to retry, so stop and report.
+  A delete needs no force; the lease adds only the condition.
+
+**Run the halves as separate commands.** Chained, one half's refusal
+silently skips the other — measured 2026-09-22, when a chain of local
+delete, remote delete and prune lost both remote steps and reported
+success. And if `<sha>` is not in this clone — a workflow pushed to the
+PR branch after step 3 — `--is-ancestor` fails `fatal: Not a valid
+commit name`; `git fetch origin pull/<n>/head` brings it in, and that
+ref outlives the branch.
 
 **Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
 Step 7 reads that setting for planning; it is the wrong thing to act on
 here, because the value can change between the two — observed mid-run,
 2026-09-16. **Empty from `ls-remote` means GitHub already deleted the
 branch**: nothing to do, and say *that* in the report rather than
-claiming the session did it. Non-empty means the delete is yours, and
-the `--is-ancestor` guard applies.
+claiming the session did it. Non-empty means the delete is yours, behind
+the lease.
 
-**Prune on both paths — which is why the block above opens with one.**
-Where GitHub auto-deleted the branch, this clone's *remote-tracking* ref
-survives it: `git branch -a` still lists it, and a plain `git fetch`
-will not remove it.
+**Prune on both paths — which is why the block above ends with one,
+outside the conditional.** Where GitHub auto-deleted the branch, this
+clone's *remote-tracking* ref survives it: `git branch -a` still lists
+it, and a plain `git fetch` will not remove it.
 
-The reference has the evidence behind each of those three, and why
-probing beats inferring even though it only narrows the window.
+The reference has the evidence behind each of those, and why probing
+beats inferring even though it only narrows the window.
 
 Do not delete, and say why, when:
 
@@ -368,7 +411,9 @@ to make the override informed, not to refuse it.
   told which one. Once the login is confirmed against the repo, `gh` is
   as good as the MCP; until then, report the mismatch.
 - **Never `--force`, never `--no-verify`** — including to get past a
-  failed `--ff-only`.
+  failed `--ff-only`. Step 9's `--force-with-lease` is on a *delete*,
+  which needs no force; there it only adds a condition, and it licenses
+  nothing anywhere else.
 - **Never write to `main` before step 6.** Opening a PR and pushing
   `main` are two decisions, not one.
 - **Never `git switch` while another session is live in the tree.**
@@ -394,6 +439,8 @@ correctly gets followed loosely.
   commits that separate the rule change from its fixtures" — then wait,
   then record it in the PR body. A request that named the mechanism up
   front has not heard the cost yet, so it is not yet a reaffirmation.
+  **A one-commit branch has nothing to collapse**: its squash gets one
+  clause — the new SHA — and proceeds, like a merge commit.
 - **A merge commit gets one clause and proceeds.** State its cost and
   the step 1 `--merges` baseline in the same turn, record it, do it. No
   wait: the round cannot tell the operator anything the clause did not.

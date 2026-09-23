@@ -1,11 +1,12 @@
 # Deleting the merged branch
 
 Everything behind step 9: why the deletion is safe enough to run
-without its own gate, why the remote ref is probed rather than inferred,
-and why the prune runs on both paths.
+without its own gate, why both halves key on the SHA step 7 pinned, why
+the remote ref is probed rather than inferred, and why the prune runs on
+both paths.
 
-Step 9 carries the commands, the `-d` rule, the ancestor guard and the
-exception list. This file carries the reasoning and the evidence — read
+Step 9 carries the commands, the SHA key, the lease and the exception
+list. This file carries the reasoning and the evidence — read
 it when the run hits an exception, when the probe comes back in a state
 the step did not predict, or when deciding whether the step's argument
 still holds in a repo unlike the one it was written against.
@@ -38,22 +39,63 @@ in any other context. Read this as an exemption for a ref just proven
 redundant, not as a general licence to skip a gate because an action
 looks routine.
 
-## Why `-d` and the ancestor check are not the same guard
+## Why both halves key on the pinned SHA
 
-**`-d`, never `-D`.** It refuses a branch that is not fully merged, so
-the local half guards itself and the check costs nothing. It also
-refuses the branch you are *on* — so on the no-checkout route it
-succeeds only because HEAD is elsewhere, which is the same condition
-that made that route legal in the first place.
+**Reachability from `main` is the wrong question after a squash or a
+rebase.** Both write new commits, so the branch's own SHAs are
+unreachable from `main` while every change is in it. The two guards
+step 9 used to run each tested reachability — `-d` for the local half,
+`git merge-base --is-ancestor origin/<branch> main` for the remote — so
+after a squash both said *not merged* about a merged branch, and the
+ancestor check's reading, "someone pushed to this branch after you
+landed it", reported a foreign push that never happened.
 
-**The remote half has no such guard, which is what the ancestor check
-is for.** `-d` answers off the *local* merge whatever is on `origin`, so
-a commit someone pushed to the branch after step 3 is invisible to it —
-and GitHub's *Restore branch* restores the PR's merge-time head, not
-that commit. `--is-ancestor` exits non-zero to mean *no*: that is the
-answer, not a broken command. A *no* is a stop worth reporting rather
-than a failure to retry — someone pushed to this branch after you landed
-it, and that work is not in `main`.
+**`-d` was worse than wrong: it was intermittent.** It tests *merged
+into its upstream* when one is set, and HEAD only when none is — a
+controlled pair on git 2.55.0.windows.3, 2026-09-22:
+
+```text
+CASE A — remote-tracking upstream still present
+  git branch -d feat/x -> exit 0
+      warning: ... merged to 'refs/remotes/origin/feat/x',
+               but not yet merged to HEAD
+
+CASE B — same squash, remote deleted and pruned
+  git branch -d feat/x -> exit 1
+      error: the branch 'feat/x' is not fully merged
+```
+
+Case A reproduced 2026-09-23 on a two-commit squash. With its upstream
+present `-d` passes whatever `main` holds, because step 3's push already
+made "merged into its upstream" true; pruned, a squash defeats it. Step
+9 ran `-d` *before* its prune, so which case a run got depended on repo
+settings and fetch history — and the passing runs taught that the guard
+worked.
+
+**A patch-id check does not rescue it.** `git cherry` marks a commit `-`
+only when some upstream commit carries the same patch, and a squash of
+two or more commits carries none of them: after a two-commit squash it
+printed `+` for both (2026-09-23). `prune-branches` reaches the same
+verdict for squash repos and takes merge evidence from the PR list; this
+step already holds the stronger form of that evidence — the head the
+merge was pinned to.
+
+**`<sha>` answers the actual question, on every route.** Locally,
+`--is-ancestor <branch> <sha>` asks whether every local commit is inside
+what merged: true after a fast-forward, a merge commit, a squash or a
+rebase alike, and false exactly when a commit reached the branch after
+the pin. Behind it `-D` is safe, and it is one command. The `-d || -D`
+pair that might otherwise stand in fails whenever `-d` already succeeded
+— `error: branch '<name>' not found` — and in an `&&` chain that skips
+everything after it.
+
+On the remote, the lease makes the delete itself conditional on
+`origin` still holding exactly what merged. Measured 2026-09-23 against
+a bare remote: a delete expecting a SHA the remote had moved past was
+refused `! [rejected] (delete) -> feat (stale info)`, exit 1, and the
+same delete expecting the current SHA went through. That refusal is the
+real *someone pushed after the merge* case — and GitHub's *Restore
+branch* restores the PR's merge-time head, not that commit.
 
 ## Why the remote ref is probed, not inferred
 
@@ -75,12 +117,15 @@ and say *that* in the report rather than claiming the session deleted
 it. The action was right either way — the skill already tolerates the
 error — but the report is what a later session reads to decide whether
 the cleanup happened, and it should not describe work it did not do.
-Non-empty means the delete is yours, and the `--is-ancestor` guard
-applies. This is step 2's `gh api user -q .login` move again: probe the
-thing, not the thing that usually implies it. A ref probe also has no
-`null` state, which that setting does when read unauthenticated. Keep
-treating *"remote ref does not exist"* as success if it still appears —
-probing narrows the window, it does not close it.
+Non-empty means the delete is yours, behind the lease. This is step 2's
+`gh api user -q .login` move again: probe the thing, not the thing that
+usually implies it. A ref probe also has no `null` state, which that
+setting does when read unauthenticated. Keep treating *"remote ref does
+not exist"* as success if it still appears — probing narrows the
+window, it does not close it. The lease answers a vanished ref with that
+same `error: unable to delete '<branch>': remote ref does not exist`,
+exit 1, as a plain delete does, so it stays distinct from the lease's
+own `(stale info)` refusal (measured 2026-09-23).
 
 ## Why the prune runs on both paths
 

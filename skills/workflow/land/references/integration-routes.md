@@ -123,8 +123,9 @@ request**, the write is the PR's own merge, server-side, whoever holds
 the tree. Only the first line differs:
 
 ```bash
-git push origin <branch>:main   # the write — ff-enforced by default
-# main requires a PR? line 1 is instead: gh pr merge <n> -R <owner>/<repo> --merge
+[[ "$(git rev-parse <branch>)" == "<sha>" ]] && git push origin <branch>:main   # the write — ff-enforced
+# main requires a PR? line 1 is instead:
+#   gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha>
 git fetch origin --quiet
 git fetch origin main:main      # moves the local main REF; HEAD untouched
 git merge-base --is-ancestor <branch> main
@@ -175,9 +176,21 @@ correctly gets followed loosely.
 2. **Then wait.** A request that named the mechanism up front has not
    heard the cost yet, so it is not yet a reaffirmation. One round.
 3. **Record it in the PR body**, so the history explains its own shape.
+4. **Carry the message over.** Pass the title and body `commit` wrote —
+   `--subject` and `--body` (gh), `commit_title` and `commit_message`
+   (`merge_pull_request`) — rather than the server's default, which a
+   repo setting decides. Relayed from a 2026-09-22 landing: the default
+   replaced the body with a commit list.
 
 Then do it. A reaffirmed instruction is the answer; pressing the point
 twice is worse than the squash.
+
+**A one-commit branch has nothing to collapse**, so its squash gets a
+merge commit's treatment instead — one clause, then proceed. The clause
+is the new SHA, which costs something only where step 1 found a branch
+cut from your tip (below). A 2026-09-22 landing took this exemption
+unasked, and the principle above — a gate calibrated for the expensive
+mechanism turns the cheap one into ceremony — says it was right to.
 
 **Squash has a second cost whenever someone branched from your tip**,
 and that one is not about your history. Preserving the SHAs —
