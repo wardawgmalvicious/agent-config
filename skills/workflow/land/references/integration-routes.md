@@ -172,7 +172,10 @@ can rewrite `main`, only advance it. **Never add the `+`**; that is the
   non-bare repo: `fatal: refusing to fetch into branch
   'refs/heads/main' checked out at ...`, exit 128. So it is legal
   *precisely* when someone else's branch is HEAD, and it fails loudly
-  in the one case where it would be unsafe.
+  in the one case where it would be unsafe. Refused, it moves no ref,
+  `origin/main` included, so step 8's two lines can still match, stale,
+  and prove nothing. Leave `main` to whoever has it checked out, and say
+  so (measured 2026-09-23, git 2.55).
 
 This route is still gated by step 6: whichever line writes `main`, the
 push or the PR merge, is the write, whoever performs it.

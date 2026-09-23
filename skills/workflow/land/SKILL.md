@@ -340,8 +340,10 @@ nothing is the half of this skill that used to be missing.
   what this check exists to catch. Asserting "unchanged" flat fails a
   run that did exactly what was asked (observed 2026-09-16: baseline 1,
   post-merge 2).
-- `main` and `origin/main` at the same SHA:
-  `git rev-parse main origin/main` prints two identical lines. Not
+- `main` and `origin/main` at one SHA: `git rev-parse main origin/main`
+  prints two identical lines. After the refspec push or the PR merge, run
+  `git fetch origin main:main` first: a plain fetch moves `origin/main`
+  alone; unfetched, the PR merge passes on two stale lines (2026-09-23). Not
   `--short`, which takes exactly one revision and fails
   `fatal: Needed a single revision`, exit 128 — run twice in one
   landing before the error was read rather than retried (2026-09-22;
