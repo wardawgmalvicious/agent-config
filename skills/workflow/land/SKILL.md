@@ -197,7 +197,11 @@ exactly what happens next: which route step 7 will take, its write to
 **then deleting the branch locally and on `origin`** (step 9). The
 deletion is disclosed here rather than prompted for afterwards — one
 decision taken before the work, not a third gate on an action this
-recoverable. **Then wait.**
+recoverable. Ask in the same breath whether anything outside git is
+bound to the branch — a workspace synced to it (Fabric's "branch out"
+creates one), a preview environment, a deploy target pinned to the ref.
+Step 9's other exceptions are all git-internal and cannot see one.
+**Then wait.**
 
 Everything past this point writes to `main`. Do not continue on your own
 initiative, even when the merge looks routine, and even when the local
@@ -424,8 +428,12 @@ Do not delete, and say why, when:
   `ListAgents` run now, since step 1's answer has expired. Note this
   blocks the *deletion*, not the landing — step 7's variant covers
   that.
+- **Something outside git is bound to the branch** — the question step
+  6 asked. What breaks when a bound branch is deleted has never been
+  tested; the question is here because asking it only after the merge
+  cost a round trip once (2026-09-22).
 - **The branch is the base of another open PR.** Deleting it retargets
-  that PR or closes it. This is the only exception steps 7 and 8 do not
+  that PR or closes it. This is the only exception steps 6 to 8 do not
   already establish — merge state does not show it — so it is the one
   that needs its own call, through the tool step 2 confirmed:
 
