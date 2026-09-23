@@ -475,23 +475,32 @@ object-valued settings set through the UI never reached the file. Edit
 the profile's `settings.json` directly and check it afterwards rather
 than trusting the UI.
 
-### User-scope MCP servers are deliberately three
+### User-scope MCP servers are bound to nothing
+
+**A server bound to no workspace is still bound to a tenant.**
+`fabric-core` and `azure-mcp` sat at user scope until 2026-09-22 on the
+workspace test, which gave every repo on the machine a Fabric and an
+Azure client answering from whichever login the shared `~/.azure` held
+— the one store no folder pin reaches (§ "Azure CLI state is per
+tenant"). At project scope a personal repo **fails closed** instead: no
+server, no tools, nothing to point at the wrong tenant. So user scope is
+`microsoft-learn-mcp` alone, and **everything else is project scope**,
+in each repo's own `.mcp.json`; a tool absent here is not a fault to
+fix. Reach for a project's `.mcp.json` rather than promoting a server to
+user scope.
 
 `~/.claude.json` holds top-level `mcpServers`, and that key is reconciled
 against `agent-config/claude/mcp/.mcp.global.template.json` by
 `scripts/link-claude.ps1 -GlobalMcp` — off by default even under
 `-Force`, because that file is Claude Code's runtime state rather than
-payload. User scope is `microsoft-learn-mcp`, `azure-mcp` and
-`fabric-core`: servers useful in any repo, and **none of them needs
-Docker** since 2026-09-14 — `dockerhub-mcp` was dropped and `azure-mcp`
-moved from the Docker MCP Gateway to `npx @azure/mcp`, so nothing at
-user scope depends on a UI-configured gateway this repo cannot express.
-`fabric-core` is the one Fabric exception to what follows, and it earns
-it by being bound to no workspace; it needs a live `az login`, and
-without one it fails in every session. **Everything else Fabric and
-Power BI is project scope**, in each Fabric repo's own `.mcp.json`, so
-those tools are absent here and that is not a fault to fix. Reach for a
-project's `.mcp.json` rather than promoting a server to user scope.
+payload.
+
+**Removing a server does not disconnect it mid-session.** Servers
+connect at session start, and after `fabric-core` and `azure-mcp` left
+`~/.claude.json` a live session kept both connected and callable for
+hours. The docs require a restart after editing `.mcp.json` and say
+nothing about removal — observed here, not documented. Until restart, a
+session can act through a server its config no longer defines.
 
 The scope test behind that, the parsing traps that corrupt
 `~/.claude.json` silently, and the `MCP_DOCKER` entry Docker Desktop

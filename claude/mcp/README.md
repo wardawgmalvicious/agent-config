@@ -17,8 +17,8 @@ VS Code / GitHub Copilot also uses a different schema — a top-level `servers` 
 
 The dividing line is **not** how often you use a server; it is whether a session that has nothing to do with that workload should still pay for it. Every user-scope server loads its whole tool surface into every session on the machine, including sessions in repos where it can do nothing useful.
 
-- **User scope** — servers that answer questions about *your work in general*: docs lookup, source control, cloud control plane. Useful in a Fabric repo, a config repo, and a scratch directory alike.
-- **Project scope** — servers bound to a workload: anything needing a workspace ID, a database, a connection string, or a running desktop application. `.mcp.json` in the repo that has those things.
+- **User scope** — servers bound to nothing: no workspace, no account, no tenant. Docs lookup is the case that qualifies — useful in a Fabric repo, a config repo, and a scratch directory alike, and answering as nobody in particular.
+- **Project scope** — servers bound to a workload or an identity: anything needing a workspace ID, a database, a connection string, or a running desktop application, and anything that acts as a GitHub account or an Azure tenant. `.mcp.json` in the repo that has those things.
 
 The Fabric and Power BI servers sit in the project template for exactly this reason. They dominate this collection by count, which makes them feel foundational, but each one is inert without the thing it binds to — a Fabric server without a workspace, and `powerbi-modeling-mcp` without a semantic model to connect to. Keeping them at user scope means every session everywhere carries tools that cannot fire. This repo is the standing example: it is markdown, PowerShell, and Python, and its own [.mcp.json](../../.mcp.json) lists two servers.
 
@@ -30,15 +30,22 @@ The Fabric and Power BI servers sit in the project template for exactly this rea
 
 [.mcp.global.template.json](.mcp.global.template.json) is the set of MCP servers that should be available in **every** Claude Code session on this machine. It is not tied to any single repo.
 
+**It holds one server, `microsoft-learn-mcp`, and the reason is the tenant.**
+`fabric-core` and `azure-mcp` sat here until 2026-09-22 on the grounds
+that neither is bound to a workspace — but each is bound to a *tenant*,
+so every repo on the machine had a Fabric and an Azure client answering
+from whichever login the shared `~/.azure` happened to hold, which is
+the one store no folder-scoped pin reaches (see [the helper's
+login](#the-helpers-login-is-the-harnesss-not-the-folders)). Both moved
+to the project template in `8fba53b`. At project scope a personal repo
+**fails closed**: no server, no tools, nothing to point at the wrong
+tenant.
+
 ### Prerequisites (user scope)
 
-- **Hosted http endpoints** (`microsoft-learn-mcp`) need no local runtime and no credential.
-- **`fabric-core`** needs the Azure CLI on `PATH` and a live `az login`, and nothing else — see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure).
-- **`azure-mcp`** needs [Node.js](https://nodejs.org/) on `PATH`; `npx` fetches the package on first launch. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux invoke `npx` directly.
+None. `microsoft-learn-mcp` is a hosted http endpoint needing no local runtime and no credential.
 
-**This template is deliberately Docker-free** (2026-09-14). `azure-mcp` used to be a Docker MCP Gateway server and `dockerhub-mcp` sat beside it; both are gone, so nothing at user scope depends on Docker Desktop running, on the MCP Toolkit extension being installed, or on gateway servers being toggled on in a UI. That last point is the reason: gateway membership is configured by clicking in Docker Desktop, which no file in this repo can express, so a machine could never be rebuilt from the repo alone. `dockerhub-mcp` was dropped outright rather than replaced — it was already documented here as the most droppable entry in the set.
-
-The trade is that `@azure/mcp` is **prerelease** (`3.0.0-beta.43` when this landed), against a Docker gateway that was stable. Accepted deliberately; revisit if the beta proves unreliable. Measured connecting 2026-09-14.
+**This template is deliberately Docker-free** (2026-09-14). `azure-mcp` used to be a Docker MCP Gateway server and `dockerhub-mcp` sat beside it; `azure-mcp` moved to `npx @azure/mcp` and has since left for the project template, and `dockerhub-mcp` was dropped outright — it was already documented here as the most droppable entry in the set. So nothing at user scope depends on Docker Desktop running, on the MCP Toolkit extension being installed, or on gateway servers being toggled on in a UI. That last point is the reason: gateway membership is configured by clicking in Docker Desktop, which no file in this repo can express, so a machine could never be rebuilt from the repo alone.
 
 The removal also retires the `<USER>` placeholder, which existed only inside those gateways' Windows `env` blocks. `scripts/link-claude.ps1` still performs the substitution, now gated on the placeholder actually appearing, so its `LOCALAPPDATA` warning cannot fire for a substitution that no longer happens.
 
@@ -64,9 +71,7 @@ Or merge the `mcpServers` object into the **top level** of `~/.claude.json` by h
 {
     // ...existing top-level fields...
     "mcpServers": {
-        "microsoft-learn-mcp": { /* from template */ },
-        "fabric-core":         { /* from template */ },
-        "azure-mcp":           { /* from template */ }
+        "microsoft-learn-mcp": { /* from template */ }
     },
     "projects": { /* ...existing per-project local-scope entries stay here... */ }
 }
@@ -100,8 +105,6 @@ And a live session rewrites this file from memory on its own schedule, so a writ
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `microsoft-learn-mcp` | http (`learn.microsoft.com/api/mcp`) | Search and fetch official Microsoft Learn / Azure docs (`microsoft_docs_search`, `microsoft_code_sample_search`, `microsoft_docs_fetch`). Zero-dependency and useful in any repo — the clearest user-scope case in the set. |
-| `fabric-core` | http (`api.fabric.microsoft.com/v1/mcp/core`) | Fabric control plane — workspaces, items, capacities. Bound to no workspace, which is what puts it at user scope. Authenticates through `headersHelper`, so it needs the Azure CLI and a live `az login`; without one it fails in **every** session on the machine. Measured connecting 2026-09-14. |
-| `azure-mcp` | stdio (`npx @azure/mcp server start`) | Azure control-plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. Prerelease — see [Prerequisites](#prerequisites-user-scope). |
 
 ---
 
@@ -109,19 +112,19 @@ And a live session rewrites this file from memory on its own schedule, so a writ
 
 [.mcp.project.template.json](.mcp.project.template.json) is the starter set for servers bound to a specific workload. Copy it to the repo root as `.mcp.json` and commit it — every collaborator who opens the repo in Claude Code gets the same MCP tools.
 
-Treat it as a menu, not a manifest. Almost no repo wants all eight: a Power BI repo wants `powerbi-modeling-mcp`, a Fabric repo wants `microsoft-fabric-mcp` and maybe `fabric-rti-mcp` or `fabric-sqlendpoint`, an application repo wants `sql-mcp` and `azure-devops-mcp`. Delete the rest.
+Treat it as a menu, not a manifest. Almost no repo wants all of them: a Power BI repo wants `powerbi-modeling-mcp`, a Fabric repo wants `microsoft-fabric-mcp` and maybe `fabric-rti-mcp` or `fabric-sqlendpoint`, an application repo wants `sql-mcp` and `azure-devops-mcp`. Delete the rest.
 
 ### Prerequisites (project scope)
 
 Three runtimes, needed only for the servers you keep:
 
-- **`npx`-based stdio servers** (`powerbi-modeling-mcp`, `microsoft-fabric-mcp`, `azure-devops-mcp`) need [Node.js](https://nodejs.org/) on `PATH` — **20.0+** for `powerbi-modeling-mcp`, which is the only one upstream pins a floor for. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux drop `"cmd", "/c"` and invoke `npx` directly.
+- **`npx`-based stdio servers** (`azure-mcp`, `powerbi-modeling-mcp`, `microsoft-fabric-mcp`, `azure-devops-mcp`) need [Node.js](https://nodejs.org/) on `PATH` — **20.0+** for `powerbi-modeling-mcp`, which is the only one upstream pins a floor for. The `cmd /c npx ...` wrapper is the Windows-friendly invocation; on macOS / Linux drop `"cmd", "/c"` and invoke `npx` directly.
 - **`uvx`-based stdio servers** (`fabric-rti-mcp`) need [`uv`](https://docs.astral.sh/uv/) on `PATH` — `uvx` is the Python tool-runner shipped with `uv` (the `npx` analog for PyPI-packaged tools). The server is distributed on PyPI as `microsoft-fabric-rti-mcp` and downloaded on first launch.
 - **`dnx`-based stdio servers** (`fabric-data-factory-mcp`) need the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) on `PATH` — `dnx` is the .NET tool-runner that ships with it (the `npx` analog for NuGet-packaged tools). The server is distributed via NuGet and downloaded on first launch.
 
 `sql-mcp` additionally needs the Data API Builder CLI (`dab`) on `PATH`.
 
-**The four hosted `http` endpoints** — `fabric-sqlendpoint`, `fabric-kqlendpoint`, `powerbi-remote-mcp` and `activator-remote-mcp` — need no runtime, but each needs the **Azure CLI on `PATH` and a live `az login`**: the `headersHelper` shells out on every connection, and Claude Code does not cache the result. Without a login they fail with an error that reads like an unsupported auth flow or a network fault rather than a missing credential; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the relevant preview enabled for the signed-in user — the Fabric MCP preview, and for `powerbi-remote-mcp` the tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*.
+**The hosted Fabric `http` endpoints** — `fabric-core`, `fabric-sqlendpoint`, `fabric-kqlendpoint`, `powerbi-remote-mcp` and `activator-remote-mcp` — need no runtime, but each needs the **Azure CLI on `PATH` and a live `az login`**: the `headersHelper` shells out on every connection, and Claude Code does not cache the result. **Which** login answers is the harness's, not the repo's — see [the helper's login](#the-helpers-login-is-the-harnesss-not-the-folders). Without a login they fail with an error that reads like an unsupported auth flow or a network fault rather than a missing credential; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the relevant preview enabled for the signed-in user — the Fabric MCP preview, and for `powerbi-remote-mcp` the tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*.
 
 ### Install (project scope)
 
@@ -159,12 +162,14 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
+| `azure-mcp` | stdio (`npx @azure/mcp server start`) | Azure control plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. Bound to a tenant, which moved it here from user scope (2026-09-22). **Prerelease** — `3.0.0-beta.43` when it left the Docker MCP Gateway on 2026-09-14, accepted deliberately against a gateway that was stable; revisit if the beta proves unreliable. |
+| `fabric-core` | http (`api.fabric.microsoft.com/v1/mcp/core`) | Fabric control plane — workspaces, items, capacities. Bound to no workspace but to a tenant, which moved it here from user scope (2026-09-22). Authenticates through `headersHelper`, so it needs the Azure CLI and a live `az login`. Measured connecting 2026-09-14. |
 | `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Hosted Fabric SQL-endpoint data plane. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). The workspace/item-bound form of *this* URL is the one variant measured not serving; the bare form here is what works. |
 | `fabric-kqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint`) | Hosted Fabric KQL data plane — Eventhouse / KQL database queries. Same `headersHelper` auth. The workspace/item-bound form works too; use one in a repo's own `.mcp.json` when the target Eventhouse is fixed. |
 | `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The remote Power BI MCP server: execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user with RLS enforced. Distinct from `powerbi-modeling-mcp` below, and from the undocumented `/v1/mcp/powerbi/authoring` URL. |
 | `activator-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>`) | Fabric Activator, pre-scoped to one reflex — rule creation and lifecycle (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). The only one of these with no bare form: the ids are in the URL, so it is per-repo by construction. |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
-| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. It used to be here as the only Claude-Code-reachable stand-in for the hosted Fabric Core endpoint; that endpoint now connects and sits at user scope as `fabric-core`, so this server is carried for its **write** surface and its OneLake and docs tools rather than as a substitute. |
+| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. It used to be here as the only Claude-Code-reachable stand-in for the hosted Fabric Core endpoint; that endpoint now connects and is carried here as `fabric-core`, so this server is carried for its **write** surface and its OneLake and docs tools rather than as a substitute. |
 | `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Its breadth is the reason to keep it now that `fabric-kqlendpoint` and `activator-remote-mcp` connect: those two are hosted and need only `az`, while this one also reaches ADX and Eventstream. Pick by surface, not by reachability. |
 | `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
 | `sql-mcp` | stdio (`dab start --mcp-stdio`) | Data API Builder exposing the repo's Azure SQL schema as MCP tools. Uses `Active Directory Interactive` auth by default; override via the `DAB_CONNECTION_STRING` env var. |
@@ -368,7 +373,7 @@ The substitution machinery stays in `scripts/link-claude.ps1` because the placeh
 
 The linker's guard against a redirected AppData is now gated on the placeholder actually being present, so it cannot warn about a substitution that no longer happens.
 
-Platform note that outlives all of that: the `cmd /c npx ...` wrapper used by `azure-mcp` here and by several project-template servers is **Windows-specific**, and should be a direct `npx` invocation on macOS / Linux.
+Platform note that outlives all of that: the `cmd /c npx ...` wrapper used by several project-template servers, `azure-mcp` among them, is **Windows-specific**, and should be a direct `npx` invocation on macOS / Linux.
 
 ### Project-template placeholders
 

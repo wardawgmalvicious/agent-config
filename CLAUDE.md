@@ -239,8 +239,8 @@ scripts/instructions-log today|reasons|paths|csv|skills|tail
 # Same, when neither copied file has changed.
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
 
-# Also reconcile user-scope MCP servers in ~/.claude.json down to the three
-# in claude/mcp/.mcp.global.template.json, PRUNING everything else there.
+# Also reconcile user-scope MCP servers in ~/.claude.json down to what
+# claude/mcp/.mcp.global.template.json declares, PRUNING everything else.
 # Off by default even under -Force; every run without it just reports the
 # drift. Re-run after a Docker Desktop update, which re-adds MCP_DOCKER.
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -GlobalMcp
