@@ -63,8 +63,10 @@ convention. A worktree converts a silent overwrite into a merge conflict
 in a repo whose convention forbids merges. **A worktree is the right tool
 for divergent state and the wrong one for convergent state** — and the
 user's own narrowing is that divergent work already causes no trouble
-here, while the convergent index is what recurs. That half is
-[handoff-queue-derived-count.md](handoff-queue-derived-count.md).
+here, while the convergent index is what recurs. That half is settled
+separately: the count line both sessions had to touch was deleted
+2026-09-23 in `7d31355`, and the number now has one source in
+`handoff-status.py`.
 
 State both halves in the section. The tempting one-liner — "worktrees
 solve concurrent sessions" — is wrong in this repo specifically.
@@ -228,11 +230,10 @@ and is listed here as a candidate, not a decision.
 
 ## Dependencies
 
-- Sibling to
-  [handoff-queue-derived-count.md](handoff-queue-derived-count.md),
-  which owns the half a worktree does not fix. Neither blocks the other,
-  and they should not be bundled into one commit: one is a repo-script
-  decision and one is a payload edit.
+- The sibling brief owning the half a worktree does not fix — the
+  queue's count line — landed 2026-09-23 in `7d31355` and its brief is
+  deleted. It never blocked this one, and the two were deliberately not
+  bundled: that was a repo-index deletion, this is a payload edit.
 - [peer-coordination-open-questions.md](peer-coordination-open-questions.md)
   is open on one thing only — a cold re-run of the 2026-09-17 probe
   showing `ListAgents` fires before a queue edit. **That is a different
