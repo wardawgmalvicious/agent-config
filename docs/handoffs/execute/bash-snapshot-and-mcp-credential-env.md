@@ -222,10 +222,18 @@ missing is only the profile-specific consequence. One or two lines.
 `machine-config`, which has been told and reports them corrected. Only
 the **rule** belongs here, and it lands whether or not that fix holds.
 
-**Verification of the fix is
-[bash-snapshot-path-capture-probe.md](bash-snapshot-path-capture-probe.md)**,
-a sibling brief. It does not block this one; it only decides whether the
-worked example ships in present or past tense.
+**The fix is verified, so the example shipped in past tense.** A sibling
+probe brief measured it and was deleted once it had; this is its
+reading, taken 2026-09-23 by `agent-config-dd`. That session's snapshot,
+`snapshot-bash-1790171362333-vxdxc7.sh`, was created 2026-09-23 09:49:32
+-0400, after machine-config `c9a2ed4` (2026-09-22 20:30:50 -0400, "print
+the banner only when stdout is a terminal"). `$PATH` held no escape
+code and no banner, snapshot line 221 was a plain
+`export PATH='/c/Users/<user>/bin:...`, and no banner reached Bash tool
+output. The probe's step 3 — `test -d` on the first `PATH` entry —
+failed, and could never pass here: that entry is `~/bin`, which the
+probe itself recorded as absent (re-confirmed 2026-09-23). The fault was
+in the check, not the fix.
 
 ---
 
@@ -406,8 +414,8 @@ nowhere else.
 
 ## Dependencies
 
-- Sibling: [bash-snapshot-path-capture-probe.md](bash-snapshot-path-capture-probe.md)
-  — non-blocking, decides finding 4's tense only.
+- The sibling path-capture probe ran 2026-09-23, passed, and was
+  deleted; its reading is under finding 4.
 - **Internal, and the only hard one: finding 5 must land in the same
   commit as finding 1.** Finding 1 rewrites the paragraph finding 5's
   text depends on, and finding 5 states the consequence that makes
