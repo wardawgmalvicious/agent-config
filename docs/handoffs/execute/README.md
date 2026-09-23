@@ -1,7 +1,8 @@
 # Open briefs — execution order
 
-Fourteen items remain on the queue: ten open and four deferred. Every
-deferral names the trigger that would re-open it; none has fired.
+Every deferral names the trigger that would re-open it; none has fired.
+Run `uv run scripts/handoff-status.py` for what is open and how long it
+has sat.
 
 | Item | State |
 | --- | --- |
