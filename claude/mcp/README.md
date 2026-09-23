@@ -273,16 +273,26 @@ batch renames run across hundreds of objects inside one transaction.
 | `--readonly` | Safe mode — blocks every write. The right default for an *audit* repo that only reads the model. |
 | `--skipconfirmation` | Approves all writes with no prompt. Only with backups and a known-good operation. |
 
-**The confirmation prompt works from Claude Code**, which was worth
-checking rather than assuming — the server gates the first write and the
-first query behind the [MCP elicitation
-protocol](https://modelcontextprotocol.io/specification/2025-06-18/client/elicitation),
-and a client that doesn't implement it would fail or hang exactly where a
-`--skipconfirmation` workaround looks tempting. Claude Code **2.1.252
-does** implement it: the bundle registers an `elicitation/create` request
-handler with both `form` and `url` modes. So leave the confirmations on.
-This is *not* the DCR situation that blocks automatic OAuth against the
-hosted Fabric endpoints — different protocol, different answer.
+**Claude Code implements the confirmation protocol. No confirmation has
+yet been seen to reach a user here.** The server gates the first write
+and the first query behind the [MCP elicitation
+protocol](https://modelcontextprotocol.io/specification/2025-06-18/client/elicitation).
+A client that doesn't implement it would fail or hang exactly where a
+`--skipconfirmation` workaround looks tempting. The support is
+documented: Claude Code's MCP docs, § "Respond to MCP elicitation
+requests" (read 2026-09-23), say it shows an interactive dialog
+automatically, in `form` or `url` mode, and the 2.1.252 bundle
+registers the matching `elicitation/create` handler. What is missing is
+an observation. The one server-side confirmation exercised from here,
+`github-mcp`'s `delete_repository`, never reached the user (see
+[GitHub and multiple accounts](#github-and-multiple-accounts)), and this
+server's own prompt has not been tried.
+
+**Leave the confirmations on regardless.** If a prompt is dropped the
+way that one was, the write is refused rather than applied, which is
+the safe direction. `--skipconfirmation` removes the only gate. This is
+*not* the DCR situation that blocks automatic OAuth against the hosted
+Fabric endpoints — different protocol, different answer.
 
 Two access facts that are easy to attribute to the wrong layer:
 
@@ -368,12 +378,17 @@ caller owned, both returned `Repository deletion was not confirmed. The
 repository was not deleted.`; `gh repo delete <owner>/<repo> --yes`
 deleted two throwaway repos in the same session. Don't grant a token
 `Administration: read/write` to get past it: the permission is not what
-is missing, and it outlives the attempt. Which layer drops the
-confirmation is not established, and it sits uneasily with the
-[`powerbi-modeling-mcp`](#powerbi-modeling-mcp-is-a-write-tool) finding
-that Claude Code implements elicitation — read from the 2.1.252 bundle,
-never seen firing. If that server's write confirmations are dropped the
-same way, its writes fail closed.
+is missing, and it outlives the attempt.
+
+**Which layer drops the confirmation is not established.** Claude Code
+documents elicitation as a dialog it shows automatically (see
+[`powerbi-modeling-mcp`](#powerbi-modeling-mcp-is-a-write-tool), where
+the protocol matters most), and no `Elicitation` hook is configured
+here to auto-decline one. Two variables were not recorded. The first is
+whether the server raised an elicitation at all. The second is the
+surface the calls ran from: the terminal, or the VS Code extension,
+whose docs never mention elicitation. Pin those down before calling it
+a client gap.
 
 ---
 
