@@ -351,6 +351,16 @@ export GH_TOKEN="$(command gh auth token --user "$(git config user.name)")"
 Read a `404` or `Could not resolve to a Repository` on a repo you know
 exists as an identity question before a slug one.
 
+**`gh auth` passes through all three copies untouched**, so
+`gh auth refresh -s <scope>` widens the keyring's *active* account
+whichever folder it runs in: it has no `--user` flag, and its help reads
+"for active account" (gh 2.101.0). In a repo bound to the other account
+it widens the wrong token — and gh's own missing-scope error suggests
+exactly that command. Switch around it: `gh auth switch --user <login>`,
+refresh, switch back. Leave all three to the user, since refresh waits
+on a browser device flow and a switch moves the active account for
+every session on this machine.
+
 **Identity leaks through file content too, and the guard is a denylist.**
 `useConfigOnly` protects the author field only. An **organization's**
 account names — `AzureAD\…` / Entra accounts, tenant names, internal
