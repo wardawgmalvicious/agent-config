@@ -3,8 +3,8 @@ name: commit
 # model: sonnet  # any model: value blocks Copilot slash invocation
 effort: xhigh
 disable-model-invocation: false
-description: "Splits working-tree changes into logical, self-consistent commits (ordering so nothing dangles, stepping files that straddle commits through intermediate states), writes conventional-commit messages (feat/fix/docs/refactor/chore) with motivation in the body, stages explicit paths only, uses git mv for renames, never pushes/amends/skips hooks unless explicitly asked, and ends by reporting the resulting hashes against a clean tree. Includes pre-commit checks for Fabric Git-synced repos (core.autocrlf, .gitattributes, whitespace-only portal diffs)."
-when_to_use: "Use when asked to commit changes — /commit, 'commit this', 'make the commits', 'commit these split logically'."
+description: "Splits working-tree changes into logical, self-consistent commits (ordering so nothing dangles, stepping files that straddle commits through intermediate states), writes conventional-commit messages (feat/fix/docs/refactor/chore) with motivation in the body, stages explicit paths only, uses git mv for renames, never pushes/amends/skips hooks unless explicitly asked, and ends by reporting the resulting hashes against a clean tree. Includes pre-commit checks for Fabric Git-synced repos (core.autocrlf, .gitattributes, whitespace-only portal diffs). In a working tree another session is editing at the same time, gates the commit on the branch and on the index exactly as read, so nothing of theirs is swept in and nothing lands on a branch a peer switched to."
+when_to_use: "Use when asked to commit changes — /commit, 'commit this', 'make the commits', 'commit these split logically' — and when the commit has to be made in a tree another session is working in: 'another session is live in this tree', 'commit mine without touching theirs'."
 ---
 
 # Commit workflow
