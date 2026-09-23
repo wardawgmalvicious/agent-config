@@ -3,7 +3,7 @@ name: land
 # model: inherit  # any model: value blocks Copilot slash invocation
 effort: max
 disable-model-invocation: false
-description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then fast-forwards main, reports CI, and deletes the merged branch locally and on origin. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration preserves every SHA — a local --ff-only merge by default, or a no-checkout ref fetch where another session holds the tree or main is protected — because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
+description: "Takes a committed branch from local to merged — pushes it, confirms which GitHub account each tool actually acts as in this repo, opens the PR through the one that matches (github-mcp where loaded, gh where its login is confirmed), then integrates it into main, reports CI, and deletes the merged branch locally and on origin. Guards two silent failures: gh and github-mcp can authenticate as different accounts, so a PR lands under the wrong identity with no error, and integration preserves every SHA — a local --ff-only merge by default, a no-checkout refspec push where another session holds the tree, or a server-side merge commit where main requires a pull request — because a squash would collapse the logical split /commit just made. Stops for confirmation before the write to main. To make the commits first use commit; to review before landing, code-review."
 when_to_use: "Use when asked to land, ship or publish a branch, open a pull request, merge to main, or get a branch in — the step after /commit. Use it even when the request already names the mechanism — 'squash these and merge', 'just merge it into main', 'force push it' — a named mechanism is the case these guards exist for, not a reason to skip them."
 ---
 
@@ -198,24 +198,39 @@ the merge button is never needed.
 fails, `main` has moved: stop, reconcile deliberately, and never reach
 for `--force`.
 
-Any other state routes elsewhere. Read the repo's merge settings before
-deciding — and `delete_branch_on_merge` with them, which step 6's
-disclosure needs:
+Any other state routes elsewhere. Read what `main` requires — from both
+of GitHub's systems, since neither read covers the other — and the
+repo's merge settings with `delete_branch_on_merge` beside them, which
+step 6's disclosure needs:
+
+```bash
+gh api repos/<owner>/<repo>/rules/branches/main --jq '[.[].type]'   # rulesets, any level
+gh api repos/<owner>/<repo>/branches/main --jq .protected            # classic protection
+```
 
 | State | Route |
 | --- | --- |
-| You hold the tree, `main` accepts a push | the default above |
-| Another session holds the tree (step 1) | `git push origin <branch>:main` |
-| A ruleset refuses that push | `gh pr merge <n> -R <owner>/<repo> --merge` |
+| `main` requires no pull request, and you hold the tree | the default above |
+| `main` requires no pull request, and another session holds the tree (step 1) | `git push origin <branch>:main` |
+| `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge` |
+| `main` also requires linear history | stop — every route inside the gate rewrites SHAs; name which, then wait |
 | A squash was asked for | name what it collapses, then wait |
 | A merge commit was asked for | one clause of disclosure, then proceed |
+
+**Route on the requirement, never on a refused push.** A refusal is the
+rules minus their bypass list, evaluated for whoever pushes, so an
+account that can bypass is never refused: its push lands on a protected
+`main` outside every required check and reports success. Succeeding is
+the failure mode. A `pull_request` type in the first read is the third
+row; `true` from the second needs the reference to interpret.
 
 **Anything but the first row — read
 [references/integration-routes.md](references/integration-routes.md)
 before the step 6 disclosure**, not after it. Step 6 states which route
 step 7 will take, so the mechanics have to be in hand while that
 disclosure is being written. That file carries why each alternative is
-not the default, the refspec mechanics of the no-checkout route and its
+not the default, how to read what `main` requires and why a refusal
+cannot tell you, the refspec mechanics of the no-checkout route and its
 two silent traps, the `gh api` settings read with its `null` caveat, and
 what a squash or a merge commit costs.
 
@@ -360,10 +375,11 @@ to make the override informed, not to refuse it.
 - If the repo is not one the authenticated identity owns, stop and
   report rather than working around it. **A protected `main` is not
   that case** — a ruleset requiring pull requests is the repo working
-  as intended, and step 7's variant lands inside it rather than around
-  it. What stays banned is the workaround: an admin bypass that also
-  skips every required status check is worse than the rejection it
-  evades.
+  as intended, and step 7's PR merge lands inside it rather than
+  around it. What stays banned is the workaround, and the silent form
+  is the one to watch for: an account that can bypass has its direct
+  push *accepted*, skipping every required status check with no
+  rejection to evade. That is why step 7 routes on the requirement.
 
 ### Repo convention — overridable, but never silently
 

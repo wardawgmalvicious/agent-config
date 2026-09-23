@@ -1,8 +1,9 @@
 # Integration routes
 
 Everything behind step 7's routing table: why the default is the
-default, the mechanics of the no-checkout route, and what it costs to
-honour a request for a squash or a merge commit.
+default, how to read what `main` requires, the mechanics of the
+no-checkout route, and what it costs to honour a request for a squash
+or a merge commit.
 
 Read this **before the step 6 disclosure** whenever the run is taking
 anything but the default `--ff-only` route. Step 6 has to state which
@@ -56,29 +57,89 @@ and the committed file is what needs reapplying.
 remote ref instead of acting on this value, and
 [branch-deletion.md](branch-deletion.md) says why.
 
+## Reading what `main` requires
+
+**Route on what `main` requires, never on whether a push is refused.**
+A refusal is the branch's rules *minus their bypass list, evaluated for
+the account that pushes* — so for an account that can bypass, the
+rejection that would have sent the run to the PR merge never comes. Its
+push to a protected `main` succeeds, skips every required check, and
+reports success. Succeeding is the failure mode. In a small estate the
+account doing the work is routinely an admin, which makes this the
+common case rather than an edge.
+
+That account is a fourth identity beside the three step 2 probes: git
+pushes through its credential helper, and
+`git config --get credential.https://github.com.username` names the
+account where one is pinned. It decides whether a push is refused and
+says nothing about what the repo requires — the other reason a push
+must not pick the route.
+
+The evidence is one client repo's ruleset, read 2026-09-22 and relayed
+rather than re-read here: `pull_request` and a required status check on
+`main`, with the admin role in the bypass list at mode `always`. The
+argument needs only that *some* bypass actor exists.
+
+Read both of GitHub's systems. The branch endpoint's `protected` flag is
+not documented as covering rulesets, so neither read stands in for the
+other:
+
+```bash
+gh api repos/<owner>/<repo>/rules/branches/main --jq '[.[].type]'
+gh api repos/<owner>/<repo>/branches/main --jq .protected
+```
+
+The first returns every **active** rule on `main` from rulesets at any
+level, repository or organization, and omits rulesets set to *evaluate*
+or *disabled*; a `pull_request` in it means `main` requires one. The
+second is classic branch protection, which can require a pull request
+too: where it reads `true`, `branches/main/protection` carries
+`required_pull_request_reviews`, and a token that cannot read that
+endpoint should treat `main` as requiring one — the PR merge is correct
+either way, at the cost of a disclosed merge commit. On agent-config
+both read `[]` and `false` (2026-09-23): consistent, and discriminating
+nothing.
+
+A ruleset's `current_user_can_bypass` — `always`, `pull_requests_only`,
+`never` or `exempt` — explains why a push got through, but it is
+evaluated for gh's token, not for the credential git pushes with. It is
+a diagnosis, never a route.
+
+**`required_linear_history` beside a pull-request rule is a stop.**
+GitHub documents that pull requests into such a branch "must use a
+squash merge or a rebase merge", so `--merge` is unavailable and every
+route that respects the gate writes new SHAs — a rebase merge keeps the
+split under them, a squash collapses it. Name which, as for a requested
+[squash](#squash--the-full-round), then wait. Documented, not exercised.
+
 ## The no-checkout route
 
-**`git switch` is not required to move `main`.** The two conditions that
-call for this route want different writes, and the difference is a merge
-commit. Where **another session holds the tree** (step 1) and nothing
-refuses a direct push, the write is the branch pushed *to* `main` — the
-default's fast-forward minus the checkout. Where **a ruleset refuses
-that push**, the merge goes server-side, and only the first line changes:
+**`git switch` is not required to move `main`.** Two writes leave HEAD
+where it is, and step 7's table picks between them on what `main`
+requires. Where it requires no pull request and **another session holds
+the tree** (step 1), the write is the branch pushed *to* `main` — the
+default's fast-forward minus the checkout. Where it **requires a pull
+request**, the write is the PR's own merge, server-side, whoever holds
+the tree. Only the first line differs:
 
 ```bash
 git push origin <branch>:main   # the write — ff-enforced by default
-# refused by a ruleset? swap line 1 for: gh pr merge <n> -R <owner>/<repo> --merge
+# main requires a PR? line 1 is instead: gh pr merge <n> -R <owner>/<repo> --merge
 git fetch origin --quiet
 git fetch origin main:main      # moves the local main REF; HEAD untouched
 git merge-base --is-ancestor <branch> main
 ```
 
-**Push first, fall through on a rejection — not the reverse.** The
-server-side `--merge` adds a merge commit — a visible break where the
-step 1 `--merges` baseline is `0`, and a shared tree alone needs none.
-**Pass `-R <owner>/<repo>` on the fallback**: it clears gh's
-`CanDeleteLocalBranch`, which gates every local-git path, so the merge
-cannot switch the tree; step 9 owns the delete. Read in gh v2.101.0.
+**Read the requirement first; never push to find out.** Until
+2026-09-23 this said the reverse — push first, fall through to the PR
+merge on a rejection — because the server-side `--merge` adds a merge
+commit that a shared tree alone does not need. That cost is real and is
+still disclosed, in [one clause](#merge-commit--one-clause-and-proceed).
+But push-first sent an account that can bypass straight past the gate,
+with no rejection to fall through on. **Pass `-R <owner>/<repo>` on the
+PR merge**: it clears gh's `CanDeleteLocalBranch`, which gates every
+local-git path, so the merge cannot switch the tree; step 9 owns the
+delete. Read in gh v2.101.0.
 
 Both refspec forms **refuse a non-fast-forward without a leading `+`**
 — `! [rejected] <src> -> main (non-fast-forward)`, exit 1 — so neither
