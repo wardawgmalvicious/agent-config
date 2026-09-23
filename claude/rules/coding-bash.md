@@ -147,6 +147,15 @@ FILE_PATH_UNIX=$(cygpath -u "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
 - Lowercase prefixes: `error:`, `warning:`, `note:`, `hint:`.
 - `exec` the final command so it replaces the shell and its exit status
   propagates directly: `exec sqlcmd -S "$SERVER" ...`.
+- **A sourced profile keeps stdout empty.** Print its diagnostics only
+  when stdout is a terminal (`[[ -t 1 ]]`), or send them to stderr.
+  Claude Code builds a session's Bash snapshot by sourcing the profile
+  and capturing `PATH` from the shell's output, so whatever the profile
+  prints to stdout lands inside `PATH` for every later tool call. This
+  machine's startup banner, ANSI escapes and all, sat at the head of
+  the snapshot's `export PATH=` line until machine-config fixed it on
+  2026-09-22 (`c9a2ed4`, banner only to a terminal); a snapshot taken
+  the next morning held a plain `export PATH='/c/...`.
 
 ## Quoting and tests
 
@@ -214,6 +223,7 @@ tax on every tool call.
 - `cd` without `|| exit` in a script that continues afterwards.
 - Piping into a long-lived process with no timeout inside a hook.
 - Diagnostics on stdout in a script whose stdout is piped.
+- Anything on stdout from a sourced profile — see Output streams.
 - Sourcing a `.env` file — it may contain values bash chokes on. Read
   keys with `grep`/`cut` instead, as `sql.sh` does.
 - `echo "$var"` for arbitrary data; use `printf '%s\n' "$var"`.
