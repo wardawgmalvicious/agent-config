@@ -137,6 +137,21 @@ delimiters are passed through as literal text. Put them in a `.ps1`
 written by a quoted heredoc and run that file instead. Silent case
 verified 2026-09-02.
 
+### A long multi-heredoc Bash call can be rejected whole
+
+**Write one file per Bash call, or use the Write tool.** One call
+writing nine quoted heredocs, about 165 lines, fails with
+``bash: -c: line 147: unexpected EOF while looking for matching `''``
+on both of two sends, and **nothing in it runs** — not even the
+heredocs before the one named. Line 147 was the first body line of the
+eighth heredoc, read as code. Each body alone passes, both halves of
+the call pass, and so do nine small heredocs carrying an apostrophe
+each. So the error text points at apostrophes and they are **not** the
+cause. The combination is, most likely through its size, which was not
+isolated. Measured 2026-09-23 on 2.1.268 with Bash in login mode. The
+same error surfaced twice before, on 2026-09-17 and 2026-09-22,
+without its cause being pinned.
+
 ### Counting carriage returns
 
 **`grep -c $'\r'` cannot count carriage returns in the Bash tool, and it
