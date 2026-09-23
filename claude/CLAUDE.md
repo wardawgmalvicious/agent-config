@@ -247,6 +247,13 @@ directory, not every login on the machine. And **Az PowerShell ignores
 `(Get-AzContextAutosaveSetting).ContextDirectory` still reads `~/.Azure`,
 so none of this reaches the module, only the CLI.
 
+**Nor does it reach an MCP server.** Servers and their `headersHelper`
+commands inherit the Claude Code process's environment, which has no
+`AZURE_CONFIG_DIR`, so a Fabric endpoint answers from the shared
+`~/.azure` whichever folder the session is in. That rests on one
+relayed measurement, deliberately not reproduced; `~/.claude/mcp/README.md`
+carries it with two candidate remedies, neither yet run.
+
 Still check `az account show` before assuming a login is needed — and
 before assuming one exists. A pin is a directory, not a credential: a
 shell can sit pinned to a tenant it has never logged into, which is what

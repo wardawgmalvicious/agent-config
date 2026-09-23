@@ -203,6 +203,39 @@ The bound-URL text is the trap, because it reads like a network or URL fault rat
 
 **What is not measured.** The second documented route, `--client-id` / `--client-secret` against a pre-registered Entra app, is still unprobed — every result above uses `headersHelper`. Two endpoints stay out of the templates on documentation grounds rather than measurement: `powerbi/authoring` and `FabricIQ`'s `X-VARIANTS` header, neither of which Learn carries (see [`powerbi-modeling-mcp` is a write tool](#powerbi-modeling-mcp-is-a-write-tool)). Everything else named above was measured on 2026-09-14.
 
+### The helper's login is the harness's, not the folder's
+
+**A `headersHelper` never sees a folder-scoped tenant pin.** MCP servers
+and their helpers are spawned by the Claude Code process and inherit
+*its* environment, which has no `AZURE_CONFIG_DIR` — the variable the
+shell profiles resolve per repo (`claude/CLAUDE.md` § "Azure CLI state
+is per tenant, and pinned by folder"). So the helper's
+`az account get-access-token` reads the shared `~/.azure`, the one store
+nothing manages: `AzLogin` only ever writes into
+`~/.azure-tenants/<name>/`. The failure is silent success — an MCP call
+from a personal repo returned a **client tenant's** workspace list, with
+no error.
+
+**That is relayed, not re-verified**: one measurement, by the session
+that reported it, on 2026-09-22. Two sessions here declined to reproduce
+it on purpose, because confirming it means issuing a Fabric call from
+the wrong folder, which is the cross-tenant call being reported.
+
+It generalizes past Fabric. Any per-client isolation a shell profile
+enforces is enforced **for shells only**; agents and MCP servers sit
+outside it, and they fail by answering for the wrong tenant rather than
+by erroring.
+
+**The `env` field is not the fix** — it applies to server processes,
+primarily stdio, and not to `headersHelper`. Two candidate remedies,
+**neither run by anyone**:
+
+- start Claude Code itself with `AZURE_CONFIG_DIR` set to the tenant the
+  repo needs;
+- set `AZURE_CONFIG_DIR` inline inside the helper command.
+
+Measure one before relying on it.
+
 ### Local-scope keys are case-split
 
 `~/.claude.json` keys local-scope config by working-directory path, and **the drive letter's case is not normalized**, so one repo can hold several entries — `c:/Repos/...` and `C:/Repos/...` — with different servers, different `disabledMcpServers`, and different trust state in each. Observed 2026-09-14 with three keys for one repo.
