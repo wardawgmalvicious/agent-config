@@ -465,8 +465,7 @@ Report the static result, the real-path result with its counts, which
 trigger queries fired and which did not, and anything the `--safe-mode`
 baseline already did without the payload. Then hand off to `/commit`,
 naming the manifest and the deleted — or, for a ledger brief, the
-appended — brief among the paths. Do not
-commit here.
+appended — brief among the paths. Do not commit here.
 
 ## Reading a failure
 
@@ -484,6 +483,7 @@ activated". Work down this table before touching a glob:
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
 | The baseline scores nearly as high as the payload | It read the payload off disk, or root `CLAUDE.md` carries the same claims. Disallow the file tools on both arms, then ablate with `Skill` disallowed |
+| The payload arm changed since the last stamp | Not yet the edit's doing. Run the pre-edit body as `<name>-old` at project scope in the probe directory on the same query; a check-shaped edit ("if X, do Y") also needs the no-X arm |
 
 The witnesses behind that table — the transcript record, the `-p`
 `commands_changed` record, which *model* served a turn, and why the

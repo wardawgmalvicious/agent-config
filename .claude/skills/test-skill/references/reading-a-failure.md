@@ -168,3 +168,31 @@ The claim that did separate was visible only in what the baseline got
 answered `git push origin BRANCH:main`, preserving every SHA. Read the
 baseline first, diff the two answers, and let the discriminator fall out
 of the disagreement.
+
+**A change in the payload arm is not yet the edit's doing.** The stamp
+names the edit that staled the test; it does not say the edit caused
+what the retest found. To attribute it, run the pre-edit body under
+another name at project scope in the probe directory — user scope
+cannot be swapped without changing every live session, and project
+scope only adds names user scope lacks, so the rename is what makes it
+load:
+
+```bash
+git show <edit>^:skills/<group>/<name>/SKILL.md \
+  | sed '0,/^name: <name>$/s//name: <name>-old/' \
+  > <probe>/.claude/skills/<name>-old/SKILL.md
+```
+
+Slash-invoke `/<name>-old` on the query the current body answered, from
+that directory; `init.slash_commands` grows by one. Measured 2026-09-23
+on `commit`: the same shared-tree walkthrough kept the `git diff
+--cached` check in 2 of 2 old-body runs and 0 of 3 current ones, which
+put the regression on the new code block rather than on the query or
+the model.
+
+**A check-shaped claim needs its no-case arm.** An edit of the form
+"if X, do Y" passes the X arm whether it checks X or not, so a skill
+that always does Y reads as a pass. Keep everything but X — same tree,
+same diff, same prompt — and expect Y not to happen. Measured
+2026-09-23 on `commit` step 4: the PR-free history committed on `main`
+("No PR convention here") where the `(#n)` history had branched.
