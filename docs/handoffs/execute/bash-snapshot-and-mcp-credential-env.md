@@ -305,6 +305,20 @@ keeping the `gh` consequence with `gh`.
 profile-wrapped commands. `az` is handled separately, and nothing beyond
 `gh` and `az` was tested.
 
+**Re-measured 2026-09-23: the `pwsh` half has moved.** machine-config
+`f2198b9` (2026-09-16, the day after this finding was measured) put a
+`gh.ps1` shim on `PATH` that runs the same folder-scoping, so a bare
+`gh` in the PowerShell tool now resolves to it —
+`(Get-Command gh).CommandType` reads `ExternalScript` — and acts as the
+repo's account. The "different accounts in the same directory" sentence
+would therefore land stale for a *bare* call. The split survives one
+level down: anything that execs `gh` — `timeout`, `env`, `xargs`, a
+bash script, a native program — gets the raw binary (a child `bash`
+reads `type -t gh` as `file`). The inbox note
+`2026-09-23-gh-exec-wrapper-identity.md` measures that case in full and
+proposes its own `claude/CLAUDE.md` text; reconcile the two before
+landing either.
+
 ---
 
 ## 6. `claude/CLAUDE.md` § "Writing files…" — a quoted heredoc fails on apostrophes in prose
