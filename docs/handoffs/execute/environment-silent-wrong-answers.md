@@ -339,11 +339,11 @@ evidence the `CLAUDE.md` edit did.
   landed.
   [peer-coordination-open-questions.md](peer-coordination-open-questions.md)'s
   edit went in on 2026-09-18.
-  [bash-snapshot-and-mcp-credential-env.md](bash-snapshot-and-mcp-credential-env.md)
-  was executed on 2026-09-23. It rewrote § Local environment around
-  two Bash launch modes, one snapshot-sourced and one a login shell,
-  and it added a profile-stdout bullet to `coding-bash.md` § "Output
-  streams". Neither section was restructured. Re-read both before
+  `bash-snapshot-and-mcp-credential-env.md` was executed and deleted on
+  2026-09-23. Its `c22ef8c` rewrote § Local environment around two
+  Bash launch modes, one snapshot-sourced and one a login shell, and
+  its `7bb9913` added a profile-stdout bullet to `coding-bash.md` §
+  "Output streams". Neither section was restructured. Re-read both before
   editing; this brief's quoted line numbers predate that pass.
 - Item 3's fallback destination is `land` step 8. The land/commit
   guard brief that was also editing it landed 2026-09-23 and is

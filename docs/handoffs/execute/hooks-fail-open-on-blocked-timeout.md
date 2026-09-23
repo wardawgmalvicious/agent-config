@@ -217,10 +217,11 @@ here: a half-deployed fix to a *guard* reads as a working guard.
 - Blocks nothing and is blocked by nothing. It touches no skill, no
   `paths:` glob and no fixture set, so no activation run and no
   `/test-skill`.
-- Adjacent to [bash-snapshot-and-mcp-credential-env.md](bash-snapshot-and-mcp-credential-env.md)
-  only in subject — both are about the Bash environment being different
-  from what the payload assumes — but they touch different files and
-  neither needs the other.
+- Adjacent to `bash-snapshot-and-mcp-credential-env.md` only in
+  subject — both are about the Bash environment being different from
+  what the payload assumes — but they touched different files and
+  neither needed the other. That brief was executed and deleted on
+  2026-09-23, and its Bash-mode rewrite is `c22ef8c`.
 - The decision above is the user's, not the executing session's. Put it
   back rather than picking one, the way a decision-kind brief is handled
   under [README.md](README.md) § "A brief can be a decision rather than

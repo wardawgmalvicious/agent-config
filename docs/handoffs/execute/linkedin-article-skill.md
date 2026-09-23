@@ -168,11 +168,17 @@ The tenant draft is **not** blocked this way and should not wait on it.
   publishing state and is the index for that folder.
 - The ablation overlaps
   [peer-coordination-open-questions.md](peer-coordination-open-questions.md).
-- The tenant draft's "small bug" section is finding 4 of
-  [bash-snapshot-and-mcp-credential-env.md](bash-snapshot-and-mcp-credential-env.md),
-  now reproduced in three sessions; its unverified MCP remedies are that
-  brief's finding 2, still unverified by anyone. Keep the two consistent
-  — the article and the payload should not disagree about the same
+- The tenant draft's "small bug" section is now
+  `claude/rules/coding-bash.md` § "Output streams", in **past tense**.
+  machine-config `c9a2ed4` fixed it on 2026-09-22, and a snapshot taken
+  on 2026-09-23 confirmed the fix. The draft's MCP remedies are
+  `claude/mcp/README.md` § "The helper's login is the harness's, not
+  the folder's", and they are still unverified by anyone. Separately,
+  `claude/CLAUDE.md` now records **two** Bash launch modes, so a draft
+  saying the Bash tool is never a login shell would disagree with it.
+  All three came from `bash-snapshot-and-mcp-credential-env.md`, which
+  was executed and deleted on 2026-09-23. Keep the draft consistent
+  with the payload, since the two should not disagree about the same
   machine.
 - No rule, hook or `paths:` glob changes. A new skill does need
   `/test-skill`.
