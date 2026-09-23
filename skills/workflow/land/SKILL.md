@@ -91,7 +91,8 @@ every login against the repo owner. Use the tool whose account matches.
 
 `gh` may be **folder-scoped**, and whether it is changes what the probe
 means. On the machine this skill was written for it is (since
-2026-09-04): both shell profiles wrap `gh` to act as the account named
+2026-09-04): the shell profiles — and, for a `pwsh` with none, a
+`gh.ps1` on `PATH` — wrap `gh` to act as the account named
 by the repo's `user.name`, resolved per call through a scoped
 `GH_TOKEN`, so a personal repo gets the personal account and a client
 root gets the client one. Three consequences.
@@ -99,9 +100,13 @@ root gets the client one. Three consequences.
 - `gh auth status` reports the keyring's *active* account, not the one
   the wrapper will use. **`gh api user -q .login` is the honest probe**
   either way, which is why it is the command above.
-- The wrapper is a profile function, so a `gh` run from a script or
-  hook that skips the profile falls back to the active account. Probe
-  through the same shell the PR command will use.
+- The probe vouches only for `gh` typed bare. Anything that launches
+  `gh` as a separate program — `timeout`, `env`, `xargs`, a script —
+  can skip the wrapper and act as the keyring's active account, so the
+  probe passes while the action runs as someone else. **Probe through
+  the exact invocation the action will use.** The mechanism, and the
+  `GH_TOKEN` pin for an exec you cannot avoid, are in
+  `~/.claude/CLAUDE.md` § "Git identity is folder-scoped".
 - **Where no such wrapper exists, `gh` simply acts as whichever account
   is active** — which makes the probe more necessary, not less. Do not
   read the absence of folder-scoping as safety.
@@ -309,6 +314,11 @@ nothing is the half of this skill that used to be missing.
   it. "No CI configured" and "checks passed" are different states the
   exit code does **not** separate — only that stderr line does, so a
   run that discarded stderr must report neither.
+- **To wait for CI, give `gh pr checks <n> --watch` the Bash tool's
+  `timeout` parameter or `run_in_background` — never coreutils
+  `timeout`.** That runs the raw binary (step 2); in a client repo the
+  keyring's active account answered `Could not resolve to a
+  Repository`, which reads as a bad slug (2026-09-23).
 - `git log --merges --oneline | wc -l` against the step 1 baseline —
   and **what counts as correct depends on the route taken**: unchanged
   after a fast-forward, exactly baseline + 1 after a sanctioned
