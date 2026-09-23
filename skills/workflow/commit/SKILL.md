@@ -118,14 +118,15 @@ question.
 
 ## When another session shares this tree
 
-Two sessions in one working tree share every file **and the index**, so
-neither staging nor a branch isolates you — only a commit does. Suspect
-it when the survey shows a path you never touched, when something is
-already staged that you did not stage, when `git diff --cached` holds a
-hunk you cannot account for from this conversation, or when the user
-says so. **Rule out the two innocent explanations first**: your own
-stepping edits, and a hook that rewrites files, which leaves its rewrite
-*unstaged*. Neither is contention.
+Two sessions in one working tree share every file, **the index and
+HEAD**, so neither staging nor a branch isolates you — only a commit
+does, and only if it lands on the branch you meant. Suspect it when the
+survey shows a path you never touched, when something is already staged
+that you did not stage, when `git diff --cached` holds a hunk you cannot
+account for from this conversation, when HEAD is not on the branch you
+left it on, or when the user says so. **Rule out the two innocent
+explanations first**: your own stepping edits, and a hook that rewrites
+files, which leaves its rewrite *unstaged*. Neither is contention.
 
 - **Ask them.** `ListAgents` names every live session
   `<cwd-basename>-<hash>` — its working directory, not its repo — and
@@ -137,9 +138,39 @@ stepping edits, and a hook that rewrites files, which leaves its rewrite
   question this section could not answer before. Ask before cutting a
   patch, not after a collision. What they say about *committed* state is
   as old as their session, so check that yourself.
-- **Write, stage and commit in one chained command.** The gap between
-  reading a diff and running `git add` is where their hunk gets swept
-  in.
+- **Write, stage and commit in one chained command — and read the
+  branch inside it.** The gap between reading a diff and running
+  `git add` is where their hunk gets swept in, and HEAD is shared the
+  same way: a peer's `git switch` moves the branch your commit lands
+  on, with no error on either side. `git status` cannot show it — it
+  reports files relative to HEAD, so a clean tree after someone moved
+  HEAD reads exactly like one before, and "the tree is clean, so
+  nothing is at risk" has been said and been wrong.
+
+  ```bash
+  [[ "$(git branch --show-current)" == "<branch>" ]] \
+    && git add <paths> && git commit -F - <<'MSG'
+  …
+  MSG
+  ```
+
+  From PowerShell the test has to be an `if`: pwsh's `&&` runs its
+  right side whenever the left side *ran*, true or false, so a literal
+  port never refuses (measured 2026-09-23, pwsh 7.6).
+
+  ```powershell
+  if ((git branch --show-current) -eq '<branch>') { git add <paths> && git commit … }
+  ```
+
+  A mismatch means someone moved HEAD: stop, `ListAgents`, ask —
+  switching back is a HEAD move for them too. Recorded 2026-09-22, and
+  `land` step 1 has the other seat: a peer's `git switch main` landed
+  between this session's `switch -c` and its `git add`, and the commit
+  went to `main` unnoticed for over an hour. If it already happened,
+  propose the repair rather than run it — the stray commit onto
+  `<branch>`, the wrong branch back to `<sha>^` — since both move refs
+  a peer may be standing on, and resetting to the upstream instead
+  would drop anything unpushed.
 - **`fatal: Unable to create '.git/index.lock': File exists` is their
   git command in flight**, not a stale lock. Wait and retry; never
   delete it.
