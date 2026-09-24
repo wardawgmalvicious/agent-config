@@ -116,9 +116,15 @@ note mode you name the destination; you do not open it for writing.
 | The payload repo's own procedure — the drift pipeline, authoring, testing | `.claude/skills/<name>/SKILL.md` — project scope there, live on save, no deploy step |
 | Cross-product troubleshooting symptom (error text → cause) | `skills/fabric/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
-| Environment or machine-wide constraint for every session | `claude/CLAUDE.md` — a copy, not live until the deploy script runs; see Step 8 |
+| Environment or machine-wide constraint for every session | `claude/CLAUDE.md` takes the rule, its tell (the error text, or the silence) and one date; the evidence — how it was measured, what was believed before — goes to `docs/evidence/user-claude-md.md` under the same heading. A copy, not live until the deploy script runs; see Step 8 |
 | Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars) |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
+
+**`claude/CLAUDE.md` is capped in pre-commit** by
+`scripts/lint-claude-md.py`, because it loads into every session on the
+machine. A learning that does not fit moves something out — evidence to
+the ledger, guidance a file type triggers to a `paths:`-scoped rule —
+rather than raising the cap.
 
 Weave the learning into the existing structure. Do **not** append a
 `## Learnings` changelog section — skills here are curated reference,
@@ -131,7 +137,7 @@ Before writing or proposing anything, find out whether it is already
 there. In **edit mode**, from the repo root:
 
 ```bash
-grep -rn -i "<key term>" skills/ .claude/skills/ claude/rules/ CLAUDE.md claude/CLAUDE.md
+grep -rn -i "<key term>" skills/ .claude/skills/ claude/rules/ CLAUDE.md claude/CLAUDE.md docs/evidence/
 ```
 
 In **note mode**, grep the payload checkout read-only at the path
