@@ -1,0 +1,260 @@
+# Handoff: when a repo gets nested instruction files
+
+- **Written**: 2026-09-24, after `5b6221b` stopped `claude/CLAUDE.md`
+  loading a second time as a subdirectory file here, from a drill the same
+  day of Claude Code's memory and large-codebases pages and VS Code's
+  custom-instructions page.
+- **Kind**: a decision, then an edit here, then possibly one skill through
+  `/author-skill`. Nothing is drafted.
+- **Status**: **Open, written 2026-09-24.**
+- **Queue**: [README.md](README.md) has the execution order. This brief
+  does not carry its own position.
+
+## The ask
+
+The user, 2026-09-24: a fresh look at when a repo should get a nested
+`CLAUDE.md` or `AGENTS.md`, this repo included but not the global payload,
+and possibly a skill that makes those determinations in any repo,
+"something similar to what init does but deeper".
+
+It began from two beliefs that do not hold: that nested files are new, and
+that a session reads a folder's README anyway. Both are answered below.
+
+## What is established
+
+From the docs, fetched 2026-09-24 on CLI 2.1.281. Re-fetch before relying
+on any of it: `AGENTS.md` support shipped in 2.1.277.
+
+- **Nested files load lazily.** `CLAUDE.md` and `CLAUDE.local.md` in the
+  working directory and every directory above it load at launch; one in a
+  subdirectory is "included when Claude reads files in those
+  subdirectories". Start in a subdirectory and its file loads at launch,
+  after its ancestors'.
+- **After `/compact`** root is re-read from disk, while "nested CLAUDE.md
+  files in subdirectories and rules with `paths:` frontmatter reload as
+  Claude reads files they apply to."
+- **A subdirectory can hold its own `.claude/rules/` and
+  `.claude/skills/`**, loaded on demand too, and a `claudeMdExcludes`
+  pattern of `**/<dir>/**` skips every `CLAUDE.md` and rule under it.
+- **The docs' own split**, from the large-codebases page: a per-directory
+  file when "directory owners maintain their own conventions; instructions
+  are versioned with the code", a path-scoped rule when "you want all
+  conventions in one place, or the same rule applies to many scattered
+  paths".
+- **`AGENTS.md` is either/or by default**, through the built-in
+  `agents-md` plugin. Claude reads it only when no `CLAUDE.md`,
+  `.claude/CLAUDE.md` or `CLAUDE.local.md` sits in the working directory
+  or above it; `~/.claude/CLAUDE.md`, managed files and rules do not
+  count. A subdirectory's `AGENTS.md` loads on a Read there only when that
+  subdirectory has no `CLAUDE.md` of its own. `AGENTS.local.md`,
+  `AGENTS.override.md` and `.agents/` are never read.
+- **Only user or managed settings can change that.**
+  `pluginConfigs["agents-md@builtin"].options.instructionFiles` takes
+  `claude-md-or-agents-md` (the default), `claude-md-and-agents-md`,
+  `claude-md` or `managed-only`, and "Claude Code ignores it in project
+  and local settings files": a repo cannot choose for the people who
+  clone it.
+- **An `AGENTS.md` read directly differs**: InstructionsLoaded hooks do
+  not fire for it, and an `--add-dir` directory never loads one. On
+  Windows, share one file through `@AGENTS.md` in a `CLAUDE.md`, not a
+  symlink.
+- **VS Code Copilot** reads `AGENTS.md` under `chat.useAgentsMdFile`.
+  Nested ones are experimental, behind `chat.useNestedAgentsMdFiles`,
+  "disabled by default". That page was quoted through WebFetch's summary,
+  so re-read it.
+- **What already does part of this.** `/init` with `CLAUDE_CODE_NEW_INIT=1`
+  "asks which artifacts to set up: CLAUDE.md files, skills, and hooks",
+  explores with a subagent and presents a proposal before writing.
+  `/doctor`'s checkup "proposes trims for a checked-in CLAUDE.md", cutting
+  what Claude can derive from the code. `/import` copies another agent's
+  instruction files in. Two official plugins are installed:
+  `claude-md-management`, whose `claude-md-improver` skill audits
+  `CLAUDE.md` files, and `claude-code-setup`, whose
+  `claude-automation-recommender` recommends hooks, skills and MCP
+  servers. `3212938` disabled both on 2026-08-31 for zero lifetime uses
+  and their listing cost, not for anything they got wrong.
+
+Probed here the same day, in the entry closing § "Editing conventions" in
+[root-claude-md.md](../../evidence/root-claude-md.md): a nested load shows
+as a `nested_memory` attachment on the Read, a `claudeMdExcludes` pattern
+must not name the drive, and the InstructionsLoaded hook log recorded none
+of the nested loads, so the transcript is the only witness.
+
+Measured in a client Fabric repo, 2026-09-24, across its 53 transcripts,
+about two weeks' worth since `cleanupPeriodDays` is 15. Its root file is
+281 lines and links three folder READMEs; one path-scoped rule has
+covered two of those folders since 2026-09-22 and links one README.
+
+| Folder holds | README | Sessions working there | Opened it | Before any other file there |
+| --- | --- | --- | --- | --- |
+| Per-object contract files | 305 lines | 7 | 6 | 3 |
+| Column docstrings | 68 lines | 1 | 0 | 0 |
+| Eventhouse definitions | 86 lines | 1 | 1 | 1 |
+
+One contract session made 52 Reads and Edits there before it opened the
+README, and the one session there after the rule landed never opened it.
+Whether the user prompted any of the opens was not checked. **A README is
+Claude's choice to open; a nested file is not.** Both of that repo's
+workspace sync-root folders already hold a `Readme.md`, so a markdown file
+at a workspace root coexists with Git sync. Inside an item folder is
+untested.
+
+## Inferred from the docs, not probed
+
+Each is one cold, read-only `claude -p … --model haiku` run with the
+transcript as witness. Run them before Phase 1 writes anything down.
+
+1. **A root `CLAUDE.md` silences every `AGENTS.md`**, nested ones
+   included, by default. In a repo like this one a nested `AGENTS.md` is
+   dead text to Claude Code.
+2. **In a repo rooted on `AGENTS.md`, a nested `CLAUDE.md` turns root off
+   for anyone who starts there**: launched in that folder, a `CLAUDE.md`
+   sits in the working directory, so root's `AGENTS.md` is not read.
+3. **A root `CLAUDE.md` holding `@AGENTS.md` silences nested `AGENTS.md`
+   files**, by 1, though its own import loads.
+4. Does a `CLAUDE.md` that `claudeMdExcludes` skips still count for 1–3?
+5. On a Read in `a/b/`, do `a/CLAUDE.md` and `a/b/CLAUDE.md` both load,
+   and in which order?
+6. Does a subagent's Read load a nested file into the subagent, the
+   parent, or neither?
+7. **Worktrees here.** A main-checkout Read under `.claude/worktrees/<n>/`
+   should load that worktree's root `CLAUDE.md` as a nested file, a second
+   and possibly different copy of root. `**/claude/CLAUDE.md` covers the
+   worktree's payload copy, not its root.
+
+## Phase 1: the strategy
+
+A decision table, tested against the probes, for where a piece of
+guidance lives. This is the starting draft, not adopted:
+
+| Guidance is… | Home | Fails silently when |
+| --- | --- | --- |
+| Needed before any Read: commands, repo-wide conventions | root file | it passes ~200 lines and adherence drops |
+| About one file kind, wherever it sits | `paths:` rule | the glob is wrong, or Grep, `cat` or a new file touch it |
+| About one directory, kept by its owners | nested file | the first touch is a Write, Bash or Grep; and after `/compact`, until the next Read |
+| A procedure asked for in words | skill | the description never matches |
+| Must hold before Claude acts | hook or `permissions.deny` | the hook itself fails open ([hooks-fail-open-on-blocked-timeout.md](hooks-fail-open-on-blocked-timeout.md)) |
+| Long reference for people | README, or a nested `CLAUDE.md` of `@README.md` if short | Claude never opens it (above) |
+| Derivable from the code | nowhere | never; `/doctor` cuts it |
+
+Which name a nested file takes, if 1–3 hold:
+
+| Root holds | Nested files are | Because |
+| --- | --- | --- |
+| `CLAUDE.md` | `CLAUDE.md` | no `AGENTS.md` is read |
+| `AGENTS.md` only | `AGENTS.md` | a nested `CLAUDE.md` drops root for sessions started there |
+| `CLAUDE.md` of `@AGENTS.md` | `CLAUDE.md`, importing a sibling `AGENTS.md` where other tools need it | a nested `AGENTS.md` is ignored |
+
+Where the strategy lives is Decision 2. Wherever it lands, it settles two
+artifacts that already take a side:
+[project-CLAUDE-template.md](../../project-CLAUDE-template.md) says "drop
+it in as `AGENTS.md` instead if that is what the repo's tooling reads",
+and [README.md](../../../README.md) § "Tool support" says to reinstate a
+root `AGENTS.md` "if a tool that reads `AGENTS.md` comes back", which is
+now half true: Claude Code reads one, but never beside a root
+`CLAUDE.md`.
+
+## Phase 2: this repo, minus the payload
+
+The standing ban is `.claude/rules/editing-claude-md.md`: "Never an
+unscoped rule, an `@import` or a subdirectory `CLAUDE.md` … the third on
+any Read beneath it". It came from the 2026-09-24 trim, whose entry is in
+§ "Preamble" of the ledger, and which moved guidance about kinds of file
+into rules. For that shape of guidance it stays right. The only question is
+whether a directory here holds guidance of the other shape.
+
+Out of bounds, whatever Phase 1 concludes:
+
+- **Anything under `claude/`.** `claude/CLAUDE.md` is the user-scope
+  payload and stays excluded. `link-claude.ps1` copies `claude/rules/`
+  whole, so a `claude/rules/CLAUDE.md` would deploy as a rule with no
+  `paths:` and load in every session on the machine; the rules README
+  carries `paths:` for exactly that reason.
+- **Inside `skills/<group>/<name>/`**, a junctioned skill directory, so
+  the file would ship with the skill.
+- **At or above `tests/**/fixtures/`**, where fixture tests need a clean
+  context (`editing-rules.md`).
+- **`AGENTS.md`**, by 1.
+
+Candidates, to measure rather than assume: `docs/handoffs/execute/`,
+whose README root tells a session to read first, the same kind of
+pointer the client measurement found unreliable; `docs/audits/`; and
+`scripts/`. The measure is this repo's own transcripts: in sessions that
+edited a brief, was the queue README Read before it?
+
+A nested file here also needs `editing-claude-md.md` amended in the same
+commit, since its `**/CLAUDE.md` glob would load it on every nested Read
+while its text speaks only of root and the payload, and a cap decision,
+since `lint-claude-md.py` caps two named files. Probe 7 decides whether
+`claudeMdExcludes` gains `**/.claude/worktrees/**`.
+
+## Phase 3: the skill, if Decision 1 says so
+
+Through `/author-skill`, whose steps 1 and 2 must weigh these before a
+name is chosen:
+
+- **`learn`**, whose Step 3 destination table has root files, rules and
+  skills but no row for a nested file or an `AGENTS.md`. A row there may
+  be most of the value.
+- **The built-ins and the two disabled plugins.** Read
+  `claude-md-improver` and run `CLAUDE_CODE_NEW_INIT=1` `/init` on a
+  scratch repo before claiming a gap; neither has been tried here.
+
+"Deeper than init", as proposals for `/author-skill` to keep or cut:
+
+1. **Evidence from the repo's own transcripts**: per folder, which
+   sessions worked there, whether they opened its README, which nested
+   files and rules loaded, and how often they compacted. The measurement
+   above is the worked example; its scratch script was not kept. It
+   reaches back only `cleanupPeriodDays`.
+2. **A cross-tool inventory**: `CLAUDE.md`, `AGENTS.md`,
+   `.github/copilot-instructions.md`, `.github/instructions/` with its
+   `applyTo` globs and `.cursor/rules/`, with 1–3 applied to what it
+   finds.
+3. **Placement by the Phase 1 table**, "nowhere" and "hook" included,
+   with a root file over 200 lines sorted section by section into where
+   each part goes.
+4. **Platform checks**, Fabric first: no file inside an item folder until
+   that is tested.
+5. **It proposes, then edits on approval.** It acts on the repo it runs
+   in, whose guidance is that repo's business, not the inbox's (`learn`
+   Step 0).
+
+It acts on any repo, so it belongs in `skills/`, probably `meta`: upkeep
+of agent configuration that must run in client repos, kept from Copilot.
+Its name cannot contain `claude`.
+
+Pilot it on the client repo above, then here. There it should re-find
+what was proposed by hand on 2026-09-24: move root's section on the
+contract folder into the rule that already covers it, and fold each
+README's must-know lines into that rule. A draft that misses both has
+failed its pilot. Its fixtures would hold instruction files of their own,
+which load as nested files in any session here that Reads them, so
+`/test-skill` has to isolate them.
+
+## Decisions for the user
+
+1. **A skill at all**, or the strategy alone: a `learn` row, the template
+   and README settled, and Phase 2 here?
+2. **Where the strategy lives**: the skill's `references/`, `learn`, or a
+   user-scope rule scoped to instruction files. A rule would fire on the
+   Read before an edit, but not when a first nested file is created,
+   which no glob sees.
+3. **The machine's `instructionFiles`**: keep the default, or set
+   `claude-md-and-agents-md` in `claude/settings.json`, which changes what
+   every repo on this machine loads.
+
+## Scrubbing
+
+This repo is public. The client repo, its folder names, its source
+systems and its session ids stay out of every commit (`author-skill`
+§ 4), and "a client Fabric repo" is the citation. The user named it on
+2026-09-24; ask for it rather than recording it here.
+
+## Re-measure before acting
+
+- `claude --version`: `AGENTS.md` needs 2.1.277, and `/memory` lists one
+  only from 2.1.280.
+- The three doc pages above.
+- The client repo's root file and rules. Three sessions were live there
+  when this was written.
