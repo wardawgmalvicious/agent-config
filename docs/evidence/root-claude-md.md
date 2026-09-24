@@ -1206,6 +1206,12 @@ cold haiku session saw every visible marker and neither commented one, in
 a `CLAUDE.md` and a `.claude/rules/` file alike. A Read still shows it, so
 evidence kept in comments would come back on every edit.
 
+**2026-09-24.** The pre-commit length check now covers root too:
+`scripts/lint-claude-md.py` checks both files, root's failure message
+naming `.claude/rules/` and this ledger, and the hook matches
+`^(claude/)?CLAUDE\.md$`. Root was 192 lines when the check reached it;
+before, nothing capped it, and the Preamble entry has how far it grew.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

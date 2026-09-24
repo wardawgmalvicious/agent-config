@@ -77,14 +77,19 @@ Helper scripts for repo maintenance and observability.
   `.claude/skills` alongside a skill is merely listed twice, but with
   `.claude/rules` alongside the same guidance *loads* twice on a matching
   file, since Copilot honours `paths:` there and `applyTo` here.
-- [lint-claude-md.py](lint-claude-md.py) — cap `claude/CLAUDE.md`, which
-  loads into every session on the machine, at the memory docs' line target.
-  The number lives only in the script. Its failure message says where to
-  move things — evidence to `docs/evidence/user-claude-md.md`, file-triggered
-  guidance to a rule, task guidance to a skill — and why an `@import` or an
-  unscoped rule would not help: both still load at launch. Takes an optional
-  path, so the failing arm can be proved on a scratch copy. Fails, rather
-  than passing, on a missing file. No dependencies. Run by pre-commit.
+- [lint-claude-md.py](lint-claude-md.py) — cap both `CLAUDE.md` files at
+  the memory docs' line target: `claude/CLAUDE.md`, which loads into every
+  session on the machine, and root `CLAUDE.md`, which loads into every
+  session in this repo. The number lives only in the script. Each failure
+  message names that file's own destinations — evidence to its ledger
+  (`docs/evidence/user-claude-md.md` or `docs/evidence/root-claude-md.md`),
+  file-triggered guidance to a rule (`claude/rules/` or `.claude/rules/`),
+  task guidance to a skill — and says why an `@import` or an unscoped rule
+  would not help: both still load at launch. With no argument it checks
+  both files; a path lints one scratch copy, which is how a failing arm is
+  proved, and a copy inside a directory named `claude/` gets the
+  user-scope message. Fails, rather than passing, on a missing file. No
+  dependencies. Run by pre-commit.
 - [lint-frontmatter.py](lint-frontmatter.py) — validate `SKILL.md` and
   `rules/*.md` frontmatter against repo conventions. Kind is inferred from
   the path: files under `rules/` need `paths:` and are exempt from

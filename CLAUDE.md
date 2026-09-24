@@ -33,7 +33,7 @@ coverage; a new group goes in its `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS`.
 ```bash
 pre-commit run --all-files            # every pre-commit-stage check, as CI runs it on push and PR to main
 pre-commit run <hook-id> --all-files  # one hook, by its id in .pre-commit-config.yaml
-uv run scripts/lint-claude-md.py      # cap claude/CLAUDE.md; a path lints a scratch copy
+uv run scripts/lint-claude-md.py      # cap both CLAUDE.md files; a path lints a scratch copy
 uv run --with pyyaml scripts/skill-status.py --stale  # which skills need a retest, from the stamps
 uv run --with pyyaml scripts/skill-status.py --stamp <skill> --phase activation,behaviour  # or real-use
 uv run scripts/handoff-status.py      # every repo's open briefs and inbox notes; reads only
@@ -149,9 +149,9 @@ deployed groups (2026-09-02), and is unmeasured for `.claude/skills/`.
 - **Adding a harness**: what only that tool reads goes under `<tool>/`,
   promoted to the root only when a second tool reads it, and deploys via a
   `scripts/link-<tool>.ps1` that leaves the tool's home real, tool-owned.
-- **Both `CLAUDE.md` files** hold only what a session needs before any Read.
-  `scripts/lint-claude-md.py` caps `claude/CLAUDE.md`, which deploys with
-  the default above; `editing-claude-md.md` says what moves where.
+- **Both `CLAUDE.md` files** hold only what a session needs before any Read,
+  and `scripts/lint-claude-md.py` caps them: `editing-claude-md.md` says
+  what moves where. `claude/CLAUDE.md` deploys with the default above.
 
 ## Validating a change
 

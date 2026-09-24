@@ -27,8 +27,8 @@ paths:
   task to a skill. Never an unscoped rule, an `@import` or a subdirectory
   `CLAUDE.md`: the first two load at launch anyway, and the third on any
   Read beneath it.
-- `scripts/lint-claude-md.py` caps `claude/CLAUDE.md` in pre-commit. A
-  learning that does not fit moves something out; the cap never rises.
+- `scripts/lint-claude-md.py` caps both files in pre-commit. A learning that
+  does not fit moves something out; the cap never rises.
 - A count, or a list of which skills a group holds, goes stale: write the
   command that derives it instead.
 - An HTML comment costs no context but shows on every Read: use one only for
