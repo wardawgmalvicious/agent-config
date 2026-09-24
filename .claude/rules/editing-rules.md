@@ -25,9 +25,11 @@ paths:
   name a rule in `.claude/rules/` after one in `claude/rules/`: the
   collision would silently switch that rule off in this repo.
 - A rule in `.claude/rules/` is this repo's own: project scope, deployed
-  nowhere, no deploy step, and not hot-reloaded, so an edit reaches the next
-  session here. It must carry `paths:`, since an unscoped rule loads at
-  launch like `CLAUDE.md` and undoes the split, and no glob may reach
+  nowhere, no deploy step. It is read when a matching file is Read, so a new
+  one loads at its next matching Read even mid-session, and an edit to one
+  already loaded reaches the session as a change notice (2026-09-24,
+  2.1.268). It must carry `paths:`, since an unscoped rule loads at launch
+  like `CLAUDE.md` and undoes the split, and no glob may reach
   `tests/**/fixtures/**`, where fixture tests need a clean context. Write it
   terse, one date per claim, with no history; its evidence goes to
   `docs/evidence/root-claude-md.md` under the root heading it came from. An

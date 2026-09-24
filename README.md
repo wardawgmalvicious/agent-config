@@ -164,9 +164,12 @@ stay separable:
   which is why it lives under `claude/`.
 - **One instruction file per scope.** Root [CLAUDE.md](CLAUDE.md) is
   project scope and never deployed; [claude/CLAUDE.md](claude/CLAUDE.md)
-  is the user-scope payload. They are not mirrors of each other. A root
-  `AGENTS.md` was carried alongside them until it went unread — Codex
-  was dropped and VS Code's `chat.useAgentsMdFile` is off — and its one
+  is the user-scope payload. They are not mirrors of each other. Root is
+  the only project-scope instruction file that loads at startup, with
+  [.claude/rules/](.claude/rules/) splitting off the guidance a file here
+  triggers, and there is no parallel file for another tool: a root
+  `AGENTS.md` was carried alongside until it went unread — Codex was
+  dropped and VS Code's `chat.useAgentsMdFile` is off — and its one
   unique section, the fixture-validation procedure, now lives in root
   `CLAUDE.md`. Reinstate it from history if a tool that reads
   `AGENTS.md` comes back; the content is not Claude-specific.
