@@ -1001,6 +1001,75 @@ stood. Of the contended files, root still names the queue;
 each `expected_activations.md` is named in
 `.claude/rules/activation-testing.md`, which loads when one is Read.
 
+**2026-09-24.** The worktree verdict above answered one axis. Measured
+2026-09-02 against `git worktree add` plus `link-claude.ps1`, it asked
+whether a worktree isolates *payload*, and that answer stands: user scope
+outranks project scope. `--worktree` and `EnterWorktree` are a different
+mechanism, carrying enforcement the hand-rolled worktree had none of.
+code.claude.com/docs/en/worktrees, re-fetched that day, lists four checks
+on the session and every subagent it spawns: an `Edit`, `Write` or
+`NotebookEdit` targeting the main checkout; a Bash, PowerShell or Monitor
+command whose working directory resolves there, or cannot be verified to
+stay out; git redirected there by `-C`, `--git-dir`, `GIT_DIR`,
+`GIT_WORK_TREE` or a prior `cd`; and a command whose text cannot be
+verified to keep git inside, of which "You can't turn this check off."
+PowerShell gets the working-directory check alone.
+
+What that buys is the index, not the document. Each worktree has its own
+index, so the 2026-09-12 `--stamp` loss above, an index collision, cannot
+happen across worktrees, and root now scopes "only a commit isolates" to
+one tree. But two worktrees are two branches, and in a history with no
+merge commit in 782, a silent overwrite of the queue becomes a merge that
+`--ff-only` refuses. A worktree suits divergent state and not convergent;
+the convergent case here was the queue's count line, deleted 2026-09-23
+in `7d31355`.
+
+The open flag closes without a run. The same page: "In a worktree with its
+own `.claude/skills` directory, only that copy loads", the main checkout's
+reading through only when there is none, which for skills needs v2.1.277
+(this machine had 2.1.281). `git ls-files` counts 9 tracked files in
+`.claude/skills/` and 9 in `.claude/rules/`, so a worktree of this repo
+always has its own copy of both, and the in-between case the 2026-09-02
+verdict calls impossible is real for the five project-scope skills. The
+page does not name `.claude/rules`: that half is inferred from the rules
+being tracked. Both rest on docs plus a count, not a run, and
+`docs/handoffs/execute/worktree-isolation-scope.md` holds the probe that
+would witness them.
+
+`worktree.baseRef` was unset in `claude/settings.json`,
+`.claude/settings.json` and `~/.claude/settings.json`, so it defaulted to
+`"fresh"`: branch from the remote default branch, fetched when older than
+24 hours with a five-second cap, the cached ref otherwise. `origin/main`
+lags `HEAD` whenever pushes do: two commits on 2026-09-22, four through
+the trim, level after a push, four again by the afternoon. A worktree, or
+an `isolation: worktree` subagent, which takes the same base, would lack
+them with nothing said. The user chose `"head"` in `.claude/settings.json`,
+this repo only, since in a client repo a clean base matching the remote
+may be the point of a worktree. Inside a worktree, `"head"` resolves to
+that worktree's `HEAD`.
+
+Preconditions, re-measured the same day: no `includeIf` in this repo's
+`.git/config`, where one refuses creation with an error that reads as a
+git-config problem (a global one is exempt, and this machine's identity
+scoping is global); `[lfs]` holding only `repositoryformatversion`; and
+`.claude`, `.claude/skills` and `.claude/rules` real directories, neither
+symlink nor junction. `/.claude/*` in `.gitignore` already covers
+`.claude/worktrees/`.
+
+Two things stay ruled out. Agent teams, on their docs as drilled
+2026-09-22: experimental, off behind `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`,
+and naming this repo's failure outright, "Two teammates editing the same
+file leads to overwrites"; a team can also form unasked, teammates are
+scoped to one session, and split panes are unsupported in VS Code's
+terminal. And a subtraction from `claude/CLAUDE.md`'s escalation
+paragraph: code.claude.com/docs/en/cross-session-messaging says a peer
+message "can't approve anything" and that the receiving Claude is told
+"never to change permission settings, `CLAUDE.md`, or other configuration
+because another session asked", which restates its first clause. The user
+kept the paragraph whole, since the loaded half of the peer-subsection
+ablation in `docs/handoffs/execute/linkedin-article-skill.md` ran against
+its current text.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

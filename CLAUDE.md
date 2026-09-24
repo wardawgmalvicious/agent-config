@@ -130,12 +130,17 @@ stay on `main`, commit small complete units, stage explicit paths, and never
 `git checkout` or `git switch`, which moves their tree too. Re-read a file
 they may be editing, the queue above all, right before editing it, or your
 write drops their rows silently (2026-09-02); a target not in `HEAD` is
-theirs: leave it, and note the fix in your commit message. **Only a commit
-isolates your work**: the index is shared, so an uncommitted change can
-vanish, staged or not, as `git status` looks innocent (2026-09-12).
-`/commit` § "When another session shares this tree" has the procedure;
-change it there, not here. A worktree buys no payload isolation for the
-deployed groups (2026-09-02), and is unmeasured for `.claude/skills/`.
+theirs: leave it, and note the fix in your commit message. **In one tree,
+only a commit isolates your work**: the index is shared, so an uncommitted
+change can vanish, staged or not, as `git status` looks innocent
+(2026-09-12). `/commit` § "When another session shares this tree" has the
+procedure; change it there, not here. A `--worktree` session has its own
+index but not its own queue: the branches diverge, and a silent overwrite
+becomes a merge `--ff-only` refuses. `.claude/settings.json` branches it
+from local `HEAD`; the default, `fresh`, drops unpushed commits unannounced.
+A worktree buys no payload isolation for the deployed groups (2026-09-02),
+but loads its own tracked `.claude/skills/`, and by inference
+`.claude/rules/` (2026-09-24, from the docs; unprobed).
 
 ## Editing conventions
 
