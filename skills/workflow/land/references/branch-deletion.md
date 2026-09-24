@@ -151,10 +151,24 @@ own `(stale info)` refusal (measured 2026-09-23).
 Where GitHub auto-deleted the branch, `origin/<branch>` is gone from the
 remote and this clone's *remote-tracking* ref to it is not:
 `git branch -a` still lists it, and a plain `git fetch` will not remove
-it. That is the leftover ref this step exists to prevent, one
-indirection out — and it survives precisely where the step did the least
-work. Observed 2026-09-13 on the first real run of this step, against a
-repo with `delete_branch_on_merge: true`.
+it unless `fetch.prune` is set. That is the leftover ref this step
+exists to prevent, one indirection out — and it survives precisely
+where the step did the least work. Observed 2026-09-13 on the first
+real run of this step, against a repo with
+`delete_branch_on_merge: true`.
+
+**This machine's `~/.gitconfig` sets `fetch.prune = true`**, which
+git-config documents as "fetch will automatically behave as if the
+--prune option was given on the command line". On 2026-09-23 the ref
+was gone before step 9 ran: its `--prune` printed nothing, and the only
+fetch since GitHub's delete was step 8's `git fetch -q origin`, so that
+prune is inferred rather than seen. machine-config added the key on
+2026-09-03 (`2cdc643`) to the template `~/.gitconfig` is rendered from.
+The file is generated, not linked, and was last rewritten 2026-09-18,
+so the 2026-09-13 run most likely predates a deploy carrying the key,
+though that rewrite cannot show what the file held before it. The
+explicit `--prune` stays either way: the skill has to work where the
+setting is absent.
 
 ## Keeping the branch is an override that costs nothing
 
