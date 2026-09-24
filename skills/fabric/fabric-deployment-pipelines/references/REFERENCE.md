@@ -1,8 +1,8 @@
 # Deployment pipelines — reference tables
 
 Long-form detail for the `fabric-deployment-pipelines` skill. Everything
-here was read from Microsoft Learn on **2026-09-12**; the item list and
-the preview flags move, so re-check
+here was read from Microsoft Learn on **2026-09-12** unless dated
+otherwise; the item list and the preview flags move, so re-check
 [Supported items](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines#supported-items)
 rather than trusting this copy for a go/no-go decision.
 
@@ -25,10 +25,16 @@ skipped rather than failing the deploy.
 | **Industry solutions** | Healthcare *(preview)* · HealthCare Cohort *(preview)* |
 | **IQ** | Ontology *(preview)* · Plan *(preview)* |
 
-**Two exclusions that surprise people.** PBIR-format reports are not
-supported — the general limitations say so outright. And semantic models
-that were never upgraded to Enhanced Metadata lost support on
-**2026-02-12**.
+**Two exclusions that surprise people, one contradicted in use.** The
+general limitations say outright that PBIR-format reports are not
+supported (item 9, re-read 2026-09-24), while the list above names
+*Report* with no format qualifier. **A PBIR-stored report has deployed
+anyway.** Serialized as PBIR from its first Git commit, it reached Test
+and Prod per the pipeline's own records (2026-08-25/26), and
+`getDefinition` on the Prod copy returned PBIR `definition/` parts on
+2026-09-24. No fresh deploy has reproduced it, so treat item 9 as a
+claim to test, not a blocker. And semantic models that were never
+upgraded to Enhanced Metadata lost support on **2026-02-12**.
 
 The `ItemType` enum accepted in a deploy request body is the general
 Fabric item enum and is **much wider than this list** — a type appearing
