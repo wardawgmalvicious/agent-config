@@ -122,6 +122,12 @@ succeeding does not mean a token can be minted for the audience you
 need — under Conditional Access the session can be valid and the token
 still refused, so probe with `az account get-access-token --resource`.
 
+Zone arithmetic needs `uv` or `pwsh`, so preflight whichever the script
+uses: convert through `uv run --no-project --with tzdata python`, never
+through `date` with a named `TZ`, which answers UTC labelled `GMT` with
+exit 0. `~/.claude/CLAUDE.md` § "Timezones: no tzdata in Git Bash, and
+UTC timestamps" has the measurement.
+
 ## Paths
 
 ```bash
@@ -228,3 +234,4 @@ tax on every tool call.
   keys with `grep`/`cut` instead, as `sql.sh` does.
 - `echo "$var"` for arbitrary data; use `printf '%s\n' "$var"`.
 - Hardcoding `/c/...` or `C:\...` when `cygpath` or `$HOME` would do.
+- `TZ=<zone> date` for zone arithmetic — it answers UTC; see Preflight.

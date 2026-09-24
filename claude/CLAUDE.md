@@ -180,6 +180,29 @@ contexts — or ask git, whose `git ls-files --eol <path>` reports `w/lf`
 or `w/crlf` for anything tracked. Measured 2026-09-13 against known LF
 and CRLF files in both contexts.
 
+### Timezones: no tzdata in Git Bash, and UTC timestamps
+
+**Git Bash ships no IANA zone database**, so
+`TZ=America/Chicago date '+%Z %z'` prints `GMT +0000` with exit 0:
+`date` treats a zone it cannot resolve as UTC, and a filter built on it
+is off by the whole offset. The tell is `%Z` reading `GMT` for a zone
+that is not. With `TZ` unset, `date` follows the Windows zone
+correctly, so `date -d '<stamp>'` converts a UTC stamp to local time;
+never hand it a named zone. Python raises `ZoneInfoNotFoundError`
+instead — convert with `uv run --no-project --with tzdata python`,
+where the flag is required, or `pwsh`'s
+`[TimeZoneInfo]::FindSystemTimeZoneById()`, which needs no install.
+Measured 2026-09-22 and 2026-09-23.
+
+**A `Z` timestamp is correct data and a wrong answer to "what day is
+it".** GitHub API timestamps like `mergedAt` are UTC, and so are Claude
+Code transcripts, so here the last four or five hours of each local day
+read as tomorrow: a transcript's `2026-09-23T02:42:51Z` was 22:42 on
+2026-09-22. Two handoffs carried the next day's date that way, caught
+only against merge times quoted beside them. Date what you write from
+the local clock, which the harness states, and show both when quoting a
+UTC stamp.
+
 ### A leading `/` argument becomes a Git install path
 
 MSYS2 rewrites any Bash-tool argument starting with a slash into a
