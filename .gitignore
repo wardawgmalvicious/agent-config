@@ -16,16 +16,18 @@
 # shared project config and IS tracked; settings.local.json (personal
 # permissions) stays ignored by the name-based rule further down.
 #
-# skills/ is tracked too, and is PAYLOAD RATHER THAN RUNTIME STATE: the
-# skills that maintain this repo's own payload are authored here at
-# project scope, deployed nowhere, and so are deliberately outside
-# link-claude.ps1's reach. The negation has to name the DIRECTORY, not a
-# glob beneath it — git never descends into a directory excluded by
-# `/.claude/*`, so `!/.claude/skills/**` alone would re-include nothing
-# and the whole set would sit untracked with no error anywhere.
+# skills/ and rules/ are tracked too, and are PAYLOAD RATHER THAN RUNTIME
+# STATE: the skills that maintain this repo's own payload, and the
+# path-scoped rules for editing it, are authored here at project scope,
+# deployed nowhere, and so are deliberately outside link-claude.ps1's
+# reach. Each negation has to name the DIRECTORY, not a glob beneath it —
+# git never descends into a directory excluded by `/.claude/*`, so
+# `!/.claude/skills/**` alone would re-include nothing and the whole set
+# would sit untracked with no error anywhere. worktrees/ stays ignored.
 /.claude/*
 !/.claude/settings.json
 !/.claude/skills/
+!/.claude/rules/
 
 # Personal Claude Desktop project instructions — not portable, may
 # contain sensitive information.

@@ -57,14 +57,20 @@ repos:
         files: '^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$'
         types: [markdown]
 
-      # README.md is documentation, not a rule — excluded so it isn't
-      # required to carry `paths:` frontmatter.
+      # Two rule trees at the same depth, so one optional leading dot takes
+      # both: claude/rules/ is user-scope payload, .claude/rules/ this repo's
+      # own project-scope rules. lint-frontmatter.py treats any path with a
+      # rules/ segment as a rule, so every rule in either must carry `paths:`
+      # -- an unscoped rule loads at launch. README.md is documentation, not
+      # a rule — excluded so it isn't required to carry `paths:` frontmatter.
+      # Prove a change with --files against a project rule (Passed) and
+      # claude/rules/README.md (Skipped).
       - id: lint-rules
         name: Validate rules frontmatter
         entry: python scripts/lint-frontmatter.py
         language: python
         additional_dependencies: [pyyaml]
-        files: '^claude/rules/(?!README\.md$)[^/]+\.md$'
+        files: '^\.?claude/rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]
 
       # claude/CLAUDE.md deploys to ~/.claude/CLAUDE.md, which loads into
