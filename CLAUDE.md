@@ -166,6 +166,11 @@ uv run scripts/lint-skill-scopes.py
 # new skill plus a settings file nobody changed, which no per-file hook sees.
 uv run scripts/lint-skill-overrides.py
 
+# Cap claude/CLAUDE.md, which loads into every session on the machine, at
+# the memory docs' line target. The number lives only in the script. A path
+# argument lints another file -- that is how its failing arm is proved.
+uv run scripts/lint-claude-md.py
+
 # Which skills have been tested, and what has changed in each since. Derived
 # from the stamps /test-skill writes to tests/skills/.tested.json, never kept
 # by hand: --stale is the to-do list, --check the pre-commit orphan check.
@@ -211,7 +216,7 @@ uv run --with pyyaml scripts/lint-instructions.py
 
 # All checks, the way CI runs them (gitleaks, ruff, frontmatter, scopes,
 # skillOverrides coverage, test-stamp orphans, audit indexes, instructions,
-# identity)
+# claude/CLAUDE.md length, identity)
 pre-commit run --all-files
 pre-commit run lint-skills --all-files     # one hook only
 
@@ -1027,7 +1032,12 @@ one or the other accordingly rather than restoring the duplicate.
 - **`claude/CLAUDE.md`** — loaded into *every* session on this
   machine. Keep it lean: machine environment and pointers only. If
   guidance has a narrower trigger (a file type, a product area),
-  prefer a path-scoped rule or a skill instead. After editing it,
+  prefer a path-scoped rule or a skill instead. A rule there carries
+  itself, what its failure looks like and one date; its evidence goes
+  to [docs/evidence/user-claude-md.md](docs/evidence/user-claude-md.md)
+  under the same heading. `scripts/lint-claude-md.py` caps the file's
+  length in pre-commit, so a learning that does not fit moves something
+  out rather than raising the cap. After editing it,
   re-run `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`
   — never bare, see Commands — to push it to `~/.claude/CLAUDE.md`.
 

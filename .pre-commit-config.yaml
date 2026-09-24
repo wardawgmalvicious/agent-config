@@ -67,6 +67,20 @@ repos:
         files: '^claude/rules/(?!README\.md$)[^/]+\.md$'
         types: [markdown]
 
+      # claude/CLAUDE.md deploys to ~/.claude/CLAUDE.md, which loads into
+      # every session on the machine, so its length is a cost each session
+      # pays. It grew from 2.7 KB to 666 lines in four weeks, one learning
+      # at a time, with no edit wrong on its own -- which is what a per-edit
+      # review cannot see and a cap can. The cap lives in the script only.
+      # Anchored so root CLAUDE.md, project scope and never deployed, does
+      # not match: prove a change here with --files against both paths.
+      - id: lint-claude-md
+        name: Cap claude/CLAUDE.md at the memory docs' line target
+        entry: python scripts/lint-claude-md.py
+        language: python
+        files: '^claude/CLAUDE\.md$'
+        pass_filenames: false
+
       # A collision is a property of a PAIR of skills, so this runs over the
       # whole set rather than the changed files -- neither file is wrong on
       # its own and a per-file hook could never see it. Scoped to the two
