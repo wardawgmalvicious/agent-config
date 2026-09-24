@@ -1,6 +1,6 @@
 ---
 name: fabric-deployment-pipelines
-description: "Use for Fabric / Power BI service-side deployment pipelines — the workspace-is-source-of-truth ALM surface promoting content stage to stage (dev → test → prod) via the Core REST API `/v1/deploymentPipelines` or `fab api`. Covers pipeline/stage lifecycle (2–10 stages, permanent once created), workspace assign/unassign, Deploy Stage Content as an LRO (202 + `x-ms-operation-id`, 300-item cap), per-operation delegated scopes (`Pipeline.Read.All`/`Pipeline.ReadWrite.All`, `Workspace.ReadWrite.All` to assign, `Pipeline.Deploy` — its own scope — to deploy), the two-permission model of pipeline Admin plus a workspace role on both stages, item pairing and its folder tie-breaker, autobinding across pipelines, portal-only deployment rules, and the limits that bite: PBIR deploying despite Learn, backward deploys empty-target and full-only, Direct Lake not rebinding, unassign destroying history and rules. For Git-driven deploys use fabric-cicd or `fab deploy`; for Data Factory orchestration items, fabric-data-pipeline."
+description: "Use for Fabric / Power BI service-side deployment pipelines — the workspace-is-source-of-truth ALM surface promoting content stage to stage (dev → test → prod) via the Core REST API `/v1/deploymentPipelines` or `fab api`. Covers pipeline/stage lifecycle (2–10 stages, permanent once created), workspace assign/unassign, Deploy Stage Content as an LRO (202 + `x-ms-operation-id`, 300-item cap), per-operation delegated scopes (`Pipeline.Read.All`/`Pipeline.ReadWrite.All`, `Workspace.ReadWrite.All` to assign, `Pipeline.Deploy` — its own scope — to deploy), the two-permission model of pipeline Admin plus a workspace role on both stages, item pairing and its folder tie-breaker, autobinding across pipelines, portal-only deployment rules, and the limits that bite: PBIR deploying despite Learn, backward deploys empty-target and full-only, Direct Lake not autobinding, unassign destroying history and rules. For Git-driven deploys use fabric-cicd or `fab deploy`; for Data Factory orchestration items, fabric-data-pipeline."
 when_to_use: "Use when promoting Fabric or Power BI content between deployment pipeline stages, creating a pipeline or assigning a workspace to a stage, automating a deploy from Azure DevOps or GitHub Actions, or debugging one — a 403 that is a missing pipeline role rather than a workspace role, a deploy that duplicated an item instead of overwriting it, a report that lost its semantic model, rules that didn't apply, or a greyed-out deploy-to-previous-stage button."
 disable-model-invocation: false
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -250,8 +250,22 @@ pipelines must have **the same number of stages**.
 
 **Direct Lake semantic models do not autobind.** Deploy a Direct Lake
 model and its lakehouse together and the target model still points at the
-**source** stage's lakehouse. Bind it with a data source rule. Every other
-model type binds to the paired item normally.
+**source** stage's lakehouse. Every other model type binds to the paired
+item normally. Which rule rebinds it depends on the flavour:
+
+- **Direct Lake on SQL** (analytics endpoint): a data source rule.
+- **Direct Lake on OneLake**: no data source rule is offered, and the
+  dropdown is greyed out. Hold the workspace and lakehouse GUIDs in `Text`
+  M parameters and give each a **parameter rule** on the target stage.
+  Rules attach to the target's copy, so a first promotion is deploy, set
+  the rules, deploy again, then refresh so the model reframes. The
+  parameter shape is in the `fabric-tmdl` skill, *Direct Lake
+  Configuration*.
+
+**A parameter-controlled connection never autobinds**, even when the
+parameter holds a model or workspace ID. Rebind it by changing the value
+or with a parameter rule. Learn's pages disagree on Direct Lake rules; see
+[references/REFERENCE.md](references/REFERENCE.md).
 
 ### Repairing a broken pairing
 
@@ -286,9 +300,10 @@ So "deploy only what changed" means diffing item **definitions** yourself
 — see the `fabric-rest-api` skill for the `getDefinition` contract, which
 differs by item type. Two traps:
 
-- **Deployment auto-rebinds embedded references** in the target (pipeline
-  `notebookId`/`workspaceId`, report-to-model id, Direct Lake
-  server/database). A paired target's definition therefore differs from
+- **Deployment rewrites embedded references** in the target: autobinding
+  rewrites pipeline `notebookId`/`workspaceId` and the report-to-model
+  id, and a rule rewrites a Direct Lake model's server/database or
+  parameter values. A paired target's definition therefore differs from
   its source even when nothing was edited — naive hashing reports false
   "changed". Normalize those fields before comparing.
 - Do the comparison **in a script** and surface only the change list.
@@ -320,6 +335,9 @@ or recreate them.** Do not claim otherwise, and do not script around them.
   shows as *different*.
 - Data source rules only swap a source for one of the **same type**, and
   the same data source cannot appear in two rules.
+- A **parameterized** source takes no data source rule, and neither does
+  a **Direct Lake on OneLake** model: both rebind with parameter rules
+  (see *Item pairing and autobinding*).
 - If the data source or parameter a rule points at is changed or removed
   in the source stage, the rule becomes invalid and **deployment fails**.
 - Deleting an item deletes its rules irrecoverably, and so does
@@ -384,5 +402,9 @@ are unique tenant-wide.
   the scopes table
 - fabric-variable-library skill — a supported item type whose value sets
   are the other way to vary config per stage
+- fabric-tmdl skill — the `Text` M parameters a Direct Lake on OneLake
+  model needs before a parameter rule can rebind it
+- fabric-gotchas skill — the greyed-out rule dropdown, and the
+  schema-and-data refresh false alarm on a parameterized Direct Lake model
 - **Not** fabric-data-pipeline — that is the Data Factory orchestration
   item, unrelated to this despite the name

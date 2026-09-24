@@ -179,7 +179,11 @@ and permissions are preserved**.
 - With autobinding engaged: Native query plus DirectQuery together is
   unsupported (including proxy models), and the data source connection
   must be the **first step** in the mashup expression.
-- Direct Lake models do not autobind — use a data source rule.
+- Direct Lake models do not autobind. The deployment-process page says
+  to use data source rules, but only **Direct Lake on SQL** takes one:
+  the [Direct Lake overview](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)
+  marks rule rebinding unsupported on **Direct Lake on OneLake**, which
+  rebinds with parameter rules instead (both re-read 2026-09-24).
 - A model using a **Dataflow Gen2 (CI/CD)** item as a data source cannot
   be deployed.
 - **Incremental refresh** is supported and the policy travels with the
@@ -238,7 +242,7 @@ before scripting one.
 | "Workspace member permissions needed" | You lack the role on an **adjacent** stage's workspace, not the one you are assigning |
 | Deployment fails on broken rules | A republished semantic model removed or renamed a parameter, or a data source rule lost its values. Fix or remove the rule, then redeploy |
 | Configured rules but nothing changed | Rules apply on the **next** deploy. Deploy the model from source to target |
-| Rules greyed out | You are not the item owner, or the item has no data sources / no parameters to bind |
+| Rules greyed out | You are not the item owner, or the item has no data sources / no parameters to bind. A **Direct Lake on OneLake** model is never offered a data source rule: give it `Text` M parameters and use parameter rules |
 | Data source rule won't save | The model has a function connected to a data source (unsupported), or the source is parameterized — use a parameter rule |
 | "Can't start the deployment" | An incremental-refresh model changed in a way that isn't allowed. Publish the `.pbix` straight to the target, or edit the target model via XMLA |
 | "Continue the deployment" | Schema-breaking change would lose target data. Continuing loses it; otherwise fix the source and redeploy |
