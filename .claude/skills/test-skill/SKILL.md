@@ -358,7 +358,7 @@ skill.** `.claude/settings.json` here collapses every platform skill
 description to `name-only`, and the description *is* the trigger — so
 an in-repo run is a guaranteed false negative that looks exactly like a
 broken skill. **A project-scope skill must run here**, where the payload
-is on disk and root `CLAUDE.md` duplicates it: disallow the file tools
+is on disk and root `CLAUDE.md` may repeat it: disallow the file tools
 (`Read,Glob,Grep,ToolSearch`) on both arms, then add a third arm with
 `Skill` disallowed too — **model-invoked, never slash**, or the
 expansion inlines the body straight past the denial and the arm is

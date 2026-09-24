@@ -300,8 +300,8 @@ Helper scripts for repo maintenance and observability.
   a user-scope skill is offered in every session on this machine while a
   project-scope one is offered only in sessions inside this repo, so the
   two are counted against different denominators and a `proj` row's
-  `listed` counts this repo's sessions alone. The six skills at project
-  scope were at user scope until the 2026-09-09 split, and the listings
+  `listed` counts this repo's sessions alone. `ls -d .claude/skills/*/`
+  lists skills that sat at user scope until the 2026-09-09 split; listings
   they earned before it are reported as a separate `[+N pre-split]` note
   rather than added in — a count drawn from a period when a skill was a
   different kind of skill explains a low number without being evidence

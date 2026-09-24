@@ -15,8 +15,9 @@
         {
             // The ONLY form of this command that should be run on this
             // machine. Running it bare re-links every platform skill and
-            // silently undoes the prune -- it reports "Done. All links
-            // verified." either way. Happened 2026-08-31; see CLAUDE.md.
+            // silently undoes the prune -- it reports "Done. Payload
+            // verified (skills linked, everything else copied)." either
+            // way. Happened 2026-08-31; see CLAUDE.md.
             // -SkillGroups also PRUNES a group left off the list, so a
             // stale form here does not merely fail to deploy a group, it
             // deletes it: meta was added 2026-09-15 and this string had to

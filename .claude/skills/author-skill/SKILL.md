@@ -163,14 +163,16 @@ command, and every cross-reference.
     `skills/<group>/<name>/SKILL.md`, deployable payload.
 
   Getting this wrong is silent and costs listing budget everywhere. The
-  seven skills at project scope today (`author-skill`, `test-skill`,
-  `learn`, `drift-*`, `land`) were all at user scope until 2026-09-09
-  for exactly this reason.
+  2026-09-09 split took this repo's own maintenance skills out of user
+  scope for exactly this reason; `ls -d .claude/skills/*/` lists what
+  sits at project scope now.
 - **Within `skills/`, the namespace picks the group directory**, and the
   group directory is load-bearing. `skills/fabric/` for `fabric-*`,
   `skills/powerbi/` for `pbir-`, `pbid-`, `pbip-` and the vendored
-  `powerbi-*`, `skills/workflow/` for the behavioral ones — which now
-  means the repo-general verbs only, `code-review` and `commit` — and
+  `powerbi-*`, `skills/workflow/` for the repo-general behavioral verbs
+  (`ls skills/workflow`), `skills/meta/` for upkeep of the agent
+  configuration that must also run in client repos, kept from Copilot
+  by its `.no-copilot` marker (`ls skills/meta`), and
   `skills/social/` for personal-profile writing (`linkedin-highlights`),
   split out so a workplace Copilot deployment of `workflow` never
   carries it. A new group needs adding to the machine's

@@ -123,11 +123,17 @@ the MSYS2 trap was skill-only. The ablation is the payload arm with
 `Skill` added to `--disallowedTools`, everything else identical: the
 listing entry stays, the body cannot load, and `CLAUDE.md` stays in
 context. It scored 9 of 12 to the skill arm's 11. Read the skill's
-contribution off that gap, and expect it to be narrow where root
-`CLAUDE.md` is the evidence file for the same procedure — that split is
-deliberate, so a narrow margin is not a redundant skill. It is the shape
-root `CLAUDE.md` (Validating a change) gives the false-positive guard,
-with the body ablated instead of the guard.
+contribution off that gap, and expect it to be narrow wherever root
+`CLAUDE.md` carries the same procedure — a narrow margin there is not a
+redundant skill. It is the shape root `CLAUDE.md` (Validating a change)
+gives the false-positive guard, with the body ablated instead of the
+guard. **The measurement predates the 2026-09-24 trim of root
+`CLAUDE.md`**, which cut it from 1,215 lines to under 200 and moved the
+activation-testing procedure to `.claude/rules/activation-testing.md`.
+That rule loads only on a matching `Read`, so with the file tools
+disallowed no arm carries it, and root keeps a summary of it: the 15 of
+16 no longer holds, and the ablation margin has not been re-measured
+since.
 
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
