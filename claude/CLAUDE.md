@@ -44,8 +44,8 @@ the bytes: a round trip through a translating layer proves nothing.
 - **Backslashes.** Bash turns `\\` into `\`, even quoted (use `chr(92)` or
   Write); `sed`/`perl -e` drop unknown escapes (use a quoted heredoc); an
   inline PowerShell here-string stays literal (use a `.ps1`). 2026-09-02.
-- **One file per Bash call**: more can fail whole, on a misleading
-  ``unexpected EOF while looking for matching `''`` (2026-09-23).
+- **One file per Bash call, or use Write** (2026-09-23): more can fail
+  whole on a misleading ``unexpected EOF while looking for matching `''``.
 - **A leading `/` becomes a Git install path**, silently, even quoted: set
   `MSYS2_ARG_CONV_EXCL='*'` or use PowerShell.
 - **`$TMPDIR` is unset**: `"$TMPDIR/x"` fails `Permission denied` at the Git
@@ -121,9 +121,9 @@ export GH_TOKEN="$(command gh auth token --user "$(git config user.name)")"
 ```
 
 **An organization's account and tenant names and internal hostnames never go
-in a file or commit message**; write `~` or `<username>` for a profile path.
-Pushed history is unfixable. `identity-guard` sees only listed names (extend
-`~/.config/identity-denylist.txt`) and only Claude Code's commits.
+in a file or commit message, in any repo**; write `~` or `<username>` for a
+profile path. Pushes are permanent. `identity-guard` sees only listed names
+(extend `~/.config/identity-denylist.txt`) and only Claude Code's commits.
 
 ### Branch naming
 
