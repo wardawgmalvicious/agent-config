@@ -128,6 +128,51 @@ through `date` with a named `TZ`, which answers UTC labelled `GMT` with
 exit 0. `~/.claude/CLAUDE.md` § "Timezones: no tzdata in Git Bash, and
 UTC timestamps" has the measurement.
 
+## Secrets and payloads stay off argv
+
+A secret, a query or a request body reaches a child process on stdin,
+in a file the caller owns, or in the environment — never as an
+argument. One remedy, two reasons, standing on different evidence:
+
+- **argv is visible outside the process** — `ps -ef`, Task Manager's
+  command-line column, `Win32_Process.CommandLine` — for the life of
+  the call, and kept by anything that logs process starts. That is
+  documented OS behaviour, not a measured incident: keeping secrets
+  off it is the user's design choice, applied 2026-09-22.
+- **A native Windows program's argv is one command line**, capped at
+  32,767 characters, and Git Bash's curl decodes it through the ANSI
+  code page — wrong results with exit 0. Measured 2026-09-23;
+  `~/.claude/CLAUDE.md` § "A native program's argv is one Windows
+  command line" has the evidence.
+
+```bash
+JQ_BIN=()
+case "$OSTYPE" in msys* | cygwin*) JQ_BIN=(-b) ;; esac
+BODY=$(printf '%s' "$QUERY" | jq "${JQ_BIN[@]}" -Rs '{query: .}')
+printf '%s' "$BODY" | curl -sS --data-binary @- \
+    -H 'Content-Type: application/json' "$URL"
+```
+
+- **Gate `-b` on `cygwin*` as well as `msys*`.** Git Bash here reports
+  `OSTYPE=cygwin` (2026-09-23), so an `msys*` gate alone never fires
+  and jq silently reads the payload in text mode. `-b` needs jq 1.7 or
+  later, which is why it is gated rather than passed everywhere. Pipe
+  a file into jq rather than using `--rawfile`, which stays text mode
+  even with `-b`.
+- **`--data-binary @-`, not `--data @-`.** curl's manual says
+  `-d @file` strips carriage returns, newlines and null bytes —
+  harmless for a URL-encoded form, wrong for a query. A token form
+  body goes the same way, and `printf` is a builtin, so the value is
+  never an exec'd program's argument.
+- **A header is argv too.** `-H @file` reads headers from a file, and
+  `--config -` (`-K -`) takes `header =` and `data =` lines from stdin
+  when one call needs both, since only one of `@-` and `--config -` can
+  have stdin. A GET has no body, but a `--config -` block is read byte
+  for byte as well: a `data-urlencode` line in one sent `é` as
+  `%C3%A9`, against `%E9` as an argument (a client repo, 2026-09-23).
+  Quote each value, escaping `\\`, `\"`, `\t`, `\n` and `\r`,
+  backslash first.
+
 ## Paths
 
 ```bash
@@ -235,3 +280,5 @@ tax on every tool call.
 - `echo "$var"` for arbitrary data; use `printf '%s\n' "$var"`.
 - Hardcoding `/c/...` or `C:\...` when `cygpath` or `$HOME` would do.
 - `TZ=<zone> date` for zone arithmetic — it answers UTC; see Preflight.
+- A secret, a query or a request body as an argument — see Secrets and
+  payloads stay off argv.

@@ -232,6 +232,28 @@ error names the boundary. Use the scratchpad path, which is a Windows
 path both sides read identically, or `cygpath -w /tmp/x` before handing
 one across. Measured 2026-09-15.
 
+### A native program's argv is one Windows command line
+
+Text handed to a native `.exe` as an argument fails two ways (measured
+2026-09-23; fabric-tools `6ed07e1`, `83ccce4`):
+
+- **Length.** The command line is capped at 32,767 characters. Past it
+  bash answers `Argument list too long`, exit 126, and the program
+  never starts. Between Git Bash programs there is no cap — `bash -c`
+  took 50,000 characters intact — so it bites at the first native one.
+- **Encoding, silently.** `/mingw64/bin/curl`, first on `PATH`, decodes
+  its arguments through the ANSI code page: `é` leaves as one non-UTF-8
+  byte, and anything outside cp1252 as `?`. Live, a Kusto query read
+  back U+FFFD and `?`, and a filter holding U+00A0 returned unrelated
+  rows, both exit 0. System32's `curl.exe` and jq's `--arg` were right.
+
+Stdin avoids both, but **native jq reads stdin in text mode**: CRLF
+arrives as LF, and a 0x1A byte ends the input without error. `-b` makes
+stdin and stdout binary from jq 1.7 — 1.6 dies `Unknown option -b`, per
+its source, not a run — and `--rawfile` stays text mode regardless. The
+convention is `~/.claude/rules/coding-bash.md` § "Secrets and payloads
+stay off argv".
+
 ### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open
