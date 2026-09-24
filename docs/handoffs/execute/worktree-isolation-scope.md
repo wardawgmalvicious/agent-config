@@ -13,16 +13,22 @@
   confirm the enforcement fires on this CLI version.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
+- **Repointed**: 2026-09-24, after root `CLAUDE.md` was trimmed in
+  `61584f5`. The root passages quoted below moved verbatim to
+  [docs/evidence/root-claude-md.md](../../evidence/root-claude-md.md) §
+  "Branching and concurrent sessions", and root keeps each as one line,
+  quoted where it is cited. What else moved since 2026-09-22 is under
+  [Re-measured 2026-09-24](#re-measured-2026-09-24).
 
 ## The standing conclusion is right, and scoped to a different axis
 
-[CLAUDE.md](../../../CLAUDE.md) § "Branching and concurrent sessions"
-says a worktree is *"either unnecessary or ineffective, with no case in
-between"*, measured 2026-09-02 by deploying to a real worktree and
-probing it cold. That measurement asked **can a worktree isolate my
-payload?** The answer was no, because user scope outranks project scope
-and a worktree copy of a user-scope skill is inert. That is still true
-and nothing here disputes it.
+The ledger's § "Branching and concurrent sessions" says a worktree is
+*"either unnecessary or ineffective, with no case in between"*, measured
+2026-09-02 by deploying to a real worktree and probing it cold. That
+measurement asked **can a worktree isolate my payload?** The answer was
+no, because user scope outranks project scope and a worktree copy of a
+user-scope skill is inert. That is still true and nothing here disputes
+it.
 
 It is not the question the collision raises. `--worktree` and
 `EnterWorktree` are a different mechanism from the `git worktree add`
@@ -40,20 +46,23 @@ to the session and to every subagent it spawns:
   worktree is blocked, and **that check cannot be turned off.**
 
 So the 2026-09-02 conclusion answers *payload isolation* and this brief
-answers *file and index isolation*. Both can be true. Edit the section to
-say which it measured rather than replacing it.
+answers *file and index isolation*. Both can be true. Since the trim,
+root's line already says which it measured — *"A worktree buys no
+payload isolation for the deployed groups (2026-09-02)"* — so this half
+needs no edit.
 
 ## What it buys, precisely: the index, not the document
 
 **Buys — the shared git index.** Each worktree has its own index. The
-loss root `CLAUDE.md` records for 2026-09-12 — a `skill-status.py
---stamp` entry in `tests/skills/.tested.json` lost twice to the other
-session's commits, *"once from the working tree, once from the working
-tree and the index while it sat staged"*, most plausibly to pre-commit's
-stash/restore — is an index collision. In separate worktrees it does not
-happen. `CLAUDE.md`'s *"the index is shared too, so staging is not
-isolation — only a commit is"* stops being true there, and that sentence
-should say it is scoped to one tree.
+loss the ledger records under that heading for 2026-09-12 — a
+`skill-status.py --stamp` entry in `tests/skills/.tested.json` lost
+twice to the other session's commits, *"once from the working tree, once
+from the working tree and the index while it sat staged"*, most
+plausibly to pre-commit's stash/restore — is an index collision. In
+separate worktrees it does not happen. Root's *"Only a commit isolates
+your work: the index is shared, so an uncommitted change can vanish,
+staged or not"* stops being true there, and that sentence should say it
+is scoped to one tree.
 
 **Does not buy — the shared document.** Two worktrees are two branches,
 so two divergent versions of
@@ -73,7 +82,8 @@ solve concurrent sessions" — is wrong in this repo specifically.
 
 ## The open flag can be closed without a probe
 
-That section currently says:
+Root's section ends *"and is unmeasured for `.claude/skills/`"*, which
+condenses this paragraph, now in the ledger under the same heading:
 
 > **The 2026-09-09 scope split reopens that last bullet, and it has not
 > been re-measured.** [...] so a worktree plausibly does isolate them,
@@ -93,8 +103,10 @@ dichotomy holds only for the deployed groups.
 Two honest limits on that, both of which belong in the edit. It is
 derived from documentation plus one `git ls-files` count, **not from a
 run** — the probe below is what would witness it. And the read-through
-half is documented as requiring v2.1.277; this machine is on **2.1.268**,
-so that path is untested here, though it is not the path this repo takes.
+half is documented as requiring v2.1.277. This machine was on 2.1.268
+when this was written and on **2.1.281** by 2026-09-24, so that path can
+now be probed here but has not been, though it is not the path this
+repo takes.
 
 ## Preconditions, measured in this repo 2026-09-22
 
@@ -117,10 +129,12 @@ something else entirely:
 
 ## The settings decision, which is payload and is not obvious
 
-Two prep items if worktrees are adopted at all:
+Prep if worktrees are adopted at all:
 
-- `.gitignore` carries no `worktrees` line, so `.claude/worktrees/` would
-  appear as untracked in the main checkout. One line.
+- **`.gitignore` needs nothing**, though this brief first said it lacked
+  a `worktrees` line: `/.claude/*` has ignored `.claude/worktrees/`
+  since `3aecc9d` (2026-09-09), and `git check-ignore -v` names that
+  line (2026-09-24).
 - **`worktree.baseRef` is unset in every settings file on this machine**
   — `claude/settings.json`, `.claude/settings.json` and the live
   `~/.claude/settings.json` all lack it — so it defaults to `"fresh"`:
@@ -169,8 +183,8 @@ Assert, in the worktree session:
    that cannot be turned off.
 4. **The skills question**: does the session list the five
    project-scope skills, and are they the *worktree's* copies? Use the
-   2026-09-02 marker technique that section already records — put a
-   marker in the worktree's
+   2026-09-02 marker technique the ledger records under that heading —
+   put a marker in the worktree's
    `.claude/skills/author-skill/SKILL.md` description and check whether
    the listing carries it.
 
@@ -180,11 +194,11 @@ with `git worktree list` that only the main checkout remains.
 ### Two traps that will make you read the result wrong
 
 **Do not run `link-claude.ps1` at any point in this probe.** The
-2026-09-02 measurement records the trap: running the main tree's copy
-with `-ClaudeDir <worktree>` relinks every junction back to the main
-tree, reporting `Relink` and ending `Done`. This probe is about project
-scope and file enforcement, not payload deployment, and the linker can
-only contaminate it.
+2026-09-02 measurement, in the ledger, records the trap: running the
+main tree's copy with `-ClaudeDir <worktree>` relinks every junction
+back to the main tree, reporting `Relink` and ending `Done`. This probe
+is about project scope and file enforcement, not payload deployment, and
+the linker can only contaminate it.
 
 **The workflow skills still being the main tree's files is not an
 enforcement leak.** `~/.claude/skills/<name>` is a junction into the
@@ -209,12 +223,13 @@ explicitly unsupported in VS Code's integrated terminal, which is where
 these sessions run.
 
 **Cross-session messaging keeps one thing, and it is not payload.**
-`CLAUDE.md` treats the `<cwd-basename>-<hash>` naming as structural —
-*"filtering peers by repo-name prefix silently misses one working in a
-subdirectory"* — and it is the **fallback**. `--name` at launch and
-`/rename` in session set a real one, which is what peers address. That is
-an operator habit costing no context, so it belongs in prose as an aside
-at most. `crossSessionInbound` and `isolatePeerMachines` are both unset
+`claude/CLAUDE.md` treated the `<cwd-basename>-<hash>` naming as
+structural — *"filtering peers by repo-name prefix silently misses one
+working in a subdirectory"* — and it is the **fallback**. `--name` at
+launch and `/rename` in session set a real one, which is what peers
+address. That is an operator habit costing no context, so it belongs in
+prose as an aside at most, and `ed8434d` landed it that way on
+2026-09-23. `crossSessionInbound` and `isolatePeerMachines` are both unset
 here and should stay unset: the default already decides per message from
 the two sessions' permission-mode classes, and `auto` counts as
 prompting, so messages are delivered.
@@ -227,6 +242,34 @@ the two additions from 2026-09-18: the subagent-laundering test and the
 inbox-delete rule. Trimming the redundant half would suit a file under a
 stated lean constraint, but it is a payload edit affecting every session
 and is listed here as a candidate, not a decision.
+
+## Re-measured 2026-09-24
+
+Measured after the root trim and before anyone executes this. Re-run
+the cheap ones anyway: the queue re-measures a row before acting on it.
+
+- **Root already names payload isolation**, so the scope correction is
+  half done. What is left is the index sentence and the flag.
+- **The in-between case covers the rules too.** `.claude/rules/` has
+  been tracked since `5119075` (9 files; `.claude/skills/` is still 9),
+  so a worktree checks out its own copy of both, and root's flag should
+  name both when it closes.
+- **The CLI passed 2.1.277**, at 2.1.281, so the read-through half can
+  be probed here.
+- **`origin/main` lags whenever pushes do.** It sat four commits behind
+  `HEAD` through the trim session and was level after the user's push
+  (`0 0`), so the `fresh` trap is intermittent, not gone.
+- **Still no merge commit**: none in 778.
+- **`.gitignore` was never short a line**, corrected in place above.
+- **`--name` and `/rename` landed**, above; the quote is now in
+  `docs/evidence/user-claude-md.md`.
+- **`ed8434d` rewrote the escalation paragraph** on 2026-09-23. It is
+  seven lines now, both 2026-09-18 additions among them: weigh the
+  subtraction against what is left, if at all.
+- **Unchanged**: `worktree.baseRef` unset in all three settings files;
+  no `includeIf` in `.git/config`; `[lfs]` holding only
+  `repositoryformatversion`; `.claude`, `.claude/skills` and
+  `.claude/rules` real directories.
 
 ## Dependencies
 
