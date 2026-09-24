@@ -213,8 +213,8 @@ The bound-URL text is the trap, because it reads like a network or URL fault rat
 **A `headersHelper` never sees a folder-scoped tenant pin.** MCP servers
 and their helpers are spawned by the Claude Code process and inherit
 *its* environment, which has no `AZURE_CONFIG_DIR` — the variable the
-shell profiles resolve per repo (`claude/CLAUDE.md` § "Azure CLI state
-is per tenant, and pinned by folder"). So the helper's
+shell profiles resolve per repo (the `repoRoot` step in `machine-config`'s
+`docs/manual-steps.md`). So the helper's
 `az account get-access-token` reads the shared `~/.azure`, the one store
 nothing manages: `AzLogin` only ever writes into
 `~/.azure-tenants/<name>/`. The failure is silent success — an MCP call

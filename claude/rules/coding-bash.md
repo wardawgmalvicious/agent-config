@@ -126,7 +126,8 @@ Zone arithmetic needs `uv` or `pwsh`, so preflight whichever the script
 uses: convert through `uv run --no-project --with tzdata python`, never
 through `date` with a named `TZ`, which answers UTC labelled `GMT` with
 exit 0. `~/.claude/CLAUDE.md` § "Timezones: no tzdata in Git Bash, and
-UTC timestamps" has the measurement.
+UTC timestamps" has the rule, and the evidence file it names has the
+measurement under the same heading.
 
 ## Secrets and payloads stay off argv
 
@@ -143,7 +144,8 @@ argument. One remedy, two reasons, standing on different evidence:
   32,767 characters, and Git Bash's curl decodes it through the ANSI
   code page — wrong results with exit 0. Measured 2026-09-23;
   `~/.claude/CLAUDE.md` § "A native program's argv is one Windows
-  command line" has the evidence.
+  command line" has the rule, and the evidence file it names has the
+  measurements under the same heading.
 
 ```bash
 JQ_BIN=()
