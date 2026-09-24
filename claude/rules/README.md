@@ -97,9 +97,14 @@ conformance checking.
   `.vscode/settings.json` vs `extensions.json` vs `.code-workspace`),
   and the silent failures around it — formatters naming extensions that
   are not enabled, `useDefaultFlags` linking a profile back to Default,
-  globs that cannot match leading dots. Triggers on `.vscode/*.json`,
+  globs that cannot match leading dots — and the three that decide
+  whether Copilot's `chat.*Locations` switches hold: settings are per
+  profile, an unlisted location defaults to on, and the Settings UI may
+  not save. Triggers on `.vscode/*.json`,
   `*.code-workspace`, and any `vscode/**/*.json` — stored profile
-  settings and a standalone `keybindings.json` alike.
+  settings and a standalone `keybindings.json` alike. No glob sees a
+  live profile under `%APPDATA%\Code\User`, so `~/.claude/CLAUDE.md`
+  tells a session to read this rule before editing one.
 - [git-identity-scoping.md](git-identity-scoping.md) — not a coding
   convention: which git config file owns an identity on a machine with
   more than one, and the four ways an `includeIf gitdir:` pattern

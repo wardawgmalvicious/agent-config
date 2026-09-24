@@ -53,6 +53,25 @@ can. So "this repo should be lightweight" is a profile task, and
   profile editor's *Use Default Profile* tick is easy to leave on, and
   the symptom — changes to one profile appearing in another — reads as a
   sync bug rather than a scoping one.
+- **Every profile has its own settings.** Each keeps a `settings.json`
+  under `%APPDATA%\Code\User\profiles\<id>\` unless it shares Default's;
+  `%APPDATA%\Code\User\settings.json` is Default's alone, and the
+  Settings UI edits the current window's profile. A switch set in one
+  profile is absent from the rest: on 2026-09-11 one profile carried
+  none of the Copilot `chat.*Locations` switches, so Copilot there still
+  inherited the whole `~/.claude` payload, hooks included.
+- **An unlisted location keeps its default, and the default is on.** The
+  `chat.*Locations` settings are location → boolean maps *over* the
+  documented defaults, so turning inheritance off means writing every
+  location out as `false`. Omitting one leaves it enabled with nothing
+  to show for it: `.claude/skills` and `.claude/rules` stayed live that
+  way while every root listed beside them read `false`.
+- **The Settings UI may not save.** Object-valued `chat.*` settings
+  edited through the UI can leave `settings.json` untouched with no
+  error — measured 2026-09-09, repeated edits against an mtime four days
+  stale, and again 2026-09-11, when two of four object-valued settings
+  set through the UI never reached the file. Edit the profile's
+  `settings.json` directly and check it afterwards.
 - **Globs do not match leading dots.** VS Code's glob engine (like the
   shell, unlike Python's `fnmatch`) will not let `*` match a leading dot,
   so `*.platform` matches nothing at all. Fabric names two item parts as
