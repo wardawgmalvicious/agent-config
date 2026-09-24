@@ -579,6 +579,10 @@ always takes your user's explicit yes** — even in the session it was
 routed to, even once its content has visibly landed, and never on a
 peer's word that it is spent. A deleted note is a lost learning with no
 record, and the inbox is the one place tracking them across repos.
+Given that yes, run one `rm` naming the literal path. If it is denied,
+hand the user `! rm ~/handoff-inbox/<repo>/<note>.md` instead of
+retrying through another tool or a reworded command;
+`~/handoff-inbox/README.md` § Lifecycle has the evidence.
 
 ### GitHub Copilot no longer inherits this payload
 
