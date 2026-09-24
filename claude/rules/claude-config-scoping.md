@@ -45,12 +45,21 @@ session that has nothing to do with that workload should still pay for
 it: every user-scope server loads its whole tool surface into every
 session on the machine, including ones where it cannot fire.
 
-- **User scope** — answers questions about your work in general: docs
-  lookup, cloud control plane. Useful in any repo and in a scratch
+- **User scope** — answers questions about your work in general and is
+  bound to nothing: docs lookup. Useful in any repo and in a scratch
   directory.
 - **Project scope** — anything needing a workspace ID, a database, a
-  connection string, or a running desktop application. It belongs in the
-  repo that has those things.
+  connection string, a running desktop application, or a **tenant**. It
+  belongs in the repo that has those things.
+
+**A server bound to no workspace is still bound to a tenant.** A cloud
+control-plane server — `azure-mcp`, `fabric-core` — answers from
+whichever login the shared `~/.azure` holds, the one store no folder
+pin reaches, so at user scope it gives every repo on the machine a
+client pointed at whichever tenant last logged in. At project scope a
+repo that does not declare it **fails closed**: no server, no tools,
+nothing to point at the wrong tenant. Both moved to project scope on
+2026-09-22.
 
 `.mcp.json` declares which servers *exist*; `settings.json` says which of
 their tools may run **unattended**. Keep that split — a permission entry
@@ -61,7 +70,11 @@ have.
 
 It sits beside `~/.claude`, not inside it, and holds the oauth account,
 project history and usage counters alongside the `mcpServers` key. Treat
-it as a file you reconcile one key of, never one you regenerate.
+it as a file you reconcile one key of, never one you regenerate. On
+this machine that key is reconciled against
+`agent-config/claude/mcp/.mcp.global.template.json` by
+`scripts/link-claude.ps1 -GlobalMcp`, which is off by default even under
+`-Force` for exactly that reason.
 
 - **A live session rewrites it from memory on its own schedule**, so an
   edit made while a session is open can be silently reverted when that
@@ -80,6 +93,13 @@ it as a file you reconcile one key of, never one you regenerate.
   re-exports the entire gateway — every tool from every enabled gateway
   server, a second time — into every session. Expect it back after a
   Docker Desktop update.
+- **Removing a server does not disconnect it mid-session.** Servers
+  connect at session start, and after `fabric-core` and `azure-mcp` left
+  `~/.claude.json` on 2026-09-22 a live session kept both connected and
+  callable for hours. The docs require a restart after editing
+  `.mcp.json` and say nothing about removal — observed here, not
+  documented. Until restart, a session can act through a server its
+  config no longer defines.
 
 ## Gotchas
 
