@@ -609,6 +609,27 @@ an unlisted `chat.*Locations` entry defaults to on, and the Settings UI
 may not save — moved with their measurements to
 `claude/rules/vscode-scoping.md` § Gotchas on 2026-09-23, in f8ad6ef.
 
+**2026-09-24.** Re-measured, the exception as stated above is false in
+both halves: Config, the profile the personal config repos open in, sets
+`chat.useClaudeMdFile` `false`, and Azure, which opens only client repos
+(two that day), leaves it out, which means its default, `true`. Each live
+profile's `settings.json`, with the stored copies of Fabric, Config and
+Azure matching the live files on these keys:
+
+| Profile | Claude entries in `chat.*Locations` | `chat.useClaudeMdFile` |
+| --- | --- | --- |
+| Default | every Claude location written out `false` | `false` |
+| Fabric | every Claude location written out `false` | `false` |
+| Config | every Claude location written out `false` | `false` |
+| Azure | one entry, `"~/.claude/agents": true` | absent, so `true` |
+
+Agents, VS Code's built-in profile, shares Default's settings. The stored
+Config has carried `false` since machine-config's `d72a414` on
+2026-09-10. Azure's one entry leaves every other Claude location at its
+default, which is on, so Copilot there reads the whole payload this
+heading says it no longer inherits; whether that is intended went to the
+user the same day, through machine-config's handoff inbox.
+
 ### User-scope MCP servers are bound to nothing
 
 **A server bound to no workspace is still bound to a tenant.**

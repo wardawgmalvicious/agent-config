@@ -190,8 +190,10 @@ stay separable:
   Claude for Claude, Copilot for Copilot — so `copy-copilot.ps1` is the
   only route from this repo to Copilot, on this machine as much as in a
   clone. `chat.useClaudeMdFile` is the one exception, set per VS Code
-  profile like every `chat.*` setting: off where client repos open, on
-  in the profile the personal config repos use. The format facts
+  profile like every `chat.*` setting. Which profile sets it which way
+  is machine state, kept outside this repo: a named profile's settings
+  in `machine-config`'s `configs/vscode/profiles/`, Default's in
+  Settings Sync. The format facts
   measured under inheritance still hold, and now describe the vendored
   payload: on 2026-09-09 a `.sql` file open in a client repo loaded
   exactly two of the twelve rules in `~/.claude/rules`, the two whose

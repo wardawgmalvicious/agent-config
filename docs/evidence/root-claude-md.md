@@ -599,6 +599,30 @@ hook included. `.claude/rules/editing-rules.md` said "not hot-reloaded, so
 an edit reaches the next session here" as committed in 5119075; the trim
 corrects it.
 
+**2026-09-24.** Re-measured, the profile paragraph above is false in both
+halves: Config, the profile this repo opens in, sets
+`chat.useClaudeMdFile` `false`, and Azure, which opens only client repos
+(two that day), leaves it out, which means its default, `true`. Each live
+profile's `settings.json`, with the stored copies of Fabric, Config and
+Azure matching the live files on these keys:
+
+| Profile | Claude entries in `chat.*Locations` | `chat.useClaudeMdFile` |
+| --- | --- | --- |
+| Default | every Claude location written out `false` | `false` |
+| Fabric | every Claude location written out `false` | `false` |
+| Config | every Claude location written out `false` | `false` |
+| Azure | one entry, `"~/.claude/agents": true` | absent, so `true` |
+
+Agents, VS Code's built-in profile, shares Default's settings. The stored
+Config has carried `false` since machine-config's `d72a414` on
+2026-09-10, the day before the correction above. Azure's one entry leaves
+every other Claude location at its default, which is on, so Copilot there
+reads the whole `~/.claude` payload; whether that is intended went to the
+user the same day, through machine-config's handoff inbox. README § Tool
+support repeated the paragraph and now says where that state is kept
+instead of what it is: a named profile's settings in machine-config's
+`configs/vscode/profiles/`, Default's in Settings Sync.
+
 ## How the pieces trigger
 
 - **Skills** (`skills/<group>/<name>/SKILL.md` for deployable payload,
