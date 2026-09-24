@@ -11,6 +11,13 @@ paths:
   and loads in every session on the machine. Each holds only what a session
   needs before it has Read anything: root, this repo's conventions;
   `claude/CLAUDE.md`, the machine environment and pointers.
+- Here `claude/CLAUDE.md` would also load a second time, as a subdirectory
+  `CLAUDE.md`, on the first Read under `claude/`: `.claude/settings.json`
+  holds it off with `claudeMdExcludes: ["**/claude/CLAUDE.md"]`. Keep the
+  pattern driveless. One naming the drive misses whenever the drive letter's
+  case differs from the path's, which follows however a Read spells it, and
+  a miss shows only as a `nested_memory` attachment in the transcript
+  (2026-09-24, 2.1.281).
 - An instruction in either carries three things: the rule, what its failure
   looks like (the error text, or the silence) and one date. Its evidence —
   how it was measured, what was believed before, counts, SHAs — goes to that

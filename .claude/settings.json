@@ -12,6 +12,9 @@
         "microsoft-learn-mcp",
         "github-mcp"
     ],
+    "claudeMdExcludes": [
+        "**/claude/CLAUDE.md"
+    ],
     "skillOverrides": {
         "fabric-activator": "name-only",
         "fabric-ai-functions": "name-only",

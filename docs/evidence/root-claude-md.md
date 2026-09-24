@@ -1236,6 +1236,51 @@ naming `.claude/rules/` and this ledger, and the hook matches
 `^(claude/)?CLAUDE\.md$`. Root was 192 lines when the check reached it;
 before, nothing capped it, and the Preamble entry has how far it grew.
 
+**2026-09-24.** `claude/CLAUDE.md` loaded twice in sessions here: at
+launch as `~/.claude/CLAUDE.md`, byte-identical that day, and again as a
+subdirectory `CLAUDE.md` on the first Read under `claude/`, which
+code.claude.com/docs/en/memory gives as when a subdirectory's file loads.
+Two witnesses before the fix: probe transcripts `65de8af5` and `e9ff8b72`
+each held a `nested_memory` attachment for it, and the
+`InstructionsLoaded` hook log held 15 `nested_traversal` loads from
+2026-08-28 on, every one this file. The same page says `claudeMdExcludes`
+patterns "are matched against absolute file paths using glob syntax" and
+says nothing of Windows, while the log records backslashed paths whose
+drive letter reads `c:` and `C:` by turns. So the key reached
+`.claude/settings.json` only after one cold haiku probe per variant on
+2.1.281, each through `--settings` and each Reading
+`claude/mcp/.mcp.global.template.json` with Read alone. "The path" is
+`C:/Repos/Personal/agent-config/claude/CLAUDE.md`; the `c:` rows were
+launched through cmd from a `c:` cwd, as VS Code launches a session.
+
+| Variant | Pattern | cwd | Read spelled | Nested load | Session |
+| --- | --- | --- | --- | --- | --- |
+| control | none | `C:` | `C:` | loaded | `9dd28eeb` |
+| candidate | `**/claude/CLAUDE.md` | `C:` | `C:` | excluded | `c1dbf8cd` |
+| absolute | the path, `C:/` | `C:` | `C:` | excluded | `9ea79328` |
+| lower drive | the path, `c:/` | `C:` | `C:` | loaded | `5751437f` |
+| backslash | the path, backslashed | `C:` | `C:` | excluded | `01f8361c` |
+| control | none | `c:` | `c:` | loaded | `83033174` |
+| candidate | `**/claude/CLAUDE.md` | `c:` | `c:` | excluded | `27204600` |
+| absolute | the path, `C:/` | `c:` | `C:` | excluded | `2c2d19c7` |
+| lower drive | the path, `c:/` | `c:` | `c:` | excluded | `2289891f` |
+| mirror | the path, `C:/` | `c:` | `c:`, pinned | loaded | `9a69338c` |
+
+In every run `deploy-scripts.md` still attached on the Read, and the
+launch `instructions` attachment still listed root and
+`~/.claude/CLAUDE.md`: the exclude leaves rules alone and does not reach
+`.claude/CLAUDE.md`. A pattern naming the drive matches only when its
+letter's case equals the path's, and the path takes the case the Read was
+spelled in, not the cwd's: haiku wrote `C:\` from a `c:` cwd in the
+second `absolute` run, which is why that row excluded and the mirror, its
+Read pinned to `c:\` in the prompt, did not. That rules out an absolute
+pattern even in a gitignored `settings.local.json`. Separators are
+normalized, tested under `C:` only. The hook log witnessed none of it: no
+probe logged a `nested_traversal` line, the control included. Re-run with
+no `--settings` against the file as committed (`8b42472f`): excluded, the
+rule attached, both launch files listed. The brief that planned this was
+deleted in the same commit.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
