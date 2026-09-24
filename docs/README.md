@@ -24,6 +24,11 @@ Internal documentation for the repo's authoring workflow.
   plus a brief per recommended action. Tracked and kept: each directory
   is the dated record of what an upstream source looked like that day.
   See [audits/README.md](audits/README.md) for the lifecycle.
+- [evidence/](evidence/) — the evidence behind an instruction file that
+  loads into every session, kept here so that file can carry only the
+  rule and its tell. [user-claude-md.md](evidence/user-claude-md.md)
+  backs `claude/CLAUDE.md` under the same headings, and its entries are
+  dated and never corrected in place.
 
 One directory is gitignored and not part of the public repo:
 
