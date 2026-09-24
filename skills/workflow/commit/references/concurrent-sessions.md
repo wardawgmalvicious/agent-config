@@ -49,6 +49,10 @@ the base is right and the bytes are wrong. Use `read_bytes` /
 2026-09-13: `git diff` wrote none, the cut copy carried one per line,
 and the binary rewrite applied first time.
 
+Count with `tr`, not in Python: `read_text()` turns each `\r\n` back
+into `\n` before any check sees it, so a CR count on its output is a
+green light on a file carrying one per line.
+
 ## The limit
 
 A line *inside* their added block is not separable. It has no `HEAD`

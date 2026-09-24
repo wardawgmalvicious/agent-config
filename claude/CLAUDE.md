@@ -58,6 +58,12 @@ like a bug. Do the arithmetic (spawns × 0.4 s) before diagnosing a
 hang, give such runs a ten-minute cap in the background, and design
 hooks for spawn economy — see `~/.claude/hooks/identity-guard.sh`.
 
+**Many of the traps below share one shape: exit 0, plausible output,
+wrong.** Where a translation layer sits on both the read and the write
+— text-mode newlines, a code page — a round-trip check proves nothing,
+because the read undoes the write before the check looks. Go under the
+layer to the bytes, or check from the other side of it.
+
 ### Python
 
 There is no system Python — but the names still resolve, so the failure
@@ -108,6 +114,17 @@ without `-f`, `Read-Host`. Expect a block until the tool timeout rather
 than a clean failure, and note that `Read-Host` under `pwsh
 -NonInteractive` errors yet still exits 0, so a script wrapping it
 reports success having done nothing. Pass the non-interactive flag.
+
+**`Path.write_text()` writes CRLF, and `read_text()` hides it.** A
+text-mode write — `open()` without `newline=""` too — turns each `\n`
+into `\r\n`, and a text-mode read turns it back, so a CR count on
+`read_text()` output is `0` on a file with one per line. A six-line
+edit staged as 440 insertions and 408 deletions past exactly that check
+(2026-09-15), and git normalizes only where `.gitattributes` or
+`core.autocrlf` covers the path. Rewrite tracked text with
+`read_bytes()` / `write_bytes()` or `newline=""`, count on the byte side
+as § "Counting carriage returns" does, and treat a whole-file diffstat
+on a small edit as the tell.
 
 ### Writing files that contain backslashes
 
