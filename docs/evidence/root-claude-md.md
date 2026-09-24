@@ -1070,6 +1070,61 @@ kept the paragraph whole, since the loaded half of the peer-subsection
 ablation in `docs/handoffs/execute/linkedin-article-skill.md` ran against
 its current text.
 
+**2026-09-24.** The worktree probe ran, on 2.1.282: transcript `a3c9d394`
+under the worktree's own project directory, plus `/context` from a second
+session in the same worktree. A `--worktree` session loads only the
+worktree's `.claude/skills/`, `.claude/rules/` and root `CLAUDE.md`, which
+closes the inferred half and overturns the brief's expectation of two root
+copies. The guard refused three of the four paths it covers and let
+through a `cd` that leaves the worktree from inside a command. The brief's
+nine assertions, with its numbering:
+
+- **0, the base: pass.** `main` stood one commit ahead of `origin/main`,
+  `3676ed0` over `2a31b2f`, and the worktree's `git log -1` printed
+  `3676ed0`, so `baseRef: "head"` took local `HEAD`.
+- **1, `Write` into the main checkout: refused**, in a third wording, not
+  either of the two the errors page gives for commands: "This session is
+  isolated in the worktree `<path>`. Edit the worktree copy of this file
+  instead of the shared-checkout path." No file appeared.
+- **2, Bash `cd <main> && ls`: ran**, and listed the main checkout, where
+  the docs' working-directory check predicts a refusal. The shell's
+  directory then stayed there, and every later Bash or PowerShell command
+  was refused, "this command's working directory resolved to the shared
+  checkout", `cd` and `Set-Location` back into the worktree included.
+  `EnterWorktree` with the worktree's path was the way out. `Read` and
+  `Grep` on main-checkout paths ran throughout, which no check covers.
+- **3, Bash `git -C <main>`: refused**, "this command redirects git to the
+  shared checkout via -C".
+- **4, Bash `$(echo git) status`: refused**, "names git in a form too
+  complex to verify that it stays inside the worktree".
+- **5, outside the checks: both ran.** Bash
+  `echo probe > <main>/probe-bash.txt` wrote its 6 bytes, and the `rm`
+  that removed them ran too; PowerShell `git -C <main> log -1` printed
+  `3676ed0`. Neither is covered by the checks as the docs word them.
+- **6, skills: pass.** An `Edit` putting a marker at the head of the
+  worktree's `author-skill` description brought an `isInitial: false`
+  `skill_listing` six seconds later, one skill, carrying the marker, and
+  the main checkout's copy stayed unchanged. The baseline, measured the
+  same day outside a worktree: of the transcripts here since 2026-09-09,
+  the 23 that run `Edit` or `Write` on a `.claude/skills/*/SKILL.md` each
+  have a later `isInitial: false` record for every skill they edited, 32
+  in all.
+- **7, rules: pass.** Reading the worktree's `claude/settings.json`
+  attached `deploy-scripts.md` and `hooks-and-agents.md`, and its
+  `.pre-commit-config.yaml` attached `pre-commit-hooks.md`, each once, each
+  under `.claude/worktrees/probe-isolation/.claude/rules/`. No record named
+  the main checkout's copy, and none attached `claude/CLAUDE.md`.
+- **8, root `CLAUDE.md`: one copy.** The session's `instructions` record
+  holds the worktree's root `CLAUDE.md` as its only Project file, and
+  `/context` lists one `CLAUDE.md`. The main checkout's root sits above the
+  worktree and did not load. Auto memory is shared: the `MEMORY.md` loaded
+  is the main checkout's, under `~/.claude/projects/`, not the worktree's
+  project directory.
+
+Root's line now names the copies a worktree loads and both gaps: the shell
+write the guard does not see, and the `cd` that runs and then strands the
+session. The brief and its queue row are deleted with this entry.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

@@ -139,8 +139,10 @@ index but not its own queue: the branches diverge, and a silent overwrite
 becomes a merge `--ff-only` refuses. `.claude/settings.json` branches it
 from local `HEAD`; the default, `fresh`, drops unpushed commits unannounced.
 A worktree buys no payload isolation for the deployed groups (2026-09-02),
-but loads its own tracked `.claude/skills/`, and by inference
-`.claude/rules/` (2026-09-24, from the docs; unprobed).
+but loads only its own `.claude/skills/`, `.claude/rules/` and `CLAUDE.md`.
+Its guard stops `Write` and `git -C` into the main checkout, not a Bash
+write or PowerShell's `git -C`; a `cd` out runs, then every command is
+refused, `cd` back too, until `EnterWorktree` (probed 2026-09-24, 2.1.282).
 
 ## Editing conventions
 
