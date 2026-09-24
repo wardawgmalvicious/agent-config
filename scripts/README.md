@@ -12,10 +12,25 @@ Helper scripts for repo maintenance and observability.
   against the globs. Needs `pyyaml` and `wcmatch`, so run it through
   `uv run --with pyyaml --with wcmatch python` — or just use the
   wrapper, which does.
+- [audit-status.py](audit-status.py) — where every drift-audit brief
+  stands. Writes a generated `README.md` into each
+  `docs/audits/<date>/<source>/`, derived from the briefs' metadata blocks
+  and execution logs, so learning which of eleven briefs ran is one file
+  rather than eleven. Never edit an index by hand; `--check` is the
+  pre-commit gate that fails when one is stale or missing. No
+  dependencies.
 - [bootstrap-pre-commit](bootstrap-pre-commit) — install the
   [pre-commit](https://pre-commit.com/) framework via
   [uv](https://docs.astral.sh/uv/) and wire git hooks for this repo.
   Idempotent; safe to re-run. Run on a fresh clone before committing.
+- [handoff-status.py](handoff-status.py) — every repo's open handoff
+  briefs and inbox notes in one view, read out of each repo's own index;
+  nothing is kept here. Defaults to every repo two levels under
+  `C:/Repos`. Reads, never writes. `--check` exits 1 on an unindexed
+  brief, a row whose brief is gone, or an inbox note routed nowhere; its
+  negative cases are
+  [tests/scripts/handoff-status/test-findings.sh](../tests/scripts/handoff-status/test-findings.sh).
+  No dependencies.
 - [instructions-log](instructions-log) — query the hook observability
   logs: the [InstructionsLoaded log](../claude/hooks/log-instructions-loaded.sh)
   and the [skill-invocation log](../claude/hooks/log-skill-invocations.sh),
@@ -29,9 +44,8 @@ Helper scripts for repo maintenance and observability.
   `claude/mcp` into `~/.claude/{agents,hooks,mcp,rules}` — see
   `$CopyDirs` in the script for the mapping — and junctions the root
   `skills/` one skill at a time into `~/.claude/skills` (no elevation
-  needed). **Skills are the only junction**: they are the one payload
-  Claude Code hot-reloads, so edit-to-live is the authoring loop there,
-  while the other four are not watched and a junction only made every
+  needed). **Skills are the only junction**: edit-to-live is the skill
+  authoring loop, while for the other four a junction made every
   uncommitted save — and every `git switch`/`stash`/`rebase` — live
   machine-wide. Converted 2026-09-02. A copied directory takes repo
   content without `-Force`; `-Force` is needed only to delete a
@@ -50,6 +64,10 @@ Helper scripts for repo maintenance and observability.
   Never overwrites a drifted mirror copy, deletes a real directory, or
   removes a target-only file without `-Force`; exits 1 when anything
   needs attention.
+  `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric` pushes only
+  the Fabric skills into a client repo's `.claude`, without this machine's
+  agents, hooks or rules; they are junctions, so every later save to one
+  is live in that repo's sessions.
 - [copy-copilot.ps1](copy-copilot.ps1) — copy two payloads into a repo's
   `.github` as real, committable files, so GitHub Copilot serves them to
   everyone who clones it: skill groups into `.github/skills`, and the
@@ -129,6 +147,17 @@ Helper scripts for repo maintenance and observability.
   passing silently — when either tree is missing or empty, since both
   collectors return nothing for an absent root and a check that compared
   nothing must not report a pass. No dependencies. Run by pre-commit.
+- [lint-skill-overrides.py](lint-skill-overrides.py) — check that every
+  `fabric/` and `powerbi/` skill has a `name-only` `skillOverrides` entry
+  in `.claude/settings.json`, which collapses their descriptions in
+  sessions here. Runs over the whole set: the block is a by-name map with
+  no pattern form, so a new platform skill is silently uncovered, and the
+  defect is a pair — a new skill plus a settings file nobody changed —
+  that no per-file hook sees. Also fails on a value that is not
+  `name-only`, an override a rename left behind under one of this repo's
+  platform prefixes, and a skill group it cannot classify: add a new group
+  to `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS`. No dependencies. Run by
+  pre-commit.
 - [payload-coverage.py](payload-coverage.py) — report which of a repo's
   files activate **nothing** in this payload. Every rule and every
   conditional skill declares `paths:` globs, so "what does this repo
@@ -196,7 +225,8 @@ Helper scripts for repo maintenance and observability.
   relations — if every file matching A also matches B, the harness never sees
   A apart from B. `overlap --usage` joins `skill-telemetry.py coverage`
   by name and prints its caveats verbatim, because they decide whether a zero
-  means anything.
+  means anything. No output line recommends deleting anything: an overlap
+  or a co-activation is a question for a person, not a verdict.
 
   **Only a description fails the gate.** A prose mention is reported and
   never gates, because a body may legitimately discuss a skill that was
@@ -235,6 +265,13 @@ Helper scripts for repo maintenance and observability.
   Visibility and the social preview image are deliberately outside it.
   `-Apply` refuses unless `gh` acts as the repo's owner.
 
+- [skill-status.py](skill-status.py) — which skills have been tested, and
+  what has changed in each since. Derived from the stamps `/test-skill`
+  writes to `tests/skills/.tested.json`, each holding a hash of what that
+  phase tested, never kept by hand. `--stale` is the to-do list; `--check`
+  is the pre-commit orphan check, failing on a stamp whose skill is gone.
+  Record a run with `--stamp <skill> --phase activation,behaviour` (or
+  `real-use`). Needs `pyyaml`.
 - [skill-telemetry.py](skill-telemetry.py) — post-hoc answer to "which
   skills are earning their listing budget?". Three subcommands:
   `coverage` (per skill: how many startup listings it appeared in, how
@@ -280,8 +317,9 @@ Helper scripts for repo maintenance and observability.
   fixture, then asserts the activations recorded in the session
   transcript. `-Set pbip|fabric` picks the fixture set; **`-StaticOnly`
   runs the glob-vs-contract check alone**, which needs no session and is
-  the cheap regression. Deriving a conditional-skill count is a side
-  effect of the static run — see the "don't restate a total" note in
+  the cheap regression. The static run prints the fixtures it checked, not
+  a skill count; the total is stated once, in the fabric set's
+  `expected_activations.md` — see the "don't restate a total" note in
   [CLAUDE.md](../CLAUDE.md#validating-a-change).
 - [test-semantic-model-audit.ps1](test-semantic-model-audit.ps1) — the
   behaviour test for

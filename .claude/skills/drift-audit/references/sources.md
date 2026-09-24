@@ -249,8 +249,8 @@ diff. Two consequences:
   re-fetching by name.
 - `drill.host`: `code.visualstudio.com`
 - `drill.via`: `webfetch`
-- `artifacts`: `README.md`, root `CLAUDE.md`, `scripts/README.md`,
-  `scripts/link-claude.ps1`
+- `artifacts`: `README.md`, root `CLAUDE.md`, `.claude/rules/`,
+  `scripts/README.md`, `scripts/link-claude.ps1`
 
 Governs how this repo's `~/.claude` payload reaches GitHub Copilot, so its
 findings land on the repo's own deployment docs rather than on skills and
@@ -335,7 +335,7 @@ bucket (c) tooling notes rather than mapped drift.
 - `drill.strip`: none — anchors here are stable heading slugs, so keep them
 - `artifacts`: `claude/settings.json`, `claude/hooks/`, `claude/agents/`,
   skill and rule frontmatter, `claude/mcp/`, `claude/CLAUDE.md`, root
-  `CLAUDE.md`, `scripts/link-claude.ps1`
+  `CLAUDE.md`, `.claude/rules/`, `scripts/link-claude.ps1`
 
 This is the harness the rest of the config runs inside, so it is the one
 source that can invalidate an artifact's *mechanism* rather than its
@@ -380,8 +380,8 @@ content and lose *silently*, because a skill's `description` is the entire
 trigger mechanism. What is repo-specific here is not "how Claude Code works"
 but "how this payload is wired into it": the junction-vs-copy split, why
 `settings.json` is copied, the fixture procedure. Those belong in root
-`CLAUDE.md` (sessions editing this repo), `README.md` (cherry-pickers), and
-this audit's own `docs/audits/<date>/claude-code/` ledger (dated
+`CLAUDE.md` and `.claude/rules/` (sessions here), `README.md` (cherry-pickers),
+and this audit's own `docs/audits/<date>/claude-code/` ledger (dated
 evidence). Findings land on the `artifacts` above; bucket (b) stays empty.
 Checked 2026-08-30 — the 2026-08-29 run's 418 filtered bullets across 89 days
 produced zero new-skill candidates, which is the expected result, not a thin
