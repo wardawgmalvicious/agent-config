@@ -205,8 +205,8 @@ before that command whether or not a PR exists: a PR that could not be
 opened is a reason to stop sooner, never a reason to carry on.
 
 Report where things stand — the PR URL, or what blocked it — and state
-exactly what happens next: which route step 7 will take, its write to
-`main`, and
+exactly what happens next: which route step 7 will take and what chose
+it (a repo document, by name, or the default), its write to `main`, and
 **then deleting the branch locally and on `origin`** (step 9). The
 deletion is disclosed here rather than prompted for afterwards — one
 decision taken before the work, not a third gate on an action this
@@ -274,6 +274,7 @@ gh api repos/<owner>/<repo>/branches/main --jq .protected            # classic p
 | `main` requires no pull request, and another session holds the tree (step 1) | `git push origin <branch>:main`, behind the same `<sha>` check |
 | `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha>` |
 | `main` also requires linear history | stop — every route inside the gate rewrites SHAs; name which, then wait |
+| The repo's documents name a mechanism — `CONTRIBUTING.md`, agent instructions, read before step 6 | treat it as asked for (the rows below), naming the document |
 | A squash was asked for | name what it collapses, then wait |
 | A merge commit was asked for | one clause of disclosure, then proceed |
 
@@ -447,8 +448,8 @@ or `list_pull_requests` with `base`.
 
 **Two kinds, and the difference is the point.** The first are
 correctness and identity — an instruction does not lift them. The second
-are this repo's convention, which is yours to override; the job there is
-to make the override informed, not to refuse it.
+are convention — the repo's written one, else this skill's default —
+yours to override; make the override informed rather than refusing it.
 
 ### Absolute — an instruction to do these is a stop, not an override
 

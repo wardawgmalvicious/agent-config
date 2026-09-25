@@ -12,6 +12,15 @@ disclosure is being written, not after.
 
 ## Why not each alternative
 
+**A written convention outranks the default; the history's shape is
+not one.** Read the repo's `CONTRIBUTING.md` and agent instructions
+before step 6, as `commit` step 4 may already have. Where they name a
+mechanism, propose it; a fast-forward stays the default only where
+they say nothing. `git log --merges` shows what has landed, not what
+the repo wants: on 2026-09-24 a `0` there talked a landing into the
+fast-forward beside a `CONTRIBUTING.md` asking for a merge commit, and
+the user corrected it.
+
 - **The merge button** — whatever it is configured to do, it is not
   this. Check what the repo actually offers before assuming the button
   was an option at all: where only squash is enabled, the button can
@@ -19,11 +28,11 @@ disclosure is being written, not after.
   pressing it that preserves the split.
 - **A merge commit** — adds a commit to a history that may never have
   had one, and collapses nothing: every SHA survives. `git log --merges
-  --oneline | wc -l` from step 1 says whether this repo is in that
-  category; a `0` there makes a merge commit a visible break in
-  convention rather than a neutral choice, and a non-zero makes it
-  close to a neutral one. Asked for, it costs a clause of disclosure
-  and not a round — see [Merge commit](#merge-commit--one-clause-and-proceed).
+  --oneline | wc -l` from step 1 says what the history has done so far,
+  not what the repo wants: a `0` may mean only that no multi-change
+  branch has landed yet, so it never outweighs a written convention.
+  Asked for, or written into the repo's documents, it costs a clause of
+  disclosure and not a round — see [Merge commit](#merge-commit--one-clause-and-proceed).
 - **Squash** — collapses the logical split `commit` just built. The
   whole point of separate commits is that each is independently
   revertible and citable. Asked for anyway? It is overridable, but not
@@ -234,8 +243,7 @@ state that and the step 1 `--merges` baseline in the same turn, record
 it in the PR body, and do it. **No wait**, because the round cannot
 tell the operator anything the clause did not, and holding one is the
 "pressing the point twice" this section already warns against. Reasoned
-2026-09-16, on a repo whose baseline was already `1` and where a merge
-commit therefore broke no convention at all.
+2026-09-16, on a repo whose baseline was already `1`.
 
 One trap in carrying that out: **`git merge -F -` does not read
 stdin.** It fails `error: could not read file '-'` (exit 129) where
