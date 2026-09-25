@@ -32,7 +32,7 @@ Usage:
     uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py
         [--sweep] [--by-file] [--exclude GLOB]... REPO...
 
-Examples (from this repo's root; "..." is the uv run line above):
+Examples, run from this repo's root ("..." is the first one's prefix):
 
     uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py
         C:/Repos/Client/some-repo
@@ -50,8 +50,9 @@ Examples (from this repo's root; "..." is the uv run line above):
     ... C:/Repos/Client/some-repo
         --exclude "**/*.lock" --exclude "**/*.example"
     Drop generated and placeholder files, so they neither pad the file
-    count nor list as gaps. Globs are repo-relative and use the MATCHER
-    above, whose "**/" also matches the root: "**/*.lock" drops uv.lock.
+    count nor list as gaps. Globs are repo-relative and match the way
+    coverage does, so "**/" also matches the root: "**/*.lock" drops
+    uv.lock.
 
     ... C:/Repos/Client/some-repo --exclude "tests/**"
     Coverage of the shipped code alone.
@@ -70,7 +71,7 @@ Reading the report: one row per extension, most files first.
     (blank)  every file is covered; the matching rules and skills follow
     ~        some are covered; one uncovered file is shown
     ->       none is covered; one is shown as "e.g."
-    -        NON_TEXT below, so no rule is expected
+    -        non-text (image, binary, font, archive, key): no rule expected
 (none) holds extensionless files and dotfiles: Dockerfile, .gitignore.
 """
 
@@ -236,7 +237,13 @@ def report(repo: pathlib.Path, globs: dict[str, list[str]],
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Report which of a repo's files activate no rule and no skill.")
+        description="Report which of a repo's files activate no rule and no skill.",
+        # --help ends with the docstring's examples, as Get-Help -Examples
+        # does for link-claude.ps1, so that text must read on its own: no
+        # "above" or "below". index(), not find(): a renamed heading should
+        # fail loudly rather than print an empty epilog.
+        epilog=__doc__[__doc__.index("\nExamples") + 1:],
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("repos", nargs="+", type=pathlib.Path,
                     help="repo paths, or parent directories with --sweep")
     ap.add_argument("--sweep", action="store_true",
