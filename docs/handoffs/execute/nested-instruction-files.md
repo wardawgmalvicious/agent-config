@@ -7,8 +7,9 @@
 - **Kind**: a decision, then an edit here, then possibly one skill through
   `/author-skill`. Nothing is drafted.
 - **Status**: **Open, written 2026-09-24.** Probes 1–6, a new 8 and four
-  cutover probes ran 2026-09-25, and the docs were re-read; probe 7 and
-  four decisions are left.
+  cutover probes ran 2026-09-25, the docs were re-read, and all four
+  decisions were answered. Next: the rule decision 2 names, then Phase 2
+  with probe 7.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -338,21 +339,37 @@ which load as nested files in any session here that Reads them, so
 
 ## Decisions for the user
 
-1. **A skill at all**, or the strategy alone: a `learn` row, the template
-   and README settled, and Phase 2 here?
-2. **Where the strategy lives**: the skill's `references/`, `learn`, or a
-   user-scope rule scoped to instruction files. A rule would fire on the
-   Read before an edit, but not when a first nested file is created,
-   which no glob sees.
-3. **The machine's `instructionFiles`**: keep the default, or set
-   `claude-md-and-agents-md` in `claude/settings.json`, which changes what
-   every repo on this machine loads. No git repo two levels under
-   `C:/Repos` tracked an `AGENTS.md` on 2026-09-25, so today either value
-   loads the same files here.
-4. **A `CLAUDE.md` of `@AGENTS.md`, and where**: the full cutover is out,
-   by § "Cutting root over to `AGENTS.md`", and this repo gains nothing
-   from the import form. Left: does any client repo take it, and does
-   its `.github/copilot-instructions.md` fold into that `AGENTS.md`?
+1. **A skill at all: deferred 2026-09-25, not declined.** Re-open when
+   `CLAUDE_CODE_NEW_INIT=1` `/init` and the disabled `claude-md-improver`
+   have been tried on a scratch repo and leave a gap. Until then Phase 3
+   waits, and the strategy stands alone in the home 2 picks.
+2. **Where the strategy lives: a user-scope rule, answered 2026-09-25.**
+   Not `learn`: its Step 0 hands a repo's own `CLAUDE.md` and
+   `.claude/rules/` back to that repo, which is where every placement
+   question arises. Not a skill, by 1. A rule in `claude/rules/`, the
+   sibling of `claude-config-scoping.md`, provisionally
+   `agent-instructions-scoping.md`, scoped to the instruction files
+   themselves: `**/CLAUDE.md`, `**/CLAUDE.local.md`, `**/AGENTS.md`,
+   `**/.claude/rules/*.md`, `**/.github/copilot-instructions.md` and
+   `**/.github/instructions/*.md`. It carries the Phase 1 tables, the
+   import form and the cutover's five losses, kept short, since it loads
+   on every Read of an instruction file in every repo. One row in
+   `learn`'s Step 3 table routes a loader learning to it; whether it gets
+   a Copilot port is `copilot-payload.md`'s call. It fires on the Read
+   before any edit to an instruction file, but not when a first nested
+   file is created, which no glob sees (`editing-rules.md`): closing that
+   is what the skill deferred in 1 would do.
+3. **The machine's `instructionFiles`: the default, answered 2026-09-25.**
+   `claude-md-and-agents-md` in `claude/settings.json` would change what
+   every repo on this machine loads, while no git repo two levels under
+   `C:/Repos` tracked an `AGENTS.md` that day, and the import form of 4
+   works under any value.
+4. **A `CLAUDE.md` of `@AGENTS.md`: answered 2026-09-25.** Not this repo,
+   by § "Cutting root over to `AGENTS.md`". Client repos explore it,
+   starting with the client Fabric repo, which keeps a root `CLAUDE.md`
+   and a `.github/copilot-instructions.md` apart by design today, already
+   drifted. A note went to its inbox the same day, and what it learns
+   comes back through `/learn`.
 
 ## Scrubbing
 
