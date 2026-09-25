@@ -70,6 +70,19 @@ conformance checking.
   coding-csharp.md it took the reference WinUI repo from 2% to 80%
   covered, measured by `payload-coverage.py` on 2026-09-10; the
   remainder is packaging and config files, which no rule claims.
+- [coding-bicep.md](coding-bicep.md) — Bicep templates, `.bicepparam`
+  files and `bicepconfig.json`. Deliberately silent on syntax and on
+  what the linter already checks: a client repo's Bicep, written with no
+  Bicep guidance in place, passed every default linter rule and already
+  handled the familiar traps (measured 2026-09-25). What remains is what
+  a green build hides: linter warnings exit 0 and the rules that matter
+  are off by default, what-if short-circuits on a module named from a
+  runtime value (live in that repo, cleared by a deployment-time
+  constant plus `dependsOn`), a redeploy resets every omitted property
+  and reverts out-of-band changes, and incremental mode never deletes a
+  removed resource. Built from Learn and a lint probe rather than
+  measured, since ten `.bicep` and `.bicepparam` files in one repo is
+  not a corpus.
 - [coding-markdown.md](coding-markdown.md) — hand-authored markdown:
   READMEs, design notes, runbooks, handoff briefs, agent instruction
   files. The only rule here scoped to `**/*.md`, so it loads in nearly
