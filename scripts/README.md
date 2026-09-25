@@ -321,6 +321,21 @@ Helper scripts for repo maintenance and observability.
   a skill count; the total is stated once, in the fabric set's
   `expected_activations.md` — see the "don't restate a total" note in
   [CLAUDE.md](../CLAUDE.md#validating-a-change).
+- [test-instruction-loading.py](test-instruction-loading.py) — what
+  Claude Code actually loads from `CLAUDE.md` and `AGENTS.md`, checked
+  rather than read off the docs. Each probe is a small git repo in the
+  temp directory and one or more cold `claude -p --model haiku`
+  sessions, judged from the transcript: which instruction file loaded,
+  after which step, and through which record. The record matters: a
+  nested `AGENTS.md` arrives as a PostToolUse `hook_additional_context`,
+  not the `nested_memory` a nested `CLAUDE.md` gets, so a check keyed on
+  one misses the other. `--list` names the probes without a session, and
+  naming some runs only those. Each ends PASS, FAIL, INVALID (the model
+  skipped a tool call it was told to make) or ERROR, and anything but
+  PASS exits 1. About 0.03 USD a session. Re-run it after a CLI upgrade
+  or a changelog entry touching instruction loading: `AGENTS.md` support
+  shipped in 2.1.277 and changed in 2.1.281, and the nested-instruction
+  brief's conclusions rest on these answers. No dependencies.
 - [test-semantic-model-audit.ps1](test-semantic-model-audit.ps1) — the
   behaviour test for
   [`fabric-semantic-model-audit`](../skills/fabric/fabric-semantic-model-audit/SKILL.md),
