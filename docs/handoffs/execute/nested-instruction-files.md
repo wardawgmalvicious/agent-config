@@ -6,7 +6,9 @@
   custom-instructions page.
 - **Kind**: a decision, then an edit here, then possibly one skill through
   `/author-skill`. Nothing is drafted.
-- **Status**: **Open, written 2026-09-24.**
+- **Status**: **Open, written 2026-09-24.** Probes 1–6 and a new 8 ran
+  2026-09-25 and the docs were re-read; probe 7 and the three decisions
+  are left.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -22,8 +24,10 @@ that a session reads a folder's README anyway. Both are answered below.
 
 ## What is established
 
-From the docs, fetched 2026-09-24 on CLI 2.1.281. Re-fetch before relying
-on any of it: `AGENTS.md` support shipped in 2.1.277.
+From the docs, fetched 2026-09-24 on CLI 2.1.281 and re-read as raw
+markdown 2026-09-25 on 2.1.282, when every quote below still stood and
+2.1.282's changelog touched no instruction loading. Re-fetch before
+relying on any of it: `AGENTS.md` support shipped in 2.1.277.
 
 - **Nested files load lazily.** `CLAUDE.md` and `CLAUDE.local.md` in the
   working directory and every directory above it load at launch; one in a
@@ -48,20 +52,26 @@ on any of it: `AGENTS.md` support shipped in 2.1.277.
   count. A subdirectory's `AGENTS.md` loads on a Read there only when that
   subdirectory has no `CLAUDE.md` of its own. `AGENTS.local.md`,
   `AGENTS.override.md` and `.agents/` are never read.
-- **Only user or managed settings can change that.**
+- **Only user settings, a `--settings` file or managed settings can
+  change that.**
   `pluginConfigs["agents-md@builtin"].options.instructionFiles` takes
   `claude-md-or-agents-md` (the default), `claude-md-and-agents-md`,
   `claude-md` or `managed-only`, and "Claude Code ignores it in project
   and local settings files": a repo cannot choose for the people who
-  clone it.
+  clone it. The second value "skips an `AGENTS.md` it has already
+  loaded", so one a `CLAUDE.md` imports is not read twice.
 - **An `AGENTS.md` read directly differs**: InstructionsLoaded hooks do
-  not fire for it, and an `--add-dir` directory never loads one. On
-  Windows, share one file through `@AGENTS.md` in a `CLAUDE.md`, not a
-  symlink.
-- **VS Code Copilot** reads `AGENTS.md` under `chat.useAgentsMdFile`.
-  Nested ones are experimental, behind `chat.useNestedAgentsMdFiles`,
-  "disabled by default". That page was quoted through WebFetch's summary,
-  so re-read it.
+  not fire for it, though they "fire as usual" for one a `CLAUDE.md`
+  imports or symlinks to, and an `--add-dir` directory never loads one.
+  On Windows, share one file through `@AGENTS.md` in a `CLAUDE.md`, not
+  a symlink.
+- **VS Code Copilot**'s Local agent reads `AGENTS.md` under
+  `chat.useAgentsMdFile` and nested ones under
+  `chat.useNestedAgentsMdFiles`, "disabled by default". The page's raw
+  source, re-read 2026-09-25, marks that setting only with a `feature()`
+  tag and never says "experimental". "Agent Host sessions use the
+  discovery rules and file formats of the selected harness": the split a
+  `machine-config` inbox note measured in VS Code 1.139.0 on 2026-09-24.
 - **What already does part of this.** `/init` with `CLAUDE_CODE_NEW_INIT=1`
   "asks which artifacts to set up: CLAUDE.md files, skills, and hooks",
   explores with a subagent and presents a proposal before writing.
@@ -99,28 +109,63 @@ workspace sync-root folders already hold a `Readme.md`, so a markdown file
 at a workspace root coexists with Git sync. Inside an item folder is
 untested.
 
-## Inferred from the docs, not probed
+## Probed 2026-09-25
 
-Each is one cold, read-only `claude -p … --model haiku` run with the
-transcript as witness. Run them before Phase 1 writes anything down.
+Each ran as one cold `claude -p --model haiku` session on 2.1.282, in its
+own `git init` scratch repo, every instruction file carrying a unique
+marker line, tools pinned by `--tools` and the launching session's
+`CLAUDE*` variables stripped. The transcript is the witness, and every
+tool call in it was checked against the path it was meant to touch.
+Control C0, an `AGENTS.md` at root and in `sub/` with no `CLAUDE.md`,
+loaded both (`46eae3f2`), so the negatives below are real; it also showed
+that `~/.claude/CLAUDE.md`, the only instruction file above the scratch
+root, does not count.
 
 1. **A root `CLAUDE.md` silences every `AGENTS.md`**, nested ones
    included, by default. In a repo like this one a nested `AGENTS.md` is
-   dead text to Claude Code.
+   dead text to Claude Code. **Holds**: neither root's nor `sub/`'s
+   loaded (`f6b8d746`).
 2. **In a repo rooted on `AGENTS.md`, a nested `CLAUDE.md` turns root off
    for anyone who starts there**: launched in that folder, a `CLAUDE.md`
    sits in the working directory, so root's `AGENTS.md` is not read.
+   **Holds**, and a Read at root did not bring it back (`0e85e2ae`).
+   Launched at root, both load, `sub/CLAUDE.md` on its Read (`2031480e`).
 3. **A root `CLAUDE.md` holding `@AGENTS.md` silences nested `AGENTS.md`
-   files**, by 1, though its own import loads.
+   files**, by 1, though its own import loads. **Holds** (`786fd841`).
 4. Does a `CLAUDE.md` that `claudeMdExcludes` skips still count for 1–3?
+   **No**: with 1's root `CLAUDE.md` excluded, root's and `sub/`'s
+   `AGENTS.md` both loaded (`89c97e19`).
 5. On a Read in `a/b/`, do `a/CLAUDE.md` and `a/b/CLAUDE.md` both load,
-   and in which order?
+   and in which order? **Both, `a/` first**, in one flush; a later Read
+   in `a/` added nothing (`4344b55c`).
 6. Does a subagent's Read load a nested file into the subagent, the
-   parent, or neither?
+   parent, or neither? **The subagent only**, a general-purpose one that
+   loaded root's `CLAUDE.md` at its start; the parent got the nested file
+   on its own first Read there (`97cb1923`).
 7. **Worktrees here.** A main-checkout Read under `.claude/worktrees/<n>/`
    should load that worktree's root `CLAUDE.md` as a nested file, a second
    and possibly different copy of root. `**/claude/CLAUDE.md` covers the
-   worktree's payload copy, not its root.
+   worktree's payload copy, not its root. **Not run**: it needs a worktree
+   and a branch here, and waits on the user.
+8. Added 2026-09-25, as the Phase 1 table's nested-file row rested on it:
+   does a first touch by Write, Grep, Glob or Bash load a folder's
+   `CLAUDE.md`? **No**, none did; the first Read in each folder loaded its
+   file (`0d43c6ff`).
+
+In C0 and 4, `sub/AGENTS.md` arrived not as a `nested_memory` attachment
+but as `hook_additional_context`, `hookEvent` `PostToolUse`, its content
+opening `Contents of <path>\AGENTS.md:`, which fits InstructionsLoaded
+not firing for one. A transcript check keyed on `nested_memory` would
+miss it; root's `AGENTS.md` shows in the launch `instructions` record,
+like a `CLAUDE.md`.
+
+The worktree probe of 2026-09-24 bears on 7 without settling it: a
+`--worktree` session did not load the main checkout's root `CLAUDE.md`
+above it ([root-claude-md.md](../../evidence/root-claude-md.md),
+§ "Branching and concurrent sessions"), though the memory page orders
+content "from the filesystem root down". Whether the upward walk stops at
+a git root or only at Claude Code's own worktrees is open, and 7 asks the
+downward case.
 
 ## Phase 1: the strategy
 
@@ -131,19 +176,22 @@ guidance lives. This is the starting draft, not adopted:
 | --- | --- | --- |
 | Needed before any Read: commands, repo-wide conventions | root file | it passes ~200 lines and adherence drops |
 | About one file kind, wherever it sits | `paths:` rule | the glob is wrong, or Grep, `cat` or a new file touch it |
-| About one directory, kept by its owners | nested file | the first touch is a Write, Bash or Grep; and after `/compact`, until the next Read |
+| About one directory, kept by its owners | nested file | the session never Reads there itself: Write, Grep, Glob, Bash and a subagent's Read all miss it (6, 8); and after `/compact`, until the next Read |
 | A procedure asked for in words | skill | the description never matches |
 | Must hold before Claude acts | hook or `permissions.deny` | the hook itself fails open ([hooks-fail-open-on-blocked-timeout.md](hooks-fail-open-on-blocked-timeout.md)) |
 | Long reference for people | README, or a nested `CLAUDE.md` of `@README.md` if short | Claude never opens it (above) |
 | Derivable from the code | nowhere | never; `/doctor` cuts it |
 
-Which name a nested file takes, if 1–3 hold:
+Which name a nested file takes, now that 1–3 hold:
 
 | Root holds | Nested files are | Because |
 | --- | --- | --- |
 | `CLAUDE.md` | `CLAUDE.md` | no `AGENTS.md` is read |
 | `AGENTS.md` only | `AGENTS.md` | a nested `CLAUDE.md` drops root for sessions started there |
 | `CLAUDE.md` of `@AGENTS.md` | `CLAUDE.md`, importing a sibling `AGENTS.md` where other tools need it | a nested `AGENTS.md` is ignored |
+
+Excluding a `CLAUDE.md` through `claudeMdExcludes` takes it out of that
+count (4): the `AGENTS.md` files beside and below it load in its place.
 
 Where the strategy lives is Decision 2. Wherever it lands, it settles two
 artifacts that already take a side:
@@ -204,7 +252,8 @@ name is chosen:
 
 1. **Evidence from the repo's own transcripts**: per folder, which
    sessions worked there, whether they opened its README, which nested
-   files and rules loaded, and how often they compacted. The measurement
+   files and rules loaded, and how often they compacted; a nested
+   `AGENTS.md` shows only as `hook_additional_context`. The measurement
    above is the worked example; its scratch script was not kept. It
    reaches back only `cleanupPeriodDays`.
 2. **A cross-tool inventory**: `CLAUDE.md`, `AGENTS.md`,
@@ -242,7 +291,9 @@ which load as nested files in any session here that Reads them, so
    which no glob sees.
 3. **The machine's `instructionFiles`**: keep the default, or set
    `claude-md-and-agents-md` in `claude/settings.json`, which changes what
-   every repo on this machine loads.
+   every repo on this machine loads. No git repo two levels under
+   `C:/Repos` tracked an `AGENTS.md` on 2026-09-25, so today either value
+   loads the same files here.
 
 ## Scrubbing
 
@@ -254,7 +305,13 @@ systems and its session ids stay out of every commit (`author-skill`
 ## Re-measure before acting
 
 - `claude --version`: `AGENTS.md` needs 2.1.277, and `/memory` lists one
-  only from 2.1.280.
-- The three doc pages above.
+  only from 2.1.280, by the memory page; no changelog entry says so.
+  2.1.282 on 2026-09-25.
+- The three doc pages above, last re-read 2026-09-25. The VS Code page's
+  source now sits under `docs/agent-customization/` in
+  `microsoft/vscode-docs`.
 - The client repo's root file and rules. Three sessions were live there
-  when this was written.
+  when this was written. On 2026-09-25 root had grown one line, still
+  beside one rule and no nested file, and the repo also tracks a
+  `.github/copilot-instructions.md` and eleven `.github/instructions/`
+  files: input for Phase 3's cross-tool inventory.
