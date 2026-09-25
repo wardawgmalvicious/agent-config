@@ -6,9 +6,9 @@
   custom-instructions page.
 - **Kind**: a decision, then an edit here, then possibly one skill through
   `/author-skill`. Nothing is drafted.
-- **Status**: **Open, written 2026-09-24.** Probes 1–6 and a new 8 ran
-  2026-09-25 and the docs were re-read; probe 7 and the three decisions
-  are left.
+- **Status**: **Open, written 2026-09-24.** Probes 1–6, a new 8 and four
+  cutover probes ran 2026-09-25, and the docs were re-read; probe 7 and
+  four decisions are left.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -21,6 +21,10 @@ and possibly a skill that makes those determinations in any repo,
 
 It began from two beliefs that do not hold: that nested files are new, and
 that a session reads a folder's README anyway. Both are answered below.
+
+On 2026-09-25 the user named the root half of the ask: cut a repo's
+`CLAUDE.md` over to `AGENTS.md` where that makes it tool-agnostic for
+people, and not if the swap loses any capability.
 
 ## What is established
 
@@ -121,6 +125,10 @@ loaded both (`46eae3f2`), so the negatives below are real; it also showed
 that `~/.claude/CLAUDE.md`, the only instruction file above the scratch
 root, does not count.
 
+`uv run scripts/test-instruction-loading.py` re-runs every probe here but
+7 and checks each against its expected loads, record kind included. Its
+first full run, the same day in fresh sessions, passed all of them.
+
 1. **A root `CLAUDE.md` silences every `AGENTS.md`**, nested ones
    included, by default. In a repo like this one a nested `AGENTS.md` is
    dead text to Claude Code. **Holds**: neither root's nor `sub/`'s
@@ -166,6 +174,53 @@ above it ([root-claude-md.md](../../evidence/root-claude-md.md),
 content "from the filesystem root down". Whether the upward walk stops at
 a git root or only at Claude Code's own worktrees is open, and 7 asks the
 downward case.
+
+## Cutting root over to `AGENTS.md`
+
+**A full cutover loses capability, so the user's own test rules it out;
+a `CLAUDE.md` of `@AGENTS.md` loses none that was found.** Read and
+probed 2026-09-25 on 2.1.282.
+
+An `AGENTS.md` with no `CLAUDE.md` loses five things, each silently, by
+the memory page:
+
+1. Anyone's `CLAUDE.local.md` counts as a `CLAUDE.md`, so a teammate's
+   personal notes switch the project's `AGENTS.md` off for them.
+2. It is not read at all before 2.1.277, in the first session after an
+   upgrade from 2.1.276 or earlier, with the `agents-md` plugin
+   disabled, before 2.1.281 on Bedrock or with telemetry off, or under
+   `claude-md` or `managed-only`, which a client's managed settings can
+   set. Each leaves the session with no project instructions.
+3. InstructionsLoaded hooks do not fire for it.
+4. An `--add-dir` directory's `AGENTS.md` never loads.
+5. An `@path` import outside the repo loads only if external imports were
+   already approved for the project, with no prompt.
+
+What it does not lose, probed: it comes back after `/compact` as a
+`CLAUDE.md` does, root at the next prompt and a nested one at the next
+Read (`k1` beside `k0`), and `disableAllHooks` does not silence a nested
+one (`h1`). Each `/compact` probe resumes its session in a new process
+per step, so compaction and restart were not told apart; the two files
+behaved alike.
+
+The docs' own "Share one file with other coding tools" keeps the content
+in `AGENTS.md` and a `CLAUDE.md` of `@AGENTS.md` beside it, Claude-only
+lines below the import. Everything then loads through a `CLAUDE.md`, so
+none of the five applies, and InstructionsLoaded fires "as usual" for
+the import. It nests too: a `sub/CLAUDE.md` of `@AGENTS.md` loaded both
+files as `nested_memory` on a Read there, and both came back after
+`/compact` (`k2`). Its costs are upkeep. Every level needs both files,
+since a nested `AGENTS.md` with no `CLAUDE.md` beside it stays silent
+(probe 3). And whatever here keys on `CLAUDE.md` would have to follow
+the content: `lint-claude-md.py`'s cap, and the `**/CLAUDE.md` glob in
+`editing-claude-md.md`.
+
+It pays only where people use other tools. This repo's root is about
+skills, hooks and deploys, which no other tool can use, and an
+`AGENTS.md` here would hand Copilot the instructions this machine's VS
+Code profiles deliberately keep from it. The client repo keeps a root
+`CLAUDE.md` and a `.github/copilot-instructions.md`, two root files for
+two tools; how far they overlap was not compared.
 
 ## Phase 1: the strategy
 
@@ -294,6 +349,10 @@ which load as nested files in any session here that Reads them, so
    every repo on this machine loads. No git repo two levels under
    `C:/Repos` tracked an `AGENTS.md` on 2026-09-25, so today either value
    loads the same files here.
+4. **A `CLAUDE.md` of `@AGENTS.md`, and where**: the full cutover is out,
+   by § "Cutting root over to `AGENTS.md`", and this repo gains nothing
+   from the import form. Left: does any client repo take it, and does
+   its `.github/copilot-instructions.md` fold into that `AGENTS.md`?
 
 ## Scrubbing
 
@@ -304,6 +363,8 @@ systems and its session ids stay out of every commit (`author-skill`
 
 ## Re-measure before acting
 
+- `uv run scripts/test-instruction-loading.py`: a FAIL means the loader
+  changed under a conclusion here.
 - `claude --version`: `AGENTS.md` needs 2.1.277, and `/memory` lists one
   only from 2.1.280, by the memory page; no changelog entry says so.
   2.1.282 on 2026-09-25.
