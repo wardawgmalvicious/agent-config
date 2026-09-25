@@ -102,6 +102,18 @@ names the worktree path, and removing the worktree is the fix:
 under `.git/worktrees` survives — `git worktree list` shows which. Both
 are writes, so propose them, do not run them.
 
+**A worktree marked `locked` refuses both, `--force` included**:
+`fatal: cannot remove a locked working tree, lock reason: <reason>`,
+while `prune` skips it and says nothing (git 2.55, 2026-09-25).
+`git worktree list -v` prints the reason. A `claude --worktree` session
+locks its own as `claude session <name> (pid <n>)`, and one killed with
+its terminal, never `/exit`ed, left the lock behind, its pid dead
+(2026-09-24). A live pid is a session still working there: leave it.
+Otherwise `git worktree unlock <path>` goes ahead of the removal, a
+deleted directory's included. **Read `git -C <path> status --short`
+first**: a worktree's uncommitted changes are on no branch, so no rung
+below sees them, and the `--force` a dirty tree needs discards them.
+
 **A remote-tracking ref is not evidence the branch is still on the
 remote.** `origin/<name>` can survive locally long after the branch is
 gone. `ls-remote` asks the remote itself and is the only thing that
@@ -298,7 +310,7 @@ took it.
 - **Never delete a branch and never push a deletion.** Not local, not
   remote, not "the obviously safe ones", not when told to. The output is
   a command string.
-- **Never remove a worktree.** Propose it; the user runs it.
+- **Never remove or unlock a worktree.** Propose it; the user runs it.
 - **Do not push the rescue branch.** Hand it to `land`.
 - **Do not trust `git branch --merged` or `git cherry` in a squash
   repo** — both report merged branches as unmerged. Merge evidence is
