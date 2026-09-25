@@ -239,6 +239,18 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
       [Security.Principal.WindowsBuiltInRole]::Administrator)
   ```
 
+- **Validate a folder parameter as a container, in pre-flight.**
+  Handed a file path, `Get-ChildItem` returns the file itself, with or
+  without `-Filter` or `-Recurse`, so a folder listing or a "newest
+  `*.json`" pick quietly becomes that one file, exit 0. A capture script
+  given an executable's path copied it as its JSON input (2026-09-24,
+  reproduced on pwsh 7.6 and 5.1). Reject the file at binding:
+
+  ```powershell
+  [ValidateScript({ Test-Path -LiteralPath $_ -PathType Container })]
+  [string]$SourceDir
+  ```
+
 - **`-NoProfile` when a script touches profiles**, or anything else the
   current session loaded at startup. A script that rewrites
   `profile.ps1` must not be running under the copy it is replacing.
