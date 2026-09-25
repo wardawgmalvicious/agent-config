@@ -29,11 +29,49 @@ share the code -- a hyphen in that filename makes it un-importable -- so
 the flags are duplicated here deliberately. Change them together.
 
 Usage:
-    uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py REPO...
     uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py
-        --sweep C:/Repos/Personal
-    ... REPO --by-file             most-matched individual files
-    ... REPO --exclude "tests/**"  drop paths from the scan
+        [--sweep] [--by-file] [--exclude GLOB]... REPO...
+
+Examples (from this repo's root; "..." is the uv run line above):
+
+    uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py
+        C:/Repos/Client/some-repo
+    One repo's coverage table, by extension. Run it before starting work
+    in a repo the payload has never seen.
+
+    ... C:/Repos/Client/some-repo C:/Repos/Personal/other-repo
+    Each repo's table, then one "uncovered across all repos scanned" total
+    ranked by file count: the list to pick the next rule from.
+
+    ... --sweep C:/Repos/Personal C:/Repos/Client
+    Every git repo directly under each parent (one level, not recursive),
+    with the same cross-repo total.
+
+    ... C:/Repos/Client/some-repo
+        --exclude "**/*.lock" --exclude "**/*.example"
+    Drop generated and placeholder files, so they neither pad the file
+    count nor list as gaps. Globs are repo-relative and use the MATCHER
+    above, whose "**/" also matches the root: "**/*.lock" drops uv.lock.
+
+    ... C:/Repos/Client/some-repo --exclude "tests/**"
+    Coverage of the shipped code alone.
+
+    ... C:/Repos/Client/some-repo --by-file
+    Also list the five files the most rules and skills match. A 1 beside
+    every one means no file draws overlapping guidance.
+
+    uv run --no-project --with pyyaml --with wcmatch python
+        C:/Repos/Personal/agent-config/scripts/payload-coverage.py .
+    From inside the target repo: the payload is found from this script's
+    own location, so only the paths change. Keep --no-project there, or
+    a repo with a pyproject.toml has its own .venv synced first.
+
+Reading the report: one row per extension, most files first.
+    (blank)  every file is covered; the matching rules and skills follow
+    ~        some are covered; one uncovered file is shown
+    ->       none is covered; one is shown as "e.g."
+    -        NON_TEXT below, so no rule is expected
+(none) holds extensionless files and dotfiles: Dockerfile, .gitignore.
 """
 
 from __future__ import annotations
