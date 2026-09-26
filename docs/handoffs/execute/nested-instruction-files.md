@@ -8,8 +8,9 @@
   `/author-skill`. Nothing is drafted.
 - **Status**: **Open, written 2026-09-24.** Probes 1–6, a new 8 and four
   cutover probes ran 2026-09-25, the docs were re-read, and all four
-  decisions were answered. Next: the rule decision 2 names, then Phase 2
-  with probe 7.
+  decisions were answered. Decision 4's client repo reported back
+  2026-09-26 (§ "The import form in the client Fabric repo"). Next: the
+  rule decision 2 names, then Phase 2 with probe 7.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -75,8 +76,18 @@ relying on any of it: `AGENTS.md` support shipped in 2.1.277.
   `chat.useNestedAgentsMdFiles`, "disabled by default". The page's raw
   source, re-read 2026-09-25, marks that setting only with a `feature()`
   tag and never says "experimental". "Agent Host sessions use the
-  discovery rules and file formats of the selected harness": the split a
-  `machine-config` inbox note measured in VS Code 1.139.0 on 2026-09-24.
+  discovery rules and file formats of the selected harness": in VS Code
+  1.139.1 `chat.useAgentsMdFile`, `chat.useNestedAgentsMdFiles` and
+  `chat.useClaudeMdFile` each say they are "only used by the Local agent
+  harness" (2026-09-26), the split
+  [copilot-harness-switches.md](copilot-harness-switches.md) investigates.
+- **GitHub.com's Copilot agent** reads the nearest `AGENTS.md` anywhere
+  in the repo or, failing one, a single root `CLAUDE.md` or `GEMINI.md`,
+  with no VS Code setting involved, by docs.github.com's
+  repository-instructions page as the client repo's session fetched it on
+  2026-09-25; not re-fetched here. So "Copilot never reads Claude's files"
+  holds only for VS Code's Local harness with the switches off, and
+  GitHub's nearest-`AGENTS.md`-wins is not Claude's either/or.
 - **What already does part of this.** `/init` with `CLAUDE_CODE_NEW_INIT=1`
   "asks which artifacts to set up: CLAUDE.md files, skills, and hooks",
   explores with a subagent and presents a proposal before writing.
@@ -219,9 +230,65 @@ the content: `lint-claude-md.py`'s cap, and the `**/CLAUDE.md` glob in
 It pays only where people use other tools. This repo's root is about
 skills, hooks and deploys, which no other tool can use, and an
 `AGENTS.md` here would hand Copilot the instructions this machine's VS
-Code profiles deliberately keep from it. The client repo keeps a root
+Code profiles deliberately keep from it. The client repo kept a root
 `CLAUDE.md` and a `.github/copilot-instructions.md`, two root files for
-two tools; how far they overlap was not compared.
+two tools, and compared on 2026-09-25 only about 20 lines of the first
+and 30 of the second were tool-specific: the same topics at two depths.
+
+## The import form in the client Fabric repo
+
+Decision 4's outcome, reported through the inbox on 2026-09-25 and
+2026-09-26. Merged to the client repo's `main` on 2026-09-25:
+
+- Root `AGENTS.md` holds the shared core, the old `CLAUDE.md` body
+  reconciled against the Copilot file: 297 lines.
+- `CLAUDE.md` is `@AGENTS.md`, then `## Claude Code` and two Claude-only
+  bullets: 15 lines.
+- `.github/copilot-instructions.md` went from 642 lines (69.5 KB) to 15
+  Copilot-only lines.
+- The Copilot file's long form, about 62 KB, moved byte for byte to one
+  reference doc under `docs/` that both tools' files point at. Path rules
+  were the alternative, each needing a `.claude/rules/` file and an
+  `.instructions.md` twin.
+- `.vscode/settings.json` pins `chat.useAgentsMdFile: true` and keeps
+  `chat.useClaudeMdFile: false`.
+
+A cold `claude -p --model haiku` probe on 2.1.282 loaded `CLAUDE.md` and
+`AGENTS.md`, quoted both, and got nothing from the Copilot file. Claude's
+always-on project instructions grew from 282 to about 310 lines, as
+reconciling pulled the Copilot file's unique facts into the core.
+Copilot's was meant to fall from about 27k tokens to about 5k, 18,156
+bytes, and by its own account of its context, in two chats, came to
+89,316. The Copilot file still pointed at the reference doc and at
+`.vscode/settings.json` with Markdown links, and the machine's Fabric
+profile turns on `chat.includeReferencedInstructions`, under which a link
+in `copilot-instructions.md` or an applied `*.instructions.md` loads its
+target in full, while links in `AGENTS.md` and `CLAUDE.md` are not
+followed ([vscode-scoping.md](../../../claude/rules/vscode-scoping.md)).
+Its links became code spans in a pull request opened 2026-09-26, not yet
+merged.
+
+Two conditions come out of it, for the rule's import-form section:
+
+1. **Copilot's files point at shared long form by code span.** In
+   Copilot's instruction files a link can be an include, where Claude
+   Code includes only `@path` imports, so the design has to say how each
+   tool's file points at the long form, and a code span holds under
+   either value of the setting.
+2. **`chat.useClaudeMdFile` stays `false`.** Until 2026-09-21 the client
+   repo's `CLAUDE.md` was a one-line import of its Copilot file, split
+   apart because that switch could have Copilot read the shared rules
+   twice. Of the next 15 commits touching either file, 5 touched both, 8
+   only the Copilot file and 2 only `CLAUDE.md`, and both of the last
+   carried facts for both tools that never reached Copilot. The import
+   form escapes the double read only with the switch off, and turning it
+   on also hands Copilot `~/.claude/CLAUDE.md`, by the setting's own
+   description. VS Code's instruction sources are additive, so a rule
+   left in both `AGENTS.md` and the Copilot file is read twice.
+
+A `CLAUDE.md` opening with the import trips markdownlint MD041, and
+`<!-- markdownlint-disable-file MD041 -->` at its end suppresses that at
+no context cost.
 
 ## Phase 1: the strategy
 
@@ -236,6 +303,7 @@ guidance lives. This is the starting draft, not adopted:
 | A procedure asked for in words | skill | the description never matches |
 | Must hold before Claude acts | hook or `permissions.deny` | the hook itself fails open ([hooks-fail-open-on-blocked-timeout.md](hooks-fail-open-on-blocked-timeout.md)) |
 | Long reference for people | README, or a nested `CLAUDE.md` of `@README.md` if short | Claude never opens it (above) |
+| Long form needed by more than one tool | one doc each tool's file points at, by code span in Copilot's | a Copilot instructions file links it while `chat.includeReferencedInstructions` is on, and it loads in full (above) |
 | Derivable from the code | nowhere | never; `/doctor` cuts it |
 
 Which name a nested file takes, now that 1–3 hold:
@@ -315,7 +383,11 @@ name is chosen:
 2. **A cross-tool inventory**: `CLAUDE.md`, `AGENTS.md`,
    `.github/copilot-instructions.md`, `.github/instructions/` with its
    `applyTo` globs and `.cursor/rules/`, with 1–3 applied to what it
-   finds.
+   finds. Who reads them comes from history before asking: in the client
+   Fabric repo `git shortlog -sne HEAD` showed one author across 694
+   commits, and one GraphQL query over its last 60 pull requests one
+   author and no reviews, Copilot's included (2026-09-25). Ask only
+   about readers who never commit.
 3. **Placement by the Phase 1 table**, "nowhere" and "hook" included,
    with a root file over 200 lines sorted section by section into where
    each part goes.
@@ -352,8 +424,12 @@ which load as nested files in any session here that Reads them, so
    themselves: `**/CLAUDE.md`, `**/CLAUDE.local.md`, `**/AGENTS.md`,
    `**/.claude/rules/*.md`, `**/.github/copilot-instructions.md` and
    `**/.github/instructions/*.md`. It carries the Phase 1 tables, the
-   import form and the cutover's five losses, kept short, since it loads
-   on every Read of an instruction file in every repo. One row in
+   import form with the two conditions the client repo found, and the
+   cutover's five losses, kept short, since it loads on every Read of an
+   instruction file in every repo. Every Copilot switch it names is read
+   by VS Code's Local harness only, so its Copilot claims say so until
+   [copilot-harness-switches.md](copilot-harness-switches.md) answers
+   what the other harnesses read. One row in
    `learn`'s Step 3 table routes a loader learning to it; whether it gets
    a Copilot port is `copilot-payload.md`'s call. It fires on the Read
    before any edit to an instruction file, but not when a first nested
@@ -363,13 +439,17 @@ which load as nested files in any session here that Reads them, so
    `claude-md-and-agents-md` in `claude/settings.json` would change what
    every repo on this machine loads, while no git repo two levels under
    `C:/Repos` tracked an `AGENTS.md` that day, and the import form of 4
-   works under any value.
+   works under any value. The client Fabric repo has tracked one since
+   its merge the same day, through that import form, which leaves the
+   default standing.
 4. **A `CLAUDE.md` of `@AGENTS.md`: answered 2026-09-25.** Not this repo,
    by § "Cutting root over to `AGENTS.md`". Client repos explore it,
-   starting with the client Fabric repo, which keeps a root `CLAUDE.md`
-   and a `.github/copilot-instructions.md` apart by design today, already
-   drifted. A note went to its inbox the same day, and what it learns
-   comes back through `/learn`.
+   starting with the client Fabric repo, which kept a root `CLAUDE.md`
+   and a `.github/copilot-instructions.md` apart, already drifted, by a
+   design four days old: it had split one shared file over a double read.
+   A note went to its inbox the same day. **Outcome, 2026-09-26**: merged
+   there, with two conditions for the rule, in § "The import form in the
+   client Fabric repo".
 
 ## Scrubbing
 
@@ -392,4 +472,8 @@ systems and its session ids stay out of every commit (`author-skill`
   when this was written. On 2026-09-25 root had grown one line, still
   beside one rule and no nested file, and the repo also tracks a
   `.github/copilot-instructions.md` and eleven `.github/instructions/`
-  files: input for Phase 3's cross-tool inventory.
+  files: input for Phase 3's cross-tool inventory. Since 2026-09-25 its
+  root is the import form, and its code-span pull request was still open
+  on 2026-09-26.
+- VS Code: 1.139.1 on 2026-09-26, when its bundle was read for the
+  settings named above.
