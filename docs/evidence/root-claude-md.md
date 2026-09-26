@@ -623,6 +623,22 @@ support repeated the paragraph and now says where that state is kept
 instead of what it is: a named profile's settings in machine-config's
 `configs/vscode/profiles/`, Default's in Settings Sync.
 
+**2026-09-26.** `copilot-payload.md` gained its code-span bullet, and
+`lint-instructions.py` a `link` check. The C# and XAML ports had linked
+each other since they were written, so wherever
+`chat.includeReferencedInstructions` is on, whichever applied pulled in
+the other in full. The Fabric profile turns it on (machine-config's
+`d72a414`, 2026-09-10), but no Fabric repo holds C# or XAML, by the
+user's report and a Glob of the client Fabric repo, so the pair never
+fired there. It came to light in that repo, where the same setting loaded
+its Copilot file's two linked targets in full: 89,316 bytes where 18,156
+were meant, by Copilot's own account in two chats, on 2026-09-25 and
+2026-09-26. Read from VS Code 1.139.1's bundle the same day: the setting
+defaults `false`, Edit mode follows links whatever its value, only a
+target that is a file is attached, and recursion runs only through
+instructions files. The check's first run, before the ports changed,
+failed on exactly those two lines.
+
 ## How the pieces trigger
 
 - **Skills** (`skills/<group>/<name>/SKILL.md` for deployable payload,

@@ -2,7 +2,7 @@
 """Validate copilot/instructions/*.instructions.md and guard them against
 drift from the claude/rules/*.md they were hand-translated from.
 
-Three jobs in one pass, because they read the same files.
+Four jobs in one pass, because they read the same files.
 
 FRONTMATTER. These carry `applyTo` — a single comma-separated glob string —
 where a rule carries a `paths:` list. lint-frontmatter.py *requires*
@@ -14,6 +14,12 @@ LEAKAGE. These files deploy into client repos. This one is personal, so a
 port that leaves `agent-config` or a profile path in the prose advertises it
 where it does not belong. The port strips those by hand; this makes the
 stripping checkable rather than remembered.
+
+LINKS. Where VS Code's chat.includeReferencedInstructions is on, a Markdown
+link in an applied instructions file is an include: Copilot's Local agent
+loads the linked file in full. A port cannot know whether a profile or the
+target repo turned that on, so it names another file as a code span, and a
+relative link fails here. URLs and in-page anchors pass.
 
 DRIFT. Each file is a one-time hand port — frontmatter converted, and a
 dozen or so lines of body prose rewritten where Claude-specific mechanics
@@ -42,6 +48,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -74,6 +81,14 @@ FORBIDDEN = (
     ("C:" + BACKSLASH + "Users", "hardcoded profile path"),
     ("C:" + BACKSLASH + "Repos", "hardcoded personal repo root"),
 )
+
+# A Markdown link's target, and the scheme that makes it a URL rather than a
+# path. Two characters at least, so a drive letter is not taken for one. Code
+# spans and fenced blocks are skipped: a link shown as an example is text.
+LINK = re.compile(r"\[[^\]]*\]\(\s*<?([^)\s>]+)")
+URL_SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]+:")
+CODE_SPAN = re.compile(r"(`+).*?\1")
+FENCES = ("```", "~~~")
 
 # The round-trip glob matcher is non-obvious and already written. Reuse the
 # primitives rather than restating them; the failure messages are ours,
@@ -181,6 +196,32 @@ def check_apply_to(value, fail) -> None:
             )
 
 
+def check_links(text: str, fail) -> None:
+    """A relative Markdown link is an include once the setting is on.
+
+    Under chat.includeReferencedInstructions, Copilot's Local agent loads
+    each file an applied instructions file links to, in full, and its Edit
+    mode does so whatever the setting says. Nothing reports what the links
+    added: on 2026-09-25 one client repo's Copilot load came to 89 KB where
+    18 KB was meant, found only by asking Copilot what it had loaded.
+    """
+    in_fence = False
+    for n, line in enumerate(text.splitlines(), 1):
+        if line.lstrip().startswith(FENCES):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        for target in LINK.findall(CODE_SPAN.sub("", line)):
+            if target.startswith("#") or URL_SCHEME.match(target):
+                continue
+            fail(
+                "link",
+                f"line {n} links {target!r}, which Copilot loads in full under "
+                "chat.includeReferencedInstructions. Name the file as a code span instead.",
+            )
+
+
 def lint_file(path: Path, failures: list[str]) -> None:
     def fail(rule: str, msg: str) -> None:
         failures.append(f"{path.relative_to(REPO).as_posix()}:{rule}: {msg}")
@@ -205,6 +246,8 @@ def lint_file(path: Path, failures: list[str]) -> None:
                 0,
             )
             fail("leak", f"line {line} contains {needle!r} — {why}. Rewrite it before shipping.")
+
+    check_links(text, fail)
 
 
 def load_manifest() -> dict:

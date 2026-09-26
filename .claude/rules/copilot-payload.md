@@ -29,8 +29,9 @@ paths:
   2026-09-26).
 - Ports drift, so `scripts/lint-instructions.py` gates them in pre-commit:
   `applyTo` must be one comma-separated string (a list parses, then matches
-  nothing), no personal-repo name or profile path may leak, and a rule edit
-  fails until its port is redone and re-recorded with `--stamp`.
+  nothing), no personal-repo name or profile path may leak, no relative
+  link may ship, and a rule edit fails until its port is redone and
+  re-recorded with `--stamp`.
   `copilot/.source-hashes.json` lists the rules deliberately not ported, so
   a new rule surfaces as a decision rather than an omission.
 - A vendored skill loses `paths:` and `effort:`, which Copilot warns about
