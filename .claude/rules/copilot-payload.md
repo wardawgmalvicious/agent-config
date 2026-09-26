@@ -22,6 +22,11 @@ paths:
   Through it a rule keeps its globs, as `applyTo`; Copilot honours `paths:`
   too, in the Claude Rules format (`**` when absent), so a rule stays
   conditional where a skill does not (2026-09-09).
+- A port names another file as a code span, never a Markdown link: under
+  `chat.includeReferencedInstructions` a link from an applied instructions
+  file loads its target in full, and a profile or a repo can turn that on
+  without the port knowing (`~/.claude/rules/vscode-scoping.md`,
+  2026-09-26).
 - Ports drift, so `scripts/lint-instructions.py` gates them in pre-commit:
   `applyTo` must be one comma-separated string (a list parses, then matches
   nothing), no personal-repo name or profile path may leak, and a rule edit

@@ -7,8 +7,7 @@ applyTo: '**/*.cs,**/*.csproj'
 # C# Coding Conventions
 
 Applies to C# on current .NET: libraries, console tools, services and
-desktop apps. XAML apps add
-[coding-xaml.instructions.md](coding-xaml.instructions.md), which also
+desktop apps. XAML apps add `coding-xaml.instructions.md`, which also
 covers view models and code-behind. Project files match too, because the
 package choices below — SqlClient, JSON, trimming — are made there.
 

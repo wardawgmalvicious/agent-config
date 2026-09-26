@@ -7,8 +7,7 @@ applyTo: '**/*.xaml,**/*.xaml.cs,**/*ViewModel.cs'
 # XAML App Conventions
 
 Applies to XAML markup, its code-behind, and the view models bound to it.
-The C# in those files also follows
-[coding-csharp.instructions.md](coding-csharp.instructions.md).
+The C# in those files also follows `coding-csharp.instructions.md`.
 
 **Check the framework before applying a line.** WinUI 3, UWP, WPF and
 .NET MAUI all use `.xaml`, and they differ in exactly the places this
