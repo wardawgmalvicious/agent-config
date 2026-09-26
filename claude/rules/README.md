@@ -113,7 +113,8 @@ conformance checking.
   globs that cannot match leading dots — and the three that decide
   whether Copilot's `chat.*Locations` switches hold: settings are per
   profile, an unlisted location defaults to on, and the Settings UI may
-  not save. Triggers on `.vscode/*.json`,
+  not save. Also `chat.includeReferencedInstructions`, which makes a
+  link in an instructions file an include. Triggers on `.vscode/*.json`,
   `*.code-workspace`, and any `vscode/**/*.json` — stored profile
   settings and a standalone `keybindings.json` alike. No glob sees a
   live profile under `%APPDATA%\Code\User`, so `~/.claude/CLAUDE.md`

@@ -72,6 +72,16 @@ can. So "this repo should be lightweight" is a profile task, and
   stale, and again 2026-09-11, when two of four object-valued settings
   set through the UI never reached the file. Edit the profile's
   `settings.json` directly and check it afterwards.
+- **`chat.includeReferencedInstructions` makes a link an include.** On,
+  Copilot's Local agent loads in full every file linked from
+  `copilot-instructions.md` or an applied `*.instructions.md`, though not
+  from `AGENTS.md` or `CLAUDE.md`. It defaults off, and Edit mode follows
+  links regardless (1.139.1). A profile's `true` reaches every repo it
+  opens: on 2026-09-25 one took a client repo's Copilot load from 18 KB
+  to 89 KB, found only by asking Copilot what it had loaded. Whether a
+  link should load is the repo's call, so set it in that repo's
+  `.vscode/settings.json`, and write a path meant to be read on demand as
+  a code span, which holds under either value.
 - **Globs do not match leading dots.** VS Code's glob engine (like the
   shell, unlike Python's `fnmatch`) will not let `*` match a leading dot,
   so `*.platform` matches nothing at all. Fabric names two item parts as
