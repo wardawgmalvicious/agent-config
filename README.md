@@ -171,8 +171,12 @@ stay separable:
   `AGENTS.md` was carried alongside until it went unread — Codex was
   dropped and VS Code's `chat.useAgentsMdFile` is off — and its one
   unique section, the fixture-validation procedure, now lives in root
-  `CLAUDE.md`. Reinstate it from history if a tool that reads
-  `AGENTS.md` comes back; the content is not Claude-specific.
+  `CLAUDE.md`. Claude Code reads an `AGENTS.md` only where no
+  `CLAUDE.md` sits on the path, so one beside root would be dead text to
+  it; the route for another tool is a `CLAUDE.md` of `@AGENTS.md`
+  ([agent-instructions-scoping.md](claude/rules/agent-instructions-scoping.md)),
+  which pays only where people use that tool, and root here is about
+  skills, hooks and deploys no other tool can use (2026-09-25).
 - **Other tools** — the repo carried a Codex payload and linker until
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads

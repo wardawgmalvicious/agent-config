@@ -1,8 +1,11 @@
 # Project Instructions
 
 Use this as a starting point for a project-scope `CLAUDE.md` at the root
-of a client or project repo. The content is tool-neutral — drop it in as
-`AGENTS.md` instead if that is what the repo's tooling reads.
+of a client or project repo. The content is tool-neutral. Where people
+also use a tool that reads `AGENTS.md`, put it there and make
+`CLAUDE.md` `@AGENTS.md` plus any Claude-only lines: an `AGENTS.md`
+alone loses five things in Claude Code, each silently
+([agent-instructions-scoping.md](../claude/rules/agent-instructions-scoping.md)).
 
 ## Project Context
 
