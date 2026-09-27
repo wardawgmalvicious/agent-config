@@ -35,6 +35,16 @@ repos:
         name: Lint Python scripts (ruff)
         files: '^scripts/.*\.py$'
 
+  # Each hook below that runs over the whole set (pass_filenames: false)
+  # also names its own script in `files:`, and any script that script
+  # loads. A change to a checker can fail files already committed, yet a
+  # commit touching only the checker skipped its hook until 2026-09-27:
+  # be7c7ac added lint-instructions' link check with that hook Skipped.
+  # CI runs --all-files, which would catch it, but only after the push to
+  # main. lint-skills and lint-rules lint the files they are handed, and
+  # `types: [markdown]` would drop a script anyway, so they take no script
+  # arm. Prove one with `pre-commit run <id> --files <script>`: Passed,
+  # never Skipped.
   - repo: local
     hooks:
       # Two skill trees at DIFFERENT DEPTHS, which is why this is one
@@ -81,25 +91,26 @@ repos:
       # claude/CLAUDE.md from 2.7 KB to 666 lines, root to 1,215 -- which is
       # what a per-edit review cannot see and a cap can. The cap lives in
       # the script only, which checks both files whichever one changed.
-      # Anchored to those two paths, so no other CLAUDE.md matches: prove a
-      # change here with --files against both (Passed) and a path that must
-      # not match (Skipped).
+      # Anchored to those two paths and the script, so no other CLAUDE.md
+      # matches: prove a change here with --files against both (Passed) and
+      # a path that must not match (Skipped).
       - id: lint-claude-md
         name: Cap both CLAUDE.md files at the memory docs' line target
         entry: python scripts/lint-claude-md.py
         language: python
-        files: '^(claude/)?CLAUDE\.md$'
+        files: '^((claude/)?CLAUDE\.md|scripts/lint-claude-md\.py)$'
         pass_filenames: false
 
       # A collision is a property of a PAIR of skills, so this runs over the
       # whole set rather than the changed files -- neither file is wrong on
       # its own and a per-file hook could never see it. Scoped to the two
-      # skill trees because nothing outside them can create one.
+      # skill trees, since nothing outside them can create one, and to the
+      # script.
       - id: lint-skill-scopes
         name: Check skill names are unique across both trees
         entry: python scripts/lint-skill-scopes.py
         language: python
-        files: '^(skills/|\.claude/skills/)'
+        files: '^(skills/|\.claude/skills/|scripts/lint-skill-scopes\.py$)'
         pass_filenames: false
 
       # Coverage of the skillOverrides block is a property of the SET, like
@@ -116,7 +127,7 @@ repos:
         name: Check platform skills are collapsed to name-only
         entry: python scripts/lint-skill-overrides.py
         language: python
-        files: '^(skills/|\.claude/settings\.json$)'
+        files: '^(skills/|\.claude/settings\.json$|scripts/lint-skill-overrides\.py$)'
         pass_filenames: false
 
       # A description naming a skill that is not installed strands the
@@ -135,7 +146,7 @@ repos:
         entry: python scripts/skill-overlap.py routing
         language: python
         additional_dependencies: [pyyaml]
-        files: '^(skills/|\.claude/skills/|claude/rules/|claude/mcp/|\.mcp\.json$)'
+        files: '^(skills/|\.claude/skills/|claude/rules/|claude/mcp/|\.mcp\.json$|scripts/skill-overlap\.py$|scripts/_skill_inventory\.py$)'
         pass_filenames: false
 
       # The test stamps in tests/skills/.tested.json are keyed by skill name,
@@ -149,7 +160,7 @@ repos:
         entry: python scripts/skill-status.py --check
         language: python
         additional_dependencies: [pyyaml]
-        files: '^(skills/|\.claude/skills/|tests/skills/\.tested\.json$)'
+        files: '^(skills/|\.claude/skills/|tests/skills/\.tested\.json$|scripts/skill-status\.py$)'
         pass_filenames: false
 
       # docs/audits/<date>/<source>/README.md is GENERATED from the briefs
@@ -165,7 +176,7 @@ repos:
         name: Check each audit directory's README matches its briefs
         entry: python scripts/audit-status.py --check
         language: python
-        files: '^docs/audits/'
+        files: '^(docs/audits/|scripts/audit-status\.py$)'
         pass_filenames: false
 
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
@@ -175,10 +186,8 @@ repos:
       # without its hand-written port following. Runs over the whole set
       # rather than the changed files, since a rule edit and its port live in
       # different directories and either one alone is the interesting case.
-      # `files:` also names the linter and lint-frontmatter.py, whose glob
-      # primitives it loads, since a change to either can fail ports already
-      # committed: be7c7ac added the link check with this hook Skipped, as it
-      # touched neither tree. CI's --all-files runs it, but after the push.
+      # lint-frontmatter.py is in `files:` too, since the linter loads its
+      # glob primitives.
       - id: lint-instructions
         name: Validate Copilot instructions and check port drift
         entry: python scripts/lint-instructions.py
