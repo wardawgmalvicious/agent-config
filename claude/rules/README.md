@@ -139,6 +139,19 @@ conformance checking.
   being dropped on stdio, and `${VAR}` shipping literally when the
   editor was reloaded rather than restarted. Triggers on `.mcp.json`,
   `.claude/settings*.json`, `.claude.json`, and `.vscode/mcp.json`.
+- [agent-instructions-scoping.md](agent-instructions-scoping.md) — not a
+  coding convention: which home a piece of agent guidance takes — root
+  `CLAUDE.md`, a `paths:` rule, a nested file, a skill, a hook, a README
+  — and how each misses in silence. Carries when Claude Code loads each
+  file (a nested one only on the session's own Read, never on Write,
+  Grep or a subagent's Read), that a `CLAUDE.md` anywhere on the path
+  silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
+  and the `@AGENTS.md` import form that loses none, with the two
+  conditions a client Fabric repo found for it. Built from cold probes
+  on 2.1.282 and the memory docs, 2026-09-25. Its VS Code claims are the
+  Local agent harness only. Triggers on `CLAUDE.md`, `CLAUDE.local.md`
+  and `AGENTS.md` at any depth, `.claude/rules/`, and Copilot's
+  `.github/` instruction files.
 
 ## Project-scope override
 
