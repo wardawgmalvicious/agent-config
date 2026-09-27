@@ -83,6 +83,23 @@ conformance checking.
   removed resource. Built from Learn and a lint probe rather than
   measured, since ten `.bicep` and `.bicepparam` files in one repo is
   not a corpus.
+- [coding-ci-workflows.md](coding-ci-workflows.md) — GitHub Actions
+  workflows, plus `.pre-commit-config.yaml` where it shares a failure
+  with them. Silent on YAML syntax: what remains is each case where the
+  file is valid, the run is green or quietly cancelled, and the thing
+  you wanted did not happen — `permissions:` inheritance and the
+  `none` that naming one scope sets, mutable action tags and pre-commit
+  `rev:`s, `pull_request_target`, events `GITHUB_TOKEN` cannot trigger,
+  a concurrency group cancelling the run already waiting, script
+  injection through `${{ }}` in `run:`, `if:`-skipped jobs reporting
+  Success, and the OIDC `sub` changing with the trigger. Built from
+  docs.github.com's raw source on 2026-09-27 rather than measured:
+  thirteen `.yml`/`.yaml` files outside job definitions across every
+  repo on the machine, all uncovered, is no corpus (2026-09-25). Its
+  glob skips other YAML, since one repo's 24 hand-kept job definitions
+  would otherwise load a CI rule. Read against a client repo's three
+  new workflows and their Bicep, which hit six of its sections, the
+  immutable OIDC `sub` among them.
 - [coding-markdown.md](coding-markdown.md) — hand-authored markdown:
   READMEs, design notes, runbooks, handoff briefs, agent instruction
   files. The only rule here scoped to `**/*.md`, so it loads in nearly
