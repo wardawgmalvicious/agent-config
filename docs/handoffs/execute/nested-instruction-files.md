@@ -9,8 +9,10 @@
 - **Status**: **Open, written 2026-09-24.** Probes 1–6, a new 8 and four
   cutover probes ran 2026-09-25, the docs were re-read, and all four
   decisions were answered. Decision 4's client repo reported back
-  2026-09-26 (§ "The import form in the client Fabric repo"). Next: the
-  rule decision 2 names, then Phase 2 with probe 7.
+  2026-09-26 (§ "The import form in the client Fabric repo"). The rule
+  decision 2 names shipped 2026-09-27, after a re-run of
+  `test-instruction-loading.py` passed all 13 probes on 2.1.282. Next:
+  Phase 2 with probe 7.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -293,7 +295,8 @@ no context cost.
 ## Phase 1: the strategy
 
 A decision table, tested against the probes, for where a piece of
-guidance lives. This is the starting draft, not adopted:
+guidance lives. Adopted 2026-09-27 into the rule decision 2 names, which
+owns both tables now: change them there. The draft it came from:
 
 | Guidance is… | Home | Fails silently when |
 | --- | --- | --- |
@@ -419,11 +422,15 @@ which load as nested files in any session here that Reads them, so
    Not `learn`: its Step 0 hands a repo's own `CLAUDE.md` and
    `.claude/rules/` back to that repo, which is where every placement
    question arises. Not a skill, by 1. A rule in `claude/rules/`, the
-   sibling of `claude-config-scoping.md`, provisionally
-   `agent-instructions-scoping.md`, scoped to the instruction files
-   themselves: `**/CLAUDE.md`, `**/CLAUDE.local.md`, `**/AGENTS.md`,
-   `**/.claude/rules/*.md`, `**/.github/copilot-instructions.md` and
-   `**/.github/instructions/*.md`. It carries the Phase 1 tables, the
+   sibling of `claude-config-scoping.md`, shipped 2026-09-27 as
+   [agent-instructions-scoping.md](../../../claude/rules/agent-instructions-scoping.md),
+   scoped to the instruction files themselves: `**/CLAUDE.md`,
+   `**/CLAUDE.local.md`, `**/AGENTS.md`, `**/.claude/rules/**/*.md`,
+   `**/.github/copilot-instructions.md` and
+   `**/.github/instructions/**/*.md`, the two directories recursive
+   since the memory page says rules are "discovered recursively". Its
+   port is deferred in `copilot/.source-hashes.json` until the harness
+   brief answers. It carries the Phase 1 tables, the
    import form with the two conditions the client repo found, and the
    cutover's five losses, kept short, since it loads on every Read of an
    instruction file in every repo. Every Copilot switch it names is read
