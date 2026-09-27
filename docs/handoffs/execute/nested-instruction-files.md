@@ -12,8 +12,10 @@
   2026-09-26 (§ "The import form in the client Fabric repo"). The rule
   decision 2 names shipped 2026-09-27, after a re-run of
   `test-instruction-loading.py` passed all 13 probes on 2.1.282. Probe 7
-  and Phase 2's transcript measurement ran the same day; Phase 2's
-  placement is decision 5, with the user.
+  and Phase 2's transcript measurement ran the same day, and decision 5
+  handed Phase 2's placement to
+  [queue-state-per-brief.md](queue-state-per-brief.md). What is left is
+  Phase 3, deferred by decision 1.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -494,15 +496,16 @@ which load as nested files in any session here that Reads them, so
    A note went to its inbox the same day. **Outcome, 2026-09-26**: merged
    there, with two conditions for the rule, in § "The import form in the
    client Fabric repo".
-5. **Where the queue's must-know lines go: open, put to the user
-   2026-09-27**, by Phase 2's measurement. A `.claude/rules/` rule on
-   `docs/handoffs/**` loads on the same Read a nested file would, and
-   leaves the standing ban as it is; a nested
-   `docs/handoffs/execute/CLAUDE.md` needs `editing-claude-md.md` amended
-   and a cap decision; nothing leaves most brief edits without the
-   queue's rules. Recommended: the rule, short, with the README still the
-   long form. Any of them misses a brief created by Write before a Read
-   there (8), which is `/author-skill`'s path.
+5. **Where the queue's must-know lines go: answered 2026-09-27**, by
+   Phase 2's measurement, and not as recommended. The recommendation was
+   a `.claude/rules/` rule on `docs/handoffs/**`, keeping the standing
+   ban. The user chose a nested `docs/handoffs/CLAUDE.md`, and **the ban
+   goes**, replaced by a lint for the places a nested file does harm. The
+   queue itself goes too: each brief carries its state, and the view is
+   generated. [queue-state-per-brief.md](queue-state-per-brief.md) carries
+   all of it out, which leaves this brief only Phase 3, deferred by 1.
+   A brief created by Write before any Read there still misses the nested
+   file (8), which is `/author-skill`'s path.
 
 ## Scrubbing
 
