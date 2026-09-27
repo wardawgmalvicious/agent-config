@@ -11,8 +11,9 @@
   decisions were answered. Decision 4's client repo reported back
   2026-09-26 (§ "The import form in the client Fabric repo"). The rule
   decision 2 names shipped 2026-09-27, after a re-run of
-  `test-instruction-loading.py` passed all 13 probes on 2.1.282. Next:
-  Phase 2 with probe 7.
+  `test-instruction-loading.py` passed all 13 probes on 2.1.282. Probe 7
+  and Phase 2's transcript measurement ran the same day; Phase 2's
+  placement is decision 5, with the user.
 - **Queue**: [README.md](README.md) has the execution order. This brief
   does not carry its own position.
 
@@ -139,9 +140,10 @@ loaded both (`46eae3f2`), so the negatives below are real; it also showed
 that `~/.claude/CLAUDE.md`, the only instruction file above the scratch
 root, does not count.
 
-`uv run scripts/test-instruction-loading.py` re-runs every probe here but
-7 and checks each against its expected loads, record kind included. Its
-first full run, the same day in fresh sessions, passed all of them.
+`uv run scripts/test-instruction-loading.py` re-runs every probe here
+and checks each against its expected loads, record kind included. Its
+first full run, the same day in fresh sessions, passed all of them; 7's
+four variants joined it 2026-09-27.
 
 1. **A root `CLAUDE.md` silences every `AGENTS.md`**, nested ones
    included, by default. In a repo like this one a nested `AGENTS.md` is
@@ -164,11 +166,17 @@ first full run, the same day in fresh sessions, passed all of them.
    parent, or neither? **The subagent only**, a general-purpose one that
    loaded root's `CLAUDE.md` at its start; the parent got the nested file
    on its own first Read there (`97cb1923`).
-7. **Worktrees here.** A main-checkout Read under `.claude/worktrees/<n>/`
-   should load that worktree's root `CLAUDE.md` as a nested file, a second
-   and possibly different copy of root. `**/claude/CLAUDE.md` covers the
-   worktree's payload copy, not its root. **Not run**: it needs a worktree
-   and a branch here, and waits on the user.
+7. **Worktrees here**, run 2026-09-27 in a scratch repo built as this one
+   is: a real `git worktree add` at `.claude/worktrees/w1`, `/.claude/*`
+   in `.gitignore`, the worktree's `CLAUDE.md` re-marked as its own.
+   **A main-checkout Read in the worktree loads its `CLAUDE.md`** as a
+   nested file, gitignored and a separate checkout notwithstanding
+   (`p7`), and `claudeMdExcludes: ["**/.claude/worktrees/**"]` keeps it
+   out (`p7x`). But a session launched in the worktree loads only that
+   file, never the main root above it (`p7-wt`), and **the same exclude
+   leaves it with no `CLAUDE.md` at all** (`p7-wt-x`): the pattern cannot
+   tell the two apart, since both are one path. Both runs passed twice,
+   in fresh sessions.
 8. Added 2026-09-25, as the Phase 1 table's nested-file row rested on it:
    does a first touch by Write, Grep, Glob or Bash load a folder's
    `CLAUDE.md`? **No**, none did; the first Read in each folder loaded its
@@ -185,9 +193,10 @@ The worktree probe of 2026-09-24 bears on 7 without settling it: a
 `--worktree` session did not load the main checkout's root `CLAUDE.md`
 above it ([root-claude-md.md](../../evidence/root-claude-md.md),
 § "Branching and concurrent sessions"), though the memory page orders
-content "from the filesystem root down". Whether the upward walk stops at
-a git root or only at Claude Code's own worktrees is open, and 7 asks the
-downward case.
+content "from the filesystem root down". `p7-wt` repeats that for a plain
+launch in a plain `git worktree`, not only a `--worktree` session.
+Whether the walk stops at a git root or at `.claude/worktrees/` stays
+open, since that worktree is both.
 
 ## Cutting root over to `AGENTS.md`
 
@@ -357,11 +366,39 @@ pointer the client measurement found unreliable; `docs/audits/`; and
 `scripts/`. The measure is this repo's own transcripts: in sessions that
 edited a brief, was the queue README Read before it?
 
+**Measured 2026-09-27**, over this repo's 300 main-session transcripts
+from 2026-09-11 to that day, `cleanupPeriodDays` being 15. Only Edit and
+Write calls count as edits, so one made through Bash is not seen:
+
+| Directory | Sessions editing there | Read its README first | Of those, the user named it | Read it only after | Never read it |
+| --- | --- | --- | --- | --- | --- |
+| `docs/handoffs/execute/` | 24 | 11 | 4 | 2 | 11 |
+| `docs/audits/` | 6 | 0 | 0 | 1 | 5 |
+| `scripts/` | 15 | 1 | 0 | 2 | 12 |
+
+So 7 of the 24 sessions that edited a brief opened the queue README of
+their own accord first, and one that never opened it made 53 calls in
+the directory. No subagent edited any of the three. It is the client
+measurement again, **a README is Claude's choice to open**, and here the
+README carries the rules a brief edit breaks silently: a row for a brief
+that outlives its session, a deleted brief's links re-pointed, a row's
+evidence re-run before acting on it. Decision 5 has the placement.
+
+`docs/audits/` and `scripts/` want nothing. `/drift-handoff` and
+`/drift-update` write and execute the audit directories and carry their
+conventions, and `scripts/README.md` is an index, where what governs
+editing a script is already in path rules.
+
 A nested file here also needs `editing-claude-md.md` amended in the same
 commit, since its `**/CLAUDE.md` glob would load it on every nested Read
 while its text speaks only of root and the payload, and a cap decision,
-since `lint-claude-md.py` caps two named files. Probe 7 decides whether
-`claudeMdExcludes` gains `**/.claude/worktrees/**`.
+since `lint-claude-md.py` caps two named files.
+
+**`claudeMdExcludes` does not gain `**/.claude/worktrees/**`**, by probe
+7. Committed, the setting travels into every worktree branched from
+here and strips that session's own root `CLAUDE.md` (`p7-wt-x`). What it
+would prevent, a second copy of root when a session here Reads into a
+worktree, is the smaller cost; no worktree existed on 2026-09-27.
 
 ## Phase 3: the skill, if Decision 1 says so
 
@@ -457,6 +494,15 @@ which load as nested files in any session here that Reads them, so
    A note went to its inbox the same day. **Outcome, 2026-09-26**: merged
    there, with two conditions for the rule, in § "The import form in the
    client Fabric repo".
+5. **Where the queue's must-know lines go: open, put to the user
+   2026-09-27**, by Phase 2's measurement. A `.claude/rules/` rule on
+   `docs/handoffs/**` loads on the same Read a nested file would, and
+   leaves the standing ban as it is; a nested
+   `docs/handoffs/execute/CLAUDE.md` needs `editing-claude-md.md` amended
+   and a cap decision; nothing leaves most brief edits without the
+   queue's rules. Recommended: the rule, short, with the README still the
+   long form. Any of them misses a brief created by Write before a Read
+   there (8), which is `/author-skill`'s path.
 
 ## Scrubbing
 
