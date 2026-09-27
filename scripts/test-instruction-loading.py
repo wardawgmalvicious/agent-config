@@ -84,6 +84,7 @@ class Probe:
     settings: dict | None = None
     subagent: dict[str, dict[str, str]] | None = None
     order: tuple[str, ...] = ()  # files that must first load in this order
+    worktree: str = ""  # a git worktree checked out here, with a CLAUDE.md of its own
 
 
 def read(path: str) -> Step:
@@ -128,6 +129,29 @@ PROBES = (
           (Step("Agent", "sub/one.txt"), read("sub/two.txt")),
           {"launch": {"CLAUDE.md": LAUNCH}, "2": {"sub/CLAUDE.md": NESTED}},
           subagent={"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED}}),
+    Probe("p7", "7: a main-checkout Read in a worktree under .claude/worktrees/ loads its CLAUDE.md",
+          {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/file.txt": "t", "top.txt": "t"},
+          (read("sub/file.txt"), read(".claude/worktrees/w1/top.txt")),
+          {"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED},
+           "2": {".claude/worktrees/w1/CLAUDE.md": NESTED}},
+          worktree=".claude/worktrees/w1"),
+    Probe("p7x", "7: claudeMdExcludes **/.claude/worktrees/** keeps it out of the main checkout",
+          {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/file.txt": "t", "top.txt": "t"},
+          (read("sub/file.txt"), read(".claude/worktrees/w1/top.txt")),
+          {"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED}},
+          settings={"claudeMdExcludes": ["**/.claude/worktrees/**"]},
+          worktree=".claude/worktrees/w1"),
+    Probe("p7-wt", "7: launched in the worktree, its own CLAUDE.md loads and the main root's does not",
+          {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/file.txt": "t", "top.txt": "t"},
+          (read(".claude/worktrees/w1/top.txt"),),
+          {"launch": {".claude/worktrees/w1/CLAUDE.md": LAUNCH}},
+          cwd=".claude/worktrees/w1", worktree=".claude/worktrees/w1"),
+    Probe("p7-wt-x", "7: launched in the worktree, that exclude drops its own CLAUDE.md too",
+          {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/file.txt": "t", "top.txt": "t"},
+          (read(".claude/worktrees/w1/top.txt"),),
+          {},
+          settings={"claudeMdExcludes": ["**/.claude/worktrees/**"]},
+          cwd=".claude/worktrees/w1", worktree=".claude/worktrees/w1"),
     Probe("p8", "8: Write, Grep, Glob and Bash load no nested CLAUDE.md; a Read does",
           {"CLAUDE.md": "i", "w/CLAUDE.md": "i", "g/CLAUDE.md": "i", "g/data.txt": "t",
            "gl/CLAUDE.md": "i", "gl/x.txt": "t", "b/CLAUDE.md": "i", "b/y.txt": "t"},
@@ -182,7 +206,25 @@ def build(root: pathlib.Path, probe: Probe) -> pathlib.Path:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(text.encode("utf-8"))
     subprocess.run(["git", "init", "-q", str(base)], check=True)
+    if probe.worktree:
+        add_worktree(base, probe.worktree)
     return base
+
+
+def add_worktree(base: pathlib.Path, rel: str) -> None:
+    """Commit the probe's files, then check them out again as a worktree at rel.
+
+    The layout `claude --worktree` makes, ignored as agent-config ignores it,
+    by `/.claude/*` in .gitignore. The checkout copies root's CLAUDE.md, marker
+    and all, so the worktree's copy is re-marked with its own path: a second,
+    possibly different copy of root, as another branch checked out there is.
+    """
+    (base / ".gitignore").write_bytes(b"/.claude/*\n")
+    git = ["git", "-C", str(base), "-c", "user.name=probe", "-c", "user.email=probe@example.invalid"]
+    subprocess.run([*git, "add", "-A"], check=True)
+    subprocess.run([*git, "commit", "-q", "-m", "probe"], check=True)
+    subprocess.run([*git, "worktree", "add", "-q", "-b", "probe-worktree", rel], check=True)
+    (base / rel / "CLAUDE.md").write_bytes(f"[[probe-marker {rel}/CLAUDE.md]]\n".encode("utf-8"))
 
 
 def step_line(n: int, step: Step, base: pathlib.Path) -> str:
