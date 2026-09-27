@@ -83,11 +83,42 @@
 # every commit on the machine. The tests in tests/hooks/identity-guard/
 # are what make that acceptable: run them after any edit.
 #
+# Open is not silent where the scan never ran. With jq missing, or unable
+# to read the hook input, the hook exits 1, not 0: the call still
+# proceeds, but Claude Code shows the first stderr line as a `hook error`
+# notice, where stderr from an exit 0 reaches only the debug log (hooks
+# docs, read 2026-09-27). A timeout that could not start once made every
+# scan exactly that silent pass; see jq_input below.
+#
 # Exit codes:
 #   0 - allow
+#   1 - allow unscanned, and say so: jq is missing or could not read the
+#       input. Claude Code mode only; in git-hook mode a 1 would block
 #   2 - block (PreToolUse) / feed back (PostToolUse); stderr carries the hits
 
 set -uo pipefail
+
+# jq over the hook input, its lifetime bounded by timeout. The wrapper is
+# run, never probed for: `command -v timeout` proves the file is on PATH,
+# not that it runs. Under Defender's ASR rule "Block use of copied or
+# impersonated system tools" a per-user Git's timeout.exe exits 126
+# (measured 2026-09-17), so a probe that trusted it left jq never running
+# and this guard allowing every commit and push, with output identical to
+# a clean pass. 126 and 127 (could not execute, not found) are codes jq's
+# own errors never use, so either retries bare jq. A healthy call spawns
+# exactly what the probe's did.
+jq_input() {
+    local rc=0
+    printf '%s' "$INPUT" | timeout 5 jq "$@" 2>/dev/null || rc=$?
+    [[ $rc -eq 126 || $rc -eq 127 ]] || return "$rc"
+    printf '%s' "$INPUT" | jq "$@" 2>/dev/null
+}
+
+# Allow, visibly: see "Open is not silent" above.
+not_scanned() {
+    echo "identity-guard: $1, so this git command was not scanned." >&2
+    exit 1
+}
 
 MSG_FILE=""
 if [[ "${1:-}" == --git-hook ]]; then
@@ -105,15 +136,14 @@ else
     # Cheap pre-filter: only a shell tool's command that mentions git is worth
     # a jq spawn. Both shell tools put the command under tool_input.command.
     [[ "$INPUT" == *'"command"'* && "$INPUT" == *git* ]] || exit 0
-    command -v jq >/dev/null 2>&1 || exit 0
+    command -v jq >/dev/null 2>&1 || not_scanned "jq is not on PATH"
 
     # One jq call, four fields, tab-separated. @tsv escapes tabs, newlines and
     # backslashes inside the command, and printf %b puts them back. jq on
     # Windows ends the line with CRLF; the CR is stripped by expansion.
-    JQ=(jq)
-    if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
-    RAW=$(printf '%s' "$INPUT" | "${JQ[@]}" -r \
-        '[.hook_event_name, .tool_name, .cwd, .tool_input.command] | map(. // "" | tostring) | @tsv' 2>/dev/null) || exit 0
+    RAW=$(jq_input -r \
+        '[.hook_event_name, .tool_name, .cwd, .tool_input.command] | map(. // "" | tostring) | @tsv') ||
+        not_scanned "jq could not read the hook input (exit $?)"
     RAW=${RAW//$'\r'/}
     IFS=$'\t' read -r EVENT TOOL CWD CMD_ESC <<<"$RAW"
     case "$TOOL" in Bash | PowerShell) ;; *) exit 0 ;; esac

@@ -27,12 +27,19 @@ FAIL=0
 # Files, not pipes: an earlier version fed the hook through `jq | bash`
 # inside "$(...)" and hung intermittently on Windows with no child process
 # left to blame — MSYS pipe handles. Every pass now goes through disk.
+# HOOK_PATH, when set, is the PATH the hook alone runs under.
 call() {
     jq -nc --arg e "$1" --arg t "$2" --arg c "$3" --arg cmd "$4" \
         '{hook_event_name:$e, tool_name:$t, cwd:$c, tool_input:{command:$cmd}}' >"$WORK/in.json"
-    IDENTITY_DENYLIST="${LIST:-}" ${HOOK_SHELL:-bash} "$HOOK" <"$WORK/in.json" >/dev/null 2>"$WORK/stderr"
+    PATH="${HOOK_PATH:-$PATH}" IDENTITY_DENYLIST="${LIST:-}" ${HOOK_SHELL:-bash} "$HOOK" <"$WORK/in.json" >/dev/null 2>"$WORK/stderr"
     echo $? >"$WORK/rc"
     cat "$WORK/rc"
+}
+# callraw <text>  → prints exit code, handing the hook text that is not JSON
+callraw() {
+    printf '%s' "$1" >"$WORK/in.json"
+    IDENTITY_DENYLIST="${LIST:-}" ${HOOK_SHELL:-bash} "$HOOK" <"$WORK/in.json" >/dev/null 2>"$WORK/stderr"
+    echo $?
 }
 expect() { # <label> <want> <got>
     if [ "$2" = "$3" ]; then
@@ -128,6 +135,47 @@ mkrepo "$E"
 echo "contoso everywhere" >>"$E/a.txt"
 git -C "$E" add a.txt
 expect "repo under an exempt root is skipped" 0 "$(call PreToolUse Bash "$(cygpath -w "$E" 2>/dev/null || echo "$E")" 'git commit -m x')"
+
+echo "-- jq that cannot start, or cannot read --"
+# The cases the healthy path never exercises: a gate that never scans
+# looks identical to one that passes. Under Defender's ASR rule a per-user
+# Git's timeout.exe exits 126, and the hook's old `command -v timeout`
+# probe then let everything through (2026-09-17). A shim whose shebang
+# names no interpreter is a real exec failure, exit 126; a non-executable
+# file would prove nothing, since bash skips it on PATH for the real one.
+J="$WORK/jq-cases"
+mkrepo "$J"
+echo "contoso" >>"$J/a.txt"
+git -C "$J" add a.txt
+JW=$(cygpath -w "$J" 2>/dev/null || echo "$J")
+SHIM="$WORK/shim"
+mkdir -p "$SHIM"
+printf '#!/nonexistent/interpreter\n' >"$SHIM/timeout"
+chmod +x "$SHIM/timeout"
+expect "timeout cannot start (126): bare jq, still blocks" 2 "$(HOOK_PATH="$SHIM:$PATH" call PreToolUse Bash "$JW" 'git commit -m x')"
+printf '#!/bin/sh\nexit 127\n' >"$SHIM/timeout"
+expect "timeout reports 127: bare jq, still blocks" 2 "$(HOOK_PATH="$SHIM:$PATH" call PreToolUse Bash "$JW" 'git commit -m x')"
+NOJQ=""
+IFS=: read -ra DIRS <<<"$PATH"
+for d in "${DIRS[@]}"; do
+    [[ -x "$d/jq" || -x "$d/jq.exe" ]] || NOJQ="${NOJQ:+$NOJQ:}$d"
+done
+expect "no jq on PATH: allowed, but exit 1" 1 "$(HOOK_PATH="$NOJQ" call PreToolUse Bash "$JW" 'git commit -m x')"
+if grep -q 'was not scanned' "$WORK/stderr"; then
+    PASS=$((PASS + 1))
+    echo "  ok   the notice says the command was not scanned"
+else
+    FAIL=$((FAIL + 1))
+    echo "  FAIL no-jq notice text"
+fi
+expect "input jq cannot parse: allowed, but exit 1" 1 "$(callraw '{"tool_name":"Bash","tool_input":{"command":"git commit -m x"')"
+if grep -q 'was not scanned' "$WORK/stderr"; then
+    PASS=$((PASS + 1))
+    echo "  ok   the notice says the command was not scanned"
+else
+    FAIL=$((FAIL + 1))
+    echo "  FAIL unparseable-input notice text"
+fi
 
 # callgit <repo> <stage> [<msg-file>]  → prints exit code. Invokes the hook
 # the way .pre-commit-config.yaml does: from the repo root, no JSON, stdin

@@ -27,7 +27,8 @@ start, before/after tool use, on stop, etc.).
   agent is `security-reviewer`, enforces that the target `file_path`
   is under `~/.claude/agent-memory/security-reviewer/`; otherwise
   exits 0 (allow). Other callers (main session, other subagents) pass
-  through unchanged. Requires [jq](https://jqlang.org).
+  through unchanged. Requires [jq](https://jqlang.org); input it cannot
+  read allows the call under a `hook error` notice saying so.
 - [identity-guard.sh](identity-guard.sh) — fires on `PreToolUse` and
   `PostToolUse` with matcher `Bash|PowerShell`, and acts only when the
   command carries a `git commit` or `git push`. Blocks a commit whose
@@ -42,7 +43,10 @@ start, before/after tool use, on stop, etc.).
   no check, silently. Fails open by design: a broken hook must not wedge
   every commit on the machine, and
   [tests/hooks/identity-guard/](../../tests/hooks/identity-guard/) is
-  what makes that acceptable. Exists because gitleaks matches secrets,
+  what makes that acceptable. Open is not silent where the scan never
+  ran: with jq missing or unable to read the input, the call proceeds
+  under a `hook error` notice saying it was not scanned. Exists because
+  gitleaks matches secrets,
   not identities, and never reads a commit message (measured 2026-09-04
   on 8.30.1). Requires [jq](https://jqlang.org).
 

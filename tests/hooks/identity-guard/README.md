@@ -29,6 +29,8 @@ so the repo passing says nothing about what is live.
 | `git push origin <ref>` names a ref other than HEAD | that ref is what is scanned | 2 / 0 |
 | Everything already on the remote | `git push` | 0 |
 | Repo under an `exempt:` root | `git commit` with a term staged | 0 |
+| `timeout` cannot start (exit 126), or reports 127 | `git commit` with a term staged | 2 — bare jq is retried, so still gated |
+| jq not on `PATH`, or input jq cannot parse | `git commit` with a term staged | 1 — allowed, under a notice that it was not scanned |
 | `--git-hook pre-commit`, a term staged / nothing staged / no denylist | git-hook mode | 2 / 0 / 0 |
 | `--git-hook commit-msg`, a term in the message / only in a `#` line | git-hook mode | 2 / 0 |
 | `--git-hook pre-push` at `PRE_COMMIT_TO_REF`, or HEAD when unset / after the remote has it | git-hook mode | 2 / 0 |

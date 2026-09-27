@@ -237,7 +237,11 @@ aborts takes the session's tool call with it.
 through exit codes: `0` allows, `2` blocks with stderr fed back to Claude
 as the rejection reason. Any other non-zero is reported as a hook error
 and the call proceeds — so a crash fails **open**. Decide deliberately
-which side a failure should land on, and say so in the header.
+which side a failure should land on, and say so in the header. **A
+deliberate open whose check never ran exits 1, not 0**: Claude Code shows
+a non-zero exit's first stderr line as a `hook error` notice, while
+stderr from an exit 0 reaches only the debug log (hooks docs, read
+2026-09-27), so an exit-0 abstention reads as a clean pass.
 
 **Bound the lifetime of anything you pipe into.** `jq` reads stdin; if
 the hook's shell dies mid-pipeline, `jq` is left blocking on a stdin that
@@ -248,19 +252,33 @@ from `log-instructions-loaded.sh` blocked the `C:\GitHub` -> `C:\Repos`
 migration and was invisible to every command-line and window scan.
 
 ```bash
-JQ=(jq)
-if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
+jq_input() {
+  local rc=0
+  printf '%s\n' "$INPUT" | timeout 5 jq "$@" 2>/dev/null || rc=$?
+  [[ $rc -eq 126 || $rc -eq 127 ]] || return "$rc"
+  printf '%s\n' "$INPUT" | jq "$@" 2>/dev/null
+}
 
 if command -v jq >/dev/null 2>&1 \
-    && OUT=$(printf '%s\n' "$INPUT" | "${JQ[@]}" -c '...' 2>/dev/null); then
+    && OUT=$(jq_input -c '...'); then
   printf '%s\n' "$OUT" >> "$LOG"
 else
   # fallback that still records something
 fi
 ```
 
-The array form matters: it degrades to bare `jq` where `timeout` is
-absent, instead of failing.
+**Run `timeout`; never probe for it.** `command -v timeout` proves the
+file is on `PATH`, not that it runs: under Defender's ASR rule "Block use
+of copied or impersonated system tools", a per-user Git install's
+`timeout.exe` exits **126** (measured 2026-09-17), and the probe this
+example once carried handed every jq call to a wrapper that never
+started, so a guard hook allowed every commit and push with output
+identical to a clean pass. 126 and 127, could not execute and not found,
+are codes jq's own errors never use, so either retries bare `jq`, and a
+healthy call spawns what it did before. To test the fallback, shadow
+`timeout` with a file whose shebang names no interpreter (exit 126): a
+non-executable file proves nothing, since bash skips it on `PATH` and
+runs the real one (2026-09-27).
 
 **Read stdin once** into a variable — `INPUT=$(cat)` — then reuse it.
 The payload is consumed on first read.

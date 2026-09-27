@@ -24,11 +24,20 @@ TS=$(date -Iseconds)
 # jq is left blocking on a stdin that never closes and holds the session's cwd
 # indefinitely -- enough to block a rename of any ancestor directory. A stranded
 # jq from this hook blocked the C:\GitHub -> C:\Repos move.
-JQ=(jq)
-if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
+#
+# timeout is run, never probed for: `command -v timeout` finds a timeout.exe
+# that Defender's ASR rule then refuses to start (exit 126, 2026-09-17). 126
+# and 127 retry bare jq, since jq's own errors never use them (coding-bash.md,
+# "Claude Code hooks").
+jq_input() {
+  local rc=0
+  printf '%s\n' "$INPUT" | timeout 5 jq "$@" 2>/dev/null || rc=$?
+  [ "$rc" -eq 126 ] || [ "$rc" -eq 127 ] || return "$rc"
+  printf '%s\n' "$INPUT" | jq "$@" 2>/dev/null
+}
 
 if command -v jq >/dev/null 2>&1 \
-    && OUT=$(printf '%s\n' "$INPUT" | "${JQ[@]}" -c --arg ts "$TS" '{ts: $ts} + .' 2>/dev/null); then
+    && OUT=$(jq_input -c --arg ts "$TS" '{ts: $ts} + .'); then
   printf '%s\n' "$OUT" >> "$LOG"
 else
   # No jq (or unparseable input): splice ts into the raw line by hand.

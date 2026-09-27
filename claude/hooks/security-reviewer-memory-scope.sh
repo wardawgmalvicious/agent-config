@@ -9,6 +9,7 @@
 #
 # Exit codes:
 #   0 - Allow the tool call
+#   1 - Allow it unchecked: jq could not read the input (see unreadable below)
 #   2 - Block the tool call (security-reviewer attempting out-of-scope Edit/Write)
 #       stderr message is fed back to Claude as the rejection reason
 
@@ -18,17 +19,32 @@ set -euo pipefail
 # jq is left blocking on a stdin that never closes and holds the session's cwd
 # indefinitely -- enough to block a rename of any ancestor directory. This hook
 # fires on every Edit/Write, so it is the highest-frequency jq call here.
-# A timeout trips errexit and the hook exits non-zero, which Claude Code reports
-# as a hook error and allows the call -- the same fail-open path any other jq
-# failure already takes today, but bounded instead of hanging forever.
-JQ=(jq)
-if command -v timeout >/dev/null 2>&1; then JQ=(timeout 5 jq); fi
+#
+# timeout is run, never probed for: `command -v timeout` finds a timeout.exe
+# that Defender's ASR rule then refuses to start (exit 126, 2026-09-17), and a
+# probe handed every jq call to it. 126 and 127 retry bare jq, since jq's own
+# errors never use them (coding-bash.md, "Claude Code hooks").
+jq_input() {
+  local rc=0
+  printf '%s\n' "$INPUT" | timeout 5 jq -r "$@" 2>/dev/null || rc=$?
+  [ "$rc" -eq 126 ] || [ "$rc" -eq 127 ] || return "$rc"
+  printf '%s\n' "$INPUT" | jq -r "$@" 2>/dev/null
+}
+
+# Input jq cannot read, or a jq that timed out (124), allows the call, as any
+# exit but 2 does: the same fail-open side as before, now bounded and named.
+# Exit 1 rather than 0, since Claude Code shows a non-zero exit's first stderr
+# line as a hook-error notice and an exit 0's stderr only in the debug log.
+unreadable() {
+  echo "security-reviewer-memory-scope: jq could not read the hook input (exit $1), so this call was not checked." >&2
+  exit 1
+}
 
 # Read JSON input from stdin
 INPUT=$(cat)
 
 # Agent-type guard — only enforce when running under security-reviewer
-AGENT_TYPE=$(echo "$INPUT" | "${JQ[@]}" -r '.agent_type // empty')
+AGENT_TYPE=$(jq_input '.agent_type // empty') || unreadable $?
 
 if [ "$AGENT_TYPE" != "security-reviewer" ]; then
   # Not our subagent (could be main session, or a different subagent)
@@ -37,7 +53,7 @@ if [ "$AGENT_TYPE" != "security-reviewer" ]; then
 fi
 
 # Extract file_path from tool_input
-FILE_PATH=$(echo "$INPUT" | "${JQ[@]}" -r '.tool_input.file_path // empty')
+FILE_PATH=$(jq_input '.tool_input.file_path // empty') || unreadable $?
 
 # If no file_path, allow (defensive — shouldn't happen for Edit/Write)
 if [ -z "$FILE_PATH" ]; then
