@@ -12,9 +12,11 @@
   same change to three sibling hooks, and **one decision** — whether the
   identity guard should fail *closed* when it cannot parse its input.
   Deploys by **copy**, so nothing is live until `link-claude.ps1` runs.
-- **Status**: **Open, nothing landed.** The defect is confirmed present
-  in all four hooks and in all four deployed copies. The machine state
-  that triggers it is **not reproduced here** — see Evidence.
+- **Status**: **Open, nothing landed; decided 2026-09-27.** The defect
+  is confirmed present in all four hooks and in all four deployed
+  copies. The machine state that triggers it is **not reproduced here**
+  and was **not live on 2026-09-27** — see Evidence. The user answered
+  the decision below the same day, so what is left is mechanical.
 - **Run in**: this repo. The hook suite in `tests/hooks/identity-guard/`
   is the one machine-checkable suite in the repo and must be run twice —
   against the repo copy and again against the deployed copy after the
@@ -122,6 +124,13 @@ actually happens. Prefer the retry.
 **Should `identity-guard` fail closed when jq produces no output at
 all?**
 
+**Answered 2026-09-27 by the user: the middle form below.** Fail open,
+but print to stderr why the scan was skipped, so the abstention stops
+reading as a clean pass. Not decided: whether the adjacent
+`command -v jq || exit 0` gains the same stderr line. Recommended, so
+the two fail-open paths agree, and cheap, since it fires only when jq
+is missing.
+
 Today `|| exit 0` treats *"could not parse the hook input"* the same as
 *"this is not a git command"*. For a guard those are different answers,
 and only one of them is safe to assume.
@@ -176,6 +185,12 @@ To check whether this machine is currently in that state:
 — if the machine is no longer in that state, the change is still correct
 (`command -v` still cannot prove executability) but the brief should say
 the trigger was not live at landing time.
+
+**Re-measured 2026-09-27: not live.** The per-user Git install is gone,
+so the command above fails with *not recognized*, and Git now sits
+under `C:\Program Files\Git`, whose `usr\bin\bash.exe -c -l` and
+`bin\bash.exe` both ran `timeout 2 true` to `rc=0`. Re-check with that
+path, and expect the ASR block only where a per-user install returns.
 
 ## Deployment
 
