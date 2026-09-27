@@ -354,7 +354,11 @@ if ($doInstructions -and -not (Test-Path $InstructionsRoot)) {
            "inside the repo's scripts/ folder?")
 }
 
-$CopilotDirFull = [IO.Path]::GetFullPath($CopilotDir)
+# Resolve through the provider, not [IO.Path]::GetFullPath: that leaves `~`
+# literal, so the documented `-CopilotDir ~/.copilot` became <cwd>\~\.copilot,
+# and it resolves a relative path against the process directory rather than
+# $PWD, which differ after a cd -- a relative target could name another repo.
+$CopilotDirFull = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($CopilotDir)
 
 # ~/.claude is link-claude's target and is junction-managed. Copying real
 # directories over those junctions would be destructive and silent, so refuse
