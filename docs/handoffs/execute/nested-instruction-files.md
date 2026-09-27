@@ -304,7 +304,7 @@ owns both tables now: change them there. The draft it came from:
 | About one file kind, wherever it sits | `paths:` rule | the glob is wrong, or Grep, `cat` or a new file touch it |
 | About one directory, kept by its owners | nested file | the session never Reads there itself: Write, Grep, Glob, Bash and a subagent's Read all miss it (6, 8); and after `/compact`, until the next Read |
 | A procedure asked for in words | skill | the description never matches |
-| Must hold before Claude acts | hook or `permissions.deny` | the hook itself fails open ([hooks-fail-open-on-blocked-timeout.md](hooks-fail-open-on-blocked-timeout.md)) |
+| Must hold before Claude acts | hook or `permissions.deny` | the hook itself fails open ([coding-bash.md](../../../claude/rules/coding-bash.md) § "Claude Code hooks") |
 | Long reference for people | README, or a nested `CLAUDE.md` of `@README.md` if short | Claude never opens it (above) |
 | Long form needed by more than one tool | one doc each tool's file points at, by code span in Copilot's | a Copilot instructions file links it while `chat.includeReferencedInstructions` is on, and it loads in full (above) |
 | Derivable from the code | nowhere | never; `/doctor` cuts it |
