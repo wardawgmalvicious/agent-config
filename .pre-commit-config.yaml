@@ -175,12 +175,16 @@ repos:
       # without its hand-written port following. Runs over the whole set
       # rather than the changed files, since a rule edit and its port live in
       # different directories and either one alone is the interesting case.
+      # `files:` also names the linter and lint-frontmatter.py, whose glob
+      # primitives it loads, since a change to either can fail ports already
+      # committed: be7c7ac added the link check with this hook Skipped, as it
+      # touched neither tree. CI's --all-files runs it, but after the push.
       - id: lint-instructions
         name: Validate Copilot instructions and check port drift
         entry: python scripts/lint-instructions.py
         language: python
         additional_dependencies: [pyyaml]
-        files: '^(claude/rules/|copilot/)'
+        files: '^(claude/rules/|copilot/|scripts/lint-instructions\.py$|scripts/lint-frontmatter\.py$)'
         pass_filenames: false
 
       # The identity-guard Claude Code hook sees only commits Claude Code
