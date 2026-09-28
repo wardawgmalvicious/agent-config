@@ -36,20 +36,25 @@ Measured 2026-09-27 over 297 main-session transcripts, 2026-09-11 to
   whole file, 188 lines and 9,913 bytes, about 2,500 tokens. Two sessions
   loaded it again after `/compact`.
 - **None since the exclude**, in 8 sessions that Read under `claude/`.
-- Before it, 32 sessions Read under `claude/`. The 9 that Read only
-  `claude/CLAUDE.md` itself never loaded it: a direct Read does not load
-  a file as its own nested memory. Of the 23 that Read other files there,
-  10 loaded it and 13 did not, on every CLI version from 2.1.268 to
-  2.1.281. **The 13 are unexplained.** The likeliest reading is that the
-  loader skips a nested file identical to one already loaded, so the
-  double load fires only while the repo copy differs from the deployed
-  one: after an edit, before a deploy, which is when a stale copy
-  misleads most.
+- **It is older than the window.** The ledger's 2026-09-24 entry
+  (`docs/evidence/root-claude-md.md` § "Editing conventions") counts 15
+  `nested_traversal` loads of this file in the `InstructionsLoaded` log
+  from 2026-08-28 on.
+- Before the exclude, 32 sessions Read under `claude/`, on every CLI
+  version from 2.1.268 to 2.1.281, and all but 3 are accounted for. The
+  12 whose first Read there was `claude/CLAUDE.md` itself never loaded it
+  again: a direct Read seems to count as the load. Of the 20 that Read
+  another file first, 10 loaded it, and 7 were the exclude's own probes
+  of 2026-09-24, run with an exclude on by design, the "excluded" rows of
+  that ledger table. **The 3 left did not load it and are unexplained**:
+  sessions `8112123e`, `f6ea275d` and `44c05720`, 2026-09-13 and 09-16.
+- **Identical content does not stop it.** On 2026-09-24 the repo copy was
+  byte-identical to the deployed one and still loaded twice, per the same
+  ledger entry.
 
-**Decide that first**, cheaply: a scratch repo whose `sub/CLAUDE.md` is a
-byte copy of `~/.claude/CLAUDE.md`, and a second whose copy differs by one
-line, each Read into once, in the manner of
-`scripts/test-instruction-loading.py`.
+Worth settling first, cheaply: whether a direct Read of a nested
+`CLAUDE.md` does suppress its later nested load, by a probe in
+`scripts/test-instruction-loading.py`, and what the 3 transcripts share.
 
 ## What others do
 
