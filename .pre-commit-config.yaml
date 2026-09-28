@@ -179,6 +179,20 @@ repos:
         files: '^(docs/audits/|scripts/audit-status\.py$)'
         pass_filenames: false
 
+      # docs/handoffs/ briefs carry their own state in frontmatter since
+      # 2026-09-27, and handoff-status.py generates the queue from it, so a
+      # bad value would drop a brief from the view with nothing to say so.
+      # This fails the commit on one, and on a blocked-by naming a brief
+      # that is gone. This repo alone: without --no-inbox every other repo's
+      # inbox directory reads as an orphan. Whole set, since landing one
+      # brief can break another's blocked-by.
+      - id: lint-briefs
+        name: Check each handoff brief's frontmatter and blockers
+        entry: python scripts/handoff-status.py . --check --no-inbox
+        language: python
+        files: '^(docs/handoffs/|scripts/handoff-status\.py$)'
+        pass_filenames: false
+
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
       # so lint-frontmatter.py would reject every one and is scoped away from
       # them. This validates them instead, blocks a personal-repo name or

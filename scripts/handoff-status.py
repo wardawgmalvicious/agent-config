@@ -4,6 +4,7 @@
     uv run scripts/handoff-status.py              # every repo under C:/Repos
     uv run scripts/handoff-status.py ROOT...      # a parent, or one repo
     uv run scripts/handoff-status.py --check      # exit 1 on any finding
+    uv run scripts/handoff-status.py . --check --no-inbox   # this repo's briefs alone
 
 Each repo keeps its own handoff index and the inbox keeps one directory per
 repo, so answering "what is open, anywhere" meant opening every index and
@@ -13,8 +14,23 @@ answered two open questions in this repo's own queue two days earlier, and
 nobody had read it. This sweeps them all and prints one section per repo
 that has anything, in each index's own order.
 
-Everything is DERIVED, as in audit-status.py -- no state is kept here:
+Everything is DERIVED, as in audit-status.py -- no state is kept here.
+A brief states its own state in frontmatter, or an index states it:
 
+  Frontmatter  a brief opening with `---` carries its state, and no index
+            row is needed: agent-config's queue since 2026-09-27, when a
+            hand-kept table proved to be what made two sessions collide.
+            The grammar is a strict YAML subset, `key: value` or
+            `key: [a, b]`, so this stays stdlib and GitHub renders it:
+              status       open | deferred
+              priority     1 | 2 | 3, buckets with no order inside one
+              needs        [user, tenant, ...]; empty means a session can act
+              blocked-by   [brief.md, ...], each a file beside this one
+              reopen-when  the trigger, required when deferred
+              written      YYYY-MM-DD, the tiebreak within a bucket
+            Such briefs print grouped -- ready, needs you, needs something
+            else, blocked, deferred -- by bucket, then oldest first, and
+            one is "in flight" while a git worktree is named after it.
   Rows      every table row or list item in a README.md under docs/handoffs/
             whose FIRST element is a link to a brief. Links elsewhere in a
             row, and links in prose, are not rows.
@@ -33,11 +49,18 @@ rather than work.
 
 Findings, which --check turns into exit 1:
 
-  unindexed   a brief no index row links to -- invisible to the one file a
-              session is told to read first
+  unindexed   a brief with no frontmatter that no index row links to --
+              invisible to the one file a session is told to read first
   dangling    a row whose brief is gone -- spent but never struck
+  frontmatter a value missing, unknown, or one a real YAML parser would
+              misread, such as one opening with a backtick
+  blocker     a blocked-by naming a brief that is gone: the landing that
+              deleted it should have deleted the name too
   loose       a note in the inbox root, addressed to no repo
   orphan      an inbox directory matching no repo swept, e.g. a misspelling
+
+--no-inbox skips the last two and the inbox listing, which lets pre-commit
+check one repo's briefs without calling every other repo's inbox an orphan.
 
 A date or position in a brief's FILENAME is reported but is not a finding:
 it breaks the common core's stable-filename rule, but a repo's own convention
@@ -71,6 +94,15 @@ DATED_NAME = re.compile(r"^(\d{4}-\d{2}-\d{2}|\d{1,3})[-_]")
 NOTE_DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})-")
 STATE_WIDTH = 46
 
+FM_KEYS = ("status", "priority", "needs", "blocked-by", "reopen-when", "written")
+FM_LISTS = {"needs", "blocked-by"}
+FM_LINE = re.compile(r"^([a-z][a-z-]*):[ \t]*(.*?)[ \t]*$")
+STATUSES = ("open", "deferred")
+PRIORITIES = ("1", "2", "3")
+# A plain YAML scalar may not open with an indicator, nor hold ": " or " #".
+YAML_INDICATORS = tuple("`@&*!|>%{}[],#?'\"")
+GROUPS = ("ready", "needs you", "needs something else", "blocked", "deferred")
+
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
         _stream.reconfigure(encoding="utf-8", errors="replace")
@@ -84,17 +116,61 @@ class Row:
 
 
 @dataclass
+class Brief:
+    """A brief that states its own state in frontmatter."""
+    path: pathlib.Path
+    meta: dict[str, str | list[str]]
+    problems: list[tuple[str, str]] = field(default_factory=list)
+
+    def get(self, key: str) -> str:
+        value = self.meta.get(key, "")
+        return value if isinstance(value, str) else ""
+
+    def items(self, key: str) -> list[str]:
+        value = self.meta.get(key, [])
+        return value if isinstance(value, list) else []
+
+    @property
+    def blockers(self) -> list[str]:
+        return [b for b in self.items("blocked-by") if (self.path.parent / b).is_file()]
+
+    @property
+    def group(self) -> str:
+        if self.get("status") == "deferred":
+            return "deferred"
+        if self.blockers:
+            return "blocked"
+        if "user" in self.items("needs"):
+            return "needs you"
+        return "needs something else" if self.items("needs") else "ready"
+
+    @property
+    def sort_key(self) -> tuple[str, str, str]:
+        return (self.get("priority") or "9", self.get("written"), self.path.name)
+
+
+@dataclass
 class RepoReport:
     repo: pathlib.Path
     rows: list[Row] = field(default_factory=list)
     briefs: list[pathlib.Path] = field(default_factory=list)
+    stated: list[Brief] = field(default_factory=list)
+    worktrees: set[str] = field(default_factory=set)
     touched: dict[str, str] = field(default_factory=dict)
     notes: list[pathlib.Path] = field(default_factory=list)
 
     @property
+    def stated_paths(self) -> set[pathlib.Path]:
+        return {brief.path for brief in self.stated}
+
+    @property
     def unindexed(self) -> list[pathlib.Path]:
-        linked = {row.target for row in self.rows}
+        linked = {row.target for row in self.rows} | self.stated_paths
         return [b for b in self.briefs if b not in linked]
+
+    @property
+    def problems(self) -> list[tuple[Brief, str, str]]:
+        return [(b, kind, text) for b in self.stated for kind, text in b.problems]
 
     @property
     def dangling(self) -> list[Row]:
@@ -141,6 +217,79 @@ def is_brief(path: pathlib.Path, tree: pathlib.Path) -> bool:
             and not is_reference(path, tree))
 
 
+def yaml_unsafe(value: str) -> bool:
+    return (value.startswith(YAML_INDICATORS) or value.startswith("- ")
+            or ": " in value or " #" in value)
+
+
+def read_frontmatter(path: pathlib.Path) -> Brief | None:
+    """Parse a brief's frontmatter, or return None when it has none."""
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    if not lines or lines[0].rstrip() != "---":
+        return None
+    brief = Brief(path, {})
+    end = next((i for i in range(1, len(lines)) if lines[i].rstrip() == "---"), None)
+    if end is None:
+        brief.problems.append(("frontmatter", "opens with --- and never closes"))
+        return brief
+    for number, line in enumerate(lines[1:end], start=2):
+        if not line.strip():
+            continue
+        match = FM_LINE.match(line)
+        if not match:
+            brief.problems.append(("frontmatter", f"line {number} is not `key: value`"))
+            continue
+        key, raw = match.groups()
+        if key not in FM_KEYS:
+            brief.problems.append(("frontmatter", f"unknown key `{key}`"))
+        elif key in brief.meta:
+            brief.problems.append(("frontmatter", f"`{key}` is given twice"))
+        elif key in FM_LISTS:
+            if not (raw.startswith("[") and raw.endswith("]")):
+                brief.problems.append(("frontmatter", f"`{key}` is not a list, [a, b]"))
+                continue
+            items = [item.strip() for item in raw[1:-1].split(",") if item.strip()]
+            if any(yaml_unsafe(item) for item in items):
+                brief.problems.append(("frontmatter", f"`{key}` holds an item YAML would misread"))
+            brief.meta[key] = items
+        else:
+            if yaml_unsafe(raw):
+                brief.problems.append(
+                    ("frontmatter", f"`{key}` would not parse as plain YAML; reword its opening"))
+            brief.meta[key] = raw
+    validate(brief)
+    return brief
+
+
+def validate(brief: Brief) -> None:
+    status = brief.get("status")
+    if status not in STATUSES:
+        brief.problems.append(("frontmatter", f"status is {status or 'missing'}; "
+                                              "want open or deferred"))
+    if brief.get("priority") not in PRIORITIES:
+        brief.problems.append(("frontmatter", f"priority is {brief.get('priority') or 'missing'}; "
+                                              "want 1, 2 or 3"))
+    try:
+        dt.date.fromisoformat(brief.get("written"))
+    except ValueError:
+        brief.problems.append(("frontmatter", "written is not a YYYY-MM-DD date"))
+    if status == "deferred" and not brief.get("reopen-when"):
+        brief.problems.append(("frontmatter", "a deferred brief needs reopen-when"))
+    for name in brief.items("blocked-by"):
+        if not (brief.path.parent / name).is_file():
+            brief.problems.append(("blocker", f"blocked-by names {name}, which does not exist"))
+
+
+def worktree_names(repo: pathlib.Path) -> set[str]:
+    """Directory names of the repo's linked worktrees, each a claim on a brief."""
+    result = subprocess.run(
+        ["git", "-C", str(repo), "worktree", "list", "--porcelain"],
+        capture_output=True, text=True, encoding="utf-8", errors="replace")
+    paths = [line[len("worktree "):] for line in result.stdout.splitlines()
+             if line.startswith("worktree ")]
+    return {pathlib.PurePath(p).name for p in paths[1:]}  # the first is the main checkout
+
+
 def read_rows(index: pathlib.Path, tree: pathlib.Path) -> list[Row]:
     rows: list[Row] = []
     heading = ""
@@ -177,7 +326,7 @@ def last_touched(repo: pathlib.Path) -> dict[str, str]:
     return touched
 
 
-def scan(repo: pathlib.Path, inbox_root: pathlib.Path) -> RepoReport:
+def scan(repo: pathlib.Path, inbox_root: pathlib.Path | None) -> RepoReport:
     report = RepoReport(repo)
     tree = (repo / HANDOFFS).resolve()
     if tree.is_dir():
@@ -186,10 +335,14 @@ def scan(repo: pathlib.Path, inbox_root: pathlib.Path) -> RepoReport:
                 report.rows += read_rows(path, tree)
             elif is_brief(path, tree):
                 report.briefs.append(path)
+                if (brief := read_frontmatter(path)) is not None:
+                    report.stated.append(brief)
         if report.briefs or report.rows:
             report.touched = last_touched(repo)
-    inbox = inbox_root / repo.name
-    if inbox.is_dir():
+        if report.stated:
+            report.worktrees = worktree_names(repo)
+    inbox = inbox_root / repo.name if inbox_root else None
+    if inbox and inbox.is_dir():
         report.notes = sorted(n for n in inbox.iterdir()
                               if n.is_file() and n.name.lower() != "readme.md")
     return report
@@ -210,8 +363,23 @@ def shorten(text: str, width: int = STATE_WIDTH) -> str:
     return text if len(text) <= width else text[:width - 3] + "..."
 
 
+def detail(brief: Brief, report: RepoReport) -> str:
+    """What a brief is waiting on, and whether a worktree has claimed it."""
+    parts = []
+    if brief.path.stem in report.worktrees:
+        parts.append("in flight")
+    if brief.group in ("needs you", "needs something else"):
+        parts.append("needs " + ", ".join(brief.items("needs")))
+    elif brief.group == "blocked":
+        parts.append("blocked by " + ", ".join(brief.blockers))
+    elif brief.group == "deferred":
+        parts.append("reopen when " + shorten(brief.get("reopen-when"), 64))
+    return "".join(f"  {part}" for part in parts)
+
+
 def print_report(report: RepoReport, today: dt.date) -> None:
     repo = report.repo
+    stated = report.stated_paths
 
     def rel(path: pathlib.Path) -> str:
         return path.relative_to(repo).as_posix()
@@ -221,20 +389,35 @@ def print_report(report: RepoReport, today: dt.date) -> None:
 
     print(f"== {repo.name} ==  {repo.as_posix()}")
     for index in dict.fromkeys(row.index for row in report.rows):
+        listed = [r for r in report.rows
+                  if r.index == index and r.target.exists() and r.target not in stated]
+        if not listed:
+            continue
         print(f"  index: {rel(index)}")
-        for row in (r for r in report.rows if r.index == index):
-            if not row.target.exists():
-                continue
+        for row in listed:
             dated = "   (dated filename)" if DATED_NAME.match(row.target.name) else ""
             print(f"    {shorten(row.state):<{STATE_WIDTH}}  {touched(row.target)}  "
                   f"{row.target.name}{dated}")
-    if report.briefs and not report.rows:
+    if any(b not in stated for b in report.briefs) and not report.rows:
         print("  index: none")
+    for directory in dict.fromkeys(b.path.parent for b in report.stated):
+        print(f"  queue: {rel(directory)}/  (each brief's own frontmatter)")
+        here = [b for b in report.stated if b.path.parent == directory]
+        for group in GROUPS:
+            members = sorted((b for b in here if b.group == group), key=lambda b: b.sort_key)
+            if members:
+                print(f"    {group}")
+            for brief in members:
+                print(f"      P{brief.get('priority') or '?'}  {brief.path.name:<46}  "
+                      f"written {brief.get('written') or '?':<10}  "
+                      f"touched {touched(brief.path)}{detail(brief, report)}")
     for row in report.dangling:
         print(f"  ! dangling   {rel(row.index)} links {row.target.name}, "
               f"which does not exist")
     for brief in report.unindexed:
         print(f"  ! unindexed  {rel(brief)}   touched {touched(brief)}")
+    for brief, kind, text in report.problems:
+        print(f"  ! {kind:<11} {rel(brief.path)}: {text}")
     if report.notes:
         print(f"  inbox: {len(report.notes)} note(s) in "
               f"~/handoff-inbox/{repo.name}/")
@@ -265,34 +448,41 @@ def main() -> int:
     ap.add_argument("--inbox", type=pathlib.Path, default=INBOX,
                     help="inbox directory (default: ~/handoff-inbox); for tests")
     ap.add_argument("--check", action="store_true",
-                    help="exit 1 if anything is unindexed, dangling, loose or orphaned")
+                    help="exit 1 on any finding: unindexed, dangling, frontmatter, "
+                         "blocker, loose or orphan")
+    ap.add_argument("--no-inbox", action="store_true",
+                    help="skip the inbox, its notes and its loose and orphan findings")
     args = ap.parse_args()
 
     today = dt.date.today()
     repos = find_repos(args.roots)
-    reports = [scan(r, args.inbox) for r in repos]
+    inbox = None if args.no_inbox else args.inbox
+    reports = [scan(r, inbox) for r in repos]
     for report in reports:
         if not report.empty:
             print_report(report, today)
 
-    loose, orphans = inbox_findings(repos, args.inbox)
+    loose, orphans = inbox_findings(repos, inbox) if inbox else ([], [])
     for name in loose:
         print(f"! loose note in ~/handoff-inbox/: {name} -- addressed to no repo")
     for name in orphans:
         print(f"! orphan inbox directory ~/handoff-inbox/{name}/ -- "
               f"no repo of that name was swept")
 
-    open_rows = sum(len(r.rows) - len(r.dangling) for r in reports)
+    open_rows = sum(1 for r in reports for row in r.rows
+                    if row.target.exists() and row.target not in r.stated_paths)
+    stated = sum(len(r.stated) for r in reports)
     unindexed = sum(len(r.unindexed) for r in reports)
     dangling = sum(len(r.dangling) for r in reports)
+    problems = sum(len(r.problems) for r in reports)
     notes = sum(len(r.notes) for r in reports)
     active = sum(not r.empty for r in reports)
     print(f"{len(repos)} repos swept, {active} with handoff work: "
-          f"{open_rows} indexed brief(s), {unindexed} unindexed, "
-          f"{dangling} dangling row(s), {notes} inbox note(s), "
-          f"{len(loose)} loose, {len(orphans)} orphan director(ies)")
+          f"{open_rows} indexed brief(s), {stated} with frontmatter, {unindexed} unindexed, "
+          f"{dangling} dangling row(s), {problems} frontmatter finding(s), "
+          f"{notes} inbox note(s), {len(loose)} loose, {len(orphans)} orphan director(ies)")
 
-    findings = unindexed + dangling + len(loose) + len(orphans)
+    findings = unindexed + dangling + problems + len(loose) + len(orphans)
     return 1 if args.check and findings else 0
 
 
