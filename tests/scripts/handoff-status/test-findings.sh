@@ -118,12 +118,33 @@ fm tick "status: open" "priority: 3" 'reopen-when: `x` opens with a backtick' "w
 git -C "$fix" -c user.name=t -c user.email=t@example.com commit -q --allow-empty -m init
 git -C "$fix" worktree add -q "$(native "$fix/.claude/worktrees/f")" -b f 2> /dev/null
 
+# An audit ledger directory, which audit-status.py knows by its report.
+# stamp <name> <execution log entry>...
+audits="$fix/docs/audits/2026-09-01/src"
+mkdir -p "$audits"
+echo "# report" > "$audits/00-audit-report.md"
+stamp() {
+    local name=$1
+    shift
+    { echo "# $name"; echo; echo "## Execution log"; echo; printf -- '- %s\n' "$@"; } \
+        > "$audits/$name.md"
+}
+stamp 01-asks "**Executed**: 2026-09-02 — escalated" "**Needs**: user — a decision"
+stamp 02-bare "**Executed**: 2026-09-02 — escalated"
+stamp 03-done "**Executed**: 2026-09-02 — applied"
+stamp 04-closed "**Executed**: 2026-09-02 — escalated" "**Closed**: 2026-09-03 — answered"
+stamp 05-waits "**Executed**: 2026-09-02 — applied with deferrals" "**Needs**: desktop, a CLI — why"
+stamp 06-free "**Executed**: 2026-09-02 — deferred" "**Needs**: none — a session can act"
+echo "# 07-unrun" > "$audits/07-unrun.md"
+
 # 1. Every finding planted above fires, and --check fails on them.
 expect_exit "planted findings fail --check" 1
 expect_line "a row whose brief is gone is dangling" "dangling   docs/handoffs/execute/README.md links gone.md"
 expect_line "a brief linked only from prose is unindexed" "unindexed  docs/handoffs/execute/c.md"
 expect_line "a note in the inbox root is loose" "loose note in ~/handoff-inbox/: loose.md"
 expect_line "an inbox directory naming no repo is orphaned" "orphan inbox directory ~/handoff-inbox/fixrepo-typo/"
+expect_line "an open audit brief with no Needs line is a finding" \
+    "audit       docs/audits/2026-09-01/src/02-bare.md: escalated and not closed"
 
 # 2. What the sweep must read correctly, and what it must leave alone.
 expect_line "a row's state is its first bold span" "Open, written 2026-09-01"
@@ -150,13 +171,24 @@ expect_line "a blocker that is gone is a finding" \
 expect_line "a value YAML would misread is a finding" \
     'frontmatter docs/handoffs/execute/tick.md: `reopen-when` would not parse as plain YAML'
 
-# 4. --no-inbox leaves the inbox alone, so one repo can be checked by itself.
+# 4. Audit follow-ups: an open outcome with no Closed line is listed by its
+#    Needs, an unrun brief under its directory, and the rest not at all.
+expect_line "Needs: user waits on the user" "2026-09-01/src/01-asks.md  needs user"
+expect_line "a Needs line splits on commas" "2026-09-01/src/05-waits.md  needs desktop, a CLI"
+expect_no_line "a Needs line stops at a dash" "— why"
+expect_line "Needs: none is listed" "2026-09-01/src/06-free.md"
+expect_no_line "Needs: none needs nothing" "06-free.md  needs"
+expect_no_line "an applied brief is not open" "03-done"
+expect_no_line "a closed brief is not open" "04-closed"
+expect_line "an unrun brief counts under its directory" "2026-09-01/src/  1 brief(s)"
+
+# 5. --no-inbox leaves the inbox alone, so one repo can be checked by itself.
 PYTHONIOENCODING=utf-8 uv run python "$repo/scripts/handoff-status.py" \
     "$(native "$fix")" --no-inbox --check > "$tmproot/out.txt" 2>&1
 expect_no_line "--no-inbox reports no loose note" "loose note"
 expect_no_line "--no-inbox lists no inbox" "inbox:"
 
-# 5. The same fixture with every finding resolved passes. A dated filename
+# 6. The same fixture with every finding resolved passes. A dated filename
 #    is left in place on purpose: it is reported, never a finding.
 sed -i '/gone\.md/d' "$queue/README.md"
 echo "| [c.md](c.md) | **Open.** Now indexed. |" >> "$queue/README.md"
@@ -166,6 +198,7 @@ fm bad "status: open" "priority: 1" "written: 2026-09-23"
 fm dep "status: deferred" "priority: 3" "reopen-when: a trigger fires" "written: 2026-09-24"
 fm m "status: open" "priority: 3" "blocked-by: []" "written: 2026-09-25"
 fm tick "status: open" "priority: 3" "written: 2026-09-26"
+stamp 02-bare "**Executed**: 2026-09-02 — escalated" "**Needs**: tenant"
 expect_exit "resolved fixture passes --check" 0
 
 echo

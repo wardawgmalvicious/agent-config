@@ -187,12 +187,15 @@ repos:
       # This fails the commit on one, and on a blocked-by naming a brief
       # that is gone. This repo alone: without --no-inbox every other repo's
       # inbox directory reads as an orphan. Whole set, since landing one
-      # brief can break another's blocked-by.
+      # brief can break another's blocked-by. It also fails an audit brief
+      # stamped open with no **Needs** line, which the view could not place,
+      # so docs/audits/ and audit-status.py, which decides what is open, are
+      # in its files too.
       - id: lint-briefs
         name: Check each handoff brief's frontmatter and blockers
         entry: python scripts/handoff-status.py . --check --no-inbox
         language: python
-        files: '^(docs/handoffs/|scripts/handoff-status\.py$)'
+        files: '^(docs/(handoffs|audits)/|scripts/(handoff|audit)-status\.py$)'
         pass_filenames: false
 
       # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,

@@ -42,6 +42,13 @@ A brief states its own state in frontmatter, or an index states it:
   Inbox     ~/handoff-inbox/<repo>/, keyed on the repo directory's name,
             which is what the inbox README tells a writer to use. The age is
             read from the note's date prefix.
+  Audits    docs/audits/<date>/<source>/, the drift-audit ledger, where a
+            repo keeps one: a brief not yet run, or one whose execution log
+            leaves work open -- escalated, deferred or applied with
+            deferrals -- and carries no **Closed** line. Its **Needs** line
+            groups it as frontmatter's needs does, `none` reading as ready.
+            The rule and the log parser are audit-status.py's, loaded from
+            beside this file, so the directory index and this view agree.
 
 A brief is any .md under docs/handoffs/ other than a README.md or an
 instruction file, a CLAUDE.md or AGENTS.md, and other than anything under
@@ -56,6 +63,8 @@ Findings, which --check turns into exit 1:
               misread, such as one opening with a backtick
   blocker     a blocked-by naming a brief that is gone: the landing that
               deleted it should have deleted the name too
+  audit       an audit brief left open with no **Needs** line, which no
+              view can place: its work was stranded in its own log before
   loose       a note in the inbox root, addressed to no repo
   orphan      an inbox directory matching no repo swept, e.g. a misspelling
 
@@ -73,16 +82,27 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import importlib.util
 import pathlib
 import re
 import subprocess
 import sys
 from dataclasses import dataclass, field
 
+# Which audit briefs are open is decided where their index is built. Put in
+# sys.modules before it runs, as importlib's recipe does: a dataclass in a
+# module missing from there fails on its string annotations.
+_spec = importlib.util.spec_from_file_location(
+    "audit_status", pathlib.Path(__file__).with_name("audit-status.py"))
+audit_status = importlib.util.module_from_spec(_spec)
+sys.modules[_spec.name] = audit_status
+_spec.loader.exec_module(audit_status)
+
 REPO = pathlib.Path(__file__).resolve().parent.parent
 DEFAULT_ROOT = REPO.parents[1]
 INBOX = pathlib.Path.home() / "handoff-inbox"
 HANDOFFS = pathlib.PurePosixPath("docs/handoffs")
+AUDITS = pathlib.PurePosixPath("docs/audits")
 REFERENCE_DIRS = {"templates", "examples"}
 # An index, and the instruction files a directory may keep for its readers.
 NOT_BRIEFS = {"readme.md", "claude.md", "agents.md"}
@@ -104,6 +124,7 @@ PRIORITIES = ("1", "2", "3")
 # A plain YAML scalar may not open with an indicator, nor hold ": " or " #".
 YAML_INDICATORS = tuple("`@&*!|>%{}[],#?'\"")
 GROUPS = ("ready", "needs you", "needs something else", "blocked", "deferred")
+OUTCOME_WIDTH = len("applied with deferrals 2026-01-01")
 
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
@@ -142,13 +163,18 @@ class Brief:
             return "deferred"
         if self.blockers:
             return "blocked"
-        if "user" in self.items("needs"):
-            return "needs you"
-        return "needs something else" if self.items("needs") else "ready"
+        return needs_group(self.items("needs"))
 
     @property
     def sort_key(self) -> tuple[str, str, str]:
         return (self.get("priority") or "9", self.get("written"), self.path.name)
+
+
+def needs_group(needs: list[str]) -> str:
+    """The group a list of needs puts work in, as frontmatter's needs does."""
+    if "user" in needs:
+        return "needs you"
+    return "needs something else" if needs else "ready"
 
 
 @dataclass
@@ -160,10 +186,19 @@ class RepoReport:
     worktrees: set[str] = field(default_factory=set)
     touched: dict[str, str] = field(default_factory=dict)
     notes: list[pathlib.Path] = field(default_factory=list)
+    audits: list = field(default_factory=list)  # audit_status.FollowUp
 
     @property
     def stated_paths(self) -> set[pathlib.Path]:
         return {brief.path for brief in self.stated}
+
+    @property
+    def open_audits(self) -> list:
+        return [a for a in self.audits if a.outcome != "pending"]
+
+    @property
+    def unplaced_audits(self) -> list:
+        return [a for a in self.open_audits if a.needs is None]
 
     @property
     def unindexed(self) -> list[pathlib.Path]:
@@ -180,7 +215,7 @@ class RepoReport:
 
     @property
     def empty(self) -> bool:
-        return not (self.rows or self.briefs or self.notes)
+        return not (self.rows or self.briefs or self.notes or self.audits)
 
 
 def find_repos(roots: list[pathlib.Path]) -> list[pathlib.Path]:
@@ -343,6 +378,7 @@ def scan(repo: pathlib.Path, inbox_root: pathlib.Path | None) -> RepoReport:
             report.touched = last_touched(repo)
         if report.stated:
             report.worktrees = worktree_names(repo)
+    report.audits = audit_status.follow_ups(repo / AUDITS)
     inbox = inbox_root / repo.name if inbox_root else None
     if inbox and inbox.is_dir():
         report.notes = sorted(n for n in inbox.iterdir()
@@ -413,6 +449,8 @@ def print_report(report: RepoReport, today: dt.date) -> None:
                 print(f"      P{brief.get('priority') or '?'}  {brief.path.name:<46}  "
                       f"written {brief.get('written') or '?':<10}  "
                       f"touched {touched(brief.path)}{detail(brief, report)}")
+    if report.audits:
+        print_audits(report)
     for row in report.dangling:
         print(f"  ! dangling   {rel(row.index)} links {row.target.name}, "
               f"which does not exist")
@@ -420,12 +458,38 @@ def print_report(report: RepoReport, today: dt.date) -> None:
         print(f"  ! unindexed  {rel(brief)}   touched {touched(brief)}")
     for brief, kind, text in report.problems:
         print(f"  ! {kind:<11} {rel(brief.path)}: {text}")
+    for item in report.unplaced_audits:
+        print(f"  ! {'audit':<11} {rel(item.path)}: {item.outcome} and not closed, "
+              f"with no **Needs** line")
     if report.notes:
         print(f"  inbox: {len(report.notes)} note(s) in "
               f"~/handoff-inbox/{repo.name}/")
         for note in report.notes:
             print(f"    {age(note, today):>8}  {note.name}")
     print()
+
+
+def print_audits(report: RepoReport) -> None:
+    """The audit follow-up queue: open briefs by need, then unrun directories."""
+    root = report.repo / AUDITS
+    print(f"  audit follow-ups: {AUDITS}/  (each brief's execution log)")
+    placed = [a for a in report.open_audits if a.needs is not None]
+    for group in GROUPS:
+        members = [a for a in placed if needs_group(a.needs) == group]
+        if members:
+            print(f"    {group}")
+        for item in members:
+            needs = f"  needs {', '.join(item.needs)}" if item.needs else ""
+            print(f"      {item.outcome + ' ' + item.date:<{OUTCOME_WIDTH}}  "
+                  f"{item.path.relative_to(root).as_posix()}{needs}")
+    pending: dict[pathlib.Path, int] = {}
+    for item in report.audits:
+        if item.outcome == "pending":
+            pending[item.path.parent] = pending.get(item.path.parent, 0) + 1
+    if pending:
+        print("    not executed: /drift-update")
+    for directory, count in pending.items():
+        print(f"      {directory.relative_to(root).as_posix()}/  {count} brief(s)")
 
 
 def inbox_findings(repos: list[pathlib.Path],
@@ -451,7 +515,7 @@ def main() -> int:
                     help="inbox directory (default: ~/handoff-inbox); for tests")
     ap.add_argument("--check", action="store_true",
                     help="exit 1 on any finding: unindexed, dangling, frontmatter, "
-                         "blocker, loose or orphan")
+                         "blocker, audit, loose or orphan")
     ap.add_argument("--no-inbox", action="store_true",
                     help="skip the inbox, its notes and its loose and orphan findings")
     args = ap.parse_args()
@@ -477,14 +541,17 @@ def main() -> int:
     unindexed = sum(len(r.unindexed) for r in reports)
     dangling = sum(len(r.dangling) for r in reports)
     problems = sum(len(r.problems) for r in reports)
+    audits = sum(len(r.open_audits) for r in reports)
+    unplaced = sum(len(r.unplaced_audits) for r in reports)
     notes = sum(len(r.notes) for r in reports)
     active = sum(not r.empty for r in reports)
     print(f"{len(repos)} repos swept, {active} with handoff work: "
           f"{open_rows} indexed brief(s), {stated} with frontmatter, {unindexed} unindexed, "
           f"{dangling} dangling row(s), {problems} frontmatter finding(s), "
+          f"{audits} audit follow-up(s), {unplaced} without Needs, "
           f"{notes} inbox note(s), {len(loose)} loose, {len(orphans)} orphan director(ies)")
 
-    findings = unindexed + dangling + problems + len(loose) + len(orphans)
+    findings = unindexed + dangling + problems + unplaced + len(loose) + len(orphans)
     return 1 if args.check and findings else 0
 
 
