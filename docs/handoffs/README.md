@@ -38,10 +38,10 @@ top-level README for additional context.
   artifacts in the repo. See [examples/README.md](examples/README.md).
 
 Open briefs — work scoped but not yet done — wait in
-[execute/](execute/). **[execute/README.md](execute/README.md) is the
-queue**: what is open, what order to run it in, and what blocks what. It is
-the only place the order lives, so it is the file to read before starting a
-session — not this one.
+[execute/](execute/), each holding its state, priority and blockers in
+its own frontmatter. `uv run scripts/handoff-status.py` prints the queue
+from them, and [CLAUDE.md](CLAUDE.md), which loads on the first Read
+here, holds what a session must know before touching one — not this file.
 
 `docs/audits/` holds handoff briefs too — the two directories split by
 lifecycle, not by kind. Both are tracked; what differs is what happens
@@ -50,8 +50,8 @@ numbered `01-`, `02-`, executed in one pass and then **kept in place**
 as a dated ledger, its briefs not citing each other. `execute/` briefs
 are hand-derived, deleted individually as each is spent, and
 cross-linked by filename — so the filename is the link target, it stays
-stable, and the ordering lives in the queue file. The reasoning is in
-[execute/README.md](execute/README.md) and
+stable, and a brief's priority lives in its frontmatter. The reasoning is
+in [execute/README.md](execute/README.md) and
 [../audits/README.md](../audits/README.md).
 
 Two conventions there worth knowing before writing a new one. **Briefs on

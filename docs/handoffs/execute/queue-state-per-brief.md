@@ -14,9 +14,9 @@ written: 2026-09-27
 - **Kind**: edits, decided, in six steps. Step 1 landed 2026-09-27:
   `360884a` taught `handoff-status.py` to read frontmatter, and the
   commit after it gave every brief its own. Step 3 landed next, ahead of
-  step 2, so the rule allowed a nested file before the first was written.
-- **Status**: the first brief written in the format it introduces. It has
-  no row in [README.md](README.md), by design.
+  step 2, so the rule allowed a nested file before the first was written,
+  and step 2 after it. Steps 4 to 6 are left.
+- **Status**: the first brief written in the format it introduces.
 
 ## The decision
 
@@ -117,7 +117,13 @@ in silence.
    loads on the first Read anywhere under `docs/handoffs/`. The README
    loses its table and keeps the reasoning. Root `CLAUDE.md`,
    `docs/handoffs/README.md`, `author-skill`, `test-skill`, `drift-update`
-   and `audit-status.py` stop pointing at the table.
+   and `audit-status.py` stop pointing at the table. As landed:
+   `author-skill` and `test-skill` never pointed at it, and `drift-update`
+   and `audit-status.py` point at the README's audit table, which stays
+   for step 5. `handoff-status.py` had to stop reading the new file as a
+   brief, and the brief templates gained frontmatter the commit before,
+   since `/author-skill` builds from them and `lint-briefs` fails a brief
+   without it.
 3. **The ban becomes a lint.** `.claude/rules/editing-claude-md.md` drops
    "never a subdirectory `CLAUDE.md`" and covers nested files. A check
    fails a nested `CLAUDE.md` or `AGENTS.md` under

@@ -1,53 +1,40 @@
-# Open briefs — execution order
+# Open briefs
 
-**Since 2026-09-27 each brief's frontmatter holds its state**, and
-`uv run scripts/handoff-status.py` generates the queue from it. The table
-below stays only until [queue-state-per-brief.md](queue-state-per-brief.md)
-step 2 replaces this file's order with that view; where the two disagree,
-the frontmatter wins, and no new row is added.
+Each brief here holds its own state in frontmatter, and
+`uv run scripts/handoff-status.py` generates the queue from it.
+[../CLAUDE.md](../CLAUDE.md), which loads on the first Read under
+`docs/handoffs/`, has the keys and what a session must know before
+touching a brief; this file keeps the reasoning behind them.
 
-Every deferral names the trigger that would re-open it. The last to
-fire, the CI-workflow rule's on 2026-09-25, was spent 2026-09-27 as
-[coding-ci-workflows.md](../../../claude/rules/coding-ci-workflows.md).
-Run `uv run scripts/handoff-status.py` for what is open and how long it
-has sat.
+## No file lists the queue
 
-| Item | State |
-| --- | --- |
-| [nested-instruction-files.md](nested-instruction-files.md) | **Open, written 2026-09-24.** When a repo should get a nested `CLAUDE.md` or `AGENTS.md`, this repo included but nothing under `claude/`, and possibly a skill that decides it in any repo, deeper than `/init`. Carries what that day established: a nested file loads on the first Read beneath it, never at launch; Claude reads `AGENTS.md` only when no `CLAUDE.md` sits on the path, a default that only user or managed settings can change; and in a client Fabric repo, 5 of 9 times a session worked in a folder it opened that folder's README late or never. Probes 1–6 and a new eighth ran 2026-09-25: a root `CLAUDE.md` silences every `AGENTS.md`, an excluded one does not count, and only the session's own Read loads a nested file; `scripts/test-instruction-loading.py` re-runs and checks them. The user's root question, cutting `CLAUDE.md` over to `AGENTS.md` for other tools if nothing is lost, is answered: a full cutover loses five things, each silently, while a `CLAUDE.md` of `@AGENTS.md` loses none found. Decided 2026-09-25: the skill is deferred until the new `/init` and `claude-md-improver` have been tried, `instructionFiles` stays at its default, and the import form is for client repos, not this one, the client Fabric repo first through its inbox. Decision 4 came back 2026-09-26: the import form merged in the client Fabric repo and hands the rule two conditions, `chat.useClaudeMdFile` staying `false` and Copilot's files pointing at shared long form by code span, since there a Copilot file's Markdown link loaded a 64 KB reference in full under `chat.includeReferencedInstructions`. **The strategy shipped 2026-09-27** as the user-scope rule [agent-instructions-scoping.md](../../../claude/rules/agent-instructions-scoping.md), all 13 probes re-passing on 2.1.282 first; its Copilot claims name the Local harness until [copilot-harness-switches.md](copilot-harness-switches.md) answers, and its port waits on the same. Probe 7 and Phase 2's transcript measurement ran 2026-09-27: `claudeMdExcludes` gains nothing for worktrees, since that exclude would strip a worktree session's own root, and only 7 of 24 sessions that edited a brief here opened this README first of their own accord. **Next: decision 5**, where the queue's must-know lines go, with the user. |
-| [copilot-port-selection.md](copilot-port-selection.md) | **Open, written 2026-09-26**, and decided the same day. **Second because it is decided and small but not time-bound**: above the harness investigation, and one sitting's work. `copy-copilot.ps1` ships every port to every repo, on the argument that `applyTo` makes an unmatched one free, but VS Code 1.139.1 lists every instruction file in each agent request, matched or not, with its description. The client Fabric repo carries the C#, M and XAML ports and holds no file any of them matches. The user's call: a repo target gets only the ports whose `applyTo` matches one of its tracked files, worked out at copy time with `payload-coverage.py`'s glob engine, since a list per repo would drift as ports are added. `~/.copilot` keeps every port, being the only route to the client repos that carry none, and the C#/XAML pair cannot simply be un-ported, since one of those repos holds 158 C# and XAML files. The accepted cost is a port missing from a repo that gains a file type after its last copy, which the run's skip list and an audit mode surface. One copy run in the client Fabric repo afterwards also settles this repo's note there on the pair's links. |
-| [fabric-alter-table-and-serialization-gaps.md](fabric-alter-table-and-serialization-gaps.md) | **Open, written 2026-09-22; moved up 2026-09-27** to run as one Fabric content session with the 2026-09-24 deployment-pipelines inbox note, which corrects a skill that had a session call a user's already-promoted PBIR report unpromotable, and [skills-for-fabric 04](../../audits/2026-09-10/skills-for-fabric/04-measure-notebook-serialization-before-editing.md); none of the three needs a tenant. It consolidates the Fabric halves of two inbox notes — one whole, one the residue of a note seven of whose nine learnings had already landed. **No tenant is needed**: every measurement is already taken and what is left is writing it down; nor does anything here change any session's payload, `skills/fabric/` being pruned from user scope on this machine. Headline: **a bare `.alter table` preserves the table docstring *and* folder, where Microsoft Learn says it overwrites both** — measured with before/after `.show database schema as json` dumps as controls, on two environments plus a purpose-built scratch table, the column order flipping each time as proof the statement ran. Three claims are deliberately kept apart, because collapsing them is what produced the wrong premise originally: the table-docstring result is the one that contradicts the docs, column docstrings were never at risk (the command has **no syntax** for them, so the docs' sentence can only ever have meant the table's), and folder needed a scratch table because no real table in the estate had one set. The pattern is the stronger argument for carrying any of it — this estate has now caught the Kusto docs wrong about docstring handling **twice, in opposite directions**, so those semantics are to be measured rather than read. Also: `.alter table` is the **only** column-reorder command and `## Schema Evolution` omits it entirely, so its absence reads as "column order is not adjustable" rather than "the command is missing here"; Learn's live-ingestion mitigation is absent in a mapping-free MultiJSON estate, with the name-keyed exemption flagged **UNVERIFIED** and explicitly not to land clean; and `.show table T cslschema`, the docs' own prescribed pre-alter capture, is missing from `## Schema Discovery`. From the older note: **notebook markdown-cell encoding**, where a bare `#` is a blank line that every git → portal sync absorbs into an H1 and reverting always loses (proven by a three-commit trail), paired with an inert second-blank-line behaviour that **must land with it** or the next reader reverts something harmless. Plus the Eventstream destination `422`, `xmla.json` as the real format-1.0 tell against a `config.version` that reads `2.0` for every item type, and one memory-hygiene action that lives outside this repo and no check here will catch. Opens with a **scrubbing** section: the source notes are raw client schema and this repo is public. |
-| [handoff-convention-cross-repo.md](handoff-convention-cross-repo.md) | **Open, written 2026-09-16.** Generalize this repo's handoff discipline to the two other repos that have started growing handoff directories on their own — `machine-config` (private, one brief, created 2026-09-16 by an outbound `/learn` run, and **indexed to this brief's Q1 shape the same day** — the first worked instance) and a client estate repo (internal, three briefs, **indexed the same day too** — missed here until 2026-09-18), the latter likely to be the second-highest-churn repo here. Measured 2026-09-16: the brief *shape* is already converging unprompted — all three estate briefs carry a `**Status:**` line that nobody standardized — so the gap is **the index**, which is the part this repo learned the hard way (order in exactly one file, no positions in filenames, a spent row invites re-execution). Proposes a minimal nine-point core plus a per-repo index and **explicitly not a shared template**, which could not span skill authoring, shell config and estate work without collapsing into generic headings. Two rules are new because briefs now cross repo boundaries: **scrubbing is decided by the destination's visibility, not the origin's**, and direction — local / outbound / inbound — has to be declared per directory, which none does today. **Q1 and Q2 were answered 2026-09-16**, the day the brief was written, and the brief's own argument against the rule form is **retracted** in its Decisions section — three of the eighteen rules are already "what belongs where" conventions. The rule form is ruled out on activation mechanics instead: `defaultMode` is `auto`, activation is keyed to the `Read` tool so `cat` fires nothing, and the trigger here is *writing* a brief into a directory that holds none — which no glob can see. Q1's answer is to **extend `/learn`** rather than add any of the three proposed forms: invariants into `skills/meta/learn/references/`, the hand-written `~/.copilot/instructions/cross-repo-handoffs.instructions.md` ported into `copilot/instructions/` so it is versioned and reaches both harnesses, and a **stub** README per handoff directory carrying direction, visibility and the index only. A `/handoff` skill was declined on measured overlap — `author-skill + learn` is already the top pair at 32.88. Q2: the inbox **widens**, routed by a directory per destination — done 2026-09-16, with `~/handoff-inbox/README.md` carrying the layout; the reader pointer landed the same day as `f931d5b`, since nothing had told a session to *read* the inbox, so it is now a paragraph in `claude/CLAUDE.md` § "Agent config source", deployed and verified against the live file. **Q3 and Q4 were answered by the estate repo's own index**, recorded here 2026-09-18. Q3: delete-when-spent suits it — the ledger it was expected to want already exists as a dated findings table, so the rule gains a **promote durable measurement before deleting** step everywhere rather than splitting per repo. Q4: no tracker to collide with (issues enabled, never used, re-measured 2026-09-18), and the index states in advance that it narrows to agent-executable work if one appears — now invariant 9 and a third stub field. **No questions remain; what is left is Q1's three edits, none drafted.** |
-| [copilot-harness-switches.md](copilot-harness-switches.md) | **Open, written 2026-09-26** from a `machine-config` inbox note of 2026-09-24, re-read against VS Code 1.139.1. **Below the decided work because it is not time-bound yet**: every switch that keeps Copilot out of `~/.claude` — the four `chat.*Locations` maps, `chat.useClaudeMdFile`, `chat.useClaudeHooks` — says it is "only used by the Local agent harness", and new chat sessions still start there, so the switches hold today. The same build ships an Agent Host Copilot SDK harness that reads none of them, and marks the Local harness for removal. **What moves it up**: new sessions defaulting to that harness, by a release or by an experiment, since both harness settings default `false` but are experiment-controlled at startup, which can flip them with no settings file changing. An investigation first — what the SDK harness reads from `~/.claude` and `.claude/`, whether it has an off-switch, what *Migrate Location Settings* moves, when the Local harness goes — then edits to `claude/CLAUDE.md`, `vscode-scoping.md`, `copilot-payload.md`, README § "Tool support" and `copy-copilot.ps1`. The rule [nested-instruction-files.md](nested-instruction-files.md) plans scopes its Copilot claims to the Local harness until this answers, the import form's own switches being Local-only too. |
-| [fabric-event-schema-set.md](fabric-event-schema-set.md) | **Open, written 2026-09-10.** The Fabric Event Schema Set item — the last unclaimed item in the `fabric-*` family's item-per-skill split, and the contract that silently drops any event not matching it. Written from a **live verification session, not documentation**: two plausible Learn URLs 404 and the surface appears genuinely undocumented, so every claim is one tenant on one date and the brief says to frame it that way. Headline finding — a doc-only edit synced from Git **did not bump the schema version**. Whether a portal edit does was never observed, so *why* is two live hypotheses (edit path vs canonical-form change), and **one cheap portal test decides it — run it before drafting**. Until then the draft leads with a rule true under both: read `versions[]` back after any edit. `fabric-eventstream`'s `references/cloudevents-producer.md` states flatly that editing a schema mints a new version, so that paragraph needs qualifying in this repo's source. Corrected 2026-09-10 after the first revision, written without this repo's guidance loaded, stated the portal half as observed and carried client names. Item structure and per-file line endings are captured for a test fixture; `paths: "**/*.EventSchemaSet/**"` follows the house pattern, and the brief records what that glob costs. |
-| [msix-packaging-skill.md](msix-packaging-skill.md) | **Open, written 2026-09-10** as the remainder of the C# rules brief, renamed from `coding-csharp-rules.md` when its two rules shipped the same day. Those rules, [coding-csharp.md](../../../claude/rules/coding-csharp.md) and [coding-xaml.md](../../../claude/rules/coding-xaml.md), took the reference WinUI repo from 2% to 80% covered. What is left is packaging — `.appxmanifest`, `.appinstaller`, signing and versioning — which is procedure-shaped and so a skill for `/author-skill`, not a rule. Nothing is drilled. One design question is left open deliberately: whether a `paths:` glob helps, when a packaging request usually arrives as words rather than as a manifest being read. Also carries three code-review findings about the reference repo's project files, which are not payload content. |
-| [linkedin-article-skill.md](linkedin-article-skill.md) | **Open, written 2026-09-22, revised the same day.** A `linkedin-article` skill for `skills/social/`, derived from two drafts that **already exist** in `~/drafts/linkedin/` — a complete 1,496-word tenant-identity article written in a `machine-config` session, and the 1,601-word peer-session-behaviour analysis, moved out of this repo's `docs/` while still uncommitted because whether it is repo content or article source is undecided and this repo is public. That folder's README carries the governing instruction, and it outranks this brief: **measure the skill against the draft rather than rewriting the draft to fit an invented format.** This brief's first revision got the frame wrong and records that rather than quietly fixing it — it drilled a LinkedIn writing guide and vendor blogs and organised the work around reach, ranking and hook formulas, which is the opposite of the stated intent, and a marketing template would strip exactly the parts that make both drafts credible. What survives that pass is mechanical: the supplied guide gives a five-item structure and **no numbers at all**, so it does not need re-reading; the hard limits (~110,000-character body, ~220-character headline, 1200×644 cover) are third-party and **unverified against LinkedIn's own docs**, whose obvious help URL 404s; and one instrument-selection fact worth keeping — posts out-reach articles roughly 5× while articles are search-indexed and posts are not, so the article is the durable artifact and a post is the discovery vehicle pointing at it. The format is **already in the drafts**, and their independent convergence is the evidence it is real: a concrete dated observation, the mechanism with its obvious-but-wrong summary explicitly ruled out, subtraction of what was already prescribed before novelty is claimed, a named limits section — *"a write-up without them is marketing"* — an unfinished answer kept rather than cut, and a reframed question instead of a call to action. Most of that is already `claude/rules/coding-markdown.md` § "Prose discipline" and should be cited, not restated. Before authoring, `skill-overlap.py overlap --skill linkedin-highlights` must run: that skill explicitly stops on posts and articles, which states the boundary without proving a second skill is right, and a high score means one skill with a mode split rather than two. Inherit its step 7 scrub — the identity hook gates commit and push only, so an article quoting a client tree's transcripts passes no gate at all — and `references/repo-evidence.md`, which it already says a later skill will read; **not** its format rules, which were measured from a 2,000-character profile field. The peer-behaviour piece stays blocked on evidence — one incident, no control, and both sessions the same model carrying the same instructions — and its fix is the ablation that doc names as missing: the same situation with the peer subsection of `claude/CLAUDE.md` loaded and with it stripped. **Only the loaded half exists** — the 2026-09-23 re-run that closed the peer-coordination brief, transcript `695a54ec` — and the 2026-09-17 run is not the stripped half, since the subsection was loaded then too and only the edit-time `ListAgents` paragraph was missing. No flag gives the stripped half cleanly: `--bare` reads no OAuth credential and drops every `CLAUDE.md`, `--safe-mode` the whole payload. The exact form, a temporary edit of `~/.claude/CLAUDE.md`, would reach every session started while it stands, so it has not been run. The tenant draft is not blocked that way and should not wait on it. |
-| [drift-fetch-subagent.md](drift-fetch-subagent.md) | **Deferred 2026-09-08 — not declined.** Its validation gate is moot rather than unmet. The baseline it asks for already exists — two inline `powerbi` runs on floor 2026-08-01 in [../../audits/2026-09-07/powerbi/](../../audits/2026-09-07/powerbi/); use `00b`, since the two disagree on the prior ref. And the context failure the agent exists to prevent has never been observed in any run, including the registry's hardest case (the 89-day `claude-code` window). `--sources` already buys per-session isolation for free and the audit ledger is already per-source, so the cheap lever is in place. Re-open on a **single-source** run that compacts mid-Phase-1 or reports files left undiffed; multi-source pressure does not count. Six corrections recorded in the brief must be applied before any drafting. |
-| [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) | **Deferred 2026-09-03** — not declined. Step 0 answered *no*: no `*.Plan` item exists in any repo here, and the payload's only mention of Plan pushes work away from it. Waiting on a Plan item appearing, not on anything in this queue. Its carve-out debt was split off and paid separately, so what remains is the skill itself. |
-| [skill-portfolio-audit.md](skill-portfolio-audit.md) | **Deferred 2026-09-10 — not declined.** A skill to find similar skills before authoring, and to recommend consolidation and deprecation across the set. Every part found a cheaper home: the pre-authoring check goes into `author-skill` §2 via [`scripts/skill-overlap.py`](../../../scripts/skill-overlap.py), repos the payload does not cover are `payload-coverage.py`'s, and the outside-repo scope collapsed to the one authoritative catalog — now `drift-audit`'s `skills-for-fabric` source — because ~2,800 outside `SKILL.md` hits were mostly aggregator copies. **Listing cost is not the reason**, unlike the 2026-09-03 telemetry-skill decline: project scope removed it. Re-open when a script run needs more than its legend, or a second authoritative catalog appears. Depends on the script. |
+Until 2026-09-27 a table here was the only place the execution order
+lived, so every session that started or landed a brief edited it. Two
+sessions in one tree dropped each other's rows silently, as root
+`CLAUDE.md` recorded from 2026-09-02, and two in worktrees would have
+conflicted on it at merge, so briefs ran one at a time whatever else
+allowed more. It was read less than it was written, too.
+[queue-state-per-brief.md](queue-state-per-brief.md) has the measurement,
+the user's decision and a survey of how other agent tooling keeps a
+backlog.
 
-Re-measured 2026-09-27: none of the three deferral triggers has fired,
-no repo of the eight on this machine tracking a `*.Plan` item and no
-audit filed since 2026-09-12, and Claude Code 2.1.282 and VS Code 1.139.1
-are still the builds the open rows were measured on.
+Priority is three buckets, not a total order: briefs in one bucket may
+run in parallel, and a worktree named after a brief claims it. What still
+conflicts between worktrees is real content, an evidence ledger above
+all, and that surfaces at rebase rather than in silence.
 
-This is the **only** place the execution order lives — each brief carries
-its own dependencies but not its position — so read this before starting a
-session here.
-
-Waves 1–18 are spent, closed between 2026-08-31 and 2026-09-03 (14
-deferred, as above). Their briefs are deleted and their outcomes live in
-the artifacts they changed, per the [lifecycle](#lifecycle) below. This
-file was pruned to the open work on 2026-09-03 rather than letting the
-struck rows accumulate; `git log -p -- docs/handoffs/execute/README.md`
-has them in full if a closed decision ever needs re-reading.
+Waves 1–18 are spent, closed between 2026-08-31 and 2026-09-03. Their
+briefs are deleted and their outcomes live in the artifacts they changed,
+per the [lifecycle](#lifecycle) below.
+`git log -p -- docs/handoffs/execute/README.md` has every row the table
+held, if a closed decision ever needs re-reading.
 
 ## Audit briefs are a second queue
 
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`
 walks those briefs in their own numbered order — so an unexecuted audit
-run is pending work this table does not list. A brief there with no
-`## Execution log` section has not been executed, and each directory's
+run is pending work the generated queue does not list. A brief there with
+no `## Execution log` section has not been executed, and each directory's
 generated `README.md` says which those are in one table — read it before
 opening briefs.
 
@@ -71,7 +58,7 @@ directory index shows the brief as `closed` rather than open forever.
 | A Git-synced Fabric repo to measure in | [skills-for-fabric 04](../../audits/2026-09-10/skills-for-fabric/04-measure-notebook-serialization-before-editing.md), whose need the client Fabric repo on this machine meets, so it rides with the Fabric content session above. Its step 3's `grep -c $'\r'` miscounts: `~/.claude/CLAUDE.md` § "Counting carriage returns" has the substitute |
 | One open question settled, then lint code | [skills-for-fabric 08](../../audits/2026-09-10/skills-for-fabric/08-decide-catalog-budget-and-reference-lints.md): the **catalog listing-budget check only**. Its reference-lint half landed 2026-09-15 as `scripts/skill-overlap.py routing`, wired into pre-commit as `lint-skill-routing`, which settles that half's open question — what counts as a reference is a backticked platform-prefixed name, with every non-skill class derived or excluded by path. What is left needs the budget itself, and that must come from Claude Code's docs rather than upstream's numbers |
 
-## Filenames are stable; order lives here
+## Filenames are stable
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`
 walks that order. That works there because a
@@ -86,38 +73,28 @@ so the filename is the link target and has to be the stable thing.
 Numbering would mean re-linking on every deletion, choosing each time
 between renumber-and-relink churn and a queue that reads `05, 07, 09, 10`.
 If a brief needs to know it is blocked, that is a dependency and belongs
-in the brief. A position is a fact about the queue and belongs here.
+in its `blocked-by`. Its bucket is its `priority`, and within a bucket
+there is no order to keep.
 
-## A brief in `execute/` is not necessarily in this table
-
-`/author-skill` writes its brief to `docs/handoffs/execute/<name>.md` and
-says it **stays queued**, but it never edits this file — so a brief can
-sit in the directory while the table above does not mention it. Measured
-2026-09-10: the `linkedin-highlights` brief was written, spent and
-deleted without ever appearing here.
-
-That is usually harmless. An author-test-land cycle finishing in a
-sitting or two would add a row and strike it the same day, and the brief
-is discoverable by `ls` throughout. It matters when the cycle **stalls**,
-because the brief is then invisible to the instruction above to read this
-file before starting a session — the one hole in this file's claim to own
-the order.
-
-So add a row when a brief in `execute/` **outlives the session that wrote
-it**, and not before. Same-day work does not need one.
+## A skill brief outlives its skill until the test runs
 
 Since 2026-09-12 `/test-skill` deletes the brief at its last step, so a
 skill brief here beside a skill that exists means the test has not run.
 Before that, nothing removed one: the `fabric-catalog-governance` brief
 outlived its test by a day with no row here and no reader. The test
-state itself is never tracked in this file. Derive it, at the start of
-a session here and alongside reading this table:
+state itself is never tracked in this file. Derive it:
 
 ```bash
 uv run --with pyyaml scripts/skill-status.py --stale
 ```
 
-## Re-measure a row before acting on it
+A brief can no longer sit here unlisted. `/author-skill` writes its brief
+here and edits no index, which before frontmatter left one invisible
+whenever its cycle stalled: the `linkedin-highlights` brief was written,
+spent and deleted without ever having a row (2026-09-10). Now the view
+lists every brief with frontmatter, and `lint-briefs` fails one without.
+
+## Re-measure a brief before acting on it
 
 The queue's two most expensive lessons, and the only ones that still
 apply to work not yet done:
@@ -134,9 +111,9 @@ apply to work not yet done:
   without reading it would have inverted the conclusion.
 
 The interval is not the signal, and neither case was detectable without
-going and looking. The trap is structural: rows are written *about*
+going and looking. The trap is structural: briefs are written *about*
 payload directories, but nothing links the two, so a commit outside the
-queue can silently satisfy or invalidate a row. **Re-run a row's own
+queue can silently satisfy or invalidate a brief. **Re-run a brief's own
 evidence before executing it** — and if it has moved, record which
 direction.
 
@@ -145,15 +122,20 @@ direction.
 [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md) opens
 with a recommendation rather than an edit list. `/drift-update` treats a
 decision-kind brief as something to put back to the user rather than
-execute, and the same applies here. Landing a **no** is a real outcome —
-record the reasoning in the commit that deletes the brief, or the question
-gets re-opened by whoever notices the gap next.
+execute, and the same applies here: while open, such a brief carries
+`needs: [user]`. Landing a **no** is a real outcome — record the reasoning
+in the commit that deletes the brief, or the question gets re-opened by
+whoever notices the gap next.
 
-Seven such briefs are spent: five "yes" and two "no", so the column has
-not been a rubber stamp. **Defer** is a third outcome, and the only one that
-leaves a file behind — don't read the surviving brief as an unanswered
-question. Delete it only if the workload is abandoned upstream or ruled
-out outright, and record which.
+Seven such briefs are spent: five "yes" and two "no", so the question has
+not been a rubber stamp. **Defer** is a third outcome, and the only one
+that leaves a file behind — don't read the surviving brief as an
+unanswered question. It stays `deferred` and names what would re-open it
+in `reopen-when`, which the queue prints; the last trigger to fire, the
+CI-workflow rule's on 2026-09-25, was spent 2026-09-27 as
+[coding-ci-workflows.md](../../../claude/rules/coding-ci-workflows.md).
+Delete it only if the workload is abandoned upstream or ruled out
+outright, and record which.
 
 ## Before touching any `paths:` glob
 
@@ -170,8 +152,9 @@ the last one that got duplicated into prose drifted three ways at once.
 Unchanged from [../README.md](../README.md): **once the change lands, the
 brief is deleted**, and git history is the archive. Deleting one is not
 just an `rm` — **re-point whatever linked to it in the same commit**, and
-the test is that no surviving brief still says "read it there" about a
-file that is gone.
+drop its name from any other brief's `blocked-by`, which `lint-briefs`
+fails otherwise. The test is that no surviving brief still says "read it
+there" about a file that is gone.
 
 When the last brief goes, this file is left as a heading and these
 conventions. That is its correct resting state, not a sign something was

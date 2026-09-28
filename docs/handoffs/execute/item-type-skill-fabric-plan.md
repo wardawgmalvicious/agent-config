@@ -124,8 +124,9 @@ Plan item at all.
 
 ## Step 1 — verify the folder suffix
 
-Same blocker, same reason, as wave 12's ontology brief (now spent — see
-the queue row). **Resolve it the way that one was**: the REST
+Same blocker, same reason, as wave 12's ontology brief (now spent — its
+row is in `git log -p -- docs/handoffs/execute/README.md`). **Resolve it
+the way that one was**: the REST
 item-management **definition** page for the item type states the
 `.platform` `metadata.type` outright, in the base64 payload of its
 definition example — for ontology,
@@ -259,8 +260,9 @@ Lighter than the other two briefs, but not nil:
 
 Most likely outcome, and it is a **defer** rather than a decline — so
 this is the one brief of the three that should *not* be deleted on a
-"no". Record the step 0 answer and the date in the queue row, leave the
-file, and revisit when a Plan item appears. Delete it only if the
+"no". Record the step 0 answer and the date in this brief, leave it
+`deferred` with its `reopen-when`, and revisit when a Plan item appears.
+Delete it only if the
 workload is abandoned upstream or the user rules it out outright, and
 record which of those it was.
 

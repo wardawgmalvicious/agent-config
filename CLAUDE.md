@@ -98,9 +98,9 @@ on the repo copy, then on the deployed one.
 - `/learn` deploys, like `/commit`, `/code-review` and `/land`; it edits the
   payload here and writes an inbox note anywhere else.
 
-`docs/audits/` is a dated ledger ([README](docs/audits/README.md)), and
-[docs/handoffs/execute/README.md](docs/handoffs/execute/README.md) the
-queue, the only place order lives: read it first. Notes from other repos
+`docs/audits/` is a dated ledger ([README](docs/audits/README.md)). Each
+brief in `docs/handoffs/execute/` holds its state in frontmatter, and
+`handoff-status.py` prints the queue: run it first. Notes from other repos
 land in `~/handoff-inbox/agent-config/` (see `~/handoff-inbox/README.md`)
 for `/author-skill` to brief or `/learn` to edit in. They are raw: copy
 nothing out verbatim, cite client evidence by kind, and delete one only once
@@ -128,8 +128,8 @@ git show HEAD:<path> | grep -n "<target>"      # nothing back: the line is their
 **With another session live in this tree, sequencing outranks branching**:
 stay on `main`, commit small complete units, stage explicit paths, and never
 `git checkout` or `git switch`, which moves their tree too. Re-read a file
-they may be editing, the queue above all, right before editing it, or your
-write drops their rows silently (2026-09-02); a target not in `HEAD` is
+they may be editing, a hand-kept list above all, right before editing it, or
+your write drops their rows silently (2026-09-02); a target not in `HEAD` is
 theirs: leave it, and note the fix in your commit message. **In one tree,
 only a commit isolates your work**: the index is shared, so an uncommitted
 change can vanish, staged or not, as `git status` looks innocent

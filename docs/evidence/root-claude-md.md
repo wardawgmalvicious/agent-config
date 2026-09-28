@@ -778,6 +778,17 @@ deleted only once its content has landed and the user has said yes. "The
 folder's own `README.md`" is `~/handoff-inbox/README.md`; the per-repo
 directory has none.
 
+**2026-09-27.** The queue is generated. Each brief in
+`docs/handoffs/execute/` holds its state in frontmatter and
+`handoff-status.py` prints the queue from it, so root says to run that
+first where it said to read `execute/README.md`, whose table is gone. The
+user decided it that day: one hand-kept file made every session that
+started or landed a brief edit it, so briefs ran one at a time. What a
+session must know before touching a brief went to a nested
+`docs/handoffs/CLAUDE.md`, which loads on the first Read beneath it:
+session `ae03d958`, a cold haiku probe that Read only `execute/README.md`,
+carried it as a `nested_memory` attachment.
+
 ## Branching and concurrent sessions
 
 **Skill saves are live; nothing else is** — but *how far* they reach now
@@ -1140,6 +1151,12 @@ nine assertions, with its numbering:
 Root's line now names the copies a worktree loads and both gaps: the shell
 write the guard does not see, and the `cd` that runs and then strands the
 session. The brief and its queue row are deleted with this entry.
+
+**2026-09-27.** "Re-read a file they may be editing, the queue above all"
+names a hand-kept list instead: the queue is no longer a file anyone
+edits (§ "Working on this repo"). What stays contended is kept by hand,
+the queue README's audit follow-up table until it is generated too, and
+the evidence ledgers.
 
 ## Editing conventions
 
