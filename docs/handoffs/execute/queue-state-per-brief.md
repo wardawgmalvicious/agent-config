@@ -145,6 +145,7 @@ in silence.
    example and needed no rule change, since a fast-forward records no
    branch name. `/land` has no route for a branch whose worktree is
    linked: its default opens with `git switch main`, which fails there.
+   [land-rework.md](land-rework.md) takes that up.
 5. **The audit second queue is generated too.** README § "Audit briefs are
    a second queue" is another hand-kept list. Escalated audit briefs with
    no `**Closed**` line are what it lists, and `audit-status.py` already
