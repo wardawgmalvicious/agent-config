@@ -43,9 +43,9 @@ A brief states its own state in frontmatter, or an index states it:
             which is what the inbox README tells a writer to use. The age is
             read from the note's date prefix.
 
-A brief is any .md under docs/handoffs/ other than a README.md, and other
-than anything under templates/ or examples/, which are reference material
-rather than work.
+A brief is any .md under docs/handoffs/ other than a README.md or an
+instruction file, a CLAUDE.md or AGENTS.md, and other than anything under
+templates/ or examples/, which are reference material rather than work.
 
 Findings, which --check turns into exit 1:
 
@@ -84,6 +84,8 @@ DEFAULT_ROOT = REPO.parents[1]
 INBOX = pathlib.Path.home() / "handoff-inbox"
 HANDOFFS = pathlib.PurePosixPath("docs/handoffs")
 REFERENCE_DIRS = {"templates", "examples"}
+# An index, and the instruction files a directory may keep for its readers.
+NOT_BRIEFS = {"readme.md", "claude.md", "agents.md"}
 
 # A row is a table row or list item that OPENS with a link to a .md file.
 ROW_LINK = re.compile(
@@ -213,7 +215,7 @@ def is_reference(path: pathlib.Path, tree: pathlib.Path) -> bool:
 
 
 def is_brief(path: pathlib.Path, tree: pathlib.Path) -> bool:
-    return (path.suffix == ".md" and path.name.lower() != "readme.md"
+    return (path.suffix == ".md" and path.name.lower() not in NOT_BRIEFS
             and not is_reference(path, tree))
 
 

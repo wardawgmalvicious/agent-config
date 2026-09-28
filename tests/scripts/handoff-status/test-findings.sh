@@ -93,6 +93,9 @@ See [c.md](c.md) in prose, which is not a row.
 - [b.md](b.md) — no bold, so the heading is the state.
 EOF
 for f in a b c 2026-01-01-d templates/t; do echo "# $f" > "$queue/$f.md"; done
+# Instruction files a directory keeps for its readers, not briefs.
+echo "# rules" > "$fix/docs/handoffs/CLAUDE.md"
+echo "# rules" > "$queue/AGENTS.md"
 echo note > "$tmproot/inbox/fixrepo/2026-09-10-note.md"
 echo note > "$tmproot/inbox/loose.md"
 
@@ -128,6 +131,8 @@ expect_line "a row with no bold takes its heading" "Deferred                    
 expect_line "a dated filename is noted" "2026-01-01-d.md   (dated filename)"
 expect_line "a routed note is listed under its repo" "2026-09-10-note.md"
 expect_no_line "templates/ is reference material, not a brief" "t.md"
+expect_no_line "a CLAUDE.md is an instruction file, not a brief" "CLAUDE.md"
+expect_no_line "an AGENTS.md is an instruction file, not a brief" "AGENTS.md"
 expect_no_line "a link outside docs/handoffs is not a row" "Not a brief"
 
 # 3. Frontmatter: its briefs group and sort, and each bad value is a finding.
