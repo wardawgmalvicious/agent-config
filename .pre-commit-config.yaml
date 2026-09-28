@@ -89,16 +89,18 @@ repos:
       # project scope and never deployed, into every session in this repo.
       # Each grew one learning at a time with no edit wrong on its own --
       # claude/CLAUDE.md from 2.7 KB to 666 lines, root to 1,215 -- which is
-      # what a per-edit review cannot see and a cap can. The cap lives in
-      # the script only, which checks both files whichever one changed.
-      # Anchored to those two paths and the script, so no other CLAUDE.md
-      # matches: prove a change here with --files against both (Passed) and
-      # a path that must not match (Skipped).
+      # what a per-edit review cannot see and a cap can. A nested CLAUDE.md
+      # loads on the first Read beneath it, under a tighter cap, and fails
+      # where it would deploy, ship or reach a fixture; an AGENTS.md fails
+      # anywhere. The caps live in the script only, which checks every file
+      # whichever one changed. Matches either name at any depth, without
+      # case, and the script: prove a change here with --files against one
+      # of them (Passed) and a path that must not match (Skipped).
       - id: lint-claude-md
-        name: Cap both CLAUDE.md files at the memory docs' line target
+        name: Cap every CLAUDE.md, and keep nested ones where they do no harm
         entry: python scripts/lint-claude-md.py
         language: python
-        files: '^((claude/)?CLAUDE\.md|scripts/lint-claude-md\.py)$'
+        files: '(?i)(^|/)(claude|agents)\.md$|^scripts/lint-claude-md\.py$'
         pass_filenames: false
 
       # A collision is a property of a PAIR of skills, so this runs over the

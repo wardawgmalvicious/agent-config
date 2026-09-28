@@ -30,12 +30,19 @@ paths:
   changes gets a new entry at the end of its heading, opening with its date
   in bold. A ledger's headings mirror its file's.
 - Guidance a file triggers goes to a `paths:`-scoped rule — `.claude/rules/`
-  for root, `claude/rules/` for `claude/CLAUDE.md` — and guidance for one
-  task to a skill. Never an unscoped rule, an `@import` or a subdirectory
-  `CLAUDE.md`: the first two load at launch anyway, and the third on any
-  Read beneath it.
-- `scripts/lint-claude-md.py` caps both files in pre-commit. A learning that
-  does not fit moves something out; the cap never rises.
+  for root, `claude/rules/` for `claude/CLAUDE.md` — guidance for one task
+  to a skill, and what a session must know before working in one directory
+  to a `CLAUDE.md` there. Never an unscoped rule or an `@import`: both load
+  at launch anyway.
+- A nested `CLAUDE.md` loads on the session's own first Read beneath it,
+  never at launch, and after `/compact` only at the next Read there, so it
+  can hold nothing a session needs sooner. It keeps to the must-knows, and
+  its directory's README keeps the reasoning and evidence. None goes under
+  `claude/`, `.claude/`, `tests/` or a skill's own directory, and no
+  `AGENTS.md` anywhere: the lint's message says why for each (2026-09-27).
+- `scripts/lint-claude-md.py` caps both files, and each nested one more
+  tightly, in pre-commit. A learning that does not fit moves something out;
+  no cap rises.
 - A count, or a list of which skills a group holds, goes stale: write the
   command that derives it instead.
 - An HTML comment costs no context but shows on every Read: use one only for

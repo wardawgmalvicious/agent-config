@@ -13,7 +13,8 @@ written: 2026-09-27
   other agent tooling keeps a backlog.
 - **Kind**: edits, decided, in six steps. Step 1 landed 2026-09-27:
   `360884a` taught `handoff-status.py` to read frontmatter, and the
-  commit after it gave every brief its own.
+  commit after it gave every brief its own. Step 3 landed next, ahead of
+  step 2, so the rule allowed a nested file before the first was written.
 - **Status**: the first brief written in the format it introduces. It has
   no row in [README.md](README.md), by design.
 
@@ -123,7 +124,9 @@ in silence.
    `claude/{agents,hooks,rules,mcp}/`, which deploy, inside
    `skills/<group>/<name>/`, which ships, or under `tests/`, where
    fixtures need a clean context, and caps a nested file's length.
-   `claude/CLAUDE.md` is the payload, excepted by name.
+   `claude/CLAUDE.md` is the payload, excepted by name. It landed wider:
+   all of `claude/` and `.claude/`, and an `AGENTS.md` anywhere, the
+   ledger entry saying why.
 4. **Parallel work in root `CLAUDE.md`.** § "Branching and concurrent
    sessions" says commit straight to `main` (settled 2026-09-02). It
    keeps that for serial work and adds a worktree per brief for parallel

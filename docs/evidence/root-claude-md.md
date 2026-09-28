@@ -1421,6 +1421,44 @@ no `--settings` against the file as committed (`8b42472f`): excluded, the
 rule attached, both launch files listed. The brief that planned this was
 deleted in the same commit.
 
+**2026-09-27.** The ban on a subdirectory `CLAUDE.md`, written into
+`editing-claude-md.md` when the project rules split out (`5119075`,
+2026-09-24) with no entry here, became a check. The user decided it that
+day, answering where the queue's must-know lines should go: a nested
+`docs/handoffs/CLAUDE.md`, with a lint in place of the ban. The ban
+counted a load on any Read beneath the file as its cost; for what a
+directory's own work needs first, that trigger is the point. It is the
+session's own first Read there, never launch (probed 2026-09-25, and the
+memory docs say so, read 2026-09-27), while a README waits on the session
+choosing to open it: of 24 sessions that edited a brief here from
+2026-09-11 to 2026-09-27, 7 opened the queue README first of their own
+accord, 4 more because the user named it, and 11 never did.
+
+`scripts/lint-claude-md.py` fails a nested one in four places, each for a
+reason the memory docs give or a deploy script shows, read 2026-09-27.
+Under `claude/`, which `link-claude.ps1` copies to `~/.claude/`, where
+"all `.md` files are discovered recursively" as rules and one without
+`paths:` loads at launch in every project. Under `.claude/`, since
+`./.claude/CLAUDE.md` is the project file's second home and the same
+recursion makes any `.md` in `rules/` a rule. Inside a skill's directory,
+which is junctioned to user scope and copied whole into a client repo's
+`.github/skills/`. Under `tests/`, where a fixture is live once Read.
+`copilot/` stays open, as `copy-copilot.ps1` ships only its
+`*.instructions.md` files. An `AGENTS.md` fails anywhere: under the
+default, a root `CLAUDE.md` stops Claude reading any, so here one could
+only be the parallel file for another tool that root forbids. The nested
+cap, 60 lines, is a judgment, not a measurement: a nested file joins a
+session already at work, so it holds the must-knows and leaves the rest to
+its README.
+
+Proved in a scratch clone of the repo, so nothing was planted in the
+shared tree. A file in each place failed, as did a lowercase `claude.md`
+and a file staged and then deleted from disk; `skills/workflow/CLAUDE.md`,
+a group's rather than a skill's, passed, as did 60 lines under `docs/` and
+a copy under the ignored `.claude/worktrees/`, while 61 lines failed.
+Through pre-commit, a planted `claude/rules/CLAUDE.md` Failed, a nested
+file under `docs/` Passed, and a path matching neither name Skipped.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

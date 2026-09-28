@@ -33,7 +33,7 @@ coverage; a new group goes in its `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS`.
 ```bash
 pre-commit run --all-files            # every pre-commit-stage check, as CI runs it on push and PR to main
 pre-commit run <hook-id> --all-files  # one hook, by its id in .pre-commit-config.yaml
-uv run scripts/lint-claude-md.py      # cap both CLAUDE.md files; a path lints a scratch copy
+uv run scripts/lint-claude-md.py      # cap every CLAUDE.md, and place nested ones; a path lints a scratch copy
 uv run --with pyyaml scripts/skill-status.py --stale  # which skills need a retest, from the stamps
 uv run --with pyyaml scripts/skill-status.py --stamp <skill> --phase activation,behaviour  # or real-use
 uv run scripts/handoff-status.py      # every repo's open briefs and inbox notes; reads only
