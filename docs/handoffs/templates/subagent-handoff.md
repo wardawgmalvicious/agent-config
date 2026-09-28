@@ -1,3 +1,11 @@
+---
+status: open
+priority: {{1, 2 or 3}}
+needs: []
+blocked-by: []
+written: {{YYYY-MM-DD}}
+---
+
 # Subagent handoff brief: {{agent-name}}
 
 Last verified: {{YYYY-MM-DD}}
@@ -5,6 +13,8 @@ Last verified: {{YYYY-MM-DD}}
 > Subagents are Claude Code-only (not part of the Agent Skills open standard). Subagents cannot spawn other subagents. The `memory:` field requires Claude Code v2.1.33 or later.
 
 > Guidance: Re-verify when referenced platform behaviors in project instructions get re-verified. For v1 briefs, use the date Claude Code creates the brief. Every section heading in this template stays in the filled brief; sections that don't apply get `N/A — <brief reason>` under the heading.
+>
+> Guidance: The frontmatter is this brief's whole queue state: `scripts/handoff-status.py` prints the queue from it, and pre-commit's `lint-briefs` fails a commit on a brief without it or with a placeholder left in. Pick `priority` — 1 now, 2 next, 3 later — list in `needs` what a session cannot supply alone (`user` for a decision), name any brief this waits on in `blocked-by`, and state none of it in the body.
 
 ## Artifact path
 
