@@ -1,3 +1,11 @@
+---
+status: open
+priority: 2
+needs: []
+blocked-by: []
+written: 2026-09-26
+---
+
 # Handoff: which harness the Copilot switches govern
 
 - **Written**: 2026-09-26, from a `machine-config` inbox note of
@@ -7,9 +15,6 @@
 - **Kind**: an investigation, then edits to every file here that states
   how Copilot is kept out of `~/.claude`. Nothing is drafted: the user
   wants the new VS Code settings model worked out first.
-- **Status**: **Open, written 2026-09-26.**
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## The claim in question
 

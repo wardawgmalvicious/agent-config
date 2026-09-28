@@ -1,3 +1,11 @@
+---
+status: open
+priority: 3
+needs: []
+blocked-by: []
+written: 2026-09-10
+---
+
 # Handoff: MSIX packaging skill
 
 - **Written**: 2026-09-10, as the remainder of the C# rules brief once
@@ -7,9 +15,6 @@
   two, and this is the third.
 - **Kind**: one skill, authored through `/author-skill`. Nothing is
   drafted and nothing is drilled.
-- **Status**: **open, written 2026-09-10.**
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## Why a skill and not a rule
 

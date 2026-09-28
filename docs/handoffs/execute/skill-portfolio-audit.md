@@ -1,3 +1,12 @@
+---
+status: deferred
+priority: 3
+needs: []
+blocked-by: []
+reopen-when: a script run needs more than its legend, or a second authoritative catalog appears
+written: 2026-09-10
+---
+
 # Handoff: a skill-portfolio audit skill
 
 - **Written**: 2026-09-10, when the skill was scoped and deferred in the
@@ -9,8 +18,6 @@
   it would wrap — shipped 2026-09-15, and its brief spent and deleted
   the same day.
 - **Run in**: this repo.
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## What it would have been
 

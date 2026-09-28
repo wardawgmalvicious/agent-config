@@ -1,3 +1,11 @@
+---
+status: open
+priority: 2
+needs: [tenant]
+blocked-by: []
+written: 2026-09-10
+---
+
 # Skill handoff brief: fabric-event-schema-set
 
 Last verified: 2026-09-10

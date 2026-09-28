@@ -11,8 +11,9 @@ written: 2026-09-27
 - **Written**: 2026-09-27, from the user's decisions that day, after a
   session measured how often the queue README is read and surveyed how
   other agent tooling keeps a backlog.
-- **Kind**: edits, decided, in six steps. Step 1 is in progress in the
-  session that wrote this.
+- **Kind**: edits, decided, in six steps. Step 1 landed 2026-09-27:
+  `360884a` taught `handoff-status.py` to read frontmatter, and the
+  commit after it gave every brief its own.
 - **Status**: the first brief written in the format it introduces. It has
   no row in [README.md](README.md), by design.
 

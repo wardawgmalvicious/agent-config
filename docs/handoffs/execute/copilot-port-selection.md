@@ -1,3 +1,11 @@
+---
+status: open
+priority: 1
+needs: []
+blocked-by: []
+written: 2026-09-26
+---
+
 # Handoff: ship a Copilot port only where it can apply
 
 - **Written**: 2026-09-26, from the user's decision that day, and from
@@ -7,9 +15,6 @@
   every port to every repo, `scripts/payload-coverage.py` does the
   matching, and each file that says every port ships is corrected.
   Nothing is drafted.
-- **Status**: **Open, written 2026-09-26.**
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## The decision
 

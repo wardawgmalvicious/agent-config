@@ -1,6 +1,14 @@
+---
+status: open
+priority: 2
+needs: []
+blocked-by: [queue-state-per-brief.md]
+written: 2026-09-16
+---
+
 # Brief: a cross-repo handoff convention
 
-**Status:** Open, written 2026-09-16. Nothing drafted. **All four
+**Status:** Nothing drafted. **All four
 questions are answered**: Q1 and Q2 the same day — see
 [Decisions](#decisions--2026-09-16), which also records four findings
 that reframed Q1 and retracts one of this brief's own arguments — and

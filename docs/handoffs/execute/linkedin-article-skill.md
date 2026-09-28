@@ -1,3 +1,11 @@
+---
+status: open
+priority: 3
+needs: []
+blocked-by: []
+written: 2026-09-22
+---
+
 # Handoff: a LinkedIn article skill, derived from two drafts that already exist
 
 - **Written**: 2026-09-22. Revised the same day, after a `machine-config`
@@ -6,14 +14,12 @@
 - **Kind**: one deployable skill in `skills/social/`, plus its
   `references/`. Two article drafts already exist and are the material
   it is derived from, not output waiting on it.
-- **Status**: **Open, nothing drafted.** Not blocked on finding a
+- **Status**: **Nothing drafted.** Not blocked on finding a
   format — see below, that framing was wrong in this brief's first
   revision.
 - **Run in**: this repo. The drafts live in `~/drafts/linkedin/`, a
   machine-local folder in no repo, the same reasoning as
   `~/handoff-inbox/`.
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## The governing instruction, and it is not this brief's
 

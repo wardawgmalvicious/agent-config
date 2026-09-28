@@ -1,3 +1,12 @@
+---
+status: deferred
+priority: 3
+needs: []
+blocked-by: []
+reopen-when: a single-source `/drift-audit` run compacts mid-Phase-1 or reports files left undiffed
+written: 2026-09-07
+---
+
 # Subagent handoff brief: drift-fetch
 
 Last verified: 2026-09-07

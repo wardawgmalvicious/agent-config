@@ -1,3 +1,12 @@
+---
+status: deferred
+priority: 3
+needs: []
+blocked-by: []
+reopen-when: decision 1's trial, of `CLAUDE_CODE_NEW_INIT=1` `/init` and `claude-md-improver` on a scratch repo, leaves a gap
+written: 2026-09-24
+---
+
 # Handoff: when a repo gets nested instruction files
 
 - **Written**: 2026-09-24, after `5b6221b` stopped `claude/CLAUDE.md`
@@ -6,7 +15,7 @@
   custom-instructions page.
 - **Kind**: a decision, then an edit here, then possibly one skill through
   `/author-skill`. Nothing is drafted.
-- **Status**: **Open, written 2026-09-24.** Probes 1–6, a new 8 and four
+- **Status**: Probes 1–6, a new 8 and four
   cutover probes ran 2026-09-25, the docs were re-read, and all four
   decisions were answered. Decision 4's client repo reported back
   2026-09-26 (§ "The import form in the client Fabric repo"). The rule
@@ -16,8 +25,6 @@
   handed Phase 2's placement to
   [queue-state-per-brief.md](queue-state-per-brief.md). What is left is
   Phase 3, deferred by decision 1.
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## The ask
 

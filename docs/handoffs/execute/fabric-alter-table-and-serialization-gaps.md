@@ -1,3 +1,11 @@
+---
+status: open
+priority: 1
+needs: []
+blocked-by: []
+written: 2026-09-22
+---
+
 # Handoff: `.alter table` semantics the Kusto docs get wrong, and four serialization gaps
 
 - **Written**: 2026-09-22, consolidating the Fabric halves of two inbox
@@ -14,14 +22,12 @@
   `skills/fabric/fabric-warehouse/references/platform-features.md` and
   `claude/rules/fabric-git-serialization.md`. Plus one **memory-hygiene
   action** that is not in this repo at all.
-- **Status**: **Open, nothing landed.** Item 1 is fully measured with
+- **Status**: **Nothing landed.** Item 1 is fully measured with
   controls and **contradicts Microsoft Learn**, which makes it the most
   valuable thing here. Items 2 and 4 are documented-but-missing. Item 3
   carries an explicitly unverified exemption that must not land clean.
 - **Run in**: this repo. **No Fabric tenant is needed** — every
   measurement is already taken; what is left is writing it down.
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## Scrubbing, before anything else
 

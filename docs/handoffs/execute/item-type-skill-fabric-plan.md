@@ -1,3 +1,12 @@
+---
+status: deferred
+priority: 3
+needs: []
+blocked-by: []
+reopen-when: a `*.Plan` item appears in any repo on this machine
+written: 2026-09-02
+---
+
 # Handoff: does the Fabric IQ Plan workload need a skill?
 
 - **Written**: 2026-09-02, after fetching the two
@@ -13,8 +22,6 @@
 - **Run in**: a fresh session, and **not before step 0 is *re*-answered.**
   The 2026-09-03 "no" is a snapshot of one day, not a standing verdict;
   re-measure rather than reading it off this line.
-- **Queue**: [README.md](README.md) has the execution order. This brief
-  does not carry its own position.
 
 ## Why this brief exists: a premise correction
 
