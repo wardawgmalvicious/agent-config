@@ -22,8 +22,8 @@ written: 2026-09-24
   decision 2 names shipped 2026-09-27, after a re-run of
   `test-instruction-loading.py` passed all 13 probes on 2.1.282. Probe 7
   and Phase 2's transcript measurement ran the same day, and decision 5
-  handed Phase 2's placement to
-  [queue-state-per-brief.md](queue-state-per-brief.md). What is left is
+  handed Phase 2's placement to `queue-state-per-brief.md`, which landed
+  it that day as `docs/handoffs/CLAUDE.md`. What is left is
   Phase 3, deferred by decision 1.
 
 ## The ask
@@ -509,8 +509,8 @@ which load as nested files in any session here that Reads them, so
    ban. The user chose a nested `docs/handoffs/CLAUDE.md`, and **the ban
    goes**, replaced by a lint for the places a nested file does harm. The
    queue itself goes too: each brief carries its state, and the view is
-   generated. [queue-state-per-brief.md](queue-state-per-brief.md) carries
-   all of it out, which leaves this brief only Phase 3, deferred by 1.
+   generated. `queue-state-per-brief.md` carried all of it out, landing
+   2026-09-27, which leaves this brief only Phase 3, deferred by 1.
    A brief created by Write before any Read there still misses the nested
    file (8), which is `/author-skill`'s path.
 

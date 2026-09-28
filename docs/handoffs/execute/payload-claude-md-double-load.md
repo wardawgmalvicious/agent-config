@@ -8,9 +8,8 @@ written: 2026-09-27
 
 # Handoff: the payload's own `CLAUDE.md` is also a nested file here
 
-- **Written**: 2026-09-27, split out of
-  [queue-state-per-brief.md](queue-state-per-brief.md) at the user's
-  request: keep `claude/CLAUDE.md` where it is for now, learn how big the
+- **Written**: 2026-09-27, split out of `queue-state-per-brief.md`,
+  landed that day, at the user's request: keep `claude/CLAUDE.md` where it is for now, learn how big the
   problem is, and explore the alternatives in a deeper session.
 - **Kind**: an investigation, then a decision. `needs: user` because the
   user wants to be in that session.

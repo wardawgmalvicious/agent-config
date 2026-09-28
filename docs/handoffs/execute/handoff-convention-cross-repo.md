@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: []
-blocked-by: [queue-state-per-brief.md]
+blocked-by: []
 written: 2026-09-16
 ---
 
@@ -15,7 +15,9 @@ that reframed Q1 and retracts one of this brief's own arguments — and
 Q3 and Q4 by the estate repo's own index, also written 2026-09-16 and
 recorded here 2026-09-18 — see
 [Q3 and Q4](#q3-and-q4--answered-by-the-estate-repos-index). What
-remains is execution: Q1's three edits, none of which exists yet.
+remains is execution: Q1's three edits, none of which exists yet,
+re-planned 2026-09-27 when this repo's queue moved into each brief's
+frontmatter — see [Re-plan](#re-plan--2026-09-27).
 
 **Scope.** Generalize the handoff discipline this repo already runs to
 the other repos on this machine, which have started growing their own
@@ -41,13 +43,15 @@ authoring a skill.
 
 ## What already exists
 
-Measured 2026-09-16 across the three repos.
+Measured 2026-09-16 across three repos, and re-measured 2026-09-27,
+when a fourth had briefs.
 
 | Repo | Visibility | Briefs | Index | A brief is about |
 | --- | --- | --- | --- | --- |
-| this one | public | 6 open in `execute/`, plus `docs/audits/` | yes — `execute/README.md` | payload: skills, rules, hooks |
-| `machine-config` | private | 2, in `docs/handoffs/` (1 in `execute/` when measured; spent, re-measured 2026-09-18) | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
-| client estate repo | internal | 3, in `execute/` | yes — `execute/README.md`, added 2026-09-16 | estate work |
+| this one | public | 14 in `execute/`, each with frontmatter, plus open follow-ups in `docs/audits/` | none since 2026-09-27: `handoff-status.py` generates the view | payload: skills, rules, hooks |
+| `machine-config` | private | 2, in `docs/handoffs/` | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
+| client estate repo | internal | 6, in `execute/` | yes — `execute/README.md`, added 2026-09-16 | estate work |
+| a second client repo | private | 2, in `execute/` | yes — `execute/README.md`, added with its first brief 2026-09-27 | its deferred infrastructure and CI work |
 
 **The brief shape is already converging without coordination.** All
 three of the client repo's briefs carry a `**Status:**` line; two cite a
@@ -55,11 +59,19 @@ measured or verified claim; the `machine-config` brief was written to
 the same shape from this repo. Nobody standardized that.
 
 **The index was missing everywhere but here**, and that is the part this
-repo learned the hard way — that ordering must live in exactly one file,
-that positions churn so filenames must not carry them, and that a spent
-brief left in a queue invites re-execution. Both other repos closed that
-gap the same day — `machine-config` and then the estate repo, which was
-the last without one (the table above records it corrected 2026-09-18).
+repo learned the hard way — that a brief's state must live in exactly
+one place, that positions churn so filenames must not carry them, and
+that a spent brief left in a queue invites re-execution. Both other repos
+closed that gap the same day — `machine-config` and then the estate repo,
+which was the last without one (the table above records it corrected
+2026-09-18) — and the second client repo opened with an index.
+
+That one place was one index in every repo until 2026-09-27, when this
+repo moved each brief's state into its own frontmatter and let
+`handoff-status.py` generate the view, because the index was the file
+two sessions in one tree dropped each other's rows from.
+[README.md](README.md#no-file-lists-the-queue) has why. The other three
+keep their indexes, which the sweep reads as before.
 
 So the deliverable is **not a shared brief template.** A template would
 have to span skill authoring, shell configuration and estate work, and
@@ -70,16 +82,22 @@ a short contract plus a per-repo index.
 ## Proposed: a minimal common core
 
 Nine invariants — eight as written 2026-09-16, and a ninth added
-2026-09-18 when Q4 was answered. Everything else stays per-repo.
+2026-09-18 when Q4 was answered; 1, 4 and 9 were corrected 2026-09-27
+for per-brief state. Everything else stays per-repo.
 
-1. **One index per repo, and it is the only place order lives.** A
-   brief carries its dependencies; it never carries its position.
+1. **A brief's state lives in exactly one place**: its own frontmatter,
+   from which a tool generates the view, or one row of the directory's
+   one index, which is then the only place order lives. A repo keeps one
+   form, and `handoff-status.py` reads both. A brief carries its
+   dependencies, never its position. This said "one index" until
+   2026-09-27, still right for a repo until two sessions collide on it.
 2. **Stable filenames, subject-named, no dates and no positions.** The
    filename is the link target. Dates go inside.
 3. **Self-contained and readable cold.** A brief that only makes sense
    to the session that wrote it has failed.
-4. **A status line**: state, the date written, and what it waits on.
-   Already emergent in all three repos.
+4. **State, the date written, and what it waits on**, as frontmatter
+   keys or as a status line, whichever form the repo keeps under 1. A
+   status line emerged in every repo with an index.
 5. **A scrubbing declaration** — see below. New; nothing has this.
 6. **Measured and Not checked as separate headed lists.** The
    undrilled set is what bounds the work, and it is the first thing
@@ -92,9 +110,10 @@ Nine invariants — eight as written 2026-09-16, and a ninth added
    it before the brief goes. A **no** is recorded in the deleting
    commit; a **deferral** is the one outcome that leaves a file. See
    [Q3](#q3-and-q4--answered-by-the-estate-repos-index).
-9. **The index says whether it is the backlog.** Either it is the only
-   one, or it is scoped to agent-executable work beside a named tracker.
-   Per-repo, declared in the stub beside direction and visibility.
+9. **The directory says whether it is the backlog.** Either its briefs
+   are the only one, or they are scoped to agent-executable work beside a
+   named tracker. Per-repo, declared in the stub beside direction and
+   visibility.
 
 ## The two genuinely new rules
 
@@ -137,6 +156,10 @@ A directory should say which of these it accepts. Today none does.
   convention, which is why it does not contradict the bullet above.
 - No change to `docs/audits/`. The queue-versus-ledger split here is
   already correct and documented.
+- **No move to frontmatter elsewhere.** A repo with an index keeps it
+  and is read as before, as this repo's own change decided on
+  2026-09-27. Frontmatter is the form to offer a repo whose sessions
+  start colliding on its index, and that repo's session makes the move.
 
 ## Decisions — 2026-09-16
 
@@ -283,6 +306,41 @@ copy of the contract so far, and it is flagged by its own author. Cut
 it when the reference exists — it is that repo's edit, so it goes as a
 note to `~/handoff-inbox/<estate-repo>/`, not as a direct write.
 
+## Re-plan — 2026-09-27
+
+This repo's queue moved into each brief's frontmatter on 2026-09-27, and
+`handoff-status.py` now generates the view, audit follow-ups included.
+That superseded invariant 1 as written, the core's first line, so the
+three Q1 edits are re-planned here, with none yet drafted to undo.
+Invariants 1, 4 and 9 above are corrected in place.
+
+**The other repos moved without any of the three.** Measured the same
+day: `machine-config`'s stub carries direction and visibility but no
+backlog declaration, and still points at this repo's `execute/README.md`
+for the queue rules, which now describe the frontmatter form, not its
+index. The estate repo's stub and the second client repo's, written with
+its first brief, carry all three fields, and each opens "This is the
+only place the execution order lives": invariant 1 in its index form,
+still true there. Each also restates the brief shape in prose, the
+second client repo's under "Conventions", so the flagged duplicate is
+now two.
+
+1. **The invariants reference** goes in `skills/meta/learn/references/`,
+   as decided, now carrying both forms of invariant 1 and the frontmatter
+   keys. `handoff-status.py` is what validates the keys, and
+   `docs/handoffs/CLAUDE.md` here keeps its own table, which has to load
+   before a brief here is touched. So a key change edits the script, that
+   table and the reference together. `lint-briefs` rejects a key the
+   script does not know, which surfaces a documented key it lacks once a
+   brief uses one; nothing catches the reverse, or a stale reference.
+2. **The Copilot instruction port** is unchanged: nothing in it touches
+   the queue.
+3. **The per-repo stubs** are written, by their own repos. What is left
+   is one note per repo to `~/handoff-inbox/<repo>/` once edit 1 exists:
+   `machine-config`'s backlog declaration, and its queue-rules pointer
+   re-aimed at the reference, and each client stub's brief-shape prose
+   cut to a link.
+
 ## Open questions
 
 None remain. All four are answered below, each pointing at where its
@@ -307,9 +365,10 @@ answer is recorded.
 
 ## Verification
 
-The convention is working when, in a fresh session in any of the three
+The convention is working when, in a fresh session in any of the four
 repos, the agent can answer "what handoff work is open here, and in what
-order" from one file, without reading every brief. Test it cold in each
+order" from one file without reading every brief, or here, where briefs
+carry frontmatter, from `handoff-status.py`. Test it cold in each
 repo — including the estate repo, whose subject matter is furthest from
 this one and is the real test of whether the core generalized or just
 described this repo in general-sounding words.
@@ -343,3 +402,5 @@ and does not fail on it, since a repo's own convention wins.
   current briefs.
 - No dependency on the shim brief's *outcome* — this is about the
   convention, and stands whether that change is made or declined.
+- **Blocked by `queue-state-per-brief.md` until it landed, 2026-09-27**,
+  since that brief's last step was this re-plan.

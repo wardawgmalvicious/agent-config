@@ -13,10 +13,25 @@ lived, so every session that started or landed a brief edited it. Two
 sessions in one tree dropped each other's rows silently, as root
 `CLAUDE.md` recorded from 2026-09-02, and two in worktrees would have
 conflicted on it at merge, so briefs ran one at a time whatever else
-allowed more. It was read less than it was written, too.
-[queue-state-per-brief.md](queue-state-per-brief.md) has the measurement,
-the user's decision and a survey of how other agent tooling keeps a
-backlog.
+allowed more. It was read less than it was written, too: of 24 sessions
+that edited a brief here between 2026-09-11 and 2026-09-27, 7 opened it
+first of their own accord, 4 more because the user named it, and 11
+never did ([nested-instruction-files.md](nested-instruction-files.md),
+§ "Phase 2").
+
+Surveyed the day the user decided this, everything built for parallel
+agents keeps state per task and generates the view. Backlog.md holds one
+file per task with frontmatter and draws its board from them; log4brains
+drops sequential numbering, which its README says avoids git merge
+issues, and generates its site; spec-kit and Kiro shard by feature
+directory with no index across features. Taskmaster began with one
+`tasks.json`, met this exact collision (its issue #744), and added tagged
+task lists to fix it. Claude Code's agent teams claim tasks under file
+locking, but are experimental, one team per session, and share one
+working tree: a fan-out tool, not a durable backlog (docs read
+2026-09-27). The brief that made the change, `queue-state-per-brief.md`,
+landed that day, and `git log --diff-filter=D -- 'docs/**/<name>.md'`
+recovers it as [../README.md](../README.md) says.
 
 Priority is three buckets, not a total order: briefs in one bucket may
 run in parallel, and a worktree named after a brief claims it. What still

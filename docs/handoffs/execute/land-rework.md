@@ -9,8 +9,8 @@ written: 2026-09-27
 # Handoff: `land` from a worktree, and the text GitHub writes for it
 
 - **Written**: 2026-09-27, at the user's request, from two sources: step
-  4 of [queue-state-per-brief.md](queue-state-per-brief.md), which sent
-  parallel briefs to worktrees and left `/land` no route for one, and the
+  4 of `queue-state-per-brief.md`, landed that day, which sent parallel
+  briefs to worktrees and left `/land` no route for one, and the
   two `land` learnings a client repo's session sent to the inbox that
   day, moved here. The note keeps its `commit` and Bicep learnings for
   `/learn`.
