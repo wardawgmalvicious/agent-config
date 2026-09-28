@@ -165,7 +165,12 @@ conformance checking.
   silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
   and the `@AGENTS.md` import form that loses none, with the two
   conditions a client Fabric repo found for it. Built from cold probes
-  on 2.1.282 and the memory docs, 2026-09-25. Its VS Code claims are the
+  on 2.1.282 and the memory docs, 2026-09-25. Since 2026-09-27 it also
+  holds a nested file to around 60 lines and keeps one out of `.claude/`
+  and out of a folder copied elsewhere, from agent-config's own
+  nested-file lint: two things a cold haiku session missed without them,
+  that `.claude/CLAUDE.md` loads at launch and that a skill folder's copy
+  carries its `CLAUDE.md` along. Its VS Code claims are the
   Local agent harness only. Triggers on `CLAUDE.md`, `CLAUDE.local.md`
   and `AGENTS.md` at any depth, `.claude/rules/`, and Copilot's
   `.github/` instruction files.

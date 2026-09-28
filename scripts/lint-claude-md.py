@@ -38,7 +38,10 @@ as Windows paths do. The files come from git, tracked or untracked but
 never ignored, which keeps the worktrees under .claude/worktrees/ out.
 
 MAX_LINES and NESTED_MAX_LINES live here and nowhere else. Prose elsewhere
-says "the cap" without the number, so the two cannot drift apart.
+says "the cap" without the number, so the two cannot drift apart. The one
+exception is claude/rules/agent-instructions-scoping.md, which gives every
+other repo on the machine NESTED_MAX_LINES as guidance: change the two
+together.
 
 Usage: lint-claude-md.py [path]
 With no argument, every file is checked. A path lints one other file

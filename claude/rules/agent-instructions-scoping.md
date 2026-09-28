@@ -83,6 +83,23 @@ loads into that session like any other. Inside a Fabric item folder is
 untested; a markdown file at a workspace's Git sync root coexists with
 sync.
 
+## What a nested file holds, and where it never goes
+
+**A nested file holds what a session must know before working in its
+directory, in around 60 lines**: it joins a session already at work, so
+its README keeps the reasoning. The number is a judgment, not a
+measurement (2026-09-27).
+
+- **Not under `.claude/`**, which Claude Code reads as config.
+  `.claude/CLAUDE.md` is no nested file but the project file's second
+  home, loaded at launch beside a root `CLAUDE.md` (probed 2026-09-27,
+  2.1.282), so keep one of the two; any `.md` under `.claude/rules/` is a
+  rule (above).
+- **Not in a folder that is copied elsewhere**, such as a skill's. The
+  file travels with every copy and loads on a Read inside any of them, so
+  notes for the folder's maintainers reach its users; what running a
+  skill needs goes in its `SKILL.md`.
+
 ## Sharing one file with other tools
 
 **Never cut a root `CLAUDE.md` over to a bare `AGENTS.md`.** With no
