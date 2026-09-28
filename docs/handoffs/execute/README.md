@@ -1,5 +1,11 @@
 # Open briefs — execution order
 
+**Since 2026-09-27 each brief's frontmatter holds its state**, and
+`uv run scripts/handoff-status.py` generates the queue from it. The table
+below stays only until [queue-state-per-brief.md](queue-state-per-brief.md)
+step 2 replaces this file's order with that view; where the two disagree,
+the frontmatter wins, and no new row is added.
+
 Every deferral names the trigger that would re-open it. The last to
 fire, the CI-workflow rule's on 2026-09-25, was spent 2026-09-27 as
 [coding-ci-workflows.md](../../../claude/rules/coding-ci-workflows.md).
