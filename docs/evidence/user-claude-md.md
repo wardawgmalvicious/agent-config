@@ -505,6 +505,17 @@ it honest: where a repo has committed its own convention, that wins.
 by design, and its own `CLAUDE.md` § "Branching and concurrent sessions"
 carries the dated reasoning.
 
+**2026-09-27.** "`agent-config`, all on `main`, is the example" is cut.
+That repo now branches too: a brief worked in parallel takes a worktree,
+landed by fast-forward (its root `CLAUDE.md`, same section, same day), so
+"all on `main`" describes where its history ends up, not how its work
+proceeds. The user had also asked, on 2026-09-23, that this file carry no
+repo-specific instructions. The precedence sentence stays; a repo's own
+`CLAUDE.md` loads at launch and needs no pointer. A `--worktree` branch
+is the harness's, `worktree-<name>`, outside this form: a session in a
+client repo renamed one with `git branch -m` and carried on in the same
+worktree, so the rule holds there as written.
+
 ## Agent config source
 
 `~/.claude` is deployed from `C:\Repos\Personal\agent-config` by

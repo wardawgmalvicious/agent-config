@@ -24,9 +24,8 @@ What a session must know before it writes, starts or lands a brief here;
   Each is `key: value` or `key: [a, b]`, and no value opens with a
   backtick or a quote, which YAML would misread.
 - **A worktree named after a brief marks it in flight** in that view; root
-  `CLAUDE.md` § "Branching and concurrent sessions" says when to take one.
-  Deploy only from the main checkout: `link-claude.ps1` junctions skills
-  into whichever checkout runs it, so a worktree's deploy dies with it.
+  `CLAUDE.md` § "Branching and concurrent sessions" says when to take one
+  and where it lands.
 - **Re-measure a brief's evidence before acting on it**, and record which
   way it moved: a commit elsewhere can satisfy or void a brief silently.
 - **`needs: [user]` is a question for the user**, not a call to make for

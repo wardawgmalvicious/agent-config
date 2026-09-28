@@ -15,7 +15,7 @@ written: 2026-09-27
   `360884a` taught `handoff-status.py` to read frontmatter, and the
   commit after it gave every brief its own. Step 3 landed next, ahead of
   step 2, so the rule allowed a nested file before the first was written,
-  and step 2 after it. Steps 4 to 6 are left.
+  and step 2 after it, then step 4. Steps 5 and 6 are left.
 - **Status**: the first brief written in the format it introduces.
 
 ## The decision
@@ -137,7 +137,14 @@ in silence.
    sessions" says commit straight to `main` (settled 2026-09-02). It
    keeps that for serial work and adds a worktree per brief for parallel
    work, deploy from main only. Edit it with `claude/CLAUDE.md` § "Branch
-   naming", as the paragraph requires.
+   naming", as the paragraph requires. As landed: `link-claude.ps1`
+   refuses a linked worktree, from the commit before, since per-file rules
+   ask for a deploy after an edit and a worktree session would follow
+   them; landing goes to the main checkout as well, because git will not
+   move `main` from a worktree. § "Branch naming" lost its `agent-config`
+   example and needed no rule change, since a fast-forward records no
+   branch name. `/land` has no route for a branch whose worktree is
+   linked: its default opens with `git switch main`, which fails there.
 5. **The audit second queue is generated too.** README § "Audit briefs are
    a second queue" is another hand-kept list. Escalated audit briefs with
    no `**Closed**` line are what it lists, and `audit-status.py` already

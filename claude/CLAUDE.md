@@ -134,7 +134,7 @@ action: `feat/fabric-ontology-skill`. No tickets, dates or sequence markers
 (`wave-3`). **Branch when the work is more than one commit, or an
 intermediate state would break while deployed**, from commit one if bound
 for `/land`. A repo's own committed convention wins (check `CONTRIBUTING.md`
-or `git branch -a`); `agent-config`, all on `main`, is the example.
+or `git branch -a`).
 
 ## Agent config source
 

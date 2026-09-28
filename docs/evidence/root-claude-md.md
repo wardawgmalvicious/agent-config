@@ -1182,6 +1182,54 @@ linked worktree` and exited 1 before its target existed; the main checkout,
 and the worktree with its `.git` rewritten to point under `.git/modules/`,
 each deployed 4 skills, exit 0.
 
+**2026-09-27.** Step 4 of `queue-state-per-brief.md`, from the user's
+decision that day that a worktree named after a brief claims it: serial
+work still commits straight to `main`, and a brief worked in parallel
+takes a worktree named after it, landed and deployed from the main
+checkout. It replaces "A `--worktree` session has its own index but not
+its own queue", stale since step 2 retired the queue file, and drops
+"reconsider if sessions collide silently again", which the worktree
+answers.
+
+The name is the brief's filename less `.md` because `handoff-status.py`
+marks a brief in flight when a directory name in `git worktree list`
+matches its stem. `claude --worktree <name>` creates
+`.claude/worktrees/<name>/` on a new branch, `worktree-<name>`
+(code.claude.com/docs/en/worktrees, re-read that day), and the 2026-09-24
+probe's records carry `gitBranch` `worktree-probe-isolation`. A slash
+becomes `+` in both: in a client repo, `EnterWorktree` given
+`fix/infra-and-workflows` made `.claude/worktrees/fix+infra-and-workflows`
+on `worktree-fix+infra-and-workflows`, where the match would miss. That
+session then ran `git branch -m fix/infra-and-workflows`, as
+`claude/CLAUDE.md` § "Branch naming" asks, and the directory, which the
+claim keys on, stayed put. So root's precedence sentence still overrides
+only when to branch: a fast-forward records no branch name either way.
+
+Landing goes to the main checkout because git will not move `main` from a
+linked worktree. Measured that day in a scratch repo on git 2.55.0:
+`git switch main` exits 128, "'main' is already used by worktree at";
+`git branch -f main` exits 128, "cannot force update the branch 'main'
+used by worktree"; `git fetch . <branch>:main` exits 128, "refusing to
+fetch into branch 'refs/heads/main' checked out at"; `git push .
+<branch>:main` is rejected, "branch is currently checked out". From the
+main checkout, `git merge --ff-only <branch>` fast-forwarded. `/land`
+step 7's default route opens with `git switch main`, so from a worktree
+it stops there, and its no-checkout row would push `<branch>:main` to
+`origin`, leaving the main checkout's `main` behind for its next serial
+commit to diverge from. `/land` is unchanged and has no route yet for a
+branch whose worktree is linked. Deploying goes to the main checkout too,
+which the entry above enforces.
+
+Two costs remain. What both branches change, an evidence ledger above
+all, conflicts at the rebase before the fast-forward, loudly, where the
+queue README dropped rows in silence. And probe 7 of
+`nested-instruction-files.md` found that a main-checkout Read inside
+`.claude/worktrees/` loads that worktree's root `CLAUDE.md` as a nested
+file; its decision to leave `claudeMdExcludes` alone holds, since the
+exclude would strip a worktree session's own root, though such a Read is
+likelier now than when no worktree existed. Root went from 199 lines to
+200, its cap.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +
