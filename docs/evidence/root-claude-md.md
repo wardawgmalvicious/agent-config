@@ -1158,6 +1158,30 @@ edits (§ "Working on this repo"). What stays contended is kept by hand,
 the queue README's audit follow-up table until it is generated too, and
 the evidence ledgers.
 
+**2026-09-27.** `link-claude.ps1` refuses to run from a linked worktree,
+and `.claude/rules/deploy-scripts.md` says to run it from the main
+checkout, where it said "from the tree whose content you want deployed".
+The 2026-09-02 measurement above deployed a worktree's copy into that
+worktree's own `.claude/`, which goes when the worktree does. Step 4 of
+`docs/handoffs/execute/queue-state-per-brief.md` opens a different case:
+a `--worktree` session running the default command, as a per-file rule
+such as `editing-claude-md.md` asks after an edit. Every source resolves
+from `$RepoRoot = Split-Path -Parent $PSScriptRoot`, so that run
+junctions each skill in `~/.claude/skills` into the worktree, putting its
+unlanded branch live machine-wide, and leaves every junction dangling once
+the worktree is removed. The check reads the checkout's `.git`, spawning
+nothing: a directory in the main checkout, a file whose `gitdir` runs
+through `.git/worktrees/` in a linked worktree, and a file pointing under
+`.git/modules/` in a submodule, which it lets through. In a scratch clone,
+each run given a scratch `-ClaudeDir` and `-SkillGroups workflow
+-SkillsOnly`: HEAD's script, run from a linked worktree, exited 0 with
+`Done. Payload verified` and junctioned `code-review` to
+`.claude\worktrees\probe\skills\workflow\code-review`; the guarded script,
+run from the same worktree, threw `Refusing to deploy from <path>, a
+linked worktree` and exited 1 before its target existed; the main checkout,
+and the worktree with its `.git` rewritten to point under `.git/modules/`,
+each deployed 4 skills, exit 0.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

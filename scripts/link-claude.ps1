@@ -194,6 +194,21 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $RepoRoot = Split-Path -Parent $PSScriptRoot
+# NEVER FROM A LINKED WORKTREE. Every source below resolves from $RepoRoot,
+# so a run from a worktree (claude --worktree, git worktree add) would
+# junction each skill into it: its unlanded branch live in every session on
+# the machine, then every junction dangling once the worktree is removed,
+# after a run that printed Linked and Done. A linked worktree's .git is a
+# file whose gitdir runs through .git/worktrees/; the main checkout's is a
+# directory, and a submodule's file points under .git/modules/ instead. Land
+# the branch, then deploy from the main checkout (2026-09-27).
+$GitEntry = Join-Path $RepoRoot '.git'
+if ((Test-Path -LiteralPath $GitEntry -PathType Leaf) -and
+    ((Get-Content -LiteralPath $GitEntry -Raw) -match '[\\/]worktrees[\\/]')) {
+    throw ("Refusing to deploy from $RepoRoot, a linked worktree: its skill " +
+        'junctions would dangle once it is removed. Land its branch, then run ' +
+        'this from the main checkout.')
+}
 # Repo-relative source -> directory name under $ClaudeDir. The source and
 # the destination differ because the repo groups Claude-format payload
 # under claude/, while skills/ stays at the repo root in the tool-neutral

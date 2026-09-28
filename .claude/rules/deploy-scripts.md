@@ -48,8 +48,9 @@ edit goes live.
   the layout.
 - `-SkillGroups` deletes only junctions resolving into this repo's
   `skills/`, so a skill authored in the target survives the prune.
-- Run the script from the tree whose content you want deployed: it takes
-  `$RepoRoot` from `$PSScriptRoot`. The main tree's copy run with
+- Run the script from the main checkout: it takes `$RepoRoot` from
+  `$PSScriptRoot` and refuses a linked worktree, whose skill junctions would
+  dangle once it is removed (2026-09-27). The main tree's copy run with
   `-ClaudeDir <worktree>` relinks every junction back to the main tree,
   printing `Relink` and still ending `Done` (2026-09-02). Given
   `-ClaudeDir`, `-SkillGroups` prunes that directory's `skills/`, never user
