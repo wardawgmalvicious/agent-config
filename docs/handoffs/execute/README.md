@@ -32,31 +32,35 @@ held, if a closed decision ever needs re-reading.
 ## Audit briefs are a second queue
 
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`
-walks those briefs in their own numbered order — so an unexecuted audit
-run is pending work the generated queue does not list. A brief there with
-no `## Execution log` section has not been executed, and each directory's
-generated `README.md` says which those are in one table — read it before
-opening briefs.
+walks those briefs in their own numbered order, so their state lives in
+each brief's execution log rather than in frontmatter.
+`uv run scripts/handoff-status.py` prints them after the brief queue, as
+audit follow-ups: each directory holding a brief not yet executed, and
+every brief whose log leaves work open — escalated, deferred or applied
+with deferrals, with no `**Closed**:` line — grouped by the `**Needs**:`
+line that log carries, as `needs` groups a brief here. `audit-status.py`
+decides which are open, beside the directory index it builds from the
+same logs, so the two cannot disagree.
 
 **A stamped brief can still be pending.** `/drift-update` stamps every
-brief it escalates, so the next run skips it and the rule above reads it
-as done, while the work its answer implies — or a deferral it recorded —
-lives only in that brief's log. Found 2026-09-11: everything below had
-been stranded that way. Entries are grouped by what each needs, not
-ordered; delete one in the commit that lands its work. Deferred re-checks
-are not listed — the next audit of that source is what performs them.
-Read a brief's log to its end before listing it: a decision can sit in a
-subsection after the stamp, as powerbi 07's 2026-09-08 decline did.
-When a row's work lands, append a `**Closed**: <date> — <how>` line to
-that brief's log in the same commit that deletes the row, so the
-directory index shows the brief as `closed` rather than open forever.
+brief it escalates, so the next run skips it, while the work its answer
+implies — or a deferral it recorded — lives only in that brief's log.
+Found 2026-09-11: every open follow-up had been stranded that way. A
+table here carried them from then until 2026-09-27, and missed what a
+hand-kept list misses: a decline recorded in a subsection after its
+stamp, which left powerbi 07 reading as open for nineteen days, and a
+deferral whose own log said it stayed open. The view reads every log to
+its end, so it misses neither.
 
-| Needs | Audit briefs |
-| --- | --- |
-| A person driving Power BI Desktop | [powerbi 04](../../audits/2026-09-07/powerbi/04-catalog-new-visual-formatting-properties.md) with [10](../../audits/2026-09-07/powerbi/10-supply-drilled-evidence-for-matrix-properties.md) and [13](../../audits/2026-09-07/powerbi/13-propagate-new-formatting-to-authoring-skills.md) D-1 · [06](../../audits/2026-09-07/powerbi/06-verify-pbip-autodetect-vs-reload-bridge.md), which also needs the `powerbi-desktop` bridge CLI · [02](../../audits/2026-09-07/powerbi/02-retire-fluent2-preview-framing.md)'s 1280×720 carve-out |
-| A model export with AI instructions set | [skills-for-fabric 05](../../audits/2026-09-10/skills-for-fabric/05-add-lsdl-refresh-to-ai-instructions.md)'s TMDL collision |
-| A Git-synced Fabric repo to measure in | [skills-for-fabric 04](../../audits/2026-09-10/skills-for-fabric/04-measure-notebook-serialization-before-editing.md), whose need the client Fabric repo on this machine meets, so it rides with the Fabric content session above. Its step 3's `grep -c $'\r'` miscounts: `~/.claude/CLAUDE.md` § "Counting carriage returns" has the substitute |
-| One open question settled, then lint code | [skills-for-fabric 08](../../audits/2026-09-10/skills-for-fabric/08-decide-catalog-budget-and-reference-lints.md): the **catalog listing-budget check only**. Its reference-lint half landed 2026-09-15 as `scripts/skill-overlap.py routing`, wired into pre-commit as `lint-skill-routing`, which settles that half's open question — what counts as a reference is a backticked platform-prefixed name, with every non-skill class derived or excluded by path. What is left needs the budget itself, and that must come from Claude Code's docs rather than upstream's numbers |
+**The `**Needs**:` line is the follow-up's home.** `/drift-update` writes
+one with every stamp that leaves work open, the frontmatter's words
+(`user`, `tenant`, `desktop`, a short phrase, or `none`) with the reason
+after a dash, and `lint-briefs` fails a commit on an open brief without
+one. A deferred re-check gets one too, naming the audit that performs
+it. When the need changes, append a new line, since the last one counts;
+when the work lands, append `**Closed**: <date> — <how>` in the same
+commit, which drops the brief from the view and shows it `closed` in its
+directory's index.
 
 ## Filenames are stable
 

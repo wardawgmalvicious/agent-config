@@ -56,7 +56,9 @@ and they are exactly what stops a later audit re-litigating a decision.
   execution logs. It is never edited by hand — the `lint-audit-index`
   pre-commit hook fails a commit whose index disagrees with its briefs —
   so it is a derived view of the logs and not a second copy of them. An
-  `escalated` row links to the follow-up queue; a `closed` date means a
+  open row — escalated, deferred or applied with deferrals — links to the
+  follow-up queue, which `handoff-status.py` prints from each open log's
+  `**Needs**:` line; a `closed` date means a
   later session discharged the brief and recorded it with a `**Closed**:`
   line in the log. Added 2026-09-13, after eleven briefs in one directory
   meant eleven files to open to learn which had run.

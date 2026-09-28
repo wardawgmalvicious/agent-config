@@ -15,7 +15,7 @@ written: 2026-09-27
   `360884a` taught `handoff-status.py` to read frontmatter, and the
   commit after it gave every brief its own. Step 3 landed next, ahead of
   step 2, so the rule allowed a nested file before the first was written,
-  and step 2 after it, then step 4. Steps 5 and 6 are left.
+  and step 2 after it, then step 4, then step 5. Step 6 is left.
 - **Status**: the first brief written in the format it introduces.
 
 ## The decision
@@ -149,7 +149,11 @@ in silence.
 5. **The audit second queue is generated too.** README § "Audit briefs are
    a second queue" is another hand-kept list. Escalated audit briefs with
    no `**Closed**` line are what it lists, and `audit-status.py` already
-   reads those logs.
+   reads those logs. As landed: the table also listed deferred and
+   applied-with-deferrals briefs, and missed three open logs, powerbi 07
+   among them, declined but never closed. Each open log now carries a
+   `**Needs**:` line, `handoff-status.py` prints them grouped by it with
+   `audit-status.py`'s rule, and `lint-briefs` fails an open one without.
 6. **Re-plan [handoff-convention-cross-repo.md](handoff-convention-cross-repo.md).**
    Its core says order lives in exactly one file, which this supersedes.
    None of its Q1 edits was drafted.

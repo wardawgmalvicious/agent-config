@@ -36,6 +36,8 @@ What a session must know before it writes, starts or lands a brief here;
 - **A skill brief beside a skill that exists means `/test-skill` has not
   run**; `uv run --with pyyaml scripts/skill-status.py --stale` says which
   skills need a retest.
-- **Audit briefs are a second queue** that the view does not show:
-  [execute/README.md](execute/README.md#audit-briefs-are-a-second-queue).
+- **Audit briefs are a second queue**, which the view prints after the
+  first from their logs: one left open carries a `**Needs**:` line, and
+  gains a `**Closed**:` line in the commit that lands its work
+  ([why](execute/README.md#audit-briefs-are-a-second-queue)).
 - **A filename is a link target**, so it carries no date or number.

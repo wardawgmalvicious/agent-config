@@ -235,6 +235,8 @@ Append to the brief file:
 - **Verification**: <which steps ran and passed>
 - **Deferred**: <what could not be checked here, and what would check it>
 - **Deviations**: <anything done differently from the brief, and why — or none>
+- **Needs**: <only when work is left open: user, tenant, desktop or a short
+  phrase, comma-separated, or none — then what it is for>
 ```
 
 An `already-applied` stamp uses the same shape with different content:
@@ -258,7 +260,7 @@ edited, and the `lint-audit-index` pre-commit hook fails a commit whose index
 disagrees with its briefs — so a stamp and its regenerated README are one
 commit.
 
-**`- **Closed**: <ISO date> — <how>` is the one key added after the stamp**,
+**`- **Closed**: <ISO date> — <how>` is the key added after the stamp**,
 by whichever later session discharges what the log left open — an
 `/author-skill` run that authored the accepted candidates, a `/drift-audit`
 run that performed the deferred behavioural check, a decision the user made.
@@ -266,7 +268,9 @@ Append it to the existing log; the `Executed` and `Deferred` lines were
 accurate when written and stay as they are. The index reads it and shows the
 row as `closed`. Without it an escalated brief reads as open forever, which is
 how the four skills authored from 2026-09-10 brief 07 left no trace in the
-ledger until a later audit wrote a brief to record them.
+ledger until a later audit wrote a brief to record them. The one other key a
+later session appends is a fresh `**Needs**:` line, when what the open work
+waits on changes; the last one counts.
 
 `docs/audits/` is tracked, so these stamps are history and not just working
 state: they make a re-run resumable, and they are also the record of what a
@@ -286,14 +290,16 @@ investigation, say what it needs and ask where it should run. Stamp the answer
 into the execution log as `escalated`. Whatever work the answer implies is a
 separate task, started deliberately — not something to fold into this run.
 
-**That task needs a home before the run ends.** The stamp makes every later
-run skip the brief, and `docs/handoffs/execute/README.md` reads a stamped brief
-as done, so work recorded only in the brief's own log is invisible to both.
-Add it to that file's audit follow-up table, under what it needs — re-reading
-the file immediately first, since it is the most contended one here. The same
-goes for a deferral that leaves work rather than a re-check, and for an
-adjacent finding. Found 2026-09-11, when two runs' follow-ups turned out to be
-in no queue.
+**That task needs a home before the run ends: the stamp's `**Needs**:`
+line.** The stamp makes every later run skip the brief, so work recorded only
+in its log is seen only by what reads the log for it.
+`uv run scripts/handoff-status.py` lists every escalated, deferred and
+applied-with-deferrals brief with no `**Closed**:` line, grouped by that line,
+and `lint-briefs` fails the commit on one without it. A deferred re-check
+gets one too, naming what performs it, such as the next audit of that source,
+and so does an adjacent finding, stamped `applied with deferrals`. Found
+2026-09-11, when two runs' follow-ups turned out to be in no queue; a
+hand-kept table held them until the view replaced it, 2026-09-27.
 
 ## 5. Report and hand off
 
@@ -333,7 +339,7 @@ next source's briefs. Both are separate, deliberate invocations.
 - **The brief set is the scope.** No unbriefed edits, no adjacent fixes, no
   re-opened reasoning.
 - **Kind decides.** Decision and investigation briefs are escalated, never
-  executed — and anything a run leaves for later gets a queue row.
+  executed — and anything a run leaves for later gets a `**Needs**:` line.
 - **Stale splits two ways, and neither is improvising.** A missing quoted
   line means the fix already landed (stamp `already-applied`) or the target
   moved (stop the run). Never substitute a line that looks close enough.
