@@ -159,3 +159,5 @@ the reason it stops short of a recommendation.
 - **Deviations**: none. The Constraint — *do not edit `powerbi-desktop.md` on
   the strength of the What's New row alone* — was observed; no speculative
   caveat was written.
+- **Needs**: desktop, the `powerbi-desktop` bridge CLI — Desktop running
+  with a PBIP open and bridged. Recorded 2026-09-27.

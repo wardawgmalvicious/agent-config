@@ -201,3 +201,5 @@ from a precaution into a measured fact for that item.
   axis pages need not be fetched again; its **What this changes in brief `04`**
   section is the amended scope for items 3, 4 and 5.
 - **Deviations**: none.
+- **Needs**: desktop — brief `04`'s Desktop session, inside which this
+  brief executes. Recorded 2026-09-27.

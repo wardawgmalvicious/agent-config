@@ -156,3 +156,5 @@ audit.
   contradiction of line 263's "It is not stored in TMDL". The skill now
   supports both readings in one session. Left untouched, as this brief
   directs; the export evidence named above is still what settles it.
+- **Needs**: a model export with AI instructions set — the evidence that
+  settles the collision. Recorded 2026-09-27.

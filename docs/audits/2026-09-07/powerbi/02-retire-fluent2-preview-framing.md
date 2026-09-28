@@ -270,3 +270,5 @@ findings here do not depend on the fork being trustworthy.
   leaving it would have meant reporting a failed verification for a defect
   the brief plainly intends to retire. Nothing else outside the enumerated
   targets was touched.
+- **Needs**: desktop — the 1280×720 initial-page carve-out, re-verified
+  against a new report. Recorded 2026-09-27.

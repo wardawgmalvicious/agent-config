@@ -180,3 +180,7 @@ granularity, and the Direct Lake motivation.
 Verification step 2 now has a fixed expected result: `grep -rniE "sync
 schema|refresh data only|refresh schema and data" skills/` should return
 **nothing**, permanently, rather than matching exactly one file.
+
+- **Closed**: 2026-09-08 — declined, per the decision above. Added
+  2026-09-27: without it the index read this brief as escalated and open
+  for nineteen days, and the generated follow-up view flagged it.

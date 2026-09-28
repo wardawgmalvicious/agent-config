@@ -194,3 +194,6 @@ the Constraint section exists to enforce.
   not the first-failure stop condition. Later briefs were executed.
 - **Deviations**: none. No property name was written from the brief's Evidence
   alone, and no example JSON was invented.
+- **Needs**: desktop — one PBIP round-trip, shared with brief `10`, `13`'s
+  D-1 and `09`'s JSON half; or a `pbir` release whose bundled schema
+  postdates 2026-08-25. Recorded 2026-09-27.

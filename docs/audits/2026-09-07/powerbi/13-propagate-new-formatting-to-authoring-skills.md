@@ -263,3 +263,5 @@ that height can only come from a real render (the brief's Knock-on).
   and behavioural confirmation, since an edited skill does not reliably reload
   mid-session on Windows. All the JSON work joins briefs `04`, `09` and `10` in
   waiting for one Desktop session, which is what the Sequencing note intends.
+- **Needs**: desktop — D-1 and the JSON encodings, in brief `04`'s Desktop
+  session. Recorded 2026-09-27.

@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md), [00b-audit-report-rerun.md](00b-audit-report-rerun.md)
 
-Briefs: 13 — applied 6 · applied with deferrals 3 · deferred 1 · escalated 3
+Briefs: 13 — applied 6 · applied with deferrals 3 · closed 1 · deferred 1 · escalated 2
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -15,7 +15,7 @@ Briefs: 13 — applied 6 · applied with deferrals 3 · deferred 1 · escalated 
 | [04 catalog the new August formatting-pane properties in `pbir-visual-json`](04-catalog-new-visual-formatting-properties.md) | 5 | content addition to a skill that encodes JSON property paths | escalated 2026-09-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [05 reconcile `fabric-tmdl-api`'s Direct Lake calculated-column claims](05-reconcile-tmdl-api-direct-lake-claims.md) | 6 | factual correction to committed prose, resolving a self-contradiction inside one skill | applied 2026-09-08 |
 | [06 verify PBIP external-change detection against the reload bridge](06-verify-pbip-autodetect-vs-reload-bridge.md) | 7 | investigation, not an edit | escalated 2026-09-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
-| [07 fold granular semantic model refresh controls into an existing skill](07-fold-in-granular-refresh-controls.md) | 8 | small content addition gated on an open placement decision | escalated 2026-09-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [07 fold granular semantic model refresh controls into an existing skill](07-fold-in-granular-refresh-controls.md) | 8 | small content addition gated on an open placement decision | escalated 2026-09-08 · closed 2026-09-08 |
 | [08 add the OneLake image-URL caveat to `fabric-cicd`](08-add-onelake-deployment-pipeline-caveat.md) | 4 of `00b-audit-report-rerun.md` | content addition to a skill's caveat list | applied 2026-09-08 |
 | [09 document URL-sourced custom icons in `pbir-conditional-formatting`](09-add-url-sourced-custom-icons.md) | 6 of `00b-audit-report-rerun.md` | content addition to a skill that encodes JSON property paths | applied 2026-09-08 |
 | [10 supply drilled upstream evidence for brief `04`'s matrix and axis items](10-supply-drilled-evidence-for-matrix-properties.md) | 9 of `00b-audit-report-rerun.md` | evidence supplement to brief `04`, not an independent edit | deferred 2026-09-08 |

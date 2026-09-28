@@ -293,3 +293,6 @@ bookkeeping on the run's own result.
   it stays a separate decision. This brief therefore carries **no**
   `Closed` key while that stands: the index must keep reading `applied
   with deferrals`, not `closed`.
+- **Needs**: user — whether `SKILL.md` § 4a generalizes `get_commit` file
+  pagination, D-1's knock-on. No queue row carried it before this line.
+  Recorded 2026-09-27.

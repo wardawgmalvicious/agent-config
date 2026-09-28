@@ -150,3 +150,7 @@ path because its bullets explain names this repo considered and rejected
 first two open questions. Neither has moved. The budget must come from
 Claude Code's docs rather than upstream's figures, and the catalog to
 measure is still per deployable group combination or the worst case.
+
+- **Needs**: none — the listing-budget check. The 2026-09-11 decision
+  above left its open questions to the task itself, the budget coming
+  from Claude Code's docs. Recorded 2026-09-27.

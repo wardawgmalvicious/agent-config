@@ -284,3 +284,7 @@ sketch that this brief's step 3 is meant to harden.
 - **Not done, deliberately**: § 1's registered-source list still omits
   `fabric-iq-ontology` (registered 2026-09-02). Unbriefed adjacent defect;
   left for its own finding rather than widening this diff.
+- **Needs**: the next powerbi drift audit — step 2's re-run, which must
+  reproduce the three commits named above, cold. The source-list gap is
+  closed: `drift-audit`'s § 1 names `fabric-iq-ontology`. Recorded
+  2026-09-27.

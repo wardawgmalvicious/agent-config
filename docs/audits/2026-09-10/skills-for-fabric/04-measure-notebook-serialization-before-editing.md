@@ -184,3 +184,7 @@ edit.
   `claude/rules/README.md`.
 - **Deferred**: the whole brief, pending that measurement.
 - **Deviations**: none.
+- **Needs**: user, a Git-synced Fabric repo — the user chooses the repo the
+  six checks run in; the client Fabric repo on this machine is one. Step
+  3's `grep -c $'\r'` miscounts: `~/.claude/CLAUDE.md` § "Counting
+  carriage returns" has the substitute. Recorded 2026-09-27.
