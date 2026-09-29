@@ -163,10 +163,13 @@ brief says it does: `Grep` for the quoted offending line at the named path.
   *post-fix* text. A missing quote means one of two opposite things, and that
   second grep is the only cheap way to tell them apart:
   - **Corrected text present** — the fix is already in the tree, applied by
-    hand or by an earlier unstamped run, and the brief's intent is satisfied.
-    Skip 4.3 and 4.4, go straight to **4.5 and stamp it `already-applied`**.
-    Nothing is edited, but the brief is now done and a later run passes over
-    it. Without this stamp the run never converges: a set applied by hand
+    hand or by an earlier unstamped run. That run may have **failed** 4.4,
+    which leaves its edits in place unstamped, so the text proves the edit
+    was made and not that it passed. Skip 4.3, run the brief's own
+    **Verification** as 4.4 does — a failure stops the run there too — and
+    on a pass go to **4.5 and stamp it `already-applied`**. Nothing is
+    edited, but the brief is now done and a later run passes over it.
+    Without this stamp the run never converges: a set applied by hand
     before this skill first ran would be re-derived in full, every time.
   - **Corrected text also absent** — the target was rewritten, renamed, or
     deleted for reasons the brief knows nothing about. The correction is *not*
@@ -240,9 +243,9 @@ Append to the brief file:
 ```
 
 An `already-applied` stamp uses the same shape with different content:
-**Files changed** is `none`, and **Verification** is the confirming grep from
-4.2 — the post-fix text, found at the named path — rather than the brief's own
-steps, which were never run.
+**Files changed** is `none`, and **Verification** names the confirming grep
+from 4.2 — the post-fix text, found at the named path — and then the brief's
+own steps, which 4.2 ran before stamping.
 
 Append; never rewrite the brief above it. The brief as written is the record of
 what was decided, and the log is the record of what happened — keeping them
