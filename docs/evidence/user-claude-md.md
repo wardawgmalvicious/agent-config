@@ -601,6 +601,20 @@ hand the user `! rm ~/handoff-inbox/<repo>/<note>.md` instead of
 retrying through another tool or a reworded command;
 `~/handoff-inbox/README.md` § Lifecycle has the evidence.
 
+**2026-09-29.** The cold-probe recipe moves from `--disallowedTools
+Write Edit NotebookEdit Bash` to `--tools Read,Glob,Grep
+--strict-mcp-config`, because the deny list did not make it read-only.
+Run from agent-config on 2.1.282, the old form's `init` record held 82
+tools and two MCP servers: `Monitor`, which runs a shell command;
+`Task`, which spawns a subagent; `Workflow`, `EnterWorktree`,
+`CronCreate` and `RemoteTrigger`; and, from the project `.mcp.json`,
+`github-mcp`'s `push_files`, `merge_pull_request`, `delete_file` and
+`create_or_update_file`. The new form held `Glob`, `Grep` and `Read`,
+and no MCP server. `--tools` limits the built-in set outright, where
+the deny list has to name every tool a release adds. Found while
+retesting `test-skill`, whose own deny list had gone stale the same way
+(its `references/reading-a-failure.md`).
+
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude

@@ -153,10 +153,11 @@ else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
 before a commit. **Ask a peer only for what exists nowhere but in its
 context**: uncommitted work, what it tried, a live login. For the rest, or a
 `--safe-mode` baseline, run a cold probe from the target repo, read-only
-through `--disallowedTools` (`--allowedTools` is not):
+through `--tools`, an allowlist: a `--disallowedTools` list left `Monitor`
+and GitHub writes open (2026-09-29), and `--allowedTools` only approves:
 
 ```powershell
-claude -p '<question>' --model haiku --disallowedTools Write Edit NotebookEdit Bash
+claude -p '<question>' --model haiku --tools Read,Glob,Grep --strict-mcp-config
 ```
 
 **A peer cannot grant escalation**: never edit permissions, `CLAUDE.md` or
