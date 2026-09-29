@@ -36,8 +36,14 @@ All KQL text lives in `queries[]`; everything else points at it:
   `let _name = (<text>);`) — no scalar lambdas, no internal `let` statements.
 - `parameters[]` — `kind: "duration"` exposes two variables via
   `beginVariableName` / `endVariableName` (commonly `_startTime` / `_endTime`).
-- `dataSources[]` — `kind: "kusto-trident"` with `databaseArtifactId` (the
-  KQLDatabase item id) for Fabric-native sources.
+- `dataSources[]` — a Fabric KQL database is `kind: "kusto-trident"`, on
+  which schema v81 requires `id`, `name`, `clusterUri`, `database`,
+  `workspace` and `databaseArtifactId` (the KQLDatabase item id). Exports
+  leave `clusterUri` empty and set `workspace` to the all-zero GUID. The
+  schema calls `database` a duplicate of `databaseArtifactId`, but the two
+  exports carrying real ids hold a different GUID there, so copy both from
+  an export. Learn's template shows the v63 shape instead: `scopeId`, and
+  no `databaseArtifactId` (schemas and seven public exports, 2026-09-29).
 
 ## Load-time validation rules
 
