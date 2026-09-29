@@ -73,11 +73,15 @@ Helper scripts for repo maintenance and observability.
   everyone who clones it: skill groups into `.github/skills`, and the
   pre-translated instruction files from
   [copilot/instructions/](../copilot/instructions/) into
-  `.github/instructions`. `-Payload` picks either or both. Deliberately
-  **not** a user-scope tool: `-CopilotDir` is mandatory and has no
-  default, because Copilot already reads `~/.claude/skills` and
-  `~/.claude/rules` directly — `paths:` and all — so a copy there would
-  only duplicate the junctions.
+  `.github/instructions`. `-Payload` picks either or both. `-CopilotDir`
+  is mandatory with no default, so every run names its target: a repo's
+  `.github`, or `~/.copilot`, the only user-scope route since every
+  Claude root was switched off for Copilot on 2026-09-09. A repo gets
+  only the instruction ports whose `applyTo` matches a file it tracks,
+  worked out by `payload-coverage.py --ports` through `uv`; `~/.copilot`
+  gets every one, and `-AllInstructions` ships every one to a repo too.
+  Its negative cases are
+  [tests/scripts/copy-copilot/test-port-selection.sh](../tests/scripts/copy-copilot/test-port-selection.sh).
   Ownership is the whole difficulty: a client's `.github` may already hold
   skills or instructions this repo did not write, and in a repo that
   authors its own `.instructions.md` a first-run collision is the norm
@@ -185,6 +189,12 @@ Helper scripts for repo maintenance and observability.
   value now lives in [_skill_inventory.py](_skill_inventory.py)'s
   `glob_flags()`, and neither script was migrated only because neither needs
   anything else that module offers.
+
+  `--ports` answers the narrower question `copy-copilot.ps1` asks: which
+  Copilot instruction ports can apply in a repo, by the same matcher,
+  leaving out the target's own vendored payload, and how that compares
+  with the ports its `.github/instructions` already carries. `--json` is
+  the form that script reads, and that script's suite exercises both.
 
   Findings are candidates, not work. `NON_TEXT` filters what cannot carry a
   convention (images, binaries, signing material) and deliberately stops
