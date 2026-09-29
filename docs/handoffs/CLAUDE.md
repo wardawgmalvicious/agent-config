@@ -31,7 +31,8 @@ What a session must know before it writes, starts or lands a brief here;
   worktree: `/exit` offers to remove it, which deletes the branch. Then:
 
   ```bash
-  git merge --ff-only <branch>   # refused: main moved; git -C <worktree> rebase main
+  git -C <worktree> rebase main && (cd <worktree> && pre-commit run --all-files)   # no hook runs on a rebase or a fast-forward
+  git merge --ff-only <branch>
   git worktree remove .claude/worktrees/<brief>   # refused as locked: a session holds it; /prune-branches if its pid is dead
   git branch -d <branch>
   ```

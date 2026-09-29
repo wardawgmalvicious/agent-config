@@ -68,6 +68,19 @@ session removed the worktree itself. At `/exit` a worktree holding
 commits is offered keep or remove, and remove deletes the branch
 (code.claude.com/docs/en/worktrees, read that day).
 
+**The landing checks the rebased tree.** No hook runs on a rebase
+or a fast-forward, and each whole-set check in `.pre-commit-config.yaml`
+runs only when a file it matches is staged, so the tree a rebase builds
+is one that nothing checked. Measured 2026-09-29 on git 2.55.0, in a
+scratch clone at `e0fc29f`, where root `CLAUDE.md` stood at 199 lines of
+its 200: two worktree branches each added one line and each passed
+`lint-claude-md` at 200, and the second rebased onto the first with no
+conflict, stood at 201 and still fast-forwarded. In that worktree,
+`pre-commit run --all-files` failed that one hook, in 7 seconds.
+`lint-briefs` meets the same case when one branch lands a brief that
+another names in `blocked-by`. In a scratch repo, a pre-commit hook ran
+once per commit and not at all on the rebase or the fast-forward.
+
 ## Audit briefs are a second queue
 
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`
