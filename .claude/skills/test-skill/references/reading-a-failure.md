@@ -217,10 +217,11 @@ by its subject, "parallel probes read each other as peers", and planned
 their probes one at a time for it. A Haiku probe under `--safe-mode`
 quoted the two newest commits verbatim; with
 `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` it answered `NONE`. Set the
-variable on every arm. Its name says it drops the built-in git
-instructions too (not measured), so for a git-workflow skill such as
-`commit` or `land` it thins the baseline beyond the snapshot: read the
-log for the claim instead of setting it there.
+variable on every arm. It also removes the built-in commit and PR
+workflow instructions, per Claude Code's env-vars page (read 2026-09-29),
+so for a skill whose claims overlap them, such as `commit` or `land`, it
+thins the baseline beyond the snapshot: read the log for the claim
+instead of setting it there.
 
 **A conditional skill answers `Unknown command` cold.** Measured
 2026-09-02 on 2.1.252: `/fabric-data-pipeline` was `Unknown command`

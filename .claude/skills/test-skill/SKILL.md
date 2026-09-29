@@ -268,6 +268,8 @@ knows the domain, `--safe-mode` reproduces most of a good answer, so
 detail that is a claim **only the skill makes**. Measured 2026-09-04 on
 `pbir-filters`: both runs got `SourceRef.Source` and doubled quotes; only
 the payload wrote the skill's 20-char hex `name` (baseline: a 32-char GUID).
+Read the baseline before naming the claim that separates: the sharpest
+one on paper is often one the baseline volunteers (`land`, 2026-09-17).
 
 **`--safe-mode` does not strip the web tools.** A baseline can fetch the
 Learn pages a skill was drilled from and re-derive it — a second reason
@@ -355,6 +357,16 @@ the expansion inlines the body straight past the denial and the arm is
 inert. Never `--tools ""`: with no tool declared, the model writes its
 calls as text and invents their results; one read-only tool avoids it.
 `references/reading-a-failure.md`, 2026-09-13 and 2026-09-29.
+
+**Parallel arms read each other as peers**, and only payload arms look:
+keep `ListAgents` and `SendMessage` out of every arm, as `--tools` does
+by construction. A skill that reads peers itself (`commit`, `land`,
+`learn`) keeps `ListAgents`, and its arms launch one at a time (2026-09-29).
+
+**Never stop an arm for silence alone.** At max effort an arm streams
+only `thinking_tokens` until its first block closes, most of a 17-minute
+baseline run: pace it against the baseline, never the payload arm, and
+bound spend at launch with `--max-budget-usd` instead (2026-09-29).
 
 Confirm the skill actually loaded with `/context` rather than by asking
 the session — self-report is unreliable, and once omitted an
@@ -470,7 +482,7 @@ activated". Work down this table before touching a glob:
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
-| The baseline scores nearly as high as the payload | It read the payload off disk, root `CLAUDE.md` carries the same claims, or the session-start git log names them, which `--safe-mode` keeps. Allowlist `--tools Skill` on both arms, set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` on every arm, then ablate with `--tools CronList` |
+| The baseline scores nearly as high as the payload | It read the payload off disk, root `CLAUDE.md` carries the same claims, or the session-start git log names them, which `--safe-mode` keeps. Allowlist `--tools Skill` on both arms, then ablate with `--tools CronList`. Set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` on every arm but a commit or PR skill's (`commit`, `land`): it also removes the built-in commit and PR instructions, so read the log for the claim there instead |
 | The payload arm changed since the last stamp | Not yet the edit's doing. Run the pre-edit body as `<name>-old` at project scope in the probe directory on the same query; a check-shaped edit ("if X, do Y") also needs the no-X arm |
 
 The witnesses behind that table — the transcript record, the `-p`
