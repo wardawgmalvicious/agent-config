@@ -178,6 +178,7 @@ of it is on Microsoft Learn.
 | DeltaFlow not available on a CDC source | Currently scoped to Azure SQL / SQL MI / SQL Server VM / PostgreSQL CDC | Use raw mode for other CDC sources and flatten Debezium yourself |
 | Events pushed to a schema-associated custom endpoint are dropped | Wrong CloudEvents envelope, `dataschema` version, or per-environment registry host | See [references/cloudevents-producer.md](references/cloudevents-producer.md) — four distinct failure modes |
 | Paused nodes are running again after a deploy | Git integration and deployment pipelines don't carry pause/resume state — after CI/CD every node in the target eventstream becomes **active** | Re-pause after the deploy (portal toggle or the REST `/pause` calls — see Pause and resume) |
+| A new event type lands zero rows, `.show ingestion failures` is empty, and the older types still land | The destination registers types at publish, so one added to the schema set since is dropped before Kusto (observed 2026-09-14) | Publish the destination after adding a type — see [references/cloudevents-producer.md](references/cloudevents-producer.md) |
 
 ## Reference
 

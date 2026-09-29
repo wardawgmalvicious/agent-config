@@ -55,6 +55,30 @@ Anatomy of the base: `https://<host>.<region>.messagingcatalog.azure.net/schemag
 
 A schema-associated eventstream → Eventhouse (processed ingestion) **auto-creates one table per schema**, named `{CloudEventType}_{CloudEventSchemaVersion}` — e.g. `Orders_v1`, `Products_v2`. The version comes from the `dataschema` `/versions/vN` segment.
 
+### The destination registers types at publish
+
+Observed in one tenant, Sept 2026, and not on Learn:
+
+- **A type added to the schema set after the destination's last publish
+  is dropped** at the registry gate, before Kusto: zero rows, nothing in
+  `.show ingestion failures`, while published types in the same run
+  land (2026-09-14). Publish the destination after adding a type, and
+  presumably after a new version of an existing one (untested).
+- **Only the topology API shows the running stream**:
+  `GET /v1/workspaces/{ws}/eventstreams/{id}/topology`, which also
+  carries error text the portal hides. The editor shows the unpublished
+  draft, so after a failed publish it can read *"no input schemas
+  selected"* over a stream that is routing. The definition never carries
+  the registry binding: `schemaMode: "None"`, an empty source
+  `properties` and `inputSchemas: [{"schema": {"columns": []}}]` are its
+  healthy shape, identical across three routing environments
+  (2026-09-14).
+- **`ESComponentUpdateFailure` on a `Running` node is advisory**: the
+  update was rejected and the last published configuration is still
+  live. It is sticky, and reverting the change does not clear it.
+  `ESComponentCreationFailure` is the fatal one: the node does not exist
+  and nothing routes.
+
 ### Version-bump gotcha
 
 **Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
