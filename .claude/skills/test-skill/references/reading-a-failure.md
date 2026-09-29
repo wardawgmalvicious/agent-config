@@ -202,3 +202,24 @@ that always does Y reads as a pass. Keep everything but X — same tree,
 same diff, same prompt — and expect Y not to happen. Measured
 2026-09-23 on `commit` step 4: the PR-free history committed on `main`
 ("No PR convention here") where the `(#n)` history had branched.
+
+**Parallel probes read each other as peers, and only the payload arms
+look.** A `-p` probe is a live session in the tree: `ListAgents` names
+it by its directory, `agent-config-<hash>` here, lists it as
+`interactive · busy` like any other, and shows the session running the
+test beside it. User-scope `CLAUDE.md` says to list peers before
+editing, and `--safe-mode` strips that line, so the baseline never
+checks and the confound lands on one side of every comparison.
+Measured 2026-09-29 on `drift-update`, eight arms in two batches: all
+six payload arms called `ListAgents` and neither baseline did. The four
+launched with both baselines each saw three to five sibling probes,
+started seconds to minutes earlier, and each made them a question for
+the user; one inferred "If you gave this prompt to more than one of the
+sessions that started two minutes ago, tell only one of us to go
+ahead." In the second batch one arm cited its sibling, "busy right
+now", as a reason to accept a commit per brief, a guard under test. Add
+`ListAgents` to `--disallowedTools` on every arm, which costs the
+baseline nothing, unless the skill under test reads peers itself
+(`commit`, `land`, `learn`'s doorbell), where a shared tree is a branch
+it takes; there, launch the arms one at a time. Neither remedy has been
+measured.
