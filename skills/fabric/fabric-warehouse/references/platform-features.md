@@ -50,12 +50,21 @@ Source control for Fabric Warehouse is a **preview** feature — both Git integr
 
 ### Definition 2.0 and the upgrade
 
-`config.version` in the warehouse's `.platform` says which version it is on.
+**Tell the version from the item folder, not from `.platform`.** A folder
+holding `xmla.json` is on 1.0; one with a `.gitignore` beside its
+`.sqlproj` is on 2.0. Learn says `.platform`'s `config.version` and
+`$schema` URL carry the version, but both read the same on a 1.0 and a
+2.0 warehouse, and `config.version` is `2.0` on every item type (measured
+2026-09-29). Learn also spells the file `XMLA.json` while it is lowercase
+on disk, so a case-sensitive search for Learn's spelling finds nothing.
+
 2.0 (`Microsoft.Build.Sql` SDK `2.3.0-preview.1`) moves shared queries to a
-`.sharedqueries` folder at the project root, stops tracking `XMLA.json`, adds
+`.sharedqueries` folder at the project root, stops tracking `xmla.json`, adds
 a project-level `.gitignore` and system references to the `.sqlproj`, and
 re-extracts every object definition (constraints, `IDENTITY`, `CLUSTER BY`)
-— so the upgrade commit is large and the ones after it are small.
+— so the upgrade commit is large and the ones after it are small. A
+missing `.sharedqueries` proves nothing: a 2.0 warehouse with no shared
+queries has none.
 
 Fabric never applies it for you; a **System update available** banner appears
 in Source control.

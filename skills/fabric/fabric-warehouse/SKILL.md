@@ -67,7 +67,8 @@ ENFORCED` constraints. What constrains you:
 CTAS workaround **destroys time-travel history and security (GRANT/DENY)** on the original table — re-apply security after the swap.
 
 **What a Git sync does to a populated table depends on the warehouse's
-definition version** (`config.version` in `.platform`). Under **2.0** (Aug
+definition version**, told by the item folder: `xmla.json` means 1.0, and
+`config.version` in `.platform` reads `2.0` either way. Under **2.0** (Aug
 2026) DacFx deploys with `BlockOnPossibleDataLoss = true`, so a synced DDL
 change dropping a column from a populated table **refuses**: `DataLoss: The
 column [s].[t].[c] is being dropped`, then `Msg 50000 ... Rows were
