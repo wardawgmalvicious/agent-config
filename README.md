@@ -396,11 +396,14 @@ stay separable:
 - **[copilot/](copilot/) is the one exception, and it is for other
   people.** A junction cannot be committed, so a teammate cloning a
   client repo gets nothing from the paths above.
-  [copilot/instructions/](copilot/instructions/) holds eight
+  [copilot/instructions/](copilot/instructions/) holds
   `claude/rules/` bodies re-emitted as `*.instructions.md` with
   `applyTo` globs, which
   [scripts/copy-copilot.ps1](scripts/copy-copilot.ps1) vendors into a
-  repo's `.github/instructions` as real files. This is the only place
+  repo's `.github/instructions` as real files: only those whose
+  `applyTo` matches a file the repo tracks, since VS Code lists every
+  one it finds in each request, while `~/.copilot` gets them all.
+  This is the only place
   the repo carries one piece of guidance in two formats, and the reason
   is that they are genuinely different: `applyTo` is a single
   comma-separated string where `paths:` is a list, and an instructions
