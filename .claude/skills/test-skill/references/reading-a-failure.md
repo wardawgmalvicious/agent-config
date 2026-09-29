@@ -280,6 +280,29 @@ answered `git push origin BRANCH:main`, preserving every SHA. Read the
 baseline first, diff the two answers, and let the discriminator fall out
 of the disagreement.
 
+**Scope the arms to the hash that moved.** The stamp keeps four,
+`paths`, `routing`, `body` and `references` (`scripts/skill-status.py`),
+and `--stale` names the one an edit moved as its verdict. Each has one
+witness, and an arm can witness only what its invocation path reads:
+
+| Verdict | Hash covers | Arm that reads it | Witness |
+| --- | --- | --- | --- |
+| `retest-activation` | the `paths:` glob | Phase A | the transcript's `skill_listing` record, `isInitial` false |
+| `retest-routing` | `description` and `when_to_use` | a model-invoked trigger query | a `Skill` call naming the skill |
+| `retest-behaviour` (`review-body` on a reference skill) | the body | any query that reaches the edited section, plus the no-X arm for a check-shaped edit | the answer, read in full |
+| `refs-only` | `references/` | none; a note, not a debt | — |
+
+A slash arm reads none of those: it inlines the body past the listing,
+so it cannot see a `description` edit, and on a body edit it shows
+nothing the model-invoked arm did not. What it alone tests, no hash
+tracks: that `/<name>` resolves and expands, and a `model:` pin, which
+only that path honours. So a skill's first test runs both paths, and a
+retest adds the slash arm only for a `model:` or `name:` edit. Read off
+the script 2026-09-29, after `4b1a5c9`'s message booked a slash arm
+for a `description` edit, which one could not have seen; `51d7487`'s
+"the routing hash is unchanged, so no slash arm ran" reads as though a
+routing change would want one.
+
 **A change in the payload arm is not yet the edit's doing.** The stamp
 names the edit that staled the test; it does not say the edit caused
 what the retest found. To attribute it, run the pre-edit body under

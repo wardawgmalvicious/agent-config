@@ -301,15 +301,15 @@ name, so a grep for it reads as a leaked payload — and when
 list at all; assert its sibling payload names instead (measured
 2026-09-13, `references/reading-a-failure.md`).
 
-Then, in a normal session, run the trigger queries from step 1. Test
-**both** invocation paths, because they do not behave alike: a `model:`
-pin is honoured on `/slash` invocation and silently dropped on
-model-invocation, while `effort:` applies on both. Where the skill has
-refusal behaviour, exercise the refusal modes as well — a skill that
-does the right thing but ignores its own scope guard has failed.
-`tests/skills/code-review/README.md` has the four-mode matrix
-(slash review, NL review, slash adversarial, NL adversarial) to copy
-from.
+Then, in a normal session, run the trigger queries from step 1, and
+**scope the arms to what the edit touched**: an arm tests only what its
+invocation path reads. A `description` or `when_to_use` edit wants a
+model-invoked trigger query and its `Skill` call, which a slash arm
+never reads; a body edit, a query that reaches the edited section; a
+first test or a `model:` pin, the slash arm too, which honours the pin
+model-invocation drops. Exercise the refusal modes too — ignoring its
+own scope guard is a fail; `tests/skills/code-review/README.md` has
+the four-mode matrix.
 
 **Allowlist the tools when a trigger query names a destructive action.**
 A behavioural probe runs with this machine's credentials — an `az login`
