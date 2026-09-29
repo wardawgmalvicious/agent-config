@@ -81,6 +81,15 @@ conflict, stood at 201 and still fast-forwarded. In that worktree,
 another names in `blocked-by`. In a scratch repo, a pre-commit hook ran
 once per commit and not at all on the rebase or the fast-forward.
 
+**The rebase also rewrites the branch's SHAs**, and a stale one still passes
+`git cat-file -e`: the pre-rebase SHA did, after `git worktree remove`
+and `git branch -d` too, while `git merge-base --is-ancestor` exited 1
+for it and 0 for the one that landed. The first brief landed this way,
+`fabric-alter-table-and-serialization-gaps`, reworded its closing
+commit after its rebase, and all six SHAs it cites are on `main`; but
+it checked them with `cat-file -e`, which would have passed stale ones
+as well (transcript `1c8ba406`).
+
 ## Audit briefs are a second queue
 
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`

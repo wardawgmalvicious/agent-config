@@ -37,6 +37,9 @@ What a session must know before it writes, starts or lands a brief here;
   git branch -d <branch>
   ```
 
+  A rebase rewrites the branch's SHAs, so cite one only after it, and
+  check each with `git merge-base --is-ancestor <sha> <branch>`, since
+  `git cat-file -e` passes on a stale one.
   Deploy after the merge, as root `CLAUDE.md` § "Commands" says.
 - **Re-measure a brief's evidence before acting on it**, and record which
   way it moved: a commit elsewhere can satisfy or void a brief silently.
