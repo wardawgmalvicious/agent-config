@@ -149,6 +149,38 @@ disallowed no arm carries it, and root keeps a summary of it: the 15 of
 16 no longer holds, and the ablation margin has not been re-measured
 since.
 
+**The ablation needs one tool declared, and `--tools ""` declares none.**
+Under the allowlist the ablation above, `Skill` denied beside the file
+tools, becomes `--tools CronList`, a read-only placeholder. Measured
+2026-09-29 on `test-skill`, Opus 5.5 at max effort, one walkthrough
+query: with no tool declared, the model wrote 14 calls as text, 7
+`Read`, 5 `Glob` and 2 `Grep`, then wrote their results itself, among
+them a `SKILL.md` for the query's skill, which does not exist, and cited
+its invented lines as findings. A call written as text ends no turn, so
+it ran to the output cap; the CLI injected "Output token limit hit.
+Resume directly…", and a second turn followed: 230,085 output tokens to
+the baseline's 111,909, 30 minutes, $5.68. A one-line Haiku check of
+`--tools ""` had passed, too short to show it, and
+`--tools Skill --disable-slash-commands` is the same trap: it drops
+`Skill` with the skills, leaving `tools: []`. No arm with a tool
+declared wrote a call as text: not the day's first two ablations, which
+denied `Skill` beside the stale list above and kept 15 tools, none of
+them a file tool, one turn each; nor a baseline whose one tool was
+`Skill`. That `CronList` alone holds is reasoned from those, not
+measured: its first arm was stopped early (below).
+
+**A max-effort arm with nothing to call is silent for most of its run.**
+Until its first content block closes, the stream holds only
+`thinking_tokens` progress records. Measured 2026-09-29, same run: the
+baseline thought 106,650 tokens before its first word, 17 minutes in
+all at about 100 a second, while the payload arm's first block closed
+at 7,400, its `Skill` call next. The `CronList` arm, stopped at 65,500
+as a runaway, was on the baseline's course: pace an arm against the
+baseline, never the payload arm. Bound spend at launch instead:
+`--max-turns` counts turns, and each arm here ran one or two long ones.
+2.1.282 has `--max-budget-usd`; whether it stops a turn in progress is
+unmeasured.
+
 **`--safe-mode` keeps the session-start git snapshot**, and a retest
 runs soon after the commit that made the claim under test, so the
 snapshot can hand that claim to the baseline. Measured 2026-09-29 on
