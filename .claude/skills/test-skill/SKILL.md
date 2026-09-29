@@ -274,8 +274,7 @@ Learn pages a skill was drilled from and re-derive it — a second reason
 it comes back close. Add `--disallowedTools WebFetch,WebSearch` **to
 both runs**, the payload side too, or a pass cannot separate "the skill
 delivered it" from "the model fetched the page the skill cites"; or
-compare on synthesis that sits on **no single page**. Measured 2026-09-12
-on `fabric-deployment-pipelines` (`references/reading-a-failure.md`).
+compare on synthesis that sits on **no single page** (2026-09-12).
 
 **Those two flags do not turn the web off on this machine, and the gap
 is one-sided.** `microsoft-learn-mcp` is **user scope**, so a payload
@@ -283,20 +282,15 @@ probe reaches Learn through it whatever `--disallowedTools` says, while
 `--safe-mode` strips MCP with the payload and the baseline cannot —
 leaving the very confound the flags were meant to remove. Add
 `--strict-mcp-config` to the payload arm (with no `--mcp-config` it
-drops every server) and check the `init` record's `tools` count: 29 with
-the servers, 22 without, matching the baseline. Measured 2026-09-13:
-`fabric-eventstream`'s first payload run blocked both web tools and
-still fetched all four drilled Learn pages.
+drops every server) and check that the `init` record's `tools` count
+matches the baseline's (`fabric-eventstream`, 2026-09-13).
 
 **Prove the baseline actually stripped the payload.** A `--safe-mode`
 run that silently kept the skill is indistinguishable from one where the
 base model already knew the answer — both read as "the skill adds
 nothing". In a `-p` probe the `system`/`init` record names
 `slash_commands` and `tools`: assert the skill is absent from it and
-that the count dropped. Measured 2026-09-12 on
-`fabric-catalog-governance` — 21 commands with the skill absent against
-33 with it present — which is what made "the baseline reproduced this
-finding unaided" a result rather than a guess.
+that the count dropped (`fabric-catalog-governance`, 2026-09-12).
 
 **Assert on a name only the payload provides.** `code-review` stays
 listed under `--safe-mode` because the CLI ships a built-in of that
@@ -347,9 +341,7 @@ The `paths:` glob keeps it out of the startup listing, so its
 context, and `/<name>` answers `Unknown command`. Read a matching file
 first; that injects the listing entry and the model can then invoke it.
 The four-mode matrix above applies as written only to an
-*unconditional* skill. Measured 2026-09-02 on 2.1.252:
-`/fabric-data-pipeline` was `Unknown command` while `/fabric-gotchas` —
-same session shape, no `paths:` — ran normally.
+*unconditional* skill (`fabric-data-pipeline`, 2026-09-02).
 
 **Run the behavioural session outside this repo — for a platform
 skill.** `.claude/settings.json` here collapses every platform skill
@@ -376,19 +368,15 @@ NL arm answered through a `Skill` call, and a slash run with **no**
 `Skill` call that still carries the skill's own detail has proved the
 expansion — without it the model would have had to call `Skill` as the
 NL run did. Use a query the skill answers itself: on one it delegates,
-the only `Skill` call is the delegate's and the run reads as ambiguous.
-Measured 2026-09-13 on `fabric-cli` — NL 3 turns with `Skill
-fabric-cli`, slash 1 turn with none, the same GUID-vs-friendly-name
-table in both; the first slash run, on a section that hands off to
-`fabric-deployment-pipelines`, showed only that skill's call.
+the only `Skill` call is the delegate's and the run reads as ambiguous
+(`fabric-cli`, 2026-09-13).
 `--output-format stream-json --verbose` is the cheaper route to those
 records — it carries the `tool_use` blocks, the `init` record and, for a
 conditional skill, the `commands_changed` record that witnesses the
 matching `Read` (`references/reading-a-failure.md`) inline, so nothing
-has to locate a session id under `~/.claude/projects/`. Read
-the answers rather than grepping them for expected phrases: on
-2026-09-12 an `/owns|owned/` scan missed "items you own" and nearly
-recorded a passing assertion as a failure.
+has to locate a session id under `~/.claude/projects/`. Read the answers
+rather than grepping them: on 2026-09-12 an `/owns|owned/` scan missed
+"items you own" and nearly recorded a passing assertion as a failure.
 
 **Launch a slash probe from PowerShell**, not the Bash tool. MSYS2
 rewrites a leading-slash argument to `C:/Program Files/Git/<name>`, so

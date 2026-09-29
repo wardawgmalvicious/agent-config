@@ -7,7 +7,9 @@ in is never the variable, what the write-tool flags leave open, what
 the `--safe-mode` list still carries, and what it leaves within reach.
 Moved out of the skill body on 2026-09-13 when that body reached the
 linter's 500-line cap, the moved text unchanged; later sections landed
-the same day, each time the cap was hit again.
+the same day, each time the cap was hit again. Four of step 8's
+measurements followed on 2026-09-29, each under a new lead, to make
+room in the body for instructions that had lived only here.
 
 **The transcript is one of two witnesses.** It is at
 `~/.claude/projects/<project>/<session-id>.jsonl`; an activation is a
@@ -34,6 +36,14 @@ took the listing from 67 to 73 with the cultures skill present;
 `model.tmdl` to 72 with `fabric-tmdl` and `fabric-tmdl-api` present and
 the cultures skill correctly absent. The `--safe-mode` baseline and a
 cold slash probe emitted none.
+
+**A slash run's witness is the NL run beside it.** A slash-invoked skill
+is inlined as a command expansion and makes no `Skill` call, so step 8
+pairs the slash arm with an NL arm on the same query. Measured
+2026-09-13 on `fabric-cli` — NL 3 turns with `Skill fabric-cli`, slash 1
+turn with none, the same GUID-vs-friendly-name table in both; the first
+slash run, on a section that hands off to `fabric-deployment-pipelines`,
+showed only that skill's call.
 
 **The transcript also witnesses which *model* served a turn**, which is
 what checks a `model:` pin in `.claude/skills/`. Each assistant record
@@ -92,6 +102,11 @@ through … the exact commands start to finish" reached step 9 with 11 of
 11. A skill whose body is commands wants one walkthrough arm, or the
 later steps are never rendered.
 
+**The `init` record is what proves the strip.** Measured 2026-09-12 on
+`fabric-catalog-governance` — 21 commands with the skill absent against
+33 with it present — which is what made "the baseline reproduced this
+finding unaided" a result rather than a guess.
+
 **The `--safe-mode` list still carries every built-in.** The proof that
 the payload was stripped is a payload name missing from
 `init.slash_commands`, and `code-review` is not one: the CLI ships a
@@ -119,6 +134,12 @@ separate "the skill delivered it" from "the model fetched the page the
 skill cites" (2026-09-12: with web off on both, the payload still
 produced the Learn fact). Cost separates when content does not: 4 turns
 to 8.
+
+**The two flags leave the Learn MCP server open to the payload arm.**
+Measured 2026-09-13: `fabric-eventstream`'s first payload run blocked
+both web tools and still fetched all four drilled Learn pages. The
+`init` record's `tools` count was 29 with the servers and 22 under
+`--strict-mcp-config`, matching the baseline.
 
 **`--safe-mode` strips what the harness loads — not the working
 directory, and not the project instructions.** Both confounds surface
@@ -200,6 +221,10 @@ variable on every arm. Its name says it drops the built-in git
 instructions too (not measured), so for a git-workflow skill such as
 `commit` or `land` it thins the baseline beyond the snapshot: read the
 log for the claim instead of setting it there.
+
+**A conditional skill answers `Unknown command` cold.** Measured
+2026-09-02 on 2.1.252: `/fabric-data-pipeline` was `Unknown command`
+while `/fabric-gotchas` — same session shape, no `paths:` — ran normally.
 
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
