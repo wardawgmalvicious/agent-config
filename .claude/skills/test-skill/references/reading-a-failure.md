@@ -66,6 +66,20 @@ judgement, and exactly the restraint the flags exist not to depend on.
 reasoning, since whether the flag reaches a subagent's tools was not
 probed.
 
+**The deny list went stale; an allowlist cannot.** On 2.1.282 a `-p`
+probe denied the step 8 list, the file and web tools, `ListAgents` and
+`SendMessage`, and still held 16 tools: among them `Workflow`, which
+spawns agents as `Agent` does; `EnterWorktree`, a git write;
+`CronCreate`, `RemoteTrigger` and `ScheduleWakeup`, which run work
+later or elsewhere; `PushNotification`; and three `Artifact` tools.
+The user-scope cold-probe recipe's shorter list, run from this repo,
+left 82: `Monitor`, `Task`, `Workflow`, and `github-mcp`'s
+`push_files`, `merge_pull_request` and `delete_file` from the project
+`.mcp.json`. `--tools Skill` left `Skill` alone, with `test-skill`
+still listed, and `--tools ""` left nothing; `--tools` names built-in
+tools only, so `--strict-mcp-config` stays. Read off `init.tools`
+2026-09-29; what the leftover tools could reach was not probed.
+
 **Disabling the shell stops an *acting* run at step 1.** What a probe
 measures is what the skill says, so the flags cost nothing on a query
 that asks for an explanation — and on one that asks the skill to act,
@@ -221,5 +235,8 @@ now", as a reason to accept a commit per brief, a guard under test. Add
 `ListAgents` to `--disallowedTools` on every arm, which costs the
 baseline nothing, unless the skill under test reads peers itself
 (`commit`, `land`, `learn`'s doorbell), where a shared tree is a branch
-it takes; there, launch the arms one at a time. Neither remedy has been
-measured.
+it takes; there, launch the arms one at a time. The first held on
+2026-09-29 (`test-skill`, six arms launched together, `SendMessage`
+denied too): both tools were absent from every `init.tools`, and no
+arm raised a sibling as a peer. `--tools` removes both by
+construction. The second is unmeasured.

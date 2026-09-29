@@ -313,20 +313,16 @@ does the right thing but ignores its own scope guard has failed.
 (slash review, NL review, slash adversarial, NL adversarial) to copy
 from.
 
-**Disable write tools when a trigger query names a destructive action.**
+**Allowlist the tools when a trigger query names a destructive action.**
 A behavioural probe runs with this machine's credentials — an `az login`
 survives across tool calls — so "Delete the Marketing domain" or a bulk
 label write can reach a real tenant, and the skill's own refusal is the
-only thing in the way. Don't rely on it: pass
-`--disallowedTools "Bash,PowerShell,Monitor,Agent,Edit,Write,NotebookEdit"`
-plus `--strict-mcp-config`. The shell tools are not the only way out —
-`Monitor` runs its `command` in Bash's own shell environment, `Agent`
-spawns a subagent with its own tools, and the user-scope `MCP_DOCKER`
-gateway re-exports `merge_pull_request` and `push_files` — and two
-`land` probes run with the shorter list proved the point by declining
-to abuse `Monitor` unprompted (`references/reading-a-failure.md`).
-Added 2026-09-12, after `fabric-catalog-governance`'s own brief
-supplied both of those queries.
+only thing in the way. Don't rely on it: pass `--tools Skill`, plus
+`Read` where a conditional skill needs its matching file, and
+`--strict-mcp-config`, since `--tools` governs only built-in tools. A
+deny list goes stale as the CLI adds tools: on 2.1.282 the one this
+step used to give left `Workflow`, `EnterWorktree`, `CronCreate` and
+`RemoteTrigger` (`references/reading-a-failure.md`, 2026-09-29).
 
 **What is measured is what the skill *says*, not whether it can call an
 API** — free on a query that asks for an explanation, and a real cost on
@@ -358,11 +354,11 @@ skill.** `.claude/settings.json` here collapses every platform skill
 description to `name-only`, and the description *is* the trigger — so
 an in-repo run is a guaranteed false negative that looks exactly like a
 broken skill. **A project-scope skill must run here**, where the payload
-is on disk and root `CLAUDE.md` may repeat it: disallow the file tools
-(`Read,Glob,Grep,ToolSearch`) on both arms, then add a third arm with
-`Skill` disallowed too — **model-invoked, never slash**, or the
+is on disk and root `CLAUDE.md` may repeat it: give both arms
+`--tools Skill`, so neither can read the payload off disk, then add a
+third arm with `--tools ""` — **model-invoked, never slash**, or the
 expansion inlines the body straight past the denial and the arm is
-inert. `references/reading-a-failure.md`, 2026-09-13.
+inert. `references/reading-a-failure.md`, 2026-09-13 and 2026-09-29.
 
 Confirm the skill actually loaded with `/context` rather than by asking
 the session — self-report is unreliable, and once omitted an
@@ -482,7 +478,7 @@ activated". Work down this table before touching a glob:
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
-| The baseline scores nearly as high as the payload | It read the payload off disk, or root `CLAUDE.md` carries the same claims. Disallow the file tools on both arms, then ablate with `Skill` disallowed |
+| The baseline scores nearly as high as the payload | It read the payload off disk, or root `CLAUDE.md` carries the same claims. Allowlist `--tools Skill` on both arms, then ablate with `--tools ""` |
 | The payload arm changed since the last stamp | Not yet the edit's doing. Run the pre-edit body as `<name>-old` at project scope in the probe directory on the same query; a check-shaped edit ("if X, do Y") also needs the no-X arm |
 
 The witnesses behind that table — the transcript record, the `-p`
