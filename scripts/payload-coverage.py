@@ -24,9 +24,11 @@ count is what makes that judgement cheap.
 
 MATCHER: wcmatch with GLOBSTAR | DOTGLOB, which is what
 scripts/activation-expect.py uses to predict activation. The two must
-agree or this reports coverage the harness would not confirm. They cannot
-share the code -- a hyphen in that filename makes it un-importable -- so
-the flags are duplicated here deliberately. Change them together.
+agree or this reports coverage the harness would not confirm. Each keeps
+its own copy of the flags beside the canonical one, _skill_inventory.py's
+glob_flags(), which either could import: a hyphen in a filename stops a
+script being imported, not importing. Neither does, since neither needs
+anything else that module offers. Change all three together.
 
 PORTS MODE (--ports) asks the narrower question scripts/copy-copilot.ps1
 needs answered: which Copilot instruction ports in copilot/instructions/

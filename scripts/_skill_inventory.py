@@ -163,11 +163,10 @@ def glob_flags():
     agree with each other or they report coverage the harness would not
     confirm, so the value lives here once.
 
-    payload-coverage.py's docstring records the duplication as unavoidable --
-    "a hyphen in that filename makes it un-importable". That is backwards: a
-    hyphenated script cannot be imported FROM, but it can import. Neither
-    script is migrated here, since neither needs anything else this module
-    offers; the constant is simply no longer forced to be copied again.
+    Either script could import it: a hyphenated script cannot be imported
+    FROM, but it can import. Neither is migrated, since neither needs
+    anything else this module offers; the constant is simply no longer
+    forced to be copied again.
     """
     from wcmatch import glob as wg
 
