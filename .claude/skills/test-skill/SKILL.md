@@ -229,20 +229,22 @@ temporarily undoing a deliberate prune and must put it back:
 
 ```powershell
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
-ls ~/.claude/skills | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
+Get-ChildItem ~/.claude/skills -Name | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
 ```
 
 **Never run the script bare.** Omitting `-SkillGroups` deploys every
 group and silently undoes the prune — it happened on 2026-08-31, and the
 run reported `Linked` 37 times and ended `Done. All links verified.`
-There is no output line that reads as wrong. The `ls` above is the only
-check that catches it.
+There is no output line that reads as wrong. The name check above is
+the only one that catches it, and only with `-Name`: without it
+`Select-String` reads each full path, so `^` never matches and the
+check passes silently (2026-09-29).
 
 **Don't read the exit code as the verdict.** `link-claude.ps1` returns
 non-zero whenever any warning fires, and the standing `MCP_DOCKER` drift
 on this machine means a wholly successful deploy *and* a successful
 restore both exit 1. Read the `Skills N linked ...; M pruned` line and
-the `ls` above instead.
+the name check above instead.
 
 ### 8. The cold behavioural session
 
@@ -493,9 +495,9 @@ directory is not the variable — are in
 - **Static before session.** A failing static check means the globs and
   the contract disagree; a session cannot resolve that and costs tokens
   to say so.
-- **Restore the prune** before finishing, and verify it with `ls`. An
-  interrupted run that left platform skills linked silently changes what
-  every later session on this machine sees.
+- **Restore the prune** before finishing, and verify it with step 7's
+  name check. An interrupted run that left platform skills linked
+  silently changes what every later session on this machine sees.
 - **Fixtures are inputs, not outputs.** Do not edit a fixture to make a
   test pass; change the contract table or the glob, and say which.
 - **Phase A is skipped, not faked**, for an unconditional skill.
