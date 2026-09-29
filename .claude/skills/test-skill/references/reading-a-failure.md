@@ -204,9 +204,22 @@ as a runaway, was on the baseline's course, and the one that finished
 bore it out: 14.6 minutes to its baseline's 14.6 and the payload arm's
 9.1. Pace an arm against the baseline, never the payload arm. Bound
 spend at launch instead: `--max-turns` counts turns, and each arm here
-ran one or two long ones. 2.1.282 has `--max-budget-usd`; whether it
-stops a turn in progress is unmeasured, since no arm run under it has
-reached its cap ($4 against at most $2.03).
+ran one or two long ones. 2.1.282 has `--max-budget-usd`, which lets
+the turn in progress finish (below).
+
+**`--max-budget-usd` does not stop a turn in progress.** Measured once,
+2026-09-29 on 2.1.282 (`251f615`), in the first arm run under it to
+reach its cap: a `--safe-mode` baseline capped at $4 spent its whole
+first turn thinking, 127,999 of 128,000 output tokens, and the CLI
+resumed it with "Output token limit hit". It had declared `Skill` and
+wrote no call as text, so that resume alone is no sign of the
+zero-tool trap above. The second turn crossed $4 partway through and
+ran on to a whole answer after 199,195 thinking tokens, 32.6 minutes
+in all, ending at $4.17. The `result` record read
+`error_max_budget_usd`, `is_error` true, and had no `result` field at
+all: read a capped arm's answer off its assistant records. Expect an
+arm to spend its cap plus the rest of the turn that crosses it, $0.17
+here.
 
 **`--safe-mode` keeps the session-start git snapshot**, and a retest
 runs soon after the commit that made the claim under test, so the
