@@ -1230,6 +1230,15 @@ exclude would strip a worktree session's own root, though such a Read is
 likelier now than when no worktree existed. Root went from 199 lines to
 200, its cap.
 
+**2026-09-29.** Root's "then land and deploy it from the main checkout"
+now reads "then land it as `docs/handoffs/CLAUDE.md` says", which holds
+the procedure: a fast-forward from the main checkout with no push, the
+deploy, then the worktree's removal and the branch's. Read as `/land`,
+the old words would have pushed the branch with every unpushed serial
+commit beneath it. The user decided it that day in `land-rework.md`, and
+`docs/handoffs/execute/README.md` § "A brief's worktree lands without a
+push" keeps the reasoning and the measurements. Root stays at 200 lines.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

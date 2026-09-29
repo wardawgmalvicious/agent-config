@@ -44,6 +44,30 @@ per the [lifecycle](#lifecycle) below.
 `git log -p -- docs/handoffs/execute/README.md` has every row the table
 held, if a closed decision ever needs re-reading.
 
+## A brief's worktree lands without a push
+
+Decided 2026-09-29, in `land-rework.md`: a brief worked in a worktree
+lands from the main checkout by a fast-forward, with no push, while
+`/land` stays the outward route, pushing and opening a PR. Serial work
+here commits to `main` and pushes only when asked, and a worktree
+branches from local `HEAD`, so `/land` would have published the branch
+with every unpushed serial commit beneath it: `main` stood 4 commits
+ahead of `origin` that day. Only this repo lands this way, so the
+commands live in [../CLAUDE.md](../CLAUDE.md), and `/land` step 1 defers
+to a repo's instructions that land without a push.
+
+Measured that day in a scratch clone, on git 2.55.0 and Claude Code
+2.1.282: from the main checkout `git merge --ff-only <branch>` refused,
+`Not possible to fast-forward`, once `main` had moved, and
+`git -C <worktree> rebase main` let it through; `git worktree remove`
+refused a dirty tree and removed a clean one, after which
+`git branch -d` deleted the branch. `ExitWorktree` `keep` returned a
+`claude --worktree` session to the main checkout, though its description
+scopes it to `EnterWorktree`, and released the worktree's lock, so that
+session removed the worktree itself. At `/exit` a worktree holding
+commits is offered keep or remove, and remove deletes the branch
+(code.claude.com/docs/en/worktrees, read that day).
+
 ## Audit briefs are a second queue
 
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`

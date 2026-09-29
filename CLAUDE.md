@@ -136,7 +136,7 @@ change can vanish, staged or not, as `git status` looks innocent
 (2026-09-12). `/commit` § "When another session shares this tree" has the
 procedure; change it there, not here. **Work a brief in parallel in a
 worktree named after it**, `claude --worktree <brief>` less `.md`, then land
-and deploy it from the main checkout: git and `link-claude.ps1` both refuse
+it as `docs/handoffs/CLAUDE.md` says: git and `link-claude.ps1` both refuse
 a worktree (2026-09-27). `.claude/settings.json` branches a worktree
 from local `HEAD`; the default, `fresh`, drops unpushed commits unannounced.
 A worktree buys no payload isolation for the deployed groups (2026-09-02),

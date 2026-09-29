@@ -24,8 +24,19 @@ What a session must know before it writes, starts or lands a brief here;
   Each is `key: value` or `key: [a, b]`, and no value opens with a
   backtick or a quote, which YAML would misread.
 - **A worktree named after a brief marks it in flight** in that view; root
-  `CLAUDE.md` § "Branching and concurrent sessions" says when to take one
-  and where it lands.
+  `CLAUDE.md` § "Branching and concurrent sessions" says when to take one.
+- **A brief's worktree lands from the main checkout, with no push**, so
+  not through `/land`, which pushes. Its session gets there by
+  `ExitWorktree` `keep` when the user asks, or ends and keeps the
+  worktree: `/exit` offers to remove it, which deletes the branch. Then:
+
+  ```bash
+  git merge --ff-only <branch>   # refused: main moved; git -C <worktree> rebase main
+  git worktree remove .claude/worktrees/<brief>   # refused as locked: a session holds it; /prune-branches if its pid is dead
+  git branch -d <branch>
+  ```
+
+  Deploy after the merge, as root `CLAUDE.md` § "Commands" says.
 - **Re-measure a brief's evidence before acting on it**, and record which
   way it moved: a commit elsewhere can satisfy or void a brief silently.
 - **`needs: [user]` is a question for the user**, not a call to make for
