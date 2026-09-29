@@ -61,6 +61,20 @@ Worked `az rest` invocation and the REST item-definition envelope:
 - `.drop table T ifexists` — guarded drop.
 - **Atomic blue-green swap** via `.rename tables A=B, B=C, C=A` (single command, atomic).
 
+**Docstring and folder: measure, don't read.** Learn overstates what
+`.alter table` does to them and says nothing of what `.create-merge`
+does. A bare `.alter table`, with no `with (...)` clause, leaves the
+table's `docstring` and `folder` as they were, though Learn says it
+overwrites both; column docstrings survive too, since the command has no
+syntax for them. `.create-merge table … with (docstring = "…")` does set
+an existing table's docstring, where Learn's page covers only columns.
+Measured on Fabric Eventhouse, not ADX: the alter on 2026-09-22 against
+before/after schema dumps (docstring on real tables in two environments,
+folder on a scratch table), the create-merge on 2026-09-17. Restating
+`with (docstring = "…", folder = "…")` on an alter still costs nothing
+and guards the documented reading: belt-and-braces, not a required
+workaround.
+
 **With OneLake availability ON the surface narrows**: adding and deleting
 columns work (April 2026+), but altering a column type, renaming a table,
 applying RLS, and deleting/truncating/purging data do **not** — toggle
