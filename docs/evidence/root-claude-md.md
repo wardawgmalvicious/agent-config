@@ -1809,6 +1809,16 @@ are not watched the way skills are" does not hold for rules, which a
 session reads when a matching file is Read (How this repo is structured,
 2026-09-24).
 
+**2026-09-29.** The sentence on `tests/scripts/` stopped naming its
+suites when a third arrived, `copy-copilot/` in 3775d1a, and now says
+what the list never did: nothing runs them unasked.
+`.pre-commit-config.yaml` has no hook under `tests/scripts/`, and
+`.github/workflows/pre-commit.yml`, the only workflow, runs
+`pre-commit/action` alone (read 2026-09-29). Commands' two per-suite
+lines became one loop over `tests/scripts/*/test-*.sh`, which a new
+suite joins with no edit there; its first run passed all three suites,
+67 cases, in 22 seconds.
+
 ## Line endings
 
 Nothing moved: this section stands in root unchanged.

@@ -37,8 +37,7 @@ uv run scripts/lint-claude-md.py      # cap every CLAUDE.md, and place nested on
 uv run --with pyyaml scripts/skill-status.py --stale  # which skills need a retest, from the stamps
 uv run --with pyyaml scripts/skill-status.py --stamp <skill> --phase activation,behaviour  # or real-use
 uv run scripts/handoff-status.py      # every repo's open briefs and inbox notes; reads only
-bash tests/scripts/handoff-status/test-findings.sh  # handoff-status's negative cases
-bash tests/scripts/skill-overlap/test-routing.sh    # the routing gate's negative case
+for t in tests/scripts/*/test-*.sh; do echo "$t: $(bash "$t" | tail -n 1)"; done  # every negative-case suite
 scripts/bootstrap-pre-commit          # a clone: install pre-commit and wire all three hook stages
 ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid)-'  # after any deploy: must print nothing
 ```
@@ -164,7 +163,7 @@ refused, `cd` back too, until `EnterWorktree` (probed 2026-09-24, 2.1.282).
 ## Validating a change
 
 Pre-commit gates what `.pre-commit-config.yaml` lists; `tests/scripts/` has
-negative-case suites for the routing gate and `handoff-status.py`; behaviour
+negative-case suites, one per script, that no hook or CI runs; behaviour
 is checked by hand against `tests/`. `skill-status.py` says what an edit
 needs retested (`paths:`, `description`, `when_to_use` or a behavioural
 body, never `references/`), so keep no "untested" list.
