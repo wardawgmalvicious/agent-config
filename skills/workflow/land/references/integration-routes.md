@@ -154,7 +154,7 @@ the tree. Only the first line differs:
 ```bash
 [[ "$(git rev-parse <branch>)" == "<sha>" ]] && git push origin <branch>:main   # the write — ff-enforced
 # main requires a PR? line 1 is instead:
-#   gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha>
+#   gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha> --subject … --body …
 git fetch origin --quiet
 git fetch origin main:main      # moves the local main REF; HEAD untouched
 git merge-base --is-ancestor <branch> main
@@ -244,6 +244,28 @@ it in the PR body, and do it. **No wait**, because the round cannot
 tell the operator anything the clause did not, and holding one is the
 "pressing the point twice" this section already warns against. Reasoned
 2026-09-16, on a repo whose baseline was already `1`.
+
+**Compose its message, as for a squash.** Left unset, GitHub builds it
+from the repo's `merge_commit_title`, and `MERGE_MESSAGE`, which
+agent-config's own settings hold, gives the classic title,
+`Merge pull request #<n> from <owner>/<branch>`. GitHub's REST docs
+abbreviate it as "from branch-name"; real titles carry the head repo's
+owner, as microsoft/vscode's do (read 2026-09-29). On an organization's
+repo that is the organization's account name, in `main` for good,
+written by the server where no local check reads it: `identity-guard`
+sees only Claude Code's commits. Relayed from a client repo, 2026-09-27:
+its two earlier merges through this route named the org, and the two
+landed that day with `--subject` did not. So pass it:
+
+- `gh`: `--subject "Merge pull request #<n> from <branch>"` and
+  `--body "<PR title>"`
+- `merge_pull_request`: the same two as `commit_title` and
+  `commit_message`
+
+A repo's `merge_commit_title` set to `PR_TITLE` does it per repo, but
+that is a settings change, and the user's call. The rule is general:
+wherever the server would compose a message — a merge title, a squash
+body, a revert title — compose it.
 
 One trap in carrying that out: **`git merge -F -` does not read
 stdin.** It fails `error: could not read file '-'` (exit 129) where

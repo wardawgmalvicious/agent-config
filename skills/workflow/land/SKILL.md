@@ -281,7 +281,7 @@ gh api repos/<owner>/<repo>/branches/main --jq .protected            # classic p
 | --- | --- |
 | `main` requires no pull request, and you hold the tree | the default above |
 | `main` requires no pull request, and another session holds the tree (step 1) | `git push origin <branch>:main`, behind the same `<sha>` check |
-| `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha>` |
+| `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha> --subject … --body …` |
 | `main` also requires linear history | stop — every route inside the gate rewrites SHAs; name which, then wait |
 | The repo's documents name a mechanism — `CONTRIBUTING.md`, agent instructions, read before step 6 | treat it as asked for (the rows below), naming the document |
 | A squash was asked for | name what it collapses, then wait |
@@ -300,7 +300,7 @@ disclosure is being written. That file carries why each alternative is
 not the default, how to read what `main` requires and why a refusal
 cannot tell you, the refspec mechanics of the no-checkout route and its
 two silent traps, the `gh api` settings read with its `null` caveat, and
-what a squash or a merge commit costs.
+what a squash or a merge commit costs, and the message each passes.
 
 Whichever line writes `main` — the local merge, the refspec push, or the
 PR merge — is the write step 6 gates, whoever performs it.
