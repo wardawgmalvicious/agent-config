@@ -13,9 +13,9 @@
     "drift-update": {
       "behaviour": {
         "date": "2026-09-29",
-        "commit": "001ac5d",
-        "routing": "1a3526fa153946b6",
-        "body": "1c24461fe1e2bddb",
+        "commit": "d65acf7",
+        "routing": "690f1a688f57abdd",
+        "body": "dc24d1c1ca13c43f",
         "references": "4f53cda18c2baa0c"
       }
     },
