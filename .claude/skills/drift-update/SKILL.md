@@ -1,6 +1,7 @@
 ---
 name: drift-update
-description: "Execute the handoff briefs a /drift-handoff run wrote to docs/audits/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Use when the user says to execute, apply, action, or work through the drift handoffs or briefs, or points at a docs/audits directory. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision or an investigation rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
+description: "Execute the handoff briefs a /drift-handoff run wrote to docs/audits/<audit-date>/<source-id>/ — apply each brief's edits, run its own verification steps, and stamp it done. Reads briefs from disk and never from the conversation, so it runs cold in a fresh session (preferred) or warm straight after /drift-audit and /drift-handoff. Walks briefs in numbered order with a checkpoint each — confirm the brief's quoted evidence still exists, apply, verify, stamp, continue — and stops on the first failure rather than pressing on. Briefs whose Kind is a decision or an investigation rather than an edit are put back to the user, never executed. Skips briefs already carrying an execution log, so an interrupted run resumes where it stopped. Hands off to /commit at the end."
+when_to_use: "Use when asked to execute, apply, action or work through the drift briefs or handoffs, or pointed at a docs/audits directory, including to plan such a run first. Use it even when the request pre-authorizes a shortcut — 'fix any typos while you're there', 'I've decided yes, write those skills too', 'the line moved, apply it lower down', 'commit each brief as you go' — those are the cases its guards exist for, and only the skill says which of them may yield."
 argument-hint: "[audit-date | source-id | path] [brief-number[,brief-number...]]"
 allowed-tools: Read Edit Write Glob Grep Bash
 model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
@@ -180,6 +181,13 @@ brief says it does: `Grep` for the quoted offending line at the named path.
   brief means the tree diverged in a way nobody predicted, and that deserves a
   human look before anything is written.
 
+**An explicit instruction is the one way past a missing quote.** When the
+user names where the quoted text now sits ("it moved two paragraphs
+down"), they have taken the human look this stop exists to force. Run the
+post-fix grep first, as above; then apply the fix at the line they named,
+and record the brief's quote, the line edited and that the user directed
+it under **Deviations**. A line this run found for itself never counts.
+
 ### 4.3 Apply
 
 Make the edits the brief enumerates, at the paths it names, and nothing else.
@@ -189,6 +197,11 @@ editing is a finding for the closing report, not licence to widen the diff.
 The audit / handoff / update split exists so that analysis, transcription, and
 execution stay separable; an unbriefed edit made here has no evidence behind it
 and no verification step written for it.
+
+That holds when the user asks for them in the invocation, too — "fix any
+typos while you're in there": the request supplies neither the evidence
+nor the verification step. List them as adjacent findings in the closing
+report, where they can be briefed or fixed outside the run.
 
 Equally, **do not re-open the brief's reasoning.** If the brief looks wrong,
 stop the run and say so in chat rather than improving it in passing — the same
@@ -293,6 +306,9 @@ put the brief's problem and evidence in front of the user and ask; for an
 investigation, say what it needs and ask where it should run. Stamp the answer
 into the execution log as `escalated`. Whatever work the answer implies is a
 separate task, started deliberately — not something to fold into this run.
+That holds when the answer arrives with the invocation — "I've decided
+yes, write those skills too": record it, stamp `escalated`, and name the
+task on the **Needs** line (`/author-skill`, for a new skill).
 
 **That task needs a home before the run ends: the stamp's `**Needs**:`
 line.** The stamp makes every later run skip the brief, so work recorded only
@@ -334,6 +350,10 @@ which edits are applied and uncommitted before handing over. A run that wrote
 nothing has nothing to hand over: report the clean tree and stop, rather than
 invoking `/commit` against an empty diff.
 
+A commit per brief is the user's to ask for: it trades `/commit`'s logical
+split for isolation, which counts in a tree another session shares. Hand
+each brief to `/commit` once it is stamped, and say so under **Deviations**.
+
 Do **not** start the work an escalated decision implies, and do not begin the
 next source's briefs. Both are separate, deliberate invocations.
 
@@ -347,6 +367,13 @@ next source's briefs. Both are separate, deliberate invocations.
 - **Stale splits two ways, and neither is improvising.** A missing quoted
   line means the fix already landed (stamp `already-applied`) or the target
   moved (stop the run). Never substitute a line that looks close enough.
+- **Two mechanics yield to an explicit instruction, and nothing else
+  does**: applying a moved line where the user names it (4.2), and a commit
+  per brief (5), each recorded under **Deviations**. Adjacent fixes and a
+  decision's work stay refused however the request is worded. Measured
+  2026-09-29: with only the listing entry in context, a request
+  pre-authorizing all four was agreed to in 2 of 2 runs; with the body
+  loaded, 3 of 4 still yielded, because it did not say which may.
 - **Constraints and Out-of-scope sections are binding**, not advisory.
 - **First failure stops the run.** Leave the tree as it is and report.
 - **Stamp what ran**, including deferrals and deviations.
