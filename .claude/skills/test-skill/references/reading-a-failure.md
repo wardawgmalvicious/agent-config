@@ -166,8 +166,12 @@ the baseline's 111,909, 30 minutes, $5.68. A one-line Haiku check of
 declared wrote a call as text: not the day's first two ablations, which
 denied `Skill` beside the stale list above and kept 15 tools, none of
 them a file tool, one turn each; nor a baseline whose one tool was
-`Skill`. That `CronList` alone holds is reasoned from those, not
-measured: its first arm was stopped early (below).
+`Skill`. `CronList` alone held when a fresh session ran it to the end,
+the same day, on a walkthrough of validating a new `tidy-worktrees`
+skill: one turn, `end_turn`, no tool call and none written as text,
+95,930 output tokens and $2.03 to its baseline's 94,582 and $1.93
+(`51d7487`). The stream carried no thinking text, so that check covers
+the answer alone; the first `CronList` arm was stopped early (below).
 
 **A max-effort arm with nothing to call is silent for most of its run.**
 Until its first content block closes, the stream holds only
@@ -175,11 +179,13 @@ Until its first content block closes, the stream holds only
 baseline thought 106,650 tokens before its first word, 17 minutes in
 all at about 100 a second, while the payload arm's first block closed
 at 7,400, its `Skill` call next. The `CronList` arm, stopped at 65,500
-as a runaway, was on the baseline's course: pace an arm against the
-baseline, never the payload arm. Bound spend at launch instead:
-`--max-turns` counts turns, and each arm here ran one or two long ones.
-2.1.282 has `--max-budget-usd`; whether it stops a turn in progress is
-unmeasured.
+as a runaway, was on the baseline's course, and the one that finished
+bore it out: 14.6 minutes to its baseline's 14.6 and the payload arm's
+9.1. Pace an arm against the baseline, never the payload arm. Bound
+spend at launch instead: `--max-turns` counts turns, and each arm here
+ran one or two long ones. 2.1.282 has `--max-budget-usd`; whether it
+stops a turn in progress is unmeasured, since no arm run under it has
+reached its cap ($4 against at most $2.03).
 
 **`--safe-mode` keeps the session-start git snapshot**, and a retest
 runs soon after the commit that made the claim under test, so the
