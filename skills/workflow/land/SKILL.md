@@ -28,6 +28,7 @@ git log --oneline origin/main..HEAD
 git log --merges --oneline | wc -l   # baseline for step 8
 git worktree list               # separate trees — not who shares this one
 git branch -vv                  # where HEAD is, and each branch's tip
+git rev-parse --path-format=absolute --git-dir --git-common-dir   # two paths: a linked worktree
 ```
 
 **A dirty tree is not automatically unfinished work.** `commit` ends on
@@ -42,6 +43,11 @@ the merge there is nothing left to compare against.
 
 Nothing to land means there is nothing to do — say so rather than
 opening an empty PR.
+
+**Two different paths from the last command mean a linked worktree**:
+steps 7 to 9 change there, and a generated branch name is renamed first.
+Read [references/linked-worktree.md](references/linked-worktree.md)
+before step 3.
 
 **Check whether another session is live in this working tree, then
 ask.** Step 7's default runs `git switch`, and one working tree has one
@@ -281,6 +287,7 @@ gh api repos/<owner>/<repo>/branches/main --jq .protected            # classic p
 | --- | --- |
 | `main` requires no pull request, and you hold the tree | the default above |
 | `main` requires no pull request, and another session holds the tree (step 1) | `git push origin <branch>:main`, behind the same `<sha>` check |
+| `main` requires no pull request, and the branch is in a linked worktree (step 1) | that push, or the main checkout's route: [references/linked-worktree.md](references/linked-worktree.md) |
 | `main` requires a pull request — **whether or not you could bypass it** | `gh pr merge <n> -R <owner>/<repo> --merge --match-head-commit <sha> --subject … --body …` |
 | `main` also requires linear history | stop — every route inside the gate rewrites SHAs; name which, then wait |
 | The repo's documents name a mechanism — `CONTRIBUTING.md`, agent instructions, read before step 6 | treat it as asked for (the rows below), naming the document |
@@ -428,6 +435,10 @@ Do not delete, and say why, when:
   `ListAgents` run now, since step 1's answer has expired. Note this
   blocks the *deletion*, not the landing — step 7's variant covers
   that.
+- **The branch is checked out in a linked worktree** still on disk: git
+  refuses the local delete from either side until the worktree goes;
+  [references/linked-worktree.md](references/linked-worktree.md) says
+  when the worktree can go, and what to hand the user.
 - **Something outside git is bound to the branch** — the question step
   6 asked. What breaks when a bound branch is deleted has never been
   tested; the question is here because asking it only after the merge
