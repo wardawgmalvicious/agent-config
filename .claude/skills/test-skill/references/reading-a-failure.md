@@ -149,6 +149,20 @@ disallowed no arm carries it, and root keeps a summary of it: the 15 of
 16 no longer holds, and the ablation margin has not been re-measured
 since.
 
+**`--safe-mode` keeps the session-start git snapshot**, and a retest
+runs soon after the commit that made the claim under test, so the
+snapshot can hand that claim to the baseline. Measured 2026-09-29 on
+`test-skill`: every file tool was off, and the peers claim sat only in
+this file, yet all six arms, both baselines included, cited `96e6f00`
+by its subject, "parallel probes read each other as peers", and planned
+their probes one at a time for it. A Haiku probe under `--safe-mode`
+quoted the two newest commits verbatim; with
+`CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` it answered `NONE`. Set the
+variable on every arm. Its name says it drops the built-in git
+instructions too (not measured), so for a git-workflow skill such as
+`commit` or `land` it thins the baseline beyond the snapshot: read the
+log for the claim instead of setting it there.
+
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
 `/author-skill` just wrote is invisible everywhere until

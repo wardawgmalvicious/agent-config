@@ -480,7 +480,7 @@ activated". Work down this table before touching a glob:
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
-| The baseline scores nearly as high as the payload | It read the payload off disk, or root `CLAUDE.md` carries the same claims. Allowlist `--tools Skill` on both arms, then ablate with `--tools ""` |
+| The baseline scores nearly as high as the payload | It read the payload off disk, root `CLAUDE.md` carries the same claims, or the session-start git log names them, which `--safe-mode` keeps. Allowlist `--tools Skill` on both arms, set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` on every arm, then ablate with `--tools ""` |
 | The payload arm changed since the last stamp | Not yet the edit's doing. Run the pre-edit body as `<name>-old` at project scope in the probe directory on the same query; a check-shaped edit ("if X, do Y") also needs the no-X arm |
 
 The witnesses behind that table — the transcript record, the `-p`
