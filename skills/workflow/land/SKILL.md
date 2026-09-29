@@ -403,21 +403,11 @@ guard is an answer: HEAD on `main` needs no move, and on any other branch
 someone moved it — stop and report. Step 8 left local `main` current.
 Never switch just to make the delete succeed: step 1's 2026-09-22 failure.
 
-**Probe the remote ref; do not infer it from `delete_branch_on_merge`.**
-Step 7 reads that setting for planning; it is the wrong thing to act on
-here, because the value can change between the two — observed mid-run,
-2026-09-16. **Empty from `ls-remote` means GitHub already deleted the
-branch**: nothing to do, and say *that* in the report rather than
-claiming the session did it. Non-empty means the delete is yours, behind
-the lease.
-
-**Prune on both paths — which is why the block above ends with one,
-outside the conditional.** Where GitHub auto-deleted the branch, this
-clone's *remote-tracking* ref survives it: `git branch -a` still lists
-it, and a plain `git fetch` will not remove it.
-
-The reference has the evidence behind each of those, and why probing
-beats inferring even though it only narrows the window.
+**Empty from `ls-remote` means GitHub already deleted the branch**: say
+so rather than claiming the delete, and never infer it from
+`delete_branch_on_merge`, which changed mid-run once (2026-09-16). **The
+prune runs on both paths**: an auto-deleted branch leaves this clone's
+remote-tracking ref behind. The reference has the evidence for both.
 
 Do not delete, and say why, when:
 
@@ -479,30 +469,11 @@ yours to override; make the override informed rather than refusing it.
 
 ### Repo convention — overridable, but never silently
 
-A squash and a merge commit are **defaults, not laws.** The history is
-the user's to shape. But the two do not cost the same, so they do not
-get the same gate: one calibrated for the expensive mechanism turns the
-cheap one into ceremony, and guidance that is annoying to follow
-correctly gets followed loosely.
-
-- **A squash keeps the full round.** Name the specific commits it would
-  collapse — not "squashing loses information" but "this collapses 3
-  commits that separate the rule change from its fixtures" — then wait,
-  then record it in the PR body. A request that named the mechanism up
-  front has not heard the cost yet, so it is not yet a reaffirmation.
-  **A one-commit branch has nothing to collapse**: its squash gets one
-  clause — the new SHA — and proceeds, like a merge commit.
-- **A merge commit gets one clause and proceeds.** State its cost and
-  the step 1 `--merges` baseline in the same turn, record it, do it. No
-  wait: the round cannot tell the operator anything the clause did not.
-- **Keeping the merged branch costs nothing to honour.** No round — it
-  is simply one of the exceptions step 9 already names. Say in the
-  report that the branch was kept and why, or the next run reads the
-  leftover ref as a bug.
-
-Then do it. A reaffirmed instruction is the answer; pressing the point
-twice is worse than the squash.
+A squash and a merge commit are **defaults, not laws**, gated by what
+they cost. **A squash keeps the full round**: name the commits it would
+collapse, then wait, since a request that named it up front has not
+heard the cost, and record it in the PR body. A merge commit, or a
+squash of one commit, gets one clause and proceeds. Once reaffirmed, do
+it: pressing the point twice is worse than the squash.
 [references/integration-routes.md](references/integration-routes.md)
-carries what each mechanism costs — including squash's second cost when
-someone branched from your tip, which is not about your history at all —
-and the `git merge -F -` trap in carrying one out.
+§ "Overriding the default" has each in full; step 9, the kept branch.
