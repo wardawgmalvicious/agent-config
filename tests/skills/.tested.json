@@ -329,10 +329,10 @@
     "test-skill": {
       "behaviour": {
         "date": "2026-09-29",
-        "commit": "426c302",
+        "commit": "1f13e6c",
         "routing": "f514d6e3ed0be58f",
-        "body": "debb1943db6ed830",
-        "references": "ebb1f6294316e2ce"
+        "body": "49972ef52e0e34a8",
+        "references": "7694125cfe4b6120"
       }
     }
   }
