@@ -10,6 +10,15 @@
         "references": "78ca74ac51b3a2fe"
       }
     },
+    "drift-update": {
+      "behaviour": {
+        "date": "2026-09-29",
+        "commit": "001ac5d",
+        "routing": "1a3526fa153946b6",
+        "body": "1c24461fe1e2bddb",
+        "references": "4f53cda18c2baa0c"
+      }
+    },
     "fabric-activator": {
       "activation": {
         "date": "2026-09-12",
