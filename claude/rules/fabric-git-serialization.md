@@ -116,6 +116,20 @@ rename that file is a hazard until it is updated. Per-object detail:
 the `fabric-eventhouse` skill. (Docs:
 `fabric/real-time-intelligence/git-eventhouse-kql-database`.)
 
+A notebook sync rewrites markdown. In `notebook-content.py` each line of
+a `# MARKDOWN ****` cell is stored as `#`, a space, then its markdown, so
+a bare `#` is a blank line, `# ## text` an H2 and `# # text` an H1. **Every
+git → portal sync merges a bare `#` into the line after it**, turning a
+paragraph break into an H1 that outranks the cell's own `##` title, and
+reverting in git loses: the portal re-applied it identically seven
+minutes after a revert merged (observed Sept 2026). Keep each markdown
+cell to one paragraph with a bold lead-in, or split it in two.
+Separately, portal commits add a second blank line after a markdown
+cell's last line and stop at two; that renders as nothing and is not the
+fix failing, so leave it. A bare `#` under `# CELL` is a Python comment
+the portal never touches, and `grep` cannot tell the two apart: classify
+by the enclosing cell marker.
+
 ## Line endings: every Fabric repo needs a `.gitattributes`
 
 Fabric writes some lines CRLF and some LF **inside the same file** —
