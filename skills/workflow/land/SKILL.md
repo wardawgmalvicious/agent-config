@@ -142,6 +142,15 @@ having worked says nothing about the next read. Fall back to the `gh`
 whose login step 2 already confirmed — sanctioned here for an
 under-scoped MCP exactly as for an absent one.
 
+**On a private repo the same gap is a 404**: GitHub answers 404 rather
+than confirm the repo exists, and a fine-grained token reaches only its
+resource owner's repos, or a selection, and public ones alone while an
+organization's approval is pending (docs.github.com, re-read
+2026-09-29). Step 2's match settles `~/.claude/CLAUDE.md`'s
+identity-first reading, so take the 403's fallback; the same tool
+reading a public repo confirms it. Seen on a client's private repo,
+2026-09-27, where the confirmed `gh` then opened the PR.
+
 **Nothing warns you.** `gh` is authenticated, it works, it reports
 success — the PR simply appears under the other account. A wrong-account
 PR looks identical to a right-account one until someone reads the
@@ -312,7 +321,7 @@ nothing is the half of this skill that used to be missing.
   is the MCP's, and `gh pr view <n> --json merged` answers *"Unknown
   JSON field: merged"*. `state` (`MERGED`), `mergedAt` and `mergedBy`
   are `gh`'s (confirmed against `gh pr view --json`, 2026-09-16).
-- **`get_check_runs` can 403 on a token that opened the PR** — step 2
+- **`get_check_runs` can refuse a token that opened the PR** — step 2
   says why. `gh pr checks <n>` is then the route, not a contradiction
   of step 2's preference; without that fallback this row is unrunnable.
 - Read the check conclusions rather than the summary. A review bot (for
