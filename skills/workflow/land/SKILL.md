@@ -22,10 +22,12 @@ say why, and why that reasoning does not generalise.
 ## 1. Preflight
 
 ```bash
+git fetch origin                # origin/main current before anything reads it
 git status --short              # see below — clean, or knowingly left
 git branch --show-current       # must not be main
 git log --oneline origin/main..HEAD
-git log --merges --oneline | wc -l   # baseline for step 8
+git rev-parse origin/main       # <base>, kept like step 7's <sha>: after the merge, nothing else says where main stood
+git log --merges --oneline origin/main | wc -l   # the history's merges so far, for step 6
 git worktree list               # separate trees — not who shares this one
 git branch -vv                  # where HEAD is, and each branch's tip
 git rev-parse --path-format=absolute --git-dir --git-common-dir   # two paths: a linked worktree
@@ -37,9 +39,6 @@ a leftover is a question rather than a stop: ask whether it belongs in
 this branch. Uncommitted work does not travel into the PR either way —
 what matters is that nothing which *should* have been committed is
 sitting unstaged. Anything you cannot account for, stop and ask.
-
-Record the merge count now. Step 8 asserts it is unchanged, and after
-the merge there is nothing left to compare against.
 
 Nothing to land means there is nothing to do — say so rather than
 opening an empty PR.
@@ -355,32 +354,33 @@ nothing is the half of this skill that used to be missing.
   the keyring's active account answered
   `Could not resolve to a Repository`, which reads as a bad slug
   (2026-09-23).
-- `git log --merges --oneline | wc -l` against the step 1 baseline —
-  and **what counts as correct depends on the route taken**: unchanged
-  after a fast-forward, exactly baseline + 1 after a sanctioned
-  `--no-ff`. More than +1 is the real problem on either path, and is
-  what this check exists to catch. Asserting "unchanged" flat fails a
-  run that did exactly what was asked (observed 2026-09-16: baseline 1,
-  post-merge 2).
+- **Read `origin/main` against the pins, never HEAD**, which the refspec
+  push and the PR merge leave on the branch:
+
+  ```bash
+  git fetch origin
+  git merge-base --is-ancestor <sha> origin/main          # exit 0: the pinned head landed as-is
+  git log --merges --oneline <base>..origin/main | wc -l   # the branch's own merges, +1 for a merge commit
+  ```
+
+  A failed ancestor check is a squash or rebase merge, which no count
+  sees; a higher count is `main` moving under the PR merge, and step 7's
+  subject names yours ([measured](references/integration-routes.md#verifying-what-landed)).
 - `main` and `origin/main` at one SHA: `git rev-parse main origin/main`
-  prints two identical lines. After the refspec push or the PR merge, run
-  `git fetch origin main:main` first: a plain fetch moves `origin/main`
-  alone; unfetched, the PR merge passes on two stale lines (2026-09-23). Not
-  `--short`, which takes exactly one revision and fails
-  `fatal: Needed a single revision`, exit 128 — run twice in one
-  landing before the error was read rather than retried (2026-09-22;
-  reproduced 2026-09-23, git 2.55).
+  prints two identical lines, after `git fetch origin main:main` wherever
+  HEAD is off `main`, since a plain fetch moves `origin/main` alone.
+  Never `--short`, which fails exit 128; the reference has both.
 
 Report the PR number, the merged state, and the CI conclusions. If CI is
 still running, say so rather than implying it passed.
 
 ## 9. Delete the branch
 
-Step 8 has just proven the merge — the PR reads as merged, step 7's
-integration succeeded, `main` and `origin/main` at one SHA — so it holds
-nothing that is not in `main`. That is what makes this cleanup rather
-than a judgement call, and why it is disclosed at step 6 instead of
-gated here.
+Step 8 has just proven the merge — the PR reads as merged, the pinned
+head is in `origin/main`, `main` and `origin/main` at one SHA — so it
+holds nothing that is not in `main`. That is what makes this cleanup
+rather than a judgement call, and why it is disclosed at step 6 instead
+of gated here.
 [references/branch-deletion.md](references/branch-deletion.md) carries
 that argument in full, including why it still holds in a shared repo and
 why the exemption does not generalise to any other remote delete.

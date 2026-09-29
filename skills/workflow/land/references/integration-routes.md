@@ -2,8 +2,8 @@
 
 Everything behind step 7's routing table: why the default is the
 default, how to read what `main` requires, the mechanics of the
-no-checkout route, and what it costs to honour a request for a squash
-or a merge commit.
+no-checkout route, what it costs to honour a request for a squash or a
+merge commit, and how step 8 reads what landed.
 
 Read this **before the step 6 disclosure** whenever the run is taking
 anything but the default `--ff-only` route. Step 6 has to state which
@@ -28,9 +28,10 @@ the user corrected it.
   pressing it that preserves the split.
 - **A merge commit** — adds a commit to a history that may never have
   had one, and collapses nothing: every SHA survives. `git log --merges
-  --oneline | wc -l` from step 1 says what the history has done so far,
-  not what the repo wants: a `0` may mean only that no multi-change
-  branch has landed yet, so it never outweighs a written convention.
+  --oneline origin/main | wc -l` from step 1 says what the history has
+  done so far, not what the repo wants: a `0` may mean only that no
+  multi-change branch has landed yet, so it never outweighs a written
+  convention.
   Asked for, or written into the repo's documents, it costs a clause of
   disclosure and not a round — see [Merge commit](#merge-commit--one-clause-and-proceed).
 - **Squash** — collapses the logical split `commit` just built. The
@@ -85,6 +86,54 @@ The pin has been exercised once, in the pass direction
 exercised. `--match-head-commit` is present in gh 2.101.0, and the
 `merge_pull_request` schema carries `expectedHeadSha` (both checked
 2026-09-23).
+
+## Verifying what landed
+
+Step 8 reads `origin/main` against two pins: step 1's `<base>`, where
+`main` stood before the landing, and step 7's `<sha>`, the head that was
+to land. Until 2026-09-29 it counted merges from HEAD, which the refspec
+push and the PR merge both leave on the branch: the count could only
+pass the first, and read `0` after the second, where its merge commit
+makes `1`. Probes flagged that unprompted on 2026-09-23, 2026-09-25 and
+2026-09-29. Reproduced 2026-09-29 against a bare origin on git 2.55,
+with a second clone doing the server's merges:
+
+| Route | From HEAD, step 1 → 8 | `<base>..origin/main` merges | `--is-ancestor <sha> origin/main` |
+| --- | --- | --- | --- |
+| Default fast-forward | 0 → 0 | 0 | 0 |
+| Refspec push | 0 → 0 | 0 | 0 |
+| Refspec push, then someone else's merge | 0 → 0 | 1 | 0 |
+| PR merge, `--merge` | 0 → 0 | 1 | 0 |
+| PR merge, after another PR merged | 0 → 0 | 2 | 0 |
+| Squash | 0 → 0 | 0 | 1 |
+| A branch carrying its own merge, fast-forward | 1 → 1 | 1 | 0 |
+| Refspec push from a linked worktree | 0 → 0 | 0 | 0 |
+
+**Expect the branch's own merges, plus one where a merge commit was the
+route**; the branch's own is usually `0`:
+
+```bash
+git log --merges --oneline <base>..<sha> | wc -l   # the branch's own
+git log --merges --format=%s <base>..origin/main   # each merge that landed, by subject
+```
+
+**Only the ancestor check sees a squash or a rebase merge**: each
+rewrites the pinned head and adds no merge. **A count past that is
+`main` moving under the PR merge**, which lands on a moved `main` where
+both fast-forward routes refuse; the second command lists each, and the
+subject step 7 composed marks yours. **Each pin needs its fetch**: a
+`<base>` read from a stale `origin/main` counts whatever landed since
+the last fetch, and step 8's own fetch is what brings a server-side
+merge in.
+
+**Local `main` is a separate check.** A plain fetch moves `origin/main`
+alone, and with no fetch at all the PR merge passed
+`git rev-parse main origin/main` on two stale lines (2026-09-23);
+`git fetch origin main:main` moves both, and is refused where `main` is
+checked out ([linked-worktree.md](linked-worktree.md)). `--short` takes
+exactly one revision and fails `fatal: Needed a single revision`, exit
+128 — run twice in one landing before the error was read rather than
+retried (2026-09-22; reproduced 2026-09-23, git 2.55).
 
 ## Reading what `main` requires
 
@@ -239,7 +288,7 @@ tip equal to your own (observed 2026-09-15).
 **A merge commit gets one clause and proceeds.** It collapses nothing:
 every SHA survives, and every commit stays independently revertible and
 citable. Its whole cost is one extra commit and a non-linear graph — so
-state that and the step 1 `--merges` baseline in the same turn, record
+state that and step 1's `--merges` count in the same turn, record
 it in the PR body, and do it. **No wait**, because the round cannot
 tell the operator anything the clause did not, and holding one is the
 "pressing the point twice" this section already warns against. Reasoned

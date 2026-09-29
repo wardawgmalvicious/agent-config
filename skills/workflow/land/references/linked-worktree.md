@@ -72,17 +72,13 @@ command to run there.
 
 ## Step 8: verify against `origin/main`
 
-`git fetch origin main:main` is refused wherever another tree has `main`
-checked out, `fatal: refusing to fetch into branch 'refs/heads/main'
-checked out at '<path>'`, exit 128, and moves no ref. From a worktree,
-check the remote instead, and count merges there, since HEAD stays on
-the branch:
-
-```bash
-git fetch origin
-git merge-base --is-ancestor <sha> origin/main    # exit 0: merged
-git log --merges --oneline origin/main | wc -l    # against step 1's baseline
-```
+Step 8's ancestor check and merge count read `origin/main` against the
+pins, so they run from the worktree unchanged. Its local-`main` line
+does not: `git fetch origin main:main` is refused wherever another tree
+has `main` checked out, `fatal: refusing to fetch into branch
+'refs/heads/main' checked out at '<path>'`, exit 128, and moves no ref
+(again 2026-09-29). Skip that line and `git rev-parse main origin/main`;
+step 7's catch-up in the main checkout brings its `main` current.
 
 ## Step 9: the worktree goes before the branch
 
