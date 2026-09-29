@@ -33,7 +33,8 @@ Worked `az rest` invocation and the REST item-definition envelope:
 
 ```kql
 .show tables
-.show table T schema as json        // column names + types
+.show table T schema as json        // column names + types, for diffing in code
+.show table T cslschema             // the same as name:type, to paste into .alter / .create
 .show table T details               // row count, extent count, size
 .show functions
 .show materialized-views
@@ -44,6 +45,17 @@ Worked `az rest` invocation and the REST item-definition envelope:
 
 - **`.create-merge table`** is the safe / idempotent form — adds missing columns, never drops existing. Prefer over `.create table` for repeatable deployments.
 - `.alter-merge table T (NewCol: string)` — add column.
+- **`.alter table T (Col1:type, Col2:type, …)`** restates the whole column
+  list and is the only command that **reorders**: the table keeps exactly
+  the columns listed, in that order, and **drops any left out, with their
+  data.** Start from `.show table T cslschema`. Learn also warns that
+  parallel ingestion "that disregards the order of columns" can land
+  values in the wrong columns, and prescribes a mapping or a pause. A CSV
+  sender is inside that; name-keyed MultiJSON is **likely** outside it,
+  since it maps by name
+  ([references/ingestion.md](references/ingestion.md)), and alters under
+  live unmapped MultiJSON streaming did no harm (2026-09-22), but no
+  deliberately concurrent test has been run.
 - `.rename column T.OldName to NewName` — rename.
 - `.drop column T.OldCol` — irreversible; fails if column is used in materialized view or function (drop dependents first).
 - `.drop table T ifexists` — guarded drop.
