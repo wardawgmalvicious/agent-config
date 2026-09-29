@@ -79,6 +79,15 @@ Observed in one tenant, Sept 2026, and not on Learn:
   `ESComponentCreationFailure` is the fatal one: the node does not exist
   and nothing routes.
 
+**From 2026-09-10 every create or update of such a destination answered
+`422`** *"MessagingCatalogConfiguration is required …"*
+(`isUserError: false`), first seen the day a schema set was reset (every
+version deleted, restarted at `v1`). A fresh eventstream, KQL database
+and schema set failed the same way, so nothing client-side caused it,
+and destinations already published kept routing. Last seen 2026-09-14
+and not re-checked since: re-test before designing around it. While it
+lasts, the first bullet means no new type can be added at all.
+
 ### Version-bump gotcha
 
 **Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
