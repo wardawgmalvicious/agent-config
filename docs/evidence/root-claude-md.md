@@ -639,6 +639,72 @@ target that is a file is attached, and recursion runs only through
 instructions files. The check's first run, before the ports changed,
 failed on exactly those two lines.
 
+**2026-09-29.** `copilot-payload.md` gained its port-selection bullet:
+`copy-copilot.ps1` no longer ships every port to every repo. It had
+argued that `applyTo` scopes each port, so an unmatched one "costs a
+reader nothing", which is true of attaching a port and not of listing
+it. VS Code 1.139.1 (commit `04c0d99f4f`), read 2026-09-26 and again
+2026-09-29 on the same build: the instructions collector fetches every
+available instructions file, attaches those that apply, then passes the
+whole list to `_getCustomizationsIndex`. Whenever a read or terminal tool
+is enabled, that writes each file into an `<instructions>` block of the
+request with its path, `description` and `applyTo`, filtered by session
+type and nothing else, and tells the model "When an instruction file
+applies to your task (based on its description or applyTo pattern),
+follow the rules specified in it." Every port carries a `description`, so
+each one shipped is an entry in every agent request, and may be read on
+its description alone. Found by searching `workbench.desktop.main.js` for
+`instruction files available.` and `Here is a list of instruction files`,
+since minified names change with every build;
+`Code.VisualElementsManifest.xml` beside `Code.exe` names the build's
+directory. The user decided on 2026-09-26, once the client Fabric repo
+was found carrying the C#, M and XAML ports with no file any of them can
+match, and chose selection at copy time over a list per repo, which would
+drift as ports are added.
+
+Each port's `applyTo` against every checkout under the machine's repos
+root, by tracked file, leaving out a checkout's vendored `.github/skills/`,
+with `payload-coverage.py`'s matcher, `wcmatch` with
+`GLOBSTAR | DOTGLOB`. On 2026-09-26 it was checked against
+`PurePosixPath.full_match`, which `lint-frontmatter.py` uses, and the two
+agreed on every checkout. Re-measured 2026-09-29, the 2026-09-26 figure
+in brackets where one moved:
+
+| Checkout | Ports it carries | Ports that match | Carried, never match |
+| --- | --- | --- | --- |
+| The client Fabric repo: 510 files (507), 162 of them vendored skills | 10, by its manifest | CI workflows, DAX, expressions, KQL, Python, Spark SQL, TMDL, T-SQL | C#, M, XAML |
+| An older client Fabric repo: 222 files | none | DAX, expressions, Python, TMDL, T-SQL | none carried |
+| A client C#/XAML repo: 204 files | none | C# (144 files), XAML (31) | none carried |
+| A client Bicep/Python repo: 108 files (104) | none | Bicep (11; 10), CI workflows (3), Python (48) | none carried |
+
+The CI workflows port, the twelfth, was ported between the two dates, and
+Bicep, the eleventh, after the client Fabric repo's last copy, so neither
+is in its manifest; Bicep matches nothing there. The C#/XAML repo is why
+the pair could not simply be un-ported: with no `.github/instructions` it
+gets both from `~/.copilot` alone, as the Bicep/Python repo gets its
+ports. No vendored skill file matched a port on either date, so leaving
+`.github/skills/` out changed no count; it stays out because those files
+are the script's own output, and `instructions/` with it for the same
+reason. Dropping `DOTGLOB` changes one count and no selection: the client
+Fabric repo's KQL port matches 31 files with it and 27 without, the four
+being an Eventhouse's child databases, which Fabric serializes under a
+`.children/` folder. Whether VS Code's `**` enters a dot-folder was not
+checked; if it does not, the KQL port never applies to those four files,
+a gap in the port and not in the selection. `~/.copilot/instructions`
+holds every port and the Fabric profile reads it, as Copilot confirmed by
+naming a file there among those it had loaded in the client Fabric repo
+on 2026-09-25, so each port a repo carries is listed twice there. That is
+read from the collector's code, not counted in a request; removing it
+takes a profile's `chat.instructionsFilesLocations`, which is
+machine-config's.
+
+`payload-coverage.py --ports <repo>/.github` now reproduces the table,
+leaving out the target's `skills/` and `instructions/`, and audits what a
+repo's manifest carries against what matches. A `-WhatIf` run of
+`copy-copilot.ps1` against the client Fabric repo on 2026-09-29 selected
+eight ports, held back Bicep, C#, M and XAML, and would prune the three
+it carries.
+
 ## How the pieces trigger
 
 - **Skills** (`skills/<group>/<name>/SKILL.md` for deployable payload,

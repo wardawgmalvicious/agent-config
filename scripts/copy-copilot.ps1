@@ -85,10 +85,29 @@
     without its port following. Run it (pre-commit does) rather than
     trusting that the two stayed in step.
 
-    Every ported instruction ships; there is no per-repo subsetting,
-    because applyTo already scopes each file to its own globs. A warehouse
-    repo with no .tmdl never loads the DAX conventions, so shipping all of
-    them costs a reader nothing. To withhold one, do not port it --
+    A REPO TARGET GETS ONLY THE PORTS THAT CAN APPLY THERE; ~/.copilot GETS
+    EVERY ONE. A port ships to a repo only when its applyTo matches at least
+    one of that repo's tracked files, leaving out the target's own skills/
+    and instructions/, which this script wrote. applyTo decides when a port
+    is attached, not whether it is listed: VS Code 1.139.1 writes every
+    available instructions file, matched or not, into an index in each agent
+    request with its description and applyTo, and tells the model to follow
+    one on either (read 2026-09-26). So an unmatched port is an entry in
+    every request, and may be read on its description alone; a client
+    Fabric repo was carrying C#, M and XAML ports no file there could match.
+    User scope keeps every port because it is the only route to a repo with
+    no .github/instructions of its own.
+
+    The match is worked out on each run, by scripts/payload-coverage.py's
+    --ports mode, rather than kept as a list per repo that would drift as
+    ports are added. A run prints every port it holds back, and a held port
+    the manifest owns is pruned, as a deselected group's skills are. A
+    target outside any git repo, or in one with no tracked files left, has
+    nothing to match against, so every port ships and the run says so. The
+    accepted cost: a repo that gains a file type after its last copy lacks
+    that port until the next run, and nothing in Copilot says so.
+    `payload-coverage.py --ports <CopilotDir>` audits a vendored target for
+    exactly that. To withhold a rule from every target, do not port it --
     copilot/.source-hashes.json records that decision and why.
 
     OWNERSHIP IS THE WHOLE DIFFICULTY, and the reason this is not
@@ -204,13 +223,20 @@
     own .github/instructions. That is the guard working, not a fault --
     read the file before adopting it, because -Force overwrites it.
 
+.PARAMETER AllInstructions
+    Ship every ported instruction to a repo target, as ~/.copilot always
+    gets, rather than only those whose applyTo matches a tracked file
+    there: for a repo about to gain a file type it holds none of yet. It
+    skips the call into Python, so it also runs where uv is absent. The
+    next run without it prunes what still matches nothing.
+
 .EXAMPLE
     ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric,powerbi,workflow
-    The normal call. Vendors the platform skills and every ported
-    instruction into the client repo's .github as committable files,
-    leaving anything the client authored untouched. Commit them and every
-    teammate gets them from a plain clone, with no script and no checkout
-    of this repo.
+    The normal call. Vendors the platform skills, and the ported
+    instructions whose applyTo matches a file in that repo, into its
+    .github as committable files, leaving anything the client authored
+    untouched. Commit them and every teammate gets them from a plain clone,
+    with no script and no checkout of this repo.
 
 .EXAMPLE
     ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -Payload instructions
@@ -219,7 +245,13 @@
 
 .EXAMPLE
     ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric -WhatIf
-    Preview: show what would be copied, pruned or skipped, writing nothing.
+    Preview: show what would be copied, pruned, skipped or held back,
+    writing nothing.
+
+.EXAMPLE
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -Payload instructions -AllInstructions
+    Every ported instruction, matched or not, for a repo about to gain a
+    file type it holds none of yet.
 
 .NOTES
     Copying personally authored skills into a client repo commits that
@@ -235,7 +267,8 @@ param(
     [ValidateSet('skills', 'instructions')]
     [string[]]$Payload = @('skills', 'instructions'),
     [string[]]$SkillGroups,
-    [switch]$Force
+    [switch]$Force,
+    [switch]$AllInstructions
 )
 
 $ErrorActionPreference = 'Stop'
@@ -343,6 +376,33 @@ function Read-ManagedManifest {
         $script:DriftCount++
         return @()
     }
+}
+
+function Get-PortSelection {
+    # Which ports match the repo holding $Target, from payload-coverage.py's
+    # --ports mode. Every failure throws, before anything is written: see
+    # #region Resolve selected instructions for why none may fall back.
+    [OutputType([System.Collections.IDictionary])]
+    param([string]$Target)
+
+    if (-not (Get-Command uv -CommandType Application -ErrorAction SilentlyContinue)) {
+        throw ("uv is not on PATH, and port selection runs in Python through it. Install " +
+               "uv, or pass -AllInstructions to ship every port unselected.")
+    }
+    $engine = Join-Path $PSScriptRoot 'payload-coverage.py'
+    $json = & uv run --quiet --no-project --with pyyaml --with wcmatch python $engine `
+        --ports --json $Target
+    if ($LASTEXITCODE -ne 0) {
+        throw ("payload-coverage.py --ports exited $LASTEXITCODE, so no port could be " +
+               "selected; nothing was written. Pass -AllInstructions to ship every port.")
+    }
+    try {
+        $report = ($json -join "`n") | ConvertFrom-Json -AsHashtable
+    }
+    catch {
+        throw "payload-coverage.py --ports printed no readable JSON: $($_.Exception.Message)"
+    }
+    @($report)[0]
 }
 
 #region Resolve and validate the destination
@@ -484,12 +544,20 @@ if ($doSkills -and $desiredSkills.Count -eq 0) {
 #endregion
 
 #region Resolve selected instructions
-# Flat files rather than folders, and every ported one ships. There is no
-# per-repo subsetting because there is nothing to gain from it: applyTo scopes
-# each file to its own globs, so a warehouse repo with no .tmdl never loads the
-# DAX conventions. Shipping all of them costs a reader nothing. To withhold
-# one, do not port it -- copilot/.source-hashes.json records that decision.
+# Flat files rather than folders. A repo target gets only the ports whose
+# applyTo matches one of its tracked files; ~/.copilot gets every one. applyTo
+# decides when a port is ATTACHED, not whether it is LISTED: VS Code lists
+# every available instructions file in each agent request, matched or not, so
+# an unmatched port costs every request an entry (.DESCRIPTION has the rest).
+#
+# The matching is payload-coverage.py's, so one glob engine answers both "what
+# does this payload cover" and "what ships here". This script calls no other
+# Python, so a missing uv or a failed call STOPS the run: falling back to
+# shipping every port would undo the selection with no one told.
+# -AllInstructions is the way to ship them all on purpose.
 $desiredInstructions = [ordered]@{}   # base name -> file name
+$heldInstructions    = [ordered]@{}   # base name -> file name, matching nothing
+$selectionNote       = $null
 if ($doInstructions) {
     foreach ($file in Get-ChildItem $InstructionsRoot -File -Filter '*.instructions.md' | Sort-Object Name) {
         $stem = $file.Name -replace '\.instructions\.md$', ''
@@ -497,6 +565,28 @@ if ($doInstructions) {
     }
     if ($desiredInstructions.Count -eq 0) {
         throw "No *.instructions.md files found in $InstructionsRoot"
+    }
+
+    if ($AllInstructions -and -not $IsUserScope) {
+        $selectionNote = 'every port ships (-AllInstructions)'
+    }
+    elseif (-not $IsUserScope) {
+        $selection = Get-PortSelection -Target $CopilotDirFull
+        if (-not $selection['matchable']) {
+            $selectionNote = "every port ships: $($selection['reason'])"
+        }
+        $reported = @($selection['ports'] | ForEach-Object { $_['name'] })
+        foreach ($stem in @($desiredInstructions.Keys)) {
+            # Both sides read copilot/instructions/, so a port the engine did
+            # not report means it read something else. Stop rather than guess.
+            if ($reported -notcontains $stem) {
+                throw "payload-coverage.py --ports did not report the port $stem; nothing was written."
+            }
+            if (@($selection['select']) -notcontains $stem) {
+                $heldInstructions[$stem] = $desiredInstructions[$stem]
+                $desiredInstructions.Remove($stem)
+            }
+        }
     }
 }
 #endregion
@@ -759,6 +849,13 @@ if ($doInstructions) {
         }
     }
 
+    # The selection is reported before any copy, and under -WhatIf too: a port
+    # held back leaves nothing at the target to show it was ever considered.
+    if ($selectionNote) { Write-Host "Ports   $selectionNote" }
+    foreach ($stem in $heldInstructions.Keys) {
+        Write-Host "Held    $($heldInstructions[$stem]) (its applyTo matches no tracked file here)"
+    }
+
     foreach ($stem in $desiredInstructions.Keys) {
         $fileName = $desiredInstructions[$stem]
         $src      = Join-Path $InstructionsRoot $fileName
@@ -795,13 +892,15 @@ if ($doInstructions) {
         $managedInstructionsNow += $stem
     }
 
-    # Ours, and no longer shipped by the repo -- a rule whose port was deleted.
+    # Ours, and no longer shipped here: held back because nothing here matches
+    # it, or a rule whose port was deleted.
     foreach ($stem in @($managedInstructionsBefore | Where-Object { -not $desiredInstructions.Contains($_) })) {
         $dest = Join-Path $DestInstructions "$stem.instructions.md"
         if (-not (Test-Path $dest)) { continue }
-        if ($PSCmdlet.ShouldProcess($dest, 'Prune instruction no longer in the repo')) {
+        $why = if ($heldInstructions.Contains($stem)) { 'held back' } else { 'no longer ported' }
+        if ($PSCmdlet.ShouldProcess($dest, "Prune instruction, $why")) {
             Remove-Item $dest -Force
-            Write-Host "Pruned  $stem.instructions.md (no longer shipped)"
+            Write-Host "Pruned  $stem.instructions.md ($why)"
             $instructionsPruned++
         }
     }
@@ -829,6 +928,7 @@ if ($doSkills) {
 }
 if ($doInstructions) {
     Write-Host ("Instr   $($desiredInstructions.Count) selected, $instructionsCopied written" +
+                $(if ($heldInstructions.Count) { "; $($heldInstructions.Count) held back" } else { '' }) +
                 $(if ($instructionsPruned)  { "; $instructionsPruned pruned" } else { '' }) +
                 $(if ($instructionsSkipped) { "; $instructionsSkipped skipped (collision)" } else { '' }))
 }

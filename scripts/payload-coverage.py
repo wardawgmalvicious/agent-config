@@ -28,9 +28,35 @@ agree or this reports coverage the harness would not confirm. They cannot
 share the code -- a hyphen in that filename makes it un-importable -- so
 the flags are duplicated here deliberately. Change them together.
 
+PORTS MODE (--ports) asks the narrower question scripts/copy-copilot.ps1
+needs answered: which Copilot instruction ports in copilot/instructions/
+can apply in a repo. Each argument is then a Copilot directory, normally a
+repo's .github, as that script's -CopilotDir is. A port is selected when
+its applyTo, split on commas, matches at least one tracked file of the
+repo holding that directory, leaving out the directory's own skills/ and
+instructions/: those are that script's output, so a vendored skill that
+shipped a .py would otherwise select the Python port wherever it went.
+applyTo alone does not scope a port, because VS Code lists every available
+instructions file in each agent request, matched or not; the ledger entry
+of 2026-09-29 in docs/evidence/root-claude-md.md has the measurement.
+
+The matcher errs toward shipping, and that is the safe side. DOTGLOB lets
+`*` and `**` match a leading dot, which VS Code's glob does not
+(claude/rules/vscode-scoping.md), so a port can be selected for a file
+Copilot would never apply it to. A wrong match costs one listed entry; a
+wrong miss would withhold a port that applies. A directory outside any git
+repo, or in one with no tracked files left, has nothing to match against,
+so every port is selected and the report says why.
+
+Where the directory already holds instructions/.managed-instructions.json,
+the report audits it too: ports it carries that match nothing, and ports
+that match but are not carried. Only a copy-copilot.ps1 run changes either.
+
 Usage:
     uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py
         [--sweep] [--by-file] [--exclude GLOB]... REPO...
+    uv run --with pyyaml --with wcmatch python scripts/payload-coverage.py
+        --ports [--json] [--sweep] [--exclude GLOB]... COPILOT_DIR...
 
 Examples, run from this repo's root ("..." is the first one's prefix):
 
@@ -61,6 +87,12 @@ Examples, run from this repo's root ("..." is the first one's prefix):
     Also list the five files the most rules and skills match. A 1 beside
     every one means no file draws overlapping guidance.
 
+    ... --ports C:/Repos/Client/some-repo/.github
+    The Copilot instruction ports copy-copilot.ps1 would ship there, each
+    with its matching file count, then an audit of the ports that repo
+    already carries. With --sweep, every repo's .github under each parent.
+    --json prints the form copy-copilot.ps1 reads.
+
     uv run --no-project --with pyyaml --with wcmatch python
         C:/Repos/Personal/agent-config/scripts/payload-coverage.py .
     From inside the target repo: the payload is found from this script's
@@ -73,11 +105,14 @@ Reading the report: one row per extension, most files first.
     ->       none is covered; one is shown as "e.g."
     -        non-text (image, binary, font, archive, key): no rule expected
 (none) holds extensionless files and dotfiles: Dockerfile, .gitignore.
+In --ports mode, one row per port: "ship" or "hold", then its file count.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -89,6 +124,11 @@ from wcmatch import glob as wg
 GLOB_FLAGS = wg.GLOBSTAR | wg.DOTGLOB
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
+PORTS = REPO / "copilot" / "instructions"
+# What copy-copilot.ps1 writes under its target, so never evidence that a
+# port applies there.
+PAYLOAD_DIRS = ("skills", "instructions")
+PORT_MANIFEST = pathlib.PurePath("instructions", ".managed-instructions.json")
 
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
@@ -235,6 +275,127 @@ def report(repo: pathlib.Path, globs: dict[str, list[str]],
     return uncovered
 
 
+def load_ports() -> dict[str, list[str]]:
+    """Return {port name: applyTo globs} for every Copilot instruction port.
+
+    applyTo is one comma-separated string, as lint-instructions.py enforces.
+    A port without one would match nothing and so be silently withheld
+    everywhere, which is exactly the failure this mode exists to prevent:
+    stop instead.
+    """
+    ports: dict[str, list[str]] = {}
+    for p in sorted(PORTS.glob("*.instructions.md")):
+        apply_to = frontmatter(p).get("applyTo")
+        if not isinstance(apply_to, str) or not apply_to.strip():
+            raise SystemExit(f"error: {p.name} has no applyTo string; "
+                             "run scripts/lint-instructions.py")
+        ports[p.name.removesuffix(".instructions.md")] = [
+            g.strip() for g in apply_to.split(",") if g.strip()]
+    if not ports:
+        raise SystemExit(f"error: no *.instructions.md in {PORTS}")
+    return ports
+
+
+def locate(target: pathlib.Path) -> tuple[pathlib.Path, str] | None:
+    """Return (repo root, target's repo-relative prefix), or None outside git.
+
+    The target need not exist yet, since copy-copilot.ps1 creates it, so git
+    is asked from the nearest directory that does, and the missing tail is
+    added to the prefix git reports ("" at the root, else ".github/").
+    """
+    probe, tail = target, []
+    while not probe.is_dir():
+        if probe.parent == probe:
+            return None
+        tail.insert(0, probe.name)
+        probe = probe.parent
+    result = subprocess.run(
+        ["git", "-C", str(probe), "rev-parse", "--show-toplevel", "--show-prefix"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return None
+    top, prefix = (result.stdout.split("\n") + ["", ""])[:2]
+    return pathlib.Path(top), prefix + "".join(f"{part}/" for part in tail)
+
+
+def read_port_manifest(target: pathlib.Path) -> list[str] | None:
+    """Return the ports copy-copilot.ps1 recorded at the target, or None."""
+    path = target / PORT_MANIFEST
+    if not path.is_file():
+        return None
+    try:
+        names = json.loads(path.read_text(encoding="utf-8")).get("instructions") or []
+    except (json.JSONDecodeError, AttributeError) as exc:
+        print(f"warning: {path} is not a readable manifest: {exc}", file=sys.stderr)
+        return None
+    return [n["name"] if isinstance(n, dict) else n for n in names]
+
+
+def port_selection(target: pathlib.Path, ports: dict[str, list[str]],
+                   exclude: list[str]) -> dict:
+    """Work out which ports ship to one Copilot directory, and audit it."""
+    target = pathlib.Path(os.path.abspath(target))
+    entry: dict = {"target": str(target), "repo": None, "files": 0,
+                   "excluded": 0, "matchable": True, "reason": "",
+                   "ports": [], "select": [], "manifest": read_port_manifest(target)}
+    located = locate(target)
+    files: list[str] = []
+    if located is None:
+        entry["matchable"] = False
+        entry["reason"] = "not inside a git repository, so nothing to match against"
+    else:
+        repo, prefix = located
+        entry["repo"] = str(repo)
+        tracked = tracked_files(repo, exclude) or []
+        own = tuple(f"{prefix}{d}/" for d in PAYLOAD_DIRS)
+        files = [f for f in tracked if not f.startswith(own)]
+        entry["files"], entry["excluded"] = len(files), len(tracked) - len(files)
+        if not files:
+            entry["matchable"] = False
+            entry["reason"] = "no tracked files outside the target's own payload"
+    for name, globs in ports.items():
+        hits = [f for f in files if wg.globmatch(f, globs, flags=GLOB_FLAGS)]
+        entry["ports"].append({"name": name, "files": len(hits),
+                               "example": hits[0] if hits else None})
+        if hits or not entry["matchable"]:
+            entry["select"].append(name)
+    return entry
+
+
+def print_ports(entry: dict) -> None:
+    """Print one target's selection, then audit the ports it already carries."""
+    if entry["repo"] is None:
+        print(f"== {entry['target']}: {entry['reason']}; every port ships ==")
+    else:
+        print(f"== {entry['target']}: {entry['files']} tracked files, "
+              f"{entry['excluded']} left out as the target's own payload ==")
+        if not entry["matchable"]:
+            print(f"  {entry['reason']}; every port ships")
+    for port in entry["ports"]:
+        verb = "ship" if port["name"] in entry["select"] else "hold"
+        example = f"   e.g. {port['example']}" if port["example"] else ""
+        print(f"  {verb}  {port['name']:<22}{port['files']:>5}{example}")
+    carried = entry["manifest"]
+    if carried is None:
+        print(f"  no {PORT_MANIFEST.as_posix()}: no ports vendored here yet")
+    else:
+        known = {p["name"] for p in entry["ports"]}
+        findings = [
+            ("carried, matching nothing",
+             [n for n in carried if n in known and n not in entry["select"]]),
+            ("carried, no longer ported", [n for n in carried if n not in known]),
+            ("matching, not carried", [n for n in entry["select"] if n not in carried]),
+        ]
+        for label, names in findings:
+            if names:
+                print(f"  audit: {label}: {', '.join(names)}")
+        if not any(names for _, names in findings):
+            print("  audit: the ports carried here are exactly those that match")
+    print()
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(
         description="Report which of a repo's files activate no rule and no skill.",
@@ -245,14 +406,24 @@ def main() -> int:
         epilog=__doc__[__doc__.index("\nExamples") + 1:],
         formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("repos", nargs="+", type=pathlib.Path,
-                    help="repo paths, or parent directories with --sweep")
+                    help="repo paths (Copilot directories with --ports), "
+                         "or parent directories with --sweep")
     ap.add_argument("--sweep", action="store_true",
                     help="treat each argument as a parent and scan every repo under it")
     ap.add_argument("--by-file", action="store_true",
                     help="also list the most-matched individual files")
     ap.add_argument("--exclude", action="append", default=[], metavar="GLOB",
                     help="drop matching paths from the scan (repeatable)")
+    ap.add_argument("--ports", action="store_true",
+                    help="each argument is a Copilot directory: report which "
+                         "instruction ports match its repo, and audit its manifest")
+    ap.add_argument("--json", action="store_true",
+                    help="with --ports, print the selection as JSON, for copy-copilot.ps1")
     args = ap.parse_args()
+    if args.json and not args.ports:
+        ap.error("--json needs --ports")
+    if args.by_file and args.ports:
+        ap.error("--by-file has no meaning with --ports")
 
     targets: list[pathlib.Path] = []
     for arg in args.repos:
@@ -260,10 +431,22 @@ def main() -> int:
             if not arg.is_dir():
                 print(f"not a directory, skipped: {arg}", file=sys.stderr)
                 continue
-            targets += sorted(c for c in arg.iterdir()
-                              if c.is_dir() and (c / ".git").exists())
+            found = sorted(c for c in arg.iterdir()
+                           if c.is_dir() and (c / ".git").exists())
+            targets += [c / ".github" for c in found] if args.ports else found
         else:
             targets.append(arg)
+
+    if args.ports:
+        ports = load_ports()
+        entries = [port_selection(t, ports, args.exclude) for t in targets]
+        if args.json:
+            print(json.dumps(entries, indent=1))
+            return 0
+        print(f"ports: {len(ports)} Copilot instruction ports\n")
+        for entry in entries:
+            print_ports(entry)
+        return 0
 
     globs = load_globs()
     total_globs = sum(len(v) for v in globs.values())

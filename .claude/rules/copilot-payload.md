@@ -3,6 +3,7 @@ paths:
   - "copilot/**"
   - "scripts/copy-copilot.ps1"
   - "scripts/lint-instructions.py"
+  - "scripts/payload-coverage.py"
 ---
 
 # The Copilot payload
@@ -48,5 +49,13 @@ paths:
   `-SkillGroups` prunes an omitted group. Each payload tracks what it
   deployed in its own manifest and prunes only that; a collision it did not
   create is skipped unless `-Force` adopts it.
+- A repo target gets only the ports whose `applyTo` matches one of its
+  tracked files, less the target's own `skills/` and `instructions/`, and
+  `~/.copilot` gets every one: VS Code lists each available instructions
+  file in every agent request, matched or not (2026-09-26). A held port the
+  manifest owns is pruned. The matching is `payload-coverage.py --ports`,
+  called through `uv`, so a missing `uv` or a failed call stops the run
+  rather than shipping every port; `-AllInstructions` does that on purpose.
+  `bash tests/scripts/copy-copilot/test-port-selection.sh` is its test.
 - `~/.copilot` takes `workflow` only, never `social`. Copies are not live:
   re-run after editing a `skills/workflow/` skill or a ported rule.
