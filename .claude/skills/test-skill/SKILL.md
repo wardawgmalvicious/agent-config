@@ -1,6 +1,6 @@
 ---
 name: test-skill
-description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Reads its inputs from disk — brief or shipped frontmatter — so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript and the stream-json `commands_changed` record are the only witnesses (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the workflow-only prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
+description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Reads its inputs from disk — brief or shipped frontmatter — so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript and the stream-json `commands_changed` record are the only witnesses (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the standing prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
 when_to_use: "Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description`, `when_to_use` or `paths:` glob, or as the follow-on to `/author-skill`."
 argument-hint: "[skill-name]"
 disable-model-invocation: false
@@ -215,7 +215,7 @@ inspection.
 **This is the one step that can damage the machine.** Everything else
 is confined to `tests/` and a throwaway directory; this writes to
 `~/.claude/skills`, which serves every session here. Only a platform
-skill needs it — `workflow` and `social` are deployed already and
+skill needs it — `workflow`, `social` and `meta` are deployed already and
 `.claude/skills/` is read in place — so skip to step 8 unless the skill
 is **new**, which has no junction until the standing form below runs once.
 
@@ -224,7 +224,7 @@ is **new**, which has no junction until the standing form below runs once.
 ```
 
 `-SkillGroups` **prunes** — a group not listed is removed. This
-machine's standing state is workflow and social only, so you are
+machine's standing state is workflow, social and meta only, so you are
 temporarily undoing a deliberate prune and must put it back:
 
 ```powershell
@@ -474,7 +474,7 @@ activated". Work down this table before touching a glob:
 
 | Symptom | Real cause |
 | --- | --- |
-| Nothing activated, any fixture | The platform skills are not deployed — `~/.claude/skills` carries workflow only |
+| Nothing activated, any fixture | The platform skills are not deployed — `~/.claude/skills` carries only the standing `workflow`, `social` and `meta` groups |
 | Nothing activated, probe looks fine | The probe read with `cat`. Activation is keyed to the **`Read` tool**; Bash `cat` and `Grep` touch the same bytes and activate nothing. This machine defaults to auto mode, which prefers `cat` |
 | The second matching file activates nothing | Correct behaviour. Activation is a **cumulative delta** — an attachment names only what was not already active |
 | An activation looks one or two reads late | Attachments **flush in batches**; attribute it to the group read since the last flush, not to one file |
