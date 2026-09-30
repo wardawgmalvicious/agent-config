@@ -257,10 +257,10 @@
     },
     "learn": {
       "behaviour": {
-        "date": "2026-09-29",
-        "commit": "5437205",
+        "date": "2026-09-30",
+        "commit": "c145751",
         "routing": "6124c8c9675e1f9a",
-        "body": "0b6dc118fb5a274b",
+        "body": "2c4f826a118a69bb",
         "references": "4f53cda18c2baa0c"
       }
     },
