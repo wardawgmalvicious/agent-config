@@ -38,8 +38,11 @@ two paths and a probe to choose between them:
 The probe is the user's to run. Its prompts went to a client repo's
 inbox that day, and its results come back to
 `~/handoff-inbox/agent-config/` as
-`<date>-claude-session-target-probe-results.md`. **Repo-target vendoring
-ends on either path**, which settles most of what is below.
+`<date>-claude-session-target-probe-results.md`. **Nothing new is
+vendored into a repo on either path**, which settles most of what is
+below. On the second, a client repo's existing skill copies are either
+dropped, for Copilot reading that repo's `.claude/skills` junctions, or
+kept and re-synced now and then. The exploration left that open.
 
 ## 1. A repo-target run without `-SkillGroups` vendors `social`
 
@@ -61,9 +64,10 @@ ends on either path**, which settles most of what is below.
   alone, such as requiring `-SkillGroups` there, leaves user scope open.
 
 **As the decision falls.** Retired, the script goes and this with it.
-At user scope only, repo targets go, and a marker on `social` turns the
-rule's "never `social`" from remembered into structural: one file,
-whose contents say why the group opted out.
+At user scope only, a marker on `social` turns the rule's "never
+`social`" from remembered into structural, for `~/.copilot` and for any
+re-sync a repo still gets: one file, whose contents say why the group
+opted out.
 
 ## 2. No check keeps a personal repo's name out of a vendored skill
 
@@ -97,17 +101,19 @@ git grep -nP '\b(agent|machine|claude)-config\b' -- \
   URL. A skills re-sync adds the other four, so its 2026-09-29 run used
   `-Payload instructions` and left its skills as they were until this
   is settled.
-- That repo names no personal repo in its files, by a rule its session
-  reported as the user's
-  ([handoff-convention-cross-repo.md](handoff-convention-cross-repo.md),
-  § "Decision — 2026-09-29").
+- The user's rule, stated 2026-09-30 for every internal company repo,
+  is that nothing committed there names a personal repo, while what
+  already exists may stay
+  ([company-repos-name-no-personal-repo.md](company-repos-name-no-personal-repo.md)).
+  Whether that allowance reaches the two lines already vendored was not
+  asked. The other four would be new.
 
-**As the decision falls.** On either path nothing new is vendored into
-a repo, so a lint has nothing to guard. What is left is the client
-repo's existing copies: the retire path deletes them, and the other
-either deletes them or keeps them frozen, which the exploration left
-open. If they are kept, rewording six lines is cheaper than a lint, and
-rewording `land` moves its body hash, so `/test-skill land` follows.
+**As the decision falls.** Retired, the client repo's copies are
+deleted and nothing is left to guard. At user scope only, they are
+either dropped for the junctions or kept and re-synced, and a re-sync
+commits the four lines the rule forbids. So if they are kept, the six
+lines are reworded first, which is cheaper than a lint; rewording
+`land` moves its body hash, so `/test-skill land` follows.
 
 ## 3. File-kind guidance shared with Copilot
 

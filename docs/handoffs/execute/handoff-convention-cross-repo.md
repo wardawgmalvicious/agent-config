@@ -20,7 +20,9 @@ re-planned 2026-09-27 when this repo's queue moved into each brief's
 frontmatter — see [Re-plan](#re-plan--2026-09-27). The third, one note
 per repo, went out 2026-09-29 ahead of them, when the user moved every
 repo they work in to frontmatter — see
-[Decision](#decision--2026-09-29).
+[Decision](#decision--2026-09-29). Two of those repos reported back on
+2026-09-30, and what they found corrects that decision in three
+places — see [Reports back](#reports-back--2026-09-30).
 
 **Scope.** Generalize the handoff discipline this repo already runs to
 the other repos on this machine, which have started growing their own
@@ -372,7 +374,7 @@ each named `2026-09-29-handoff-state-per-brief.md`:
 | client estate repo | 6, indexed | frontmatter on each, the queue table cut, the root pointer re-aimed |
 | second client repo | 3, indexed | the same |
 | `machine-config` | 2, indexed, dated names | the same, the briefs renamed to their subjects, and the missing backlog declaration |
-| `fabric-tools`, `personal-scripts` | none | one root `CLAUDE.md` line now; the directory and its stub come with the first brief |
+| `fabric-tools`, `personal-scripts` | none | a root `CLAUDE.md` section holding the first-brief contract, corrected 2026-09-30 from one line ([Reports back](#reports-back--2026-09-30), item 1); the directory and its stub come with the first brief |
 
 Each note carries the key table and a draft of every brief's values,
 leaving the priorities to the user. **The root pointer is the edit that
@@ -387,6 +389,8 @@ path, with `uv run --no-project`. That took 0.55 s, measured
 2026-09-29 from inside a repo with its own `pyproject.toml`, which plain
 `uv run` would have synced first. A clone without this repo, whether a
 teammate's or CI's, reads the same state with one `grep` over the keys.
+That `grep` reads every file in the directory, a README's own example
+included ([Reports back](#reports-back--2026-09-30), item 2).
 
 **The estate repo names no personal repo in its files**, a rule its own
 session reported that day as the user's. The rule is not yet in that
@@ -394,14 +398,194 @@ repo's committed files. Under it, the estate repo's view command stays
 out of its committed files, where the grep does the job. The rule also
 voids the cut-to-a-link planned for its brief-shape prose, since a link
 there would name this repo. So that prose stays as its own copy, and
-the flagged duplicate becomes a copy kept on purpose. Whether the second
-client repo follows the same rule is the user's call. Until then, its
-note offers the path-free form too.
+the flagged duplicate becomes a copy kept on purpose. The second client
+repo follows the same rule: the user stated it on 2026-09-30 for every
+internal company repo
+([company-repos-name-no-personal-repo.md](company-repos-name-no-personal-repo.md)),
+so the path-free form is the only one a company repo commits.
 
 **This brief does not wait on the notes.** Each lands in its own repo,
 on its own session's time, and the sweep lists each note until that
 repo deletes it. This brief lands with edits 1 and 2. The Verification
 below is the cold check on the notes, once they have landed.
+
+## Reports back — 2026-09-30
+
+Two inbox notes of that day, from the second client repo's session and
+from `fabric-tools`'s, each written while landing its copy of the
+2026-09-29 note. What they change above is corrected in place.
+
+**Where each repo stood that day**, by `uv run
+scripts/handoff-status.py`: every brief on the machine carries
+frontmatter, and its summary reads `0 indexed brief(s)`.
+
+| Repo | Its 2026-09-29 note |
+| --- | --- |
+| `machine-config` | landed and deleted; its two briefs renamed to their subjects |
+| `fabric-tools` | landed there as `500fa53`, a root section, and deleted |
+| client estate repo | the move sits uncommitted on a branch; the note waits |
+| second client repo | the move is one commit on a branch; the note waits |
+| `personal-scripts` | not landed; the note waits, still asking for one line |
+
+### 1. A repo with no briefs needs a root section, not one line
+
+The note asked a repo with no briefs for one line in its root
+`CLAUDE.md`, deferred `execute/README.md` to the first brief, and had
+itself deleted once the line landed. **Two things the session writing a
+first brief needs then have no home.** What each key takes lived in the
+note, and in this repo's `docs/handoffs/CLAUDE.md`, which no other repo
+loads. And the README step is described nowhere else. Finding 2 of
+[Decisions](#decisions--2026-09-16) already says why nothing under
+`docs/handoffs/` can carry either: writing a brief is a Write.
+
+`fabric-tools` landed a section instead, § "Handoff briefs" in its root
+`CLAUDE.md`, 46 of that file's 144 lines. It holds:
+
+- the path, and the subject-named, undated filename;
+- the frontmatter block, what each key takes, and the plain
+  `key: value` grammar;
+- delete on landing, and the `blocked-by` cleanup;
+- the view command, `--check`, and the worktree that marks a brief in
+  flight;
+- that a brief is committed and so public, while the inbox note it is
+  triaged from is private and may be raw;
+- that the first brief brings `execute/README.md`, with its three
+  declarations.
+
+Probed cold that day on Claude Code 2.1.282, one run per question per
+form, by `claude -p --model haiku --tools Read,Glob,Grep
+--strict-mcp-config`. Question A asked for a brief's path and its full
+text, question B for every file a first-brief commit would hold.
+
+| Form | A: path | A: block under `--check` | B: files in the commit |
+| --- | --- | --- | --- |
+| One line | under `docs/handoffs/execute/` | 4 findings, exit 1 | the brief alone |
+| Section | under `docs/handoffs/execute/` | the documented block, exit 0 | the README with its three declarations, and the brief |
+
+The one-line session invented its values: `status: ready`,
+`priority: normal`, and prose for `needs` and `blocked-by`. Three limits
+hold. The forms ran in different repos, the line in a scratch repo and
+the section in `fabric-tools` among 98 other lines. The line was that
+session's rendering of the note's spec, which gave no text for it. And
+one run each on haiku shows that the line can fail, not how often.
+
+**The general form**: a step deferred to "with the first brief" needs a
+home that is loaded when the first brief is written. A note deleted on
+landing is not one, so what it defers moves into the file it lands in.
+
+**What it changes here.** The row for these two repos in
+[Decision](#decision--2026-09-29) is corrected. `personal-scripts` still
+holds the note with the one-line ask. Two sessions began there on
+2026-09-30 and were sent the measurement; amending the note itself is
+the user's call, and this brief's first step if the note still waits.
+Once the invariants reference exists (edit 1), it is what a short root
+pointer could name.
+
+### 2. The path-free `grep` reads a README's own example
+
+The note's fallback view is a `grep` for the keys at line start over
+`docs/handoffs/execute/*.md`. Its glob takes `README.md` too, and the
+note showed the frontmatter as a fenced `yaml` block for a README to
+carry. With that fence in place the view printed four lines for a brief
+that does not exist, and exited 0 (GNU grep 3.0 in Git Bash).
+`handoff-status.py` never meets the case, since it reads a README as no
+brief and parses only a file's leading block. **So `--check` passes
+while the path-free view is wrong.**
+
+- `--exclude=README.md` cleans the shell form, and the Grep tool has no
+  such option. A documented shell command gets run through the tool,
+  where an option with no counterpart is dropped without a word.
+- What held: **a README beside briefs starts no line with a key.** The
+  second client repo's key table gained a column holding an example
+  line for each key, since a table row opens with `|`, and its README
+  says why it shows no fenced example. The plain `grep` then printed 13
+  lines from 3 briefs and none from the README, in the shell and
+  through the Grep tool.
+- Two cold probes there asked what handoff work was open. With the
+  fence and the `--exclude` form, the session opened the README and
+  left out the deferred brief. With the table form and the plain
+  `grep`, it opened no README and named the deferred brief and its
+  trigger. Both answers were right, two things changed between the
+  probes and each ran once: suggestive, and no more.
+
+Re-measured here the same day: in each of the three other repos that
+hold briefs beside a README, and in this one, the plain `grep` prints no
+line of the README's. The fence survives in the copies of the note
+still waiting, the estate repo's by that session's reading. Whether to
+amend a copy is the landing session's call.
+
+### 3. `--check` blames a value's opening for a colon in its middle
+
+`docs/handoffs/CLAUDE.md` says "no value opens with a backtick or a
+quote, which YAML would misread". `yaml_unsafe` in
+`scripts/handoff-status.py` rejects more: a value opening with any YAML
+indicator character, or with a dash and a space, and one holding a
+colon then a space, or a space then `#`, anywhere. One message serves
+every case. Reproduced 2026-09-30 in a scratch copy, with
+`reopen-when: a typo reaches a run: what-if or deploy`:
+
+```text
+  ! frontmatter docs/handoffs/execute/<brief>.md: `reopen-when` would not parse as plain YAML; reword its opening
+```
+
+Exit 1, and the opening is fine: the colon and space after `run` are
+what failed.
+
+**Edit.** The message names the case it met, and the sentence under the
+key table adds the two it omits. `docs/handoffs/CLAUDE.md` stood at its
+60-line cap on 2026-09-30, so the words go into the lines it has.
+`tests/scripts/handoff-status/test-findings.sh` asserts the present
+message's first half, and gains the new case. This can land alone,
+ahead of edit 1, which repeats the grammar in the invariants reference.
+
+### 4. What the six keys could not say, and what stayed per-repo
+
+For the invariants reference (edit 1), two cases from the second client
+repo's queue that fit no key:
+
+- **A deadline tied to an event.** That a brief must land before the
+  first run of one workflow is the most important fact in that queue.
+  It is carried as `priority: 1` plus a status line kept for it.
+- **A brief whose halves differ in readiness.** One brief can move two
+  of its three parts now and the third only after an event. It carries
+  `needs: []` for the ready half, and tells the session that lands that
+  half to cut it and set `needs` to the event.
+
+And what each repo kept its own, which the reference should leave
+per-repo:
+
+- **The worktree claim.** `fabric-tools` keeps it: `.claude/*` is
+  ignored there, and the claim keys on the worktree's directory, not
+  its branch. In a scratch repo a worktree named after a brief, on a
+  `<type>/<kebab-slug>` branch, showed that brief as
+  `in flight (parked)`. The second client repo did not adopt it, for
+  two reasons: `.claude/worktrees/` is not ignored there, and its
+  branch names must be `<type>/<kebab-slug>`, which that measurement
+  answers. Its README says instead that nothing in a brief marks it as
+  taken, and to look for its subject in the branches and open pull
+  requests.
+- **The `needs` row.** The second client repo's reads "`user`, or a
+  short phrase for anything else": `tenant` and `desktop` mean nothing
+  there.
+- **The script's name.** `fabric-tools` names the script and gives no
+  path. A company repo names neither (item 5).
+
+### 5. What the rule on repo names changes here
+
+The user's rule, first-hand since 2026-09-30, is briefed in
+[company-repos-name-no-personal-repo.md](company-repos-name-no-personal-repo.md).
+For this brief's edits:
+
+- The stub from Q1 tells a company repo's README where a payload
+  learning goes, by this repo's inbox directory and so by its name. A
+  mention that already exists may stay, as the second client repo's
+  did. A stub written from now on says it without the name.
+- A note to a company repo, and the invariants reference, hand over the
+  path-free form only, and say the script command is for local use. In
+  the second client repo it went into the project's auto-memory, so
+  sessions on this machine keep the grouped view and `--check`.
+- [Verification](#verification) already allows the one `grep` "where a
+  repo names no personal repo". That is now every company repo.
 
 ## Open questions
 
