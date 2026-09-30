@@ -538,5 +538,17 @@ systems and its session ids stay out of every commit (`author-skill`
   files: input for Phase 3's cross-tool inventory. Since 2026-09-25 its
   root is the import form, and its code-span pull request was still open
   on 2026-09-26.
+- That root again, trimmed by hand on 2026-09-29 by the client repo's
+  session, by its inbox note of that day. Of 15 fails-silently gotchas,
+  8 moved behind `paths:` rules that point at `.github/instructions/`
+  files, and 4 stayed, since a live command or a sync triggers the
+  mistake and no Read does
+  ([scoped-rule-imports-and-trigger-sorting.md](scoped-rule-imports-and-trigger-sorting.md),
+  item 2;
+  [copilot-client-repo-findings.md](copilot-client-repo-findings.md),
+  item 3, for the pointer shape). Phase 3's pilot expects a draft to
+  re-find the 2026-09-24 proposal there: check what of it is still
+  undone, and count the trigger test and a pointer rule among what a
+  draft must handle.
 - VS Code: 1.139.1 on 2026-09-26, when its bundle was read for the
   settings named above.
