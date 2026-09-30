@@ -315,10 +315,10 @@
     },
     "prune-branches": {
       "behaviour": {
-        "date": "2026-09-29",
-        "commit": "672c409",
+        "date": "2026-09-30",
+        "commit": "d0329cc",
         "routing": "ee4893feac2cb171",
-        "body": "b76e03c5fae317d8",
+        "body": "f9c6026e72561c2e",
         "references": "4f53cda18c2baa0c"
       },
       "real-use": {
