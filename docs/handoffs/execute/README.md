@@ -44,6 +44,53 @@ per the [lifecycle](#lifecycle) below.
 `git log -p -- docs/handoffs/execute/README.md` has every row the table
 held, if a closed decision ever needs re-reading.
 
+## Every brief takes a worktree
+
+Decided 2026-09-29, in `worktree-per-brief.md`: every brief is worked in
+a worktree named after it, not only one worked in parallel, since whether
+work runs in parallel shows only after it starts, and only a worktree
+claims a brief in the view. Root `CLAUDE.md` § "Branching and concurrent
+sessions" holds the rule, and its ledger that day's evidence; what a
+session must know around it is here.
+
+**A brief's evidence is re-measured before its worktree is entered.** The
+guard refused three read-only commands against client repos that day: a
+`git -C` there, a `find` naming `.git` in its filter, and one it called
+too complex to verify, while Glob, Grep and a plain `find` ran; a fourth,
+during `/commit`, was a git command beside a shell variable, which the
+session split. So the session measures from the main checkout first,
+rather than route around the guard, and `EnterWorktree` fits that order;
+`claude --worktree` suits a brief whose evidence needs no git outside
+this repo.
+
+**A check that needs the deployed payload runs after the merge, on
+`main`**, since a worktree cannot reach it:
+
+- a skill in a deployed group, listed by
+  `ls skills/workflow skills/social skills/meta`: `~/.claude/skills`
+  junctions the main checkout's copy and user scope outranks project
+  scope, so a probe from a worktree tests `main`'s version with nothing
+  said, and `/test-skill` stops at step 7 there;
+- anything under `claude/` checked only once deployed, and `/test-skill`
+  step 7, since `link-claude.ps1` refuses a linked worktree (`ac3d22e`);
+- `test-activation.ps1` without `-StaticOnly`, which deploys through
+  `link-claude.ps1` and is refused the same way; `-StaticOnly` exits
+  before the deploy and runs anywhere.
+
+A skill in `.claude/skills/` needs none of this, since a worktree loads
+its own copy (root ledger, probe 6, 2026-09-24). The edit still goes in
+the worktree: in the main checkout a save to a deployed group's skill is
+live machine-wide at once, half-finished states included, while a
+worktree lets nothing out until the whole edit lands. Staying there would
+have kept unverified work out of `main`'s history only, and the history
+already takes it: `land`'s four edits landed at 09:44–09:46 local that
+day and `c0283d9` stamped their behaviour at 11:17, while
+`skill-status.py --stale` tracks the gap. Nor could a probe stand in,
+since `test-activation.ps1` deploys only `fabric` and `powerbi`, into its
+probe's project scope, and leaves user scope alone. So the worktree
+stays, holding the claim, and the brief stays, holding the check, until
+the check passes; a fix goes forward on `main`.
+
 ## A brief's worktree lands without a push
 
 Decided 2026-09-29, in `land-rework.md`: a brief worked in a worktree

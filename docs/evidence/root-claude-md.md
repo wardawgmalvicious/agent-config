@@ -1305,6 +1305,64 @@ commit beneath it. The user decided it that day in `land-rework.md`, and
 `docs/handoffs/execute/README.md` § "A brief's worktree lands without a
 push" keeps the reasoning and the measurements. Root stays at 200 lines.
 
+**2026-09-29.** Every brief now takes a worktree named after it, where
+root said only a brief worked in parallel did. Its first paragraph
+branches "to work a brief" with no qualifier, and the rule names
+`EnterWorktree` beside `claude --worktree` and the failure it prevents,
+a brief the queue never marks `in flight`. The user decided it that day
+in `worktree-per-brief.md`, with a second answer: a brief whose check
+needs the deployed payload still edits in its worktree, lands, and runs
+that check on `main`, fixing forward, its worktree and brief kept until
+it passes. `docs/handoffs/execute/README.md` § "Every brief takes a
+worktree" keeps that answer's reasoning and the guard's cost. Branching
+in place stays out: a `git switch` moves every session's tree
+(2026-09-02). Root went from 199 lines to 200.
+
+The trigger missed with its condition met. Four of that day's sessions in
+this tree left the evidence; times are UTC, local four hours earlier.
+
+| Transcript | Work | Where |
+| --- | --- | --- |
+| `1c8ba406` | brief `fabric-alter-table-and-serialization-gaps`, then follow-ups | a worktree, because the user said a peer was live; the main checkout after landing |
+| `17acda19` | brief `copilot-port-selection` | the main checkout |
+| `22196fc0` | `/test-skill test-skill`, then `/learn` | the main checkout |
+| `b8459a74` | a test run's findings, then `/learn` | the main checkout |
+
+`17acda19`'s first `ListAgents`, at 17:58:06, listed `agent-config-82` and
+`agent-config-eb` busy, and it worked its brief in the main checkout
+anyway; its calls at 18:30 and 18:51 found at least two sessions here
+each time. Nothing claimed that brief, since `handoff-status.py` marks one
+in flight only when a worktree's directory name matches its stem
+(`detail()`), so `copilot-port-selection` read `ready` to every session
+while it was worked. Asked to keep out of a test run, the same session
+improvised a worktree: `git worktree add` in its scratchpad, commits
+there, and a fast-forward from the main checkout. The worktree cost
+little: `1c8ba406` needed the user once, to be told a peer was live, and
+landed seven commits by rebase and fast-forward in under two minutes,
+with one `SendMessage` to its peer.
+
+The user sent six coordination prompts that day, three from a brief
+worked outside a worktree:
+
+| Time | Transcript | Prompt, abridged | Brief outside a worktree |
+| --- | --- | --- | --- |
+| 15:17 | `b8459a74` | "Peer is committing right now. Go ahead and commit when the peer is finished." | no |
+| 16:04 | `22196fc0` | "The other test-skill session is staging and committing their hunk, please do so afterwards" | no |
+| 16:13 | `1c8ba406` | "There is another session working on the tree as a heads up, so branch or tree accordingly" | yes: take a worktree |
+| 18:04 | `1c8ba406` | "Yes commit and watch for the peer's work." | no: follow-ups after landing |
+| 18:18 | `22196fc0` | "Other session is committing right now" | yes: `17acda19`'s commits |
+| 18:28 | `17acda19` | "There is a new session going and doing a test run of test-skill" | yes |
+
+The count is user messages in that day's transcripts under
+`~/.claude/projects/c--Repos-Personal-agent-config/` matching
+`session|coordinat|peer|interfer|wiped|collision`, less pasted prompts
+and those about starting a new session. Re-run that evening, it found no
+seventh: the later matches were probe prompts, compaction summaries and
+questions about starting or routing work to another session. Re-run it
+after the next day of parallel work. The three from non-brief work are
+untouched by the rule, and `worktree-per-brief.md` § "Left open" keeps
+them.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

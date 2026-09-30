@@ -112,7 +112,7 @@ machine-wide, committed or not, as is any `git switch`, `stash`, `reset` or
 `rebase` that changes one, pre-commit's own stash/restore around a commit
 included. **Commit straight to `main`**; **branch only when an intermediate
 state would break while deployed** (settled 2026-09-02), or to work a
-brief in parallel (below). This overrides when `claude/CLAUDE.md` §
+brief (below). This overrides when `claude/CLAUDE.md` §
 "Branch naming" says to branch, not how to name one: edit the two together.
 A platform skill is deployed only where a `-ClaudeDir` run linked it
 (2026-09-24). Integrate by fast-forward, as the repo owner, as `/land` does:
@@ -133,9 +133,10 @@ theirs: leave it, and note the fix in your commit message. **In one tree,
 only a commit isolates your work**: the index is shared, so an uncommitted
 change can vanish, staged or not, as `git status` looks innocent
 (2026-09-12). `/commit` § "When another session shares this tree" has the
-procedure; change it there, not here. **Work a brief in parallel in a
-worktree named after it**, `claude --worktree <brief>` less `.md`, then land
-it as `docs/handoffs/CLAUDE.md` says: git and `link-claude.ps1` both refuse
+procedure; change it there, not here. **Work every brief in a worktree
+named after it**, by `EnterWorktree` or `claude --worktree` with its name
+less `.md`, or the queue never marks it `in flight` (2026-09-29). Land it as
+`docs/handoffs/CLAUDE.md` says: git and `link-claude.ps1` both refuse
 a worktree (2026-09-27). `.claude/settings.json` branches a worktree
 from local `HEAD`; the default, `fresh`, drops unpushed commits unannounced.
 A worktree buys no payload isolation for the deployed groups (2026-09-02),

@@ -33,20 +33,22 @@ What a session must know before it writes, starts or lands a brief here;
   ```bash
   git -C <worktree> rebase main && (cd <worktree> && pre-commit run --all-files)   # no hook runs on a rebase or a fast-forward
   git merge --ff-only <branch>
-  git worktree remove .claude/worktrees/<brief>   # refused as locked: a session holds it; /prune-branches if its pid is dead
+  git worktree remove .claude/worktrees/<brief>   # after any deployed-payload check passes; refused as locked: a session holds it; /prune-branches if its pid is dead
   git branch -d <branch>
   ```
 
   A rebase rewrites the branch's SHAs, so cite one only after it, and
   check each with `git merge-base --is-ancestor <sha> <branch>`, since
-  `git cat-file -e` passes on a stale one.
-  Deploy after the merge, as root `CLAUDE.md` § "Commands" says.
-- **Re-measure a brief's evidence before acting on it**, and record which
-  way it moved: a commit elsewhere can satisfy or void a brief silently.
+  `git cat-file -e` passes on a stale one. Deploy after the merge, as root
+  `CLAUDE.md` § "Commands" says, then any check that needs the deployed
+  payload, fixing forward on `main`.
+- **Re-measure a brief's evidence before entering its worktree**, whose
+  guard refuses git in another repo, and record which way it moved: a
+  commit elsewhere can satisfy or void a brief silently.
 - **`needs: [user]` is a question for the user**, not a call to make for
   them. A decision lands as yes, no or defer, the reasoning in the commit;
   a defer keeps the brief, `deferred` with its `reopen-when`.
-- **Landing deletes the brief** in the commit that lands its work: drop
+- **Landing deletes the brief** in the commit that finishes its work: drop
   its name from every `blocked-by`, and re-point whatever linked to it.
 - **A skill brief beside a skill that exists means `/test-skill` has not
   run**; `uv run --with pyyaml scripts/skill-status.py --stale` says which

@@ -438,10 +438,10 @@ Branching and concurrent sessions; the re-stamp in the reference).
 brief stays queued in `docs/handoffs/execute/` until this test runs,
 and nothing else removes it (`references/reading-a-failure.md`). Grep
 for links to it and re-point them in the same change. An **edit** brief
-runs the other way — the queue retires it in the commit that lands its
-work, so its absence is correct and the edited skill carries no
-"untested" marker on disk at all; `skill-status.py --stale` is the only
-thing that says so.
+goes in the commit that finishes its work, so it is still here when this
+run is its last check; otherwise its absence is correct and the edited
+skill carries no "untested" marker on disk at all, and
+`skill-status.py --stale` is the only thing that says so.
 
 **A `docs/audits/` brief is recorded, not deleted.** That directory is
 a ledger (`docs/audits/README.md`) — deleting from it loses the entry.
