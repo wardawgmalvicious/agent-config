@@ -102,9 +102,12 @@ names the worktree path, and removing the worktree is the fix:
 under `.git/worktrees` survives — `git worktree list` shows which. Both
 are writes, so propose them, do not run them.
 
-**A worktree marked `locked` refuses both, `--force` included**:
+**A worktree marked `locked` refuses both, one `--force` included**:
 `fatal: cannot remove a locked working tree, lock reason: <reason>`,
 while `prune` skips it and says nothing (git 2.55, 2026-09-25).
+The refusal's second line suggests `remove -f -f`: never propose it. It
+removed a locked, dirty worktree in one step, uncommitted changes and
+all, past both checks below (2026-09-29, and git-worktree's docs).
 `git worktree list -v` prints the reason. A `claude --worktree` session
 locks its own as `claude session <name> (pid <n>)`, and one killed with
 its terminal, never `/exit`ed, left the lock behind, its pid dead
