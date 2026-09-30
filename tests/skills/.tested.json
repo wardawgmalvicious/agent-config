@@ -334,6 +334,15 @@
         "body": "e371bb7494a981ca",
         "references": "dfbee271458dc86d"
       }
+    },
+    "triage": {
+      "behaviour": {
+        "date": "2026-09-30",
+        "commit": "a7ddc2c",
+        "routing": "259dda58848607a0",
+        "body": "82d1defebe12853a",
+        "references": "a04fb65b01fe3a0c"
+      }
     }
   }
 }
