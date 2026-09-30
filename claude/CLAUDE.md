@@ -54,6 +54,9 @@ the bytes: a round trip through a translating layer proves nothing.
   (2026-09-15). Use the scratchpad, or `cygpath -w`.
 - **`mv` denying a directory rename** (`Permission denied`) means a held
   handle: retry, and don't change shell or settings.
+- **Native `jq` writes CRLF** (1.8.2, 2026-09-30): `comm` and `diff` miss
+  every LF line, `read` keeps the `\r` and `> file` is CRLF, while `grep`
+  and a one-line `$(...)` hide it. Pass `-b` always, not only for payloads.
 
 ### Counting carriage returns
 

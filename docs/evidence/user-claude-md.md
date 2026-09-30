@@ -227,6 +227,57 @@ handle closes. Don't touch settings either — a Claude Code permission
 or sandbox denial refuses *before* the program runs, so it never
 arrives as the program's own error text.
 
+#### Native `jq` writes CRLF to stdout
+
+Added 2026-09-30 as a bullet; it never had a section of its own. `jq`
+here is the native Windows build that winget installs, and it opens its
+streams in text mode: its help lists `-b, --binary` as "open input/output
+streams in binary mode". So every line it writes ends `\r\n`, whatever
+the input's endings, to a pipe and to a file alike. Measured 2026-09-30,
+jq 1.8.2 in Git Bash:
+
+```text
+$ jq -n '"a"' | od -c
+0000000   "   a   "  \r  \n
+$ printf '["x","y"]' | jq -r '.[]' | od -c
+0000000   x  \r  \n   y  \r  \n
+$ jq -b -n '"a"' | od -c
+0000000   "   a   "  \n
+```
+
+What that does to the next command, each run on `["a","b"]` through
+`jq -r '.[]'` against the LF text `a`, `b`:
+
+| Next command | Plain `jq` | With `-b` |
+| --- | --- | --- |
+| `comm -12` | 0 lines in common | 2 |
+| `diff` | exit 1 | exit 0 |
+| `while IFS= read -r x`, each compared with its LF text | 0 of 2 equal | 2 of 2 |
+| `mapfile -t` | an element is `a\r` | not run |
+| `jq . in.json > out.json`, 7 lines | 7 carriage returns | 0 |
+| `$(...)` over both lines | `a\r\nb`: the inner `\r` stays | not run |
+| `$(...)` over one value | `a`: bash drops a final `\r\n` | `a` |
+| `grep -x a` | matches, and prints `a\n` | not run |
+
+**So the trap is uneven.** The two checks a session reaches for first, a
+`grep` and a one-value capture, pass, while a list comparison beside
+them is wrong with exit 0 and nothing on screen, since a trailing `\r`
+prints as nothing. It surfaced that day as `comm -23` of a directory
+listing against `jq -r` over an ownership manifest, which reported all
+48 of a client repo's vendored skills as absent from the manifest that
+named them.
+
+jq's manual says as much under `--binary`: "Windows users using WSL,
+MSYS2, or Cygwin, should use this option when using a native jq.exe,
+otherwise jq will turn newlines (LFs) into carriage-return-then-newline
+(CRLF)" (`jqlang/jq`, `docs/content/manual/dev/manual.yml`, read
+2026-09-30). § "A native program's argv is one Windows command line"
+already had `-b` for the input side, a payload on stdin; this is the
+output side, which a call with no payload meets.
+`tests/hooks/identity-guard/README.md` § "Traps" has held one instance
+since the hook's first version, a `tool_name` read as `Bash\r`, and
+`claude/hooks/identity-guard.sh` strips `\r` from what it reads.
+
 ### Counting carriage returns
 
 **`grep -c $'\r'` cannot count carriage returns in the Bash tool, and it
