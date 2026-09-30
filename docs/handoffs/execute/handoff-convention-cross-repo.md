@@ -604,6 +604,16 @@ source" has the measurements. For the invariants reference (edit 1):
 inbound notes are read when the user asks, and a repo's inbox directory
 is named for the repository, never for a linked worktree.
 
+**`handoff-status.py .` takes the repo's name from its directory**, so
+from a linked worktree it reads the repo's own inbox directory as an
+orphan and counts none of its notes. Measured 2026-09-30: from
+`.claude/worktrees/triage` the view printed `== triage ==`,
+`0 inbox note(s)` and six orphan directories, where the main checkout
+printed `inbox: 2 note(s)` and five. `lint-briefs` passes `--no-inbox`,
+so no commit fails on it. The fix takes the name from the parent of
+`git rev-parse --git-common-dir`, with a case in
+`tests/scripts/handoff-status/test-findings.sh`.
+
 ## Open questions
 
 None remain. All four are answered below, each pointing at where its
