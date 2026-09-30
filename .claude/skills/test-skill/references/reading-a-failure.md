@@ -225,6 +225,15 @@ all: read a capped arm's answer off its assistant records. Expect an
 arm to spend its cap plus the rest of the turn that crosses it, $0.17
 here.
 
+**A routing arm needs only its first tool call.** `--max-turns 1` ends
+it there: the `Skill` call is in the stream, the `result` reads
+`error_max_turns` with `num_turns` 2, and the process exits 1, so a
+runner chaining arms reports the batch as failed. Measured 2026-09-30 on
+2.1.282, Opus 5.5 at max effort, on `triage`'s first test: each of three
+routing arms made the expected call, `triage`, `learn` and
+`author-skill`, for $0.17, $0.19 and $0.22, where the payload arms that
+answered cost $1.27 to $1.46.
+
 **`--safe-mode` keeps the session-start git snapshot**, and a retest
 runs soon after the commit that made the claim under test, so the
 snapshot can hand that claim to the baseline. Measured 2026-09-29 on
