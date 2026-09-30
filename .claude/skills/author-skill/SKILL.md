@@ -445,6 +445,15 @@ do not test here either. `/test-skill` reads the brief from disk, so it
 can run now or in a fresh session next week — the two do not have to be
 back to back, and a cold run is the better one.
 
+**In a brief's worktree, the hand-off opens with this session leaving
+it.** The brief and the draft exist in that tree alone, so the fresh
+session enters `.claude/worktrees/<brief>` by `EnterWorktree` with that
+path, which is refused while this one is inside:
+`belongs to another running Claude Code session (locked: <reason>)`. So
+ask the user to have this session `ExitWorktree` with `keep` first
+(2.1.283, 2026-09-30; `docs/handoffs/execute/README.md` § "Every brief
+takes a worktree").
+
 ## 10. Constraints
 
 - **No unverified claims.** If step 4 did not establish it, it does not

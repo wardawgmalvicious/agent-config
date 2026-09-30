@@ -108,6 +108,20 @@ branch's oldest reflog entry, where it was created, must differ from its
 tip. `tests/scripts/handoff-status/` plants each case; against the
 script before this change, those six failed and the other 34 passed.
 
+**Only the session that made a worktree locks it** (2026-09-30, 2.1.283).
+A second session's `EnterWorktree` with the path was refused while the
+maker was inside, `belongs to another running Claude Code session
+(locked: claude session <name> (pid <pid>))`, and admitted once the
+maker had left by `ExitWorktree` `keep`, still running. The entrant took
+no lock: with it inside, `git worktree list --porcelain` showed none,
+twice in five minutes. So `held` cannot see a session that entered, whose
+worktree reads `parked` or `merged`, and whether git would remove that
+worktree, or a third session be admitted, was not tried. The worktrees
+page has the lock taken "at creation" and nothing on the refusal
+(code.claude.com/docs/en/worktrees, read that day). A skill brief's
+hand-off therefore opens with its author leaving, as `/author-skill`
+step 9 says.
+
 ## A brief's worktree lands without a push
 
 Decided 2026-09-29, in `land-rework.md`: a brief worked in a worktree
