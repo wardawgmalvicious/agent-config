@@ -1,8 +1,8 @@
 ---
 status: open
 priority: 3
-needs: [user, the Claude session target probe]
-blocked-by: []
+needs: [user]
+blocked-by: [copilot-payload-retirement.md]
 written: 2026-09-30
 ---
 
@@ -35,11 +35,13 @@ two paths and a probe to choose between them:
 - **It does not**: keep Copilot at user scope only, stop vendoring into
   repos, and freeze the ports.
 
-The probe is the user's to run. Its prompts went to a client repo's
-inbox that day, and its results come back to
-`~/handoff-inbox/agent-config/` as
-`<date>-claude-session-target-probe-results.md`. **Nothing new is
-vendored into a repo on either path**, which settles most of what is
+The user took the first path later that day, on what VS Code lists
+under each target, and
+[copilot-payload-retirement.md](copilot-payload-retirement.md) holds it:
+the removal, and the one turn on the corporate network it still waits
+on, which replaced the probe. This brief stays meanwhile as the record
+of the second path. **Nothing new is vendored into a repo on either
+path, and no port is redone on either**, which settles most of what is
 below. On the second, a client repo's existing skill copies are either
 dropped, for Copilot reading that repo's `.claude/skills` junctions, or
 kept and re-synced now and then. The exploration left that open.
@@ -214,8 +216,10 @@ edits the rule again meanwhile.
 Each item lands as a yes or a no once the direction is known, and a no
 is recorded in the commit that deletes this brief
 ([README.md](README.md) § "A brief can be a decision rather than an
-edit"). The direction itself is not this brief's to settle: if it gets a
-brief of its own, fold this one into it.
+edit"). The direction is not this brief's to settle:
+[copilot-payload-retirement.md](copilot-payload-retirement.md) holds it,
+and deletes this brief with each item's no if its turn passes. If the
+turn fails, the items land here as the second path has them.
 
 ## Scrubbing
 
@@ -224,7 +228,9 @@ role, and the user's words about who reads the payload carry no name.
 
 ## Re-measure before acting
 
-- `ls ~/handoff-inbox/agent-config/` for the probe's results note.
+- Whether the turn in
+  [copilot-payload-retirement.md](copilot-payload-retirement.md) has
+  run: it is graded from disk, and no results note comes back.
 - `ls -a skills/*/` for the markers, and the `git grep` above for the
   six lines.
 - `git log -1 --format=%h -- scripts/copy-copilot.ps1`: `3775d1a` on

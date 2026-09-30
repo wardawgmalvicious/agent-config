@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: []
-blocked-by: []
+blocked-by: [copilot-payload-retirement.md]
 written: 2026-09-26
 ---
 
