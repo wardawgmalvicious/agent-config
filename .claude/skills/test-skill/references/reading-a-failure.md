@@ -7,7 +7,7 @@ in is never the variable, what the write-tool flags leave open, what
 the `--safe-mode` list still carries, and what it leaves within reach.
 Moved out of the skill body on 2026-09-13 when that body reached the
 linter's 500-line cap, the moved text unchanged; later sections landed
-the same day, each time the cap was hit again. Four of step 8's
+the same day, each time the cap was hit again. Five of step 8's
 measurements followed on 2026-09-29, each under a new lead, to make
 room in the body for instructions that had lived only here.
 
@@ -44,6 +44,10 @@ pairs the slash arm with an NL arm on the same query. Measured
 turn with none, the same GUID-vs-friendly-name table in both; the first
 slash run, on a section that hands off to `fabric-deployment-pipelines`,
 showed only that skill's call.
+
+**Read the answers rather than grepping them.** On 2026-09-12 an
+`/owns|owned/` scan missed "items you own" and nearly recorded a passing
+assertion as a failure.
 
 **The transcript also witnesses which *model* served a turn**, which is
 what checks a `model:` pin in `.claude/skills/`. Each assistant record
@@ -383,4 +387,30 @@ it takes; there, launch the arms one at a time. The first held on
 2026-09-29 (`test-skill`, six arms launched together, `SendMessage`
 denied too): both tools were absent from every `init.tools`, and no
 arm raised a sibling as a peer. `--tools` removes both by
-construction. The second is unmeasured.
+construction. The second held the same day on `learn`, whose two arms
+ran one after the other: the `/learn` arm's `ListAgents` showed five
+live sessions and no sibling probe.
+
+**A peer can still message an arm, and the arm answers it as a second
+turn.** The stream shows the turn, never the message: a second `init`,
+on the session model, and a second `result`, between a pair of
+`command_lifecycle` records. Measured 2026-09-29 on 2.1.282, on that
+`/learn` arm, launched with `--tools Skill,ListAgents` and so without
+`SendMessage`: a live session sent a heads-up to every session its
+`ListAgents` showed, and the arm, its answer given on Fable, answered
+the heads-up on Opus. The first `result` has `result_index` 0, the
+second 1, and the second's `total_cost_usd` is the running total, $3.24
+to the first's $2.75. So `select(.type=="result") | .result` prints both
+answers back to back, and a read of the last `result` takes the peer's.
+Grade the first, and print the count beside it:
+
+```bash
+jq -s -r '[.[] | select(.type == "result")] | "results: \(length)", .[0].result' arm.jsonl
+```
+
+The day's other three arms each carried one `init`, one `result` and no
+`command_lifecycle`. Nothing marked the arm as a probe to its sender:
+the listing names it by its directory, and whether `--name` would make
+a peer leave one alone is unmeasured. So is a message landing
+mid-answer, though `SendMessage`'s description says messages "drain at
+the receiver's next tool round", and an arm that calls a tool has one.

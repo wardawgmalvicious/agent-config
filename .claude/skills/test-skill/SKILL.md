@@ -389,8 +389,8 @@ records — it carries the `tool_use` blocks, the `init` record and, for a
 conditional skill, the `commands_changed` record that witnesses the
 matching `Read` (`references/reading-a-failure.md`) inline, so nothing
 has to locate a session id under `~/.claude/projects/`. Read the answers
-rather than grepping them: on 2026-09-12 an `/owns|owned/` scan missed
-"items you own" and nearly recorded a passing assertion as a failure.
+rather than grepping them (2026-09-12), and only the first `result`: a
+peer's message can run in an arm as a second turn (2026-09-29).
 
 **Launch a slash probe from PowerShell**, not the Bash tool. MSYS2
 rewrites a leading-slash argument to `C:/Program Files/Git/<name>`, so
