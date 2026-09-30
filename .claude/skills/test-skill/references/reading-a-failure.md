@@ -266,6 +266,22 @@ re-stamp, and that it does not is the proof that the committed content
 is the tested content. `land`, 2026-09-17: stamped at `343003d`,
 re-stamped at `a7b855c`, `body` `5b24a04f96e79be7` both times.
 
+**A stamp is a working-tree write, so a peer's commit can take it.**
+Another live session's commit discarded one, staged or not — twice on
+2026-09-12, before a re-stamp chained into `git add` and `git commit`
+landed (root `CLAUDE.md`, Branching and concurrent sessions; the
+re-stamp above).
+
+**A stamp taken in a linked worktree can name a commit `main` never
+gets.** Landing rebases the branch onto `main` before the fast-forward
+(`docs/handoffs/CLAUDE.md`), and whenever `main` has moved, that
+rewrites the commit `rev-parse` named. `test-skill`, 2026-09-29: the
+no-X arm, walking a retest through in a brief's worktree, stamped there
+and landed by `--ff-only`, noting that a rebase "would leave the stamp
+pointing at a commit main doesn't have" (`b4e097b`). Only provenance
+suffers, as above, so step 10 stamps on `main` once the fast-forward
+lands, where `HEAD` is the landed commit.
+
 **A brief outlives its test unless step 10 removes it, and an edit brief
 leaves no trace at all.** On 2026-09-12 a brief whose skill had been
 tested and landed that morning was still on disk that afternoon,

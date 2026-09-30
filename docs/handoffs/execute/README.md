@@ -154,6 +154,14 @@ commit after its rebase, and all six SHAs it cites are on `main`; but
 it checked them with `cat-file -e`, which would have passed stale ones
 as well (transcript `1c8ba406`).
 
+**So a `/test-skill` stamp waits for the merge**, as a deployed-payload
+check does: `skill-status.py --stamp` records `HEAD`'s SHA, so a stamp
+taken in the worktree names a commit the rebase rewrites whenever `main`
+has moved. A walkthrough retest did exactly that, noted in `b4e097b`'s
+message, and the user decided the same day, 2026-09-29, that
+`/test-skill` step 10 stamps on `main` once the fast-forward lands, with
+the brief deleted in that commit.
+
 ## Audit briefs are a second queue
 
 `/drift-handoff` writes to `docs/audits/`, not here, and `/drift-update`

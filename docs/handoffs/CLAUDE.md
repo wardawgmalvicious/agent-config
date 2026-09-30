@@ -41,7 +41,7 @@ What a session must know before it writes, starts or lands a brief here;
   check each with `git merge-base --is-ancestor <sha> <branch>`, since
   `git cat-file -e` passes on a stale one. Deploy after the merge, as root
   `CLAUDE.md` § "Commands" says, then any check that needs the deployed
-  payload, fixing forward on `main`.
+  payload and any `/test-skill` stamp, fixing forward on `main`.
 - **Re-measure a brief's evidence before entering its worktree**, whose
   guard refuses git in another repo, and record which way it moved: a
   commit elsewhere can satisfy or void a brief silently.

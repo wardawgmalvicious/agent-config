@@ -33,14 +33,6 @@ written: 2026-09-29
 - **Audit briefs** run as one numbered pass per directory, and
   `handoff-status.py` matches worktrees against `execute/` stems only,
   so the rule does not reach `/drift-update`.
-- **A stamp taken in a worktree can name a commit `main` never gets.**
-  `skill-status.py --stamp` records `HEAD`'s short SHA, and the landing's
-  rebase rewrites that commit whenever `main` has moved, though
-  `docs/handoffs/CLAUDE.md` says to cite a SHA only after the rebase
-  (`b4e097b`'s message). `--stale` never reads the field, so only the
-  provenance is wrong. Stamping after the rebase, or on `main` with
-  `--at` once landed, keeps it true; which one `/test-skill` asks for is
-  the user's call.
 - Agent teams stay ruled out (root ledger, 2026-09-24).
 
 ## On reopening

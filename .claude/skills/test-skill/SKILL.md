@@ -428,11 +428,11 @@ retest. Nothing else records a test, so a run without a stamp did not
 happen as far as the next session can tell.
 
 **The stamp is a working-tree write that another live session's commit
-can discard**, staged or not — twice on 2026-09-12, before a re-stamp
-chained into `git add` and `git commit` landed. Hand `/commit` the stamp
-command to re-run before staging, and again once the tested edit
-commits, so `commit` names the commit that holds it (root `CLAUDE.md`,
-Branching and concurrent sessions; the re-stamp in the reference).
+can discard**, staged or not (2026-09-12, in the reference). Hand
+`/commit` the stamp command to re-run before staging, and again once the
+tested edit commits, so `commit` names the commit that holds it. **In a
+linked worktree, stamp on `main` once the fast-forward lands**, since
+the rebase rewrites the worktree's commits; the brief goes in that commit.
 
 **Then delete the brief — if it is still there.** An `/author-skill`
 brief stays queued in `docs/handoffs/execute/` until this test runs,
