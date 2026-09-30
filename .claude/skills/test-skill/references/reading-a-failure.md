@@ -424,3 +424,10 @@ the listing names it by its directory, and whether `--name` would make
 a peer leave one alone is unmeasured. So is a message landing
 mid-answer, though `SendMessage`'s description says messages "drain at
 the receiver's next tool round", and an arm that calls a tool has one.
+
+**`crossSessionInbound` is the documented switch against it.** Claude
+Code's cross-session messaging page, read 2026-09-30, says `refuse`
+"drops each message without delivering it", and a `-p` session takes the
+key from its `--settings` value, so
+`--settings '{"crossSessionInbound":"refuse"}'` on every arm would keep
+a peer's message from running as a second turn. Not yet run on an arm.
