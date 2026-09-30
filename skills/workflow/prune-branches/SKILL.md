@@ -112,6 +112,8 @@ all, past both checks below (2026-09-29, and git-worktree's docs).
 locks its own as `claude session <name> (pid <n>)`, and one killed with
 its terminal, never `/exit`ed, left the lock behind, its pid dead
 (2026-09-24). A live pid is a session still working there: leave it.
+A pid held by anything but `claude` was reused, so that session is dead:
+`Get-Process -Id <n>` names the holder, and Windows recycles pids.
 Otherwise `git worktree unlock <path>` goes ahead of the removal, a
 deleted directory's included. **Read `git -C <path> status --short`
 first**: a worktree's uncommitted changes are on no branch, so no rung
