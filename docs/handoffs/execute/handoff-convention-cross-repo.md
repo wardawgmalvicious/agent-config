@@ -15,9 +15,12 @@ that reframed Q1 and retracts one of this brief's own arguments — and
 Q3 and Q4 by the estate repo's own index, also written 2026-09-16 and
 recorded here 2026-09-18 — see
 [Q3 and Q4](#q3-and-q4--answered-by-the-estate-repos-index). What
-remains is execution: Q1's three edits, none of which exists yet,
+remains is execution: Q1's first two edits, neither yet drafted,
 re-planned 2026-09-27 when this repo's queue moved into each brief's
-frontmatter — see [Re-plan](#re-plan--2026-09-27).
+frontmatter — see [Re-plan](#re-plan--2026-09-27). The third, one note
+per repo, went out 2026-09-29 ahead of them, when the user moved every
+repo they work in to frontmatter — see
+[Decision](#decision--2026-09-29).
 
 **Scope.** Generalize the handoff discipline this repo already runs to
 the other repos on this machine, which have started growing their own
@@ -43,15 +46,20 @@ authoring a skill.
 
 ## What already exists
 
-Measured 2026-09-16 across three repos, and re-measured 2026-09-27,
-when a fourth had briefs.
+Measured 2026-09-16 across three repos, re-measured 2026-09-27, when a
+fourth had briefs, and again 2026-09-29, when this one had fallen from
+14 briefs to 11 and the second client repo had risen from 2 to 3.
 
 | Repo | Visibility | Briefs | Index | A brief is about |
 | --- | --- | --- | --- | --- |
-| this one | public | 14 in `execute/`, each with frontmatter, plus open follow-ups in `docs/audits/` | none since 2026-09-27: `handoff-status.py` generates the view | payload: skills, rules, hooks |
+| this one | public | 11 in `execute/`, each with frontmatter, plus open follow-ups in `docs/audits/` | none since 2026-09-27: `handoff-status.py` generates the view | payload: skills, rules, hooks |
 | `machine-config` | private | 2, in `docs/handoffs/` | yes — `docs/handoffs/README.md`, added 2026-09-16 | machine setup: shells, PATH, installed tooling |
 | client estate repo | internal | 6, in `execute/` | yes — `execute/README.md`, added 2026-09-16 | estate work |
-| a second client repo | private | 2, in `execute/` | yes — `execute/README.md`, added with its first brief 2026-09-27 | its deferred infrastructure and CI work |
+| a second client repo | private | 3, in `execute/` | yes — `execute/README.md`, added with its first brief 2026-09-27 | its deferred infrastructure and CI work |
+
+Two more repos the user works in, `fabric-tools` and
+`personal-scripts`, held no briefs and no handoff directory on
+2026-09-29.
 
 **The brief shape is already converging without coordination.** All
 three of the client repo's briefs carry a `**Status:**` line; two cite a
@@ -71,33 +79,37 @@ repo moved each brief's state into its own frontmatter and let
 `handoff-status.py` generate the view, because the index was the file
 two sessions in one tree dropped each other's rows from.
 [README.md](README.md#no-file-lists-the-queue) has why. The other three
-keep their indexes, which the sweep reads as before.
+kept their indexes until 2026-09-29, when the user moved every repo to
+frontmatter; the sweep reads either form while each makes the move.
 
 So the deliverable is **not a shared brief template.** A template would
 have to span skill authoring, shell configuration and estate work, and
 would collapse into either uselessly generic headings or this repo's own
 concerns imposed on two repos that do not share them. The deliverable is
-a short contract plus a per-repo index.
+a short contract plus a per-repo stub, which held an index until
+2026-09-29.
 
 ## Proposed: a minimal common core
 
 Nine invariants — eight as written 2026-09-16, and a ninth added
 2026-09-18 when Q4 was answered; 1, 4 and 9 were corrected 2026-09-27
-for per-brief state. Everything else stays per-repo.
+for per-brief state, and 1 and 4 again 2026-09-29, for frontmatter in
+every repo. Everything else stays per-repo.
 
 1. **A brief's state lives in exactly one place**: its own frontmatter,
-   from which a tool generates the view, or one row of the directory's
-   one index, which is then the only place order lives. A repo keeps one
-   form, and `handoff-status.py` reads both. A brief carries its
+   from which a tool generates the view. A brief carries its
    dependencies, never its position. This said "one index" until
-   2026-09-27, still right for a repo until two sessions collide on it.
+   2026-09-27, and allowed either form until 2026-09-29;
+   `handoff-status.py` still reads an index, for a repo partway through
+   the move.
 2. **Stable filenames, subject-named, no dates and no positions.** The
    filename is the link target. Dates go inside.
 3. **Self-contained and readable cold.** A brief that only makes sense
    to the session that wrote it has failed.
 4. **State, the date written, and what it waits on**, as frontmatter
-   keys or as a status line, whichever form the repo keeps under 1. A
-   status line emerged in every repo with an index.
+   keys, which the body does not restate. A status line emerged in every
+   repo with an index; its state word and date are what move into the
+   keys.
 5. **A scrubbing declaration** — see below. New; nothing has this.
 6. **Measured and Not checked as separate headed lists.** The
    undrilled set is what bounds the work, and it is the first thing
@@ -141,7 +153,8 @@ differently:
   the machine-level inbound path for payload work, with two writers and
   one reader.
 
-A directory should say which of these it accepts. Today none does.
+A directory should say which of these it accepts. None did on
+2026-09-16; every indexed repo's stub did by 2026-09-29.
 
 ## What this does not propose
 
@@ -156,10 +169,6 @@ A directory should say which of these it accepts. Today none does.
   convention, which is why it does not contradict the bullet above.
 - No change to `docs/audits/`. The queue-versus-ledger split here is
   already correct and documented.
-- **No move to frontmatter elsewhere.** A repo with an index keeps it
-  and is read as before, as this repo's own change decided on
-  2026-09-27. Frontmatter is the form to offer a repo whose sessions
-  start colliding on its index, and that repo's session makes the move.
 
 ## Decisions — 2026-09-16
 
@@ -326,20 +335,73 @@ second client repo's under "Conventions", so the flagged duplicate is
 now two.
 
 1. **The invariants reference** goes in `skills/meta/learn/references/`,
-   as decided, now carrying both forms of invariant 1 and the frontmatter
-   keys. `handoff-status.py` is what validates the keys, and
+   as decided, now carrying invariant 1 as corrected 2026-09-29 and the
+   frontmatter keys. `handoff-status.py` is what validates the keys, and
    `docs/handoffs/CLAUDE.md` here keeps its own table, which has to load
    before a brief here is touched. So a key change edits the script, that
-   table and the reference together. `lint-briefs` rejects a key the
+   table and the reference together, and since 2026-09-29 is also a note
+   to every repo holding a copy of the table (see
+   [Decision](#decision--2026-09-29)). `lint-briefs` rejects a key the
    script does not know, which surfaces a documented key it lacks once a
    brief uses one; nothing catches the reverse, or a stale reference.
 2. **The Copilot instruction port** is unchanged: nothing in it touches
    the queue.
-3. **The per-repo stubs** are written, by their own repos. What is left
-   is one note per repo to `~/handoff-inbox/<repo>/` once edit 1 exists:
-   `machine-config`'s backlog declaration, and its queue-rules pointer
-   re-aimed at the reference, and each client stub's brief-shape prose
-   cut to a link.
+3. **The per-repo stubs** are written, by their own repos. The one note
+   per repo planned here for after edit 1 went out 2026-09-29, ahead of
+   it and widened to the move itself; see
+   [Decision](#decision--2026-09-29). It carries `machine-config`'s
+   backlog declaration, and re-aims that repo's queue-rules pointer at
+   this repo's `docs/handoffs/`, since the reference does not exist yet.
+   The brief-shape cut does not go out with it; the Decision says why.
+
+## Decision — 2026-09-29
+
+**Every repo the user works in moves to per-brief frontmatter**, not
+only one whose sessions collide on its index, because it is "better for
+potential parallel work as it comes", in the user's words. That
+reverses what this brief recorded on 2026-09-27 under "What this does
+not propose": a repo with an index would keep it, and frontmatter would
+be offered to a repo only once its sessions collided. The two
+reference-only client repos are excluded by the user's call.
+
+**One note per repo went to `~/handoff-inbox/<repo>/` the same day**,
+each named `2026-09-29-handoff-state-per-brief.md`:
+
+| Repo | Briefs | The note asks for |
+| --- | --- | --- |
+| client estate repo | 6, indexed | frontmatter on each, the queue table cut, the root pointer re-aimed |
+| second client repo | 3, indexed | the same |
+| `machine-config` | 2, indexed, dated names | the same, the briefs renamed to their subjects, and the missing backlog declaration |
+| `fabric-tools`, `personal-scripts` | none | one root `CLAUDE.md` line now; the directory and its stub come with the first brief |
+
+Each note carries the key table and a draft of every brief's values,
+leaving the priorities to the user. **The root pointer is the edit that
+matters in each repo**, for finding 2's reason in
+[Decisions](#decisions--2026-09-16): writing a brief is a Write, which
+loads no nested file, so only a root instruction file reaches the
+session writing a repo's first brief.
+
+**No tooling is copied**, so "No tooling copied into other repos" above
+still holds. A repo prints its view by running this repo's script by
+path, with `uv run --no-project`. That took 0.55 s, measured
+2026-09-29 from inside a repo with its own `pyproject.toml`, which plain
+`uv run` would have synced first. A clone without this repo, whether a
+teammate's or CI's, reads the same state with one `grep` over the keys.
+
+**The estate repo names no personal repo in its files**, a rule its own
+session reported that day as the user's. The rule is not yet in that
+repo's committed files. Under it, the estate repo's view command stays
+out of its committed files, where the grep does the job. The rule also
+voids the cut-to-a-link planned for its brief-shape prose, since a link
+there would name this repo. So that prose stays as its own copy, and
+the flagged duplicate becomes a copy kept on purpose. Whether the second
+client repo follows the same rule is the user's call. Until then, its
+note offers the path-free form too.
+
+**This brief does not wait on the notes.** Each lands in its own repo,
+on its own session's time, and the sweep lists each note until that
+repo deletes it. This brief lands with edits 1 and 2. The Verification
+below is the cold check on the notes, once they have landed.
 
 ## Open questions
 
@@ -365,18 +427,20 @@ answer is recorded.
 
 ## Verification
 
-The convention is working when, in a fresh session in any of the four
-repos, the agent can answer "what handoff work is open here, and in what
-order" from one file without reading every brief, or here, where briefs
-carry frontmatter, from `handoff-status.py`. Test it cold in each
-repo — including the estate repo, whose subject matter is furthest from
-this one and is the real test of whether the core generalized or just
-described this repo in general-sounding words.
+The convention is working when, in a fresh session in any repo the
+user works in, the agent can answer "what handoff work is open here,
+and what can run at once" from `handoff-status.py`, or the one `grep`
+where a repo names no personal repo, without reading every brief. Test
+it cold in each repo, once its 2026-09-29 note has landed. That includes
+the estate repo, whose subject matter is furthest from this one and is
+the real test of whether the core generalized or just described this
+repo in general-sounding words.
 
-Two corrections to that criterion. It is **one file plus one command**:
-the in-repo index answers what is open *here*, and
-`ls ~/handoff-inbox/<repo>/` answers what has been routed here and not
-yet triaged. And all three legs became testable on 2026-09-16, when
+Two corrections to that criterion. It is **two commands**: the view
+answers what is open *here*, which was one in-repo index until
+2026-09-29, and `ls ~/handoff-inbox/<repo>/` answers what has been
+routed here and not yet triaged. And all three legs became testable on
+2026-09-16, when
 `machine-config` and the estate repo each indexed their directories. No
 cold test has run in either yet.
 
