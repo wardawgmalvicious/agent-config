@@ -30,7 +30,13 @@ A brief states its own state in frontmatter, or an index states it:
               written      YYYY-MM-DD, the tiebreak within a bucket
             Such briefs print grouped -- ready, needs you, needs something
             else, blocked, deferred -- by bucket, then oldest first, and
-            one is "in flight" while a git worktree is named after it.
+            one is "in flight" while a git worktree is named after it:
+              held    a live session's lock, or a lock naming no pid
+              merged  its branch committed, and the main checkout's HEAD
+                      holds that: landed, its deployed-payload check to run
+              parked  neither: unlanded work, or none begun, left there
+            A lock whose pid is gone, a crashed session's, adds "lock
+            stale", and /prune-branches proposes the unlock.
   Rows      every table row or list item in a README.md under docs/handoffs/
             whose FIRST element is a link to a brief. Links elsewhere in a
             row, and links in prose, are not rows.
@@ -81,8 +87,10 @@ Stdlib only. Reads other repos and never writes to them.
 from __future__ import annotations
 
 import argparse
+import ctypes
 import datetime as dt
 import importlib.util
+import os
 import pathlib
 import re
 import subprocess
@@ -125,6 +133,12 @@ PRIORITIES = ("1", "2", "3")
 YAML_INDICATORS = tuple("`@&*!|>%{}[],#?'\"")
 GROUPS = ("ready", "needs you", "needs something else", "blocked", "deferred")
 OUTCOME_WIDTH = len("applied with deferrals 2026-01-01")
+# Claude Code locks the worktree a session holds as
+# "claude session <name> (pid <n>)" (skills/workflow/prune-branches).
+LOCK_PID = re.compile(r"\(pid (\d+)\)")
+PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+STILL_ACTIVE = 259
+ERROR_ACCESS_DENIED = 5
 
 for _stream in (sys.stdout, sys.stderr):
     if hasattr(_stream, "reconfigure"):
@@ -183,7 +197,7 @@ class RepoReport:
     rows: list[Row] = field(default_factory=list)
     briefs: list[pathlib.Path] = field(default_factory=list)
     stated: list[Brief] = field(default_factory=list)
-    worktrees: set[str] = field(default_factory=set)
+    worktrees: dict[str, str] = field(default_factory=dict)  # name -> how it holds
     touched: dict[str, str] = field(default_factory=dict)
     notes: list[pathlib.Path] = field(default_factory=list)
     audits: list = field(default_factory=list)  # audit_status.FollowUp
@@ -317,14 +331,112 @@ def validate(brief: Brief) -> None:
             brief.problems.append(("blocker", f"blocked-by names {name}, which does not exist"))
 
 
-def worktree_names(repo: pathlib.Path) -> set[str]:
-    """Directory names of the repo's linked worktrees, each a claim on a brief."""
+@dataclass
+class Worktree:
+    """One entry of `git worktree list --porcelain`."""
+    name: str
+    head: str = ""
+    branch: str = ""  # refs/heads/<name>; empty when detached
+    lock: str | None = None  # the lock's reason, "" when it gives none
+
+
+def git_lines(repo: pathlib.Path, *args: str) -> list[str]:
     result = subprocess.run(
-        ["git", "-C", str(repo), "worktree", "list", "--porcelain"],
+        ["git", "-C", str(repo), *args],
         capture_output=True, text=True, encoding="utf-8", errors="replace")
-    paths = [line[len("worktree "):] for line in result.stdout.splitlines()
-             if line.startswith("worktree ")]
-    return {pathlib.PurePath(p).name for p in paths[1:]}  # the first is the main checkout
+    return result.stdout.splitlines()
+
+
+def read_worktrees(repo: pathlib.Path) -> list[Worktree]:
+    """Every worktree of the repo, the main checkout first."""
+    trees: list[Worktree] = []
+    for line in git_lines(repo, "worktree", "list", "--porcelain"):
+        key, _, value = line.partition(" ")
+        if key == "worktree":
+            trees.append(Worktree(pathlib.PurePath(value).name))
+        elif trees and key == "HEAD":
+            trees[-1].head = value
+        elif trees and key == "branch":
+            trees[-1].branch = value
+        elif trees and key == "locked":
+            trees[-1].lock = value
+    return trees
+
+
+def pid_alive(pid: int) -> bool:
+    """Whether a process is running, asked without signalling it.
+
+    Never os.kill(pid, 0) on Windows, where every signal but the two console
+    events is TerminateProcess: the probe would end the session it asks about.
+    """
+    if sys.platform != "win32":
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+    from ctypes import wintypes
+    if pid > 0xFFFFFFFF:
+        return False
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.OpenProcess.argtypes = (wintypes.DWORD, wintypes.BOOL, wintypes.DWORD)
+    kernel32.OpenProcess.restype = wintypes.HANDLE
+    kernel32.GetExitCodeProcess.argtypes = (wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD))
+    kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+    handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+    if not handle:
+        # Another account's process refuses the query, and exists all the same.
+        return ctypes.get_last_error() == ERROR_ACCESS_DENIED
+    try:
+        code = wintypes.DWORD()
+        return (bool(kernel32.GetExitCodeProcess(handle, ctypes.byref(code)))
+                and code.value == STILL_ACTIVE)
+    finally:
+        kernel32.CloseHandle(handle)
+
+
+def worktree_claims(repo: pathlib.Path, stems: set[str]) -> dict[str, str]:
+    """How each worktree named after a brief holds it: held, merged or parked.
+
+    Ancestry alone cannot say merged: a branch that never committed is an
+    ancestor of the main checkout's HEAD too. So its oldest reflog entry, the
+    commit it was created at, must also differ from its tip, and a branch
+    whose reflog is gone reads parked. Two spawns for every unheld claim
+    together, none for a held one.
+    """
+    trees = read_worktrees(repo)
+    if not trees:
+        return {}
+    main, claims = trees[0], [t for t in trees[1:] if t.name in stems]
+    states: dict[str, str] = {}
+    unheld: list[Worktree] = []
+    for tree in claims:
+        pid = LOCK_PID.search(tree.lock or "")
+        if tree.lock is not None and (not pid or pid_alive(int(pid.group(1)))):
+            states[tree.name] = "held"
+        else:
+            unheld.append(tree)
+    refs = [t.branch for t in unheld if t.branch]
+    landed: set[str] = set()
+    if refs:
+        merged = set(git_lines(repo, "branch", "--merged", main.head, "--format=%(refname)"))
+        created: dict[str, tuple[int, str]] = {}
+        for line in git_lines(repo, "log", "-g", "--format=%gD %H", *refs):
+            selector, _, sha = line.partition(" ")
+            ref, _, index = selector.rpartition("@{")
+            if not index.rstrip("}").isdigit():
+                continue  # a date-form selector: no creation point, so parked
+            number = int(index.rstrip("}"))
+            if number >= created.get(ref, (-1, ""))[0]:
+                created[ref] = (number, sha)
+        landed = {t.branch for t in unheld if t.branch in merged
+                  and t.branch in created and created[t.branch][1] != t.head}
+    for tree in unheld:
+        state = "merged" if tree.branch in landed else "parked"
+        states[tree.name] = state + (", lock stale" if tree.lock is not None else "")
+    return states
 
 
 def read_rows(index: pathlib.Path, tree: pathlib.Path) -> list[Row]:
@@ -377,7 +489,7 @@ def scan(repo: pathlib.Path, inbox_root: pathlib.Path | None) -> RepoReport:
         if report.briefs or report.rows:
             report.touched = last_touched(repo)
         if report.stated:
-            report.worktrees = worktree_names(repo)
+            report.worktrees = worktree_claims(repo, {b.path.stem for b in report.stated})
     report.audits = audit_status.follow_ups(repo / AUDITS)
     inbox = inbox_root / repo.name if inbox_root else None
     if inbox and inbox.is_dir():
@@ -404,8 +516,8 @@ def shorten(text: str, width: int = STATE_WIDTH) -> str:
 def detail(brief: Brief, report: RepoReport) -> str:
     """What a brief is waiting on, and whether a worktree has claimed it."""
     parts = []
-    if brief.path.stem in report.worktrees:
-        parts.append("in flight")
+    if claim := report.worktrees.get(brief.path.stem):
+        parts.append(f"in flight ({claim})")
     if brief.group in ("needs you", "needs something else"):
         parts.append("needs " + ", ".join(brief.items("needs")))
     elif brief.group == "blocked":

@@ -59,6 +59,20 @@ expect_line() {
     fi
 }
 
+# expect_brief <label> <brief filename> <fixed string its queue line must hold>
+expect_brief() {
+    local line
+    line=$(grep -E -- "  ${2//./\\.} +written" "$tmproot/out.txt")
+    if [[ -n "$line" && "$line" == *"$3"* ]]; then
+        echo "ok    $1"
+        pass=$((pass + 1))
+    else
+        echo "FAIL  $1: $2's line lacks '$3'"
+        sed 's/^/        /' "$tmproot/out.txt"
+        fail=$((fail + 1))
+    fi
+}
+
 # expect_no_line <label> <fixed string that must NOT appear>
 expect_no_line() {
     if grep -qF -- "$2" "$tmproot/out.txt"; then
@@ -115,8 +129,29 @@ fm m "status: open" "priority: 3" "blocked-by: [missing.md]" "written: 2026-09-2
 # shellcheck disable=SC2016 # the backtick is literal, and the point
 fm tick "status: open" "priority: 3" 'reopen-when: `x` opens with a backtick' "written: 2026-09-26"
 # A worktree named after f claims it. A worktree needs a commit to branch from.
-git -C "$fix" -c user.name=t -c user.email=t@example.com commit -q --allow-empty -m init
-git -C "$fix" worktree add -q "$(native "$fix/.claude/worktrees/f")" -b f 2> /dev/null
+git_t() { git -c user.name=t -c user.email=t@example.com "$@"; }
+git_t -C "$fix" commit -q --allow-empty -m init
+add_worktree() {
+    git -C "$fix" worktree add -q "$(native "$fix/.claude/worktrees/$1")" -b "$1" 2> /dev/null
+}
+add_worktree f
+# How each claim holds its brief. f's worktree is fresh and unlocked. The live
+# pid is this shell's own, its Windows pid under Git Bash, as Claude Code
+# records one; no Windows or Linux process has pid 999999999. merged's branch
+# commits and the main checkout fast-forwards to it; park's never lands.
+for name in hold stale bare park merged; do
+    fm "$name" "status: open" "priority: 3" "written: 2026-09-27"
+    add_worktree "$name"
+done
+live=$(cat "/proc/$$/winpid" 2> /dev/null || echo "$$")
+git -C "$fix" worktree lock --reason "claude session hold (pid $live)" \
+    "$(native "$fix/.claude/worktrees/hold")"
+git -C "$fix" worktree lock --reason "claude session stale (pid 999999999)" \
+    "$(native "$fix/.claude/worktrees/stale")"
+git -C "$fix" worktree lock "$(native "$fix/.claude/worktrees/bare")"
+git_t -C "$fix/.claude/worktrees/park" commit -q --allow-empty -m unlanded
+git_t -C "$fix/.claude/worktrees/merged" commit -q --allow-empty -m landed
+git_t -C "$fix" merge -q --ff-only merged
 
 # An audit ledger directory, which audit-status.py knows by its report.
 # stamp <name> <execution log entry>...
@@ -160,6 +195,14 @@ expect_no_line "a link outside docs/handoffs is not a row" "Not a brief"
 expect_no_line "a brief with frontmatter needs no row" "unindexed  docs/handoffs/execute/f.md"
 expect_line "an open, unblocked brief is ready" "    ready"
 expect_line "a worktree named after a brief puts it in flight" "touched uncommitted  in flight"
+expect_brief "a fresh, unlocked worktree is parked, not merged" f.md "in flight (parked)"
+expect_brief "a lock whose pid is alive is held" hold.md "in flight (held)"
+expect_brief "a lock whose pid is gone is parked, lock stale" stale.md \
+    "in flight (parked, lock stale)"
+expect_brief "a lock naming no pid is held" bare.md "in flight (held)"
+expect_brief "a commit that never landed is parked" park.md "in flight (parked)"
+expect_brief "a committed branch the main checkout holds is merged" merged.md \
+    "in flight (merged)"
 expect_line "needs: [user] waits on the user" "needs user"
 expect_line "a blocker that exists blocks" "blocked by f.md"
 expect_line "an unknown status is a finding" "frontmatter docs/handoffs/execute/bad.md: status is maybe"

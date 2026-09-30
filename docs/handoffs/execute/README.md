@@ -95,6 +95,19 @@ probe's project scope, and leaves user scope alone. So the worktree
 stays, holding the claim, and the brief stays, holding the check, until
 the check passes; a fix goes forward on `main`.
 
+**The view says how a worktree holds its brief**, from its lock and its
+branch (2026-09-29). `held` is a lock whose pid is alive, or a lock that
+names no pid: a session is at work there. `merged` is a branch that
+committed and that the main checkout's `HEAD` contains: a brief waiting
+on its check on `main`, as above. `parked` is anything else, work left
+unlanded or never begun, to resume rather than start again. A lock whose
+pid is gone, a crashed session's, adds `lock stale`, and
+`/prune-branches` proposes the unlock. Ancestry alone would say `merged`
+of a branch that never committed, which sits under `main` too, so the
+branch's oldest reflog entry, where it was created, must differ from its
+tip. `tests/scripts/handoff-status/` plants each case; against the
+script before this change, those six failed and the other 34 passed.
+
 ## A brief's worktree lands without a push
 
 Decided 2026-09-29, in `land-rework.md`: a brief worked in a worktree
