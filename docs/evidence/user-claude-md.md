@@ -666,6 +666,50 @@ the deny list has to name every tool a release adds. Found while
 retesting `test-skill`, whose own deny list had gone stale the same way
 (its `references/reading-a-failure.md`).
 
+**2026-09-30.** Nothing announces an inbox note any more, and peers are
+messaged only inside their own repository: the user's two calls that
+day, once `/triage` gave the payload repo's inbox a reader. The
+session-start check (`f931d5b`) and the doorbell `/learn` rang after
+writing a note (`55d9a6d`) both went; each was added 2026-09-16 against
+one failure, three notes unread for a day while the inbox had two
+writers and no reader. What they cost, as measured:
+
+- **The check mostly found notes nobody then opened.** Of the 45
+  sessions in the payload repo since 2026-09-23 that made 20 or more tool
+  calls, 42 listed the inbox; 39 of those listings named a note, and 21
+  of the 39 sessions opened none, having been started for something
+  else. Measured 2026-09-30 for the `triage` brief, by a script not kept.
+- **Its command was wrong in a linked worktree**, where every brief here
+  is worked. `git rev-parse --show-toplevel` names the worktree, so from
+  `.claude/worktrees/triage` the command pointed at
+  `~/handoff-inbox/triage/`, which does not exist. A session isolated by
+  `EnterWorktree` had it refused before it ran: "this command names git
+  in a form too complex to verify that it stays inside the worktree"
+  (2.1.282). The repository's name is the basename of the parent of
+  `git rev-parse --path-format=absolute --git-common-dir`.
+- **A message is a turn in its receiver.** Claude Code's cross-session
+  messaging page, read 2026-09-30, says a busy session reads one
+  "between tool calls during an active turn", an idle one "starts a new
+  turn with the message", and a delivered one "counts toward usage like
+  a prompt you type". On 2026-09-29 a heads-up ran as a second turn in a
+  `/test-skill` arm, $0.49 over its $2.75, and printed a second `result`
+  after the arm's own. On 2026-09-30 a doorbell woke a session that had
+  just finished a test run, for one `ls` and a reply.
+
+**The harness cannot scope peers to a repository.** The same page lists
+every session on the machine and gives two switches, neither by
+project: `crossSessionInbound`, which takes `accept`, `hold` or `refuse`
+for every sender at once, so it would also silence the same-repo peers
+that `commit`, `land` and `triage` ask; and deny rules naming
+`SendMessage` and `ListAgents`, bare, which also end messages to a
+session's own subagents. The default here is delivery, since `auto`
+counts as a prompting mode. So the scope is a rule, and the inbox is the
+one channel between repos. Left open: a `PreToolUse` hook on
+`SendMessage` that refuses a recipient named after another directory.
+What says a note exists now: the writing session's report to its user,
+`/triage` in the payload repo, and `scripts/handoff-status.py` there,
+which lists every repo's waiting notes.
+
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude

@@ -147,11 +147,13 @@ rest are copies, live after a deploy. Edit the repo, never `~/.claude`.
 
 **A learning for another repo goes to `~/handoff-inbox/<repo>/`**; read the
 inbox `README.md` before writing one, and a note loose in its root is
-un-routed. At session start check this repo's (empty is normal):
-`ls ~/handoff-inbox/$(basename "$(git rev-parse --show-toplevel)")/`.
+un-routed. This repo's notes wait for the user's word: open none unasked
+(2026-09-30). `<repo>` is the repository's directory, never a worktree's.
 
 **Peers.** `ListAgents` names a session by its `/rename` or `--name` name,
 else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
+**Message only a session in this repository** (2026-09-30): another repo's
+work goes to its inbox, and nothing announces a note.
 **Run it before editing a file another session may be editing**, not only
 before a commit. **Ask a peer only for what exists nowhere but in its
 context**: uncommitted work, what it tried, a live login. For the rest, or a

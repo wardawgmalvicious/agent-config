@@ -40,7 +40,7 @@ git rev-parse --show-toplevel
 | Where | Mode | What happens |
 | --- | --- | --- |
 | Inside the payload checkout | **edit** | Steps 1–5, then Step 6 proposes the diff, Step 8 hands off to `/commit` |
-| Any other repo, or none | **note** | Steps 1–5, then Step 7 writes a note to `~/handoff-inbox/<target-repo>/` and notifies a live session there |
+| Any other repo, or none | **note** | Steps 1–5, then Step 7 writes a note to `~/handoff-inbox/<target-repo>/` and Step 8 tells the user where it is |
 
 **In note mode, edit nothing outside the current workspace** — not the
 payload checkout, not `~/.claude`, not another repo's files. Reading the
@@ -271,31 +271,12 @@ explicitly which parts are raw, because the session that lands this will
 be writing into a repo that may be public, and it is that session's job
 to scrub. A note that looks generalized but isn't is the failure mode.
 
-**Then ring the doorbell.** A correctly written note nobody reads is
-this inbox's own failure mode — three sat unread for a day from
-2026-09-15. If `ListAgents` shows a live session in the target repo,
-`SendMessage` it one line: the note's path and what it covers. **Match
-on the working directory, not a repo-name prefix** — a name is
-`<cwd-basename>-<hash>`, so a peer sitting in a subdirectory of the
-target repo carries that subdirectory's name and a prefix match skips it
-(measured 2026-09-17). The note is the artifact; the message is only a
-pointer to it, so if no session is live there nothing is lost — the next
-one finds the note from the start-of-session check in
-`~/.claude/CLAUDE.md`.
-
-**The doorbell is best-effort.** `SendMessage` does not always travel
-with `ListAgents`, and its availability varies **per session**: on
-2026-09-17 one session had peer discovery and no messaging tool at all
-— absent from the tool list and from the deferred set, with `ToolSearch`
-finding nothing — while another on the same machine hours later had it
-deferred and resolved it first try with `select:SendMessage`. So try
-`ToolSearch` once; if it is still missing, say so in the handoff report
-rather than reading it as "no live session". The note still lands
-either way.
-
-**Never ask that session to apply the note.** Landing it is that
-session's user's call, not yours, and a peer cannot grant the
-permission. The message names the note and stops.
+**Nothing announces the note, and no session is messaged about it.** A
+message runs in its receiver as a turn, in the middle of whatever that
+session was started for, and work for another repo is what the inbox
+carries. The note waits until the user asks a session in the target repo
+to bring it in, so Step 8's report is the only thing that says it exists
+(2026-09-30; the doorbell this replaced rang from 2026-09-16).
 
 Shape:
 
@@ -303,7 +284,7 @@ Shape:
 # Handoff: <topic>
 
 **Origin:** <what kind of repo or estate, generalized>. <Month Year>.
-**For:** `/learn` in a session inside the payload repo.
+**For:** `/triage` in a session inside the payload repo.
 
 **Sources, cited by kind.** <Whether anything below carries a workspace,
 tenant, account or host name — so the landing session knows what needs
@@ -350,10 +331,10 @@ script runs** — remind the user, and check the repo's own instructions
 for the exact invocation, since running it bare can deploy more than
 intended.
 
-**Note mode.** Tell the user the note's full path, what it covers in one
-line, and whether a live session in the target repo was notified. The
-next step is `/learn` in a session inside the payload repo. Do not copy
-the note into that repo yourself, and do not commit anything here.
+**Note mode.** Tell the user the note's full path and what it covers in
+one line: nothing else will, since no session is notified. The next step
+is `/triage` in a session inside the payload repo. Do not copy the note
+into that repo yourself, and do not commit anything here.
 
 ## Example (illustrative — not a real fabric-cicd fact)
 

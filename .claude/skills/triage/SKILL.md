@@ -163,9 +163,8 @@ Work down the table. The first row that fits is the verdict.
 - **Folded follows subject, not lineage**: briefs on one subject belong
   in one file, and what resolves independently stays separate
   (`docs/handoffs/README.md`). **A brief `in flight` is its worktree's to
-  edit.** Leave the learning uncarried and its note in place, and where
-  the claim reads `held`, tell that session the note exists. Never ask
-  it to apply it.
+  edit.** Leave the learning uncarried and its note in place, and message
+  no session about it: step 9 names the brief the note waits on.
 - **Briefed takes `status: deferred` and a `reopen-when`** where the
   learning is real and its time is not now. There is no deferred
   directory and no declined one: a brief's state is its frontmatter.
@@ -241,7 +240,7 @@ edit. Then, in this order:
    create the file with the header the reference gives.
 5. **Misrouted.** A whole note moves with one `mv` into the other repo's
    inbox directory; one learning out of several is written there as a
-   new note. Then ring the doorbell as `/learn` step 7 does.
+   new note. Message no session there: the report says where it went.
 
 Then `uv run scripts/handoff-status.py . --check --no-inbox` and
 `pre-commit run --all-files`, once each.
@@ -299,11 +298,13 @@ that the next run will find their learnings Covered.
 ## 9. Report
 
 - **Per note**: what each learning became, the commit that holds it, and
-  whether the note was deleted, kept or moved.
+  whether the note was deleted, kept or moved. A note kept for a brief in
+  flight names that brief and whether its claim held: nothing else tells
+  its worktree.
 - **Corrections** made to what the notes claimed.
 - **What is owed**: a deploy for an edit under `claude/`; a retest, from
   `uv run --with pyyaml scripts/skill-status.py --stale`, for a skill an
-  edit touched; a doorbell that could not be rung.
+  edit touched.
 - **What was not re-run**, and why.
 - That nothing was pushed.
 
