@@ -266,6 +266,13 @@ re-stamp, and that it does not is the proof that the committed content
 is the tested content. `land`, 2026-09-17: stamped at `343003d`,
 re-stamped at `a7b855c`, `body` `5b24a04f96e79be7` both times.
 
+**A brief outlives its test unless step 10 removes it, and an edit brief
+leaves no trace at all.** On 2026-09-12 a brief whose skill had been
+tested and landed that morning was still on disk that afternoon,
+reading as "authored, untested". `land`, 2026-09-13: `31d2f4f`
+implemented `land-branch-cleanup.md` and deleted it in one commit, and
+the skill went twelve commits unstamped.
+
 **Pick the discriminating claim after reading the baseline, not before.**
 The claim that reads as a skill's sharpest is not thereby one only the
 skill makes, and choosing it up front biases a run toward measuring
