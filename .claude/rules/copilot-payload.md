@@ -31,8 +31,8 @@ paths:
 - Ports drift, so `scripts/lint-instructions.py` gates them in pre-commit:
   `applyTo` must be one comma-separated string (a list parses, then matches
   nothing), no personal-repo name or profile path may leak, no relative
-  link may ship, and a rule edit fails until its port is redone and
-  re-recorded with `--stamp`.
+  link may ship, and a rule edit fails until its hash is re-recorded with
+  `--stamp`.
   `copilot/.source-hashes.json` lists the rules deliberately not ported, so
   a new rule surfaces as a decision rather than an omission.
 - A vendored skill loses `paths:` and `effort:`, which Copilot warns about
@@ -57,5 +57,8 @@ paths:
   called through `uv`, so a missing `uv` or a failed call stops the run
   rather than shipping every port; `-AllInstructions` does that on purpose.
   `bash tests/scripts/copy-copilot/test-port-selection.sh` is its test.
-- `~/.copilot` takes `workflow` only, never `social`. Copies are not live:
-  re-run after editing a `skills/workflow/` skill or a ported rule.
+- `~/.copilot` takes `workflow` only, never `social`. **The payload is
+  frozen until it is removed** (2026-09-30): no port is redone and no copy
+  refreshed after an edit, in `~/.copilot` or in a repo, since the user
+  decided to retire it
+  (`docs/handoffs/execute/copilot-payload-retirement.md`).

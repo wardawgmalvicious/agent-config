@@ -12,9 +12,8 @@ written: 2026-09-30
   seeing what VS Code lists under each of its session targets in a
   client Fabric repo, and from a read of the installed build the same
   day (transcript `230c3b1b`).
-- **Kind**: a removal in two parts. The first stops the upkeep and needs
-  no one. The second deletes, and waits on one turn only the user can
-  run. Nothing is drafted.
+- **Kind**: a removal. The upkeep stopped the day this was written; the
+  deletion waits on one turn only the user can run. Nothing is drafted.
 
 ## The decision
 
@@ -203,36 +202,32 @@ What each outcome means:
 - **2 holds and 3 does not**: the target answers without the payload,
   which the build says cannot happen. Stop and report; delete nothing.
 
-## Before the turn: stop the upkeep
+## Before the turn: the upkeep has stopped
 
 **The decision ends the upkeep on either path**, since a retired payload
-is deleted and a frozen one is never redone. Three bullets still tell a
-session otherwise. Amending them is small enough for one commit on
-`main`, without this brief's worktree, and leaves the brief open:
+is deleted and a frozen one is never redone. The bullets that told a
+session otherwise were amended on 2026-09-30: the last one in each of
+`.claude/rules/editing-rules.md` and `copilot-payload.md`, and the last
+of § "Name and listing budget" in `editing-skills.md`. Their evidence
+is in `docs/evidence/root-claude-md.md` § "Editing conventions".
+Nothing of this part is left to do. What it changes for a session:
 
-- `.claude/rules/editing-rules.md`, its last bullet: a rule edit no
-  longer redoes its port.
-- `.claude/rules/editing-skills.md`, the last bullet of § "Name and
-  listing budget": no `copy-copilot.ps1` run after a workflow skill is
-  edited.
-- `.claude/rules/copilot-payload.md`, its last bullet: the same, for
-  both.
+- **A rule edit leaves its port alone.** `lint-instructions` still fails
+  the commit, with `drift`, until the new hash is recorded:
 
-Until the hook is gone, `lint-instructions` still fails a commit that
-edits a ported rule. Record the new hash and leave the port as it is:
+  ```bash
+  uv run --with pyyaml scripts/lint-instructions.py --stamp
+  ```
 
-```bash
-uv run --with pyyaml scripts/lint-instructions.py --stamp
-```
+- **A new rule** goes into `copilot/.source-hashes.json` under
+  `deferred`, with this brief as its reason.
+- **Nothing is copied** to `~/.copilot` or into a repo.
+- **A brief that still carries a port step** or a `copy-copilot.ps1` run
+  drops it when it is worked:
 
-A new rule goes into `copilot/.source-hashes.json` as `deferred`, with
-this brief as its reason. Nothing is copied to `~/.copilot` or into a
-repo. A brief that still carries a port step or a `copy-copilot.ps1` run
-drops it when it is worked:
-
-```bash
-git grep -n -E 'copy-copilot|lint-instructions' -- docs/handoffs/execute
-```
+  ```bash
+  git grep -n -E 'copy-copilot|lint-instructions' -- docs/handoffs/execute
+  ```
 
 ## After the turn: remove
 
@@ -421,8 +416,6 @@ and a pinned model has to be one the Copilot-routed proxy can serve.
   If one exists it is machine-config's, through its inbox.
 - Whether Copilot code review runs on the client repo's pull requests,
   and that it reads `.github/instructions`: recalled that day, not read.
-- `lint-instructions.py --stamp` with no port redone was read from the
-  script, not run.
 
 ## Verification
 

@@ -1743,6 +1743,41 @@ thing is unexplained: a rule loaded twice between two compactions in 126
 of 848 rule-and-window pairs, and three times in one. What reloads it
 there was not traced.
 
+**2026-09-30.** The upkeep of the Copilot payload stopped, for the last
+bullet of `editing-rules.md`, the copy bullet of `editing-skills.md` and
+two bullets of `copilot-payload.md`. Until that day a rule edit redid its
+port by hand before `lint-instructions.py --stamp`, and an edit to a
+`skills/workflow/` skill was followed by a `copy-copilot.ps1` run into
+`~/.copilot`. The user, on seeing what VS Code lists under each of its
+session targets:
+
+> We no longer need to maintain the Copilot specific skills anymore or
+> the payload based on what I am seeing.
+
+`docs/handoffs/execute/copilot-payload-retirement.md` holds that day's
+evidence and the removal, which waits on one turn through VS Code's
+Claude target on the corporate network. The upkeep does not wait on it:
+if the turn passes the payload is deleted, and if it fails the payload
+is frozen at user scope, so neither outcome redoes a port.
+
+The hook stays until the removal, so what it asks of a rule edit was
+measured in a scratch copy of `scripts/`, `claude/rules/` and `copilot/`:
+
+- A line appended to `coding-tsql.md`, its port untouched, failed with
+  `claude/rules/coding-tsql.md:drift: changed since
+  copilot/instructions/coding-tsql.instructions.md was ported from it`,
+  exit 1.
+- `--stamp` then printed
+  `stamped 12 port(s) into copilot/.source-hashes.json` and the check
+  exited 0, with the port byte-identical to the repo's. The linter
+  cannot tell a redone port from an untouched one: the stamp is the
+  whole gate.
+- A new rule with no port failed as `untracked`, exit 1, and passed once
+  listed under `deferred` with a reason.
+
+So from this date a stamped manifest no longer says a port matches its
+rule. That is what freezing means, and the removal deletes both.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

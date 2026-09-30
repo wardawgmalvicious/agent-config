@@ -32,9 +32,10 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   (2026-08-31, 2.1.251), and so does an in-place `description` edit
   (2026-09-02, 2.1.252). That proves the listing refreshes, not that a
   reworded trigger then fires.
-- A `skills/workflow/` skill reaches Copilot only as a copy: after editing
-  one, re-run
-  `./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow`.
+- A `skills/workflow/` skill reaches Copilot only as a copy, and the copy
+  is no longer refreshed: the Copilot payload is being retired, so run no
+  `copy-copilot.ps1` after editing one (2026-09-30,
+  `docs/handoffs/execute/copilot-payload-retirement.md`).
 
 ## Invocation and spend fields
 

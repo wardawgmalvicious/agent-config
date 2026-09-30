@@ -42,7 +42,10 @@ paths:
   `docs/evidence/root-claude-md.md` under the root heading it came from. An
   HTML comment costs no context but shows on every Read, so use one only for
   a note to the next editor, never for evidence.
-- A rule with a port in `copilot/instructions/` needs the port redone by
-  hand after an edit, then
-  `uv run --with pyyaml scripts/lint-instructions.py --stamp`; pre-commit
-  fails the rule edit until the port follows (`copilot-payload.md`).
+- A rule with a port in `copilot/instructions/` leaves the port as it is:
+  the Copilot payload is being retired, and no port is redone
+  (2026-09-30). Pre-commit still fails the rule edit, with `drift`, until
+  `uv run --with pyyaml scripts/lint-instructions.py --stamp` records the
+  new hash, and fails a new rule as `untracked` until
+  `copilot/.source-hashes.json` lists it under `deferred`
+  (`docs/handoffs/execute/copilot-payload-retirement.md`).
