@@ -1396,6 +1396,58 @@ checkout still deployed 33 and `~/.claude/skills` stayed unchanged. Then
 worktree, junctioned 45 skills from it and passed 16 of 16 fixtures.
 Root stays at 200 lines.
 
+**2026-09-30.** The count above, re-run over the next day of parallel
+work, from 02:25 to 21:12 UTC on 2026-09-30, which is 22:25 on 2026-09-29
+to 17:12 local: from its evening re-run until the user reopened
+`worktree-per-brief.md` before the day was out. It found eight
+coordination prompts, five from work with no brief; 2026-09-29 had six,
+three from such work. Times are UTC.
+
+| Time | Transcript | Prompt, abridged | Work |
+| --- | --- | --- | --- |
+| 02:25 | `d6b26aea` | "Yes please message the peer as a heads up" | brief `worktree-per-brief`, in its worktree, beside a peer's edit to the same skill in the main checkout |
+| 03:17 | `a52fa454` | "There are some working sessions going on currently, coordinate with them first" | brief `handoff-convention-cross-repo`, which then took its worktree |
+| 03:33 | `d6b26aea` | "The other session is testing prune-branches, so we're okay." | none: whether a running retest would need redoing once a peer's edit landed |
+| 04:22 | `d6b26aea` | "Please coordinate with the prune-branch session" | none: a retest's stamp commit beside a peer's uncommitted edit to a deployed skill |
+| 14:43 | `f4c294ab` | "this session needs to exit the worktree so the other session can enter" | brief `triage`: its author held the worktree its test needed |
+| 15:06 | `230c3b1b` | "there is another active session, but that should be in a different worktree" | none: a new brief and a rule edit, beside a peer's unstaged edits |
+| 20:18 | `85de4c80` | "please coordinate with the other session and commit only your hunk" | none: two retests' stamps in one file |
+| 20:19 | `129b1f49` | "Another test session will nudge you to coordinate the commit" | none: the same two stamps |
+
+Twenty-three more matched and were left out: nine probe prompts, eight
+of them `/triage`'s test arms; three pasted; a task notification; seven
+about starting a session or routing work to one, as the method has it;
+and three that discussed sessions without asking one to coordinate:
+`d6b26aea`'s 05:23, deferring this count, `fef450bb`'s 15:04, relaying
+the 14:43 hand-off as evidence for a `/learn` edit, and `e529946c`'s
+17:03, proposing to keep peer messages inside one repository. The scan
+now reads each worktree's folder too,
+`C--Repos-Personal-agent-config--claude-worktrees-<name>`: this
+session's transcript moved there when it entered its worktree at 21:22,
+taking three of the rows above, and the triage arms, run from that
+worktree, wrote theirs there.
+
+The sessions settled every case once told, and nothing was lost. At
+20:19 `85de4c80` asked `129b1f49` by `SendMessage` whose hunk of
+`tests/skills/.tested.json` was whose, committed its own behind
+`/commit`'s `git write-tree` gate and sent the SHA; `129b1f49` checked
+HEAD, the index and its hunk before committing. `129b1f49` had reported
+both stamps as separate hunks at 19:04, and neither session was asked to
+commit before 20:18. Told at 15:06 that its peer should be in another
+worktree, `230c3b1b` committed `7c14fa6` in the main checkout, where
+`fef450bb` held two unstaged `/learn` edits: pre-commit's stash set them
+aside and put them back, and `fef450bb` found them as approved before
+committing `06ddf60`.
+
+A worktree for work with no brief would have kept a peer's uncommitted
+edits out of the main checkout at 04:22 and 15:06, where a commit's
+stash reaches them, and changed nothing in the other three, all retests:
+`/test-skill` step 10 lands every stamp on `main`, in one file, where
+two stamps had met at 16:04 on 2026-09-29 as well. Of the three from
+briefs, 14:43 was new in kind: a test session refused the `triage`
+worktree while its author was inside, which `06ddf60` answered in
+`/author-skill` step 9.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +
