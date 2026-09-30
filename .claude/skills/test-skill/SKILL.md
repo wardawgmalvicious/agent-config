@@ -218,6 +218,8 @@ is confined to `tests/` and a throwaway directory; this writes to
 skill needs it — `workflow`, `social` and `meta` are deployed already and
 `.claude/skills/` is read in place — so skip to step 8 unless the skill
 is **new**, which has no junction until the standing form below runs once.
+**In a linked worktree, stop instead** for a skill in those three groups:
+step 8 would test the main checkout's copy, silently. Land it first.
 
 ```powershell
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta,fabric   # or ...,powerbi
