@@ -22,6 +22,12 @@ paths:
   `{"type":"attachment"}` record whose `attachment.type` is `skill_listing`,
   with `isInitial` false and `names` naming the skills; a rule match appends
   a `nested_memory` attachment naming the rule file (2026-09-01, 2.1.252).
+- A `nested_memory` record carries the rule body three times, in the
+  record's `rendered`, `attachment.content.content` and `.rawContent`, 13 KB
+  each for one rule: project with jq before printing one. Its
+  `attachment.content.type`, `User` or `Project`, names the tree; `.globs`
+  is the rule's whole `paths:` list, not the glob that matched (2026-09-30,
+  2.1.283).
 - `isInitial: true` is the startup listing: its `names`, `skillCount` and
   rendered `content` are the only record of what was offered, which
   separates "listed and not chosen" from "never listed".

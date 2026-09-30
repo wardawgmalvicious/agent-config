@@ -1939,6 +1939,20 @@ lines became one loop over `tests/scripts/*/test-*.sh`, which a new
 suite joins with no edit there; its first run passed all three suites,
 67 cases, in 22 seconds.
 
+**2026-09-30.** What one rule-load record holds, read from a session's
+own transcript on 2.1.283, for `activation-testing.md`. The PowerShell
+rule's record carries its body three times: in `rendered`, an array that
+is 13,703 characters as JSON; in `attachment.content.content`, 13,221;
+and in `attachment.content.rawContent`, 13,284, the same text with its
+frontmatter. All sixteen records in that transcript held the three, so
+one record printed whole costs the rule three times over.
+`attachment.content.type` read `User` for a rule under `~/.claude/rules/`
+and `Project` for one under this repo's `.claude/rules/`.
+`attachment.content.globs` is the rule's whole `paths:` list, 6 entries
+for a rule with 6 globs and 3 for one with 3, so it never says which
+glob matched, and no field of the record names the file whose Read did:
+the hook log's `trigger_file_path` does, for the loads that log sees.
+
 ## Line endings
 
 Nothing moved: this section stands in root unchanged.
