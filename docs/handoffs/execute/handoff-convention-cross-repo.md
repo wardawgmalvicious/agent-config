@@ -22,7 +22,9 @@ per repo, went out 2026-09-29 ahead of them, when the user moved every
 repo they work in to frontmatter — see
 [Decision](#decision--2026-09-29). Two of those repos reported back on
 2026-09-30, and what they found corrects that decision in three
-places — see [Reports back](#reports-back--2026-09-30).
+places — see [Reports back](#reports-back--2026-09-30). The same day
+the user withdrew the inbox's reader pointer — see
+[Decision](#decision--2026-09-30).
 
 **Scope.** Generalize the handoff discipline this repo already runs to
 the other repos on this machine, which have started growing their own
@@ -587,6 +589,20 @@ For this brief's edits:
   sessions on this machine keep the grouped view and `--check`.
 - [Verification](#verification) already allows the one `grep` "where a
   repo names no personal repo". That is now every company repo.
+
+## Decision — 2026-09-30
+
+**Nothing tells a session to read the inbox any more.** The user
+withdrew the reader pointer recorded under
+[Decisions](#decisions--2026-09-16), and with it the doorbell `/learn`
+rang after writing a note, once `/triage` gave this repo's inbox a
+reader. A note now waits for the user's word: `/triage` drains this
+repo's, and `uv run scripts/handoff-status.py` lists every repo's. Peers
+are messaged only inside their own repository, so the inbox is the one
+channel between repos. `docs/evidence/user-claude-md.md` § "Agent config
+source" has the measurements. For the invariants reference (edit 1):
+inbound notes are read when the user asks, and a repo's inbox directory
+is named for the repository, never for a linked worktree.
 
 ## Open questions
 
