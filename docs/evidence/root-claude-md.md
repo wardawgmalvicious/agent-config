@@ -1448,6 +1448,13 @@ briefs, 14:43 was new in kind: a test session refused the `triage`
 worktree while its author was inside, which `06ddf60` answered in
 `/author-skill` step 9.
 
+`worktree-per-brief.md` put that route to the user, who dropped it the
+same day: work with no brief stays on `main` in the main checkout, where
+sequencing outranks branching. Its other open item went the other way: a
+`/drift-update` pass now takes a worktree named after its audit
+directory, as `docs/handoffs/execute/README.md` § "Audit briefs are a
+second queue" says.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

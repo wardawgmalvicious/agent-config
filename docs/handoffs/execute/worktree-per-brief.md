@@ -1,9 +1,8 @@
 ---
-status: deferred
-priority: 3
+status: open
+priority: 1
 needs: []
 blocked-by: []
-reopen-when: the next day of parallel sessions here has passed, for the root ledger's coordination count
 written: 2026-09-29
 ---
 
@@ -18,28 +17,27 @@ written: 2026-09-29
   [README.md](README.md) § "Every brief takes a worktree" the reasoning,
   with the two edits made the same day: `link-claude.ps1` admits a probe
   root from a worktree, and the view says held, parked or merged.
-- **Kind**: what the rule does not reach, deferred until a day of
-  parallel work shows whether it matters.
+- **Decided** 2026-09-30, on the root ledger's recount that day: work
+  with no brief takes no worktree route, and a `/drift-update` pass takes
+  one named after its audit directory. `/drift-update` steps 2, 4.4 and 5
+  carry the second, and [README.md](README.md) § "Audit briefs are a
+  second queue" the reasoning. Agent teams stay ruled out (root ledger,
+  2026-09-24).
+- **Kind**: one behaviour retest, of an edit this brief's worktree
+  landed.
 
 ## Left open
 
-- **Non-brief work in parallel.** Half the six prompts in the root
-  ledger's 2026-09-29 entry passed between sessions doing `/test-skill`,
-  `/learn` or follow-ups in the main checkout, with no brief to name a
-  worktree after. `17acda19`'s scratchpad worktree is one route,
-  improvised: no guard, no claim, and whether a Read in it loads this
-  repo's `paths:` rules is untested. Whether `/commit` § "When another
-  session shares this tree" offers it is a separate question.
-- **Audit briefs** run as one numbered pass per directory, and
-  `handoff-status.py` matches worktrees against `execute/` stems only,
-  so the rule does not reach `/drift-update`.
-- Agent teams stay ruled out (root ledger, 2026-09-24).
+`/drift-update`'s body changed, so it owes a behaviour retest, and its
+next pass is due on 2026-10-01, for the `fabric` and `powerbi` audits.
+Run `/test-skill drift-update` in a fresh session from the main
+checkout, not a worktree: a retest's one write is its stamp, which goes
+on `main` (`/test-skill` step 10). Delete this brief in that stamp's
+commit.
 
-## On reopening
+## Re-measure before acting
 
-Re-run the root ledger's count of coordination prompts, by the method
-its 2026-09-29 entry under § "Branching and concurrent sessions" gives,
-over the next day on which sessions here ran in parallel. If prompts
-from non-brief work recur, put the first bullet above to the user as a
-decision, `needs: [user]`; if none do, drop it. The brief goes once
-nothing above is open.
+```bash
+uv run --with pyyaml scripts/skill-status.py --stale   # drift-update reads retest-behaviour until the stamp
+git log --oneline -1 -- .claude/skills/drift-update/SKILL.md   # the edit under test
+```
