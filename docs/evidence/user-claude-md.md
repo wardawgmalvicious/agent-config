@@ -655,6 +655,42 @@ default, which is on, so Copilot there reads the whole payload this
 heading says it no longer inherits; whether that is intended went to the
 user the same day, through machine-config's handoff inbox.
 
+**2026-09-30.** The heading's claim is the Copilot harness's, and a
+Claude model picked in Copilot changes nothing about it. VS Code's docs
+of that day (`microsoft/vscode-docs` at `250ea55`:
+`docs/agents/run/agent-harnesses.md`,
+`docs/agents/concepts/agent-harnesses.md` and
+`docs/agent-customization/custom-instructions.md`, each approved
+9/30/2026) describe four harnesses, Local, Copilot, Claude and Codex,
+chosen per session through a **Session Target** control, and say
+customizations "follow the selected harness": Agent Host sessions use
+"the discovery rules and file formats of the selected harness", Copilot
+format `.github/instructions` and `~/.copilot/instructions`, Claude
+format `.claude/rules` and `~/.claude/rules`, plus `CLAUDE.md` and
+`.claude/CLAUDE.md`, and `chat.instructionsFilesLocations` is
+"deprecated and only used by the Local agent". Claude sessions "use
+Anthropic's Claude Agent SDK", on by default through
+`github.copilot.chat.claudeAgent.enabled`, signed in through the Copilot
+subscription or a BYOK key. Their model picker groups models by
+Anthropic and Copilot and "determines the provider and billing method",
+nothing about files; the concepts page has "the same model might be
+available through more than one harness".
+
+The installed build, 1.139.1 (commit `04c0d99f4f`), carries the picker,
+as `Open Session Target Picker` and `Set Session Target` in
+`nls.messages.json`, and the setting, which is declared in VS Code's own
+bundle, `product.json` and `workbench.desktop.main.js`, not in the
+bundled Copilot extension's `package.json`. No live profile's
+`settings.json` names it, and no repo's `.vscode/settings.json` or
+`.code-workspace` file does. **Whether the target loads this payload was
+not probed.** A probe for the user to run went to a client repo's inbox,
+and its results note lands in this repo's as
+`<date>-claude-session-target-probe-results.md`. The sentence went into
+`claude/CLAUDE.md`, and a table of the two harnesses' files into
+`claude/rules/agent-instructions-scoping.md`, because the user picks a
+Claude model in Copilot as a matter of course, and that picks no
+harness.
+
 ### User-scope MCP servers are bound to nothing
 
 **A server bound to no workspace is still bound to a tenant.**

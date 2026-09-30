@@ -171,7 +171,10 @@ literal path; if denied, hand the user `! rm <that path>`, not a retry.
 ### GitHub Copilot no longer inherits this payload
 
 Copilot reads `~/.copilot/*` and a repo's `.github/*`, never `~/.claude`,
-except `CLAUDE.md` where `chat.useClaudeMdFile` is on. **Read
+except `CLAUDE.md` where `chat.useClaudeMdFile` is on. That is the Copilot
+harness. VS Code's **Claude** session target runs the Claude Agent SDK, on
+by default, and its docs say it reads `~/.claude/rules` and `.claude/`;
+unprobed here (2026-09-30). A Claude *model* changes no harness. **Read
 `~/.claude/rules/vscode-scoping.md` before editing any VS Code settings
 file**, a profile's under `%APPDATA%\Code\User` included.
 

@@ -170,10 +170,11 @@ conformance checking.
   and out of a folder copied elsewhere, from agent-config's own
   nested-file lint: two things a cold haiku session missed without them,
   that `.claude/CLAUDE.md` loads at launch and that a skill folder's copy
-  carries its `CLAUDE.md` along. Its VS Code claims are the
-  Local agent harness only. Triggers on `CLAUDE.md`, `CLAUDE.local.md`
-  and `AGENTS.md` at any depth, `.claude/rules/`, and Copilot's
-  `.github/` instruction files.
+  carries its `CLAUDE.md` along. Its VS Code claims are the Local agent
+  harness's; since 2026-09-30 it also holds the docs' file table for the
+  Copilot and Claude session targets, unprobed here. Triggers on
+  `CLAUDE.md`, `CLAUDE.local.md` and `AGENTS.md` at any depth,
+  `.claude/rules/`, and Copilot's `.github/` instruction files.
 
 ## Project-scope override
 

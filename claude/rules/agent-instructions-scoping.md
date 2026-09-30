@@ -138,10 +138,21 @@ conditions hold it together (a client Fabric repo, 2026-09-26):
   it. VS Code's sources are additive, so a fact kept in both `AGENTS.md`
   and a Copilot file is read twice: give each fact one home.
 
-**Every VS Code claim here is the Local agent harness.** In 1.139.1
-`chat.useAgentsMdFile`, `chat.useNestedAgentsMdFiles` (off by default)
-and `chat.useClaudeMdFile` each say they are "only used by the Local
-agent harness" (2026-09-26); what the Agent Host harness reads is not
-established. GitHub.com's Copilot agent differs again: it reads the
-nearest `AGENTS.md` anywhere in the repo, else one root `CLAUDE.md` or
+**Every VS Code claim here is the Local agent harness**, one of four a
+session's **Session Target** picks. Customizations follow the harness,
+and the model picker changes only who answers and who bills (VS Code
+docs, 2026-09-30). In 1.139.1 `chat.useAgentsMdFile`,
+`chat.useNestedAgentsMdFiles` (off by default) and `chat.useClaudeMdFile`
+each say they are "only used by the Local agent harness" (2026-09-26),
+whose removal the bundle announces. The docs give the other local
+harnesses their own formats, unprobed on this machine; Codex reads
+`AGENTS.md`, nested ones too:
+
+| Harness | Project | Targeted | User |
+| --- | --- | --- | --- |
+| Copilot, the Copilot SDK | `.github/copilot-instructions.md` or `AGENTS.md` | `.github/instructions/*.instructions.md` | `~/.copilot/instructions` |
+| Claude, the Claude Agent SDK, on by default (`github.copilot.chat.claudeAgent.enabled`) | `CLAUDE.md`, `.claude/CLAUDE.md` | `.claude/rules`, by `paths:` | `~/.claude/rules` |
+
+GitHub.com's Copilot agent differs again: it reads the nearest
+`AGENTS.md` anywhere in the repo, else one root `CLAUDE.md` or
 `GEMINI.md`, with no setting involved (docs.github.com, 2026-09-25).
