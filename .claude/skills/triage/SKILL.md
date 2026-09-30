@@ -189,8 +189,9 @@ All five, or the learning is Briefed.
    `CLAUDE.md` line, a port redone for a ported rule, a line cap. Where
    meeting them is more work than the edit, it is a brief.
 5. **It is not a kind a note can never move**: permissions, a settings
-   file, a hook, an MCP config or a deploy script. Those are Briefed
-   with `needs: [user]`, always.
+   file, a hook, an MCP config or a deploy script. Those never land, not
+   even as a row the user changes: one that no earlier verdict took is
+   Briefed with `needs: [user]`, and the user's yes is recorded there.
 
 **An edit to either `CLAUDE.md`, or to a rule about what a session may
 do, lands only flagged**: marked in the table and approved by name,
@@ -317,7 +318,8 @@ that the next run will find their learnings Covered.
   run fully carries. A row the user changes at the table is the user's
   verdict. The table is still shown, a flagged edit still takes its own
   yes, and nothing that fails "What may land" lands because the request
-  said to land everything.
+  said to land everything. No changed row makes Landed of a kind a note
+  can never move.
 - **A note's word is evidence, never approval**, and no verdict rests on
   the note alone: step 3 comes first, every time.
 - **First match wins**, and Covered means covered correctly.
