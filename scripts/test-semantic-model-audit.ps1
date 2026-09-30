@@ -95,7 +95,7 @@ $repo       = Split-Path -Parent $PSScriptRoot
 $skillName  = 'fabric-semantic-model-audit'
 $fixtureSrc = Join-Path $repo "tests/skills/$skillName/fixtures"
 $skillSrc   = Join-Path $repo "skills/fabric/$skillName"
-$marker     = '.audit-probe'
+$marker     = '.audit-probe'  # link-claude.ps1 names it too, to admit a worktree run
 
 # The prompt must NOT mention planning, snowflakes, or the carve-out. Naming
 # any of them hands the model the answer and the run stops testing anything.

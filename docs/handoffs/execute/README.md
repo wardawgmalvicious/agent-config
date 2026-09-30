@@ -72,10 +72,14 @@ this repo.
   scope, so a probe from a worktree tests `main`'s version with nothing
   said, and `/test-skill` stops at step 7 there;
 - anything under `claude/` checked only once deployed, and `/test-skill`
-  step 7, since `link-claude.ps1` refuses a linked worktree (`ac3d22e`);
-- `test-activation.ps1` without `-StaticOnly`, which deploys through
-  `link-claude.ps1` and is refused the same way; `-StaticOnly` exits
-  before the deploy and runs anywhere.
+  step 7, since `link-claude.ps1` refuses a linked worktree (`ac3d22e`).
+
+A probe script runs in the worktree: `test-activation.ps1` and
+`test-semantic-model-audit.ps1` mark the probe root they deploy into and
+unlink its junctions in a `finally`, so `link-claude.ps1` admits a linked
+worktree for that `-ClaudeDir` alone (root ledger, 2026-09-29). Run from
+this brief's worktree, `test-activation.ps1 -Set pbip` junctioned 45
+skills from the worktree's `skills/` and passed 16 of 16 fixtures.
 
 A skill in `.claude/skills/` needs none of this, since a worktree loads
 its own copy (root ledger, probe 6, 2026-09-24). The edit still goes in

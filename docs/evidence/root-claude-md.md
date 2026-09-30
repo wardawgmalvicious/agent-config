@@ -1363,6 +1363,29 @@ after the next day of parallel work. The three from non-brief work are
 untouched by the rule, and `worktree-per-brief.md` § "Left open" keeps
 them.
 
+**2026-09-29.** Root's "git and `link-claude.ps1` both refuse a worktree"
+now reads "`link-claude.ps1`, bar a probe root, and git refuse a
+worktree", and `.claude/rules/deploy-scripts.md` names the root: a
+`-ClaudeDir` whose parent holds `.activation-probe` or `.audit-probe`,
+which `test-activation.ps1` and `test-semantic-model-audit.ps1` write
+before they deploy, each unlinking its junctions in a `finally`. The
+marker decides, not `-ClaudeDir`, which a client repo's `.claude` takes
+too, and user scope never passes, whatever sits beside it. Until then a
+platform skill's real-path test waited for its brief to land;
+`worktree-per-brief.md` asked for this. In a scratch clone, the new
+script, run from a linked worktree, refused with exit 1, its target
+never created: the default target under a stand-in `USERPROFILE`, the
+same with `.activation-probe` beside it, an unmarked `-ClaudeDir`, a
+marker that was a directory, and one in the grandparent. HEAD's script
+refused a marked root as well. The new one admitted, exit 0, a
+`.activation-probe` root with 45 of 45 junctions resolving into the
+worktree's `skills/`, an `.audit-probe` root with 33 of 33, and a
+relative `-ClaudeDir` from inside a marked root, while the clone's main
+checkout still deployed 33 and `~/.claude/skills` stayed unchanged. Then
+`test-activation.ps1 -Set pbip -Model sonnet`, run from that brief's own
+worktree, junctioned 45 skills from it and passed 16 of 16 fixtures.
+Root stays at 200 lines.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

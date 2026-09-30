@@ -84,7 +84,7 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $expect = Join-Path $PSScriptRoot 'activation-expect.py'
 $fixtureSrc = Join-Path $repo "tests/skills/$Set-triggers/fixtures"
-$marker = '.activation-probe'
+$marker = '.activation-probe'  # link-claude.ps1 names it too, to admit a worktree run
 
 function Invoke-Expect {
     param([string[]]$Arguments)

@@ -136,8 +136,8 @@ change can vanish, staged or not, as `git status` looks innocent
 procedure; change it there, not here. **Work every brief in a worktree
 named after it**, by `EnterWorktree` or `claude --worktree` with its name
 less `.md`, or the queue never marks it `in flight` (2026-09-29). Land it as
-`docs/handoffs/CLAUDE.md` says: git and `link-claude.ps1` both refuse
-a worktree (2026-09-27). `.claude/settings.json` branches a worktree
+`docs/handoffs/CLAUDE.md` says: `link-claude.ps1`, bar a probe root, and git
+refuse a worktree (2026-09-29). `.claude/settings.json` branches a worktree
 from local `HEAD`; the default, `fresh`, drops unpushed commits unannounced.
 A worktree buys no payload isolation for the deployed groups (2026-09-02),
 but loads only its own `.claude/skills/`, `.claude/rules/` and `CLAUDE.md`.

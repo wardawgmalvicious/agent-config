@@ -50,11 +50,14 @@ edit goes live.
   `skills/`, so a skill authored in the target survives the prune.
 - Run the script from the main checkout: it takes `$RepoRoot` from
   `$PSScriptRoot` and refuses a linked worktree, whose skill junctions would
-  dangle once it is removed (2026-09-27). The main tree's copy run with
-  `-ClaudeDir <worktree>` relinks every junction back to the main tree,
-  printing `Relink` and still ending `Done` (2026-09-02). Given
-  `-ClaudeDir`, `-SkillGroups` prunes that directory's `skills/`, never user
-  scope.
+  dangle once it is removed (2026-09-27). From a worktree it deploys only
+  into a probe root, a `-ClaudeDir` whose parent holds `.activation-probe`
+  or `.audit-probe`, the two probe scripts' markers, and both unlink their
+  junctions in a `finally`; user scope never passes (2026-09-29). The
+  main tree's copy run with `-ClaudeDir <worktree>` relinks every junction
+  back to the main tree, printing `Relink` and still ending `Done`
+  (2026-09-02). Given `-ClaudeDir`, `-SkillGroups` prunes that directory's
+  `skills/`, never user scope.
 - `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric` pushes only
   the Fabric skills into a client repo, without this machine's agents, hooks
   or rules. They are junctions, so every save to one is live in that repo's

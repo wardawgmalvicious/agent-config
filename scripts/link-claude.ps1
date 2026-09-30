@@ -202,12 +202,32 @@ $RepoRoot = Split-Path -Parent $PSScriptRoot
 # file whose gitdir runs through .git/worktrees/; the main checkout's is a
 # directory, and a submodule's file points under .git/modules/ instead. Land
 # the branch, then deploy from the main checkout (2026-09-27).
+#
+# One target is admitted: a probe root's .claude. test-activation.ps1 and
+# test-semantic-model-audit.ps1 each mark the probe root before deploying
+# into it and unlink every junction in a finally, so a platform skill's
+# brief can run its real-path test in its own worktree (2026-09-29). The
+# marker decides, not -ClaudeDir, which a client repo's .claude takes too;
+# it must sit in -ClaudeDir's parent, and user scope never passes.
 $GitEntry = Join-Path $RepoRoot '.git'
 if ((Test-Path -LiteralPath $GitEntry -PathType Leaf) -and
     ((Get-Content -LiteralPath $GitEntry -Raw) -match '[\\/]worktrees[\\/]')) {
-    throw ("Refusing to deploy from $RepoRoot, a linked worktree: its skill " +
-        'junctions would dangle once it is removed. Land its branch, then run ' +
-        'this from the main checkout.')
+    # Resolved as PowerShell resolves the deploy's own paths: a .NET call
+    # alone would read a relative -ClaudeDir against the process directory.
+    $targetDir = [IO.Path]::GetFullPath(
+        $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ClaudeDir)
+    ).TrimEnd('\', '/')
+    $probeDir = Split-Path -Parent $targetDir
+    $userDir = [IO.Path]::GetFullPath((Join-Path $HOME '.claude')).TrimEnd('\', '/')
+    $probeMarked = $probeDir -and @('.activation-probe', '.audit-probe' | Where-Object {
+            Test-Path -LiteralPath (Join-Path $probeDir $_) -PathType Leaf
+        }).Count -gt 0
+    if (-not $probeMarked -or $targetDir -ieq $userDir) {
+        throw ("Refusing to deploy from $RepoRoot, a linked worktree: its skill " +
+            'junctions would dangle once it is removed. Land its branch, then run ' +
+            'this from the main checkout. The one -ClaudeDir admitted from a ' +
+            'worktree sits in a probe root marked .activation-probe or .audit-probe.')
+    }
 }
 # Repo-relative source -> directory name under $ClaudeDir. The source and
 # the destination differ because the repo groups Claude-format payload
