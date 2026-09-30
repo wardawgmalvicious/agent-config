@@ -305,11 +305,11 @@ Then, in a normal session, run the trigger queries from step 1, and
 **scope the arms to what the edit touched**: an arm tests only what its
 invocation path reads. A `description` or `when_to_use` edit wants a
 model-invoked trigger query and its `Skill` call, which a slash arm
-never reads; a body edit, a query that reaches the edited section; a
-first test or a `model:` pin, the slash arm too, which honours the pin
-model-invocation drops. Exercise the refusal modes too — ignoring its
-own scope guard is a fail; `tests/skills/code-review/README.md` has
-the four-mode matrix.
+never reads; a body edit, a query that reaches the edited section, plus
+the slash arm if `model:` pins a model, which model-invocation drops; a
+`model:` edit, the slash arm; a first test or a `name:` edit, both
+paths. Exercise the refusal modes too — ignoring its own scope guard is
+a fail; `tests/skills/code-review/README.md` has the four-mode matrix.
 
 **Allowlist the tools when a trigger query names a destructive action.**
 A behavioural probe runs with this machine's credentials — an `az login`

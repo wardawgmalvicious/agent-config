@@ -289,15 +289,22 @@ witness, and an arm can witness only what its invocation path reads:
 | --- | --- | --- | --- |
 | `retest-activation` | the `paths:` glob | Phase A | the transcript's `skill_listing` record, `isInitial` false |
 | `retest-routing` | `description` and `when_to_use` | a model-invoked trigger query | a `Skill` call naming the skill |
-| `retest-behaviour` (`review-body` on a reference skill) | the body | any query that reaches the edited section, plus the no-X arm for a check-shaped edit | the answer, read in full |
+| `retest-behaviour` (`review-body` on a reference skill) | the body | any query that reaches the edited section, plus the slash arm on a pinned skill and the no-X arm for a check-shaped edit | the answer, read in full |
 | `refs-only` | `references/` | none; a note, not a debt | — |
 
 A slash arm reads none of those: it inlines the body past the listing,
 so it cannot see a `description` edit, and on a body edit it shows
-nothing the model-invoked arm did not. What it alone tests, no hash
-tracks: that `/<name>` resolves and expands, and a `model:` pin, which
-only that path honours. So a skill's first test runs both paths, and a
-retest adds the slash arm only for a `model:` or `name:` edit. Read off
+nothing the model-invoked arm did not unless `model:` pins a model.
+What it alone tests, no hash tracks: that `/<name>` resolves and
+expands, and a `model:` pin, which only that path honours, so on a
+pinned skill it alone runs the body on the model `/<name>` gets. So a
+skill's first test runs both paths, and a retest adds the slash arm for
+a body edit on a pinned skill and for a `model:` or `name:` edit.
+`learn` pins `fable`, which a model-invoked arm at `--model opus` never
+runs; list the pins with `grep -rn "^model:" .claude/skills skills`,
+where `inherit` pins nothing. Nothing flags a `name:` edit either:
+`lint-frontmatter.py` does not tie `name:` to the directory, which keys
+the stamp, so a frontmatter rename reads as current. Read off
 the script 2026-09-29, after `4b1a5c9`'s message booked a slash arm
 for a `description` edit, which one could not have seen; `51d7487`'s
 "the routing hash is unchanged, so no slash arm ran" reads as though a
