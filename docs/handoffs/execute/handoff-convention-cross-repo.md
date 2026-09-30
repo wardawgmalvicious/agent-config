@@ -415,17 +415,18 @@ Two inbox notes of that day, from the second client repo's session and
 from `fabric-tools`'s, each written while landing its copy of the
 2026-09-29 note. What they change above is corrected in place.
 
-**Where each repo stood that day**, by `uv run
-scripts/handoff-status.py`: every brief on the machine carries
-frontmatter, and its summary reads `0 indexed brief(s)`.
+**What each landing did**, as far as that day showed. `uv run
+scripts/handoff-status.py` says which copies of the note still wait;
+that day its summary read `0 indexed brief(s)`, every brief on the
+machine carrying frontmatter.
 
-| Repo | Its 2026-09-29 note |
+| Repo | Its copy of the 2026-09-29 note |
 | --- | --- |
 | `machine-config` | landed and deleted; its two briefs renamed to their subjects |
 | `fabric-tools` | landed there as `500fa53`, a root section, and deleted |
-| client estate repo | the move sits uncommitted on a branch; the note waits |
-| second client repo | the move is one commit on a branch; the note waits |
-| `personal-scripts` | not landed; the note waits, still asking for one line |
+| second client repo | landed by pull request as one squashed commit, and deleted |
+| client estate repo | in progress that morning, committed on a branch |
+| `personal-scripts` | in progress that morning, as a root section |
 
 ### 1. A repo with no briefs needs a root section, not one line
 
@@ -474,12 +475,12 @@ home that is loaded when the first brief is written. A note deleted on
 landing is not one, so what it defers moves into the file it lands in.
 
 **What it changes here.** The row for these two repos in
-[Decision](#decision--2026-09-29) is corrected. `personal-scripts` still
-holds the note with the one-line ask. Two sessions began there on
-2026-09-30 and were sent the measurement; amending the note itself is
-the user's call, and this brief's first step if the note still waits.
-Once the invariants reference exists (edit 1), it is what a short root
-pointer could name.
+[Decision](#decision--2026-09-29) is corrected. `personal-scripts`'
+copy asked for one line too. Two sessions began there that morning and
+were sent the measurement, and its root `CLAUDE.md` then held an
+uncommitted § "Handoff briefs" of 43 lines, so the note was left
+unamended. Once the invariants reference exists (edit 1), it is what a
+short root pointer could name.
 
 ### 2. The path-free `grep` reads a README's own example
 
