@@ -103,8 +103,9 @@ last section.
   [docs/handoffs/execute/](../../docs/handoffs/execute/). Writes nothing
   until the user approves one table, and deletes a note only on the
   user's yes. It is the receiving half `/learn`'s note mode never had:
-  that skill addresses its notes to `/learn` here, and no step of it, or
-  of `/author-skill`, takes one in. Of the 45 sessions here that made 20
+  until 2026-09-30 that skill addressed its notes to `/learn` here, and
+  no step of it, or of `/author-skill`, took one in; they name `/triage`
+  now. Of the 45 sessions here that made 20
   or more tool calls in the week to 2026-09-30, 39 saw notes waiting and
   21 opened none. Named for the verb you invoke. **Here by decision, not
   by the last section's test**: any repo can have an inbox directory,

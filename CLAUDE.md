@@ -101,7 +101,7 @@ on the repo copy, then on the deployed one.
 brief in `docs/handoffs/execute/` holds its state in frontmatter, and
 `handoff-status.py` prints the queue: run it first. Notes from other repos
 land in `~/handoff-inbox/agent-config/` (see `~/handoff-inbox/README.md`)
-for `/author-skill` to brief or `/learn` to edit in. They are raw: copy
+and wait for `/triage`, run on the user's word. They are raw: copy
 nothing out verbatim, cite client evidence by kind, and delete one only once
 it has landed and the user has said yes.
 

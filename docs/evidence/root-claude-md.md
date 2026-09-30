@@ -855,6 +855,16 @@ session must know before touching a brief went to a nested
 session `ae03d958`, a cold haiku probe that Read only `execute/README.md`,
 carried it as a `nested_memory` attachment.
 
+**2026-09-30.** Notes from other repos wait for `/triage`, which the user
+runs. Root had sent them "for `/author-skill` to brief or `/learn` to
+edit in", and neither skill has a step that takes one in:
+`/author-skill` never mentions the inbox, and `/learn`'s note named
+`/learn` in a session here as its reader. `/triage` is that step, at
+project scope since the same day, and `/learn`'s note now names it.
+Nothing announces a note any more: the user withdrew the session-start
+check and the doorbell that day, and `docs/evidence/user-claude-md.md`
+§ "Agent config source" has the measurements.
+
 ## Branching and concurrent sessions
 
 **Skill saves are live; nothing else is** — but *how far* they reach now
