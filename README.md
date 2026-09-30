@@ -83,7 +83,7 @@ rearranging the root.
   [skills/README.md](skills/README.md).
 
 The skills that maintain *this* repo — `author-skill`, `test-skill`,
-`drift-audit`, `drift-handoff`, `drift-update` — are
+`drift-audit`, `drift-handoff`, `drift-update`, `triage` — are
 deliberately **not** here. They live at project scope in
 `.claude/skills/`, deploy nowhere, and are covered in
 [CLAUDE.md](CLAUDE.md). Being payload is what `skills/` means, and they

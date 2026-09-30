@@ -1,13 +1,13 @@
 # This repo's own maintenance skills
 
-Five skills that operate on `agent-config` itself. They live here at
+Six skills that operate on `agent-config` itself. They live here at
 **project scope** rather than in [skills/](../../skills/), and the
 distinction is not filing — it is what the two directories mean.
 
 `skills/` is **payload**: content deployed elsewhere, by
 `scripts/link-claude.ps1` into `~/.claude/skills` as one junction per
 skill, or by `scripts/copy-copilot.ps1` into a client repo's
-`.github/skills` as committed files. These five are not payload. Their
+`.github/skills` as committed files. These six are not payload. Their
 whole subject is this repo's own structure — its groups, its linter, its
 handoff queue, its audit ledger — so outside this working tree they have
 nothing to act on.
@@ -95,6 +95,22 @@ last section.
   never from the conversation, which is what keeps `drift-handoff`'s
   cold-read contract honest: a brief that can't be executed without
   opening the audit report is reported as a brief-format defect.
+- [triage/](triage/) — drain this repo's handoff inbox, where sessions
+  in other repos leave learnings as raw notes. Splits each note into
+  learnings, re-measures each against the payload, and gives it one
+  verdict, first match wins: covered, misrouted, declined, folded into
+  an open brief, landed as a small approved edit, or briefed into
+  [docs/handoffs/execute/](../../docs/handoffs/execute/). Writes nothing
+  until the user approves one table, and deletes a note only on the
+  user's yes. It is the receiving half `/learn`'s note mode never had:
+  that skill addresses its notes to `/learn` here, and no step of it, or
+  of `/author-skill`, takes one in. Of the 45 sessions here that made 20
+  or more tool calls in the week to 2026-09-30, 39 saw notes waiting and
+  21 opened none. Named for the verb you invoke. **Here by decision, not
+  by the last section's test**: any repo can have an inbox directory,
+  so by where it runs this could be payload. The user started it here on
+  2026-09-30, where the notes arrive, and a second repo whose inbox
+  fills is what moves it to [skills/meta/](../../skills/meta/).
 
 ## The two that left
 
@@ -128,7 +144,7 @@ It is payload now because it carries a **mode split** rather than a
 repo assumption — edit mode inside this checkout, note mode everywhere
 else, writing to `~/handoff-inbox/` instead of editing. It went to a new
 `skills/meta/` group rather than `workflow/` because its subject is the
-agent payload rather than the user's repo — the same subject as the five
+agent payload rather than the user's repo — the same subject as the six
 here, differing only in needing to run everywhere. The group's
 `.no-copilot` marker is what lets it **keep** its `model: fable` pin as
 deployed payload.

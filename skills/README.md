@@ -77,9 +77,9 @@ disagree.
   outside the current workspace. Pinned `model: fable` — routing a
   learning to the right file is the judgment the pin is for.
 
-The five skills that maintain *this* repo — `author-skill`,
+The six skills that maintain *this* repo — `author-skill`,
 `test-skill`, `drift-audit`, `drift-handoff`,
-`drift-update` — are **not here**. They live at project
+`drift-update`, `triage` — are **not here**. They live at project
 scope in [.claude/skills/](../.claude/skills/), which no deploy
 script reaches, because they can only ever act on this working
 tree. Being payload is what this directory means, and they are not
