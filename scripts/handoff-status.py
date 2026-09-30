@@ -57,8 +57,10 @@ A brief states its own state in frontmatter, or an index states it:
             beside this file, so the directory index and this view agree.
 
 A brief is any .md under docs/handoffs/ other than a README.md or an
-instruction file, a CLAUDE.md or AGENTS.md, and other than anything under
-templates/ or examples/, which are reference material rather than work.
+instruction file, a CLAUDE.md or AGENTS.md, other than anything under
+templates/ or examples/, which are reference material rather than work,
+and other than declined.md at the tree's root: the ledger of learnings
+declined at inbox triage, a record and never a queue row.
 
 Findings, which --check turns into exit 1:
 
@@ -114,6 +116,9 @@ AUDITS = pathlib.PurePosixPath("docs/audits")
 REFERENCE_DIRS = {"templates", "examples"}
 # An index, and the instruction files a directory may keep for its readers.
 NOT_BRIEFS = {"readme.md", "claude.md", "agents.md"}
+# Kept at the tree's root only, so a brief of the same name under execute/
+# is still a brief.
+LEDGERS = {"declined.md"}
 
 # A row is a table row or list item that OPENS with a link to a .md file.
 ROW_LINK = re.compile(
@@ -263,9 +268,13 @@ def is_reference(path: pathlib.Path, tree: pathlib.Path) -> bool:
     return bool(REFERENCE_DIRS & set(path.relative_to(tree).parts[:-1]))
 
 
+def is_ledger(path: pathlib.Path, tree: pathlib.Path) -> bool:
+    return path.parent == tree and path.name.lower() in LEDGERS
+
+
 def is_brief(path: pathlib.Path, tree: pathlib.Path) -> bool:
     return (path.suffix == ".md" and path.name.lower() not in NOT_BRIEFS
-            and not is_reference(path, tree))
+            and not is_reference(path, tree) and not is_ledger(path, tree))
 
 
 def yaml_unsafe(value: str) -> bool:

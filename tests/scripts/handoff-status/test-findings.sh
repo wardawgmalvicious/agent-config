@@ -110,6 +110,10 @@ for f in a b c 2026-01-01-d templates/t; do echo "# $f" > "$queue/$f.md"; done
 # Instruction files a directory keeps for its readers, not briefs.
 echo "# rules" > "$fix/docs/handoffs/CLAUDE.md"
 echo "# rules" > "$queue/AGENTS.md"
+# The ledger of declined learnings, a record at the tree's root and not a
+# brief. A file of that name anywhere else is a brief like any other.
+echo "# Declined" > "$fix/docs/handoffs/declined.md"
+echo "# declined" > "$queue/declined.md"
 echo note > "$tmproot/inbox/fixrepo/2026-09-10-note.md"
 echo note > "$tmproot/inbox/loose.md"
 
@@ -189,6 +193,10 @@ expect_line "a routed note is listed under its repo" "2026-09-10-note.md"
 expect_no_line "templates/ is reference material, not a brief" "t.md"
 expect_no_line "a CLAUDE.md is an instruction file, not a brief" "CLAUDE.md"
 expect_no_line "an AGENTS.md is an instruction file, not a brief" "AGENTS.md"
+expect_no_line "the decline ledger at the tree's root is not a brief" \
+    "unindexed  docs/handoffs/declined.md"
+expect_line "a declined.md anywhere else is still a brief" \
+    "unindexed  docs/handoffs/execute/declined.md"
 expect_no_line "a link outside docs/handoffs is not a row" "Not a brief"
 
 # 3. Frontmatter: its briefs group and sort, and each bad value is a finding.
@@ -241,6 +249,7 @@ fm bad "status: open" "priority: 1" "written: 2026-09-23"
 fm dep "status: deferred" "priority: 3" "reopen-when: a trigger fires" "written: 2026-09-24"
 fm m "status: open" "priority: 3" "blocked-by: []" "written: 2026-09-25"
 fm tick "status: open" "priority: 3" "written: 2026-09-26"
+fm declined "status: open" "priority: 3" "written: 2026-09-28"
 stamp 02-bare "**Executed**: 2026-09-02 — escalated" "**Needs**: tenant"
 expect_exit "resolved fixture passes --check" 0
 
