@@ -363,7 +363,7 @@ calls as text and invents their results; one read-only tool avoids it.
 **Parallel arms read each other as peers**, and only payload arms look:
 keep `ListAgents` and `SendMessage` out of every arm, as `--tools` does
 by construction. A skill that reads peers itself (`commit`, `land`,
-`learn`) keeps `ListAgents`, and its arms launch one at a time (2026-09-29).
+`triage`) keeps `ListAgents`, and its arms launch one at a time (2026-09-29).
 
 **Never stop an arm for silence alone.** At max effort an arm streams
 only `thinking_tokens` until its first block closes, most of a 17-minute

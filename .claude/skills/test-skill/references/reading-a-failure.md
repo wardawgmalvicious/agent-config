@@ -382,8 +382,9 @@ ahead." In the second batch one arm cited its sibling, "busy right
 now", as a reason to accept a commit per brief, a guard under test. Add
 `ListAgents` to `--disallowedTools` on every arm, which costs the
 baseline nothing, unless the skill under test reads peers itself
-(`commit`, `land`, `learn`'s doorbell), where a shared tree is a branch
-it takes; there, launch the arms one at a time. The first held on
+(`commit`, `land`, `triage`, and `learn` until its doorbell went on
+2026-09-30), where a shared tree is a branch it takes; there, launch the
+arms one at a time. The first held on
 2026-09-29 (`test-skill`, six arms launched together, `SendMessage`
 denied too): both tools were absent from every `init.tools`, and no
 arm raised a sibling as a peer. `--tools` removes both by
