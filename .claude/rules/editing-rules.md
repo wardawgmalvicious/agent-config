@@ -12,6 +12,13 @@ paths:
   creating a file, since the first file in a directory has nothing to Read:
   guidance about making something belongs in a skill description or a hook
   (reasoned 2026-09-16, not measured).
+- A rule's whole body is paid again after each compaction, at the next
+  matching Read, not once a session: without a compaction no rule loaded
+  more than twice, with them one loaded 21 times, and one client session
+  paid 574 KB of user rules in 77 loads across 12 compactions, against
+  71 KB had each loaded once (164 sessions, seven repos, 2026-09-30). A
+  section only some matching files need costs every other one on each
+  load: a narrower glob is the rule's own lever.
 - A wrong glob has no error path; the rule just never loads.
   `scripts/lint-frontmatter.py` rejects the mistakes that silently narrow a
   pattern: a backslash, a leading `/` or `./`, and a bare `*.ext` with no

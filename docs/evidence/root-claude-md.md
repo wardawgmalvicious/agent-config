@@ -1704,6 +1704,45 @@ a copy under the ignored `.claude/worktrees/`, while 61 lines failed.
 Through pre-commit, a planted `claude/rules/CLAUDE.md` Failed, a nested
 file under `docs/` Passed, and a path matching neither name Skipped.
 
+**2026-09-30.** What a `paths:` rule costs over a session was measured,
+for `editing-rules.md`'s bullet on reloads. Every main transcript under
+`~/.claude/projects/` for seven repos on this machine, 268 sessions from
+2026-09-11 to 2026-09-30 on Claude Code 2.1.267 to 2.1.285. A rule load
+is a `nested_memory` attachment whose path sits under `~/.claude/rules/`,
+sized by its `attachment.content.content`, and a compaction is a `system`
+record with subtype `compact_boundary`. 164 sessions loaded a user-scope
+rule, 976 loads in all.
+
+- **Nothing loads without a Read.** The 564 `instructions` records name
+  no rule file, user or project.
+- **A compaction is what makes a rule load again.** In the 100 sessions
+  with no compaction no rule loaded more than twice, and in 95 of them
+  none loaded more than once. In the 64 that compacted (median once, p90
+  11 times, most 20), one rule loaded 21 times over 16 compactions.
+- **Reloads more than double the bill.** First loads alone come to
+  2,953,418 bytes, and with reloads to 6,866,443: 2.3 times as much, and
+  about 1.7 M tokens at four bytes each, which is an estimate.
+
+| Session, by its repo | Compactions | Loads | Distinct rules | Bytes loaded | First loads only |
+| --- | --- | --- | --- | --- | --- |
+| a client Fabric repo | 12 | 77 | 9 | 574,348 | 71,170 |
+| the same | 16 | 61 | 7 | 427,394 | 59,012 |
+| the same | 16 | 63 | 6 | 412,685 | 37,152 |
+| this repo | 7 | 28 | 5 | 249,400 | 46,031 |
+| `machine-config` | 11 | 24 | 2 | 214,445 | 16,047 |
+
+A session's first loads are small beside that: a median of 17,740 bytes
+in 3 rules in the client Fabric repo (p90 48,054), and 11,933 in 2 here
+(p90 33,989), against 22,484 for the two `CLAUDE.md` files every session
+here loads, as they stood before that day's edit.
+
+Two cautions for the next measurement. **Count a compaction by its
+boundary record**: an `isCompactSummary` record follows each, 240 and
+240 here, so a count of lines naming either doubles the figure. And one
+thing is unexplained: a rule loaded twice between two compactions in 126
+of 848 rule-and-window pairs, and three times in one. What reloads it
+there was not traced.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
