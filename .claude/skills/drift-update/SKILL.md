@@ -81,6 +81,23 @@ run.** List them and ask which to execute. Do not silently pick the first or
 concatenate them: sources produce unrelated edits with unrelated verification,
 which is the same reason `/drift-handoff` gives them sibling directories.
 
+**Take the pass's worktree before reading its briefs**, named after the
+directory: `EnterWorktree` with the name `<audit-date>-<source-id>`, such
+as `2026-09-12-skills-for-fabric`, as root `CLAUDE.md` has a brief take
+one. A pass holds every brief's edits uncommitted until step 5, which in
+the main checkout leaves them in reach of a peer's commit. The worktree
+branches from local `HEAD`, where `/drift-handoff` committed the
+directory: if `git status --short <directory>` prints anything, stop and
+have it committed first, or the worktree starts without it.
+
+- **One by that name already in `git worktree list` is a stopped run's.**
+  Enter it with `path`: its stamps, the resume mechanism below, are there,
+  and the main checkout, which has none, would re-run every brief.
+- **A refusal naming `git resolves its working tree to <path>`** came
+  after the worktree was made (2026-09-30). Enter it with `path`, spelled
+  as that message prints it, rather than recreating it as the message
+  suggests.
+
 Then, in the resolved directory:
 
 - `Glob` the numbered briefs. `00-audit-report.md` is not a brief; it is
@@ -228,6 +245,15 @@ A failed verification stops the run. Report the command, its output, and the
 state of the tree; leave the edits in place rather than reverting, so the user
 can see what happened.
 
+**A step that needs the deployed payload is deferred, not failed**, since
+the worktree cannot reach it: a `claude/` file checked once deployed
+(`link-claude.ps1` refuses a worktree), or a probe of a skill in a
+deployed group, `workflow`, `social` or `meta`, which reads the main
+checkout's copy. Stamp it under **Deferred** with a `**Needs**:` line and
+run it on `main` after the landing (step 5);
+`docs/handoffs/execute/README.md` § "Every brief takes a worktree" has
+the measurements.
+
 **One check this skill cannot perform:** an edited `SKILL.md` does not reliably
 reload mid-session on Windows, so no brief that edits a skill can have its
 behaviour validated in the session that applied it. Lint and prose checks pass;
@@ -350,6 +376,12 @@ which edits are applied and uncommitted before handing over. A run that wrote
 nothing has nothing to hand over: report the clean tree and stop, rather than
 invoking `/commit` against an empty diff.
 
+**The pass lands as a brief's worktree does**: from the main checkout, by
+fast-forward with no push, by the commands `docs/handoffs/CLAUDE.md`
+gives, once the user asks this session to leave the worktree. Then run
+the deferred steps that need the deployed payload, deploying first, and
+append `**Closed**:` to each brief whose steps pass, as 4.5 says.
+
 A commit per brief is the user's to ask for: it trades `/commit`'s logical
 split for isolation, which counts in a tree another session shares. Hand
 each brief to `/commit` once it is stamped, and say so under **Deviations**.
@@ -360,6 +392,8 @@ next source's briefs. Both are separate, deliberate invocations.
 ## 6. Constraints
 
 - **Briefs come from disk.** Never from the transcript, a summary, or memory.
+- **A pass runs in its own worktree** (step 2) and lands from the main
+  checkout (step 5).
 - **The brief set is the scope.** No unbriefed edits, no adjacent fixes, no
   re-opened reasoning.
 - **Kind decides.** Decision and investigation briefs are escalated, never

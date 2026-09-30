@@ -20,7 +20,8 @@ of what upstream looked like that day.
 Commit the directory **before** executing it, even when the same
 session will go straight on to `/drift-update`. An unexecuted directory
 in git is what a second machine picks up, and it is the only state in
-which the briefs are provably readable cold.
+which the briefs are provably readable cold. A pass's worktree branches
+from that commit too (`/drift-update` step 2).
 
 ## Why this is tracked
 

@@ -122,6 +122,23 @@ page has the lock taken "at creation" and nothing on the refusal
 hand-off therefore opens with its author leaving, as `/author-skill`
 step 9 says.
 
+**`EnterWorktree` by name can make the worktree and still refuse it**
+(2026-09-30, 2.1.283). Called with `worktree-per-brief` from a session
+whose directory read `c:\Repos\…`, it created the worktree, its branch
+and a lock naming the session's pid, then refused:
+
+```text
+Refusing to use c:\…\worktree-per-brief as an isolation worktree: git
+resolves its working tree to C:/…/worktree-per-brief (a core.worktree
+redirect, or a checkout discovered above it)
+```
+
+The paths differ only in the drive letter's case, which the same
+session's directory showed both ways that hour. `EnterWorktree` with the
+path, spelled as git prints it, entered at once; the message's advice,
+to recreate the worktree, was not tried. `/drift-update` step 2 carries
+the fallback.
+
 ## A brief's worktree lands without a push
 
 Decided 2026-09-29, in `land-rework.md`: a brief worked in a worktree
@@ -208,6 +225,18 @@ it. When the need changes, append a new line, since the last one counts;
 when the work lands, append `**Closed**: <date> — <how>` in the same
 commit, which drops the brief from the view and shows it `closed` in its
 directory's index.
+
+**A pass takes a worktree too** (decided 2026-09-30, in
+`worktree-per-brief.md`), named after its directory, as `/drift-update`
+step 2 says. A pass holds every brief's edits uncommitted until it hands
+them to `/commit`, the longest such stretch here, and in the main
+checkout a peer's commit reaches uncommitted work: its pre-commit stash
+set another session's edits aside that day (root ledger, 2026-09-30).
+The view marks no audit directory in flight, since `handoff-status.py`
+matches worktrees to `execute/` stems and a pass starts only when the
+user asks for one, so a claim would guard nothing. `/drift-handoff`
+commits the directory before any pass, which the worktree needs, since
+it branches from local `HEAD`.
 
 ## Filenames are stable
 
