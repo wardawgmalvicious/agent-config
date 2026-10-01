@@ -329,7 +329,9 @@ API** — free on a query that asks for an explanation, and a real cost on
 one that asks the skill to *act*: it stops at the first command it
 cannot issue, and every later step goes unmeasured on that arm. Phrase
 one arm as a walkthrough ("the exact commands, start to finish");
-`land`, 2026-09-13, is the measurement.
+`land`, 2026-09-13, is the measurement. A step that decides on a
+command's output needs it run: `Bash`, writes denied by rule, `auto`
+mode, never `dontAsk` (`references/reading-a-failure.md`, 2026-10-01).
 
 **Give a trigger query enough context to be answerable.** A bare
 imperative in an empty probe directory routes to file exploration

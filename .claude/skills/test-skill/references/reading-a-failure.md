@@ -109,6 +109,23 @@ through … the exact commands start to finish" reached step 9 with 11 of
 11. A skill whose body is commands wants one walkthrough arm, or the
 later steps are never rendered.
 
+**A step that decides on a command's output needs that command run.** A
+walkthrough renders the command as a line for the user, so the decision
+it feeds goes unmeasured: `land`'s step 1 turns on `never-prompted.sh`.
+Give that arm `Bash` with every write denied by rule, and mind the
+permission mode. Under `--permission-mode dontAsk`, a batched read-only
+call that no prefix rule can parse, a `{ }` group or a `$?`, is refused
+as "Permission to use Bash has been denied because Claude Code is
+running in don't ask mode", where a plain command gets "…with command
+`<cmd>` has been denied". An Opus 5.5 arm read the generic form as no
+shell at all, never tried the script it was allowed, and handed it to
+the user. Under `auto` the same block is refused by name, and three
+arms of three then split their reads and ran the script. A `git push`
+inside a `{ }` block was refused in both modes. A Haiku probe given
+`--permission-mode auto` reported `default` in its `init` record, so a
+cheap Haiku check of the envelope tests the wrong mode. Measured
+2026-10-01 on 2.1.282 (`32f6847`).
+
 **A probe's environment is its arm's environment.** A variable set to
 launch a slash probe from Bash stays in the `claude` process, and its
 Bash tool's Git Bash inherits it. With `MSYS2_ARG_CONV_EXCL='*'`, every
