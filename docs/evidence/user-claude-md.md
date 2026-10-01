@@ -155,11 +155,11 @@ kill timer (pwsh 7.6.6, .NET 10.0.12):
   `Continue` only; the `Stop` row was run for the plain and secure forms.
 - The PowerShell tool's own command line carries `-NonInteractive`, so a
   prompt run inline there throws. A `pwsh -File` it starts carries no
-  flag, and its masked prompt hung until killed. The Bash tool passes no
-  flag either, and the note's session read `[Console]::IsInputRedirected`
-  as `True` there, so a masked prompt reached from it should block to the
-  tool's timeout: inferred, not run, since the `EnterWorktree` guard
-  refused `pwsh` from the Bash tool in this brief's worktree.
+  flag, and its masked prompt hung until killed. So did both masked forms
+  in a `pwsh -File` started from the Bash tool, which passes no flag
+  either, and where `[Console]::IsInputRedirected` was `True` too. That
+  run was made from the main checkout, since the `EnterWorktree` guard
+  refuses `pwsh` from the Bash tool inside a worktree.
 - `[Environment]::UserInteractive` was `True` in every session, an agent
   shell's included, so it sees neither case.
 - `Read-Host`'s Notes on Learn say it "only reads from the stdin stream
