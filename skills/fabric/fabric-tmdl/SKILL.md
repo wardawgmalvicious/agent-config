@@ -170,6 +170,16 @@ model Model
   Calculated tables are preview on Direct Lake on OneLake and unsupported
   on Direct Lake on SQL; Direct Lake calculated columns are unmaterialized
   and so [can't be used in relationships](https://learn.microsoft.com/power-bi/transform-model/desktop-calculated-columns).
+- **Desktop and web modelling pick a Direct Lake relationship's many side
+  by row count**: "the table with more rows is considered as the many
+  side", and nothing validates it
+  ([Edit tables](https://learn.microsoft.com/fabric/fundamentals/direct-lake-edit-tables#create-and-edit-relationships-between-tables)).
+  So a date table longer than its fact, as one spanning a planning horizon
+  over a small fact is, comes out reversed, the date column in
+  `fromColumn` (seen once in web modelling, 2026-09-30). Read
+  `relationships.tmdl` back after creating one: a query fails on any
+  duplicate in a one-side column
+  ([limitations](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)).
 - **Cross-environment rebinding (deployment pipelines):** Direct Lake on OneLake does **not**
   support data source rules — the dropdowns are simply greyed out. Only the [Direct Lake
   overview limitations table](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)
