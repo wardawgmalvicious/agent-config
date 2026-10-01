@@ -78,6 +78,10 @@ HEAD are not. On 2026-09-22 a switch made after the check, once the one
 peer it found had ended and two others had started, put one of their
 next commits on `main`, unnoticed for over an hour. The reflog records
 every move and never the mover, so the check comes before the move.
+**A row `scripts/never-prompted.sh` passes was never prompted and is
+not live** ([why](references/never-prompted-sessions.md)): give it the
+rows here and again in each move's command, ahead of the move, and name
+at step 6 what it passed. A failed read keeps a row live.
 
 Someone being live is **not** a reason to abandon the landing — step 7
 has a no-checkout route for exactly this case. Disclose it at step 6
@@ -419,7 +423,7 @@ the rest. A `<sha>` this clone lacks fails
 
 **HEAD on `<branch>` is the one local case that needs the move**: `-D`
 refuses it, and the PR merge leaves you there when you hold the tree.
-With anyone else live, keep the local branch and say so. A refusing
+With anyone else live (step 1), keep the local branch and say so. A refusing
 guard is an answer: HEAD on `main` needs no move, and on any other branch
 someone moved it — stop and report. Step 8 left local `main` current.
 Never switch just to make the delete succeed: step 1's 2026-09-22 failure.
@@ -437,9 +441,9 @@ Do not delete, and say why, when:
 - The user asked to keep it. Honour that with no round — it costs
   nothing, and the reference says why.
 - Another session is live in the tree, or is on this branch — by a
-  `ListAgents` run now, since step 1's answer has expired. Note this
-  blocks the *deletion*, not the landing — step 7's variant covers
-  that.
+  `ListAgents` run now and step 1's script, since step 1's answer has
+  expired. Note this blocks the *deletion*, not the landing — step 7's
+  variant covers that.
 - **The branch is checked out in a linked worktree** still on disk: git
   refuses the local delete from either side until the worktree goes;
   [references/linked-worktree.md](references/linked-worktree.md) says
@@ -481,8 +485,8 @@ yours to override; make the override informed rather than refusing it.
 - **Never write to `main` before step 6.** Opening a PR and pushing
   `main` are two decisions, not one.
 - **Never `git switch` while another session is live in the tree** —
-  live by a `ListAgents` run immediately before the switch, never by
-  step 1's.
+  live by a `ListAgents` run immediately before the switch and step 1's
+  script inside its command, never by step 1's run or by an instruction.
 - If the repo is not one the authenticated identity owns, stop and
   report rather than working around it. **A protected `main` is not
   that case** — a ruleset requiring pull requests is the repo working

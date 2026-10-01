@@ -160,7 +160,11 @@ files, which leaves its rewrite *unstaged*. Neither is contention.
   and not in `HEAD` — "are you editing `<path>` right now?" is the
   question this section could not answer before. Ask before cutting a
   patch, not after a collision. What they say about *committed* state is
-  as old as their session, so check that yourself.
+  as old as their session, so check that yourself. **Skip a session
+  that was never prompted**, for which
+  `bash ~/.claude/skills/land/scripts/never-prompted.sh <name>` exits 0:
+  it holds nothing in this tree, and a message would prompt it, making
+  it a peer `land` then has to count (2026-09-30).
 - **Stage and read in one chained command, commit in a second, and
   read the branch inside both** — with `git write-tree` carrying the
   index you read into the commit. The gap between reading a diff and
