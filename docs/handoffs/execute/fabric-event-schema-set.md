@@ -8,7 +8,7 @@ written: 2026-09-10
 
 # Skill handoff brief: fabric-event-schema-set
 
-Last verified: 2026-09-30
+Last verified: 2026-10-01
 
 > Guidance: Re-verify when referenced platform behaviors in project instructions get re-verified. For v1 briefs, use the date Claude Code creates the brief. Every section heading in this template stays in the filled brief; sections that don't apply get `N/A — <brief reason>` under the heading.
 
@@ -91,6 +91,19 @@ Learn:
   that a portal update mints a version. They say nothing of `ancestor`,
   the top-level `name`, the newest-first order of `versions[]` or a Git
   sync, and one line is wrong for a Git sync (Finding 4).
+- **Re-measured 2026-10-01, before drafting; nothing moved against the
+  brief.** The sample item's newest commit was still the 2026-09-30
+  inline-only change, both schemas at `v3` and one inline copy diverged;
+  the `fabric-eventstream` correction stood; Learn still carried the
+  line Finding 4 cites. Learn's pages also document what this brief had
+  not recorded: bulk **Import** of several versions, numbered by the
+  registry, a `device-telemetry-schema-example` page, and that
+  registering a schema does not validate events. Newly measured: the
+  whole definition re-serializes byte for byte as `json.dumps(indent=2)`
+  with CRLF and no final newline (ASCII content only), and the draft's
+  two Git-route scripts were run on a copy of the item. The
+  deployment-pipeline note cited below was not found in the payload, so
+  the draft cites `fabric-eventstream`'s nearest line instead.
 - [skills/fabric/fabric-eventstream/references/cloudevents-producer.md](../../../skills/fabric/fabric-eventstream/references/cloudevents-producer.md)
   — the producer contract this skill defers to. Its "Version-bump
   gotcha" was the only evidence of a bump before 2026-09-30: `Products`
@@ -158,8 +171,8 @@ will hold, em dashes as written:
 - `when_to_use`: 393 / 512
 
 Both counts were measured, not estimated, on 2026-09-30 after the drafts
-were rewritten, and still **must be re-counted after drafting** per
-checklist item 2.
+were rewritten, and re-counted from the drafted `SKILL.md` on 2026-10-01
+per checklist item 2: unchanged.
 
 Draft `description`:
 
