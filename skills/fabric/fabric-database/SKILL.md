@@ -35,6 +35,12 @@ Fabric SQL Database is an Azure SQL Database hosted within a Fabric workspace. I
 - **OneLake replication**: Tables automatically replicate to OneLake as Delta/Parquet
 - **SQL projects**: Uses standard `.sqlproj` format for schema-as-code
 - **Do NOT apply Warehouse T-SQL restrictions** to Fabric SQL Database code
+- **Plan system database**: `__fabric_plan_sys.SQLDatabase` is created with
+  a Plan item (Fabric IQ) to store plan metadata
+  ([planning prerequisites](https://learn.microsoft.com/fabric/iq/plan/overview-prerequisites)),
+  and its `.platform` description opens `DoNotEdit` (observed 2026-09-30).
+  This skill's glob matches its `.sql` files: stand down, and don't edit,
+  rename or delete them, in Git or the portal
 
 ## Reference
 
