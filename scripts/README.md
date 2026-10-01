@@ -264,16 +264,22 @@ Helper scripts for repo maintenance and observability.
   [.pre-commit-config.yaml](../.pre-commit-config.yaml); the header
   says why the override is not an environment variable and why the
   marker is not `CLAUDE_CODE_SSE_PORT`.
-- [repo-settings.ps1](repo-settings.ps1) — keep this repo's GitHub
-  settings in [.github/repo-settings.json](../.github/repo-settings.json):
+- [repo-settings.ps1](repo-settings.ps1) — keep each personal repo's GitHub
+  settings in a snapshot here, this repo's in
+  [.github/repo-settings.json](../.github/repo-settings.json) and any
+  other's in `.github/repo-settings/<name>.json`, where `-Path` defaults
+  from `-Repo`:
   `-Export` snapshots the live repo into it, `-Check` (the default) reports
   drift and exits 1 on any, `-Apply` restores the file's values. Exists
   because GitHub holds settings server-side only: the 2026-09-10
   delete-and-recreate reset every toggle to its default, and there was no
   record of the old values to restore from. **Export after changing a
   setting in the UI**, or the file silently stops describing the repo.
+  Each snapshot names its repo, and every mode refuses a file naming
+  another before the first `gh` call; its negative cases are
+  [tests/scripts/repo-settings/test-pairing.sh](../tests/scripts/repo-settings/test-pairing.sh).
   Visibility and the social preview image are deliberately outside it.
-  `-Apply` refuses unless `gh` acts as the repo's owner.
+  `-Export` and `-Apply` refuse unless `gh` acts as the repo's owner.
 
 - [skill-status.py](skill-status.py) — which skills have been tested, and
   what has changed in each since. Derived from the stamps `/test-skill`

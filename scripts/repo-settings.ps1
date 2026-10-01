@@ -1,7 +1,8 @@
 <#
 .SYNOPSIS
-    Export, check or apply this repo's GitHub settings against a committed
-    snapshot, .github/repo-settings.json.
+    Export, check or apply a personal repo's GitHub settings against a
+    snapshot committed here: this repo's in .github/repo-settings.json, any
+    other's in .github/repo-settings/<name>.json.
 
 .DESCRIPTION
     GitHub keeps a repo's settings on the server and nowhere else, so they
@@ -11,12 +12,26 @@
     record of the old values existed to restore from. This file is that
     record, and this script is how it is read and restored.
 
+    EVERY PERSONAL REPO'S SNAPSHOT LIVES HERE. On 2026-09-23 another repo
+    was recreated for the same reason and this script was not reached for:
+    nothing in that repo knew it existed. So it runs cross-repo (decided
+    2026-09-27): -Repo names the repo and -Path defaults from it.
+
     Three modes, one per switch. -Check is the default and is read-only.
       -Export  read the live repo and overwrite the JSON file with it
       -Check   report every setting where live and file disagree; exit 1
                on any drift, so it can gate a script
       -Apply   change the live repo to match the file, then re-check. The
                only mode that writes to GitHub.
+
+    A SNAPSHOT NAMES ITS REPO, in its _repo key, and every mode refuses a
+    file naming another repo than -Repo, -Export over one included, before
+    the first gh call. Read from the source on 2026-09-30, the two defaults
+    were independent, so naming one left the other on this repo: a crossed
+    -Export overwrote this repo's snapshot with another repo's settings,
+    and a crossed -Apply patched the other repo with this one's, its owner
+    check passing because one account owned both. A file that names no
+    repo, or is not JSON, is refused too and never overwritten.
 
     CURATED, NOT A DUMP. The file holds settable values only. The raw
     `gh api repos/...` answer also carries ids, counters, timestamps and
@@ -38,10 +53,12 @@
     AUTHORIZATION IS CHECKED, NOT ASSUMED. Read without admin rights, the
     merge settings come back null rather than failing, and a snapshot
     taken that way would record nulls as though they were settings. So a
-    null allow_squash_merge aborts every mode. -Apply additionally refuses
-    unless `gh` acts as the repo's owner: on this machine gh is
+    null allow_squash_merge aborts every mode. -Export and -Apply also
+    refuse unless `gh` acts as the repo's owner: on this machine gh is
     folder-scoped and can resolve to a different account than the one
-    that owns the repo (see ~/.claude/CLAUDE.md).
+    that owns the repo (see ~/.claude/CLAUDE.md). For -Export the same
+    check keeps out an organization's repo, whose owner is a name that
+    never goes in a file here.
 
 .PARAMETER Export
     Overwrite the JSON file with the live settings.
@@ -56,12 +73,14 @@
     owner/name. Defaults to this repo's origin remote.
 
 .PARAMETER Path
-    The settings file. Defaults to .github/repo-settings.json.
+    The snapshot file. Defaults from -Repo: .github/repo-settings.json for
+    this repo, .github/repo-settings/<name>.json for any other.
 
 .EXAMPLE
     ./scripts/repo-settings.ps1            # check
     ./scripts/repo-settings.ps1 -Export    # snapshot after changing a setting in the UI
     ./scripts/repo-settings.ps1 -Apply     # restore, e.g. after a recreate
+    ./scripts/repo-settings.ps1 -Export -Repo <owner>/<name>   # another repo's, to .github/repo-settings/<name>.json
 #>
 [CmdletBinding(DefaultParameterSetName = 'Check')]
 param(
@@ -76,7 +95,6 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path $PSScriptRoot -Parent
-if (-not $Path) { $Path = Join-Path $repoRoot '.github/repo-settings.json' }
 
 # The repository-level keys worth recording: every one is settable through
 # PATCH /repos/{owner}/{repo}. Order here is the order written to the file.
@@ -94,6 +112,8 @@ $script:RulesetNoise = @('id', 'node_id', 'source', 'source_type', 'created_at',
     'updated_at', '_links', 'current_user_can_bypass')
 $script:Comment = 'Managed by scripts/repo-settings.ps1 (-Export / -Check / -Apply). ' +
     'Visibility and the social preview image are deliberately not here; see the script header.'
+# Keys that document the file rather than set anything: never compared.
+$script:MetaKeys = @('_comment', '_repo')
 
 function Step { param($m) Write-Host "`n=== $m" -ForegroundColor Cyan }
 function Ok { param($m) Write-Host "  [ok]    $m" -ForegroundColor Green }
@@ -179,7 +199,8 @@ function Get-LiveSetting {
             'A snapshot taken this way would record nulls as settings.'
     }
 
-    $settings = [ordered]@{ '_comment' = $script:Comment }
+    # GitHub's own spelling of the name, which -Repo matches case-insensitively.
+    $settings = [ordered]@{ '_comment' = $script:Comment; '_repo' = $repoJson['full_name'] }
 
     $repository = [ordered]@{}
     foreach ($key in $script:RepositoryKeys) {
@@ -227,14 +248,14 @@ function Get-LiveSetting {
 #region Compare
 # Flatten to "path = compact json" pairs. Arrays compare whole: a topic
 # list or a ruleset is one setting, and element-wise drift in it would be
-# noise. The _comment key is documentation, never a setting.
+# noise. The meta keys are documentation, never a setting.
 function ConvertTo-FlatSetting {
     [CmdletBinding()]
     param($Node, [string]$Prefix = '')
     $flat = [ordered]@{}
     if ($Node -is [System.Collections.IDictionary]) {
         foreach ($key in $Node.Keys) {
-            if ($key -eq '_comment') { continue }
+            if ($key -in $script:MetaKeys) { continue }
             $childPath = if ($Prefix) { "$Prefix.$key" } else { $key }
             $child = ConvertTo-FlatSetting -Node $Node[$key] -Prefix $childPath
             foreach ($k in $child.Keys) { $flat[$k] = $child[$k] }
@@ -277,32 +298,93 @@ function Write-Drift {
 }
 #endregion
 
+#region The snapshot and its repo
+# owner/name of the origin remote, or $null where there is no GitHub origin.
+function Get-OriginRepo {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$Root)
+    $url = git -C $Root remote get-url origin 2>$null
+    if ($LASTEXITCODE -ne 0 -or $url -notmatch 'github\.com[:/](?<owner>[^/]+)/(?<name>[^/]+?)(\.git)?$') {
+        return $null
+    }
+    return "$($Matches['owner'])/$($Matches['name'])"
+}
+
+# The snapshot at $Path, or $null where there is none yet. A file there that
+# names no repo cannot be paired with -Repo, so it is refused, never
+# overwritten: nothing shows whose settings it holds.
+function Read-Snapshot {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$Path)
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) { return $null }
+    $refusal = "$Path cannot be paired with -Repo, so it is neither read nor overwritten"
+    try {
+        $snapshot = Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json -AsHashtable
+    } catch {
+        throw "${refusal}: it is not JSON."
+    }
+    if ($snapshot -isnot [System.Collections.IDictionary] -or -not $snapshot.Contains('_repo') -or
+        $snapshot['_repo'] -isnot [string] -or [string]::IsNullOrWhiteSpace($snapshot['_repo'])) {
+        throw "${refusal}: it names no repo in a _repo key."
+    }
+    return $snapshot
+}
+#endregion
+
 #region Pre-flight
+# Every refusal here comes before the first gh call, so it costs nothing and
+# tests/scripts/repo-settings/ proves it offline.
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw 'gh not found on PATH. hint: winget install GitHub.cli'
 }
+$originRepo = Get-OriginRepo -Root $repoRoot
 if (-not $Repo) {
-    $url = git -C $repoRoot remote get-url origin
-    if ($LASTEXITCODE -ne 0) { throw "No origin remote in $repoRoot; pass -Repo owner/name." }
-    if ($url -notmatch 'github\.com[:/](?<owner>[^/]+)/(?<name>[^/]+?)(\.git)?$') {
-        throw "origin is not a GitHub URL: $url"
-    }
-    $Repo = "$($Matches['owner'])/$($Matches['name'])"
+    if (-not $originRepo) { throw "No GitHub origin remote in $repoRoot; pass -Repo owner/name." }
+    $Repo = $originRepo
 }
-Step "Repo $Repo -- mode $($PSCmdlet.ParameterSetName)"
+if ($Repo -notmatch '^[A-Za-z0-9_-]+/[A-Za-z0-9_.-]+$') { throw "-Repo takes owner/name, not '$Repo'." }
+# GitHub's names are case-insensitive, and so is -eq.
+$isThisRepo = [bool]$originRepo -and $Repo -eq $originRepo
+if (-not $Path) {
+    $leaf = if ($isThisRepo) { 'repo-settings.json' } else { "repo-settings/$($Repo.Split('/')[1]).json" }
+    $Path = Join-Path $repoRoot ".github/$leaf"
+}
+# Resolved once, so the file checked here is the file -Export writes: .NET
+# resolves a relative path against the process directory, not $PWD.
+$Path = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($Path)
+Step "Repo $Repo -- mode $($PSCmdlet.ParameterSetName) -- $Path"
+
+$snapshot = Read-Snapshot -Path $Path
+if ($null -eq $snapshot) {
+    if (-not $Export) { throw "No settings file at $Path. Run -Export first." }
+} elseif ($snapshot['_repo'] -ne $Repo) {
+    throw "$Path is the snapshot of $($snapshot['_repo']), not $Repo, so it is neither read nor " +
+        "overwritten. Pass -Repo $($snapshot['_repo']) to use it, or leave -Path out for $Repo's own."
+}
 #endregion
+
+# Only a repo's owner writes its settings, or keeps a snapshot of it here: an
+# organization's repo would put the organization's name in a file.
+if ($Export -or $Apply) {
+    $owner = $Repo.Split('/')[0]
+    $login = gh api user -q .login
+    if ($LASTEXITCODE -ne 0 -or $login -ne $owner) {
+        $what = if ($Export) { 'snapshot a repo it does not own' } else { 'write settings under the wrong account' }
+        throw "gh acts as '$login', not the repo owner '$owner'. Refusing to $what."
+    }
+}
 
 $live = Get-LiveSetting -Repo $Repo
 
 if ($Export) {
+    [void][System.IO.Directory]::CreateDirectory((Split-Path $Path -Parent))
     $text = (ConvertTo-Json -InputObject $live -Depth 20).Replace("`r`n", "`n") + "`n"
     [System.IO.File]::WriteAllText($Path, $text, [System.Text.UTF8Encoding]::new($false))
     Ok "wrote $Path"
     exit 0
 }
 
-if (-not (Test-Path $Path)) { throw "No settings file at $Path. Run -Export first." }
-$wanted = Get-Content $Path -Raw | ConvertFrom-Json -AsHashtable
+$wanted = $snapshot
 $result = Compare-Setting -Live $live -Wanted $wanted
 
 if (-not $Apply) {
@@ -311,11 +393,6 @@ if (-not $Apply) {
 }
 
 #region Apply
-$owner = $Repo.Split('/')[0]
-$login = gh api user -q .login
-if ($LASTEXITCODE -ne 0 -or $login -ne $owner) {
-    throw "gh acts as '$login', not the repo owner '$owner'. Refusing to write settings under the wrong account."
-}
 $drift = $result.Drift
 if ($drift.Count -eq 0) { Ok 'nothing to apply'; exit 0 }
 Write-Drift -Result $result

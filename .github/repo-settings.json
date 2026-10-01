@@ -1,5 +1,6 @@
 {
   "_comment": "Managed by scripts/repo-settings.ps1 (-Export / -Check / -Apply). Visibility and the social preview image are deliberately not here; see the script header.",
+  "_repo": "wardawgmalvicious/agent-config",
   "repository": {
     "description": "Skills, coding rules, hooks, a subagent and MCP templates for coding agents — day-to-day Microsoft Fabric, Power BI and Azure work.",
     "homepage": null,
