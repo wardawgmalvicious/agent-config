@@ -32,6 +32,7 @@
         "fabric-dataflow": "name-only",
         "fabric-deployment-pipelines": "name-only",
         "fabric-error-handling": "name-only",
+        "fabric-event-schema-set": "name-only",
         "fabric-eventhouse": "name-only",
         "fabric-eventstream": "name-only",
         "fabric-gotchas": "name-only",

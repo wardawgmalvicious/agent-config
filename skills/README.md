@@ -119,7 +119,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (33)
+## Microsoft Fabric platform (34)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -185,6 +185,15 @@ construction. Split out of `workflow` 2026-09-11.
 - [fabric-database/](fabric/fabric-database/) — Fabric SQL database.
 - [fabric-eventhouse/](fabric/fabric-eventhouse/) — Fabric Eventhouse + KQL.
 - [fabric-eventstream/](fabric/fabric-eventstream/) — Fabric Eventstream.
+- [fabric-event-schema-set/](fabric/fabric-event-schema-set/) — the Event
+  Schema Set item a schema-associated Eventstream validates events
+  against: `EventSchemaSetDefinition.json`, its four description stores,
+  the bare Avro record you upload against the envelope the portal
+  generates, and which route mints a version. Every portal save does,
+  while a Git sync stores `versions[]` as pushed, so it carries scripts
+  to append a version from Git and read the result back. Split from
+  `fabric-eventstream` by item, as the family divides; that skill keeps
+  the producer contract and the `dataschema` anatomy.
 - [fabric-activator/](fabric/fabric-activator/) — the Activator item, which
   the API and Git both call `Reflex`: `ReflexEntities.json` as a flat array
   of entities wired by `uniqueIdentifier`, the escaped-JSON-string trap in
