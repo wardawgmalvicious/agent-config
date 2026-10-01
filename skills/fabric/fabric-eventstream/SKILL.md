@@ -159,8 +159,12 @@ associated schema. Two facts decide whether it works at all:
 
 The wire format, the `dataschema` URI anatomy, version-bump behaviour, table
 naming, and the custom-endpoint connection-string conventions are all in
-[references/cloudevents-producer.md](references/cloudevents-producer.md). None
-of it is on Microsoft Learn.
+[references/cloudevents-producer.md](references/cloudevents-producer.md).
+Of these, only versioning is on Microsoft Learn, and only for a portal
+save, where
+[an update mints a new version](https://learn.microsoft.com/fabric/real-time-intelligence/schema-sets/create-manage-event-schemas#update-an-event-schema)
+(read 2026-09-30); what a Git sync does is not. The rest was undocumented
+when verified.
 
 ## Gotchas
 
