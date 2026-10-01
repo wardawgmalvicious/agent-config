@@ -90,7 +90,22 @@ lasts, the first bullet means no new type can be added at all.
 
 ### Version-bump gotcha
 
-**Editing a schema in the set mints a new version** (it does not edit in place). The `dataschema` URI must point at the **current** version, and versions can differ across schemas in the same set (observed: `Orders` / `Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit). Point at the wrong version → the event validates against the old version's types → dropped. (Open question: whether Fabric accepts a `latest` form in `dataschema` to avoid pinning — untested.)
+**A portal edit mints a new version; a Git sync does not.** Every portal
+**Update** that reaches **Finish** adds one, even when only the event-type
+description changed: Learn documents the minting, and a description-only
+save minted a version byte-identical to the last (observed 2026-09-30). A
+Git sync stores `*.EventSchemaSet/EventSchemaSetDefinition.json` as
+pushed: an edited entry in `versions[]` changes that version in place, a
+field addition included, and a hand-written entry with the next `id` and
+`ancestor` becomes a new version (observed 2026-09-30, one tenant; whether
+the validating registry follows either is untested). So from Git, append
+a version rather than edit one, and read `versions[]` back after any edit.
+The `dataschema` URI must point at the **current** version, and versions
+can differ across schemas in the same set (observed: `Orders` /
+`Customers` at `v1`, `Products` at `v2` after a `bytes`→`string` edit).
+Point at the wrong version → the event validates against the old
+version's types → dropped. (Open question: whether Fabric accepts a
+`latest` form in `dataschema` to avoid pinning — untested.)
 
 Reference producer shape (C#): set the `cloudEvents:*` application properties in the batch-send helper that assembles the `EventDataBatch` — the higher-level SDK export path does not carry them — and build the `dataschema` URI in the job-output model that already knows the schema name and version.
 
@@ -116,5 +131,5 @@ Schema support itself is a **creation-time flag**: it cannot be enabled on an ex
 |---|---|---|
 | `CloudEventPropertyMissingException: ...type is missing` when pushing to a schema-associated custom endpoint | Attributes sent in the body / structured mode | Use CloudEvents **binary** mode: `cloudEvents:`-prefixed application properties (esp. `cloudEvents:type`), body = payload JSON only. See *Producing to a schema-associated custom endpoint* above |
 | Event associates in **Data preview** but no table is written | Missing / wrong `cloudEvents:dataschema` | Set `dataschema` to the current schema version URI (`/versions/vN`) — it's what routes to a table |
-| Event dropped after editing a schema | The schema edit bumped the version | Update `dataschema` `/versions/vN` to the new current version; versions can differ per schema in the same set |
+| Event dropped after editing a schema | A portal edit bumped the version (a Git sync bumps nothing — see *Version-bump gotcha*) | Update `dataschema` `/versions/vN` to the new current version; versions can differ per schema in the same set |
 | Events rejected / missing after copying producer config to another environment | Schema-registry host or group id reused across environments | Host and group are **per schema set** — capture `<host>`, `<region>`, and the schema set's itemId per environment |
