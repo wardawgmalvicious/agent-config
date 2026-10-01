@@ -15,7 +15,8 @@
     EVERY PERSONAL REPO'S SNAPSHOT LIVES HERE. On 2026-09-23 another repo
     was recreated for the same reason and this script was not reached for:
     nothing in that repo knew it existed. So it runs cross-repo (decided
-    2026-09-27): -Repo names the repo and -Path defaults from it.
+    2026-09-27): -Repo names the repo and -Path defaults from it. The order
+    a recreate takes is in scripts/README.md, "Recreating a repo".
 
     Three modes, one per switch. -Check is the default and is read-only.
       -Export  read the live repo and overwrite the JSON file with it
