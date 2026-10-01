@@ -60,7 +60,7 @@ SETTINGS_REL = ".claude/settings.json"
 # Groups whose skills MUST be collapsed, and groups that must not be
 # required to be. Anything else fails as unclassified -- see the module
 # docstring.
-PLATFORM_GROUPS = {"fabric", "powerbi"}
+PLATFORM_GROUPS = {"fabric", "powerbi", "windows"}
 BEHAVIOURAL_GROUPS = {"workflow", "social", "meta"}
 
 # The one value this repo uses. Kept as a constant so a deliberate policy
@@ -70,7 +70,7 @@ EXPECTED = "name-only"
 
 # Prefixes that mark a name as this repo's own platform payload, for the
 # orphan check only.
-PLATFORM_PREFIXES = ("fabric-", "pbir-", "pbid-", "pbip-", "powerbi-")
+PLATFORM_PREFIXES = ("fabric-", "pbir-", "pbid-", "pbip-", "powerbi-", "msix-")
 
 
 def platform_skills() -> tuple[dict[str, str], list[str]]:

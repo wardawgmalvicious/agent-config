@@ -317,3 +317,25 @@ construction. Split out of `workflow` 2026-09-11.
 - [pbir-conditional-formatting/](powerbi/pbir-conditional-formatting/) —
   conditional formatting for visuals.
 - [pbir-visual-json/](powerbi/pbir-visual-json/) — visual JSON structure.
+
+## Windows apps (1)
+
+A platform group, like `fabric` and `powerbi`: pruned from user scope,
+and linked into a repo that ships a Windows app with
+`link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups windows`.
+Opened 2026-10-01 for `msix-packaging`, which loads into no session
+until a repo links it.
+
+- [msix-packaging/](windows/msix-packaging/) — release a packaged Windows
+  desktop app as MSIX. Reads the project first: `WindowsPackageType`
+  `None` means unpackaged, and the skill stops there; single-project MSIX
+  or a `.wapproj`; self-contained or framework-dependent. Then one
+  release in order, through App Installer, the Store or a plain `.msix`:
+  raise the version, build with msbuild's `GenerateAppxPackageOnBuild`,
+  sign with a matching `/fd` and a timestamp, publish the package before
+  the `.appinstaller` that names it, and check the update lands. Carries
+  the install error codes, and cites both sides wherever Learn
+  contradicts itself. Unconditional where linked, with no `paths:`
+  glob: a packaging request can arrive as words ("publish a new
+  version") before any manifest is read, and a glob would hide the
+  skill in the only repos that link it.

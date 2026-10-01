@@ -53,6 +53,7 @@
         "fabric-variable-library": "name-only",
         "fabric-warehouse": "name-only",
         "fabric-warehouse-monitoring": "name-only",
+        "msix-packaging": "name-only",
         "pbid-tom-live": "name-only",
         "pbip-project-structure": "name-only",
         "pbir-bookmarks": "name-only",
