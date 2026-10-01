@@ -137,7 +137,13 @@ The paths differ only in the drive letter's case, which the same
 session's directory showed both ways that hour. `EnterWorktree` with the
 path, spelled as git prints it, entered at once; the message's advice,
 to recreate the worktree, was not tried. `/drift-update` step 2 carries
-the fallback.
+the fallback. The refused call's lock outlived the session's
+`ExitWorktree` `keep`, unlike the maker's in the paragraph above: back
+in the main checkout, `git worktree list --porcelain` still read
+`locked claude session worktree-per-brief (pid 6452)`, and
+`~/.claude/sessions/6452.json` named the session that had just left.
+`git worktree remove` refuses a locked worktree, so the landing ran
+`git worktree unlock` first, as [../CLAUDE.md](../CLAUDE.md) says.
 
 ## A brief's worktree lands without a push
 
