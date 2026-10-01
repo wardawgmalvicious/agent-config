@@ -109,6 +109,20 @@
         "paths": "5b66c4a51bea08b1"
       }
     },
+    "fabric-event-schema-set": {
+      "activation": {
+        "date": "2026-10-01",
+        "commit": "9464705",
+        "paths": "26938c65a2e2bc49"
+      },
+      "behaviour": {
+        "date": "2026-10-01",
+        "commit": "9464705",
+        "routing": "2bcdf84e15d7bd64",
+        "body": "6df802e562a4b8b9",
+        "references": "744d5937093eb6d1"
+      }
+    },
     "fabric-eventhouse": {
       "activation": {
         "date": "2026-09-12",
