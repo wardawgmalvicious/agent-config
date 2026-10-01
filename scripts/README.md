@@ -392,47 +392,13 @@ for `linkedin-highlights`. See the Tool support section of the
 
 ## Recreating a repo
 
-A leak pushed to GitHub, such as a client's name or a credential, is
-undone only by deleting the repo and creating it again: a rewrite in place
-leaves it reachable
-([why](../docs/evidence/user-claude-md.md#git-identity-is-folder-scoped)).
-The settings go with the repo, so the order matters. It was learned
-twice: here on 2026-09-10, when nothing recorded the old values, and in
-another repo on 2026-09-23, where nothing named `repo-settings.ps1`, so
-it went unused.
-
-1. **Snapshot the settings while they exist**, unless a current snapshot
-   is committed, which `-Check` exiting 0 shows. From this repo, or by the
-   script's full path from any other:
-
-   ```powershell
-   ./scripts/repo-settings.ps1 -Export -Repo <owner>/<name>
-   ```
-
-   It writes `.github/repo-settings/<name>.json` here, and refuses a repo
-   the acting account does not own. This repo is public, so a snapshot
-   publishes the repo's name, description, topics and security toggles:
-   commit a private repo's only on the user's word. A session in another
-   repo leaves the file uncommitted and says so in
-   `~/handoff-inbox/agent-config/`.
-2. **Delete the repo** with `gh repo delete <owner>/<name> --yes`.
-   `github-mcp`'s `delete_repository` cannot: its confirmation never
-   reaches the user ([claude/mcp/README.md](../claude/mcp/README.md)).
-3. **Create it** with `gh repo create`, which takes `--description` and
-   no topics (gh 2.101.0), then restore both with everything else:
-
-   ```powershell
-   ./scripts/repo-settings.ps1 -Apply -Repo <owner>/<name>
-   ```
-
-   `-Apply` has not yet run against a repo with no commits; if a setting
-   fails there, run it again after step 5.
-4. **Arm the repo's hooks before the first push**, or they do not cover
-   it; on 2026-09-23 that was `core.hooksPath`. A hook committed but not
-   yet executable does not run on a POSIX clone, and says nothing: that
-   repo's history held such a window.
-5. **Push, then upload the social preview by hand**, since no API sets
-   it. `-Check` prints a `[SKIP]` line until one is uploaded.
+The order a recreate takes is the `recreate-repo` skill,
+[skills/workflow/recreate-repo/SKILL.md](../skills/workflow/recreate-repo/SKILL.md),
+since 2026-10-01, with the evidence behind each step in its
+`references/pushed-leaks.md`. It moved there from here because a session
+in another repo reads none of this file: on 2026-09-23 one recreated a
+repo without `repo-settings.ps1` for exactly that reason, and a skill's
+description reaches every session on the machine.
 
 ## Pre-commit
 
