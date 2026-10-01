@@ -23,10 +23,10 @@ name the path of a script in this repo:
 > fine, but I don't want any personal repo names being committed
 > anywhere in an internal company repo.
 
-Until then the payload held it second-hand, and for one repo.
-[handoff-convention-cross-repo.md](handoff-convention-cross-repo.md)
-§ "Decision — 2026-09-29" recorded it as the estate repo's rule, as that
-repo's session reported it, and left the second client repo open. **The
+Until then the payload held it second-hand, and for one repo. The
+cross-repo handoff brief, deleted when it landed on 2026-09-30, recorded
+it on 2026-09-29 as the estate repo's rule, as that repo's session
+reported it, and left the second client repo open. **The
 user states it for every internal company repo**, which makes it
 machine-wide guidance and not one repo's convention.
 
@@ -73,10 +73,11 @@ Put the question with the diff; the sentence lands either way.
 
 ## What it touches elsewhere
 
-- [handoff-convention-cross-repo.md](handoff-convention-cross-repo.md),
-  § "Reports back — 2026-09-30", item 5: the stub a company repo's
-  queue README is written from, the notes sent to company repos, and
-  the planned invariants reference each hand over the path-free form.
+- The cross-repo handoff convention, landed 2026-09-30: each company
+  repo's queue README and the notes sent to it already hand over the
+  path-free form, and the invariants reference it once planned was
+  dropped, so what is left to apply it to is a stub or note written
+  from now on.
 - [copilot-client-repo-findings.md](copilot-client-repo-findings.md),
   item 2: six lines in vendorable skills name a personal repo, and a
   client repo already carries two of them. Whether "if something
