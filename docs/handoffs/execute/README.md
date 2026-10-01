@@ -120,6 +120,12 @@ of a branch that never committed, which sits under `main` too, so the
 branch's oldest reflog entry, where it was created, must differ from its
 tip. `tests/scripts/handoff-status/` plants each case; against the
 script before this change, those six failed and the other 34 passed.
+The pairing is by the worktree directory's name, so a brief renamed
+while it is worked, as `/author-skill` step 5 replaces a queue brief
+written under another stem, leaves its worktree claiming nothing. A
+`git worktree move` to the new stem, run from the main checkout once the
+session has left, pairs them again: after the `recreate-repo` landing on
+2026-10-01 the view read `in flight (merged)`.
 
 **Only the session that made a worktree locks it** (2026-09-30, 2.1.283).
 A second session's `EnterWorktree` with the path was refused while the
