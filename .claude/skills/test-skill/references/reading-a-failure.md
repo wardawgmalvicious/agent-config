@@ -138,6 +138,17 @@ the exemption failing. `'/land'`, the prompt's prefix alone, kept both
 the slash path and the script working. Measured 2026-10-01 on 2.1.282,
 the same script both ways.
 
+**A never-prompted peer is a headless process on an open stdin.** For
+`land` or `commit`, start `claude -p --input-format stream-json
+--output-format stream-json --verbose` in the fixture, its stdin piped
+from a process that never writes (`sleep 3500 | claude -p …`); one
+message written to that pipe first makes the prompted no-case. `land`'s
+`references/never-prompted-sessions.md` has both signatures. End it by
+ending the holder: on EOF it exits and removes its registry entry.
+`TaskStop` on the background shell left the native `claude.exe`
+running, to be killed by PID, after which its registry file was gone
+within a minute (a second session, 2026-10-01).
+
 **The `init` record is what proves the strip.** Measured 2026-09-12 on
 `fabric-catalog-governance` — 21 commands with the skill absent against
 33 with it present — which is what made "the baseline reproduced this
