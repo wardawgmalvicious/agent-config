@@ -61,7 +61,11 @@ during `/commit`, was a git command beside a shell variable, which the
 session split. So the session measures from the main checkout first,
 rather than route around the guard, and `EnterWorktree` fits that order;
 `claude --worktree` suits a brief whose evidence needs no git outside
-this repo.
+this repo. Inside the worktree it refuses more than git: on 2026-09-30 it
+turned down a compound with no git in it, since it "runs sed with -b
+inside a construct too complex to verify, so what it runs cannot be
+shown not to be git". Its message asks for plain, separate commands,
+and that is how a compound git command it refused the same day ran.
 
 **A check that needs the deployed payload runs after the merge, on
 `main`**, since a worktree cannot reach it:
