@@ -97,6 +97,21 @@ module environment 'modules/environment.bicep' = {
   the live value and pass it back in, as a pipeline must for a container
   image that a separate app pipeline sets. What-if shows the revert as a
   Modify wherever it can evaluate the resource.
+- **Read a removed property by its value, not by its `-`.** What-if
+  lists a property the template omits as removed even when the deploy
+  will set it to the value it already holds, the default the provider
+  fills in, and Learn calls such a line noise. On a Basic-SKU container
+  registry the change did not touch, it listed
+  `- properties.dataEndpointEnabled: false` and `- properties.encryption`
+  with `status: "disabled"`: Premium-only features, so a Basic registry
+  always holds those values, and `az acr show` found both unchanged
+  after the deploy (2026-09-27, Bicep CLI 0.47.16). A removed value that
+  is the default for that resource and SKU changes nothing; one that is
+  not is the revert above. **Unlike the `reference()` case, a line that
+  recurs proves nothing**: after a real revert, the next run shows the
+  same line with the default. A deployment stack's what-if drops most
+  such lines against a baseline kept from its last deploy, though not
+  every one (Learn, 2026-09-30).
 - Where a setting can live on a resource or on a child resource, the
   choice decides what a redeploy keeps. A virtual network's subnets
   belong in its `subnets` property, never in `virtualNetworks/subnets`
@@ -127,4 +142,5 @@ az stack group create --name <stack> --resource-group <rg> \
 - `az deployment group what-if` before deploying, read for three things:
   fewer changes than you made (a short-circuited module), a Modify on a
   resource you did not touch (an out-of-band change about to be
-  reverted), and an `Ignore` on one you removed (it keeps running).
+  reverted, unless each line removes a property at its default), and an
+  `Ignore` on one you removed (it keeps running).
