@@ -24,6 +24,11 @@ loads in every session at no cost. When the rule landed, no breach
 of it had been seen: the one session that met the case asked the user
 first.
 
+The cold probes run after the deploy, in the ledger under the same
+heading, are the case for building it: Haiku wrote the path into a
+client repo's README and flagged nothing, so a Haiku subagent making a
+client repo's commit holds neither this rule nor that repo's own.
+
 ## The shape it could take
 
 `identity-guard` runs the other way. It keeps the names on
