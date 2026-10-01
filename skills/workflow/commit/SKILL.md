@@ -61,10 +61,20 @@ question.
 - **When one file straddles commits**, reach for interactive
   `git add -p` where your harness offers it. Some do not: an agent
   shell with no interactive stdin cannot drive it, and the prompt
-  either hangs or reads EOF. Where it is unavailable, step the file
-  through intermediate states instead — edit it down to the first
-  commit's portion, commit, restore the next portion, commit again.
-  Verify the final state matches the intended end state exactly.
+  either hangs or reads EOF. Where it is unavailable, **stage through
+  the index**: [scripts/stage-part.py](scripts/stage-part.py) builds
+  the next commit's version of the file from the changed blocks a regex
+  picks and writes it straight into the index, leaving the working tree
+  at its final state. Read the `TAKE` and `skip` line it prints for
+  each block, then `git diff --cached`, before each commit; an empty
+  `git status --short` after the last commit proves the commits add up
+  to the file on disk. Usage, limits, and the blob built by hand for
+  changes no unchanged line separates:
+  [references/index-staging.md](references/index-staging.md). Stepping
+  the file through intermediate states on disk is the fallback — edit
+  it down to the first commit's portion, commit, restore the next
+  portion, commit again — and rewrites the working tree, so verify the
+  final state matches the intended end state exactly.
   **Stepping assumes you own the whole file.** If another session has
   uncommitted work in it, stepping rewrites their in-flight text —
   commit only what is yours and leave the rest with a note.
