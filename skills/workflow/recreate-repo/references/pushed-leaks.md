@@ -100,7 +100,7 @@ agent-config whatever the working directory, and the script runs
 `git -C <agent-config> remote get-url origin` before any `gh` call. From
 a worktree session that is git outside the worktree, and the Bash
 tool's guard refused `pwsh -NoProfile -File <the script>` before it ran
-(Claude Code 2.1.282, 2026-10-01): "this command runs pwsh in a plain
+(Claude Code 2.1.283, 2026-10-01): "this command runs pwsh in a plain
 command; what it reads or is handed as shell text cannot be shown not to
 run git". So the skill has a worktree session leave first.
 

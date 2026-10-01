@@ -84,7 +84,7 @@ resolves its own location, so it runs from any directory: measured
 2026-10-01 from another personal repo, `31 setting(s) already match`,
 exit 0. **Not from a worktree session**: the script runs git in
 agent-config's checkout and writes there, outside the worktree, and the
-Bash tool's guard refused it (2.1.282, 2026-10-01). Ask to leave the
+Bash tool's guard refused it (2.1.283, 2026-10-01). Ask to leave the
 worktree first.
 
 - **It writes into agent-config, not into the repo you are in**:
