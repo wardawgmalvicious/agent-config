@@ -257,6 +257,12 @@ source list is exhausted.
 The target is `docs/handoffs/execute/<name>.md`, built from
 `docs/handoffs/templates/skill-handoff.md`.
 
+**A queue brief under another stem is replaced, not kept beside it.**
+Queue names often end `-skill` (`ls docs/handoffs/execute/*skill*`), and
+`/test-skill` step 1 reads `<name>.md`: carry the queue brief's content
+as below, `git rm` it, and drop its name wherever a `blocked-by` or a
+link holds it (2026-10-01).
+
 **Check whether that path is already occupied before writing a byte.**
 A `/drift-update` escalation leaves its scoping input at exactly this
 name, so the file that authorizes the work and the file this step
@@ -471,8 +477,10 @@ it**, by `ExitWorktree` with `keep` when the user asks: the landing runs
 from the main checkout, and a session entering `.claude/worktrees/<brief>`
 to test a project-scope skill is refused while this one is inside,
 `belongs to another running Claude Code session (locked: <reason>)`
-(2.1.283, 2026-09-30; `docs/handoffs/execute/README.md` § "Every brief
-takes a worktree").
+(2.1.283, 2026-09-30). If step 5 renamed the brief, name the worktree's
+move to the new stem for whoever lands it, or the queue view pairs it
+with nothing (`docs/handoffs/execute/README.md` § "Every brief takes a
+worktree", 2026-10-01).
 
 ## 10. Constraints
 
@@ -495,6 +503,7 @@ takes a worktree").
   payload skill, `.claude/skills/README.md` for a project-scope one. `Edit` is available
   for those two existing files and nothing else — adjacent cleanups are
   `/learn` and `/simplify` territory, and an unbriefed edit made here
-  has no evidence behind it.
+  has no evidence behind it. The one removal is step 5's, of a queue
+  brief the new one replaces.
 - **Deletion is the user's call.** Step 9 proposes; it does not sweep
   files away.
