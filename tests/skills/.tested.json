@@ -278,6 +278,15 @@
         "references": "4f53cda18c2baa0c"
       }
     },
+    "msix-packaging": {
+      "behaviour": {
+        "date": "2026-10-01",
+        "commit": "83cfa21",
+        "routing": "d0e0f3f252b8ab52",
+        "body": "f44abe6fc5207122",
+        "references": "e12c9e14be397474"
+      }
+    },
     "pbip-project-structure": {
       "activation": {
         "date": "2026-09-01",
