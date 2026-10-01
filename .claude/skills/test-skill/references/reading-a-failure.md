@@ -298,6 +298,29 @@ instead of setting it there.
 2026-09-02 on 2.1.252: `/fabric-data-pipeline` was `Unknown command`
 while `/fabric-gotchas` — same session shape, no `paths:` — ran normally.
 
+**After a Read, the slash path opens in that process only.** Measured
+2026-10-01 on 2.1.282, `fabric-event-schema-set`, on Haiku, since only
+resolution was in question: one print session took stream-json input,
+a message asking for a `Read` of a matching file and, 45 seconds later,
+one opening `/fabric-event-schema-set`. The `Read` emitted
+`commands_changed` naming the skill, the second turn's `init` listed 88
+slash commands to the first's 87, and the transcript records the second
+message as a `<command-name>` expansion of the body, answered with no
+`Skill` call. On 2026-09-12, `fabric-dataflow`'s slash command still
+answered `Unknown command` "after a Read had activated it in a resumed
+print session" (`28fbc94`). A resume is a new process, so the pair says
+activation lives in the process and is not replayed from the transcript:
+inferred, not re-run. Whether a message sent before the Read finishes
+works too is untested; the pause was a precaution.
+
+```powershell
+$read  = '{"type":"user","message":{"role":"user","content":"Use the Read tool to read <matching file>, then reply with just: ok"}}'
+$slash = '{"type":"user","message":{"role":"user","content":"/<name> <question>"}}'
+& { $read; Start-Sleep -Seconds 45; $slash } |
+    claude -p --input-format stream-json --output-format stream-json --verbose `
+        --tools Read,Skill --strict-mcp-config
+```
+
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
 `/author-skill` just wrote is invisible everywhere until

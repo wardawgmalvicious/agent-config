@@ -343,6 +343,10 @@ The `paths:` glob keeps it out of the startup listing, so its
 `description` — the whole model-invocation trigger — is never in
 context, and `/<name>` answers `Unknown command`. Read a matching file
 first; that injects the listing entry and the model can then invoke it.
+The slash arm needs that Read **in its own process**: send it, then
+`/<name>`, as two messages to one `--input-format stream-json` print
+session. A `--resume` still answered `Unknown command` (`fabric-dataflow`,
+2026-09-12); one process expanded it (2026-10-01, in the reference).
 The four-mode matrix above applies as written only to an
 *unconditional* skill (`fabric-data-pipeline`, 2026-09-02).
 
@@ -477,7 +481,7 @@ activated". Work down this table before touching a glob:
 | A negative assertion always passes | The skill it is asserting *against* is not deployed. Both groups must deploy for either set |
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
-| `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read. Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
+| `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read in that same process: a `--resume` answered it too (2026-09-12). Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
 | The baseline scores nearly as high as the payload | It read the payload off disk, root `CLAUDE.md` carries the same claims, or the session-start git log names them, which `--safe-mode` keeps. Allowlist `--tools Skill` on both arms, then ablate with `--tools CronList`. Set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` on every arm but a commit or PR skill's (`commit`, `land`): it also removes the built-in commit and PR instructions, so read the log for the claim there instead |
 | The payload arm changed since the last stamp | Not yet the edit's doing. Run the pre-edit body as `<name>-old` at project scope in the probe directory on the same query; a check-shaped edit ("if X, do Y") also needs the no-X arm |
 
