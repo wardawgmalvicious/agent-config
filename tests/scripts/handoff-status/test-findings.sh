@@ -250,7 +250,17 @@ PYTHONIOENCODING=utf-8 uv run python "$repo/scripts/handoff-status.py" \
 expect_no_line "--no-inbox reports no loose note" "loose note"
 expect_no_line "--no-inbox lists no inbox" "inbox:"
 
-# 6. The same fixture with every finding resolved passes. A dated filename
+# 6. From a linked worktree the repo keeps its main checkout's name, which
+#    keys its inbox directory: named for the worktree, that directory read as
+#    an orphan and its notes went uncounted (2026-09-30).
+PYTHONIOENCODING=utf-8 uv run python "$repo/scripts/handoff-status.py" \
+    "$(native "$fix/.claude/worktrees/f")" --inbox "$(native "$tmproot/inbox")" \
+    > "$tmproot/out.txt" 2>&1
+expect_line "a worktree is named for its main checkout" "== fixrepo =="
+expect_line "a worktree lists its repo's notes" "2026-09-10-note.md"
+expect_no_line "a worktree's repo inbox is no orphan" "orphan inbox directory ~/handoff-inbox/fixrepo/"
+
+# 7. The same fixture with every finding resolved passes. A dated filename
 #    is left in place on purpose: it is reported, never a finding.
 sed -i '/gone\.md/d' "$queue/README.md"
 echo "| [c.md](c.md) | **Open.** Now indexed. |" >> "$queue/README.md"

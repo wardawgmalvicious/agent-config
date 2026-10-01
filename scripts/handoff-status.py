@@ -46,8 +46,9 @@ A brief states its own state in frontmatter, or an index states it:
             `git log` per repo (a spawn costs ~0.4 s here, so never one per
             file). `uncommitted` when no commit has touched it.
   Inbox     ~/handoff-inbox/<repo>/, keyed on the repo directory's name,
-            which is what the inbox README tells a writer to use. The age is
-            read from the note's date prefix.
+            which is what the inbox README tells a writer to use: from a
+            linked worktree, its main checkout's. The age is read from the
+            note's date prefix.
   Audits    docs/audits/<date>/<source>/, the drift-audit ledger, where a
             repo keeps one: a brief not yet run, or one whose execution log
             leaves work open -- escalated, deferred or applied with
@@ -199,6 +200,7 @@ def needs_group(needs: list[str]) -> str:
 @dataclass
 class RepoReport:
     repo: pathlib.Path
+    name: str = ""  # the main checkout's directory, which keys the inbox
     rows: list[Row] = field(default_factory=list)
     briefs: list[pathlib.Path] = field(default_factory=list)
     stated: list[Brief] = field(default_factory=list)
@@ -387,6 +389,20 @@ def read_worktrees(repo: pathlib.Path) -> list[Worktree]:
     return trees
 
 
+def repo_name(repo: pathlib.Path) -> str:
+    """The name the inbox keys a repo on: its main checkout's directory.
+
+    A linked worktree's own directory is named for the worktree, so from one
+    the sweep once read the repo's notes as an orphan directory and counted
+    none (2026-09-30). Only a worktree's .git is a file, and only then is git
+    asked, since a spawn costs ~0.4 s here.
+    """
+    if not (repo / ".git").is_file():
+        return repo.name
+    trees = read_worktrees(repo)
+    return trees[0].name if trees else repo.name
+
+
 def pid_alive(pid: int) -> bool:
     """Whether a process is running, asked without signalling it.
 
@@ -500,7 +516,7 @@ def last_touched(repo: pathlib.Path) -> dict[str, str]:
 
 
 def scan(repo: pathlib.Path, inbox_root: pathlib.Path | None) -> RepoReport:
-    report = RepoReport(repo)
+    report = RepoReport(repo, repo_name(repo))
     tree = (repo / HANDOFFS).resolve()
     if tree.is_dir():
         for path in sorted(tree.rglob("*.md")):
@@ -515,7 +531,7 @@ def scan(repo: pathlib.Path, inbox_root: pathlib.Path | None) -> RepoReport:
         if report.stated:
             report.worktrees = worktree_claims(repo, {b.path.stem for b in report.stated})
     report.audits = audit_status.follow_ups(repo / AUDITS)
-    inbox = inbox_root / repo.name if inbox_root else None
+    inbox = inbox_root / report.name if inbox_root else None
     if inbox and inbox.is_dir():
         report.notes = sorted(n for n in inbox.iterdir()
                               if n.is_file() and n.name.lower() != "readme.md")
@@ -561,7 +577,7 @@ def print_report(report: RepoReport, today: dt.date) -> None:
     def touched(path: pathlib.Path) -> str:
         return report.touched.get(rel(path), "uncommitted")
 
-    print(f"== {repo.name} ==  {repo.as_posix()}")
+    print(f"== {report.name} ==  {repo.as_posix()}")
     for index in dict.fromkeys(row.index for row in report.rows):
         listed = [r for r in report.rows
                   if r.index == index and r.target.exists() and r.target not in stated]
@@ -599,7 +615,7 @@ def print_report(report: RepoReport, today: dt.date) -> None:
               f"with no **Needs** line")
     if report.notes:
         print(f"  inbox: {len(report.notes)} note(s) in "
-              f"~/handoff-inbox/{repo.name}/")
+              f"~/handoff-inbox/{report.name}/")
         for note in report.notes:
             print(f"    {age(note, today):>8}  {note.name}")
     print()
@@ -628,12 +644,11 @@ def print_audits(report: RepoReport) -> None:
         print(f"      {directory.relative_to(root).as_posix()}/  {count} brief(s)")
 
 
-def inbox_findings(repos: list[pathlib.Path],
+def inbox_findings(names: set[str],
                    inbox: pathlib.Path) -> tuple[list[str], list[str]]:
     """Return (loose notes, orphan directories) in the inbox root."""
     if not inbox.is_dir():
         return [], []
-    names = {r.name for r in repos}
     loose = sorted(p.name for p in inbox.iterdir()
                    if p.is_file() and p.name.lower() != "readme.md")
     orphans = sorted(p.name for p in inbox.iterdir()
@@ -664,7 +679,8 @@ def main() -> int:
         if not report.empty:
             print_report(report, today)
 
-    loose, orphans = inbox_findings(repos, inbox) if inbox else ([], [])
+    names = {r.name for r in reports}
+    loose, orphans = inbox_findings(names, inbox) if inbox else ([], [])
     for name in loose:
         print(f"! loose note in ~/handoff-inbox/: {name} -- addressed to no repo")
     for name in orphans:
