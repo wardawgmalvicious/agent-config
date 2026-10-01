@@ -56,6 +56,15 @@
         against.
       - Secrets and variables. Their values are not readable by design.
 
+    `gh repo edit` REACHES ONLY PART OF THIS, so do not simplify the
+    script into it. Its help (gh 2.101.0, read 2026-10-01) has no flag
+    for secret_scanning_non_provider_patterns or _validity_checks,
+    Dependabot alerts or security updates, private vulnerability
+    reporting, Actions permissions or workflow permissions, rulesets,
+    merge_commit_title or _message, or web_commit_signoff_required. Its
+    one squash flag takes one of four presets, where this file records a
+    title and a message.
+
     AUTHORIZATION IS CHECKED, NOT ASSUMED. Read without admin rights, the
     merge settings come back null rather than failing, and a snapshot
     taken that way would record nulls as though they were settings. So a
