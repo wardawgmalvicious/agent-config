@@ -385,9 +385,13 @@ remainder there costs no portability the skill still had.
 malformed line away from the skill silently not loading, and the Edit
 tool on Windows is where that line comes from.
 
+```bash
+pre-commit run --files <the SKILL.md you wrote> <its references/*.md> <the brief>
 ```
-pre-commit run --all-files
-```
+
+**Not `--all-files`, which is the index** (`git ls-files`): an untracked
+draft is invisible to it, so `lint-skills` passes without reading the
+draft; `--files` takes any path on disk (pre-commit 4.6.2, 2026-10-01).
 
 **Score the draft against its neighbours**, which step 2 could not:
 
