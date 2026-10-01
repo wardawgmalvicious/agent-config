@@ -49,6 +49,20 @@ internal cross-references stay intact.
   recommends; never deletes. The complement of `land` — that one stops
   this debris accumulating on the happy path, this cleans up what never
   took it.
+- [recreate-repo/](workflow/recreate-repo/) — the immediate remedy for a
+  leak already pushed, a client's name or a credential in history: delete
+  the repository and create it again, in the order that keeps its
+  settings — rotate the credential, snapshot with
+  `scripts/repo-settings.ps1` by full path from any repo, clean the
+  history, checkpoint, delete, create, apply, arm the hooks,
+  `fetch --prune`, push, upload the preview. Exists because the order was
+  learned twice (2026-09-10, 2026-09-23) and a session in another repo
+  reads none of this repo's files, so the runbook had to deploy to be
+  found. Named for the job, not the leak: the leak is the trigger, and
+  `purge-leak` would have named the thing the body refuses. Says why a
+  rewrite plus force-push is not the remedy, what the recreate cannot
+  reach — the forks of a public repo — and why the 90-day restore is
+  never used.
 
 ## Meta
 
