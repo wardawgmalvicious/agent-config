@@ -59,6 +59,16 @@
 scripts/instructions-log text eol=lf
 scripts/bootstrap-pre-commit text eol=lf
 
+# A Fabric fixture kept byte for byte. Fabric writes an Event Schema Set's
+# definition CRLF on every line and its .platform LF, and the `*` rule
+# above would store the definition LF, silently: the working tree keeps
+# its CRs and reads clean, while every clone gets LF and stops resembling
+# the item. `-text` on the item folder is what fabric-git-serialization
+# tells a Fabric repo to set on its workspace tree, for the same reason.
+# Measured 2026-10-01: unpinned, `git hash-object --path` gave a different
+# blob than the bytes on disk.
+tests/skills/fabric-triggers/fixtures/SampleESS.EventSchemaSet/** -text
+
 # Binary assets. `* text=auto` already leaves these alone in practice --
 # git sniffs the NUL bytes in a PNG header and skips normalization -- but
 # the detection is heuristic, so say it outright rather than relying on

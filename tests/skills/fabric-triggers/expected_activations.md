@@ -14,7 +14,9 @@ this table previously read as though a match loaded the bodies.)
 Shapes are modelled on a production Fabric Git-synced repo — *the
 reference repo* below — except `GraphModel`, `SQLDatabase` and
 `DataAgent`, which are modelled on the public Git-synced exports pinned
-in the README. One fixture rests on an unverified shape and says so:
+in the README. `SampleESS.EventSchemaSet/` is modelled on a real item in
+a sandbox workspace, bytes included — see assertion 9. One fixture rests
+on an unverified shape and says so:
 `SampleAct.Activator/`, whose folder suffix no export produces — see
 assertion 7.
 
@@ -38,6 +40,8 @@ an apparent one.
 | `SampleES.Eventstream/.platform` | `fabric-eventstream` | 2,810 |
 | `SampleES.Eventstream/eventstream.json` | `fabric-eventstream` | 2,810 |
 | `SampleES.Eventstream/eventstreamProperties.json` | `fabric-eventstream` | 2,810 |
+| `SampleESS.EventSchemaSet/.platform` | `fabric-event-schema-set` | 4,850 |
+| `SampleESS.EventSchemaSet/EventSchemaSetDefinition.json` | `fabric-event-schema-set` | 4,850 |
 | `SampleDash.KQLDashboard/.platform` | `fabric-realtime-dashboard` | 1,839 |
 | `SampleDash.KQLDashboard/RealTimeDashboard.json` | `fabric-realtime-dashboard` | 1,839 |
 | **`SampleNB.Notebook/.platform`** | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | **6,448** |
@@ -99,8 +103,8 @@ an apparent one.
 | `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
 | `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
 
-Together with `../pbip-triggers/`, all **29** conditional skills in the
-payload are now covered — 10 there, 19 here.
+Together with `../pbip-triggers/`, all **30** conditional skills in the
+payload are now covered — 10 there, 20 here.
 
 ## Assertions that carry weight
 
@@ -291,10 +295,41 @@ the README. The real export has no `.mdf` part either; the shape is
 documented on Learn but unobserved here, and this set does not let a
 fixture vouch for a shape on a doc sample alone.
 
+**9. The EventSchemaSet fixture is modelled on a real item, and its bytes
+are part of the shape.** `fabric-event-schema-set` globs
+`**/*.EventSchemaSet/**`, item-scoped, so both files carry it. The folder
+suffix, the two-file shape, `metadata.type: "EventSchemaSet"` and the
+definition's structure come from a real Event Schema Set in a Git-synced
+sandbox workspace, read 2026-10-01 and cited by kind; every name, field
+and doc string is synthetic.
+
+The definition is **CRLF on every line** and the `.platform` LF, neither
+with a final newline or a BOM, as Fabric writes them: the one JSON part
+here that is not LF. `.gitattributes` pins the folder `-text`, since
+`* text=auto eol=lf` would otherwise store the definition LF while the
+working tree still read clean (measured 2026-10-01).
+
+It is **not a clean item**. It holds the state the real one reached after
+seven edits by portal and Git: two schemas at three versions, newest
+first, both event types carrying the inline `schema` a portal save swaps
+in, and `Customers`' inline copy holding a field its `v3` lacks. The
+read-back script in the skill's `references/editing-from-git.md` prints
+its documented output from this file line for line. Don't copy it as a
+model of a healthy definition.
+
+`EventSchemaSetDefinition.json` is also the row behind the
+`fabric-git-serialization` glob added with it. `.platform` reaches that
+rule through `**/.platform` whatever the item type; the definition
+reaches it only through `**/*.EventSchemaSet/**`, and reached no rule at
+all before. The real-path run cannot witness that arm, because the rule
+is already active from the first `.platform` the probe reads; the static
+rules pass is the check.
+
 ## Rules load here too
 
 Extend the static check to `claude/rules/*.md` (same snippet, second glob
-set) and the picture changes. Measured 2026-08-31, re-measured 2026-09-12:
+set) and the picture changes. Measured 2026-08-31, re-measured 2026-09-12
+and 2026-10-01:
 
 | Fixture file | Rules |
 | --- | --- |
@@ -418,7 +453,8 @@ over-broad.
   three names (`GraphModel`, `UserDataFunction`, `ApacheAirflowJob`) were
   confirmed against real Git-synced exports and added, and `Dataflow` was
   checked and is **correct** — 246 public exports use `<name>.Dataflow`,
-  while `DataflowGen2` is a portal name that never reaches Git. The rest
+  while `DataflowGen2` is a portal name that never reaches Git.
+  `EventSchemaSet` was added on 2026-10-01, from a real item. The rest
   of the list was never re-verified, and nothing keeps it current as
   Fabric ships item types. A full pass is cheap: one `filename:.platform`
   code search per candidate name. A missing entry here means an item type

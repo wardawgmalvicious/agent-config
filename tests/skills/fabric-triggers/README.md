@@ -39,6 +39,8 @@ tests/skills/fabric-triggers/fixtures/
 │                                   EmbeddedRealTimeQueryset.json
 ├── SampleES.Eventstream/           .platform, eventstream.json,
 │                                   eventstreamProperties.json
+├── SampleESS.EventSchemaSet/       .platform, EventSchemaSetDefinition.json
+│                                   (the definition CRLF, pinned -text)
 ├── SampleDash.KQLDashboard/        .platform, RealTimeDashboard.json
 ├── SampleNB.Notebook/              .platform, notebook-content.py,
 │                                   notebook-settings.json
@@ -129,6 +131,14 @@ but never configured. Learn's
 [Activator Git integration](https://learn.microsoft.com/fabric/real-time-intelligence/git-activator)
 page corroborates the same `{.platform, ReflexEntities.json}` pair.
 `SampleAct.Activator/` has no item behind it at all — see below.
+
+`SampleESS.EventSchemaSet/` is modelled the same way, on a real
+`.EventSchemaSet` item in a Git-synced sandbox workspace, read 2026-10-01
+and cited by kind. That item fixed the folder suffix, the two-file
+contents, `metadata.type: "EventSchemaSet"`, the definition's structure
+and its bytes. It is the one fixture whose line endings `.gitattributes`
+pins, and the one deliberately left as an unhealthy item; assertion 9 in
+[expected_activations.md](expected_activations.md) says why for both.
 
 Two deliberate deviations from those sources. The real `.SQLDatabase`
 `.gitignore` is the full ~480-line `dotnet new gitignore`; the fixture

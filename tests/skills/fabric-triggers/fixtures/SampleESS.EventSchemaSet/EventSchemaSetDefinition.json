@@ -1,0 +1,107 @@
+{
+  "eventTypes": [
+    {
+      "id": "Orders",
+      "description": "Orders placed through any sales channel",
+      "format": "CloudEvents/1.0",
+      "envelopeMetadata": {
+        "id": {
+          "type": "string",
+          "required": true
+        },
+        "type": {
+          "type": "string",
+          "required": true,
+          "value": "Orders"
+        },
+        "source": {
+          "type": "string",
+          "required": true
+        },
+        "specversion": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "schemaFormat": "Avro/1.12.0",
+      "schema": "{\n \"fields\": [\n  {\n   \"name\": \"orderId\",\n   \"type\": \"string\",\n   \"doc\": \"Order identifier, unique per sales channel\"\n  },\n  {\n   \"name\": \"amount\",\n   \"type\": \"double\",\n   \"doc\": \"Order total in the order's currency, tax included\"\n  },\n  {\n   \"name\": \"placedAt\",\n   \"type\": \"long\",\n   \"doc\": \"When the order was placed, epoch milliseconds UTC\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Orders\",\n \"doc\": \"An order as placed, before fulfilment.\"\n}"
+    },
+    {
+      "id": "Customers",
+      "description": "",
+      "format": "CloudEvents/1.0",
+      "envelopeMetadata": {
+        "id": {
+          "type": "string",
+          "required": true
+        },
+        "type": {
+          "type": "string",
+          "required": true,
+          "value": "Customers"
+        },
+        "source": {
+          "type": "string",
+          "required": true
+        },
+        "specversion": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "schemaFormat": "Avro/1.12.0",
+      "schema": "{\n \"fields\": [\n  {\n   \"name\": \"customerId\",\n   \"type\": \"string\",\n   \"doc\": \"Customer identifier, unique per source system\"\n  },\n  {\n   \"name\": \"registeredAt\",\n   \"type\": \"long\",\n   \"doc\": \"When the customer registered, epoch milliseconds UTC\"\n  },\n  {\n   \"name\": \"region\",\n   \"type\": \"string\",\n   \"doc\": \"Sales region code\"\n  },\n  {\n   \"name\": \"segment\",\n   \"type\": \"string\",\n   \"doc\": \"Marketing segment\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Customers\"\n}"
+    }
+  ],
+  "schemas": [
+    {
+      "id": "Orders",
+      "format": "Avro/1.12.0",
+      "versions": [
+        {
+          "id": "v3",
+          "format": "Avro/1.12.0",
+          "schema": "{\n \"fields\": [\n  {\n   \"name\": \"orderId\",\n   \"type\": \"string\",\n   \"doc\": \"Order identifier, unique per sales channel\"\n  },\n  {\n   \"name\": \"amount\",\n   \"type\": \"double\",\n   \"doc\": \"Order total in the order's currency, tax included\"\n  },\n  {\n   \"name\": \"placedAt\",\n   \"type\": \"long\",\n   \"doc\": \"When the order was placed, epoch milliseconds UTC\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Orders\",\n \"doc\": \"An order as placed, before fulfilment.\"\n}",
+          "ancestor": "v2"
+        },
+        {
+          "id": "v2",
+          "format": "Avro/1.12.0",
+          "schema": "{\n \"fields\": [\n  {\n   \"name\": \"orderId\",\n   \"type\": \"string\",\n   \"doc\": \"Order identifier, unique per sales channel\"\n  },\n  {\n   \"name\": \"amount\",\n   \"type\": \"double\",\n   \"doc\": \"Order total in the order's currency, tax included\"\n  },\n  {\n   \"name\": \"placedAt\",\n   \"type\": \"long\",\n   \"doc\": \"When the order was placed, epoch milliseconds UTC\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Orders\",\n \"doc\": \"An order as placed, before fulfilment.\"\n}",
+          "ancestor": "v1"
+        },
+        {
+          "id": "v1",
+          "format": "Avro/1.12.0",
+          "schema": "{\n    \"fields\": [\n        {\n            \"name\": \"orderId\",\n            \"type\": \"string\",\n            \"doc\": \"Order identifier, unique per sales channel\"\n        },\n        {\n            \"name\": \"amount\",\n            \"type\": \"double\",\n            \"doc\": \"Order total in the order's currency\"\n        },\n        {\n            \"name\": \"placedAt\",\n            \"type\": \"long\",\n            \"doc\": \"When the order was placed, epoch milliseconds UTC\"\n        }\n    ],\n    \"type\": \"record\",\n    \"name\": \"Orders\",\n    \"doc\": \"An order as placed, before fulfilment.\"\n}\n",
+          "ancestor": "v1"
+        }
+      ]
+    },
+    {
+      "id": "Customers",
+      "format": "Avro/1.12.0",
+      "versions": [
+        {
+          "id": "v3",
+          "format": "Avro/1.12.0",
+          "schema": "{\n \"fields\": [\n  {\n   \"name\": \"customerId\",\n   \"type\": \"string\",\n   \"doc\": \"Customer identifier, unique per source system\"\n  },\n  {\n   \"name\": \"registeredAt\",\n   \"type\": \"long\",\n   \"doc\": \"When the customer registered, epoch milliseconds UTC\"\n  },\n  {\n   \"name\": \"region\",\n   \"type\": \"string\",\n   \"doc\": \"Sales region code\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Customers\"\n}",
+          "ancestor": "v2"
+        },
+        {
+          "id": "v2",
+          "format": "Avro/1.12.0",
+          "schema": "{\n \"fields\": [\n  {\n   \"name\": \"customerId\",\n   \"type\": \"string\",\n   \"doc\": \"Customer identifier, unique per source system\"\n  },\n  {\n   \"name\": \"registeredAt\",\n   \"type\": \"long\",\n   \"doc\": \"When the customer registered, epoch milliseconds UTC\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Customers\"\n}",
+          "ancestor": "v1"
+        },
+        {
+          "id": "v1",
+          "format": "Avro/1.12.0",
+          "schema": "{\n \"fields\": [\n  {\n   \"name\": \"customerId\",\n   \"type\": \"string\",\n   \"doc\": \"Customer identifier\"\n  }\n ],\n \"type\": \"record\",\n \"name\": \"Customers\"\n}",
+          "ancestor": "v1"
+        }
+      ]
+    }
+  ],
+  "name": "SampleESS"
+}
