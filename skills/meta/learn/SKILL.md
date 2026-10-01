@@ -209,7 +209,14 @@ terminal, when it exits 1.
 If it can't be verified, still carry it forward but mark it clearly as
 **unverified** in the text (e.g. "Observed Aug 2026 with v1.3; not yet
 documented") so a future `drift-audit` can confirm or remove it.
-Include the date and version where relevant — these learnings age.
+Include the date and version where relevant — these learnings age. **The
+version is the session's, and only its transcript names it**: each entry
+of `~/.claude/projects/<cwd slug>/<session id>.jsonl` (both names are in
+the scratchpad path) carries `"version":`. `claude --version` is the
+`PATH` binary, which a VS Code session (`"entrypoint":"claude-vscode"`)
+does not run, and a build can change at a resume: 2.1.283, then 2.1.285
+after a six-hour gap, while `PATH` said 2.1.282, the number three files
+then cited (2026-10-01).
 
 ## Step 6 — Edit mode: propose the edit
 
