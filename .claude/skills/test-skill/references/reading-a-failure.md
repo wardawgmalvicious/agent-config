@@ -367,6 +367,19 @@ on `commit`: the same shared-tree walkthrough kept the `git diff
 put the regression on the new code block rather than on the query or
 the model.
 
+**The same route tests a wording before it lands.** Copy the skill's
+directory to `<probe>/.claude/skills/<name>-next/`, set its `name:` to
+match, edit the copy, and slash-invoke it as `-old` is: the live
+user-scope skill stays what every other session reads until the arms
+decide. For a skill that reads `git status`, list `.claude/` in the
+probe's `.git/info/exclude`, so the copy never shows among the changes
+the arm surveys. Measured 2026-09-30 on `commit`: a bullet leading with
+the staging command in a fence staged through the index in 3 of 3
+runs, against 2 of 3 for the live body reached through `Skill`. Three
+arms a side cannot separate that from chance, and the two sides took
+different paths besides, so the live body stayed and the stamp names
+it; slash both sides when only the wording is in question.
+
 **A check-shaped claim needs its no-case arm.** An edit of the form
 "if X, do Y" passes the X arm whether it checks X or not, so a skill
 that always does Y reads as a pass. Keep everything but X — same tree,
