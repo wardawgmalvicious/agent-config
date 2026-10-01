@@ -31,8 +31,8 @@ the bytes: a round trip through a translating layer proves nothing.
   (`pbir-cli`), `ruff`, `sqlfluff`, `pre-commit`, `git-filter-repo`.
 - **Never `uv run python -` with nothing on stdin**: PyREPL blocks to the
   timeout or prints ~50k `WinError 6` tracebacks; pipe or heredoc. Prompts
-  (`git rebase -i`, `fab` without `-f`) block too, so pass the
-  non-interactive flag; `Read-Host` under `-NonInteractive` exits 0.
+  (`git rebase -i`, `fab` without `-f`, masked `Read-Host`) block too, so
+  pass the non-interactive flag; `Read-Host` then throws, yet may exit 0.
 - **stdout is cp1252** (2026-09-13): an em dash raises `UnicodeEncodeError`
   mid-print. Set `PYTHONIOENCODING=utf-8` or write a UTF-8 file.
 - **`write_text()` writes CRLF, and `read_text()` hides it**: use

@@ -137,6 +137,38 @@ edit staged as 440 insertions and 408 deletions past exactly that check
 as § "Counting carriage returns" does, and treat a whole-file diffstat
 on a small edit as the tell.
 
+**2026-09-30.** The prompts clause is reworded, since the paragraph above
+is wrong about `Read-Host` twice: on redirected stdin only its masked
+forms block, and under `-NonInteractive` it throws, exiting 0 under
+`Continue` only. Measured 2026-09-29 by a machine-setup repo's session,
+whose setup script had gained a `Read-Host -AsSecureString` prompt, and
+re-run here 2026-09-30 in child `pwsh` processes, each with a six-second
+kill timer (pwsh 7.6.6, .NET 10.0.12):
+
+| Child `pwsh` | `Read-Host` | `-AsSecureString`, `-MaskInput` |
+| --- | --- | --- |
+| stdin redirected | reads it: `$null` at its end, else the line; exit 0 | ignores it and waits for console keys, printing nothing, until killed |
+| `-NonInteractive`, `Continue` | throws `PSInvalidOperationException`, returns `$null`; exit 0 | the same |
+| `-NonInteractive`, `Stop` | throws; `pwsh -File` exits 1 | the same |
+
+- `-MaskInput` was first measured here, and under `-NonInteractive` with
+  `Continue` only; the `Stop` row was run for the plain and secure forms.
+- The PowerShell tool's own command line carries `-NonInteractive`, so a
+  prompt run inline there throws. A `pwsh -File` it starts carries no
+  flag, and its masked prompt hung until killed. The Bash tool passes no
+  flag either, and the note's session read `[Console]::IsInputRedirected`
+  as `True` there, so a masked prompt reached from it should block to the
+  tool's timeout: inferred, not run, since the `EnterWorktree` guard
+  refused `pwsh` from the Bash tool in this brief's worktree.
+- `[Environment]::UserInteractive` was `True` in every session, an agent
+  shell's included, so it sees neither case.
+- `Read-Host`'s Notes on Learn say it "only reads from the stdin stream
+  of the host process" (read 2026-09-30); the masked forms contradict
+  that.
+
+The guard, and what each form does where, went to
+`claude/rules/coding-powershell.md` § "Windows and system operations".
+
 ### Shell traps
 
 Six sections of their own until 2026-09-23, now one bullet each in

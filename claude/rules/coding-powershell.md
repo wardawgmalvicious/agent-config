@@ -251,6 +251,37 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
   [string]$SourceDir
   ```
 
+- **Check that a prompt can be answered before asking it.** With stdin
+  redirected, as in an agent shell, `Read-Host` reads stdin and returns
+  `$null` at its end, but `-AsSecureString` and `-MaskInput` ignore it
+  and wait for console keys, **blocking until the process is killed and
+  printing nothing**. Under `-NonInteractive` all three throw
+  `PSInvalidOperationException` ("PowerShell is in NonInteractive mode"),
+  and a `pwsh -File` script carries on with `$null` and exits 0 under
+  `Continue`, or exits 1 under `Stop`. The flag is not inherited: a
+  `pwsh -File` started from a `-NonInteractive` session runs without it,
+  and its masked prompt hung until killed (pwsh 7.6.6, 2026-09-30).
+  `[Environment]::UserInteractive` was `True` throughout, so check stdin
+  too, and catch the throw that check cannot see:
+
+  ```powershell
+  if (-not [Environment]::UserInteractive -or [Console]::IsInputRedirected) {
+      # No keyboard: skip with a warning, or take the value from a parameter.
+  }
+  else {
+      try {
+          $secret = Read-Host -Prompt 'Token (Enter to skip)' -AsSecureString
+      }
+      catch [System.Management.Automation.PSInvalidOperationException] {
+          # -NonInteractive on a real console: IsInputRedirected is False there.
+      }
+  }
+  ```
+
+  Run the check before `ShouldProcess`, so a dry run reports the skip a
+  real run would make. The `UserInteractive` half is for a scheduled
+  task with no desktop: reasoned, not measured.
+
 - **`-NoProfile` when a script touches profiles**, or anything else the
   current session loaded at startup. A script that rewrites
   `profile.ps1` must not be running under the copy it is replacing.
@@ -309,7 +340,8 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
 - `New-Item -Force` on an existing file — it truncates the content.
 - Mutating with no dry-run path.
 - `Read-Host`, `Get-Credential`, `Out-GridView`, `pause` in anything that
-  may run non-interactively (scheduled tasks, CI, agent sessions).
+  may run non-interactively (scheduled tasks, CI, agent sessions), unless
+  guarded as § "Windows and system operations" shows.
 - Swallowing errors with `-ErrorAction SilentlyContinue` and no
   follow-up test.
 - `$_` reused inside nested `ForEach-Object` blocks — bind the outer one
