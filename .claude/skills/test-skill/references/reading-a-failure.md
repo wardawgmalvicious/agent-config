@@ -10,6 +10,8 @@ linter's 500-line cap, the moved text unchanged; later sections landed
 the same day, each time the cap was hit again. Five of step 8's
 measurements followed on 2026-09-29, each under a new lead, to make
 room in the body for instructions that had lived only here.
+Step 7's user-scope deploy followed on 2026-10-01, when the step became
+a copy into the probe.
 
 **The transcript is one of two witnesses.** It is at
 `~/.claude/projects/<project>/<session-id>.jsonl`; an activation is a
@@ -308,6 +310,39 @@ immediately after the draft, while its brief said "live on save and
 needs no deploy step". The run is the standing form, so there is no
 prune to restore; `/author-skill` carries the same rule from `land`,
 2026-09-02.
+
+**Step 7's user-scope deploy, as the step read until 2026-10-01**, kept
+for a run that needs a platform group in user scope; step 7 now copies
+the group into the probe instead. Moved unchanged, bar the exit-code
+paragraph's dates.
+
+```powershell
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta,fabric   # or ...,powerbi
+```
+
+`-SkillGroups` **prunes** — a group not listed is removed. This
+machine's standing state is workflow, social and meta only, so you are
+temporarily undoing a deliberate prune and must put it back:
+
+```powershell
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
+Get-ChildItem ~/.claude/skills -Name | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
+```
+
+**Never run the script bare.** Omitting `-SkillGroups` deploys every
+group and silently undoes the prune — it happened on 2026-08-31, and the
+run reported `Linked` 37 times and ended `Done. All links verified.`
+There is no output line that reads as wrong. The name check above is
+the only one that catches it, and only with `-Name`: without it
+`Select-String` reads each full path, so `^` never matches and the
+check passes silently (2026-09-29).
+
+**Don't read the exit code as the verdict.** `link-claude.ps1` returns
+non-zero whenever any warning fires, and when this was written
+(2026-09-12) the standing `MCP_DOCKER` drift on this machine meant a
+wholly successful deploy *and* a successful restore both exited 1. On
+2026-10-01 the standing form exited 0, `.claude.json` in sync. Read the
+`Skills N linked ...; M pruned` line and the name check above instead.
 
 **The stamp's `commit` field can name a commit that lacks what was
 tested.** `--stamp` writes `rev-parse --short HEAD`, so a run against an

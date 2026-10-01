@@ -210,43 +210,33 @@ inspection.
 
 ## Phase B — behaviour
 
-### 7. Deploy the groups — and restore the prune
+### 7. Load a platform skill in the probe — never in user scope
 
-**This is the one step that can damage the machine.** Everything else
-is confined to `tests/` and a throwaway directory; this writes to
-`~/.claude/skills`, which serves every session here. Only a platform
-skill needs it — `workflow`, `social` and `meta` are deployed already and
-`.claude/skills/` is read in place — so skip to step 8 unless the skill
-is **new**, which has no junction until the standing form below runs once.
+A platform skill needs this step. So does a **new** skill in `workflow`,
+`social` or `meta`, which has no junction until the standing form runs
+once, `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta`,
+never bare (root `CLAUDE.md`, Commands); the rest of those groups is
+deployed already, and `.claude/skills/` is read in place.
 **In a linked worktree, stop instead** for a skill in those three groups:
 step 8 would test the main checkout's copy, silently. Land it first.
 
-```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow,social,meta,fabric   # or ...,powerbi
-```
-
-`-SkillGroups` **prunes** — a group not listed is removed. This
-machine's standing state is workflow, social and meta only, so you are
-temporarily undoing a deliberate prune and must put it back:
+Copy the skill's whole group into the payload probe's **project scope**,
+outside this repo; give the baseline a sibling with no `.claude/`, since
+`--safe-mode` stops a skill loading, not a `Read` of its file.
 
 ```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
-Get-ChildItem ~/.claude/skills -Name | Select-String '^(fabric|pbir|pbid)-'   # must return nothing
+$probe = '<a scratch directory outside this repo>'
+New-Item -ItemType Directory "$probe/payload/.claude/skills", "$probe/baseline" | Out-Null
+Get-ChildItem skills/fabric -Directory | ForEach-Object {   # or skills/powerbi
+    Copy-Item $_.FullName "$probe/payload/.claude/skills" -Recurse }
 ```
 
-**Never run the script bare.** Omitting `-SkillGroups` deploys every
-group and silently undoes the prune — it happened on 2026-08-31, and the
-run reported `Linked` 37 times and ended `Done. All links verified.`
-There is no output line that reads as wrong. The name check above is
-the only one that catches it, and only with `-Name`: without it
-`Select-String` reads each full path, so `^` never matches and the
-check passes silently (2026-09-29).
-
-**Don't read the exit code as the verdict.** `link-claude.ps1` returns
-non-zero whenever any warning fires, and the standing `MCP_DOCKER` drift
-on this machine means a wholly successful deploy *and* a successful
-restore both exit 1. Read the `Skills N linked ...; M pruned` line and
-the name check above instead.
+User scope serves every live session and this touches none; copies make
+teardown a plain delete, with no junction to follow back into this repo.
+Re-copy after an edit. Measured 2026-10-01 on `fabric-event-schema-set`:
+`init` listed the group's 11 unconditional skills, a matching `Read`
+brought the new one in, then `Skill`. The user-scope deploy this step
+used to make is in `references/reading-a-failure.md`.
 
 ### 8. The cold behavioural session
 
@@ -496,9 +486,8 @@ directory is not the variable — are in
 - **Static before session.** A failing static check means the globs and
   the contract disagree; a session cannot resolve that and costs tokens
   to say so.
-- **Restore the prune** before finishing, and verify it with step 7's
-  name check. An interrupted run that left platform skills linked
-  silently changes what every later session on this machine sees.
+- **Never deploy a platform group to user scope** to test it: step 7's
+  probe copy is enough, and user scope serves every live session.
 - **Fixtures are inputs, not outputs.** Do not edit a fixture to make a
   test pass; change the contract table or the glob, and say which.
 - **Phase A is skipped, not faked**, for an unconditional skill.
