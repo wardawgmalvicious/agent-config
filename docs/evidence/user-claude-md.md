@@ -359,6 +359,26 @@ bullet: `claude/CLAUDE.md` stood at its 200-line cap once
 `80e6e46` landed, and the fold made room for § "`sed` reads CRLF as LF"
 above without dropping a rule.
 
+**2026-10-01.** The bullet now names two causes, and only the first is
+grep's. Git Bash's GNU grep 3.0 matches no CR unless given `-U`: on a file
+of two CRLF lines and one LF line, `grep -c $'\r'` printed 0 and
+`grep -U -c $'\r'` printed 2. The second is bash's: inside `$(...)` and
+`<(...)` a `$'\r'` arrives empty, whatever reads it. There
+`printf '%s' $'\r' | od -c` printed nothing, `tr -d $'\r'` and `${v%$'\r'}`
+each left `x\r` whole, `grep -U -c $'\r'` printed 3, and
+`<(printf 'a%sb' $'\r')` gave `ab`. In backticks the CR survived. So did one
+set outside as `cr=$'\r'`: inside, `grep -U -c "$cr"` printed 2, and
+`tr -d "$cr"` and `${v%"$cr"}` each left `x`. A tool that decodes `\r`
+itself needs no variable: `tr -cd '\r'` and `grep -UPc '\r$'`
+each printed 2. Measured on bash 5.3.15 (Git for Windows 2.55.0), partly
+through the Bash tool on Claude Code 2.1.285 and partly from a script file
+run by `bash`, and every result run both ways agreed, so the 2026-09-13
+entry's "in the Bash tool" was too narrow: hooks and scripts hit it as well.
+The bullet grew a line, taking the file to its 200-line cap, and dropped
+`git ls-files --eol` to fit. No `$'\r'` in this repo sat inside a
+substitution: `claude/hooks/identity-guard.sh` and the `linkedin-highlights`
+example use it at top level.
+
 ### Timezones: no tzdata in Git Bash, and UTC timestamps
 
 **Git Bash ships no IANA zone database**, so

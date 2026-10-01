@@ -59,8 +59,9 @@ the bytes: a round trip through a translating layer proves nothing.
   and a one-line `$(...)` hide it. Pass `-b` always, not only for payloads.
 - **`sed` reads CRLF as LF** (4.9, 2026-09-30): `\r$` matches nothing, and
   `-i`, even `-n p`, writes a CRLF file back LF, exit 0. Pass `-b`.
-- **`grep -c $'\r'` miscounts** (2026-09-13): 0 on CRLF, every line inside
-  `$(...)`. Use `tr -cd '\r' < file | wc -c` or `git ls-files --eol`.
+- **`$'\r'` is empty in `$(...)` and `<(...)`** (2026-10-01): `tr -d $'\r'`
+  strips nothing, `grep` matches every line. Set `cr=$'\r'` outside. `grep`
+  sees no CR without `-U`. Count CRs with `tr -cd '\r' < file | wc -c`.
 
 ### Timezones: no tzdata in Git Bash, and UTC timestamps
 
