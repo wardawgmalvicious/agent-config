@@ -27,6 +27,15 @@ after its start, no transcript, and listed eleven minutes on, with
 nothing started near it. Why the extension starts such a process is not
 established, and a panel opened and not yet typed in reads the same.
 
+A headless process carries it too. Four `claude -p --input-format
+stream-json` processes, nothing yet on their open stdin, read `idle`
+727 to 774 ms after their start with no transcript, and `ListAgents`
+listed each `interactive · idle`; the script passed all four, and one
+left alone kept the signature for its whole hour, until its stdin
+closed. Two sent one message each read live at the registry check,
+`updatedAt` 2003 and 2030 ms after start. Measured 2026-10-01 on
+2.1.282, by two sessions.
+
 ## The two reads
 
 | Read | Where | Never prompted when |
@@ -46,6 +55,12 @@ three and a half minutes past its `statusUpdatedAt` (2026-10-01,
 2.1.283). So an `updatedAt` still within a second of `startedAt` means
 nothing has touched the entry since the process started, which is
 stricter than a status that never changed.
+
+**The `entrypoint` the script prints is not provenance.** A process
+inherits it from whatever launched it, by way of
+`CLAUDE_CODE_ENTRYPOINT`: one started from a VS Code session's Bash
+tool read `claude-vscode`, and a `land` arm called it "a VS Code panel"
+on that alone (2026-10-01). The exemption does not read it.
 
 ## Why a doubt reads as live
 
@@ -90,7 +105,8 @@ branch.
 - What ends such a process: the user's close did not, within thirty
   seconds.
 - Why the extension starts one, and whether it always comes in a pair.
-- Whether a CLI session shows the same signature.
+- Whether an interactive CLI session shows the same signature; a
+  headless one does (§ What it is).
 - Whether anything but a prompt moves a never-prompted entry's
   `updatedAt`. If something does, the session reads as live: the safe
   side.
