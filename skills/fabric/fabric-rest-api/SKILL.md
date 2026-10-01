@@ -111,6 +111,16 @@ def create_item(access_token: str, item_name: str, ...) -> str:
 
 The `poll_lro` helper honors `Retry-After`, polls `Location` until the operation reaches `Succeeded`, and (with `return_result=True`) fetches `/result` to return the actual created-item body.
 
+**`az rest` cannot tell a `202` from a `200`.** It prints the body and
+nothing else, and has no option of its own to show headers (Azure CLI
+2.90.0, 2026-10-01), so a `202` comes back as empty output and exit 0,
+`Location` and `x-ms-operation-id` unseen. On `getDefinition` a session
+took that for an item with no definition (2026-09-24). Where a call may
+answer `202`, as `getDefinition`, a definition update or a create can,
+use `fab api --show_headers`, which prints `status_code`, an empty body
+as `"(Empty)"`, and the headers, though like `az rest` it does not poll
+(`fab` 1.7.0 source, 2026-10-01).
+
 ## Definition APIs
 
 Item types with content (Notebook, SemanticModel, Report, DataPipeline) accept a `definition` object containing `format`, `parts`, and base64-encoded payloads.

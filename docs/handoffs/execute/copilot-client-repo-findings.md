@@ -196,9 +196,8 @@ With either port the client repo cuts its guide to its own half.
 
 **As the decision falls.** Retired, the question is moot. At user scope
 only, with the ports frozen, it is the third way by default, and the
-client repo keeps its guide.
-[fabric-view-endings-and-az-rest-lro.md](fabric-view-endings-and-az-rest-lro.md)
-edits the rule again meanwhile.
+client repo keeps its guide. The rule has since been edited again, for
+a view's CRLF lines and the leftover header line.
 
 ## Not checked
 

@@ -19,8 +19,7 @@ written: 2026-09-30
 
 The note's other findings went elsewhere: 2 and 4 to
 [copilot-client-repo-findings.md](copilot-client-repo-findings.md), and
-5 to
-[fabric-view-endings-and-az-rest-lro.md](fabric-view-endings-and-az-rest-lro.md).
+5 to `claude/rules/fabric-git-serialization.md`, where it has landed.
 
 ## 1. An `@`-import inside a `paths:` rule loads at launch
 
