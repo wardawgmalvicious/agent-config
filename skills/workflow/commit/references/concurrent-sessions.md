@@ -8,9 +8,11 @@ shares this tree". In a solo tree none of it applies.
 
 `git add -p` is the right tool and an agent shell cannot drive it: there
 is no interactive stdin, so the prompt either hangs until the tool
-timeout or reads EOF. Applying a hand-cut patch to the index is the
+timeout or reads EOF. Applying a hand-cut patch to the index is one
 non-interactive substitute. It touches the index only, so their hunk
-stays on disk for them to commit.
+stays on disk for them to commit. [Index staging](index-staging.md) is
+the other, and reaches below a hunk, where a patch cannot: see "The
+limit".
 
 ## The recipe
 
@@ -60,9 +62,28 @@ version to stage apart from the block it belongs to, so no patch
 granularity reaches it. Leave it, and name the deferred piece in your
 commit message so `git log` carries it.
 
+**A patch keeps or drops a hunk whole, and a hunk is wider than a
+change**: it carries context lines on both sides, so their change a few
+lines from yours shares your hunk
+([where git splits two](index-staging.md#what-a-block-is)).
+`git diff -U0` cuts one hunk per run of changed lines, but don't cut
+finer that way: `git apply --unidiff-zero` places a pure addition by
+its new-side line number, so with an earlier hunk dropped it lands off
+by that hunk's line count, exit 0. Measured 2026-09-30 on git 2.55.0:
+with a two-line insertion above it dropped, an inserted line staged two
+lines low.
+
+[Index staging](index-staging.md) goes below a hunk with no patch: one
+unchanged line separates their change from yours, and only the index is
+written, so their text stays on disk. Their edit on the line next to
+yours still shares your block; its "In a contended tree" says what to
+do then.
+
 ## The wrong instinct
 
 Do **not** overwrite the file with a HEAD-plus-your-change version,
 `git add`, then restore theirs. That puts their work off disk for a
 window in which they may read the file or commit it, which is the
-failure this whole procedure exists to avoid.
+failure this whole procedure exists to avoid. Build that version in the
+scratchpad and stage it as a blob instead
+([the blob by hand](index-staging.md#below-a-block-the-blob-by-hand)).
