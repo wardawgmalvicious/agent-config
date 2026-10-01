@@ -456,17 +456,21 @@ a step here instead of a habit.
   the work landed. Deletion itself is safe — briefs are committed when
   written, so the deleting commit and its content stay recoverable.
 
-Hand off to **`/test-skill`, then `/commit`**. Do not commit here, and
-do not test here either. `/test-skill` reads the brief from disk, so it
-can run now or in a fresh session next week — the two do not have to be
-back to back, and a cold run is the better one.
+Hand off to **`/commit`, then `/test-skill`**, and do neither here. For
+a skill under `skills/`, `/test-skill` step 7 cannot run in a worktree —
+a deployed group's junction serves the main checkout's copy, and
+`link-claude.ps1` refuses a worktree — so land it as
+`docs/handoffs/CLAUDE.md` says, deploy, then test on `main`. A
+project-scope skill can be tested in its worktree, its stamp still
+waiting for `main` (`/test-skill` step 10). The test reads the brief
+from disk, so it need not follow at once, and a cold run is the better
+one (2026-10-01).
 
 **In a brief's worktree, the hand-off opens with this session leaving
-it.** The brief and the draft exist in that tree alone, so the fresh
-session enters `.claude/worktrees/<brief>` by `EnterWorktree` with that
-path, which is refused while this one is inside:
-`belongs to another running Claude Code session (locked: <reason>)`. So
-ask the user to have this session `ExitWorktree` with `keep` first
+it**, by `ExitWorktree` with `keep` when the user asks: the landing runs
+from the main checkout, and a session entering `.claude/worktrees/<brief>`
+to test a project-scope skill is refused while this one is inside,
+`belongs to another running Claude Code session (locked: <reason>)`
 (2.1.283, 2026-09-30; `docs/handoffs/execute/README.md` § "Every brief
 takes a worktree").
 
