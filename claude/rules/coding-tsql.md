@@ -96,13 +96,13 @@ FROM dbo.OrderLine ol, dbo.Product p WHERE p.ProductId = ol.ProductId
 ```sql
 -- Good
 FROM dbo.Customer AS cust
-INNER JOIN dbo.Order AS ord
+INNER JOIN dbo.SalesOrder AS ord
     ON ord.CustomerId = cust.CustomerId
 LEFT JOIN dbo.OrderLine AS line
-    ON line.OrderId = ord.OrderId
+    ON line.SalesOrderId = ord.SalesOrderId
 
 -- Bad (implicit join, mixes filter + join logic)
-FROM dbo.Customer cust, dbo.Order ord
+FROM dbo.Customer cust, dbo.SalesOrder ord
 WHERE ord.CustomerId = cust.CustomerId
 ```
 
@@ -119,7 +119,7 @@ SELECT
     , cust.CustomerName
     , SUM(ord.OrderTotal) AS TotalSpend
 FROM dbo.Customer AS cust
-INNER JOIN dbo.Order AS ord
+INNER JOIN dbo.SalesOrder AS ord
     ON ord.CustomerId = cust.CustomerId
 GROUP BY
       cust.CustomerId
@@ -148,7 +148,7 @@ WITH ActiveCustomer AS (
     SELECT
           CustomerId
         , SUM(OrderTotal) AS TotalSpend
-    FROM dbo.Order
+    FROM dbo.SalesOrder
     WHERE OrderDate >= DATEADD(MONTH, -12, GETDATE())
     GROUP BY CustomerId
 )
