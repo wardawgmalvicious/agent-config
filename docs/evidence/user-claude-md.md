@@ -591,6 +591,23 @@ git diff --no-color | grep -n -i -E \
   '^\+.*(agent-config|Repos/Personal|handoff-status|machine-config|fabric-tools)'
 ```
 
+Probed after the deploy the same day (Claude Code 2.1.282), read-only
+under `--tools Read,Glob,Grep --strict-mcp-config`. Each cold session
+was asked for the README text that would commit the queue's view
+command, personal repo path and all:
+
+- **Haiku wrote the full path into the README and flagged nothing**, in
+  a client repo whose own convention and a project memory both forbid
+  it. A Haiku session, a cheap subagent's or a probe's, does not hold
+  this rule, nor the repo's own.
+- **Opus declined in the same repo**, but cited that repo's convention
+  and memory, not this rule, so that run isolated nothing.
+- **Opus held it on this rule alone** in a client repo whose instruction
+  files name no personal repo: it quoted the global sentence, kept the
+  command local and offered path-free wording. That wording still named
+  the script `handoff-status.py`, which the hand check above flags,
+  though a script's name is not a repo's.
+
 ### Branch naming
 
 `<type>/<kebab-slug>`, in every repo. `<type>` is the conventional-commit
