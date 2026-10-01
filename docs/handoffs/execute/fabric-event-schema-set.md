@@ -1,14 +1,14 @@
 ---
 status: open
 priority: 2
-needs: [tenant]
+needs: []
 blocked-by: []
 written: 2026-09-10
 ---
 
 # Skill handoff brief: fabric-event-schema-set
 
-Last verified: 2026-09-10
+Last verified: 2026-09-30
 
 > Guidance: Re-verify when referenced platform behaviors in project instructions get re-verified. For v1 briefs, use the date Claude Code creates the brief. Every section heading in this template stays in the filled brief; sections that don't apply get `N/A — <brief reason>` under the heading.
 
@@ -36,7 +36,7 @@ Documents the Fabric **Event Schema Set** item — the `.EventSchemaSet`
 folder and its single `EventSchemaSetDefinition.json` part — as the
 contract a schema-associated Eventstream custom endpoint validates
 incoming events against. The subject is the item's own anatomy and
-editing model: the two independent places a human-readable description
+editing model: the four places a human-readable description
 lives, the shape of the file you upload versus the envelope the portal
 generates around it, when a new schema version is and is not minted, and
 the byte format the definition round-trips in.
@@ -45,17 +45,20 @@ It stops at the item boundary. The producer wire format, the
 `dataschema` URI anatomy, the registry host, and the destination table
 naming already belong to `fabric-eventstream` and are cross-referenced
 rather than restated. What this skill adds that no existing skill has is
-**one observed case where an edit did not mint a version** — a doc-only
-change synced from Git held at `v1` — and the rule that follows from not
-yet knowing why: read `versions[]` back after any edit rather than
-assuming a bump either way.
+**which route mints a version**: every portal save that reaches
+**Finish** does, even a description-only one, while a Git sync stores
+`versions[]` exactly as pushed, so an edited entry changes in place and a
+hand-written one is accepted (observed 2026-09-30). The rule that
+follows: from Git, append a version rather than edit one, and read
+`versions[]` back after any edit, by any route.
 
 Inline, model-invocable, path-scoped.
 
 ## Sources drilled
 
-Drilled — a live verification session in a client's sandbox workspace on
-2026-09-10, plus repo-internal material:
+Drilled — live verification sessions in two tenants' sandbox workspaces,
+on 2026-09-10 and 2026-09-30, plus repo-internal material and Microsoft
+Learn:
 
 - **A real upload / commit-back cycle.** A 10-field schema was authored
   as an Avro record, uploaded through the portal, and the committed-back
@@ -66,36 +69,49 @@ Drilled — a live verification session in a client's sandbox workspace on
   edited in Git, committed, pushed, and synced, then the resulting
   definition inspected. This is Finding 4.
 - **A rejected portal form entry** at 265 characters — Finding 3.
+- **Seven edits in four rounds, 2026-09-30**, in the second tenant, on a
+  schema set with nothing attached: three portal saves (a field `doc`; an
+  event-type description; a description again, with the Avro
+  byte-identical to the last version), one upload, and three Git syncs
+  (an in-place edit to two schemas' `v2`, one adding a field; a
+  hand-written `v3`; a change to an event type's inline `schema` alone).
+  Each was read back from the committed definition and the portal's
+  History pane. Findings 1, 3, 4, 6 and 8 changed, and Finding 9 is new.
+  The triage that folded this in re-read the definition's Git history the
+  same day, and it agreed.
+- **Microsoft Learn**, read 2026-09-30, after two URLs tried on
+  2026-09-10 had returned 404: the REST
+  [EventSchemaSet definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/eventschemaset-definition)
+  page, the schema-set pages under
+  `learn.microsoft.com/fabric/real-time-intelligence/schema-sets/`
+  (`schema-registry-overview`, `create-manage-event-schema-sets`,
+  `create-manage-event-schemas`, `manage-event-schema-versions`,
+  `import-event-schemas`), and Real-Time hub's
+  `event-schema-registry-page`. They document the definition format and
+  that a portal update mints a version. They say nothing of `ancestor`,
+  the top-level `name`, the newest-first order of `versions[]` or a Git
+  sync, and one line is wrong for a Git sync (Finding 4).
 - [skills/fabric/fabric-eventstream/references/cloudevents-producer.md](../../../skills/fabric/fabric-eventstream/references/cloudevents-producer.md)
   — the producer contract this skill defers to. Its "Version-bump
-  gotcha" is the only prior evidence of a bump: `Products` reaching `v2`
-  after a `bytes`→`string` retype, a **structural** edit whose edit path
-  it does not record.
+  gotcha" was the only evidence of a bump before 2026-09-30: `Products`
+  reaching `v2` after a `bytes`→`string` retype, a **structural** edit
+  whose edit path it does not record.
 - The client repo's layout: its `.gitattributes` marks the workspace tree
   `-text`, a validation script there reads fields out of the definition,
   and a directory of upload files is kept under review in Git — a worked
   example of authoring outside the portal.
 
-Not drilled, and the draft must not describe any of it:
+Not drilled, and the draft names each as untested rather than describe
+it:
 
-- **Microsoft Learn.** Two plausible documentation URLs for event schema
-  sets returned 404. This surface appears genuinely undocumented, which
-  is consistent with the existing note in `cloudevents-producer.md` that
-  the producer wire format is "not documented on Microsoft Learn". Every
-  claim in this brief is observed behavior on one tenant, on one date —
-  not a documented contract, and the draft should say so in those terms.
-- **A doc-only edit made in the portal.** Not performed. This is the
-  case that decides what Finding 4 means (see Notes), and it is cheap and
-  safe to run on a throwaway schema with no producer attached.
-- **Field-level structural edits via Git.** Deliberately untested — see
-  Finding 8. Nothing in the draft may claim to know what happens.
+- **Whether the validating registry follows a Git sync**: an in-place
+  edit, a hand-written version, or a diverged inline copy (Findings 8 and
+  9). Nothing produced events on 2026-09-30. Still open, item 4.
 - **The REST surface.** Whether `getDefinition` / `updateDefinition`
-  mint versions like the Git sync path or like the portal is untested.
+  mint versions like the Git sync path or like the portal is untested
+  (Still open, items 2 and 3).
 - **Deployment-pipeline behavior**, beyond the pre-existing note that a
   pipeline copy of a schema set does not populate its backing catalog.
-- **Multi-version coexistence.** Only single-version schemas were
-  observed after the rebuild; how the portal presents a schema holding
-  both `v1` and `v2` was not seen.
 
 ## Frontmatter
 
@@ -138,37 +154,40 @@ dependencies.
 Counted from the drafts below, unwrapped to the single-line form YAML
 will hold, em dashes as written:
 
-- `description`: 928 / 1,024
-- `when_to_use`: 335 / 512
+- `description`: 1,002 / 1,024
+- `when_to_use`: 393 / 512
 
-Both counts were measured, not estimated, and still **must be re-counted
-after drafting** per checklist item 2.
+Both counts were measured, not estimated, on 2026-09-30 after the drafts
+were rewritten, and still **must be re-counted after drafting** per
+checklist item 2.
 
 Draft `description`:
 
 > Use for the Microsoft Fabric Event Schema Set item
 > (EventSchemaSetDefinition.json) — the contract a schema-associated
 > Eventstream custom endpoint validates events against, and what
-> silently drops an event that does not match. Covers the two
-> independent description stores (eventTypes[].description, a portal
-> form entry capped at 256 characters, versus the Avro record-level doc
-> inside schemas[].versions[].schema, which an uploaded file carries and
-> the portal preserves verbatim), the bare-Avro shape of an upload file
-> versus the envelope the portal generates around it, fresh-upload
-> version reset to v1, and when a schema version is minted: a doc-only
-> edit synced from Git held at v1, so read versions[] back after any
-> edit rather than assuming a bump. Plus portal re-serialization at
-> 2-space indent, the self-referencing ancestor on v1, and the item's
-> per-file byte format (CRLF definition, LF .platform, no trailing
-> newline).
+> silently drops an event that does not match. Covers the four
+> description stores (eventTypes[].description, schemas[].description,
+> versions[].description and the Avro record-level doc inside
+> versions[].schema), the bare-Avro shape of an upload file versus the
+> envelope the portal generates around it, the inline schema a portal
+> save swaps in for an event type's schemaUrl, fresh-upload version
+> reset to v1, and which route mints a version: every portal save does,
+> even a description-only one, while a Git sync stores versions[] as
+> pushed, so from Git append a version rather than edit one and read
+> versions[] back after any edit. Plus serialization (an upload stored
+> verbatim, the editor writing 1-space indent), the ancestor chain, and
+> the item's per-file byte format (CRLF definition, LF .platform, no
+> trailing newline).
 
 Draft `when_to_use`:
 
 > Use when adding, editing or deleting schemas in a Fabric event schema
 > set; deciding whether a schema edit belongs in the portal or in Git;
-> hitting the 256-character description limit; authoring the Avro upload
+> writing a new schema version by hand in Git; authoring the Avro upload
 > files a schema set is populated from; or working out why a schema
-> version did or did not bump and what that broke downstream.
+> version did or did not bump, or why a field added in Git shows nowhere
+> in the portal, and what that broke downstream.
 
 ## Body structure outline
 
@@ -185,24 +204,33 @@ Draft `when_to_use`:
    format, versions[] of id / format / schema / ancestor). The `schema`
    value is a **JSON string** holding the Avro record, not a nested
    object — the single most confusing thing about reading the file.
-4. **The two description stores.** A table: where each lives, who sets
-   it, whether an upload can reach it, and its limit. The load-bearing
-   point is that they are unrelated fields and an upload cannot set the
-   event-type description.
+   Learn's definition page adds an optional `description` on `schemas[]`
+   and `versions[]`, `eventTypeCategory` (`EventType` or
+   `BusinessEventType`), `protocol` and `protocolOptions`, and makes an
+   event type's `schemaUrl` and inline `schema` mutually exclusive. The
+   file adds what the page omits: a top-level `name` holding the display
+   name, `ancestor`, and `versions[]` newest first (Finding 7). A portal
+   save swaps `schemaUrl` for an inline `schema` (Finding 9).
+4. **The four description stores.** A table: where each lives, who sets
+   it, whether an upload reaches it, and its limit where one is known.
+   The load-bearing point is that they are unrelated fields: an upload
+   fills the event-type description from the file, and nothing keeps the
+   stores in step afterwards (Finding 1).
 5. **What you author versus what the portal generates.** The upload file
    is a bare Avro record — `fields`, `type`, `name`, optional `doc`. The
-   entire `eventTypes` envelope is generated. Include a minimal worked
+   entire `eventTypes` envelope is generated, and the create form's name
+   and description are filled from the file. Include a minimal worked
    upload file with neutral entity names.
-6. **Versioning — what was observed and what was not.** Findings 4, 5
-   and 8, as separately labelled claims: observed (a Git doc-only edit
-   held at `v1`), prior observation (a field retype reached `v2`, edit
-   path unrecorded), not observed (a portal doc-only edit; a Git field
-   edit). Then the two hypotheses from Notes and what each predicts, and
-   the rule that holds under both: **after any edit, by any path, read
+6. **Versioning — the route decides.** Findings 4, 5, 8 and 9 as
+   separately labelled claims: every portal save mints, and a Git sync
+   stores `versions[]` as pushed (observed 2026-09-30, portal minting
+   documented); a fresh upload starts at `v1`; an in-place Git edit is
+   Finding 8's hazard at the item level; and the inline copy can diverge
+   unseen. What stays untested is said beside each: whether the registry
+   that validates events follows a Git sync. The rule: **from Git, append
+   a version rather than edit one, and after any edit, by any route, read
    `versions[]` back and confirm the version your `dataschema` URI names
-   still exists and still describes what producers send.** If the
-   discriminating test in Notes has run by draft time, replace the
-   hypotheses with its result and date it.
+   still exists and still describes what producers send.**
 7. **Why the version is load-bearing.** It propagates into the bronze
    table name, the ingest control row's schema version, the Lakehouse
    shortcut, and the `dataschema` URI. An unnoticed bump desynchronises
@@ -211,10 +239,13 @@ Draft `when_to_use`:
 8. **Byte format and serialization.** The two parts do **not** share a
    line-ending convention — see the Item structure note. Neither carries
    a trailing newline; neither has a BOM; a `-text` attribute on the
-   workspace tree is what keeps both round-tripping. The portal
-   re-serializes the Avro string at 2-space indent regardless of the
-   upload's formatting, and `ancestor` self-references on a `v1`.
-9. **Gotchas table**, in the house format.
+   workspace tree is what keeps both round-tripping. An upload is stored
+   byte for byte, whatever the portal editor saves is 1-space indent
+   with no trailing newline, and a Git edit written that way round-trips
+   with nothing to commit (Finding 6). `ancestor` self-references on a
+   `v1` and names the previous version after it (Finding 7).
+9. **Gotchas table**, in the house format, including a field added in
+   Git that shows nowhere in the portal (Finding 9).
 
 ## Changes from source proposal
 
@@ -245,35 +276,37 @@ specific enough not to fire on unrelated work. `when_to_use` and
 `copy-copilot.ps1` applies no frontmatter transformation, so nothing
 downstream comments it for you.
 
-One content caveat that is not about frontmatter: every claim is observed
-behavior on a single tenant on a single date, with no Microsoft Learn
-page to cite behind any of it. The draft should carry that framing
-explicitly rather than presenting the findings as documented contract.
+One content caveat that is not about frontmatter: Learn now documents the
+definition format and that a portal update mints a version (read
+2026-09-30), and the draft cites those pages for exactly that. Everything
+else is observed behavior, in two tenants on two dates, and the draft
+carries that framing explicitly rather than presenting it as documented
+contract. One Learn line is wrong for a Git sync (Finding 4) and must not
+be quoted as the rule.
 
 ## Cross-reference dependencies
 
-- **`fabric-eventstream`** — *pending edit dependency.* Its
+- **`fabric-eventstream`** — *edit landed 2026-09-30.* Its
   [references/cloudevents-producer.md](../../../skills/fabric/fabric-eventstream/references/cloudevents-producer.md),
-  under "Version-bump gotcha", states flatly that **"Editing a schema in
-  the set mints a new version (it does not edit in place)"**. Finding 4
-  shows a doc-only edit synced from Git did not. Edit that paragraph
-  **in this repo's source**, not in any client repo's vendored copy,
-  which the next sync overwrites: qualify the claim as observed for a
-  field retype, add the 2026-09-10 Git doc-only observation, and point
-  at the read-back rule. Because the two skills' globs are disjoint, the
-  pointer must name the **file** —
-  `*.EventSchemaSet/EventSchemaSetDefinition.json` — not the skill: a
-  skill-name pointer is dead whenever the schema set's glob has not
-  matched (`author-skill` step 6). `fabric-eventstream` also owns the
-  producer contract, `dataschema` anatomy, registry host and
-  destination-table naming, all of which this skill defers to.
+  under "Version-bump gotcha", no longer says every edit mints: it splits
+  the route, a portal edit minting and a Git sync not, and its Gotchas
+  row follows. As this dependency required, it names the **file** —
+  `*.EventSchemaSet/EventSchemaSetDefinition.json` — not the skill,
+  because the two skills' globs are disjoint and a skill-name pointer is
+  dead whenever the schema set's glob has not matched (`author-skill`
+  step 6). Its `SKILL.md` no longer says none of it is on Learn. Re-read
+  both against the drafted skill, and edit them **in this repo's
+  source**, never a client repo's vendored copy, which the next sync
+  overwrites. `fabric-eventstream` also owns the producer contract,
+  `dataschema` anatomy, registry host and destination-table naming, all
+  of which this skill defers to.
 - **`fabric-eventhouse`** — already converted; owns bronze table creation
   and `.create-merge` schema evolution, which is where events land.
 - **`fabric-gotchas`** — already converted; the silent-drop failure mode
   belongs in its table too if it is not there already.
 - **Avro 1.12 specification** — external/standard. The `doc` attribute on
   a record, and Parsing Canonical Form stripping `doc` — the mechanism
-  behind hypothesis B in Notes.
+  hypothesis B rested on, refuted 2026-09-30 (Notes).
 
 ## Claude Code's post-draft checklist
 
@@ -286,64 +319,117 @@ explicitly rather than presenting the findings as documented contract.
 
 ## Notes
 
-**The findings, stated once, so the draft has a single source.** Items 1–3
-and 5–7 are observed. Item 4 is observed on the Git side only. Item 8 is
-inferred and labelled as such.
+**The findings, stated once, so the draft has a single source.** Each is
+observed, in the tenant and on the date it gives; 2026-09-30's were
+re-read from the definition's Git history by the triage that folded them
+in. What is inferred or still untested is said in the finding.
 
-1. **Two description stores, not one.** `eventTypes[].description` is
-   entered in the portal form at upload time. The Avro record-level `doc`
-   travels inside the schema string. An uploaded file cannot set the
-   event-type description — confirmed by uploading a file carrying a
-   record `doc` and still being required to type name and description.
+1. **Four description stores, independent once set.**
+   `eventTypes[].description`, optional in the create form ("Optionally,
+   enter a description", Learn); `schemas[].description` and
+   `versions[].description`, both optional on Learn's definition page;
+   and the Avro record-level `doc` inside the schema string. **Corrected
+   2026-09-30:** an upload does fill the create form's name and
+   description from the file, and the stored event-type description
+   equalled the record `doc` verbatim, as Learn's import page says of its
+   own review. On 2026-09-10, in the other tenant, a name and
+   description still had to be typed, so the forms may differ or the
+   portal may have changed. Which part of the file supplies the name is
+   unknown, the file and the record sharing one. Afterwards the stores
+   are separate: a later event-type description edit left the Avro `doc`
+   as uploaded.
 2. **Record-level `doc` survives the upload verbatim.** Key order
    `fields` / `type` / `name` / `doc` preserved, and all field-level
    `doc` values preserved. The portal does not canonicalize the schema,
-   though it does re-indent it (Finding 6).
-3. **`eventTypes[].description` is capped at 256 characters** in the
-   portal form. A 265-character value was rejected. Whether the same cap
+   and on 2026-09-30 it stored the upload byte for byte (Finding 6).
+3. **The event-type description's cap is unestablished.** A 265-character
+   value was rejected at upload on 2026-09-10; a 257-character one was
+   accepted on Update and stored exactly on 2026-09-30. The cap sits
+   between 258 and 265, or differs between the create and Update forms;
+   the create form was not retested (Still open, item 1). Learn gives a
+   256-character limit only for the schema set's own name. Whether a cap
    applies to the record-level `doc` was not tested — a 214-character
    one uploaded fine.
-4. **A doc-only edit made in Git and synced did not bump the schema
-   version.** It held at `v1`. That half is observed. The earlier
-   revision of this brief also stated that "the same edit made in the
-   portal mints a new version"; no such portal edit appears in the
-   session's record, so that half is **unestablished** and must not
-   reach the draft as observed. The only recorded bump is the structural
-   retype in `cloudevents-producer.md`, path unrecorded.
+4. **The route decides whether an edit mints** (2026-09-30; the Git
+   doc-only case also 2026-09-10, in the other tenant). Every portal
+   **Update** that reaches **Finish** puts a new version at the head of
+   `versions[]`, its `ancestor` naming the one before: a field `doc`
+   change did, an event-type description change with the Avro equal once
+   parsed did, and one whose Avro text was byte-identical to the previous
+   version's did. Learn documents portal minting. A Git sync stores
+   `versions[]` as written: an in-place edit to two schemas' `v2`, a
+   structural field addition included, stayed `v2`; a hand-written `v3`
+   with `"ancestor": "v2"` was accepted as a third version; and a change
+   to an event type's inline `schema` alone minted nothing (Finding 9).
+   Learn's definition page says "A new version is created when a new
+   schema is provided to the EventType item", which the last case
+   contradicts for a Git sync; for REST `updateDefinition` it is
+   untested (Still open, item 3).
 5. **A fresh upload registers as `v1`** even where that schema name
    previously reached `v2`/`v3`/`v4` and was deleted. Version numbering
-   follows the schema object, not the name.
-6. **The portal re-serializes the Avro string at 2-space indent**
-   regardless of the uploaded file's own formatting (the uploads were
-   4-space). Do not try to match portal whitespace from source.
+   follows the schema object, not the name. A fresh upload registered as
+   `v1` again on 2026-09-30; the deleted-name case was not retested.
+6. **An upload is stored verbatim; the editor writes 1-space.**
+   **Corrected 2026-09-30:** a 621-byte, 4-space upload ending in a
+   newline was stored byte for byte, and everything the portal editor
+   saved — the visual builder's `v1`, and each Update — is exactly
+   `json.dumps(obj, indent=1)` with no trailing newline, as is Learn's
+   example. A Git edit serialized that way round-trips with nothing to
+   commit. Whether the 2026-09-10 tenant's 2-space reading was a
+   difference between tenants or a change since is unknown.
 7. **`ancestor` self-references on a first version** — `"id": "v1"` with
-   `"ancestor": "v1"`.
-8. **Inferred hazard — do not present as tested.** If Git sync never
-   mints a version, a Git edit that *adds, removes or retypes a field*
-   would silently mutate a `v1` whose content changed underneath
-   already-produced events, while `dataschema` still resolves to `v1`.
-   That was deliberately not tested, because the desired behavior there
-   is a bump. Whether the hazard is real depends on which hypothesis
-   below holds.
+   `"ancestor": "v1"`. Each later version names the one before it,
+   `versions[]` lists the newest first, and the definition carries a
+   top-level `name` holding the item's display name, which Learn's page
+   omits. Two and three versions per schema were seen on 2026-09-30, in
+   the file and in History.
+8. **The hazard, observed at the item level.** A Git edit to an existing
+   version rewrites it in place (Finding 4), so a producer pinned to it
+   would be validated, if the registry follows the definition, against
+   content that changed underneath it, while `dataschema` still
+   resolves. Whether the registry that validates events serves a
+   rewritten version, a hand-written one, or neither is untested (Still
+   open, item 4): the draft presents the item-level fact as observed and
+   the event-level consequence as inferred. Until a producer has run
+   against it, make structural changes in the portal.
+9. **A portal save swaps the event type's `schemaUrl` for an inline
+   `schema`**, byte-identical to the newest version's (three saves,
+   2026-09-30); an upload writes `"schemaUrl": "#/schemas/<id>"`. The
+   file respects Learn's mutual exclusion, and the newest schema text is
+   then held twice. **The two copies can disagree with nothing showing
+   it**: an edit to the inline copy alone, synced from Git, minted
+   nothing, shows nowhere in the portal, whose schema pages read
+   `versions[]` only, and left Source control empty, so the service
+   presumably stored it as pushed (inferred; not read back through REST
+   `getDefinition`, Still open, item 2). Which copy a producer is
+   validated against is untested. The next portal save presumably
+   overwrites the inline copy (inferred from the swap).
 
-**What Finding 4 means is undecided, and one test decides it.** Two
-hypotheses fit the evidence equally well:
+**What Finding 4 settled.** Two hypotheses stood here until 2026-09-30:
+A, that the edit path decides, and B, that the content decides, minting
+only when the schema's Parsing Canonical Form changes, which strips
+`doc`. The portal minted for a `doc`-only change and for a byte-identical
+one, and a Git sync did not mint a structural change, so B is refuted on
+both routes. A holds, refined: Git can make a version, but only by
+writing the entry itself. Inferred from one item type, and worth checking
+before assuming it of another: an item that keeps its own version history
+in its definition may treat a Git sync as a state write rather than an
+edit.
 
-- **A — the edit path decides.** A portal save always mints a version;
-  a Git sync never does. Then Finding 8's hazard is real, and the rule is
-  "structural edits in the portal, doc-only edits in either".
-- **B — the content decides.** The service mints only when the schema's
-  canonical form changes. Avro's Parsing Canonical Form strips `doc`, so
-  a doc-only edit never mints, by either path, and a structural edit
-  mints by either path. Then Finding 8's hazard does not exist, and
-  where you edit does not matter.
+**Still open, each needing a tenant**, and each labelled untested in the
+draft:
 
-They disagree on two cases: a doc-only edit in the portal (A: bumps; B:
-does not) and a field edit via Git (A: does not; B: bumps). The first is
-cheap and safe — one portal description edit on a throwaway schema with
-no producer attached, then read the definition back. Run it before
-drafting if possible. Until then, the read-back rule in body section 6
-is correct under both hypotheses, which is why the draft leads with it.
+1. The create form's description cap, between 258 and 265 characters
+   (Finding 3). Cheap.
+2. A REST `getDefinition` read confirming that the inline copy diverged
+   from `v3` (Finding 9). Cheap, with a token for the tenant.
+3. Whether REST `updateDefinition` mints like the portal or like Git
+   (Finding 4).
+4. End to end: a producer against an in-place-edited version, a
+   hand-written one and a diverged inline copy, through a
+   schema-associated custom endpoint. Not cheap: it needs an
+   eventstream, and the `422` `MessagingCatalogConfiguration` fault in
+   `cloudevents-producer.md` may still block creating the destination.
 
 **Item structure, and the test fixture.** The item is a two-file folder,
 measured 2026-09-10. Nothing else is in it — no subdirectories, no
@@ -378,6 +464,14 @@ CRLF. Neither ends with a trailing newline — the last byte of both is
 `}`. A fixture generated by an ordinary editor will silently normalize
 both to LF-with-final-newline and stop resembling the real item.
 
+Re-measured 2026-09-30, in the second tenant's item: the definition is
+CRLF on every line and `.platform` LF, neither with a BOM or a final
+newline. **A multi-version fixture exists there**: the definition as of
+that evening holds two schemas at three versions each. Its only raw
+identifier is the top-level `name`, which a fixture genericizes. One
+schema's inline copy was left diverged from its `v3` (Finding 9), so
+read the item fresh rather than trusting this paragraph.
+
 Note also that `config.version` reads `"2.0"` here, which is the
 `.platform` schema version and **not** an indicator of the item's
 definition format — that value reads `2.0` for every item type in a
@@ -410,10 +504,22 @@ of the `fabric-*` family is divided.
 - **Field specs: M.** Frontmatter follows the corrected template and the
   house pattern in `fabric-eventstream`, but was not re-verified at
   source, which is what checklist item 1 exists for.
-- **Body content: H for findings 1–3 and 5–7**, each observed directly
-  in one session with the resulting file read back from Git. **M for
-  finding 4** — the Git half is observed, the portal half is not, and
-  the mechanism is two live hypotheses. **L for finding 8**, which
-  depends on hypothesis A and is explicitly untested — it must reach the
-  draft as an inference with its reasoning shown, never as a verified
-  behavior.
+- **Body content: H for findings 2, 4, 5, 6 and 7**, each observed with
+  the file read back from Git, and portal minting documented on Learn.
+  **M for findings 1 and 3**, each corrected on 2026-09-30 from one
+  observation that disagrees with the other tenant's. **M for finding
+  9**: the swap seen three times, the divergence once and partly
+  inferred. **H for finding 8's item-level fact and L for its
+  event-level consequence**, which stays untested until a producer runs
+  and reaches the draft as an inference with its reasoning shown.
+
+## Re-measure before acting
+
+- The sandbox item, in a client sample repo on this machine:
+  `git log --format='%h %ad %s' --date=iso -- '*.EventSchemaSet/*'`,
+  then read the newest definition. On 2026-09-30 both schemas stood at
+  `v3`, one with its inline copy holding a field its `v3` lacks.
+- `grep -n "Git sync" skills/fabric/fabric-eventstream/references/cloudevents-producer.md`:
+  the corrected *Version-bump gotcha*, landed 2026-09-30.
+- Learn's EventSchemaSet definition page and the schema-set pages,
+  before the draft quotes either.

@@ -1,9 +1,8 @@
 ---
-status: deferred
-priority: 3
+status: open
+priority: 2
 needs: []
 blocked-by: []
-reopen-when: a `*.Plan` item appears in any repo on this machine
 written: 2026-09-02
 ---
 
@@ -13,15 +12,14 @@ written: 2026-09-02
   `learn.microsoft.com/fabric/iq/plan/` links that prompted
   the [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md) work and
   finding they were about something else entirely.
-- **Kind**: coverage decision, then possibly `/author-skill`.
-- **Status**: **deferred 2026-09-03 — step 0 was answered *no*.** The
-  recommendation below is unchanged *on the merits*: the content is real,
-  uncovered and unguessable. What was unresolved was whether Plan is
-  **used** here, and today it is not. This brief is alive and on disk on
-  purpose — that is not an oversight to tidy up.
-- **Run in**: a fresh session, and **not before step 0 is *re*-answered.**
-  The 2026-09-03 "no" is a snapshot of one day, not a standing verdict;
-  re-measure rather than reading it off this line.
+- **Kind**: coverage decision, now answered: `/author-skill` next.
+- **Step 0**: answered *no* on 2026-09-03 and *yes* on 2026-09-30, when a
+  Plan item appeared in a client sample repo on this machine, this
+  brief's reopen trigger. The recommendation below was unchanged *on the
+  merits* throughout: the content is real, uncovered and unguessable.
+- **Run in**: a fresh session, after re-measuring the sample item from
+  the main checkout (§ Re-measure before acting), since a worktree's
+  guard refuses git in another repo.
 
 ## Why this brief exists: a premise correction
 
@@ -103,10 +101,25 @@ direction** — that is the whole lesson of this re-run, and it is why the
 step 0 grep is now a trap rather than a measurement. Every one of the new
 hits argues the same way the old one did.
 
-Steps 1 and 2 are therefore **unexecuted** — no suffix was guessed, no
+Steps 1 and 2 were then **unexecuted** — no suffix was guessed, no
 glob was written, and no skill was drafted. **Step 3 is the exception**:
 its `fabric-semantic-model-audit` carve-out was split off and landed the
 same day, because it was never gated on step 0. See that step for why.
+
+**Answered 2026-09-30: yes.** A client sample repo on this machine, the
+Git side of a Fabric workspace that the user started that day partly to
+give this brief a real item, holds one `*.Plan` folder with all three
+sheet kinds: seven PowerTable sheets made from the portal's sample
+dataset (AdventureWorks tables written into a Fabric SQL database in the
+same workspace), one planning sheet over a Direct Lake on OneLake
+semantic model built on those tables plus a date table, and one
+intelligence sheet (`sheetType: REPORTING`) embedding the planning
+sheet's visual. Measured by the session that built it, and re-measured
+by the triage that folded this in: one `*.Plan/.platform` on the
+machine, typed `Plan`. **Halves A and B are still untested on it**: when
+the note was written the planning sheet carried one field, a category
+key on columns, and no time fields or measures. The date relationship
+has since been fixed and measures added (§ Step 3).
 
 ## The gap, if step 0 says yes
 
@@ -124,26 +137,23 @@ Plan item at all.
 
 ## Step 1 — verify the folder suffix
 
-Same blocker, same reason, as wave 12's ontology brief (now spent — its
-row is in `git log -p -- docs/handoffs/execute/README.md`). **Resolve it
-the way that one was**: the REST
-item-management **definition** page for the item type states the
-`.platform` `metadata.type` outright, in the base64 payload of its
-definition example — for ontology,
-[Ontology definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition)
-decoded to `"type": "Ontology"`, and the Git folder is
-`{display name}.{type}`. The equivalent
+**Resolved 2026-09-30: the suffix is `.Plan`.** The real item's
+`.platform` reads `"metadata": {"type": "Plan"}`, and its folder is
+`{displayName}.Plan/`, the `{display name}.{type}` form that the
 [Plan definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/plan-definition)
-page exists and is the place to look. That beats hunting for a real
-workspace, and it settles the `definition/` layout in the same fetch.
-**Do not assume `.Plan`** — and note the specific hazard here: a work
-semantic model already contains a table literally named `Plan`
-(`<model>.SemanticModel/definition/tables/Plan.tmdl`), which is
-unrelated. A glob written on a guess would be both wrong and
-plausible-looking in a grep.
+page and wave 12's ontology precedent both give. The glob, in
+`fabric-ontology`'s form:
 
-Resolve from a workspace containing a real Plan item, or from the Fabric
-REST item-types list, before writing anything path-scoped.
+```yaml
+paths:
+  - "**/*.Plan/**"
+```
+
+The hazard this step was written for cannot fire: a work semantic
+model's table named `Plan` is a file, `tables/Plan.tmdl`, and the glob
+needs a directory ending `.Plan`. Run `-StaticOnly` anyway. A Plan also
+auto-creates a separate item, `__fabric_plan_sys.SQLDatabase/`, which
+the glob does not match, and should not (§ Step 3).
 
 ## Step 2 — the content, and whether it is one skill or two
 
@@ -169,7 +179,11 @@ The replacement is to state row existence as data:
   arithmetic: 10 measures × 4 scenarios = 40 measures, and a fifth
   scenario makes 50.
 - **Date tables spanning the planning horizon**, not the transaction
-  history, with fiscal fields for 4-4-5 / 4-5-4 / 5-4-4 patterns.
+  history, with fiscal fields for 4-4-5 / 4-5-4 / 5-4-4 patterns. Such a
+  table is often longer than its fact, and Direct Lake modelling picks a
+  relationship's many side by row count, so it comes out reversed: seen
+  on the sample item on 2026-09-30, and now a rule in `fabric-tmdl`
+  § Direct Lake Configuration, which half A cites.
 - **Weight matrices** brought in through **Blend** as a measure rather
   than a relationship.
 - **PowerTable** as the maintenance surface, so business users change
@@ -183,7 +197,13 @@ One architectural constraint worth surfacing to `SKILL.md` rather than
 burying: the approach is **built and validated on Direct Lake over
 OneLake**, and PowerTable depends on the planning data existing as
 OneLake tables in the first place. That is a prerequisite, not a
-preference.
+preference. Against it, the
+[planning connection page](https://learn.microsoft.com/fabric/iq/plan/planning-how-to-create-semantic-model-connection)
+rates Import "Supported fully" and Direct Lake "Supported with
+limitations" (fixed credentials, no SSO), as read by the note's session
+on 2026-09-30 and not re-read here; the sample item's Direct Lake on
+OneLake model connected without complaint. Settle the two before the
+draft calls either a prerequisite.
 
 ### Half B — automatic time-intelligence detection (a format reference)
 
@@ -212,13 +232,168 @@ always fire together, and the queue has already settled that permanent
 co-firing is not an argument for merging *or* for splitting (wave 4,
 workstream C) — but it does mean the split would buy nothing.
 
+**Updated 2026-09-30:** the item's own content, below, is what a
+`paths:` glob on `*.Plan/**` fires on, so it goes in `SKILL.md`. Halves A
+and B serve someone building the planning model, and both fit
+`references/`. Weigh that against the body cap.
+
+### The item itself, measured 2026-09-30
+
+Evidence is a session's portal commits in the client sample repo, all on
+2026-09-30, labelled observed where seen and inferred where reasoned.
+What the triage that folded this in re-measured the same evening is
+marked so. Documented means the
+[Plan definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/plan-definition)
+page, read 2026-09-30, which gives every part as `InlineBase64` JSON.
+
+| Part | The page says | Observed |
+| --- | --- | --- |
+| `.platform`, `definition.json`, `planProperties.json` | required | present |
+| `connectedPlanning/infobridge.json` | optional, required with Connected Planning | present and empty from the first commit, with Connected Planning unused |
+| `cube/cube.json` | optional, required with cube writeback | appeared with the first planning sheet, every array empty, no writeback configured; `definition.json` also keeps an inline `cube` object the page omits |
+| `sheets/{sheetId}/sheet.json` | required | on 6 of 9 sheets, absent on PowerTable sheets never configured (re-measured) |
+| `sheets/{sheetId}/commentSettings.json` | required for PLANNING and POWERTABLE | on the PLANNING and REPORTING sheets, and on 0 of 7 PowerTable sheets, which keep their comment settings in `sourceSettings.json` (re-measured). Inferred: the page means REPORTING |
+| PowerTable visual: `columnConfigs.json`, `properties.json`, `source.json`, `sourceSettings.json` | required | on all 7 (re-measured) |
+| PowerTable visual: `approvals.json`, `automations.json`, `forms.json` | optional | absent, none configured |
+| Planning visual: `dataInput.json` | required | absent: the visual has only `properties.json`, with no input columns yet (re-measured) |
+| Intelligence visual: `properties.json` | required | not applicable: the intelligence sheet has no `visuals/` folder (re-measured) |
+
+Layout a script trips on:
+
+- **`{sheetId}` is the sheet's `recordGuid`** in `definition.json`,
+  lowercase (documented; re-measured).
+- **Visual folder case follows the visual type.** The 7 PowerTable
+  visual folders are uppercase while `definition.json` lists their ids
+  lowercase, and the planning visual's folder is lowercase
+  (re-measured). A path joined from `definition.json` misses every
+  PowerTable visual on a case-sensitive filesystem.
+- **An embedded visual is stored once, under its home sheet.** The
+  intelligence sheet's only visual entry reuses the planning visual's id
+  with `"isEmbedded": true` (re-measured), and nothing under the
+  intelligence sheet's folder refers to it: its `visualGroupMap` and
+  `sourceVisualsMeta` are empty.
+- **A PowerTable sheet stays bare until first configured**: no
+  `sheet.json`, a `properties.json` of `{"properties": {}}`, and only
+  the SCD and COMMENT_SETTINGS settings. The sample made three full
+  sheets and four bare ones with no edit by the user. One edit to a bare
+  sheet, a column's display name and description, filled it out: a
+  `sheet.json`, a `properties.json` of 341 leaves, a `dbMeta` block on
+  every column, and the ROW_ADD, ROW_UPDATE and ROW_DELETE settings.
+  Bare means never configured, not broken.
+- `definition.json` stores no sheet order; the array order is the
+  display order (inferred).
+
+**Portal commits rewrite what nobody edited**, so a line diff of a Plan
+commit is unreadable: one rename plus one sheet viewed came to 913 added
+lines (observed; not re-measured). The churn:
+
+- `source.json`: `meta.lastRowCountUpdatedAt`, in Unix seconds, and
+  `meta.totalRows`, one table's going from 0 rows to 547;
+- `properties.json`: `properties.properties.visualState` gaining ~90–120
+  style and theme defaults (`gridStyles`, `globalStyles`, `themeColors`,
+  `pagination`), plus `reportMode: "EDIT"` and `locale: "en-US"`, the
+  locale presumably the editing user's, so two users in different
+  locales would flip it (inferred);
+- `sheet.json`: `commentary.activeBookmarkId` appearing and
+  disappearing;
+- `planProperties.json`: a numeric key added to `theme.appliedThemes`
+  when sheets were added, its meaning unknown.
+
+The skill should name these paths, so a reader filters them first and
+diffs the JSON structurally to find the intent.
+
+**The portal's own output fails four of its published schemas.** The
+item declares 11 Plan schemas plus `.platform`'s, all under
+`https://developer.microsoft.com/json-schemas/fabric/item/plan/definition/`
+at `1.0.0`: draft-07, with `$ref`s to the shared
+`common/connectionReference` and `common/itemReference`, all resolvable
+on 2026-09-30. Validated each against its own `$schema`, refs fetched
+live, 38 of 42 files pass (re-measured: the same 38 and the same four
+failures), and none of the four was edited by hand:
+
+| File | Fails because |
+| --- | --- |
+| `connectedPlanning/infobridge.json` | `sources: []` breaks `minItems: 1`, so the portal writes a file its own schema rejects |
+| `planProperties.json` | `theme.appliedThemes` is not allowed by the schema's `theme`, which sets `additionalProperties: false` |
+| the intelligence sheet's `sheet.json` | `canvasStyle.background` lacks the required `fillMode`, which the other sheets carry |
+| the intelligence sheet's `commentSettings.json` | its indicator, `{type: "user", color, pixel}`, needs `position` and may not carry `color`; the planning sheet's `arrow` variant passes, so the schema models one variant |
+
+So a CI step validating Fabric definitions against their published
+schemas fails an untouched Plan, the more so as sheet kinds are added.
+Whether Update Item accepts these files back is untested (inferred yes,
+since the service wrote them).
+
+**Casing.** The portal writes PascalCase schema paths (`Definition`,
+`PowerTable/Source`), except `cube`, and each schema that pins its
+`$schema` does so with a PascalCase `const` (re-measured). Learn's "Must
+be" URLs are camelCase, bar one (`Planning/ModelTemplate`). The host
+serves either spelling, but a strict string compare against the page
+fails: the page is wrong, the portal right.
+
+**What each part points at** (observed by the note's session unless
+marked):
+
+- **PowerTable to table**, `source.json`. The page documents a portable
+  form: a `connection` id, a `database` workspace-and-item pair, each
+  optionally a Variable Library reference, a `schema` and a `tableName`.
+  All 7 visuals use the legacy form instead, everything inside a
+  `source` object: the connection id, the SQL endpoint host, a database
+  name carrying the item GUID, schema, table, table type, creation mode
+  and null variable fields, plus a `meta` block of connection, database
+  and workspace names and ids and the churning row count. The schema
+  allows both forms.
+- **Plan to app database**, `definition.json`'s `appDBconnection`: a
+  connection GUID, the same one every PowerTable uses — the tutorial's
+  "Set up connection", once per Plan. On no Learn page (the key's
+  presence re-measured).
+- **Plan to semantic model**, `semanticModelReference`: the legacy form
+  again — model and workspace ids and names, a separate cloud connection
+  to the model, `sourceType: "WORKLOAD"` — plus four fields the page
+  omits: an integer `artifactId` (Power BI's internal id),
+  `datasetRelations`, a `recordGuid` and an `app.powerbi.com` URL. Its
+  `directLakeMode` and `directQueryMode` both read `false` over a Direct
+  Lake on OneLake model, so don't read them as the storage mode
+  (inferred). The page marks the reference required; the schema does
+  not, and a Plan with no planning sheet omits it.
+- **Planning visual to model fields**, the planning `properties.json`:
+  bound by name, as `Table[column]` in
+  `visualState.columnDimensions[].externalKey`, each field carrying
+  `isTimeDimension` and `timeIntervalUnit`, presumably where time
+  detection records its verdict (inferred). So half B's `Sept` case
+  should be readable from git, not only from the screen.
+- **Intelligence sheet to planning visual**: by `visualId` with
+  `isEmbedded`, in `definition.json` only (re-measured).
+- **The system database**, `__fabric_plan_sys.SQLDatabase`:
+  auto-created to store plan metadata (Learn's prerequisites page), its
+  `.platform` description opening `DoNotEdit` (re-measured). It holds
+  one SQL schema per Plan, named for the Plan's item GUID (the Plan's
+  `logicalId` is that GUID reordered), with tables for PowerTable
+  approvals, audit, automations, writeback, cube jobs and InfoBridge
+  queries, and a `Security/` folder of one file per principal.
+
+**For deployment** (inferred): only the planning visual's by-name
+binding survives a move to another workspace unchanged. The PowerTable
+sources and the model reference need rewriting, for example by
+`fabric-cicd`'s `find_replace`; the system database's schema name is
+workspace-specific by construction; and the portable forms the page
+describes would avoid most of this, but the portal writes neither.
+
 ### Not drilled
 
-The Plan overview, the PowerTable and Blend how-tos, the item's
-definition/serialisation format, and the remaining
-`plan/resources/best-practices/` pages. Only the two linked pages were
-fetched. The definition format is the significant omission and is
-required before any `paths:` work.
+The definition format is drilled now, above. Still not:
+
+- the Plan overview, the PowerTable and Blend how-tos, and the remaining
+  `plan/resources/best-practices/` pages;
+- on the item: InfoBridge / Connected Planning sources, writeback,
+  scenarios, insert rows, model templates, data-input columns, a
+  populated cube, PowerTable approvals, automations and forms, and
+  native intelligence visuals, none of which the sample uses;
+- time detection on a real hierarchy, half B's `Sept` case included,
+  which should be readable from git (§ What each part points at);
+- whether `fabric-cicd` or `fab` handle a Plan.
+
+The time-intelligence page still matched half B's tables on 2026-09-30,
+as read by the note's session.
 
 ## Step 3 — overlap
 
@@ -239,17 +414,35 @@ Lighter than the other two briefs, but not nil:
   here — it needed the documented shape of a planning model, not a folder
   suffix or a Plan item. What the guard has not had is a real planning
   model to be tested against; that limitation is recorded in the audit
-  skill's own §9 rather than here.
+  skill's own §9 rather than here. A real Plan's model now sits in the
+  client sample repo, but on 2026-09-30 it was a small plain star, with
+  no validity table and no Scenario dimension, so it does not yet test
+  the guard.
+- **`fabric-database`** globs `**/*.SQLDatabase/**/*.sql`, so it fires
+  on the Plan's system database. **Landed 2026-09-30**: its
+  *Fabric-Specific Context* tells it to stand down there. The Plan skill
+  says the same from its side.
+- **`fabric-tmdl`** carries, **since 2026-09-30**, the row-count rule
+  that reversed the sample's date relationship: web modelling put the
+  date table, longer than the fact, on the many side (observed
+  2026-09-30, fixed by hand that evening). Half A cites it.
+- **`fabric-ontology`**'s `when_to_use` ends "the item is not the Fabric
+  IQ Plan item": point that clause at this skill once it exists.
 
 ## Validation, if it proceeds
 
 - Fixture + `expected_activations.md` rows +
-  `./scripts/test-activation.ps1 -Set fabric`, all blocked on step 1.
-  `-StaticOnly` first.
-- Real-use validation is the weak point and should be honest about it: no
-  Plan item exists here today. If step 0 resolved to "yes, upcoming", the
-  sample `.pbix` is the only available exercise, and a skill validated
-  only against a sample should say so in the brief that replaces this one.
+  `./scripts/test-activation.ps1 -Set fabric`, `-StaticOnly` first, no
+  longer blocked now that step 1 is resolved. A glob test needs paths
+  only, so a synthetic `Fixture.Plan/` does: `definition.json`,
+  `.platform`, one `sheets/<guid>/visuals/<GUID>/` PowerTable set with an
+  uppercase folder, and one lowercase planning visual. The real item's 42
+  files are LF and carry workspace, item, connection and database
+  identifiers, so genericize anything taken from them.
+- Real-use validation is still the weak point, and the skill says so: a
+  real item now backs the serialization content, but the modelling and
+  time-label content has only Microsoft's sample `.pbix` until halves A
+  and B are exercised on the sample item.
 - Preview churn is high — a preview workload inside a preview product.
   Date every claim and register the Plan doc set with `/drift-audit` in
   the same pass.
@@ -271,3 +464,18 @@ followed — so treat this section as the standing instruction for the
 **next** answer, not as an open question. It stays in the conditional on
 purpose: step 0 can be asked again, and a later "yes" does not make these
 paragraphs stale.
+
+## Re-measure before acting
+
+- A `*.Plan/.platform` search across the repos on this machine: one, in
+  a client sample repo, on 2026-09-30.
+- In that repo,
+  `git log --format='%h %ad %s' --date=iso -- '*.Plan/*' '*.SemanticModel/*'`:
+  on 2026-09-30 the item was last committed at 20:09, the model's date
+  relationship fixed at 20:38 and measures added at 20:43, so halves A
+  and B may have moved on since.
+- `grep -n "fabric_plan_sys" skills/fabric/fabric-database/SKILL.md` and
+  `grep -n "more rows" skills/fabric/fabric-tmdl/SKILL.md`: the two
+  overlap edits, landed 2026-09-30.
+- The Plan definition page, before the draft calls a part required or
+  optional.
