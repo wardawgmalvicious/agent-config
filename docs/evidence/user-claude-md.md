@@ -310,7 +310,40 @@ output side, which a call with no payload meets.
 since the hook's first version, a `tool_name` read as `Bash\r`, and
 `claude/hooks/identity-guard.sh` strips `\r` from what it reads.
 
-### Counting carriage returns
+#### `sed` reads CRLF as LF
+
+Added 2026-09-30 as a bullet; it never had a section of its own. Git
+Bash's `sed` is GNU sed 4.9 at `/usr/bin/sed`, and it reads its input in
+text mode: `sed --help` lists `-b, --binary` as "open files in binary
+mode (CR+LFs are not processed specially)". So a line's closing `\r\n`
+reaches the script as `\n`, from a file, through `-i`, on stdin and down
+a pipe alike, and an address or pattern naming that `\r` has nothing to
+match. Measured 2026-09-30 on a three-line CRLF file, each run asked to
+edit line 2 with `2s/\r$/ x\r/`:
+
+| Form | Exit | CRs left of 3 | Line 2 edited |
+| --- | --- | --- | --- |
+| `sed -i` | 0 | 0 | no |
+| `sed <script> file > out` | 0 | 0 | no |
+| `sed <script> < file > out` | 0 | 0 | no |
+| `cat file \| sed <script> > out` | 0 | 0 | no |
+| `sed -i -n p`, no edit asked | 0 | 0 | — |
+| each of the first four with `-b` | 0 | 3 | yes |
+
+Only a line's end is touched. A `\r` mid-line survives a read without
+`-b` (`printf 'a\rb\r\n'` reads back as `a\rb\n`), and one the
+replacement writes reaches the file (`s/$/\r/` over two LF lines left
+two), so the loss is on the way in. Native `jq`, above, is its mirror,
+adding a CR on the way out; each takes its own `-b`.
+
+It surfaced that day in `tests/scripts/stage-part/test-stage-part.sh`,
+whose CRLF case marks two lines of a `.ps1` checked out CRLF with
+`sed -i -e '5s/\r$/ alpha\r/' -e '7s/\r$/ beta\r/'`: the fixture came
+back LF with neither line marked, and five checks failed against a file
+the suite believed was CRLF. The suite now passes `-b` wherever
+`sed -b q /dev/null` succeeds.
+
+#### Counting carriage returns
 
 **`grep -c $'\r'` cannot count carriage returns in the Bash tool, and it
 fails in both directions.** Bare, it returns 0 on a CRLF file; inside
@@ -320,6 +353,11 @@ Count bytes instead — `tr -cd '\r' < file | wc -c` is right in both
 contexts — or ask git, whose `git ls-files --eol <path>` reports `w/lf`
 or `w/crlf` for anything tracked. Measured 2026-09-13 against known LF
 and CRLF files in both contexts.
+
+**2026-09-30.** A section of its own until this date, now a Shell traps
+bullet: `claude/CLAUDE.md` stood at its 200-line cap once
+`80e6e46` landed, and the fold made room for § "`sed` reads CRLF as LF"
+above without dropping a rule.
 
 ### Timezones: no tzdata in Git Bash, and UTC timestamps
 

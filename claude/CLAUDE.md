@@ -36,7 +36,7 @@ the bytes: a round trip through a translating layer proves nothing.
 - **stdout is cp1252** (2026-09-13): an em dash raises `UnicodeEncodeError`
   mid-print. Set `PYTHONIOENCODING=utf-8` or write a UTF-8 file.
 - **`write_text()` writes CRLF, and `read_text()` hides it**: use
-  `newline=""` or bytes, and count as § "Counting carriage returns" does.
+  `newline=""` or bytes, and count CRs as § "Shell traps" does.
   The tell is a whole-file diffstat on a small edit (2026-09-15).
 
 ### Shell traps
@@ -57,11 +57,10 @@ the bytes: a round trip through a translating layer proves nothing.
 - **Native `jq` writes CRLF** (1.8.2, 2026-09-30): `comm` and `diff` miss
   every LF line, `read` keeps the `\r` and `> file` is CRLF, while `grep`
   and a one-line `$(...)` hide it. Pass `-b` always, not only for payloads.
-
-### Counting carriage returns
-
-`grep -c $'\r'` miscounts: 0 on CRLF, every line inside `$(...)`. Use
-`tr -cd '\r' < file | wc -c` or `git ls-files --eol` (2026-09-13).
+- **`sed` reads CRLF as LF** (4.9, 2026-09-30): `\r$` matches nothing, and
+  `-i`, even `-n p`, writes a CRLF file back LF, exit 0. Pass `-b`.
+- **`grep -c $'\r'` miscounts** (2026-09-13): 0 on CRLF, every line inside
+  `$(...)`. Use `tr -cd '\r' < file | wc -c` or `git ls-files --eol`.
 
 ### Timezones: no tzdata in Git Bash, and UTC timestamps
 
