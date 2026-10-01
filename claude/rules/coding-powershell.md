@@ -289,6 +289,23 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
   absence is an expected, meaningful state.
 - Registry paths use PSDrive prefixes (`HKLM:\SOFTWARE\...`), never raw
   `HKEY_LOCAL_MACHINE\...`.
+- **Delete an environment variable with `[NullString]::Value`, never
+  `$null`.** PowerShell binds `$null` to a .NET `string` parameter as
+  `''`, and since .NET 9, so pwsh 7.5, `SetEnvironmentVariable` with `''`
+  sets an empty value where it used to delete. So
+  `[Environment]::SetEnvironmentVariable($name, $null, 'User')` raises
+  no error and leaves the name in `HKCU:\Environment`, empty; at
+  `Process` scope it leaves an empty variable, as `$env:NAME = ''` now
+  does too (pwsh 7.6.6, 2026-09-29; Process scope re-run 2026-09-30).
+  `[NullString]::Value` passes a real null and deletes, and in the
+  current process `Remove-Item env:NAME` and `$env:NAME = $null` delete
+  as well. Then check that the name is gone, with
+  `(Get-Item 'HKCU:\Environment').GetValueNames()` or
+  `Test-Path env:NAME`, not that the value is falsy: an empty leftover
+  is `$false` too, and a cleanup check written as `[bool]$value`
+  reported "not set" over exactly that leftover. Any .NET call whose
+  callee treats null and `''` differently changes meaning the same way,
+  silently.
 
 ## Strings and quoting
 
@@ -342,6 +359,8 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
 - `Read-Host`, `Get-Credential`, `Out-GridView`, `pause` in anything that
   may run non-interactively (scheduled tasks, CI, agent sessions), unless
   guarded as § "Windows and system operations" shows.
+- `$null` for a .NET `string` argument where null and `''` differ, as in
+  `SetEnvironmentVariable`: it arrives as `''`. Pass `[NullString]::Value`.
 - Swallowing errors with `-ErrorAction SilentlyContinue` and no
   follow-up test.
 - `$_` reused inside nested `ForEach-Object` blocks — bind the outer one
