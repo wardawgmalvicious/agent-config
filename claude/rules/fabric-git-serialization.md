@@ -133,8 +133,10 @@ by the enclosing cell marker.
 ## Line endings: every Fabric repo needs a `.gitattributes`
 
 Fabric writes some lines CRLF and some LF **inside the same file** —
-the `GO` / `ALTER TABLE` constraint block in Warehouse table DDL and
-the auto-generated view header are CRLF, the surrounding body is LF.
+the `GO` / `ALTER TABLE` constraint block in Warehouse table DDL, and a
+view's auto-generated header, last body line and the blank line before
+its closing `GO`, are CRLF; the surrounding body is LF (three CRs in
+each of the 10 views of one warehouse, 2026-10-01).
 With Git for Windows' default `core.autocrlf = true` and no
 `.gitattributes`, a local commit strips those CRs, the next portal
 sync puts them back, and the history fills with recurring
@@ -156,6 +158,25 @@ Analytics/**   -text
 strips the portal's CRLF lines and restarts the ping-pong from the
 other side. This does not retroactively fix already-committed blobs;
 expect one more normalization commit before it settles.
+
+**A view header's own line ending can differ by workspace.** In one
+estate a sandbox workspace writes it LF and the Dev workspace CRLF. On
+an LF header the Dev sync rewrites the line and leaves the old one
+behind, one dash short: `- Auto Generated …`. That line fails with
+`Incorrect syntax near '-'` and blocks every later sync (2026-08-17 and
+2026-08-19, as the estate's repo records them); deleting it fixes it.
+The same repo records a second cause, whose line comes back after every
+sync: the live view's `sys.sql_modules` definition embeds the header
+comment, and the portal half-strips it on export. Re-create the view in
+each affected warehouse with `CREATE OR ALTER`, its text starting at
+`CREATE` with no header line.
+
+Two CI checks guard against it, as that repo's do, and neither depends
+on the stack: fail on any `.sql` line starting `- Auto Generated`, and
+on a view header whose ending differs from what the workspace synced to
+`main` writes, CRLF in that estate. Test the CR with `tr -cd '\r'`, not
+`grep`: Git Bash's grep 3.0 matches no `\r$`, so a grep check flags
+every view there (2026-10-01).
 
 Practical consequence while editing: exact-match string edits against
 these files can fail on the CRLF lines even when the text looks
