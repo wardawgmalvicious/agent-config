@@ -41,8 +41,14 @@
     WHAT IT DOES NOT CAPTURE, and why:
       - Visibility. Recorded nowhere and never applied: a file edit must
         not be able to publish or hide a repo.
-      - The social preview image. There is no API for it; it is a manual
-        upload, documented in docs/social/README.md.
+      - The social preview image. GitHub has a read side and no write side
+        (measured 2026-09-23, re-run 2026-10-01): no GraphQL mutation, no
+        REST endpoint and no field of PATCH /repos/{owner}/{repo} sets it,
+        while GraphQL's usesCustomOpenGraphImage says whether one is
+        uploaded. So -Check, and -Apply's re-check, print a SKIP line when
+        none is, naming the manual upload. It never counts as drift:
+        -Apply could never clear it, and a repo may rightly have no card.
+        This repo's is in docs/social/README.md.
       - Classic branch protection. Rulesets are the current mechanism and
         are exported and checked; this repo has none. Applying rulesets is
         not implemented -- -Apply reports a ruleset difference as SKIP
@@ -243,6 +249,24 @@ function Get-LiveSetting {
     $settings['rulesets'] = @($rulesets | Sort-Object { $_['name'] })
     return $settings
 }
+
+# The social preview has a read side and no write side (see the header), so
+# it is reported here and never compared.
+function Write-SocialPreview {
+    [CmdletBinding()]
+    param([Parameter(Mandatory)][string]$Repo, [switch]$IsThisRepo)
+    $owner, $name = $Repo.Split('/')
+    $query = 'query($owner: String!, $name: String!) ' +
+        '{ repository(owner: $owner, name: $name) { usesCustomOpenGraphImage } }'
+    $body = @{ query = $query; variables = @{ owner = $owner; name = $name } }
+    $r = Invoke-GhApi -Endpoint 'graphql' -Method 'POST' -Body $body
+    if ($r.ExitCode -ne 0) { throw "gh api graphql failed: $($r.Text)" }
+    $repository = ($r.Text | ConvertFrom-Json -AsHashtable)['data']['repository']
+    if ($repository['usesCustomOpenGraphImage']) { return }
+    $card = if ($IsThisRepo) { "; this repo's card is in docs/social/README.md" } else { '' }
+    Skip ('social preview: none uploaded, and no API can upload one -- by hand, ' +
+        "Settings > General > Social preview$card")
+}
 #endregion
 
 #region Compare
@@ -389,12 +413,17 @@ $result = Compare-Setting -Live $live -Wanted $wanted
 
 if (-not $Apply) {
     Write-Drift -Result $result
+    Write-SocialPreview -Repo $Repo -IsThisRepo:$isThisRepo
     exit ([int]($result.Drift.Count -gt 0))
 }
 
 #region Apply
 $drift = $result.Drift
-if ($drift.Count -eq 0) { Ok 'nothing to apply'; exit 0 }
+if ($drift.Count -eq 0) {
+    Ok 'nothing to apply'
+    Write-SocialPreview -Repo $Repo -IsThisRepo:$isThisRepo
+    exit 0
+}
 Write-Drift -Result $result
 Step 'Applying'
 
@@ -454,6 +483,7 @@ if ($drift.Contains('rulesets')) {
 Step 'Re-checking'
 $after = Compare-Setting -Live (Get-LiveSetting -Repo $Repo) -Wanted $wanted
 Write-Drift -Result $after
+Write-SocialPreview -Repo $Repo -IsThisRepo:$isThisRepo
 if ($script:Failures.Count -or $after.Drift.Count) {
     Write-Host "`n$($script:Failures.Count) failure(s), $($after.Drift.Count) setting(s) still drifting." -ForegroundColor Red
     exit 1

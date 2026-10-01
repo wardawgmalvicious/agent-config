@@ -123,6 +123,10 @@ serve() {
     done
 }
 
+card() {
+    printf '{"data":{"repository":{"usesCustomOpenGraphImage":%s}}}\n' "$1" \
+        > "$bin/api/graphql.json"
+}
 login() { printf '%s\n' "$1" > "$bin/login.txt"; }
 
 # 0. The stub, not gh, must answer: a crossed -Apply against the script before
@@ -139,6 +143,7 @@ fi
 echo "ok    gh is the stub"
 
 login fixture_owner
+card true
 snapshot fixture_owner/alpha alpha "$tmproot/alpha.saved"
 snapshot fixture_owner/beta beta "$tmproot/beta.json"
 serve fixture_owner/alpha "$tmproot/alpha.saved"
@@ -229,7 +234,16 @@ expect_exit "-Apply under another account is refused" 1
 expect_calls "after asking only who gh is" "GET user"
 login fixture_owner
 
-# 7. A matching pair still applies, to -Repo alone, and its re-check passes.
+# 7. The social preview: a SKIP line while none is uploaded, never drift.
+card false
+run -Check -Repo fixture_owner/beta -Path "$(native "$fresh")"
+expect_exit "an unset card leaves -Check passing" 0
+expect_line "and is reported" "[SKIP] social preview: none uploaded"
+card true
+run -Check -Repo fixture_owner/beta -Path "$(native "$fresh")"
+expect_no_line "a card that is set is not" "social preview"
+
+# 8. A matching pair still applies, to -Repo alone, and its re-check passes.
 jq -b '.repository.description = "beta, edited in the UI"' "$tmproot/beta.json" \
     > "$tmproot/beta-ui.json"
 serve fixture_owner/beta "$tmproot/beta-ui.json"
@@ -243,7 +257,7 @@ expect_value "it wrote to -Repo alone" \
     "$(tr -d '\r' 2> /dev/null < "$bin/calls.log" | grep -v -e '^GET ' -e '^POST graphql$')" \
     "PATCH repos/fixture_owner/beta"
 
-# 8. This repo's bare run is unchanged: -Repo from origin, -Path its own file,
+# 9. This repo's bare run is unchanged: -Repo from origin, -Path its own file,
 #    and every setting matching when GitHub holds what the file says.
 origin=$(git -C "$repo" remote get-url origin | sed -E 's#^.*github\.com[:/]##; s#\.git$##')
 serve "$origin" "$repo/.github/repo-settings.json"

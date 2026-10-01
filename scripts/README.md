@@ -278,8 +278,9 @@ Helper scripts for repo maintenance and observability.
   Each snapshot names its repo, and every mode refuses a file naming
   another before the first `gh` call; its negative cases are
   [tests/scripts/repo-settings/test-pairing.sh](../tests/scripts/repo-settings/test-pairing.sh).
-  Visibility and the social preview image are deliberately outside it.
-  `-Export` and `-Apply` refuse unless `gh` acts as the repo's owner.
+  Visibility is deliberately outside it, and the social preview image,
+  which no API sets, is only reported. `-Export` and `-Apply` refuse
+  unless `gh` acts as the repo's owner.
 
 - [skill-status.py](skill-status.py) — which skills have been tested, and
   what has changed in each since. Derived from the stamps `/test-skill`
