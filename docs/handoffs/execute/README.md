@@ -153,7 +153,9 @@ redirect, or a checkout discovered above it)
 ```
 
 The paths differ only in the drive letter's case, which the same
-session's directory showed both ways that hour. `EnterWorktree` with the
+session's directory showed both ways that hour. From one whose directory
+read `C:\Repos\…`, `EnterWorktree` by name entered at once (2026-10-01,
+one run). `EnterWorktree` with the
 path, spelled as git prints it, entered at once; the message's advice,
 to recreate the worktree, was not tried. `/drift-update` step 2 carries
 the fallback. The refused call's lock outlived the session's
