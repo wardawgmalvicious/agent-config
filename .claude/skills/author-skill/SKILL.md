@@ -110,11 +110,11 @@ uv run --with pyyaml scripts/skill-overlap.py overlap --skill <nearest-skill>
 ```
 
 It ranks that skill's pairs by shared distinctive tokens, so what already
-clusters around your topic shows up before you have written a line. There
-is no way to score a description that does not exist yet, which is why
-this runs against the neighbour rather than the candidate. Read its output
-into the three outcomes; it changes what you find, not what you do about
-it.
+clusters around your topic shows up before you have written a line. A
+description that does not exist yet cannot be scored, so this runs
+against the neighbour here and against the candidate at step 7. Read its
+output into the three outcomes; it changes what you find, not what you
+do about it.
 
 **Before authoring a *platform* skill, check upstream first.** Microsoft
 ships a catalog at `microsoft/skills-for-fabric`, and vendoring one of
@@ -359,7 +359,7 @@ inline with the date and version, the way `/learn` does, so a later
 
 ## 7. Post-draft checks
 
-Run all four. Each catches something the others do not.
+Run all five. Each catches something the others do not.
 
 ```
 uv run --with pyyaml scripts/lint-frontmatter.py <the SKILL.md you wrote>
@@ -389,6 +389,18 @@ tool on Windows is where that line comes from.
 pre-commit run --all-files
 ```
 
+**Score the draft against its neighbours**, which step 2 could not:
+
+```bash
+uv run --with pyyaml scripts/skill-overlap.py overlap --skill <name>
+```
+
+A borrowed clause scores as competition: `recreate-repo`'s `when_to_use`
+reused a sentence of `land`'s, and the pair scored 43.7, then 35.6
+reworded (2026-10-01). Report the score, the shared tokens and the pair's
+place in the bare `overlap` listing, since `--skill` ranks only `<name>`'s
+own pairs; it is a question for the user, not a gate.
+
 ## 8. Register it in skills/README.md
 
 Add the entry to the section the namespace implies — Behavioral,
@@ -412,7 +424,7 @@ Report:
    from the brief.
 2. **The scope decisions** — what the skill deliberately does not cover,
    and why.
-3. **Check results** — lint, description count, `pre-commit`.
+3. **Check results** — lint, description count, `pre-commit`, overlap.
 4. **That the skill is not behaviourally tested.** Say it plainly —
    but for the right reason. It is *not* that the file cannot reload:
    skills hot-reload in-session, fixed upstream in 2.1.216 and verified
