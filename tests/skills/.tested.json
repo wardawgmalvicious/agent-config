@@ -248,11 +248,11 @@
     },
     "land": {
       "behaviour": {
-        "date": "2026-09-29",
-        "commit": "d65acf7",
+        "date": "2026-10-01",
+        "commit": "d384389",
         "routing": "aeb5e4a008876930",
-        "body": "ae45c3b131e9a81b",
-        "references": "08d42a45b52346ff"
+        "body": "04e46c5234024c05",
+        "references": "59d743bfb13cd605"
       }
     },
     "learn": {
