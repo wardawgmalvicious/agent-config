@@ -1,0 +1,47 @@
+{
+  "_comment": "Managed by scripts/repo-settings.ps1 (-Export / -Check / -Apply). Visibility and the social preview image are deliberately not here; see the script header.",
+  "_repo": "wardawgmalvicious/claude-rewrite-extension",
+  "repository": {
+    "description": null,
+    "homepage": null,
+    "has_issues": true,
+    "has_projects": true,
+    "has_wiki": false,
+    "has_discussions": false,
+    "allow_merge_commit": true,
+    "allow_squash_merge": true,
+    "allow_rebase_merge": true,
+    "allow_auto_merge": false,
+    "allow_update_branch": false,
+    "delete_branch_on_merge": false,
+    "squash_merge_commit_title": "COMMIT_OR_PR_TITLE",
+    "squash_merge_commit_message": "COMMIT_MESSAGES",
+    "merge_commit_title": "MERGE_MESSAGE",
+    "merge_commit_message": "PR_TITLE",
+    "web_commit_signoff_required": false
+  },
+  "topics": [],
+  "security_and_analysis": {
+    "secret_scanning": "disabled",
+    "secret_scanning_non_provider_patterns": "disabled",
+    "secret_scanning_push_protection": "disabled",
+    "secret_scanning_validity_checks": "disabled"
+  },
+  "dependabot": {
+    "alerts": false,
+    "security_updates": false
+  },
+  "private_vulnerability_reporting": false,
+  "actions": {
+    "permissions": {
+      "enabled": true,
+      "allowed_actions": "all",
+      "sha_pinning_required": false
+    },
+    "workflow_permissions": {
+      "default_workflow_permissions": "read",
+      "can_approve_pull_request_reviews": false
+    }
+  },
+  "rulesets": []
+}
