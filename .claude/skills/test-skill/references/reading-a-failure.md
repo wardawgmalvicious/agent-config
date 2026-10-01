@@ -109,6 +109,18 @@ through … the exact commands start to finish" reached step 9 with 11 of
 11. A skill whose body is commands wants one walkthrough arm, or the
 later steps are never rendered.
 
+**A probe's environment is its arm's environment.** A variable set to
+launch a slash probe from Bash stays in the `claude` process, and its
+Bash tool's Git Bash inherits it. With `MSYS2_ARG_CONV_EXCL='*'`, every
+native program the arm runs takes its MSYS paths unconverted: `jq.exe`
+answered, for each entry,
+`Could not open file /c/Users/<username>/.claude/sessions/<pid>.json`,
+and `land`'s `never-prompted.sh` exited 1, "the session registry did
+not read", reading every row as live, which is indistinguishable from
+the exemption failing. `'/land'`, the prompt's prefix alone, kept both
+the slash path and the script working. Measured 2026-10-01 on 2.1.282,
+the same script both ways.
+
 **The `init` record is what proves the strip.** Measured 2026-09-12 on
 `fabric-catalog-governance` — 21 commands with the skill absent against
 33 with it present — which is what made "the baseline reproduced this

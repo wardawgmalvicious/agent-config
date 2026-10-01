@@ -394,7 +394,9 @@ rewrites a leading-slash argument to `C:/Program Files/Git/<name>`, so
 failure is invisible, because the model reads the mangled text, still
 recognises the skill name, and invokes it via the Skill tool. The run
 then looks like a passing slash test while measuring model-invocation.
-`MSYS2_ARG_CONV_EXCL='*'` works too. Measured 2026-09-02.
+Measured 2026-09-02. From Bash, set `MSYS2_ARG_CONV_EXCL='/my-skill'`,
+never `'*'`: the arm's own shell inherits it, and its native `jq` breaks
+(`references/reading-a-failure.md`, 2026-10-01).
 
 ### 9. Confirm the fixtures are unmodified
 
