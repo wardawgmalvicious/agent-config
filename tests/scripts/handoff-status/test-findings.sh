@@ -132,6 +132,10 @@ fm dep "status: deferred" "priority: 3" "written: 2026-09-24"
 fm m "status: open" "priority: 3" "blocked-by: [missing.md]" "written: 2026-09-25"
 # shellcheck disable=SC2016 # the backtick is literal, and the point
 fm tick "status: open" "priority: 3" 'reopen-when: `x` opens with a backtick' "written: 2026-09-26"
+# A colon then a space mid-value, where the opening is fine; and a list item.
+fm colon "status: open" "priority: 3" "reopen-when: a typo reaches a run: what-if" \
+    "written: 2026-09-26"
+fm item "status: open" "priority: 3" "needs: [desktop, a run: what-if]" "written: 2026-09-26"
 # A worktree named after f claims it. A worktree needs a commit to branch from.
 git_t() { git -c user.name=t -c user.email=t@example.com "$@"; }
 git_t -C "$fix" commit -q --allow-empty -m init
@@ -221,6 +225,13 @@ expect_line "a blocker that is gone is a finding" \
 # shellcheck disable=SC2016 # the backticks are literal
 expect_line "a value YAML would misread is a finding" \
     'frontmatter docs/handoffs/execute/tick.md: `reopen-when` would not parse as plain YAML'
+# shellcheck disable=SC2016 # the backticks are literal
+expect_line "the finding names an opening it met" \
+    'tick.md: `reopen-when` would not parse as plain YAML: it opens with '"'\`'"
+expect_line "the finding names a colon mid-value, not the opening" \
+    "colon.md: \`reopen-when\` would not parse as plain YAML: it holds ': '"
+expect_line "a list item's finding names the item and its case" \
+    "item.md: \`needs\` item 'a run: what-if' would not parse as plain YAML: it holds ': '"
 
 # 4. Audit follow-ups: an open outcome with no Closed line is listed by its
 #    Needs, an unrun brief under its directory, and the rest not at all.
@@ -249,6 +260,8 @@ fm bad "status: open" "priority: 1" "written: 2026-09-23"
 fm dep "status: deferred" "priority: 3" "reopen-when: a trigger fires" "written: 2026-09-24"
 fm m "status: open" "priority: 3" "blocked-by: []" "written: 2026-09-25"
 fm tick "status: open" "priority: 3" "written: 2026-09-26"
+fm colon "status: open" "priority: 3" "written: 2026-09-26"
+fm item "status: open" "priority: 3" "needs: [desktop]" "written: 2026-09-26"
 fm declined "status: open" "priority: 3" "written: 2026-09-28"
 stamp 02-bare "**Executed**: 2026-09-02 — escalated" "**Needs**: tenant"
 expect_exit "resolved fixture passes --check" 0

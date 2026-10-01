@@ -21,8 +21,8 @@ What a session must know before it writes, starts or lands a brief here;
   | `reopen-when` | the trigger; required when `deferred` |
   | `written` | `YYYY-MM-DD` |
 
-  Each is `key: value` or `key: [a, b]`, and no value opens with a
-  backtick or a quote, which YAML would misread.
+  Each is `key: value` or `key: [a, b]`; YAML misreads a value opening with
+  a quote or backtick, or holding a colon before a space or `#` after one.
 - **A worktree named after a brief marks it in flight** in that view; root
   `CLAUDE.md` § "Branching and concurrent sessions" says when to take one.
 - **A brief's worktree lands from the main checkout, with no push**, so

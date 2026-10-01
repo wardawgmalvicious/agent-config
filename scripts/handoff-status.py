@@ -277,9 +277,21 @@ def is_brief(path: pathlib.Path, tree: pathlib.Path) -> bool:
             and not is_reference(path, tree) and not is_ledger(path, tree))
 
 
-def yaml_unsafe(value: str) -> bool:
-    return (value.startswith(YAML_INDICATORS) or value.startswith("- ")
-            or ": " in value or " #" in value)
+def yaml_misread(value: str) -> str:
+    """What makes a plain YAML scalar misread a value, or "" when nothing does.
+
+    The finding says which case it met: one message once served all four and
+    blamed the opening, so a colon mid-value sent the reader to a fine start.
+    """
+    if value.startswith("- "):
+        return "it opens with '- '"
+    if value.startswith(YAML_INDICATORS):
+        return f"it opens with {value[0]!r}"
+    if ": " in value:
+        return "it holds ': '"
+    if " #" in value:
+        return "it holds ' #'"
+    return ""
 
 
 def read_frontmatter(path: pathlib.Path) -> Brief | None:
@@ -309,13 +321,16 @@ def read_frontmatter(path: pathlib.Path) -> Brief | None:
                 brief.problems.append(("frontmatter", f"`{key}` is not a list, [a, b]"))
                 continue
             items = [item.strip() for item in raw[1:-1].split(",") if item.strip()]
-            if any(yaml_unsafe(item) for item in items):
-                brief.problems.append(("frontmatter", f"`{key}` holds an item YAML would misread"))
+            for item in items:
+                if why := yaml_misread(item):
+                    brief.problems.append(
+                        ("frontmatter",
+                         f"`{key}` item {item!r} would not parse as plain YAML: {why}"))
             brief.meta[key] = items
         else:
-            if yaml_unsafe(raw):
+            if why := yaml_misread(raw):
                 brief.problems.append(
-                    ("frontmatter", f"`{key}` would not parse as plain YAML; reword its opening"))
+                    ("frontmatter", f"`{key}` would not parse as plain YAML: {why}"))
             brief.meta[key] = raw
     validate(brief)
     return brief
