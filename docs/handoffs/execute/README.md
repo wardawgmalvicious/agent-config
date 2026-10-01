@@ -66,6 +66,15 @@ turned down a compound with no git in it, since it "runs sed with -b
 inside a construct too complex to verify, so what it runs cannot be
 shown not to be git". Its message asks for plain, separate commands,
 and that is how a compound git command it refused the same day ran.
+It refuses an interpreter the same way: on 2026-10-01 (2.1.283) a
+command running `pwsh -NoProfile -File` on a script in the main
+checkout, with no git in its text, was refused as "a plain command; what
+it reads or is handed as shell text cannot be shown not to run git". The
+PowerShell tool ran the same call, and with it the script's `git -C` on
+the main checkout. Root `CLAUDE.md` says PowerShell's `git -C` passes, so
+that is a route around the guard, not a measurement from the main
+checkout: a script that lives outside the worktree waits for
+`ExitWorktree` `keep`.
 
 **A check that needs the deployed payload runs after the merge, on
 `main`**, since a worktree cannot reach it:
