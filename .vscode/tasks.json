@@ -33,7 +33,7 @@
             "label": "verify skill prune held",
             "type": "shell",
             "command": "Get-ChildItem ~/.claude/skills -Name",
-            "detail": "Should list the deployed groups' skills and no fabric-/pbir-/pbid-/powerbi- prefix.",
+            "detail": "Should list the deployed groups' skills and no fabric-/pbir-/pbid-/powerbi-/msix- prefix.",
             "problemMatcher": []
         },
         {

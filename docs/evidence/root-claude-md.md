@@ -409,6 +409,15 @@ only `tests/` is gitleaks-allowlisted. `docs/` has been scanned since
 2026-09-07, when `docs/audits/` became tracked, and `.gitleaks.toml` says
 why. The prune's detail moved to `.claude/rules/deploy-scripts.md`.
 
+**2026-10-01.** The prune check's pattern gains `msix`. `msix-packaging`
+opened a third platform group, `windows`, kept out of user scope as
+`fabric` and `powerbi` are. A bare run re-links it with the rest, which
+the old pattern still caught through `fabric-`, but a `-SkillGroups`
+list that added `windows` alone would have linked it with nothing
+flagged. The pattern needs one prefix per pruned group, not every
+prefix: `pbip-` and `powerbi-` share the `powerbi` group with `pbir-`
+and `pbid-`, so they need no entry of their own.
+
 ## How this repo is structured
 
 Files here are synced into tool config directories; where an edit
