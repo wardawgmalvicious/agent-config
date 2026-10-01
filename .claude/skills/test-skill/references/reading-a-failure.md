@@ -43,7 +43,10 @@ pairs the slash arm with an NL arm on the same query. Measured
 2026-09-13 on `fabric-cli` — NL 3 turns with `Skill fabric-cli`, slash 1
 turn with none, the same GUID-vs-friendly-name table in both; the first
 slash run, on a section that hands off to `fabric-deployment-pipelines`,
-showed only that skill's call.
+showed only that skill's call, and so read as ambiguous. A slash run
+with **no** `Skill` call that still carries the skill's own detail has
+proved the expansion: without it the model would have had to call
+`Skill`, as the NL run did. Moved here from step 8 on 2026-10-01.
 
 **Read the answers rather than grepping them.** On 2026-09-12 an
 `/owns|owned/` scan missed "items you own" and nearly recorded a passing

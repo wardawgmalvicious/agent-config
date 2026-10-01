@@ -377,13 +377,9 @@ In a `-p` probe where `/context` is unavailable, use the transcript: a
 model-invoked skill appears as a `Skill` tool_use, while a slash-invoked
 one is **inlined as a command expansion** and produces no `Skill` call —
 so an absent `Skill` record disproves nothing on the slash path.
-The positive witness is the pair: run the slash probe on the query the
-NL arm answered through a `Skill` call, and a slash run with **no**
-`Skill` call that still carries the skill's own detail has proved the
-expansion — without it the model would have had to call `Skill` as the
-NL run did. Use a query the skill answers itself: on one it delegates,
-the only `Skill` call is the delegate's and the run reads as ambiguous
-(`fabric-cli`, 2026-09-13).
+The positive witness is a slash run on a query the NL arm answered
+itself through `Skill`: carrying the skill's detail with **no** `Skill`
+call proves the expansion (`references/reading-a-failure.md`).
 `--output-format stream-json --verbose` is the cheaper route to those
 records — it carries the `tool_use` blocks, the `init` record and, for a
 conditional skill, the `commands_changed` record that witnesses the
