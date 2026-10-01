@@ -140,6 +140,13 @@ to be plausible, not real data.
 README has a dedicated section for these, and a fixture invented from a
 guess will happily pass a test that asserts nothing true.
 
+**Pin a fixture whose bytes are part of its shape.** This repo's
+`.gitattributes` commits a CRLF fixture as LF, warning only at
+`git add`, and `git status` reads clean after. Give the folder `-text`
+in the fixture's own commit, as `SampleESS.EventSchemaSet` has. Before
+staging, `git hash-object --path=<f> <f>` and its `--no-filters` form
+must match; after, `git ls-files --eol <f>` reads `i/crlf` (2026-10-01).
+
 ### 4. Update `expected_activations.md`
 
 One row per fixture file, naming the skills that must fire. This is the
