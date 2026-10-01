@@ -553,6 +553,44 @@ the same script as a git hook, the way agent-config's
 is not this guard: it matches secrets, not names, and never reads a
 message (measured 2026-09-04).
 
+**2026-09-30.** The other direction joins it: no personal repo's name is
+committed in a repo under a client root. A session in the second client
+repo, landing that repo's copy of the 2026-09-29 per-brief note, asked
+the user whether its committed files might name the path of a script in
+this repo:
+
+> No outside repo names committed at all. If something already exists
+> fine, but I don't want any personal repo names being committed
+> anywhere in an internal company repo.
+
+Until then the payload held it second-hand and for one repo: the
+cross-repo handoff brief recorded it on 2026-09-29 as the estate repo's
+rule, as that repo's session reported it, and left the second client
+repo open. Stated for every internal company repo, it is machine-wide
+guidance, not one repo's convention.
+
+- **"Committed" is read as files, commit messages, pull request text
+  and branch names.** The user's sentence separates none of them; the
+  estate repo's reported wording was "files, commits and PRs".
+- **What already exists may stay.** The second client repo's queue
+  README tells a session that a payload learning belongs in this repo's
+  inbox directory, by name. It predates the rule, and the user let it
+  stand.
+- **A command that runs a personal repo's script stays local.** There
+  the queue's view command went into the project's auto-memory, and the
+  committed root file carries the path-free `grep` instead.
+- **Nothing enforces it, and the user deferred a hook that day** until
+  a breach is seen; the deferred brief keeps the shape and its gaps.
+  `identity-guard` runs the other way, keeping an organization's names
+  out of every repo, and an `exempt:` line skips a client root
+  altogether. The second client repo's working tree was checked by
+  hand, and this exited 1 with no match:
+
+```bash
+git diff --no-color | grep -n -i -E \
+  '^\+.*(agent-config|Repos/Personal|handoff-status|machine-config|fabric-tools)'
+```
+
 ### Branch naming
 
 `<type>/<kebab-slug>`, in every repo. `<type>` is the conventional-commit

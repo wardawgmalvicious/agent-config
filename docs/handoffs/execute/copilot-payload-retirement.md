@@ -328,7 +328,7 @@ note carries:
   platform skills under any target, since `.claude/skills` there is
   git-ignored junctions, where `.github/skills` was tracked.
 - What that session commits names no personal repo, by the user's rule
-  ([company-repos-name-no-personal-repo.md](company-repos-name-no-personal-repo.md)).
+  (`claude/CLAUDE.md` § "Git identity is folder-scoped").
 
 ### The briefs this closes
 

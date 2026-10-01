@@ -106,7 +106,7 @@ git grep -nP '\b(agent|machine|claude)-config\b' -- \
 - The user's rule, stated 2026-09-30 for every internal company repo,
   is that nothing committed there names a personal repo, while what
   already exists may stay
-  ([company-repos-name-no-personal-repo.md](company-repos-name-no-personal-repo.md)).
+  (`claude/CLAUDE.md` § "Git identity is folder-scoped").
   Whether that allowance reaches the two lines already vendored was not
   asked. The other four would be new.
 
