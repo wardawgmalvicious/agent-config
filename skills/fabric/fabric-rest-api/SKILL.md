@@ -1,6 +1,6 @@
 ---
 name: fabric-rest-api
-description: "Use for Microsoft Fabric REST API patterns: listing and paginating workspaces/items with continuationToken/continuationUri, calling /v1/workspaces/{wsId}/items, handling long-running operations (202 Accepted, Location header, polling /v1/operations/{id}, Retry-After, /result), the runtime item ID vs .platform logicalId distinction (PowerBIEntityNotFound root cause), the 201-or-202 create pattern, jobType values for /jobs/instances (RunNotebook, Pipeline, SparkJob, Refresh — NOT DefaultJob), the `definition` envelope and `?updateMetadata=true` `.platform` flag, job scheduling (Daily/Weekly/Monthly), 429 rate limiting with Retry-After, capacity assignment, and the GA `sensitivityLabel` field on List/Get/Update Item responses (GUID only, not settable via PATCH)."
+description: "Use for Microsoft Fabric REST API patterns: listing and paginating workspaces/items with continuationToken/continuationUri, calling /v1/workspaces/{wsId}/items, handling long-running operations (202 Accepted, Location header, polling /v1/operations/{id}, Retry-After, /result), the runtime item ID vs .platform logicalId distinction (PowerBIEntityNotFound root cause), the 201-or-202 create pattern, jobType values for /jobs/instances (RunNotebook, Pipeline, SparkJob, Refresh — NOT DefaultJob), the `definition` envelope and `?updateMetadata=true` `.platform` flag, Git integration APIs (git/status workspaceHead vs remoteCommitHash, updateFromGit), job scheduling (Daily/Weekly/Monthly), 429 rate limiting with Retry-After, capacity assignment, and the GA `sensitivityLabel` field on List/Get/Update Item responses (GUID only, not settable via PATCH)."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -153,6 +153,58 @@ PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
 | Other (KQLDashboard, CopyJob, Dataflow, Eventstream, MirroredDatabase, GraphQLApi, etc.) | varies | see [MS schema index](https://github.com/microsoft/json-schemas/tree/main/fabric/item) |
 
 **`definition.pbir` `byConnection` only**: Fabric REST API supports only `byConnection` semantic-model references in PBIR. The `byPath` form (used locally with pbir-cli) is not accepted by the Fabric REST endpoints — switch to `byConnection` before deploying.
+
+## Git Integration APIs
+
+A Git-connected workspace is synced to one commit while its branch may be
+at another, and
+[Get Status](https://learn.microsoft.com/rest/api/fabric/core/git/get-status),
+`GET /v1/workspaces/{wsId}/git/status`, returns both: `workspaceHead`, the
+commit the workspace is synced to, `remoteCommitHash`, the branch head, and
+`changes[]`, each carrying `workspaceChange`, `remoteChange` and
+`conflictType`. Heads that differ, with no `remoteChange` on any entry,
+mark the stranded state behind fabric-gotchas' `Git_HeadNotSynced` row: an
+incoming commit with no incoming item, which the Source control pane
+offers no button to take.
+
+[Update From Git](https://learn.microsoft.com/rest/api/fabric/core/git/update-from-git),
+`POST …/git/updateFromGit`, updates only the items the incoming commits
+changed. It requires `remoteCommitHash`; `workspaceHead` is checked
+against the service's own head, failing `WorkspaceHeadMismatch`, and may
+be null only right after Initialize Connection. It will not start with
+items in conflict and no `conflictResolution`, nor with incoming items
+present and `options.allowOverrideItems` not `true`. **So the two hashes
+from `git/status`, and nothing else, are the safe body**: it applies or it
+refuses, and never overwrites. Add either field on purpose, after reading
+`changes[]`.
+
+```json
+{ "workspaceHead": "<git/status workspaceHead>", "remoteCommitHash": "<git/status remoteCommitHash>" }
+```
+
+- **Both calls need the caller's Git credentials.**
+  `GET …/git/myGitCredentials` answers `source`: `Automatic`,
+  `ConfiguredConnection` (with a `connectionId`) or `None`; on `None`, set
+  them with Update My Git Credentials first.
+- **Both are long-running**: `200`, or `202` with `Location`,
+  `x-ms-operation-id` and `Retry-After`, polled as *Long-Running
+  Operations (LRO)* says, and invisible through `az rest`, as it also
+  says. Learn says not to call Get Status while an update runs. One
+  update, observed 2026-09-30, answered `202` with `Retry-After: 20` and
+  finished in under a second; its `Location` named a regional cluster
+  host, not `api.fabric.microsoft.com`, and polling
+  `/v1/operations/{x-ms-operation-id}` on the base URL worked. Polling
+  that `Location` itself was not tried.
+
+**`git/status` types items outside its documented enum.** One call
+(2026-09-30, one tenant) typed a semantic model, a Plan and a SQL
+database as `dataset`, `Planning` and `SQLDbNative`, where Learn's
+`ItemType` lists `SemanticModel`, `Plan` and `SQLDatabase`, and none of
+the three (re-read 2026-10-01). A script filtering `changes[]` on
+documented type names skips those items without a word. Match on
+`itemMetadata.itemIdentifier` instead: `logicalId` where present, else
+`objectId`. Learn requires one of the two, and its example of an item
+added in the workspace carries only `objectId`.
 
 ## Job Execution
 
