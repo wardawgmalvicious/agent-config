@@ -223,6 +223,19 @@ FILE_PATH_UNIX=$(cygpath -u "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
 - Provide escape hatches as environment variables (`SKIP_AZ_LOGIN=1`)
   rather than extra flags, for CI and non-interactive callers.
 
+## A running script reads its file as it goes
+
+Bash reads a script from its file while it runs, not whole before it
+starts, so an edit made mid-run lands in that run: it resumes at its
+byte offset, inside the new text. A background harness edited while it
+waited on a long command resumed mid-word once the command returned —
+`line 83: nvoked: command not found`, then
+``syntax error near unexpected token `fi'``, exit 2 — and its post-run
+checks never ran. An edit that began exactly at the next unread line
+ran the new line as if it had always been there, exit 0. Both measured
+on bash 5.3, 2026-09-30. Nothing shows that a background run is still
+reading its file, so edit a copy, or wait for the run to exit.
+
 ## Claude Code hooks
 
 Hooks in `agent-config/hooks/` run on every session start or tool call.
@@ -302,3 +315,5 @@ tax on every tool call.
 - `TZ=<zone> date` for zone arithmetic — it answers UTC; see Preflight.
 - A secret, a query or a request body as an argument — see Secrets and
   payloads stay off argv.
+- Editing a script while a run of it is still reading — see A running
+  script reads its file as it goes.
