@@ -173,6 +173,15 @@ INNER JOIN RecentOrder AS ord
 
 ## Object naming
 
+- **Schemas**: an object's name never repeats its schema:
+  `Sales.Customer`, not `Sales.SalesCustomer`. Every reference is
+  schema-qualified already (§ Identifier quoting), so schemas holding
+  parallel objects can share names, and their constraints can too: SQL
+  Server scopes a constraint name to its table's schema, and so does a
+  Fabric Warehouse, which took the same `PK_<Table>` on a table in each
+  of two schemas and refused it on a second table in one (2026-09-30).
+  Synapse dedicated SQL pool's docs make a default constraint's name
+  unique in the database instead.
 - **Tables**: `PascalCase`, singular (`Customer`, not `Customers`).
 - **Columns**: `PascalCase`. Use full words — `CustomerId`, not `CustId`.
 - **Primary key**: `<TableName>Id`. Foreign keys mirror the PK name in
