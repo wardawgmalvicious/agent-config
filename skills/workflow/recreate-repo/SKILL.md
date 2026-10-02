@@ -191,7 +191,7 @@ git-side guard a repo wires — `identity-guard`'s git-hook mode,
 pre-commit install                          # every type in default_install_hook_types, where the repo uses pre-commit
 git config core.hooksPath <dir>             # a repo that commits its hooks; then:
 git ls-files -s <dir>                       # 100755 each, or a POSIX clone does not run it
-git update-index --chmod=+x <dir>/<hook>    # the fix for a 100644, committed before the push
+git update-index --chmod=+x <dir>/<hook>    # the fix for a 100644, committed with no pathspec before the push
 ```
 
 Then the prune, and only then the push:
