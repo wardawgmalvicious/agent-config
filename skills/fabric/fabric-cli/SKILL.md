@@ -1,6 +1,6 @@
 ---
 name: fabric-cli
-description: "Use for the Fabric CLI `fab` (v1.5 GA March 2026, `pip install ms-fabric-cli`, Python 3.10–3.13, pre-installed in Fabric Notebooks) — filesystem-style CLI over Fabric + Power BI REST. Covers path syntax (Workspace.Workspace/Item.ItemType, .ItemType suffix mandatory, hidden roots .capacities/.connections/.domains/.gateways), auth reuse from `az login`, navigation (ls/cd/pwd/exists/get/desc/find), item CRUD (mkdir/set/rm/cp/mv/ln/export/import), ACLs, capacity/domain assign, labels, jobs (incl. semantic-model refresh + dataflow), table maintenance, shortcuts via `fab ln`, `fab deploy --config <yaml>` for one-command workspace CI/CD on top of fabric-cicd (v1.5+), `fab api` REST passthrough (-A powerbi/storage/azure), deployment pipelines, report rebind via `fab set semanticModelId`, DuckDB-on-OneLake, executing DAX via fab api, and common gotchas (InvalidPath, GUID vs friendly names for schema tables, -f for non-interactive)."
+description: "Use for the Fabric CLI `fab` (v1.5 GA March 2026, `pip install ms-fabric-cli`, Python 3.10–3.13, pre-installed in Fabric Notebooks) — filesystem-style CLI over Fabric + Power BI REST. Covers path syntax (Workspace.Workspace/Item.ItemType, .ItemType suffix mandatory, hidden roots .capacities/.connections/.domains/.gateways), auth (`fab auth login` or `FAB_TOKEN` + `FAB_TOKEN_ONELAKE` env tokens, not `az login`), navigation (ls/cd/pwd/exists/get/desc/find), item CRUD (mkdir/set/rm/cp/mv/ln/export/import), ACLs, capacity/domain assign, labels, jobs (incl. semantic-model refresh + dataflow), table maintenance, shortcuts via `fab ln`, `fab deploy --config <yaml>` for one-command workspace CI/CD on top of fabric-cicd (v1.5+), `fab api` REST passthrough (-A powerbi/storage/azure), deployment pipelines, report rebind via `fab set semanticModelId`, DuckDB-on-OneLake, executing DAX via fab api, and common gotchas (InvalidPath, GUID vs friendly names for schema tables, -f for non-interactive)."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -18,7 +18,19 @@ Filesystem-style CLI over the Fabric + Power BI REST APIs. Paths use `Workspace.
 
 ## Authentication
 
-`fab` reuses the current Azure CLI session (`az login`). It auto-acquires tokens for Fabric and Power BI audiences. Storage / OneLake operations via `fab api -A storage` require the same Az CLI session. `fab auth` tokens do **not** work for OneLake storage calls from external tools — acquire via `az account get-access-token --resource https://storage.azure.com` instead (OneLake's audience is Azure Storage, not the Fabric API).
+`fab` does **not** reuse the Azure CLI session: its auth module has no Azure CLI credential, so with `az` signed in and `fab` logged out, `fab ls` fails `[AuthenticationFailed] Failed to get access token` (`fab` 1.7.0 source, and a run, 2026-10-01). It takes `fab auth login` (interactive, service principal or managed identity), or tokens in environment variables, which leave its stored login alone, so a shell pinned to one tenant through `AZURE_CONFIG_DIR` stays pinned:
+
+```bash
+export FAB_TOKEN="$(az account get-access-token --resource https://analysis.windows.net/powerbi/api --query accessToken -o tsv | tr -d '\r')"
+export FAB_TOKEN_ONELAKE="$(az account get-access-token --resource https://storage.azure.com --query accessToken -o tsv | tr -d '\r')"
+```
+
+- **Both are required**: either alone fails `both_fab_and_onelake_tokens_required`.
+- **`FAB_TOKEN` carries the Power BI audience**: `fab` checks its `aud` against `https://analysis.windows.net/powerbi/api` alone.
+- **`FAB_TOKEN_AZURE`** (`https://management.azure.com`) serves only Azure-scope commands, but `fab auth status` crashes without it, `[UnexpectedError] FAB_TOKEN_AZURE`, since it reads the variable before checking that it is set.
+- They expire like any access token: mint them in the same shell call as the `fab` command.
+
+`fab auth` tokens do **not** work for OneLake storage calls from external tools — acquire via `az account get-access-token --resource https://storage.azure.com` instead (OneLake's audience is Azure Storage, not the Fabric API).
 
 ## Path Syntax
 
@@ -339,6 +351,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 |---|---|---|
 | `InvalidPath: No such file or directory` on export | Output dir does not exist | `mkdir -p` first; `fab export` does not create parents |
 | Import/export hangs | Expects interactive confirmation | Always pass `-f` in scripts and automation |
+| `[AuthenticationFailed] Failed to get access token` with `az` signed in | `fab` never reads the Azure CLI login | `fab auth login`, or the env tokens under Authentication |
 | GUID path fails on schema table | DuckDB Delta reader on non-dbo schemas | Use friendly names with `.Lakehouse` suffix |
 | DuckDB auth fails | No CLI chain specified | `CREATE SECRET (...CHAIN 'cli')` forces Az CLI creds |
 | Tokens rejected for OneLake | Used `fab auth` token, or wrong audience | Acquire via `az account get-access-token --resource https://storage.azure.com` (OneLake's audience is Azure Storage, NOT the Fabric API) |
