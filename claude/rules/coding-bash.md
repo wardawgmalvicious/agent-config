@@ -257,6 +257,15 @@ a non-zero exit's first stderr line as a `hook error` notice, while
 stderr from an exit 0 reaches only the debug log (hooks docs, read
 2026-09-27), so an exit-0 abstention reads as a clean pass.
 
+**Exit 2's stderr has a different reader per event.** Claude reads it
+for PreToolUse; for PreCompact, which it blocks, only the user sees it,
+on a manual `/compact`; for SessionStart it is a `hook error` notice
+Claude never sees. Plain stdout reaches Claude only from
+`UserPromptSubmit`, `UserPromptExpansion`, `SessionStart` and
+`PostModelSwitch`, and a PreCompact's `systemMessage` is discarded, so a
+hook that tells Claude something about a compaction is SessionStart with
+matcher `compact`, which fires after one (hooks docs, read 2026-10-01).
+
 **Bound the lifetime of anything you pipe into.** `jq` reads stdin; if
 the hook's shell dies mid-pipeline, `jq` is left blocking on a stdin that
 never closes and holds the session's cwd forever. That is enough to make
