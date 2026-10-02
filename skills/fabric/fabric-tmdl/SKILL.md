@@ -177,9 +177,12 @@ model Model
   So a date table longer than its fact, as one spanning a planning horizon
   over a small fact is, comes out reversed, the date column in
   `fromColumn` (seen once in web modelling, 2026-09-30). Read
-  `relationships.tmdl` back after creating one: a query fails on any
+  `relationships.tmdl` back after creating one, since nothing errors:
+  grouping by the reversed date table returned the fact's grand total on
+  every year (DAX query view, 2026-09-30). The documented failure on a
   duplicate in a one-side column
-  ([limitations](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)).
+  ([limitations](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations))
+  presumably needs a query that filters across the relationship (untested).
 - **Cross-environment rebinding (deployment pipelines):** Direct Lake on OneLake does **not**
   support data source rules — the dropdowns are simply greyed out. Only the [Direct Lake
   overview limitations table](https://learn.microsoft.com/fabric/fundamentals/direct-lake-overview#considerations-and-limitations)
