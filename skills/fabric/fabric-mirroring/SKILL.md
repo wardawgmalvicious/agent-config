@@ -61,6 +61,12 @@ From the `mirroring/overview` platform table as of 2026-08-30.
 | Azure Monitor (preview) | Metadata — connection-based, surfaces via Eventhouse |
 | Open mirrored database | Open |
 
+Not in the table: **Cosmos DB in Fabric**, the native `CosmosDBDatabase`
+item, mirrors itself to OneLake like Fabric SQL database, automatically,
+with nothing to configure
+([mirror-onelake](https://learn.microsoft.com/fabric/database/cosmos-db/mirror-onelake)).
+The Azure Cosmos DB row is a mirrored Azure account.
+
 Per-source limits, auth, and setup detail: `references/source-matrix.md`.
 **Read the source's own limitations page before promising behaviour** — the
 per-source pages carry constraints the general docs don't, and they lag
