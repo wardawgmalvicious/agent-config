@@ -15,6 +15,7 @@ All Fabric operations require Microsoft Entra ID OAuth 2.0 bearer tokens. **Usin
 | **Fabric REST API** | `https://api.fabric.microsoft.com/.default` |
 | **Power BI REST API** (refresh, data sources, permissions, DAX) | `https://analysis.windows.net/powerbi/api/.default` |
 | **OneLake** (DFS/Blob) | `https://storage.azure.com/.default` |
+| **Cosmos DB in Fabric** (NoSQL data plane) | `https://cosmos.azure.com`, as `--resource` or a notebook's `getToken("https://cosmos.azure.com/")`; the `/.default` scope form is untested (2026-10-01) |
 | **Warehouse / SQL Endpoint / SQL Database** (TDS) | `https://database.windows.net/.default` |
 | **KQL / Kusto** | `https://kusto.kusto.windows.net/.default` |
 | **XMLA Endpoint** | `https://analysis.windows.net/powerbi/api/.default` |
