@@ -359,6 +359,7 @@ Full limitation list: [references/REFERENCE.md](references/REFERENCE.md).
 | *"Continue the deployment"* message | A schema-breaking change (for example an int column becoming a string) would lose data in the target. Continuing loses it; the alternative is fixing the source and redeploying |
 | Backward deploy button greyed out | You can only deploy backwards into an **empty** stage — and only as a full deployment |
 | Not copied by a deploy | Data, URL, ID, permissions, workspace settings, app content, personal bookmarks; and for semantic models: role assignments, refresh schedule, data source credentials, query caching, endorsement |
+| Data function button after a deploy | A Power BI button that calls a User Data Function stays pinned to the source stage's function, even where the target holds one of the same name, so a test report writes back through dev. Re-point it in the target report ([translytical task flows](https://learn.microsoft.com/power-bi/create-reports/translytical-task-flow-overview)) |
 | Orphaned pipeline (owner left) | A Fabric admin adds an owner or deletes it via the `Admin - Pipelines UpdateUserAsAdmin` API. Until then nobody can unassign its workspaces |
 | Dataflow refreshing during deploy | The deployment fails. Comparing stages during a refresh gives unpredictable results |
 
