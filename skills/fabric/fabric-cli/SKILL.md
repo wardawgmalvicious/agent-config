@@ -76,6 +76,8 @@ Names with spaces or apostrophes work inside double quotes with no escaping: `"C
 | `fab import <path> -i <dir> -f` | Import definition from local folder (`-f` required for non-interactive) |
 | `fab ln <link-path> --target <target-path>` | Create a OneLake shortcut (alias `mklink`) |
 
+**`export` writes REST's IDs, `bulk-export` Git's.** `fab export` calls `getDefinition`: object IDs, the real workspace ID, and an all-zero `.platform` `logicalId`, with no `description`. `bulk-export` writes `logicalId`s and an all-zero `workspaceId`, as a portal commit does, so redeploy or compare with a repo from it. Both re-indent JSON to 4 spaces and write CRLF in every part, code included, so commit neither into a Git-synced folder as is, and compare with `jq -S` (`fab` 1.7.0, two User Data Functions items, 2026-10-01). `bulk-export` also drops types without a word: one run's summary counted a skipped `Warehouse` and four `SQLEndpoint`s and never mentioned a `Plan`, an `EventSchemaSet` or an `AppBackend`, so check it against `fab ls`.
+
 ### Access Control
 
 | Command | Purpose |
