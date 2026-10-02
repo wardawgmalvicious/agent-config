@@ -75,7 +75,7 @@ union
 
 visualOptions: `{"multiStat__labelColumn": "Metric", "multiStat__valueColumn":
 "Value", "multiStat__displayOrientation": "horizontal", "multiStat__slot":
-{"width": 3, "height": 1}}`.
+{"width": 3, "height": 1}}`, on a tile at least 9 wide and 3 tall.
 
 ## Deterministic ids for scripted authoring
 

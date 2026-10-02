@@ -81,7 +81,12 @@ generic `xColumn`/`yColumns`/`hideLegend`/…). Minimal or empty
 
 - **multistat**: rows = stats; `multiStat__labelColumn` / `multiStat__valueColumn`,
   `multiStat__displayOrientation`, `multiStat__slot: {width, height}` (inner
-  grid of stat slots).
+  grid of stat slots, 1×1 to 5×5). **The tile needs 3 grid columns per slot
+  column and 3 rows per slot row**: five slots in a row need 15×3, a full
+  5×5 grid 15×15, whatever the query returns or the orientation. A smaller
+  tile loads, then fails only when drawn: *Current tile size (12, 5) is
+  smaller than the minimum supported tile size (15, 3)*. No schema check
+  catches it, and Learn gives no minimum (13 probe tiles, 2026-10-01).
 - **kpi** (gauge/bar/donut/number via `kpi__visualType`): `kpi__minValue`,
   `kpi__maxValue`, and `kpi__referenceLines` take **static numbers only** — a
   dynamic (query-computed) target cannot be bound. For "actual vs computed
