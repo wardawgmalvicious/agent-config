@@ -275,6 +275,7 @@ Enumerate at runtime: `get_supported_feature_flags()`.
 - **Eventhouse / KQL Database**: parameterization not applied to these types; KQL table data not source-controlled.
 - **Data Pipeline / Copy Job / Mirrored Database / Paginated Report**: connection references are **not** source-controlled — parameterize connection GUIDs (`key_value_replace` on `externalReferences.connection`) and pre-create connections in the target.
 - **Cosmos DB database**: `find_replace` is not applied, the first deploy creates the definition without data, and unpublish needs `enable_cosmosdbdatabase_unpublish` (upstream item-types page, 2026-10-01).
+- **User Data Function**: Git stores a same-workspace connection as the target's `logicalId` and an all-zero `workspaceId`, which a REST create rejects with `ConnectionSourceNotFound` until both become the object ID and the real workspace ID (observed 2026-10-01). The generic logical-ID pass should make that rewrite when the connected item's folder is in the repository directory (1.3.0 source, inferred, not run), so upstream's "always point to the original items unless parameterized" holds across workspaces. No `resources/functions.json` is needed, whatever upstream says.
 - **ML Experiment / Mounted Data Factory**: shell only / requires the external ADF to exist.
 
 Full 34-type matrix: [reference/item_types](https://microsoft.github.io/fabric-cicd/latest/reference/item_types/).
