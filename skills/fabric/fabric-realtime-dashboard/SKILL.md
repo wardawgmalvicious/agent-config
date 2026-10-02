@@ -38,12 +38,17 @@ All KQL text lives in `queries[]`; everything else points at it:
   `beginVariableName` / `endVariableName` (commonly `_startTime` / `_endTime`).
 - `dataSources[]` — a Fabric KQL database is `kind: "kusto-trident"`, on
   which schema v81 requires `id`, `name`, `clusterUri`, `database`,
-  `workspace` and `databaseArtifactId` (the KQLDatabase item id). Exports
-  leave `clusterUri` empty and set `workspace` to the all-zero GUID. The
-  schema calls `database` a duplicate of `databaseArtifactId`, but the two
-  exports carrying real ids hold a different GUID there, so copy both from
-  an export. Learn's template shows the v63 shape instead: `scopeId`, and
-  no `databaseArtifactId` (schemas and seven public exports, 2026-09-29).
+  `workspace` and `databaseArtifactId` (the KQLDatabase item id). **Git and
+  REST export it differently.** A git file leaves `clusterUri` empty, sets
+  `workspace` to the all-zero GUID and puts the database's `logicalId` in
+  `database`; `getDefinition` returns the cluster's query URI, the runtime
+  item id in `database` (equal to `databaseArtifactId`, as the schema says)
+  and the workspace id or the all-zero GUID (two dashboards, 2026-10-01).
+  Copy from the export the path takes: git's for a git file,
+  `getDefinition`'s for a REST create, which bound and ran its tiles; a REST
+  create in git's shape is untested. Learn's template shows the v63 shape
+  instead: `scopeId`, and no `databaseArtifactId` (schemas and seven public
+  exports, 2026-09-29).
 
 ## Load-time validation rules
 
