@@ -40,7 +40,11 @@ Fabric SQL Database is an Azure SQL Database hosted within a Fabric workspace. I
   ([planning prerequisites](https://learn.microsoft.com/fabric/iq/plan/overview-prerequisites)),
   and its `.platform` description opens `DoNotEdit` (observed 2026-09-30).
   This skill's glob matches its `.sql` files: stand down, and don't edit,
-  rename or delete them, in Git or the portal
+  rename or delete them, in Git or the portal. Don't query the database
+  either: Learn reserves it "strictly for system operations and app
+  storage" and says to query writeback data in its configured destination
+  ([persist data](https://learn.microsoft.com/fabric/iq/plan/planning-writeback/planning-how-to-persist-data),
+  2026-10-01). Its SQL project in Git shows its shape
 
 ## Reference
 
