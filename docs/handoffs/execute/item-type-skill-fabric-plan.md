@@ -116,10 +116,11 @@ semantic model built on those tables plus a date table, and one
 intelligence sheet (`sheetType: REPORTING`) embedding the planning
 sheet's visual. Measured by the session that built it, and re-measured
 by the triage that folded this in: one `*.Plan/.platform` on the
-machine, typed `Plan`. **Halves A and B are still untested on it**: when
-the note was written the planning sheet carried one field, a category
-key on columns, and no time fields or measures. The date relationship
-has since been fixed and measures added (§ Step 3).
+machine, typed `Plan`. **Both halves have since been run on it**, by
+the same session later that evening, in a note folded here on
+2026-10-01: a planning grid with date fields on columns and a measure,
+a month member spelled `Sept`, Extend Time and a data-input measure.
+What they showed is under § Half B, § The item itself and § Not drilled.
 
 ## The gap, if step 0 says yes
 
@@ -183,7 +184,13 @@ The replacement is to state row existence as data:
   table is often longer than its fact, and Direct Lake modelling picks a
   relationship's many side by row count, so it comes out reversed: seen
   on the sample item on 2026-09-30, and now a rule in `fabric-tmdl`
-  § Direct Lake Configuration, which half A cites.
+  § Direct Lake Configuration, which half A cites. Its symptom was the
+  fact's grand total repeated on every year, with no error. A horizon
+  table is necessary, not sufficient: the grid shows periods only where
+  the measure has data, and future columns come from **Extend Time**
+  (needs a data-input measure and no forecasts) or a forecast measure
+  (Learn's Extend Time and P&L forecast pages, read by the note's session
+  2026-09-30).
 - **Weight matrices** brought in through **Blend** as a measure rather
   than a relationship.
 - **PowerTable** as the maintenance surface, so business users change
@@ -218,6 +225,23 @@ Mechanical and unguessable, which is exactly what a skill is for:
   `Sept` (only `Sep` or `September`), `WK1` (use `W1`), `First Half`
   (use `H1`), `Q5`, `Week 54`, `2025-2026` and any range, `01/02/2025`,
   `Feb 1, 2025`, and mixed formats within one level.
+- **On the sample item, observed 2026-09-30.** The level verdict is in
+  the planning visual's `properties.json`,
+  `visualState.columnDimensions[].isTimeDimension` and
+  `.timeIntervalUnit` (`null` on row fields), and a text month column
+  with no `sortByColumn` was recognised by its field name alone. With
+  one member spelled `Sept` and column subtotals **off**, the member
+  dropped silently: no Q3, no column, the visible columns adding to 547
+  against the model's 554. Filtered to that quarter alone, `Sept`
+  appeared as plain text. Column subtotals **on**
+  (`totals_config.column_sub_total: "Right"`) bypassed parsing: `Sept`
+  counted under Q3, and the months fell into the model's alphabetical
+  order. So one sheet shows different numbers by a totals toggle. Under
+  Extend Time, Plan generates its own period labels (`Sep`), so the
+  model's `Sept` actual never lands in Plan's `Sep` period: a forecast
+  beside a missing actual, no error. Fix labels at the source, and give
+  every text month column a `sortByColumn`. Untested: time-intelligence
+  calculations on such a level.
 - **14 valid hierarchy orderings enumerated**, and five invalid ones
   (`Quarter → Year`, `Day → Month`, `Week → Month`, …).
 - The sharpest gotcha: **a Day level directly under Quarter or Half Year
@@ -255,7 +279,7 @@ page, read 2026-09-30, which gives every part as `InlineBase64` JSON.
 | `sheets/{sheetId}/commentSettings.json` | required for PLANNING and POWERTABLE | on the PLANNING and REPORTING sheets, and on 0 of 7 PowerTable sheets, which keep their comment settings in `sourceSettings.json` (re-measured). Inferred: the page means REPORTING |
 | PowerTable visual: `columnConfigs.json`, `properties.json`, `source.json`, `sourceSettings.json` | required | on all 7 (re-measured) |
 | PowerTable visual: `approvals.json`, `automations.json`, `forms.json` | optional | absent, none configured |
-| Planning visual: `dataInput.json` | required | absent: the visual has only `properties.json`, with no input columns yet (re-measured) |
+| Planning visual: `dataInput.json` | required | present once a measure is on the grid, no input column needed: one entry per measure, `measureGuid` a numeric string, `dataInputType: 6`, `measure_role: "ACMeasure"`, and `sidecarHydration*` fields of unknown use (observed 2026-09-30; absent before any measure) |
 | Intelligence visual: `properties.json` | required | not applicable: the intelligence sheet has no `visuals/` folder (re-measured) |
 
 Layout a script trips on:
@@ -309,7 +333,9 @@ at `1.0.0`: draft-07, with `$ref`s to the shared
 `common/connectionReference` and `common/itemReference`, all resolvable
 on 2026-09-30. Validated each against its own `$schema`, refs fetched
 live, 38 of 42 files pass (re-measured: the same 38 and the same four
-failures), and none of the four was edited by hand:
+failures), and none of the four was edited by hand. Re-run twice later
+that evening on the grown item, 39 of 43 passed, the same four failing
+and `dataInput.json` and the planning `properties.json` passing:
 
 | File | Fails because |
 | --- | --- |
@@ -358,9 +384,18 @@ marked):
 - **Planning visual to model fields**, the planning `properties.json`:
   bound by name, as `Table[column]` in
   `visualState.columnDimensions[].externalKey`, each field carrying
-  `isTimeDimension` and `timeIntervalUnit`, presumably where time
-  detection records its verdict (inferred). So half B's `Sept` case
-  should be readable from git, not only from the screen.
+  `isTimeDimension` and `timeIntervalUnit`, where time detection records
+  its level verdict (observed 2026-09-30). Whether members parsed is not
+  in git, only on screen; git records the switch that decides it,
+  `totals_config.column_sub_total` (§ Half B). Measures bind by name too,
+  `Table[measure]` with `columnType: "Measure"`, here from an Import-mode
+  measures table inside the Direct Lake on OneLake model, which Plan read
+  without complaint. Every grid field also gets a filter-pane entry in
+  `properties.superFilterAssignments`; a swapped-in field's entry is
+  appended last, below the measure's, out of view until scrolled. A
+  filter left in the pane is saved in the definition and hides periods
+  that arrive later, from Extend Time for one. Plan applies its own
+  number format: `formatString: 0` shows as `184.00`.
 - **Intelligence sheet to planning visual**: by `visualId` with
   `isEmbedded`, in `definition.json` only (re-measured).
 - **The system database**, `__fabric_plan_sys.SQLDatabase`:
@@ -369,14 +404,55 @@ marked):
   one SQL schema per Plan, named for the Plan's item GUID (the Plan's
   `logicalId` is that GUID reordered), with tables for PowerTable
   approvals, audit, automations, writeback, cube jobs and InfoBridge
-  queries, and a `Security/` folder of one file per principal.
+  queries, and a `Security/` folder of one file per principal. The schema
+  name was confirmed in the portal (2026-10-01). Building a planning grid
+  adds a table, `visual_di_<originEntityId>_<hash>`, with one
+  `NVARCHAR(255)` `dim_<table><column>` column per grid field and
+  `DECIMAL(30,10)` `measure_N` columns; a new field layout adds a new
+  table, the old one stays, and a layout seen before maps back to its
+  own (observed 2026-09-30). Typing a value adds
+  `visual_audit_<n>_<hash>`, logging each edit with the editor's UPN:
+  personal data, in rows, not in git. Source control listed that DDL only
+  after the database was opened in the portal, 3 h 22 min after the
+  change behind it (once, 2026-10-01), so open it before committing a
+  Plan change. Where typed values live across layouts is still open.
+  **Don't query it**: Learn reserves it "strictly for system operations
+  and app storage" and sends readers to the writeback destination
+  ([persist data](https://learn.microsoft.com/fabric/iq/plan/planning-writeback/planning-how-to-persist-data),
+  read 2026-10-01). Learn its shape from its SQL project in git.
 
 **For deployment** (inferred): only the planning visual's by-name
 binding survives a move to another workspace unchanged. The PowerTable
 sources and the model reference need rewriting, for example by
 `fabric-cicd`'s `find_replace`; the system database's schema name is
 workspace-specific by construction; and the portable forms the page
-describes would avoid most of this, but the portal writes neither.
+describes would avoid most of this, but the portal writes neither. **No
+tool applies such a rewrite yet**: `fabric-cicd`'s `ItemType` enum, on
+`main` and in v1.3.0, the copy `fab` 1.7.0 bundles, has `Ontology` and no
+`Plan`, and `fab` has neither IQ type (observed in source, 2026-10-01),
+while deployment pipelines and Git integration list Plan (preview). A
+deployment makes its own system database (Known limitations, read
+2026-10-01), so that folder in git is a record to read, not to deploy
+(inferred). The same page names two renames that break a Plan: its
+workspace (the item no longer opens) and its semantic model (the
+connection breaks).
+
+**Extend Time and a data-input measure, run 2026-09-30.** The data-input
+measure is a second `dataInput.json` entry under
+`measure_type.DataInput`: `allow_input: "ReadAndEdit"`,
+`bound_to_filter_context: true`, `distribute_parent_value_to_children:
+true` (top-down allocation, which split values evenly, not by actuals),
+and an `on_change_formula` naming its source measure by numeric
+`measureGuid` (`M_<id>`), not by name. The ids looked deterministic: a
+field re-added got the same `columnDimensions[].id` (inferred: a hash of
+the field key). Extend Time is `visualState.extend_time: {start_date,
+end_date}`, ISO dates, in the planning `properties.json`. Typed values
+survived swapping a column field, in a commit that touched only
+`properties.json`. More view state joins the churn list:
+`visualState.totals_config` (a user setting), `toolbar.*`, `tableState.*`,
+`columnExpandCollapse`, `embeddedSuperFilter`, `layout.layout_type`,
+`ruler`, and default `aggregation_config` and `ragged_hierarchy_config`
+blocks.
 
 ### Not drilled
 
@@ -385,12 +461,13 @@ The definition format is drilled now, above. Still not:
 - the Plan overview, the PowerTable and Blend how-tos, and the remaining
   `plan/resources/best-practices/` pages;
 - on the item: InfoBridge / Connected Planning sources, writeback,
-  scenarios, insert rows, model templates, data-input columns, a
-  populated cube, PowerTable approvals, automations and forms, and
-  native intelligence visuals, none of which the sample uses;
-- time detection on a real hierarchy, half B's `Sept` case included,
-  which should be readable from git (§ What each part points at);
-- whether `fabric-cicd` or `fab` handle a Plan.
+  scenarios, insert rows, model templates, Forecast, a populated cube,
+  PowerTable approvals, automations and forms, and native intelligence
+  visuals, none of which the sample uses;
+- time-intelligence calculations (YTD, prior period) on a level whose
+  members don't all parse;
+- where typed values are stored across field layouts, which git alone
+  can't settle.
 
 The time-intelligence page still matched half B's tables on 2026-09-30,
 as read by the note's session.
@@ -425,7 +502,9 @@ Lighter than the other two briefs, but not nil:
 - **`fabric-tmdl`** carries, **since 2026-09-30**, the row-count rule
   that reversed the sample's date relationship: web modelling put the
   date table, longer than the fact, on the many side (observed
-  2026-09-30, fixed by hand that evening). Half A cites it.
+  2026-09-30, fixed by hand that evening). Since 2026-10-01 it also names
+  the symptom, the fact's total on every date member with no error. Half
+  A cites both.
 - **`fabric-ontology`**'s `when_to_use` ends "the item is not the Fabric
   IQ Plan item": point that clause at this skill once it exists.
 
@@ -436,7 +515,7 @@ Lighter than the other two briefs, but not nil:
   longer blocked now that step 1 is resolved. A glob test needs paths
   only, so a synthetic `Fixture.Plan/` does: `definition.json`,
   `.platform`, one `sheets/<guid>/visuals/<GUID>/` PowerTable set with an
-  uppercase folder, and one lowercase planning visual. The real item's 42
+  uppercase folder, and one lowercase planning visual. The real item's 43
   files are LF and carry workspace, item, connection and database
   identifiers, so genericize anything taken from them.
 - Real-use validation is still the weak point, and the skill says so: a
@@ -472,8 +551,9 @@ paragraphs stale.
 - In that repo,
   `git log --format='%h %ad %s' --date=iso -- '*.Plan/*' '*.SemanticModel/*'`:
   on 2026-09-30 the item was last committed at 20:09, the model's date
-  relationship fixed at 20:38 and measures added at 20:43, so halves A
-  and B may have moved on since.
+  relationship fixed at 20:38 and measures added at 20:43; the
+  planning-sheet probes ran to 22:48, and the system database's DDL was
+  committed at 02:10 on 2026-10-01.
 - `grep -n "fabric_plan_sys" skills/fabric/fabric-database/SKILL.md` and
   `grep -n "more rows" skills/fabric/fabric-tmdl/SKILL.md`: the two
   overlap edits, landed 2026-09-30.
