@@ -46,7 +46,7 @@ Every Fabric item has **two** GUIDs, and they are NOT interchangeable. Using the
 | Identifier | Source | Resolved by | Use for |
 |---|---|---|---|
 | **Runtime item ID** | Fabric portal URL (`…/items/{guid}`); `GET /v1/workspaces/{wsId}/items` response `id` | The Fabric engine at execution time | Pipeline activity `notebookId` / `pipelineId`, Variable Library values consumed at runtime, REST `/items/{id}` calls, `notebookutils.runtime.context` lookups |
-| **logicalId** | `.platform` file → `config.logicalId` | Git integration / source-control tooling | `.platform` payloads, PBIP + pbir-cli + `fab import` source-control operations |
+| **logicalId** | `.platform` file → `config.logicalId`; `logicalId` on Get Item / List Items, null when none is assigned | Git integration / source-control tooling | `.platform` payloads, PBIP + pbir-cli + `fab import` source-control operations |
 
 **The relationship is exact, not a resemblance: for a portal-created item, `logicalId` is the runtime item ID with its 16 bytes reversed.** Confirmed 2026-09-03 against `GET /v1/workspaces/{wsId}/items` over 19 workspaces — 21 of 21 resolvable reversals hit a real item with the same `displayName` and `type`, none hit a different item, and no raw `logicalId` was itself an item ID. Reversal is an involution, so it round-trips. This is also why a `logicalId` so often has a version nibble that is not `4`: a reversed v4 GUID does not look like a v4 GUID (79 reversals, zero failures, across two private repos and ~20 public ones spanning tenants).
 
@@ -68,6 +68,13 @@ rev = lambda g: str(uuid.UUID(bytes_le=uuid.UUID(g).bytes_le[::-1]))
 rev("7c4d1e88-93af-4b02-9d61-2fa50c7e3b14")   # synthetic
 # -> '0c7e3b14-2fa5-9d61-4b02-93af7c4d1e88'
 ```
+
+To fetch the `logicalId`, read it from the API before deriving it:
+`GET /v1/workspaces/{wsId}/items[/{itemId}]` returns it beside `id`
+([Get Item](https://learn.microsoft.com/rest/api/fabric/core/items/get-item)),
+and so does `fab get <item> -q logicalId`. One workspace's List Items
+carried it for every Git-supported item and for no `SQLEndpoint` or
+`AppBackend`, matching each committed `.platform` (2026-10-01).
 
 **Variable Library specifically:** variable string values are passed **verbatim** to consumers — they are NOT resolved against `.platform` logicalIds. Always store the runtime item ID.
 
