@@ -252,7 +252,7 @@ deploy_with_config("config.yml", token_credential=cred, environment="prod",
 
 | Flag | Effect |
 |---|---|
-| `enable_lakehouse_unpublish` / `enable_warehouse_unpublish` / `enable_sqldatabase_unpublish` / `enable_eventhouse_unpublish` / `enable_kqldatabase_unpublish` | Allow orphan deletion of **data-bearing items** — off by default as data-loss protection |
+| `enable_lakehouse_unpublish` / `enable_warehouse_unpublish` / `enable_sqldatabase_unpublish` / `enable_eventhouse_unpublish` / `enable_kqldatabase_unpublish` / `enable_cosmosdbdatabase_unpublish` | Allow orphan deletion of **data-bearing items** — off by default as data-loss protection |
 | `enable_hard_delete` | Bypass workspace recycle bin on unpublish; requires workspace **Admin** |
 | `enable_shortcut_publish` / `continue_on_shortcut_failure` | Deploy Lakehouse shortcuts / tolerate shortcut failures |
 | `disable_workspace_folder_publish` | Don't create workspace subfolders |
@@ -274,6 +274,7 @@ Enumerate at runtime: `get_supported_feature_flags()`.
 - **Variable Library**: the **active value set is selected by the `environment` value** — the deploy picks the value set matching the environment name.
 - **Eventhouse / KQL Database**: parameterization not applied to these types; KQL table data not source-controlled.
 - **Data Pipeline / Copy Job / Mirrored Database / Paginated Report**: connection references are **not** source-controlled — parameterize connection GUIDs (`key_value_replace` on `externalReferences.connection`) and pre-create connections in the target.
+- **Cosmos DB database**: `find_replace` is not applied, the first deploy creates the definition without data, and unpublish needs `enable_cosmosdbdatabase_unpublish` (upstream item-types page, 2026-10-01).
 - **ML Experiment / Mounted Data Factory**: shell only / requires the external ADF to exist.
 
 Full 34-type matrix: [reference/item_types](https://microsoft.github.io/fabric-cicd/latest/reference/item_types/).
