@@ -155,8 +155,8 @@ un-routed. This repo's notes wait for the user's word: open none unasked
 
 **Peers.** `ListAgents` names a session by its `/rename` or `--name` name,
 else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
-**Message only a session in this repository** (2026-09-30): another repo's
-work goes to its inbox, and nothing announces a note.
+**Message another repo only in a coordination the user starts**, the sends
+they direct and answers within it (2026-10-01); else use its inbox.
 **Run it before editing a file another session may be editing**, not only
 before a commit. **Ask a peer only for what exists nowhere but in its
 context**: uncommitted work, what it tried, a live login. For the rest, or a

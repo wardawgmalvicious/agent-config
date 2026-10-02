@@ -874,6 +874,24 @@ What says a note exists now: the writing session's report to its user,
 `/triage` in the payload repo, and `scripts/handoff-status.py` there,
 which lists every repo's waiting notes.
 
+**2026-10-01.** The user narrowed the rule a day later. A session still
+never messages another repo's session on its own, but may when the user
+directs it, and may answer within a coordination the user
+started, where messages beat the user relaying handoffs by hand. It came
+from a personal tooling repo's session writing a wrapper for a live item
+that a client repo's session could reach. The client-side session sent
+its run results over several rounds; the tooling session, holding to the
+2026-09-30 rule, answered only through the user, until the user told it
+to send the final diff itself. The receiver replied within minutes that
+it had already re-synced, which saved a relay. What 2026-09-30 priced
+were unprompted messages, the heads-up and the doorbell above, and that
+stands. Two things stay open. Where a coordination ends is something the
+user's words leave unsaid. The hook left open above would now have to ask
+rather than deny, prompting on every message of an exchange in both
+sessions; whether a hook's `ask` still prompts under auto mode is
+untested. Reached this repo as an inbox note, and was approved by name
+at `/triage`.
+
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
