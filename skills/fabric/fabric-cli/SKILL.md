@@ -57,7 +57,7 @@ Names with spaces or apostrophes work inside double quotes with no escaping: `"C
 | `fab cd <path>` | Change working path (session-scoped) |
 | `fab pwd` | Current path |
 | `fab exists <path>` | Returns `* true` / `* false` |
-| `fab get <path> [-v] [-q <jmespath>] [-o <file>]` | Item details; `-v` all properties |
+| `fab get <path> [-v] [-q <jmespath>] [-o <file>] [-f]` | Item details. Without `-q` it lists the queryable property paths, not their values (`-v` too); `-q .` prints everything, definition parts decoded. On an item, pass `-f` |
 | `fab desc .<ItemType>` | List commands supported by an item type |
 | `fab find "<text>" [-P type=[...]] [-l]` | OneLake-catalog search across all workspaces by display name / description / workspace name (**v1.6+**). `-P` uses `key=value` / `key!=value` with `[a,b]` bracket syntax (distinct from the JSON-array form `fab deploy` uses) |
 | `fab open <path>` | Open the workspace or item in the browser |
@@ -352,7 +352,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 | Issue | Cause | Fix |
 |---|---|---|
 | `InvalidPath: No such file or directory` on export | Output dir does not exist | `mkdir -p` first; `fab export` does not create parents |
-| Import/export hangs | Expects interactive confirmation | Always pass `-f` in scripts and automation |
+| Import/export, or `get` on an item, hangs or fails `Found xterm-256color, while expecting a Windows console` (Git Bash) / `No Windows console found` (PowerShell) | A confirmation prompt (for `get`, the sensitivity label) with no console to answer it | Always pass `-f` in scripts and automation |
 | `[AuthenticationFailed] Failed to get access token` with `az` signed in | `fab` never reads the Azure CLI login | `fab auth login`, or the env tokens under Authentication |
 | GUID path fails on schema table | DuckDB Delta reader on non-dbo schemas | Use friendly names with `.Lakehouse` suffix |
 | DuckDB auth fails | No CLI chain specified | `CREATE SECRET (...CHAIN 'cli')` forces Az CLI creds |
