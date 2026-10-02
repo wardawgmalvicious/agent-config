@@ -15,8 +15,9 @@ where they diverge:
 
 - **CLI wrappers** — `local-cli/*.sh`, `infra/deploy.sh`.
   Strict-mode scripts a human or agent runs directly.
-- **Claude Code hooks** — `agent-config/hooks/*.sh`. Run automatically on
-  every session or tool call; see the hooks section.
+- **Claude Code hooks** — `~/.claude/hooks/*.sh`, or a repo's
+  `.claude/hooks/`. Run automatically on every session or tool call; see
+  the hooks section.
 - **Shell profiles** — `.bashrc`, `.bash_profile`, `.profile`. Sourced
   into a shell rather than executed, which inverts the strict-mode rule
   below.
@@ -238,7 +239,7 @@ reading its file, so edit a copy, or wait for the run to exit.
 
 ## Claude Code hooks
 
-Hooks in `agent-config/hooks/` run on every session start or tool call.
+Hooks run on every session start or tool call.
 Their blast radius is the whole session, so they follow stricter rules
 than an ordinary script.
 
