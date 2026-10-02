@@ -211,6 +211,13 @@ files, which leaves its rewrite *unstaged*. Neither is contention.
   `<branch>`, the wrong branch back to `<sha>^` — since both move refs
   a peer may be standing on, and resetting to the upstream instead
   would drop anything unpushed.
+- **Don't route around a staged file with `git commit -- <path>`.** With
+  `core.filemode` false, the Windows default, a pathspec commit ignores the
+  index's mode: a new script lands 100644 though `git add --chmod=+x`
+  staged 100755, a tracked one keeps HEAD's mode, and the index keeps
+  100755 staged as `M` for the next plain commit, whoever makes it. It
+  exits 0 (git 2.55.0.windows.3, 2026-10-01). With a peer's file staged,
+  ask them to commit or unstage it first.
 - **`fatal: Unable to create '.git/index.lock': File exists` is their
   git command in flight**, not a stale lock. Wait and retry; never
   delete it.
