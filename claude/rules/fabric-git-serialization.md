@@ -47,7 +47,11 @@ parts (`pipeline-content.json`, `variables.json`, eventstream/report
 JSON, Warehouse `.sql` scripts) **has no final newline** — a trailing
 newline added locally is stripped on the next portal round-trip,
 producing a whitespace-only diff. TMDL, `notebook-content.*`, and
-`.kql` parts *do* end with a newline.
+`.kql` parts *do* end with a newline. A User Data Functions
+`function_app.py` has no canonical end: it is stored as the editor's text
+ended, with no final newline after one publish and `\n\n\n` after the
+next (three portal commits, 2026-09-30), so the rule below is the only
+one that fits it.
 
 When editing these files:
 
@@ -137,7 +141,9 @@ Fabric writes some lines CRLF and some LF **inside the same file** —
 the `GO` / `ALTER TABLE` constraint block in Warehouse table DDL, and a
 view's auto-generated header, last body line and the blank line before
 its closing `GO`, are CRLF; the surrounding body is LF (three CRs in
-each of the 10 views of one warehouse, 2026-10-01).
+each of the 10 views of one warehouse, 2026-10-01). A User Data Functions
+`definition.json` is CRLF on every line, with no final newline, beside an
+LF `function_app.py` and `.platform` (the same three commits).
 With Git for Windows' default `core.autocrlf = true` and no
 `.gitattributes`, a local commit strips those CRs, the next portal
 sync puts them back, and the history fills with recurring
