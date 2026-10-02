@@ -207,8 +207,11 @@ refuses, and never overwrites. Add either field on purpose, after reading
 (2026-09-30, one tenant) typed a semantic model, a Plan and a SQL
 database as `dataset`, `Planning` and `SQLDbNative`, where Learn's
 `ItemType` lists `SemanticModel`, `Plan` and `SQLDatabase`, and none of
-the three (re-read 2026-10-01). A script filtering `changes[]` on
-documented type names skips those items without a word. Match on
+the three (re-read 2026-10-01). Two calls on 2026-10-01 added a User
+Data Functions item as `FunctionSet` and a report as `report`
+(`UserDataFunction`, `Report` on Learn), and repeated `dataset` and
+`SQLDbNative`. A script filtering `changes[]` on documented type names
+skips those items without a word, case-insensitively too. Match on
 `itemMetadata.itemIdentifier` instead: `logicalId` where present, else
 `objectId`. Learn requires one of the two, and its example of an item
 added in the workspace carries only `objectId`.
