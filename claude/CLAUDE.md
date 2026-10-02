@@ -46,8 +46,8 @@ the bytes: a round trip through a translating layer proves nothing.
   inline PowerShell here-string stays literal (use a `.ps1`). 2026-09-02.
 - **One file per Bash call, or use Write** (2026-09-23): more can fail
   whole on a misleading ``unexpected EOF while looking for matching `''``.
-- **A leading `/` becomes a Git install path**, silently, even quoted: set
-  `MSYS2_ARG_CONV_EXCL='*'` or use PowerShell.
+- **A leading `/` becomes a Git install path**, silently, even quoted: use
+  pwsh, or `MSYS2_ARG_CONV_EXCL=/x` on that command; `'*'` breaks git's ssh.
 - **`$TMPDIR` is unset**: `"$TMPDIR/x"` fails `Permission denied` at the Git
   install root (2026-09-12). Use the scratchpad path.
 - **`/tmp` is `C:\tmp` to a native child**, which raises `FileNotFoundError`

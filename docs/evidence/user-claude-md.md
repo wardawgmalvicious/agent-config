@@ -226,6 +226,25 @@ trailing text, and **it fails silently** — nothing reports the mangling.
 Prefix with `MSYS2_ARG_CONV_EXCL='*'`, or run from PowerShell. (Probing
 a skill's *slash* path has further traps; `test-skill` covers them.)
 
+**2026-10-01.** `'*'` turns conversion off for every argument of every
+native program the command starts, not only the one with the slash, and
+that reaches git's ssh. Where `core.sshCommand` names its key as
+`~/.ssh/<key>` with `-o IdentitiesOnly=yes`, git's `sh` expands the `~` to
+`/c/Users/<username>`, which Windows OpenSSH then receives unconverted. A
+session in a client estate repo, with the variable exported at the top of
+a Bash call that later reached the remote, got from `git ls-remote`:
+`Warning: Identity file /c/Users/<username>/.ssh/<key> not accessible: No
+such file or directory.`, then `git@github.com: Permission denied
+(publickey).`, exit 128 (git 2.55.0.windows.3, OpenSSH_for_Windows_9.5p2).
+That error points at keys, accounts and `gh auth`; only the warning names
+the cause. Re-measured here the same day without connecting: under `'*'`,
+`ssh.exe -G` given the same `-i ~/.ssh/<key>` printed the same warning and
+fell back to the default identities, and `python3.13` received
+`/c/Users/x` unconverted, while `MSYS2_ARG_CONV_EXCL='/code-review'`
+left `/code-review` alone and still converted `/c/Users/x`. So the bullet
+now names the prefix form, set on the one command, as `test-skill` already
+uses it.
+
 #### `$TMPDIR` is unset, so `"$TMPDIR/x"` writes to the Git install
 
 Neither shell sets it. In Bash the path collapses to `/x`, which MSYS2
