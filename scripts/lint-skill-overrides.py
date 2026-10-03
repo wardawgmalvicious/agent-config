@@ -2,8 +2,9 @@
 """Enforce that every platform skill is collapsed to name-only in this repo.
 
 .claude/settings.json carries a `skillOverrides` block whose job is to keep
-the fabric/ and powerbi/ skill descriptions out of the listing in sessions
-HERE, where the subject is maintaining the payload rather than using it.
+the platform groups' skill descriptions (PLATFORM_GROUPS below) out of the
+listing in sessions HERE, where the subject is maintaining the payload
+rather than using it.
 That block is a BY-NAME MAP WITH NO PATTERN FORM, so a newly authored
 platform skill is not covered by it until someone types the name in — and
 nothing says so. The failure is silent in the only direction that matters:
@@ -25,7 +26,7 @@ it went silent twice in a row:
            mechanism, and is why this check exists instead.
 
 WHY AN UNKNOWN GROUP IS A FAILURE. The platform/behavioural split is a
-judgement this script cannot make. skills/workflow/ and skills/social/ are
+judgement this script cannot make. The BEHAVIOURAL_GROUPS below are
 deliberately NOT overridden — `commit` and `code-review` are reached by
 description, so collapsing them would break the thing they are for. A new
 group is therefore neither safe to require nor safe to skip, and guessing

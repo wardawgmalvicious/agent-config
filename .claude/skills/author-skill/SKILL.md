@@ -1,6 +1,6 @@
 ---
 name: author-skill
-description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and fabric-/pbir-/pbid- prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and which tree a new skill belongs in and its deploy step. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
+description: "Author a new skill for this repo end to end — take a topic, check for existing coverage, drill the official docs behind it, write a filled handoff brief to docs/handoffs/, then draft the SKILL.md and run the post-draft checks. Use when asked to write, author, create, or scaffold a new skill, or when a drift-audit new-skill candidate has been accepted. Encodes this repo's own conventions rather than generic skill advice — verb naming for behavioral skills and namespace prefixes for platform ones, the description as the entire trigger mechanism, long detail split into references/, lint-frontmatter.py, and which tree a new skill belongs in and its deploy step. Drills before it writes and never encodes an unverified claim. Ends at a linted draft plus a fresh-session test plan; writes no test fixtures and does not commit — fixtures and validation are test-skill's, which reads the brief back off disk. To fold a session learning into guidance that already exists, use learn instead."
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 model: fable  # judgment-heavy; alias not dated ID — see .claude/rules/editing-skills.md
@@ -37,10 +37,9 @@ listing, and `/<name>` answers `Unknown command`. Measured 2026-09-02:
 machine the form is `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta`,
 **never bare** — see root `CLAUDE.md`.
 
-A **platform** skill is the exception that proves the rule: `fabric` and
-`powerbi` are pruned from user scope here on purpose, so a new one stays
-unlinked by design and enters no session's payload. Nothing is broken
-when that happens, and no linker run changes it.
+A **platform** skill is the exception that proves the rule: its group is
+pruned from user scope here on purpose, so a new one enters no session's
+payload until a `-ClaudeDir` run links it into one repo's `.claude/`.
 
 **A project-scope skill needs the linker not at all**, which is the
 third case and the easiest to get wrong in the other direction. Nothing
@@ -145,8 +144,8 @@ command, and every cross-reference.
 - **Behavioral, cross-domain skills take the verb you invoke** —
   `commit`, `learn`, `code-review`, `drift-audit`. Read the name as the
   user typing it.
-- **Platform skills take a namespace prefix** — `fabric-`, `pbir-`, or
-  `pbid-`.
+- **Platform skills take their group's namespace prefix** — `fabric-`,
+  `pbir-`/`pbid-`/`pbip-`, or `msix-` (the lint's `PLATFORM_PREFIXES`).
 - **`powerbi-*` is reserved.** Those are vendored from
   `microsoft/skills-for-fabric` and keep upstream naming so re-sync
   diffs stay clean. Never take that prefix for a local skill.
@@ -168,16 +167,18 @@ command, and every cross-reference.
   sits at project scope now.
 - **Within `skills/`, the namespace picks the group directory**, and the
   group directory is load-bearing. `skills/fabric/` for `fabric-*`,
-  `skills/powerbi/` for `pbir-`, `pbid-`, `pbip-` and the vendored
-  `powerbi-*`, `skills/workflow/` for the repo-general behavioral verbs
-  (`ls skills/workflow`), `skills/meta/` for upkeep of the agent
-  configuration that must also run in client repos, kept from Copilot
-  by its `.no-copilot` marker (`ls skills/meta`), and
+  `skills/powerbi/` for `pbir-`/`pbid-`/`pbip-` and the vendored
+  `powerbi-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
+  repo-general behavioral verbs (`ls skills/workflow`), `skills/meta/` for
+  upkeep of the agent configuration that must also run in client repos,
+  kept from Copilot by its `.no-copilot` marker (`ls skills/meta`), and
   `skills/social/` for personal-profile writing (`linkedin-highlights`),
-  split out so a workplace Copilot deployment of `workflow` never
-  carries it. A new group needs adding to the machine's
-  `-SkillGroups` default everywhere that default is written, or the
-  next documented linker run prunes it.
+  split out so a workplace Copilot deployment of `workflow` never carries
+  it. A new group goes in `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS` in
+  `scripts/lint-skill-overrides.py`; a platform one stays out of the
+  `-SkillGroups` default, linked per repo by `-ClaudeDir` (`windows`,
+  2026-10-01), and a user-scope one joins that default everywhere it is
+  written, or the next linker run prunes it.
 - **Depth is pinned per tree and a misplacement fails twice silently.**
   The pre-commit hook matches
   `^(skills/[^/]+|\.claude/skills)/[^/]+/SKILL\.md$` — two directories

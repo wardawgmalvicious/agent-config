@@ -7,10 +7,11 @@ paths:
 # The skillOverrides block
 
 - `.claude/settings.json`'s `skillOverrides` collapses every platform skill
-  description — `skills/fabric/` and `skills/powerbi/` — to `name-only` in
-  sessions here. It stays even though the workflow-only prune keeps those
-  skills out of `~/.claude/skills`: it keeps them auditable from this repo
-  and the shape ready for a future edit.
+  description — `skills/fabric/`, `skills/powerbi/` and `skills/windows/`,
+  the groups in `PLATFORM_GROUPS` — to `name-only` in sessions here. It
+  stays even though the default prune keeps those skills out of
+  `~/.claude/skills`: it keeps them auditable from this repo and the shape
+  ready for a future edit.
 - Never collapse `workflow`, `social` or `meta`: `commit`, `code-review` and
   the rest are reached by description. The lint skips those groups, so a
   collapsed behavioural skill passes pre-commit.

@@ -20,7 +20,8 @@ See each `SKILL.md` for its specific triggering conditions.
 
 Naming convention: behavioral skills are named as the verb you invoke
 (`/commit`, `/code-review`); platform skills carry a `fabric-` / `pbir-` /
-`pbid-` namespace prefix. `powerbi-*` skills are vendored from
+`pbid-` / `pbip-` / `msix-` namespace prefix. `powerbi-*` skills are
+vendored from
 [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
 and keep Microsoft's upstream naming so re-sync diffs and their
 internal cross-references stay intact.
