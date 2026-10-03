@@ -74,7 +74,12 @@ PowerShell tool ran the same call, and with it the script's `git -C` on
 the main checkout. Root `CLAUDE.md` says PowerShell's `git -C` passes, so
 that is a route around the guard, not a measurement from the main
 checkout: a script that lives outside the worktree waits for
-`ExitWorktree` `keep`.
+`ExitWorktree` `keep`. It reads the text an interpreter is handed, too:
+on 2026-10-01 (2.1.285) a `python3.13 -` heredoc counting two frontmatter
+strings, one of them "Not for publishing a git branch", was refused as a
+command that "feeds python text naming git in a plain command, which
+cannot be shown to stay inside the worktree". The strings went to the
+scratchpad by `Write`, and `wc -c` on that path ran.
 
 **A check that needs the deployed payload runs after the merge, on
 `main`**, since a worktree cannot reach it:
