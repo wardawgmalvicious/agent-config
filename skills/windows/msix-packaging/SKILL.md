@@ -100,8 +100,9 @@ Each step names what goes wrong at it.
 
 - **The package version** is `Identity/@Version` in
   `Package.appxmanifest`: four parts, Major.Minor.Build.Revision, each
-  0 to 65535. Raise it every release, a rebuild that changes nothing
-  you meant to change included.
+  0 to 65535, and all four are yours in a sideload; only the Store
+  reserves the fourth (§5). Raise it every release, a rebuild that
+  changes nothing you meant to change included.
 - **The `.appinstaller`'s `MainPackage` or `MainBundle` must carry the
   same identity**: "The Name, Publisher, Version, ProcessorArchitecture,
   and ResourceId **must** match the values in the AppxManifest.xml file
@@ -272,11 +273,13 @@ file's design; Learn does not state it.
 - **Do not sign it.** "The Microsoft Store will automatically re-sign
   your MSIX/AppX packages with a Microsoft certificate during the
   publishing process after your app passes certification."
-- **Leave the fourth version part 0, and make the first nonzero.** "The
-  last (fourth) section of the version number is reserved for Store use
-  and must be left as 0". Learn words that rule for "Windows 10 or
-  Windows 11 (UWP) packages"; keeping it for a desktop app costs
-  nothing.
+- **For a Store package, leave the fourth version part 0 and make the
+  first nonzero.** "The last (fourth) section of the version number is
+  reserved for Store use and must be left as 0", one of the rules the
+  page says "The Microsoft Store enforces", worded for "Windows 10 or
+  Windows 11 (UWP) packages". Keeping it for a desktop app costs
+  nothing; a sideload is bound by none of it, and no page fetched
+  restricts its fourth part.
 - **`runFullTrust` is a restricted capability**, and a packaged desktop
   app at medium integrity needs it. A Store submission must explain
   each restricted capability on the Submission options page; a

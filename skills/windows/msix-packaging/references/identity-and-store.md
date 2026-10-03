@@ -123,9 +123,12 @@ Sources:
   and must be left as 0 when you build your package (although the Store
   may change the value in this section). The other sections must be set
   to an integer between 0 and 65535 (except for the first section,
-  which cannot be 0)." The Store serves "the highest-versioned package
-  that is applicable", accepts packages in any order, and allows equal
-  versions only across architectures.
+  which cannot be 0)." The rules are the Store's: the page opens them
+  with "The Microsoft Store enforces certain rules related to version
+  numbers", and the Identity element page reserves nothing. The Store
+  serves "the highest-versioned package that is applicable", accepts
+  packages in any order, and allows equal versions only across
+  architectures.
 - **Package requirements**: SHA2-256 block map hashes, 25 GB per package
   or bundle, ANSI file names.
 - **Restricted capabilities**, `runFullTrust` among them: "you must
