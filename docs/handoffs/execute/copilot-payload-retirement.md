@@ -213,11 +213,14 @@ only the user saw:
    missed confirmed loads (`.claude/rules/activation-testing.md`).
 5. **Which MCP servers' tools were offered**:
    `grep -o 'mcp__[A-Za-z0-9_-]*__' <transcript> | sort | uniq -c`.
-   VS Code bridges its own tools in as one server, so look for the name
-   `~/.claude.json` gives the user-scope server. Finding it while the
-   organization's policy is `none` means it reached the session outside
-   VS Code's deny list. Tell the user, who is asking the organization
-   for MCP access: it is a gap to report, not access to use.
+   The user enabled MCP for the organization on 2026-10-03, so expect the
+   client repo's `.mcp.json` servers under their own names, and VS Code's
+   own tools bridged in as one server; a server offered both ways came by
+   both routes (§ "What VS Code read for MCP"). The name `~/.claude.json`
+   gives the user-scope server means the SDK read that file itself, since
+   VS Code does not. None at all means the policy resolved to `none`, or
+   to `registry`, which refuses these servers (§ "What the build does"):
+   tell the user.
 6. **`/learn`, if it was sent**: whether a turn started, and on which
    model, for § "The `model:` split".
 
@@ -438,9 +441,11 @@ and a pinned model has to be one the Copilot-routed proxy can serve.
   VS Code's chat on the corporate network, and the way back is git:
   revert the removal, or take the script and `copilot/` from the commit
   the ledger names and run it against `~/.copilot`.
-- **MCP there is off by the organization's policy**, and the user is
-  asking for it. That is no part of this brief, and no reason to look
-  for another route to a server.
+- **MCP there is the organization's to switch off as well.** Its policy
+  had MCP off until the user enabled it on 2026-10-03, and no server has
+  yet been seen to start under any target (§ "What VS Code read for
+  MCP"). If it goes off again, that is no part of this brief, and no
+  reason to look for another route to a server.
 
 ## Not checked
 
@@ -450,7 +455,8 @@ and a pinned model has to be one the Copilot-routed proxy can serve.
   `~/.claude/agents`.
 - Whether the entitlement's `none` reaches a server the SDK finds by
   itself in `~/.claude.json`: the deny list is built from what VS Code
-  reads, and it does not read that file.
+  reads, and it does not read that file. Moot while the organization
+  leaves MCP on, as the user set it on 2026-10-03.
 - Whether a setting makes the Claude target the default for a new chat.
   If one exists it is machine-config's, through its inbox.
 - Whether Copilot code review runs on the client repo's pull requests,
