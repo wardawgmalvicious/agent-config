@@ -158,6 +158,20 @@ user enabled MCP servers for the organization:
   ten of the project template's entries carry a `headersHelper`. The
   window had registered no server in the 26 hours it had been open,
   which fits the policy change reaching it: inferred, not traced.
+- **Later that day the Local target started `github-mcp` from
+  `.mcp.json`, and expanded no variable in it.** `${NAME}` and
+  `${env:NAME}` both reached GitHub as typed, and `headersHelper` was
+  ignored; with the helper alone, VS Code signed in to GitHub itself.
+  The user kept the `${VAR}` header, so `github-mcp` fails in the Local
+  target by decision (`claude/mcp/README.md` § "GitHub and multiple
+  accounts"). The Claude target starts these servers through the SDK,
+  so it should expand `${VAR}` as Claude Code does, given the variable
+  in its environment: unseen. The Claude Code extension skips any
+  project helper, the Fabric ones included, until the folder's
+  lowercase-drive key is trusted (§ "The DCR error is a credential
+  failure" there); whether the Claude target does is unseen, so a
+  helper-backed server failing in step 5 below may be that rather than
+  the policy.
 - **The docs agree.** VS Code's MCP servers page (`ms.date` 2026-09-30)
   calls `.mcp.json` the "Workspace, portable format", and says "The flow
   also lists the deprecated .vscode/mcp.json and VS Code user-profile
