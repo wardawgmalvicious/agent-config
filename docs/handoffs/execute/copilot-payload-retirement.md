@@ -40,9 +40,9 @@ what remains only if the turn below fails.
 
 ## What was measured
 
-All on 2026-09-30, on VS Code 1.139.1 (commit `04c0d99f4f`). When this
-brief lands, this section moves verbatim to
-`docs/evidence/user-claude-md.md`.
+All on 2026-09-30, on VS Code 1.139.1 (commit `04c0d99f4f`), bar the
+last subsection, which carries its own date. When this brief lands, this
+section moves verbatim to `docs/evidence/user-claude-md.md`.
 
 ### What each target lists
 
@@ -140,6 +140,35 @@ at = data.find(sys.argv[2].encode())
 print(at, data[max(0, at - 900):at + 900].decode("utf-8", "replace"))
 PY
 ```
+
+### What VS Code read for MCP
+
+On 2026-10-03, on VS Code 1.140.0 and Copilot Chat 0.68.0, the day the
+user enabled MCP servers for the organization:
+
+- **VS Code reads both workspace files.** Each server it registers gets
+  a log, `mcpServer.<source>.<name>.log`, in the window's folder under
+  `%APPDATA%\Code\logs\`. This repo's window registered
+  `microsoft-learn-mcp` from `.vscode/mcp.json` as `mcp.config.ws0`, and
+  again, with `github-mcp`, from `.mcp.json` as `workspace-dot-mcp.0`:
+  one server, twice. A client Fabric repo's window, with no
+  `.vscode/mcp.json`, registered the six servers in its `.mcp.json`.
+- **None had started.** Every log was empty, so what VS Code's own
+  agents make of `${VAR}` and `headersHelper` in `.mcp.json` is unseen;
+  ten of the project template's entries carry a `headersHelper`. The
+  window had registered no server in the 26 hours it had been open,
+  which fits the policy change reaching it: inferred, not traced.
+- **The docs agree.** VS Code's MCP servers page (`ms.date` 2026-09-30)
+  calls `.mcp.json` the "Workspace, portable format", and says "The flow
+  also lists the deprecated .vscode/mcp.json and VS Code user-profile
+  destinations for compatibility." Of the Agent Host, where a Claude
+  session runs: "the Agent Host doesn't read .vscode/mcp.json directly.
+  Instead, VS Code forwards your MCP server configuration to the Agent
+  Host, except servers that require interactive input".
+- **The VS Code session behind this was no Claude-target turn.** It ran
+  in the Local target on a Claude model; its transcript, in
+  `GitHub.copilot-chat\transcripts\` under VS Code's workspace storage,
+  says `"producer":"copilot-agent"`.
 
 ## The turn it waits on
 
@@ -274,6 +303,19 @@ deployed state, but the hook and the files it reads leave in one commit.
   Copilot; and the comments and messages naming the script in
   `.gitattributes`, `scripts/lint-claude-md.py`,
   `scripts/lint-skill-scopes.py` and `scripts/skill-overlap.py`.
+- **`.vscode/mcp.json` and `.vscode/mcp.template.json` go**, leaving
+  `.mcp.json` the one MCP file: the user's call on 2026-10-03, once
+  § "What VS Code read for MCP" showed VS Code reading it ("it seems
+  likely we can maintain just one mcp file now"). The live file holds
+  only `microsoft-learn-mcp`, which `.mcp.json` has. The template's two
+  entries the project template lacks, `eventhouse-remote-mcp` and
+  `warehouse-remote-mcp`, each join it or are recorded as left out in
+  `claude/mcp/README.md`, with the reason `.vscode/README.md` gives, and
+  that README keeps only what is not MCP. Re-point what names either
+  file, and correct `claude/rules/claude-config-scoping.md`, whose table
+  gives VS Code only `.vscode/mcp.json`: `git grep -n -E '\.vscode/mcp'`.
+  This holds on either path of § "What each outcome means": on the
+  second, it moves to the findings brief as this one is deleted.
 - **The ledgers take entries, never corrections.**
   `docs/evidence/user-claude-md.md` takes § "What was measured" and the
   turn's grading. `docs/evidence/root-claude-md.md` takes the removal
@@ -361,9 +403,6 @@ note carries:
   chat in the Chat view still started there on 2026-09-26.
 - The harness table in `claude/rules/agent-instructions-scoping.md`,
   corrected: facts about VS Code, true whatever this repo ships.
-- `.vscode/mcp.json` and the VS Code template under `claude/mcp/`:
-  VS Code's own MCP format, which the Copilot and Local targets read,
-  where the Claude target reads `.mcp.json`. Not decided here.
 - What `identity-guard`, `push-gate.sh` and their READMEs say of a
   commit made outside Claude Code: still true of Source Control and a
   terminal.
@@ -443,6 +482,9 @@ name. The inbox note and the transcript are raw.
 
 - VS Code's version, and each string under § "What the build does" in
   its bundle: 1.139.1 on 2026-09-30.
+- Which files VS Code takes MCP servers from: the `mcpServer.*.log`
+  names in a window's folder under `%APPDATA%\Code\logs\` (1.140.0 on
+  2026-10-03, § "What VS Code read for MCP").
 - `ls -A ~/.copilot/instructions ~/.copilot/skills`, and each manifest.
 - Which repos hold vendored copies: a `.managed-skills.json` or
   `.managed-instructions.json` under any repo's `.github`.
