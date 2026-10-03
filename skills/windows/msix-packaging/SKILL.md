@@ -89,7 +89,8 @@ Then the channel:
   PublisherDisplayName into the manifest (§5).
 - **Neither**: a plain `.msix` or `.msixbundle`, handed out and
   installed by double-click or `Add-AppxPackage`. Follow §3 and skip
-  the `.appinstaller` in step 4.
+  the `.appinstaller` in step 4; such a copy is outside the update
+  channel (step 5).
 
 ## 3. Release through App Installer, in order
 
@@ -221,6 +222,17 @@ file's design; Learn does not state it.
 - **A packaged desktop app shows no update prompt**, whatever
   `ShowPrompt` says: "For desktop applications, this functionality
   provides a silent update."
+- **Only a copy installed through the `.appinstaller` is in the update
+  channel.** "Installing a Windows app using the App Installer file will
+  create an entry in the App Installer repository", and the checks run
+  off that entry. Learn never says what a bare `.msix` install gets; it
+  follows that it has no entry and never checks.
+  `Get-AppxPackageAutoUpdateSettings` lists the entries on a machine
+  (`-AllUsers` for every user), and `-ShowUpdateAvailability` says
+  whether an update is waiting. Learn documents no way to add an entry
+  afterwards: `Set-AppxPackageAutoUpdateSettings` is scoped to an app
+  "that was installed using an App Installer file", so point such users
+  at the `.appinstaller`.
 - **If nothing arrives**, install a local copy of the `.appinstaller`
   with `Add-AppxPackage -AppInstallerFile <path>` to separate the file
   from the server, then read *Application and Services Logs >

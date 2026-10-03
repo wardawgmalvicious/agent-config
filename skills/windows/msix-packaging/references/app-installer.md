@@ -18,6 +18,7 @@ Sources:
 - [Troubleshoot App Installer issues](https://learn.microsoft.com/windows/msix/app-installer/troubleshoot-appinstaller-issues)
 - [App Installer security features](https://learn.microsoft.com/windows/msix/app-installer/app-installer-security-features)
 - [Configure CI/CD pipeline with YAML file](https://learn.microsoft.com/windows/msix/desktop/azure-dev-ops)
+- [Get-AppxPackageAutoUpdateSettings](https://learn.microsoft.com/powershell/module/appx/get-appxpackageautoupdatesettings) and [Set-AppxPackageAutoUpdateSettings](https://learn.microsoft.com/powershell/module/appx/set-appxpackageautoupdatesettings)
 
 ## Anatomy
 
@@ -253,6 +254,23 @@ another.
   the installation. Once the user has installed the application using
   these steps, the application is associated with the App Installer
   file."
+- **That install is what enrols the app for updates.** "Installing a
+  Windows app using the App Installer file will create an entry in the
+  App Installer repository with the specified configurations that had
+  been set. As long as the Windows app has an entry in the App Installer
+  repository, the automatic update and repair of the app can be
+  configured through by: Windows Settings App, App Installer file,
+  PowerShell, or through a CSP" (auto-update overview).
+  `Get-AppxPackageAutoUpdateSettings` "returns the settings configured
+  for a specific or all installed Windows Apps in relation to Auto Update
+  and Repair", for one `-PackageFullName`, the user's apps, or
+  `-AllUsers`; `-ShowUpdateAvailability` "Displays available update
+  information". `Set-AppxPackageAutoUpdateSettings` "Configures the
+  auto-update and repair settings for a specific Windows app that was
+  installed using an App Installer file", by `-PackageFamilyName` and
+  `-AppInstallerUri`; whether it can enrol a copy installed from the
+  bare package is not stated, and no page says what such a copy gets
+  (2026-10-01).
 - **From PowerShell**:
   `Add-AppxPackage -AppInstallerFile "C:\Users\user1\Desktop\MyApp.appinstaller"`
   installs "with all update settings specified within the App Installer
