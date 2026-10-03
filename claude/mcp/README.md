@@ -274,6 +274,26 @@ The third row was accidental — the login was wiped mid-session by an interacti
 
 **So a bogus bearer is the wrong negative control** — it exercises the bottom row, which is the case that diagnoses itself. This corrects the middle row of the table above, recorded earlier that day as "helper returning a bogus bearer": a *well-formed* bogus bearer returns the 401 text on that same bare URL, so whatever produced the DCR error was the emits-nothing condition. Use a helper that cannot run (a nonexistent command) to reproduce the DCR error deliberately.
 
+**A helper that never runs emits nothing too.** Claude Code runs a
+helper from a project `.mcp.json` only in a folder whose trust is
+persisted in `~/.claude.json`, and otherwise skips it: the VS Code
+extension's log says `headersHelper not run: this workspace has no
+persisted trust` (2026-10-02 and 2026-10-03). Trust is kept per key, and
+[the keys are case-split](#local-scope-keys-are-case-split): the
+extension uses the lowercase drive letter, and on 2026-10-03 this repo's
+lowercase key was untrusted while the uppercase one terminal sessions
+use was trusted. So a server can connect from the terminal and fail in
+the extension, with this error or with whatever its static `headers`
+send. Trust the lowercase key once from **cmd**, which keeps the case
+you type where PowerShell and Git Bash restore `C:`; accept the trust
+prompt and the server approval, then `/exit` (measured 2026-10-03 on
+2.1.282):
+
+```bat
+cd /d c:\Repos\<repo>
+claude
+```
+
 The bound-URL text is the trap, because it reads like a network or URL fault rather than an auth one. A genuinely absent endpoint is a fourth text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL. Claude Code redacts the ids out of the `Error dialing` URL it prints, so that text cannot tell you which workspace or item was dialled.
 
 **Both URL shapes work, and every hosted endpoint probed so far connects.** Measured 2026-09-14, each against its own control: bare `dataPlane/sqlEndpoint`, bare `dataPlane/kqlEndpoint`, `core`, `powerbi`, a workspace/item-bound `kqlEndpoint` (two repeated rounds), and a workspace/reflex-bound Activator URL. The bound shape is not second-class, and nothing needs rewriting to the bare form to work from Claude Code. The one measured failure is a workspace/item-bound `dataPlane/sqlEndpoint`, which returns `MCP endpoint not found` for every item type tried in one tenant while the bound `kqlEndpoint` beside it connects — a tenant-side gap in that variant, not a credential or client problem.
@@ -288,7 +308,8 @@ The bound-URL text is the trap, because it reads like a network or URL fault rat
 
 **A `headersHelper` never sees a folder-scoped tenant pin.** MCP servers
 and their helpers are spawned by the Claude Code process and inherit
-*its* environment, which has no `AZURE_CONFIG_DIR` — the variable the
+*its* environment, less its credentials for a project helper (below),
+which has no `AZURE_CONFIG_DIR` — the variable the
 shell profiles resolve per repo (the `repoRoot` step in `machine-config`'s
 `docs/manual-steps.md`). So the helper's
 `az account get-access-token` reads the shared `~/.azure`, the one store
@@ -307,12 +328,24 @@ enforces is enforced **for shells only**; agents and MCP servers sit
 outside it, and they fail by answering for the wrong tenant rather than
 by erroring.
 
-**The `env` field is not the fix** — it applies to server processes,
-primarily stdio, and not to `headersHelper`. Two candidate remedies,
-**neither run by anyone**:
+**A project helper inherits no credential.** Claude Code strips
+credential-like variables before it runs a helper from a project
+`.mcp.json` or a plugin, though not at user or local scope (2.1.238).
+Its docs give `TOKEN`, `SECRET`, `PASSWORD`, `KEY` and `AUTH` as
+examples, yet both `GITHUB_PAT_*` variables were stripped too, so the
+real list is wider than the documented one; whether it takes
+`AZURE_CONFIG_DIR` is unmeasured. Nor can a value be passed in: `${VAR}`
+is not expanded in `headersHelper`. A helper that needs a token reads it
+from a file or a store, as the docs advise and as `az` does from its own
+cache. On Windows the helper runs under `cmd.exe`. Measured 2026-10-03
+on 2.1.282.
+
+**The `env` field is not the fix**: on an http server it never reaches
+the helper (measured 2026-10-03). Two candidate remedies, **neither run
+by anyone**:
 
 - start Claude Code itself with `AZURE_CONFIG_DIR` set to the tenant the
-  repo needs;
+  repo needs, if the stripping above leaves it;
 - set `AZURE_CONFIG_DIR` inline inside the helper command.
 
 Measure one before relying on it.
