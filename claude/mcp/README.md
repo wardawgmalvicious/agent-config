@@ -9,7 +9,7 @@ Two starter configurations for Model Context Protocol (MCP) servers in Claude Co
 
 Claude Code supports three MCP scopes: **user** (across every project on the machine), **project** (per-repo, shared via `.mcp.json`), and **local** (per-repo, private, stored under `projects.<path>.mcpServers` inside `~/.claude.json`). These two templates cover the scopes worth sharing; local scope is per-machine by definition and has no template.
 
-Both templates contain **only servers that actually work from Claude Code**. The Fabric-hosted endpoints now qualify: every one probed **connects from Claude Code via `headersHelper`** — `dataPlane/sqlEndpoint`, `dataPlane/kqlEndpoint`, `core`, `powerbi`, and the workspace-bound `kqlEndpoint` and Activator reflex forms, measured 2026-09-14 on CLI 2.1.268 and carried in the templates. What fails is Claude Code's **automatic** OAuth flow, which cannot register with these endpoints because Microsoft's auth stack requires Dynamic Client Registration (DCR) that the flow doesn't perform. That is a fact about one flow, not a property of the endpoints, and the two documented routes around it are `headersHelper`, a command supplying the `Authorization` header directly, and `claude mcp add --client-id … --client-secret` for a pre-registered Entra app. Only the first has been probed here — see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure) for what was measured and what was not. The endpoints also work from VS Code Copilot and the GitHub Copilot CLI, which use first-party client IDs, and [.vscode/mcp.template.json](../../.vscode/mcp.template.json) still carries the full set for that client — including the workspace/item-bound `sqlEndpoint`, the one variant that answered `MCP endpoint not found` for every item type tried in the tenant probed (see [.vscode/README.md](../../.vscode/README.md)). They used to be carried here as reference entries, which only produced templates whose own install instructions had to say "skip these seven." `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
+The global template carries only servers measured working from Claude Code. The project template also lists servers Microsoft documents that no one here has probed yet, each marked **Unprobed** in [its tables](#servers-project-scope) (added 2026-10-02). Every Fabric-hosted endpoint probed so far **connects from Claude Code via `headersHelper`** — `dataPlane/sqlEndpoint`, `dataPlane/kqlEndpoint`, `core`, `powerbi`, and the workspace-bound `kqlEndpoint` and Activator reflex forms, measured 2026-09-14 on CLI 2.1.268 and carried in the templates. What fails is Claude Code's **automatic** OAuth flow, which cannot register with these endpoints because Microsoft's auth stack requires Dynamic Client Registration (DCR) that the flow doesn't perform. That is a fact about one flow, not a property of the endpoints, and the two documented routes around it are `headersHelper`, a command supplying the `Authorization` header directly, and `claude mcp add --client-id … --client-secret` for a pre-registered Entra app. Only the first has been probed here — see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure) for what was measured and what was not. The endpoints also work from VS Code Copilot and the GitHub Copilot CLI, which use first-party client IDs, and [.vscode/mcp.template.json](../../.vscode/mcp.template.json) still carries its original seven for that client — including the workspace/item-bound `sqlEndpoint`, the one variant that answered `MCP endpoint not found` for every item type tried in the tenant probed (see [.vscode/README.md](../../.vscode/README.md)) — and none of the 2026-10-02 additions, as the Copilot payload is retiring. They used to be carried here as reference entries, which only produced templates whose own install instructions had to say "skip these seven." `microsoft-learn-mcp` is unaffected — different auth surface (`learn.microsoft.com/api/mcp`).
 
 VS Code / GitHub Copilot also uses a different schema — a top-level `servers` key instead of `mcpServers`, and a workspace file at `.vscode/mcp.json`.
 
@@ -112,7 +112,7 @@ And a live session rewrites this file from memory on its own schedule, so a writ
 
 [.mcp.project.template.json](.mcp.project.template.json) is the starter set for servers bound to a specific workload. Copy it to the repo root as `.mcp.json` and commit it — every collaborator who opens the repo in Claude Code gets the same MCP tools.
 
-Treat it as a menu, not a manifest. Almost no repo wants all of them: a Power BI repo wants `powerbi-modeling-mcp`, a Fabric repo wants `microsoft-fabric-mcp` and maybe `fabric-rti-mcp` or `fabric-sqlendpoint`, an application repo wants `sql-mcp` and `azure-devops-mcp`. Delete the rest.
+Treat it as a menu, not a manifest. Its entries run in product groups, in the order of [the tables below](#servers-project-scope), so a repo keeps a block or two and deletes the rest: a Power BI repo wants `powerbi-modeling-mcp`, a Fabric repo wants `microsoft-fabric-mcp` and maybe `fabric-rti-mcp` or `fabric-sqlendpoint`, an application repo wants `sql-mcp` and `azure-devops-mcp`. JSON allows no comments, so the group boundaries live only in those tables.
 
 ### Prerequisites (project scope)
 
@@ -124,7 +124,7 @@ Three runtimes, needed only for the servers you keep:
 
 `sql-mcp` additionally needs the Data API Builder CLI (`dab`) on `PATH`.
 
-**The hosted Fabric `http` endpoints** — `fabric-core`, `fabric-sqlendpoint`, `fabric-kqlendpoint`, `powerbi-remote-mcp` and `activator-remote-mcp` — need no runtime, but each needs the **Azure CLI on `PATH` and a live `az login`**: the `headersHelper` shells out on every connection, and Claude Code does not cache the result. **Which** login answers is the harness's, not the repo's — see [the helper's login](#the-helpers-login-is-the-harnesss-not-the-folders). Without a login they fail with an error that reads like an unsupported auth flow or a network fault rather than a missing credential; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the relevant preview enabled for the signed-in user — the Fabric MCP preview, and for `powerbi-remote-mcp` the tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*.
+**The hosted Fabric `http` endpoints** — every `http` entry but `github-mcp` — need no runtime, but each needs the **Azure CLI on `PATH` and a live `az login`**: the `headersHelper` shells out on every connection, and Claude Code does not cache the result. **Which** login answers is the harness's, not the repo's — see [the helper's login](#the-helpers-login-is-the-harnesss-not-the-folders). Without a login they fail with an error that reads like an unsupported auth flow or a network fault rather than a missing credential; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the relevant preview enabled for the signed-in user — the Fabric MCP preview, and for `powerbi-remote-mcp` and `powerbi-modeling-remote-mcp` the tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*. The item-bound servers add capacity and tenant settings of their own, listed in their rows.
 
 ### Install (project scope)
 
@@ -144,8 +144,13 @@ Three runtimes, needed only for the servers you keep:
     | `<OrgName>` | Azure DevOps organization. |
     | `<ProjectName>` | Azure DevOps project. |
     | `<GITHUB_PAT_VAR>` | Name of the environment variable holding this repo's GitHub token — see below. Note this is a variable *name*, not the token. |
-    | `<WorkspaceId>` | Fabric workspace GUID holding the Activator reflex. |
+    | `<WorkspaceId>` | Fabric workspace GUID holding the item an item-bound entry targets: the Activator reflex, data agent or ontology. |
     | `<ActivatorId>` | Activator (reflex) item GUID for `activator-remote-mcp`. |
+    | `<DataAgentId>` | Published data agent item GUID for `data-agent-remote-mcp`. |
+    | `<OntologyId>` | Ontology item GUID for `ontology-remote-mcp`. |
+
+    `operations-agent-remote-mcp` ships with an empty `url`: fill it in once
+    Microsoft publishes the endpoint, or delete the entry.
 
 3. Commit `.mcp.json` to version control.
 
@@ -159,23 +164,94 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 
 ### Servers (project scope)
 
+Grouped by product, in the template's own order. Where a group holds
+alternatives, its lead says which to keep, and a repo keeps one, never
+both: the agent then sees two overlapping tool sets and routes between
+them ambiguously, which is Learn's own warning for the Power BI authoring
+pair. **Unprobed** marks an entry Microsoft documents that no one here has
+yet connected from Claude Code (added 2026-10-02).
+
+#### Source control and work tracking
+
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `github-mcp` | http (`api.githubcopilot.com/mcp/`) | GitHub repos, issues, PRs, releases, code search. Bearer-token auth; no local runtime, so it needs no Docker Desktop. Replace `<GITHUB_PAT_VAR>` with the env var holding the token for *this* repo's account. |
-| `azure-mcp` | stdio (`npx @azure/mcp server start`) | Azure control plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. Bound to a tenant, which moved it here from user scope (2026-09-22). **Prerelease** — `3.0.0-beta.43` when it left the Docker MCP Gateway on 2026-09-14, accepted deliberately against a gateway that was stable; revisit if the beta proves unreliable. |
-| `fabric-core` | http (`api.fabric.microsoft.com/v1/mcp/core`) | Fabric control plane — workspaces, items, capacities. Bound to no workspace but to a tenant, which moved it here from user scope (2026-09-22). Authenticates through `headersHelper`, so it needs the Azure CLI and a live `az login`. Measured connecting 2026-09-14. |
-| `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Hosted Fabric SQL-endpoint data plane. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). The workspace/item-bound form of *this* URL is the one variant measured not serving; the bare form here is what works. |
-| `fabric-kqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint`) | Hosted Fabric KQL data plane — Eventhouse / KQL database queries. Same `headersHelper` auth. The workspace/item-bound form works too; use one in a repo's own `.mcp.json` when the target Eventhouse is fixed. |
-| `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The remote Power BI MCP server: execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user with RLS enforced. Distinct from `powerbi-modeling-mcp` below, and from the undocumented `/v1/mcp/powerbi/authoring` URL. |
-| `activator-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>`) | Fabric Activator, pre-scoped to one reflex — rule creation and lifecycle (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). The only one of these with no bare form: the ids are in the URL, so it is per-repo by construction. |
-| `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes**, and since GA it refuses every tool until its EULA is accepted — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
-| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. It used to be here as the only Claude-Code-reachable stand-in for the hosted Fabric Core endpoint; that endpoint now connects and is carried here as `fabric-core`, so this server is carried for its **write** surface and its OneLake and docs tools rather than as a substitute. |
-| `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Its breadth is the reason to keep it now that `fabric-kqlendpoint` and `activator-remote-mcp` connect: those two are hosted and need only `az`, while this one also reaches ADX and Eventstream. Pick by surface, not by reachability. |
-| `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
-| `sql-mcp` | stdio (`dab start --mcp-stdio`) | Data API Builder exposing the repo's Azure SQL schema as MCP tools. Uses `Active Directory Interactive` auth by default; override via the `DAB_CONNECTION_STRING` env var. |
 | `azure-devops-mcp` | stdio (`npx @azure-devops/mcp`) | Azure DevOps work items, repos, pipelines scoped to the configured org + project. |
 
+#### Azure and SQL
+
+| Server | Runtime | Purpose |
+| --- | --- | --- |
+| `azure-mcp` | stdio (`npx @azure/mcp server start`) | Azure control plane: ARM resources, Key Vault, Cosmos, SQL, Storage, Monitor, Functions, Bicep, etc. Bound to a tenant, which moved it here from user scope (2026-09-22). **Prerelease** — `3.0.0-beta.43` when it left the Docker MCP Gateway on 2026-09-14, accepted deliberately against a gateway that was stable; revisit if the beta proves unreliable. |
+| `sql-mcp` | stdio (`dab start --mcp-stdio`) | Data API Builder exposing the repo's Azure SQL schema as MCP tools. Uses `Active Directory Interactive` auth by default; override via the `DAB_CONNECTION_STRING` env var. |
+
 > `ASPNETCORE_URLS=http://127.0.0.1:0` forces DAB to pick a free loopback port so multiple Claude sessions or a running dev server don't collide.
+
+#### Fabric platform
+
+Not alternatives: Learn's [Fabric MCP
+overview](https://learn.microsoft.com/rest/api/fabric/articles/mcp-servers/what-is-fabric-mcp-server)
+has the two run together, Core for workspaces, roles and folders, and the
+local server for OneLake files, offline API docs and item creation.
+
+| Server | Runtime | Purpose |
+| --- | --- | --- |
+| `fabric-core` | http (`api.fabric.microsoft.com/v1/mcp/core`) | Fabric control plane — workspaces, items, capacities. Bound to no workspace but to a tenant, which moved it here from user scope (2026-09-22). Authenticates through `headersHelper`, so it needs the Azure CLI and a live `az login`. Measured connecting 2026-09-14. |
+| `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs + Data Factory: create items, list workspaces/tables, read Fabric docs, best practices, and pipelines and Dataflow Gen2 (Learn's tool reference, 2026-10-02). It used to be here as the only Claude-Code-reachable stand-in for the hosted Fabric Core endpoint; that endpoint now connects and is carried here as `fabric-core`, so this server is carried for its **write** surface and its OneLake and docs tools rather than as a substitute. |
+
+#### Fabric data
+
+| Server | Runtime | Purpose |
+| --- | --- | --- |
+| `fabric-sqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint`) | Learn's *Fabric Data Warehouse MCP server*: one tool, `executeSQL`, running any T-SQL the signed-in user may run against a warehouse or SQL analytics endpoint, so review a write before approving it. Authenticates through `headersHelper`, not OAuth — needs a live `az login` (see [below](#the-dcr-error-is-a-credential-failure)). The workspace/item-bound form of *this* URL is the one variant measured not serving; the bare form here is what works. |
+| `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). Overlaps `microsoft-fabric-mcp` on pipelines and Dataflow Gen2; carry it for the rest. |
+
+#### Real-Time Intelligence
+
+Pick by surface, not by reachability. The hosted servers each cover one
+item type and need only `az`, and Learn recommends connecting
+`fabric-kqlendpoint` beside `activator-remote-mcp` so the agent can read
+the schema a rule watches. `fabric-rti-mcp` overlaps them on Eventhouse
+and Activator, also manages maps, and alone reaches ADX and Eventstream:
+keep it or `fabric-kqlendpoint` for KQL, not both.
+
+| Server | Runtime | Purpose |
+| --- | --- | --- |
+| `fabric-kqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint`) | Hosted Fabric KQL data plane — Eventhouse / KQL database queries. Same `headersHelper` auth. The workspace/item-bound form works too; use one in a repo's own `.mcp.json` when the target Eventhouse is fixed. |
+| `activator-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>`) | Fabric Activator, pre-scoped to one reflex — rule creation and lifecycle (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). It has no bare form: the ids are in the URL, so it is per-repo by construction. |
+| `operations-agent-remote-mcp` | http (URL not yet published) | **Unprobed, and no endpoint yet.** Learn's [RTI MCP overview](https://learn.microsoft.com/fabric/real-time-intelligence/mcp-overview) lists a hosted operations agent server — instructions, playbook generation, monitoring — but no Learn page publishes its URL (checked 2026-10-02). The entry ships with an empty `url`, which Claude Code (2.1.208+) lists as `not configured` and never dials; paste the URL in when Microsoft publishes it. |
+| `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. |
+
+#### Power BI
+
+Two pairs of alternatives; keep at most one of each.
+
+- **Authoring**: `powerbi-modeling-mcp` (local, GA) or
+  `powerbi-modeling-remote-mcp` (hosted, preview). Learn recommends hosted
+  where it works and says never to register both ([Power BI Authoring MCP
+  server](https://learn.microsoft.com/power-bi/developer/mcp/power-bi-authoring-mcp),
+  checked 2026-10-02). Only local reaches Power BI Desktop or PBIP and
+  TMDL files on disk, so a PBIP repo keeps local.
+- **Querying**: `fabric-iq` or `powerbi-remote-mcp`. Learn now calls the
+  second the earlier consumption endpoint and prefers Fabric IQ; keep
+  `powerbi-remote-mcp` until `fabric-iq` is measured here.
+
+| Server | Runtime | Purpose |
+| --- | --- | --- |
+| `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes**, and since GA it refuses every tool until its EULA is accepted — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
+| `powerbi-modeling-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi/authoring`) | **Unprobed.** The hosted Power BI Authoring server (preview): the local server's modeling tools against models in a Fabric workspace, without Desktop, PBIP files, transactions or traces. Stateful, so the client must return `mcp-Session-Id` on every request. Microsoft's own [Claude Code setup](https://github.com/microsoft/skills-for-fabric/blob/main/mcp-setup/README.md) authenticates it with this same `headersHelper`. Needs the tenant setting in the prerequisites. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
+| `fabric-iq` | http (`fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq`) | **Unprobed.** Fabric IQ MCP (GA), Learn's preferred server for querying Power BI: finds reports and semantic models by name or browser URL, reads their metadata and schema, searches stored values and runs DAX — read-only, under the signed-in user's RLS and OLS, with no IDs to configure. The `X-Variants` header pins its tool contract; Learn's troubleshooting blames a missing one when the tools don't match its list. Microsoft's [Claude Code setup](https://github.com/microsoft/skills-for-fabric/blob/main/mcp-setup/README.md) uses this same `headersHelper` and says a Power BI-audience token works too. Needs a tenant whose home region runs every Fabric workload. |
+| `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The earlier Power BI *Consumption* server (preview): execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user with RLS enforced. Read-only, unlike `powerbi-modeling-remote-mcp` one path segment further on. Measured connecting 2026-09-14; drop it once `fabric-iq` is measured. |
+
+#### Data agents and ontologies
+
+Each is bound to one Fabric item, so its URL carries the IDs and the entry
+belongs only in the repo that owns that item.
+
+| Server | Runtime | Purpose |
+| --- | --- | --- |
+| `data-agent-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/dataagents/<DataAgentId>/agent`) | **Unprobed.** A published Fabric data agent as one MCP tool: a question in, an answer grounded in the agent's sources out. The URL resolves only once the agent is **published**. Learn rules out dynamic client registration and asks for a bearer for `https://api.fabric.microsoft.com/.default`, which is the token this `headersHelper` mints. Needs F2+ or P1+ capacity and the data agent tenant settings. |
+| `ontology-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<OntologyId>/ontologyEndpoint`) | **Unprobed.** An ontology (preview) item served to agents: its entities, relationships and definitions. The path is `dataPlane/…/items/`, unlike the data agent's. Needs F2+ or P1+ capacity and the tenant settings *"Users can create ontology (preview) items"* and *"Users can create Fabric items"*; service principals don't work yet (a Learn known issue). |
 
 ### The DCR error is a credential failure
 
@@ -206,7 +282,7 @@ The bound-URL text is the trap, because it reads like a network or URL fault rat
 
 **So diagnose the helper before believing the error.** Run it alone first — `az account get-access-token --resource https://api.fabric.microsoft.com --query expiresOn --output tsv`, which prints an expiry and never a token. Warm, it returns in 1.2–1.6 s against a **10-second** abandon threshold, so a cold acquisition can plausibly exceed it. Never run the credential-producing form in a session transcript.
 
-**What is not measured.** The second documented route, `--client-id` / `--client-secret` against a pre-registered Entra app, is still unprobed — every result above uses `headersHelper`. Two endpoints stay out of the templates on documentation grounds rather than measurement: `powerbi/authoring` and `FabricIQ`'s `X-VARIANTS` header, neither of which Learn carries (see [`powerbi-modeling-mcp` is a write tool](#powerbi-modeling-mcp-is-a-write-tool)). Everything else named above was measured on 2026-09-14.
+**What is not measured.** The second documented route, `--client-id` / `--client-secret` against a pre-registered Entra app, is still unprobed — every result above uses `headersHelper`. The entries marked **Unprobed** in [the server tables](#servers-project-scope) were added 2026-10-02 from documentation alone; probe each one alone, as above, before relying on it. Everything else named above was measured on 2026-09-14.
 
 ### The helper's login is the harness's, not the folder's
 
@@ -259,7 +335,9 @@ Several servers here write — `microsoft-fabric-mcp` creates items,
 model in place through TOM, so a bad batch is not a resource you delete
 and recreate but a model whose measures and relationships have moved.
 `--readwrite` is the documented default and the template passes no flag to
-change it.
+change it. Its hosted twin, `powerbi-modeling-remote-mcp`, edits the same
+models without the flags below and without transactions, so a batch there
+is not rolled back as a unit (Learn, checked 2026-10-02).
 
 **Back the model up first.** Upstream says so in a warning box, not a
 footnote: an LLM driving TOM can make unintended changes, and there is no
@@ -310,8 +388,8 @@ is absent from the GA README (2026-10-02).
 
 **The local server is GA**, as `v1.0.0`, under a new name: the *Power BI
 Authoring MCP Server*. Its npm package is still
-`@microsoft/powerbi-modeling-mcp`, and `powerbi-remote-mcp` is still
-preview. The flags, env vars and
+`@microsoft/powerbi-modeling-mcp`; the hosted twin and
+`powerbi-remote-mcp` are still preview. The flags, env vars and
 connection targets above are read from
 [`microsoft/powerbi-modeling-mcp`](https://github.com/microsoft/powerbi-modeling-mcp)'s
 README, **not** from Learn — the Learn overview links out to it rather
@@ -330,20 +408,19 @@ unattended, but only for someone who has read the
 so the template sets neither: in a committed `.mcp.json` either would
 accept it for every collaborator.
 
-**The remote modeling endpoint stays off every template.** Upstream's
-`skills-for-fabric` plugin registers `powerbi-modeling-mcp` as an `http`
-server at `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring`, but
-Learn does not document that endpoint — its MCP servers overview lists
-exactly two Power BI servers, the remote *query* server at `/v1/mcp/powerbi`
-and the local stdio modeling server above. Checked 2026-09-11 and again
-2026-09-12: two dated negatives. **Keep the two URLs apart.** The query
-server at `/v1/mcp/powerbi` is fully documented, connects from Claude Code,
-and is in the project template as `powerbi-remote-mcp`; `/v1/mcp/powerbi/authoring`
-is one path segment further on and has none of that. The standing verdict is **endpoint TBD,
-verify before template add** — don't re-derive it, and don't add the server
-on upstream's configuration alone. The same hold covers FabricIQ's
-`X-VARIANTS: Fabric.Routing.PowerBIDataExploration` header: the
-`fabricaihub/integrations/m365` URL pattern is on Learn, the header is not.
+**The hosted authoring endpoint is documented now, and carried as
+`powerbi-modeling-remote-mcp`.** Learn's MCP servers overview gave two
+dated negatives, 2026-09-11 and 2026-09-12; by 2026-10-02 it describes
+one *Power BI Authoring* server with a hosted (preview) and a local (GA)
+deployment, recommends hosted where it works, and says never to register
+both. **Keep the two Power BI URLs apart.** `/v1/mcp/powerbi` is the
+earlier read-only *query* server, `powerbi-remote-mcp`;
+`/v1/mcp/powerbi/authoring`, one path segment further on, writes. FabricIQ
+moved too: Learn now documents it at
+`fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq` with
+`X-Variants: Fabric.Routing.FabricIQ.V1`, which is what `fabric-iq`
+carries. Upstream's older `fabricaihub/integrations/m365` URL and its
+`Fabric.Routing.PowerBIDataExploration` value stay out of the templates.
 
 ---
 

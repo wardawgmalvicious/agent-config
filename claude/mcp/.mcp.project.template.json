@@ -7,6 +7,18 @@
                 "Authorization": "Bearer ${<GITHUB_PAT_VAR>}"
             }
         },
+        "azure-devops-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@azure-devops/mcp@latest",
+                "<OrgName>",
+                "<ProjectName>"
+            ]
+        },
         "azure-mcp": {
             "type": "stdio",
             "command": "cmd",
@@ -17,72 +29,6 @@
                 "@azure/mcp@latest",
                 "server",
                 "start"
-            ]
-        },
-        "fabric-core": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/core",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
-        },
-        "fabric-sqlendpoint": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
-        },
-        "fabric-kqlendpoint": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
-        },
-        "powerbi-remote-mcp": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/powerbi",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
-        },
-        "activator-remote-mcp": {
-            "type": "http",
-            "url": "https://api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
-        },
-        "powerbi-modeling-mcp": {
-            "type": "stdio",
-            "command": "cmd",
-            "args": [
-                "/c",
-                "npx",
-                "-y",
-                "@microsoft/powerbi-modeling-mcp@latest",
-                "--start"
-            ]
-        },
-        "microsoft-fabric-mcp": {
-            "type": "stdio",
-            "command": "cmd",
-            "args": [
-                "/c",
-                "npx",
-                "-y",
-                "@microsoft/fabric-mcp@latest",
-                "server",
-                "start",
-                "--mode",
-                "all"
-            ]
-        },
-        "fabric-rti-mcp": {
-            "type": "stdio",
-            "command": "uvx",
-            "args": [
-                "microsoft-fabric-rti-mcp"
-            ]
-        },
-        "fabric-data-factory-mcp": {
-            "type": "stdio",
-            "command": "dnx",
-            "args": [
-                "Microsoft.DataFactory.MCP",
-                "--prerelease",
-                "--yes"
             ]
         },
         "sql-mcp": {
@@ -101,17 +47,99 @@
                 "ASPNETCORE_URLS": "http://127.0.0.1:0"
             }
         },
-        "azure-devops-mcp": {
+        "fabric-core": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/core",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "microsoft-fabric-mcp": {
             "type": "stdio",
             "command": "cmd",
             "args": [
                 "/c",
                 "npx",
                 "-y",
-                "@azure-devops/mcp@latest",
-                "<OrgName>",
-                "<ProjectName>"
+                "@microsoft/fabric-mcp@latest",
+                "server",
+                "start",
+                "--mode",
+                "all"
             ]
+        },
+        "fabric-sqlendpoint": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "fabric-data-factory-mcp": {
+            "type": "stdio",
+            "command": "dnx",
+            "args": [
+                "Microsoft.DataFactory.MCP",
+                "--prerelease",
+                "--yes"
+            ]
+        },
+        "fabric-kqlendpoint": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "activator-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "operations-agent-remote-mcp": {
+            "type": "http",
+            "url": "",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "fabric-rti-mcp": {
+            "type": "stdio",
+            "command": "uvx",
+            "args": [
+                "microsoft-fabric-rti-mcp"
+            ]
+        },
+        "powerbi-modeling-mcp": {
+            "type": "stdio",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@microsoft/powerbi-modeling-mcp@latest",
+                "--start"
+            ]
+        },
+        "powerbi-modeling-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "fabric-iq": {
+            "type": "http",
+            "url": "https://fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq",
+            "headers": {
+                "X-Variants": "Fabric.Routing.FabricIQ.V1"
+            },
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "powerbi-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/powerbi",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "data-agent-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/dataagents/<DataAgentId>/agent",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+        },
+        "ontology-remote-mcp": {
+            "type": "http",
+            "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/workspaces/<WorkspaceId>/items/<OntologyId>/ontologyEndpoint",
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
         }
     }
 }

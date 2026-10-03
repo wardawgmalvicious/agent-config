@@ -104,8 +104,9 @@ are not payload: they can only ever act on this working tree.
   denylisted client or account names into history.
 - [claude/mcp/](claude/mcp/) — MCP server templates in Claude's
   `mcpServers` schema, one per shareable scope: user (`~/.claude.json`)
-  and project (a repo's `.mcp.json`). Both carry only servers that
-  actually connect from Claude Code. See
+  and project (a repo's `.mcp.json`). The user template carries only
+  servers measured connecting from Claude Code; the project template
+  also lists documented servers not yet probed, each marked. See
   [claude/mcp/README.md](claude/mcp/README.md) for which scope a server
   belongs in — the test is whether it is bound to a workload, not how
   often you use it.
