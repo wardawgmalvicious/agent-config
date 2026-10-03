@@ -168,7 +168,7 @@ Pair the file with a `.claude/settings.json` in the same repo that pre-approves 
 | `fabric-kqlendpoint` | http (`api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint`) | Hosted Fabric KQL data plane — Eventhouse / KQL database queries. Same `headersHelper` auth. The workspace/item-bound form works too; use one in a repo's own `.mcp.json` when the target Eventhouse is fixed. |
 | `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The remote Power BI MCP server: execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user with RLS enforced. Distinct from `powerbi-modeling-mcp` below, and from the undocumented `/v1/mcp/powerbi/authoring` URL. |
 | `activator-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/workspaces/<WorkspaceId>/reflexes/<ActivatorId>`) | Fabric Activator, pre-scoped to one reflex — rule creation and lifecycle (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). The only one of these with no bare form: the ids are in the URL, so it is per-repo by construction. |
-| `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
+| `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes**, and since GA it refuses every tool until its EULA is accepted — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
 | `microsoft-fabric-mcp` | stdio (`npx @microsoft/fabric-mcp ... --mode all`) | Fabric core + OneLake + docs: create items, list workspaces/tables, read Fabric docs, best practices. It used to be here as the only Claude-Code-reachable stand-in for the hosted Fabric Core endpoint; that endpoint now connects and is carried here as `fabric-core`, so this server is carried for its **write** surface and its OneLake and docs tools rather than as a substitute. |
 | `fabric-rti-mcp` | stdio (`uvx microsoft-fabric-rti-mcp`) | Local Real-Time Intelligence server — KQL queries against Fabric Eventhouse + ADX, Eventstream / Activator / Map management. Its breadth is the reason to keep it now that `fabric-kqlendpoint` and `activator-remote-mcp` connect: those two are hosted and need only `az`, while this one also reaches ADX and Eventstream. Pick by surface, not by reachability. |
 | `fabric-data-factory-mcp` | stdio (`dnx Microsoft.DataFactory.MCP --prerelease`) | Fabric Data Factory control plane: gateways, connections, workspaces, dataflows, pipelines, copy jobs, Apache Airflow jobs, capacities. NuGet-distributed; currently `0.x-beta` (hence `--prerelease`). |
@@ -271,7 +271,7 @@ batch renames run across hundreds of objects inside one transaction.
 | Flag | Effect |
 | --- | --- |
 | `--readonly` | Safe mode — blocks every write. The right default for an *audit* repo that only reads the model. |
-| `--skipconfirmation` | Approves all writes with no prompt. Only with backups and a known-good operation. |
+| `--skipconfirmation` | Approved all writes with no prompt, before GA. Absent from the GA README's options (2026-10-02). |
 
 **Claude Code implements the confirmation protocol. No confirmation has
 yet been seen to reach a user here.** The server gates the first write
@@ -305,18 +305,30 @@ Two access facts that are easy to attribute to the wrong layer:
 
 For unattended use, `--authmode=serviceprincipal` plus `AZURE_CLIENT_ID`,
 `AZURE_TENANT_ID` and a secret or certificate replaces the interactive
-login; `PBI_MODELING_MCP_ACCESS_TOKEN` supplies a token directly.
+login. `PBI_MODELING_MCP_ACCESS_TOKEN`, which supplied a token directly,
+is absent from the GA README (2026-10-02).
 
-Both Power BI MCP servers are **Public Preview**, and upstream says the
-implementation may change significantly before GA. The flags, env vars and
+**The local server is GA**, as `v1.0.0`, under a new name: the *Power BI
+Authoring MCP Server*. Its npm package is still
+`@microsoft/powerbi-modeling-mcp`, and `powerbi-remote-mcp` is still
+preview. The flags, env vars and
 connection targets above are read from
 [`microsoft/powerbi-modeling-mcp`](https://github.com/microsoft/powerbi-modeling-mcp)'s
 README, **not** from Learn — the Learn overview links out to it rather
 than restating it, so a `drift-audit` run over the `powerbi` What's New
 source will not see a flag rename. Verified 2026-09-03 against that
 README and the Learn [MCP servers
-overview](https://learn.microsoft.com/power-bi/developer/mcp/mcp-servers-overview);
-re-read the repo README when the server goes GA.
+overview](https://learn.microsoft.com/power-bi/developer/mcp/mcp-servers-overview),
+and re-read at GA on 2026-10-02.
+
+**The GA build refuses every other tool call until its EULA is
+accepted.** In a session the agent can call `accept_eula` once you
+explicitly say yes, and the acceptance is saved on the machine.
+`--accepteula` and `PBI_MODELING_MCP_ACCEPT_EULA=true` accept it
+unattended, but only for someone who has read the
+[EULA](https://github.com/microsoft/powerbi-modeling-mcp/blob/main/EULA.txt),
+so the template sets neither: in a committed `.mcp.json` either would
+accept it for every collaborator.
 
 **The remote modeling endpoint stays off every template.** Upstream's
 `skills-for-fabric` plugin registers `powerbi-modeling-mcp` as an `http`
