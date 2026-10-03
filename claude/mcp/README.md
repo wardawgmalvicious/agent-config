@@ -465,6 +465,25 @@ GitHub's hosted server is reached at `https://api.githubcopilot.com/mcp/`. Claud
 "headers": { "Authorization": "Bearer ${<GITHUB_PAT_VAR>}" }
 ```
 
+**VS Code reads this file too, and `github-mcp` fails there by
+decision.** VS Code expands no variable in `.mcp.json`, `${env:NAME}`
+included, so the placeholder goes out as the token and GitHub answers
+`400 … Authorization header is badly formatted` (VS Code 1.140.0,
+2026-10-03). A `headersHelper` in place of `headers` connects both tools,
+since VS Code ignores the helper and signs in to GitHub itself; it was
+measured working that day and declined. VS Code's sign-in asked for
+`repo`, `read:org`, `read:user`, `user:email`, `read:packages`,
+`write:packages`, `read:project`, `project`, `gist` and `notifications`,
+far wider than the PAT. It remembers the account by server name, with a
+global default, so a new repo starts on whichever account was chosen
+last; naming the server per account fixes that, at the price of a second
+tool prefix in Claude Code, where `land` and `recreate-repo` look for
+`github-mcp`. And Claude Code runs a project helper only in a folder it
+trusts ([a helper that never
+runs](#the-dcr-error-is-a-credential-failure)). That is too much to bend
+Claude Code's file for a fallback client, so Copilot goes without
+`github-mcp`.
+
 This entry is **project scope, not user scope**, and on a single-account machine that looks like overkill. It isn't, as soon as there are two accounts. The token decides which identity every GitHub tool call runs as, so the server becomes workload-bound by the same test the rest of this file applies — a work token is the wrong tool in a personal repo, and nothing about the failure is loud.
 
 So give each account its own variable and let each repo name the one it needs:
@@ -485,7 +504,7 @@ They are Windows **user** environment variables, and `machine-config` provisions
 
 It prompts as a `SecureString` and writes straight to User scope, so the token never reaches shell history or a transcript; `-MigrateFrom <name>` copies one already set under a different name, and `-RemoveGeneric` clears the account-agnostic ones. The names themselves are declared in that repo's `config.psd1` (`GitHubPatVar`, `WorkGitHubPatVar`), and its `setup.ps1` reports any that do not resolve.
 
-Then **fully restart VS Code** — processes inherit the environment when they spawn, so a reload window is not enough. This is the failure mode to know, because it reads as an auth problem rather than an environment one: with the variable absent from the *running* process, `${...}` never expands, the literal text goes out as the bearer token, and the server answers `400 ... Authorization header is badly formatted`. Hit on 2026-09-07, where the variable was correct in the registry the whole time.
+Then **fully restart VS Code** — processes inherit the environment when they spawn, so a reload window is not enough. This is the failure mode to know, because it reads as an auth problem rather than an environment one: with the variable absent from the *running* process, `${...}` never expands, the literal text goes out as the bearer token, and the server answers `400 ... Authorization header is badly formatted`. Hit on 2026-09-07, where the variable was correct in the registry the whole time. The same 400 in VS Code's own MCP log is the expected failure above, not this one.
 
 Prefer a real PAT (classic or fine-grained) over `gh auth token`: the `gho_` token the `gh` CLI holds is rotated, so a value copied out of it goes stale. Scope it to what the MCP tools actually need — `repo` and `read:org` cover issues, PRs, and code search.
 
