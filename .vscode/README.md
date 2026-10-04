@@ -1,23 +1,6 @@
 # VS Code workspace config
 
-The two MCP files are easy to mix up:
-
-| File | Role |
-| --- | --- |
-| [mcp.json](mcp.json) | **Live.** The MCP servers VS Code / Copilot starts when *this* repo is open. |
-| [mcp.template.json](mcp.template.json) | **Payload.** A starter set to copy into *other* repos as their `.vscode/mcp.json`. |
-
-The template sits here rather than in a templates directory because this is
-exactly where it deploys — copy it next to the live file and drop the
-`.template` from the name.
-
-The live file is deliberately thin. This repo is markdown, PowerShell, and
-Python — it has no Fabric workspace, so it lists only Microsoft Learn. The
-Fabric endpoints that used to sit here now live in the template, where they
-describe repos that actually have a workspace.
-
-The rest of the directory is ordinary workspace config, live for this repo
-only:
+Ordinary workspace config, live for this repo only:
 
 | File | Role |
 | --- | --- |
@@ -25,152 +8,19 @@ only:
 | [tasks.json](tasks.json) | The commands from [CLAUDE.md](../CLAUDE.md#commands), in their safe form — notably `link-claude.ps1` with `-SkillGroups workflow,social,meta`, never bare. |
 | [extensions.json](extensions.json) | Extension recommendations matched to the file types actually in the repo. |
 
-Everything else in `.vscode/` is gitignored; the six files above are
-explicitly un-ignored in [.gitignore](../.gitignore).
+Everything else in `.vscode/` is gitignored; this README and the three
+files above are explicitly un-ignored in [.gitignore](../.gitignore).
 
 Line endings are **not** configured here — [.gitattributes](../.gitattributes)
 is authoritative at commit time and root [.editorconfig](../.editorconfig)
 covers the editor side, so `files.eol` is deliberately absent from
 [settings.json](settings.json).
 
-## Why VS Code needs its own file at all
+## No `mcp.json`
 
-VS Code / GitHub Copilot uses a different MCP config surface from Claude Code:
-a top-level `servers` key instead of `mcpServers`, and a **user profile**
-`mcp.json` (opened via the **MCP: Open User Configuration** command, typically
-populated through the Extensions view's `@mcp` gallery search rather than
-hand-edited) alongside this **workspace** file. There's no template here for
-the user-profile file, since it's gallery-managed rather than hand-authored.
-
-Claude Code's own templates — user scope and project scope — are in
-[claude/mcp/](../claude/mcp/README.md).
-
-⚠ **Agent Host nuance**: a Copilot CLI / Agent Host session does not read
-`.vscode/mcp.json` directly — VS Code forwards its contents to the Agent Host
-automatically, *except* servers with `${input:...}` interactive variables
-(which the Agent Host can't prompt for). Every server in
-[mcp.template.json](mcp.template.json) is a static HTTP endpoint with no
-`${input:...}` vars, so they forward fine. For servers that do need interactive
-input, or for configuration that must be portable across both surfaces, use a
-root-level `.mcp.json` / `.github/mcp.json` (`copilot mcp add`) or
-`~/.copilot/mcp-config.json` instead — the Agent Host reads those natively.
-
-## The template — workspace scope
-
-[mcp.template.json](mcp.template.json) is the starter set for the Fabric-hosted
-MCP endpoints that fail with OAuth Dynamic Client Registration (DCR) errors
-under Claude Code's **automatic** OAuth flow but work fine from VS Code Copilot
-/ GitHub Copilot CLI, which use first-party client IDs. That asymmetry is why
-this file exists — but it is no longer total, and the entries here are not all
-Claude-Code-impossible.
-
-**Every endpoint here has now been probed from Claude Code, and all but one
-connect** — through a `headersHelper` command supplying an `az` bearer rather
-than through OAuth, measured 2026-09-14 on CLI 2.1.268. `dataPlane/sqlEndpoint`,
-`dataPlane/kqlEndpoint`, `core`, `powerbi`, a **workspace/item-bound**
-`kqlEndpoint` and the workspace-bound Activator reflex URL all connected; five
-of the seven entries below are carried in the Claude templates as a result.
-The bound form is not second-class.
-
-`eventhouse-remote-mcp` is the first entry not carried, and that is a choice
-rather than a failure: it connects, but its ids are per-repo and its bare
-sibling `kql-global-mcp` is already in the template as `fabric-kqlendpoint`,
-so the shape is discoverable without a second placeholder-laden entry.
-`activator-remote-mcp` *is* carried despite the same ids, because it has no
-bare form — leaving it out would leave the shape written down nowhere.
-
-The real exception is `warehouse-remote-mcp`, the workspace/item-bound
-`dataPlane/sqlEndpoint`: it answered `MCP endpoint not found` for every item
-type tried — Warehouse, SQLEndpoint and Lakehouse — in a tenant where the
-bound `kqlEndpoint` beside it connected and both ids resolved through the
-Fabric REST API. That reads as the variant not serving in that tenant rather
-than a bad URL, so it stays here and out of the Claude project template. The
-second documented route, `--client-id` / `--client-secret` for a pre-registered
-Entra app, is still unprobed.
-
-See [claude/mcp/README.md](../claude/mcp/README.md#the-dcr-error-is-a-credential-failure)
-for the measurement, and for the three error texts a credential problem can
-produce — one of which reads like a network fault. This template is unaffected
-either way: VS Code reaches these servers by its own first-party client ID, so
-it stays whatever a probe returns.
-
-It intentionally excludes the *generic* servers (GitHub, Azure, Microsoft Docs,
-the Fabric core/RTI stdio servers) — those are better installed once per
-machine through VS Code's own `@mcp` Extensions gallery search at user-profile
-scope than hand-authored per repo.
-
-### Install
-
-1. Copy the template into the target repo, from a clone of this one:
-
-    ```bash
-    mkdir -p <target>/.vscode
-    cp .vscode/mcp.template.json <target>/.vscode/mcp.json
-    ```
-
-    Unlike the Claude templates, this file has no `~/.claude/...` path —
-    `scripts/link-claude.ps1` deploys `claude/mcp`, not this directory, so
-    copy it from the clone.
-
-2. Drop any entries you don't need — most repos want one or two of these, not
-   all seven. `powerbi-remote-mcp`, `fabric-core-remote-mcp`, `kql-global-mcp`,
-   and `warehouse-global-mcp` need no placeholders and work as-is (workspace
-   and item IDs are passed per tool call). The other three are pre-scoped to a
-   single item and need these replaced:
-
-    | Placeholder | Replace with |
-    | --- | --- |
-    | `<WorkspaceId>` | Fabric workspace ID (shared by all three pre-scoped entries). |
-    | `<KqlDatabaseId>` | KQL database item ID for `eventhouse-remote-mcp`. |
-    | `<WarehouseId>` | Warehouse item ID for `warehouse-remote-mcp`. |
-    | `<ActivatorId>` | Activator (reflex) artifact ID for `activator-remote-mcp`. |
-
-3. Commit the resulting `.vscode/mcp.json` — VS Code's own docs recommend
-   source-controlling it specifically so a team shares one server list.
-
-4. The **first time** VS Code starts one of these servers it shows a
-   trust-confirmation dialog per server. Reset all trust decisions with the
-   **MCP: Reset Trust** command from the Command Palette.
-
-### Servers
-
-| Server | Purpose |
-| --- | --- |
-| `powerbi-remote-mcp` | Hosted Power BI query service — retrieves model schema and generates/executes DAX. Scoped per call by **semantic model ID**, not by workspace. Read-only: to *edit* a model use `powerbi-modeling-mcp` from the [Claude project template](../claude/mcp/README.md#powerbi-modeling-mcp-is-a-write-tool) instead. Two prerequisites below. |
-| `fabric-core-remote-mcp` | Hosted Fabric Core MCP — natural-language workspace + item CRUD, role assignments, capacity ops. Preview as of 2026-05. |
-| `kql-global-mcp` | Hosted Fabric global KQL endpoint — workspace + database IDs passed per tool call. |
-| `warehouse-global-mcp` | Hosted Fabric global Warehouse SQL endpoint — workspace + item IDs passed per tool call. |
-| `eventhouse-remote-mcp` | Fabric Eventhouse remote MCP pre-scoped to one KQL database via `<WorkspaceId>` / `<KqlDatabaseId>`. |
-| `warehouse-remote-mcp` | Fabric Warehouse remote MCP pre-scoped to one warehouse via `<WorkspaceId>` / `<WarehouseId>`. |
-| `activator-remote-mcp` | Fabric Activator remote MCP pre-scoped to one reflex via `<WorkspaceId>` / `<ActivatorId>`. Tools cover rule creation (`create_rule`, `list_rules`, `start_rule`, `stop_rule`). |
-
-#### `powerbi-remote-mcp` has two gates that are not placeholders
-
-Both fail *after* the server connects, so they look like the model is
-empty or the agent is confused rather than like a configuration problem:
-
-- **A tenant setting must be on** — *"Users can use the Power BI Model
-  Context Protocol server endpoint (preview)"*, enabled by a Power BI
-  admin. Nothing in `mcp.json` can substitute for it.
-- **Its `Generate Query` tool needs a Copilot license** and consumes
-  Copilot capacity, because it calls the same DAX generation engine as
-  Copilot for Power BI. The rest of the tools do not. If you would
-  rather not spend capacity, disable that one tool in the client and let
-  the agent's own model write the DAX.
-
-You also need **Build** permission on at least one semantic model, and
-the model ID is read from its service URL:
-`https://app.powerbi.com/groups/{workspaceId}/datasets/{semanticModelId}`.
-
-## Verifying
-
-There's no CLI equivalent for the workspace file itself — use **MCP: List
-Servers** from the Command Palette (shows status and per-server logs), or
-**MCP: Reset Trust** if a server was previously declined. From the GitHub
-Copilot CLI specifically:
-
-```bash
-# Servers the CLI's own user + workspace config surfaces see
-# (does not include VS Code-forwarded or gallery-installed servers)
-copilot mcp list
-```
+VS Code reads the root [.mcp.json](../.mcp.json) itself, the same file
+Claude Code does, so this repo keeps one server list and no
+`.vscode/mcp.json` (2026-10-04). The VS Code-schema template that sat
+here went with it. What VS Code's own agents make of `${VAR}` and
+`headersHelper` in `.mcp.json`, and how to check which servers a window
+registered, is in [claude/mcp/README.md](../claude/mcp/README.md).

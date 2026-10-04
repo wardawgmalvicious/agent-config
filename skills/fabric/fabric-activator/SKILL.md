@@ -238,8 +238,9 @@ Fabric ships an HTTP MCP endpoint scoped to **one** Activator item:
 https://api.fabric.microsoft.com/v1/mcp/workspaces/<Workspace ID>/reflexes/<Artifact ID>
 ```
 
-OAuth against Entra; this repo's `.vscode/mcp.template.json` already
-carries a matching `activator-remote-mcp` entry. Four tools:
+OAuth against Entra; `~/.claude/mcp/.mcp.project.template.json`
+carries a matching `activator-remote-mcp` entry, which sends an `az`
+bearer through `headersHelper`. Four tools:
 `create_rule`, `list_rules`, `start_rule`, `stop_rule`.
 
 **`create_rule` starts the rule automatically**, where the definition

@@ -203,6 +203,22 @@ history, because `author-skill`'s tree step is stale: it still names
 `skillOverrides` upkeep moved to `.claude/rules/skill-overrides.md`, and
 the VS Code template exception to `.claude/rules/deploy-scripts.md`.
 
+**2026-10-04.** `.vscode/mcp.json` and `.vscode/mcp.template.json` were
+deleted, so root's list of this repo's config names `.mcp.json` and
+`.claude/settings.json`, and `.claude/rules/deploy-scripts.md` loses the
+VS Code template exception. VS Code reads a workspace `.mcp.json`
+itself: on 2026-10-03, on 1.140.0, this repo's window registered
+`microsoft-learn-mcp` from both files, one server twice, and VS Code's
+MCP servers page (`ms.date` 2026-09-30) calls `.mcp.json` the portable
+format and `.vscode/mcp.json` deprecated. The user chose one MCP file
+that day, in `docs/handoffs/execute/copilot-payload-retirement.md`, and
+asked for the deletion ahead of the turn that brief waits on. Of the
+template's seven entries the project template carries five; the two
+workspace/item-bound data-plane forms stay out, for the reasons the rows
+for `fabric-sqlendpoint` and `fabric-kqlendpoint` give in
+`claude/mcp/README.md`. `git show 6e09cce:.vscode/mcp.template.json`
+recovers the template.
+
 ## Commands
 
 ```bash

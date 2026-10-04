@@ -16,7 +16,7 @@ holds what a file here triggers. Add no parallel file for another tool: a
 holds Claude Code's formats; `copilot/`, payload for other repos, exists
 only because `applyTo` and `paths:` differ; `skills/` is top-level as no one
 tool owns its format. This repo's own config sits where each tool looks:
-`.mcp.json`, `.claude/settings.json`, `.vscode/mcp.json`.
+`.mcp.json`, which VS Code reads too, and `.claude/settings.json`.
 
 `.claude/skills/` (`ls -d .claude/skills/*/`) holds skills that act only on
 this repo: project scope, deployed nowhere, reached by no deploy script

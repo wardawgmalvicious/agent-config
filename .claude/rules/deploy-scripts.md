@@ -27,9 +27,8 @@ edit goes live.
   (2026-09-14). The two `ConvertFrom-Json` switches that keep the round trip
   lossless are in `claude/mcp/README.md`; each fails silently when omitted.
 - Templates describe other repos and sit in their payload; live config
-  describes this repo and sits where its tool looks. The VS Code MCP
-  template is the exception: it sits in `.vscode/` beside its live file,
-  because that is where it deploys.
+  describes this repo and sits where its tool looks: `.mcp.json` serves
+  VS Code too, so `.vscode/` holds no MCP file (2026-10-04).
 - The copies are copies on purpose: never turn `claude/CLAUDE.md`,
   `claude/settings.json` or a copied directory into a link. A symlinked
   `~/.claude/settings.json` broke three times upstream in 2026, once

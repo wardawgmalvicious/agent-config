@@ -320,19 +320,11 @@ deployed state, but the hook and the files it reads leave in one commit.
   Copilot; and the comments and messages naming the script in
   `.gitattributes`, `scripts/lint-claude-md.py`,
   `scripts/lint-skill-scopes.py` and `scripts/skill-overlap.py`.
-- **`.vscode/mcp.json` and `.vscode/mcp.template.json` go**, leaving
-  `.mcp.json` the one MCP file: the user's call on 2026-10-03, once
-  § "What VS Code read for MCP" showed VS Code reading it ("it seems
-  likely we can maintain just one mcp file now"). The live file holds
-  only `microsoft-learn-mcp`, which `.mcp.json` has. The template's two
-  entries the project template lacks, `eventhouse-remote-mcp` and
-  `warehouse-remote-mcp`, each join it or are recorded as left out in
-  `claude/mcp/README.md`, with the reason `.vscode/README.md` gives, and
-  that README keeps only what is not MCP. Re-point what names either
-  file, and correct `claude/rules/claude-config-scoping.md`, whose table
-  gives VS Code only `.vscode/mcp.json`: `git grep -n -E '\.vscode/mcp'`.
-  This holds on either path of § "What each outcome means": on the
-  second, it moves to the findings brief as this one is deleted.
+- **`.vscode/mcp.json` and `.vscode/mcp.template.json` left on
+  2026-10-04**, ahead of the turn, at the user's word: `.mcp.json` is
+  the one MCP file. The `**2026-10-04.**` entry under "Preamble" in
+  `docs/evidence/root-claude-md.md` names the last commit that held
+  them. Nothing of it is left to do here.
 - **The ledgers take entries, never corrections.**
   `docs/evidence/user-claude-md.md` takes § "What was measured" and the
   turn's grading. `docs/evidence/root-claude-md.md` takes the removal

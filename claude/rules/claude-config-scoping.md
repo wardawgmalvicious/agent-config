@@ -27,10 +27,10 @@ covers placement and the silent failures around it.
 | `~/.claude/settings.json` | no — machine-local | every session on the machine | model and effort defaults, `permissions.defaultMode`, hooks that must run everywhere |
 | `~/.claude.json` → top-level `mcpServers` | no | every session on the machine | **user-scope** MCP servers only |
 | `~/.claude.json` → `projects.<path>.mcpServers` | no | one repo, this machine | **local-scope** servers: private, unshared |
-| `<repo>/.mcp.json` | yes | everyone who clones | servers bound to this repo's workload |
+| `<repo>/.mcp.json` | yes | everyone who clones, in Claude Code and VS Code | servers bound to this repo's workload |
 | `<repo>/.claude/settings.json` | yes | everyone who clones | permissions for this repo's tools, repo-scoped hooks |
 | `<repo>/.claude/settings.local.json` | no — gitignore it | you, in this repo | personal overrides and approvals |
-| `<repo>/.vscode/mcp.json` | yes | VS Code / Copilot only | the same servers in **Copilot's** schema |
+| `<repo>/.vscode/mcp.json` | yes | VS Code only | nothing new: VS Code reads `.mcp.json` too, and its docs call this file deprecated (2026-10-03) |
 
 Two of those pairs are easy to conflate and neither mistake is reported.
 Putting a user-scope server under `projects.<path>.mcpServers` makes it

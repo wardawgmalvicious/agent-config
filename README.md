@@ -294,9 +294,9 @@ stay separable:
     `~/.claude/mcp` — not even Claude Code; it exists so the commands in
     [claude/mcp/README.md](claude/mcp/README.md) resolve from a stable
     path — and `~/.claude.json` is Claude Code's own runtime state.
-    Copilot wants a workspace `.vscode/mcp.json` or
-    `~/.copilot/mcp-config.json` (see
-    [.vscode/README.md](.vscode/README.md)).
+    Copilot reads a workspace `.mcp.json`, the same file as Claude
+    Code, or `~/.copilot/mcp-config.json` (see
+    [claude/mcp/README.md](claude/mcp/README.md)).
 
     **Copilot validates skill frontmatter against its own field list and
     warns rather than failing** — with one exception that does not warn
