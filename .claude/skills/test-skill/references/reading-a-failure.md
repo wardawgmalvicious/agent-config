@@ -270,6 +270,22 @@ all: read a capped arm's answer off its assistant records. Expect an
 arm to spend its cap plus the rest of the turn that crosses it, $0.17
 here.
 
+**The plan's five-hour window ends an arm the same way, with no answer.**
+Measured 2026-10-06 on 2.1.291: the window stood at 95% when four Opus
+baselines launched at max effort beside the user's other sessions, and
+reached 100% at 13:22 local, seven minutes before it reset. Every arm's
+stream carries `rate_limit_event` records, `status` `allowed` below the
+record's `surpassedThreshold`, 0.9 here, and `allowed_warning` past it,
+`unifiedWindows.five_hour.utilization` climbing from 0.95 in each
+baseline. The arm that crossed got one reading `rejected`,
+`overageDisabledReason` `out_of_credits`, and its `result` read
+`subtype` `success`, `is_error` true, `num_turns` 18, $1.09, with
+"You've hit your session limit · resets 1:30pm" where the answer goes;
+the process exited 1. Read `is_error`, not `subtype`, and rerun after
+the reset: the 18 turns are in the assistant records, the answer is
+not. `--max-budget-usd` sees none of it, and a warning record on a
+running arm is the only notice before launching the next.
+
 **A routing arm needs only its first tool call.** `--max-turns 1` ends
 it there: the `Skill` call is in the stream, the `result` reads
 `error_max_turns` with `num_turns` 2, and the process exits 1, so a
