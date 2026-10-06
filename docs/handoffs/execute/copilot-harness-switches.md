@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 2
-needs: []
+needs: [user]
 blocked-by: [copilot-payload-retirement.md]
 written: 2026-09-26
 ---
@@ -14,7 +14,10 @@ written: 2026-09-26
   re-read of 1.139.1's bundle the day this was written.
 - **Kind**: an investigation, then edits to every file here that states
   how Copilot is kept out of `~/.claude`. Nothing is drafted: the user
-  wants the new VS Code settings model worked out first.
+  wants the new VS Code settings model worked out first. Since
+  2026-10-06 it also holds two calls of the user's (§ "A client repo
+  pointed its Local agent at Claude's files", § "Six agents in the
+  Default profile").
 
 ## The claim in question
 
@@ -115,20 +118,99 @@ The ones that state the model rather than cite it:
 
 1. What does the Agent Host Copilot SDK harness read, and does any of it
    come from `~/.claude` or a workspace's `.claude/` by default?
+
+   Answered for the standalone Copilot app, which runs the same Copilot
+   CLI runtime, on 2026-10-05: nothing from `~/.claude`, and a
+   workspace's `.claude/rules/` as an index by `paths:`
+   ([copilot-payload-retirement.md](copilot-payload-retirement.md)
+   § "The decision the turn left"). VS Code's Copilot target is inferred
+   to match, not tested.
 2. Does that harness have any off-switch for Claude's files, per profile
    or otherwise?
 3. What does *Migrate Location Settings* move, and where? Its strings
    say it moves customizations found through the location settings, and
    `~/.claude/skills` is a junction into this repo. Try it on a scratch
    profile first, never a real one.
+
+   Documented, not run (VS Code's agents and agent-customization docs,
+   fetched 2026-10-05 by a client repo's session): with an Agent Host
+   target selected, the Agent Customizations editor offers four
+   migrations. *Migrate Location Settings*
+   (`chat.customizations.locationsMigration.enabled`, default `false`)
+   moves the agents, instructions and skills those settings found into
+   the selected host's folders, clears the settings by default, and
+   deletes the originals only if asked. For the Claude host it has
+   nothing to move, since those locations are its own folders; for the
+   Copilot host it would copy `.claude/*` into Copilot's folders, the
+   duplication the retirement removes, so it is not run there. *Migrate
+   User Data Customizations*
+   (`chat.customizations.userDataMigration.enabled`, default `false`)
+   copies agents and instructions a profile stores, *Migrate Prompt
+   Files* converts them to skills, and *Migrate MCP Servers* moves
+   servers to `.mcp.json` or `$COPILOT_HOME/mcp-config.json`.
 4. When is the Local harness due to go? The release notes should say.
+
+   No date, by the same docs: prompt files "continue to work with the
+   Local agent for now, but the Local agent will be removed in a future
+   release", and `chat.agentFilesLocations`, `chat.modeFilesLocations`,
+   `chat.instructionsFilesLocations` and `chat.agentSkillsLocations` are
+   "deprecated because Agent Host sessions don't use them". The settings
+   and the harness leave together, so plan for the Claude target, not
+   for Local running on its defaults.
 5. Does an explicit `false` for both harness settings hold against an
    experiment? A set value outranks a default, and a default is all an
    experiment changes, but that is unverified here.
+
+   By the same docs, `chat.editor.preferCopilotHarness` (experimental),
+   which the device policy `ChatEditorPreferCopilotHarness` can enforce
+   from 1.134, starts a new editor chat on the Copilot target where
+   Local would have started. It "does not migrate existing sessions or
+   change explicit or remembered Claude and Codex selections", so a
+   Claude pick holds.
 6. Does the SDK harness read `AGENTS.md` and `CLAUDE.md`, and follow an
    instructions file's links, and under what settings? The answer
    decides whether the import form's two Copilot conditions outlive the
    Local harness.
+
+   The standalone app reads both, expanding the root `CLAUDE.md`'s
+   `@AGENTS.md`, so `AGENTS.md` loads twice (2026-10-05, the section
+   named under question 1).
+
+## A client repo pointed its Local agent at Claude's files
+
+On 2026-10-02, while retiring its own Copilot copies, a client Fabric
+repo's `.vscode/settings.json` turned its Local agent the other way: the
+six Claude locations under `.claude/` and `~/.claude/` for rules, skills
+and agents on, `.github/*` and `~/.copilot/*` off, `chat.useClaudeMdFile`
+`true`, `chat.useAgentsMdFile` left `true`, Claude hook locations still
+off, and `chat.includeReferencedInstructions` `false`, since one of its
+rules links by Markdown. That contradicts
+`claude/rules/agent-instructions-scoping.md`, where
+`chat.useClaudeMdFile` stays `false`, and `claude/CLAUDE.md` § "GitHub
+Copilot no longer inherits this payload", and it runs against the
+premise of machine-config's `-Audit`, though that checks profiles, not a
+workspace's settings. **Whether it is that repo's exception or the new
+default is the user's call.** A new default changes those two files
+here, and machine-config through its inbox.
+
+Unverified there: whether the Local agent follows `CLAUDE.md`'s
+`@AGENTS.md`, which would load `AGENTS.md` twice with
+`chat.useAgentsMdFile` on, as the standalone app does; and whether it
+reads skills through the junctions and attaches `.claude/rules/` files
+by `paths:`, both of which VS Code documents.
+
+## Six agents in the Default profile
+
+`%APPDATA%/Code/User/prompts/`, the Default profile's folder, holds six
+`fabric-*` `.agent.md` files (listed 2026-10-06) that neither this repo
+nor machine-config names. The Local target reads them, and no Agent Host
+target does: those read user agents "from the selected host's folder,
+such as `~/.copilot/agents` or `~/.claude/agents`, and not from VS Code
+profile user data" (VS Code's custom-agents page, fetched 2026-10-05).
+So they go dark with the Local harness. **Keep, migrate or delete is the
+user's call.** *Migrate User Data Customizations* (question 3) would
+copy them to the selected host's folder, and `~/.claude/agents` deploys
+from `claude/agents/` here, by copy.
 
 ## What machine-config already did
 

@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 2
-needs: [user, a Claude-target turn on the corporate network]
+needs: [user]
 blocked-by: []
 written: 2026-09-30
 ---
@@ -13,7 +13,9 @@ written: 2026-09-30
   client Fabric repo, and from a read of the installed build the same
   day (transcript `230c3b1b`).
 - **Kind**: a removal. The upkeep stopped the day this was written; the
-  deletion waits on one turn only the user can run. Nothing is drafted.
+  deletion waited on one turn only the user could run, which passed on
+  2026-10-05, and now waits on one decision of the user's (§ "The
+  decision the turn left"). Nothing is drafted.
 
 ## The decision
 
@@ -41,8 +43,8 @@ what remains only if the turn below fails.
 ## What was measured
 
 All on 2026-09-30, on VS Code 1.139.1 (commit `04c0d99f4f`), bar the
-last subsection, which carries its own date. When this brief lands, this
-section moves verbatim to `docs/evidence/user-claude-md.md`.
+last two subsections, which carry their own dates. When this brief
+lands, this section moves verbatim to `docs/evidence/user-claude-md.md`.
 
 ### What each target lists
 
@@ -115,8 +117,9 @@ In `resources/app/out/vs/workbench/workbench.desktop.main.js`:
 
 ### What no one has seen
 
-A turn. Of the 200 transcripts under `~/.claude/projects` touched in the
-three days to 2026-09-30, 166 came from the Claude Code extension
+A turn, until 2026-10-05 (§ "How it graded"). Of the 200 transcripts
+under `~/.claude/projects` touched in the three days to 2026-09-30, 166
+came from the Claude Code extension
 (`entrypoint` `claude-vscode`) and 34 from `claude -p` (`sdk-cli`): none
 from this target. VS Code's Agents window lists Claude Code's own
 sessions, since it reads the same store, so a session shown there proves
@@ -184,11 +187,48 @@ user enabled MCP servers for the organization:
   `GitHub.copilot-chat\transcripts\` under VS Code's workspace storage,
   says `"producer":"copilot-agent"`.
 
+### The corporate network, 2026-10-05
+
+Measured on that network from 14:37 to 15:53 UTC by a VS Code session in
+a client Fabric repo, with Windows `curl.exe`, Git Bash's curl,
+`openssl s_client` and Claude Code 2.1.289: four CLI runs and the
+extension's log. **No proxy and no TLS inspection: a filter resets
+Anthropic's hosts by name.**
+
+- **No proxy anywhere.** WinHTTP goes direct; WinINET has no proxy and no
+  PAC URL; auto-detect is on, but `wpad` does not resolve and the .NET
+  system proxy comes back direct. `github.com`, `pypi.org` and
+  `login.microsoftonline.com` answer directly.
+- **Reset by name.** `api.anthropic.com`, `claude.ai`, `claude.com`,
+  `platform.claude.com`, `mcp-proxy.anthropic.com` and
+  `console.anthropic.com` resolve to `160.79.104.10` and
+  `2607:6bc0::10`. TCP connects in about 45 ms, and the connection is
+  reset as the TLS handshake begins: `curl: (35) Recv failure:
+  Connection was reset`, or `read ECONNRESET` in Claude Code's log.
+- **Sign-in and refresh never got through.** `platform.claude.com`,
+  `claude.com`, `console.anthropic.com` and `mcp-proxy.anthropic.com`
+  failed every try, as did every token refresh in the log and a `/login`
+  at 15:32.
+- **The API got through in bursts.** curl passed around 15:10, 15:39 and
+  15:52, ten tries of ten at 15:52 over IPv4 and IPv6, while
+  `platform.claude.com` failed ten of ten on the same addresses;
+  `claude.ai` passed once. 6 of 7 of Claude Code's model requests
+  arrived, and each was answered `401 OAuth access token has expired`:
+  the stored token had expired, and no refresh could reach
+  `platform.claude.com`. So Claude Code fails on its login, not its
+  route.
+- **No TLS inspection**: completed handshakes showed publicly issued
+  certificates.
+- At 17:15 UTC a second session there saw `api.anthropic.com` and
+  `platform.claude.com` reset while `api.github.com` answered `200`.
+  VS Code's chat reaches its models through GitHub's hosts, which that
+  network does not filter, so the Local target and the Claude target on
+  a Copilot model both answered there.
+
 ## The turn it waits on
 
 The findings brief set the test: the target "answers on the corporate
-network". Everything above says it will, and nothing has shown it. The
-user is next on that network in the week of 2026-10-05.
+network". It did, on 2026-10-05 (§ "How it graded", below).
 
 The steps are the user's, in the note
 `2026-09-30-claude-session-target-probe.md` in that client repo's
@@ -248,6 +288,91 @@ What each outcome means:
 - **2 holds and 3 does not**: the target answers without the payload,
   which the build says cannot happen. Stop and report; delete nothing.
 
+### How it graded
+
+The turn ran on 2026-10-05 from 16:27 to 20:05 UTC: a Claude-target
+chat on a client Fabric repo opened as a folder, on the corporate
+network, in VS Code 1.140 (build `07f806f999`), with Claude Code 2.1.281
+by the transcript and SDK 0.3.281. A Local-target session in that repo
+graded it from disk up to 17:15 UTC; `/triage` re-graded the whole
+transcript, `399df72e`, on this machine on 2026-10-06. The note in that
+repo's inbox was not opened.
+
+1. **Found**: `entrypoint` `sdk-ts` on all 929 entries that carry one,
+   so the `grep -L` above finds it.
+2. **Holds.** 261 answers, every one on `claude-sonnet-5-5`, routed
+   through Copilot: the Agent Host logged no Anthropic credential
+   (`tokenSource=absent`, `apiKeySource=absent`), as the grading session
+   read it, and that day's Anthropic-routed runs ended `401` (§ "The
+   corporate network, 2026-10-05"). Two error entries came after the
+   first grading. VS Code's proxy answered `402` `quotaExceeded`, "You
+   have exceeded your monthly quota", at 18:19:48 UTC, and 195 answers
+   on the same model followed it, by a route not traced. At 20:05:33 UTC
+   "Autocompact is thrashing" ended the session.
+3. **Holds.** `nested_memory` records of type `User`:
+   `claude-config-scoping.md` from 16:39 UTC, after Reads of `.mcp.json`,
+   and `coding-markdown.md` from 18:15 UTC. No `.sql` file was read, so
+   not `coding-tsql.md`, but by the same mechanism.
+4. **Holds.** 102 lines of `instructions-loaded.log` carry the session's
+   id. `identity-guard` was not seen to fire, since a passing hook leaves
+   no entry.
+5. **Not as expected.** Offered from the start: three VS Code extension
+   servers; `microsoft-learn-mcp`, which only `~/.claude.json` defines,
+   so the SDK read that file itself; and VS Code's bridged `host` and
+   `client`. From 18:06 UTC three more, Docker Desktop's `MCP_DOCKER`
+   among them, from a source not traced: `~/.claude.json` held only
+   `microsoft-learn-mcp` on 2026-10-06. By 17:15 UTC none of the seven
+   servers in that repo's `.mcp.json` was offered, though VS Code
+   registered all seven in that window, and its `.claude/settings*.json`
+   carry neither `enabledMcpjsonServers` nor
+   `enableAllProjectMcpServers`. Whether a later one is among the seven,
+   and why none came earlier, were not checked, so `${VAR}` and a
+   project `headersHelper` under this target are still unseen. The
+   session called `client` three times, and `host` and
+   `microsoft-learn-mcp` once each; the Learn call returned a result.
+6. **Not sent.** No user slash command: the 23 `<command-name>` strings
+   sit inside `prompt_snapshot` attachments.
+
+So 2 and 3 hold, which reads as remove, after the one decision the turn
+left.
+
+### The decision the turn left
+
+**Whether the standalone GitHub Copilot desktop app is a supported
+harness is the user's call before anything is removed.** It runs
+Copilot CLI in worktrees it creates, so no VS Code target and no
+`.vscode/settings.json` applies to it. A session in it reported what it
+had loaded, on 2026-10-05 in a client Fabric repo, then checked that on
+disk:
+
+- **In full**: the repo's `AGENTS.md`, and its root `CLAUDE.md` with
+  `@AGENTS.md` expanded, so `AGENTS.md` twice; and
+  `~/.copilot/instructions/cross-repo-handoffs.instructions.md`.
+- **As an index the agent opens itself**: the ports in
+  `~/.copilot/instructions`, by `applyTo`, and the repo's
+  `.claude/rules/`, by `paths:`.
+- **Skills by name and description**: the repo's `.github/skills/`,
+  which shadows same-named ones in `~/.copilot/skills/`, then those, and
+  the app's own.
+- **Nothing under `~/.claude`**, and no `.claude/skills/`: its junctions
+  are git-ignored, so a worktree never has them.
+
+After the removal the app keeps `AGENTS.md`, the index of the repo's
+`.claude/rules/`, the handoff rule and its own skills, and loses the 12
+ports and both skill sets. The note read the handoff rule as lost too,
+but that file is no port and stays (§ "On this machine, after the
+merge"). If the app is supported, both Copilot targets stay in the sync
+and their drift is closed. On 2026-10-06, comparing each port with its
+`claude/rules/` source by distinct non-blank lines after the
+frontmatter, `coding-tsql` had 10 found only in the port and 19 only in
+the rule, `coding-sparksql` 14 and 14, `coding-bicep` 1 and 19,
+`coding-xaml` 3 and 6, `coding-csharp` 2 and 4, `coding-expressions` 1
+and 3, and the other six 0 and 2. Pointing
+`COPILOT_CUSTOM_INSTRUCTIONS_DIRS` at `~/.claude/rules` instead is
+untested; it was unset at User scope on 2026-10-06, and the app does
+parse `paths:` in a repo's `.claude/rules/`. Whether VS Code's Copilot
+target, on the same runtime, loads the same is inferred, not tested.
+
 ## Before the turn: the upkeep has stopped
 
 **The decision ends the upkeep on either path**, since a retired payload
@@ -304,7 +429,13 @@ deployed state, but the hook and the files it reads leave in one commit.
   and VS Code's Claude target read `~/.claude`, and no other target
   does. Keep its pointer to `vscode-scoping.md`. If the heading changes,
   the ledger's changes in the same commit, since a ledger's headings
-  mirror its file's.
+  mirror its file's. It also takes the corporate network's rule, with
+  its tell and its date: there Claude Code fails on its sign-in, `read
+  ECONNRESET` as the TLS handshake begins, and a request that gets
+  through is answered `401 OAuth access token has expired`, while the
+  Claude target on a Copilot model answers (§ "The corporate network,
+  2026-10-05"). The file sits at its 200-line cap, so the rewrite pays
+  for the rule's lines.
 - **Three statements from `6545f2e` are corrected, not cut.** They were
   written that morning, before the panels were seen.
   `claude/rules/agent-instructions-scoping.md` calls the other
@@ -358,6 +489,19 @@ git grep -n -i -E 'copy-copilot|lint-instructions|copilot/instructions|source-ha
 
 ### In the client repo
 
+**Most of this was done there on 2026-10-02**, by that repo's own
+session, on a branch and uncommitted when it reported: the two rules
+took their bodies byte for byte, then `.github/copilot-instructions.md`
+and `.github/instructions/` went, with the 8 ports and their manifest.
+It kept `.github/skills/` and its manifest, which the user held back for
+now, and pointed its Local agent at Claude's files
+([copilot-harness-switches.md](copilot-harness-switches.md)). So the
+note shrinks to `.github/skills/`, once the user says, and a check that
+the branch landed. Those copies lagged 27 files across 16 skills that
+day, and their manifest lacks `fabric-event-schema-set` only because
+the skill was added here on 2026-10-01 (`7905f58`), after that repo's
+last skills sync.
+
 One client Fabric repo holds vendored copies, in two checkouts, and no
 other repo two levels under `C:/Repos` or `C:/GitHub` did on
 2026-09-30: 48 skills and 8 ports, each set with its manifest. That
@@ -409,7 +553,10 @@ note carries:
 
 - `claude/rules/vscode-scoping.md` and machine-config's profile
   switches: they keep the Local harness out of `~/.claude`, and a new
-  chat in the Chat view still started there on 2026-09-26.
+  chat in the Chat view still started there on 2026-09-26. A client repo
+  turned its own Local agent the other way on 2026-10-02; whether that
+  is the new default is the question of
+  [copilot-harness-switches.md](copilot-harness-switches.md).
 - The harness table in `claude/rules/agent-instructions-scoping.md`,
   corrected: facts about VS Code, true whatever this repo ships.
 - What `identity-guard`, `push-gate.sh` and their READMEs say of a
@@ -438,31 +585,58 @@ and a pinned model has to be one the Copilot-routed proxy can serve.
   Copilot-routed target cannot serve. If it failed, `learn`'s own pin is
   broken on the corporate network: put that to the user.
 
+**`/learn` was not sent** (§ "How it graded", step 6), so the second
+branch holds. The target's Copilot group was three models on
+2026-10-05, Claude Sonnet 5.5, Claude Sonnet 5 and Claude Haiku 4.5, by
+the Agent Host log as the grading session read it, while the Local
+target ran Claude Opus 5.5 on Copilot that day. So `learn`'s `fable`
+pin names a model the Copilot-routed target cannot serve, as `opus`
+would: put that to the user. The live `~/.claude/settings.json` carries
+`"model": "opus"`, a key of its own that the deploy keeps, and the turn
+raised no error on it: it ran on the picker's model. Whether a skill's
+pin is ignored the same way, or fails, is unseen.
+
 ## What it costs, and the way back
 
 - **The Copilot, Local and Codex targets get none of the payload.**
-  Accepted: the user picks the Claude target.
+  Accepted: the user picks the Claude target. Nor is the Copilot target
+  a fallback for a server that needs authentication: "Copilot sessions
+  can currently access only local MCP servers that don't require
+  authentication" (VS Code's harness page, approved 2026-09-30).
+- **The Claude target on a Copilot model has limits of its own**: no
+  Opus in its group (§ "The `model:` split"), and a monthly quota, which
+  its proxy reported exceeded on 2026-10-05 (§ "How it graded").
 - **The Claude target is the organization's to switch off**
   (`Claude3PIntegration`). If it does, nothing of the payload reaches
   VS Code's chat on the corporate network, and the way back is git:
   revert the removal, or take the script and `copilot/` from the commit
-  the ledger names and run it against `~/.copilot`.
+  the ledger names and run it against `~/.copilot`. Claude Code itself
+  gets through that network's filter only in gaps:
+  [claude-code-corporate-network.md](claude-code-corporate-network.md)
+  holds what is left for it.
 - **MCP there is the organization's to switch off as well.** Its policy
-  had MCP off until the user enabled it on 2026-10-03, and no server has
-  yet been seen to start under any target (§ "What VS Code read for
-  MCP"). If it goes off again, that is no part of this brief, and no
-  reason to look for another route to a server.
+  had MCP off until the user enabled it on 2026-10-03. Since then the
+  Local target has started `github-mcp` and the Claude target
+  `microsoft-learn-mcp` (§ "What VS Code read for MCP", § "How it
+  graded"). If it goes off again, that is no part of this brief, and no
+  reason to look for another route to a server. The tell is silence: no
+  server listed, no trust prompt, no MCP tools, while Developer: Policy
+  Diagnostics names the policy (a client repo's window, 2026-10-02).
 
 ## Not checked
 
-- A turn through the target, above all.
+- What let 195 answers through after the `402` on 2026-10-05: overage
+  billing, a reset, or another route.
+- Whether a skill's `model:` pin fails under the target, or is ignored
+  as the settings' `model` was.
 - Which two hook sources the Copilot panel counted, what the 25 skills
   outside the Claude screenshot were, and the 4 agents beside the one in
   `~/.claude/agents`.
 - Whether the entitlement's `none` reaches a server the SDK finds by
   itself in `~/.claude.json`: the deny list is built from what VS Code
   reads, and it does not read that file. Moot while the organization
-  leaves MCP on, as the user set it on 2026-10-03.
+  leaves MCP on, as the user set it on 2026-10-03. That the SDK finds
+  such a server is settled: the turn was offered `microsoft-learn-mcp`.
 - Whether a setting makes the Claude target the default for a new chat.
   If one exists it is machine-config's, through its inbox.
 - Whether Copilot code review runs on the client repo's pull requests,
@@ -504,3 +678,6 @@ name. The inbox note and the transcript are raw.
   `scripts/copy-copilot.ps1`: `91845fa` and `3775d1a` on 2026-09-30.
 - `uv run scripts/handoff-status.py`, for briefs written since that
   carry a port step.
+- The turn's transcript, `399df72e` under the client repo's project
+  directory in `~/.claude/projects`, in case the session was resumed:
+  1,321 lines, the last at 20:05:33 UTC on 2026-10-05, read 2026-10-06.
