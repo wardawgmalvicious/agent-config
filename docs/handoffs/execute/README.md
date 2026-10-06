@@ -195,6 +195,13 @@ session removed the worktree itself. At `/exit` a worktree holding
 commits is offered keep or remove, and remove deletes the branch
 (code.claude.com/docs/en/worktrees, read that day).
 
+**Auto mode denies the rebase.** On 2026-10-06 (2.1.289) a session in
+its brief's worktree ran `git rebase main` there, and the auto-mode
+classifier refused it as `[Git Destructive]`, as it refuses a remote
+branch delete (`prune-branches`). Once the user said in the
+conversation to run it, the same command ran with no prompt. One run,
+issued inside the worktree rather than by the `git -C` form above.
+
 **The landing checks the rebased tree.** No hook runs on a rebase
 or a fast-forward, and each whole-set check in `.pre-commit-config.yaml`
 runs only when a file it matches is staged, so the tree a rebase builds

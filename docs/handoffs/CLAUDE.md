@@ -31,7 +31,7 @@ What a session must know before it writes, starts or lands a brief here;
   worktree: `/exit` offers to remove it, which deletes the branch. Then:
 
   ```bash
-  git -C <worktree> rebase main && (cd <worktree> && pre-commit run --all-files)   # no hook runs on a rebase or a fast-forward
+  git -C <worktree> rebase main && (cd <worktree> && pre-commit run --all-files)   # no hook runs on a rebase or a fast-forward; auto mode denies the rebase as [Git Destructive] until the user says to run it
   git merge --ff-only <branch>
   git worktree remove .claude/worktrees/<brief>   # after any deployed-payload check passes; refused as locked: a session holds it; /prune-branches if its pid is dead; this session's own lock, left by a refused EnterWorktree by name: git worktree unlock first
   git branch -d <branch>
