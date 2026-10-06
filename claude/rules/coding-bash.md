@@ -266,6 +266,13 @@ Claude never sees. Plain stdout reaches Claude only from
 hook that tells Claude something about a compaction is SessionStart with
 matcher `compact`, which fires after one (hooks docs, read 2026-10-01).
 
+**What a hook hands Claude is capped at 10,000 characters**, measured
+per string: plain stdout as a whole, `additionalContext` and
+`systemMessage` each. Past it Claude Code writes the text to a file in
+the session directory and hands Claude the path with a 2,000-character
+preview, which nothing asks it to read, and no setting raises the cap
+(hooks docs, read 2026-10-06).
+
 **Bound the lifetime of anything you pipe into.** `jq` reads stdin; if
 the hook's shell dies mid-pipeline, `jq` is left blocking on a stdin that
 never closes and holds the session's cwd forever. That is enough to make
