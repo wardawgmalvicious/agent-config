@@ -138,3 +138,32 @@ targets, different failure modes.
 Surfaced by the 2026-10-06 `vscode-agent` run while it mapped its
 findings onto this repo. The machine-config row of F-1's table was read
 on 2026-10-06 while this brief was written, not during the audit.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied
+- **Session**: fresh (no audit or handoff run in this session; the
+  report arrived by @-mention only)
+- **Files changed**: `docs/handoffs/execute/copilot-harness-switches.md`
+- **Verification**: the target was still at `689d714`, and everything
+  this brief quotes sat where it put it: the target's `:48` and `:51`
+  rows, its nine locations at `:53-60`, question 1 and the
+  `vscode-scoping.md` bullet at `:108-110`;
+  `claude/rules/vscode-scoping.md` `:60-62` and `:63-68`;
+  `README.md:202-206`; and machine-config's `profiles.psd1:106`, read
+  in place. The `13c7b89` attribution is this brief's, not re-checked,
+  since the worktree's guard refuses git in another repo. Step 1 —
+  **passed**: `git diff --stat` listed the target beside brief 01's
+  files and nothing else. Step 2 — **passed**: `profile storage` at
+  `:86`, `:88`, `:96`, `:146` and `:308`, `registered separately` at
+  `:103`, `Shared Copilot SDK` at `:166` and `hooks included` at
+  `:142`. Step 3 — **passed**: `untouched`, and the frontmatter has no
+  hunk. Step 4 (`pre-commit run --all-files`) runs once at the end of
+  the run.
+- **Deferred**: none
+- **Deviations**: none to the edits. Two notes. Item 4 went into
+  § "Re-measure before acting", the target's list of what to re-measure
+  before it acts, since this brief named no section. F-1's table
+  carries over with one row reworded, "this brief, 1.139.0 bundle"
+  becoming "the 1.139.0 bundle, the list above", and README's line
+  numbers dated 2026-10-06.

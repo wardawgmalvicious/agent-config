@@ -77,6 +77,35 @@ VS Code 1.139.0 (commit `2242ebbb54`) on 2026-09-24, strings from
   Fabric, Config, Azure) sets either harness setting, and no
   `SOFTWARE\Policies\Microsoft\VSCode` key exists under `HKLM` or `HKCU`.
 
+VS Code's docs state two facts against this table: documented, not
+measured, at `microsoft/vscode-docs` head `c642b585` (2026-10-01), and
+checked on the live site on 2026-10-06 by the `vscode-agent` drift
+audit (`docs/audits/2026-10-06/vscode-agent/`).
+
+- **The Local agent's user instructions are documented as "VS Code
+  profile storage"**: the custom-instructions page, § "Instructions file
+  locations" (`4f4413d`, release 1.139, 2026-09-23), reads "Local agent
+  user | VS Code profile storage" and "Local agent workspace |
+  `.github/instructions` or `.claude/rules`". That disagrees with the
+  nine-location list above, which puts `~/.claude/rules` among the
+  built-in Claude locations. Four sources now disagree about
+  `~/.claude/rules` under the Local agent:
+
+  | Source | What it says |
+  | --- | --- |
+  | VS Code docs, 2026-09-23 | not a Local location; the Local user scope is profile storage |
+  | the 1.139.0 bundle, the list above | one of nine built-in `source: "claude-*"` locations |
+  | `README.md:202-206` (2026-10-06), measured 2026-09-09 | a `.sql` file "loaded exactly two of the twelve rules in `~/.claude/rules`" |
+  | machine-config `configs/vscode/profiles/profiles.psd1:106` (`13c7b89`, 2026-09-24) | a Claude location its profile audit checks under `chat.instructionsFilesLocations` |
+
+- **`chat.hookFilesLocations` is documented with an empty default**: the
+  hooks page (`91b05da`, 2026-09-21) says "The setting's default value
+  is empty because the built-in locations are registered separately."
+  That disagrees with the table's row for it, "every built-in path
+  `true`". The `chat.useClaudeHooks` row agrees with the page: each
+  Claude-format location "Requires `chat.useClaudeHooks`", which "is
+  off by default".
+
 Re-read on 1.139.1 (commit `04c0d99f4f`, installed 2026-09-25) on
 2026-09-26:
 
@@ -107,7 +136,14 @@ The ones that state the model rather than cite it:
   profile turns `chat.useClaudeMdFile` on.
 - `claude/rules/vscode-scoping.md`: the per-profile and
   unlisted-location gotchas, and `chat.includeReferencedInstructions`,
-  every one a Local-only setting.
+  every one a Local-only setting. Two of its passages, as read
+  2026-10-06, meet the documented facts in § "What was measured":
+  `:60-62`, that a profile with none of the switches "still inherited
+  the whole `~/.claude` payload, hooks included", where Claude-format
+  hooks also need `chat.useClaudeHooks`, off by default; and `:63-68`,
+  "**An unlisted location keeps its default, and the default is
+  on.**", where the hooks map is documented with an empty default and
+  the Local agent's user instructions as profile storage.
 - `.claude/rules/copilot-payload.md`: the switches in its first bullet,
   and its bullet on hooks, where 1.139.0 runs no Claude-format hook unless
   `chat.useClaudeHooks` is on, and that defaults off.
@@ -125,6 +161,19 @@ The ones that state the model rather than cite it:
    ([copilot-payload-retirement.md](copilot-payload-retirement.md)
    § "The decision the turn left"). VS Code's Copilot target is inferred
    to match, not tested.
+
+   A candidate for its hooks, unverified: the hooks page (`91b05da`,
+   2026-09-21) gives the Copilot target the "Shared Copilot SDK
+   implementation" and sends it to [GitHub's Copilot hooks
+   reference](https://docs.github.com/en/copilot/reference/hooks-reference),
+   then says "Some harnesses discover the same hook files, such as
+   `.github/hooks/*.json` or `.claude/settings.json`. This file
+   compatibility does not make their behavior identical." That could
+   explain the 2 hook entries the Copilot panel counted on 2026-09-30,
+   which nobody opened
+   ([copilot-payload-retirement.md](copilot-payload-retirement.md)
+   § "Not checked"). The page does not say which harness discovers
+   `.claude/settings.json`.
 2. Does that harness have any off-switch for Claude's files, per profile
    or otherwise?
 3. What does *Migrate Location Settings* move, and where? Its strings
@@ -254,3 +303,10 @@ build's commit directory; an older one can linger beside it.
   1.139.0 on 2026-09-24, 1.139.1 on 2026-09-26.
 - The mention count above, by its own command.
 - machine-config's `ClaudeLocations` and `ClaudeSwitches`.
+- The Local agent's user-scope instructions, re-measured before this
+  brief's conclusions or `claude/rules/vscode-scoping.md` change. The
+  docs say profile storage, while the 1.139.0 bundle lists
+  `~/.claude/rules` and a 2026-09-09 measurement saw rules load from it
+  (§ "What was measured"). `README.md:202-206` names that method: a
+  `.sql` file open in a client repo, and which of the rules in
+  `~/.claude/rules` loaded.
