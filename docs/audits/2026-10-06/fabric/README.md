@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 20 — pending 20
+Briefs: 21 — pending 21
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -29,3 +29,4 @@ Briefs: 20 — pending 20
 | [18 decide how the audit fetches a large table source](18-decide-table-source-fetch-strategy.md) | 21 | a decision on the audit pipeline itself, followed by a `SKILL.md` edit | pending |
 | [19 decide the new-skill candidates](19-decide-new-skill-candidates.md) | 22 | a decision | pending |
 | [20 scope the TMDL globs and check the incidental findings](20-scope-tmdl-globs-and-check-incidentals.md) | 23 | two unrelated tasks that share one recommended action | pending |
+| [21 correct the mirroring kinds and flag the September announcements](21-correct-mirroring-kinds-and-flag-announcements.md) | none — briefed on request after the handoff; see Context | minor edits and dated flags in one skill and its reference | pending |
