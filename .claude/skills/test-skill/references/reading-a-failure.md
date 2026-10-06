@@ -576,4 +576,7 @@ Code's cross-session messaging page, read 2026-09-30, says `refuse`
 "drops each message without delivering it", and a `-p` session takes the
 key from its `--settings` value, so
 `--settings '{"crossSessionInbound":"refuse"}'` on every arm would keep
-a peer's message from running as a second turn. Not yet run on an arm.
+a peer's message from running as a second turn. Passed on all 18 arms
+of a run on 2026-10-06 (2.1.291) with a normal `init` and no error;
+whether it refused anything is unmeasured, since a refused message
+leaves no trace in the arm, and none showed a second turn.
