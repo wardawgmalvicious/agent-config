@@ -36,13 +36,18 @@ check() { # <label> <condition-exit-code>
         sed 's/^/       | /' "$tmproot/out"
     fi
 }
+# The script leaves out the session CLAUDE_CODE_SESSION_ID names, and a run
+# inside Claude Code inherits its own, so each search clears it unless a
+# case sets $asking.
 search() {
-    CLAUDE_CONFIG_DIR=$(native "$store") PYTHONIOENCODING=utf-8 \
+    env -u CLAUDE_CODE_SESSION_ID ${asking:+"CLAUDE_CODE_SESSION_ID=$asking"} \
+        CLAUDE_CONFIG_DIR="$(native "$store")" PYTHONIOENCODING=utf-8 \
         uv run --quiet --no-project "$repo/skills/workflow/find-session/scripts/find-session.py" \
         "$@" >"$tmproot/out" 2>&1
     echo $? >"$tmproot/rc"
 }
 rc() { cat "$tmproot/rc"; }
+asking=
 
 # rec <file> <jq-filter> [--arg name value]...: append one transcript record
 rec() {
@@ -129,6 +134,11 @@ search --repo beta rename
 check "--repo keeps only that repo" "$(grep -q 77777777 "$tmproot/out" && ! grep -q 11111111 "$tmproot/out"; echo $?)"
 search --repo alpha test-skill
 check "--repo counts a worktree as its repo" "$(grep -q 44444444 "$tmproot/out"; echo $?)"
+asking=11111111-1111-4111-8111-111111111111
+search --repo alpha rename group sessions
+asking=
+check "leaves out the session running the search" \
+    "$(! grep -q 11111111 "$tmproot/out" && grep -q 22222222 "$tmproot/out"; echo $?)"
 search --json rename group sessions
 check "--json is JSON with a resume command" \
     "$(jq -b -e '.[0].resume | startswith("claude --resume ")' <"$tmproot/out" >/dev/null; echo $?)"

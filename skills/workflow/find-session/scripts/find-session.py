@@ -32,10 +32,13 @@ not one prompt read from them exits 2.
 
 It reaches back only as far as transcripts are kept, so the summary line
 names the oldest one on disk: `cleanupPeriodDays` is the most that can be,
-and on 2026-10-06 the store held 7 days against a setting of 15. Probe
-sessions -- cwd in the temp folder, or named "probe: ..." -- are left out
-unless --probes. Exits 1 when nothing matches. No dependencies;
-tests/scripts/find-session/ holds each case.
+and on 2026-10-06 the store held 7 days against a setting of 15.
+
+The session running the search is left out, by CLAUDE_CODE_SESSION_ID,
+which Claude Code sets in its shells, since its own prompt holds the
+terms. Probe sessions -- cwd in the temp folder, or named "probe: ..." --
+are left out unless --probes. Exits 1 when nothing matches. No
+dependencies; tests/scripts/find-session/ holds each case.
 """
 
 from __future__ import annotations
@@ -210,7 +213,8 @@ def main(argv: list[str] | None = None) -> int:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
     projects = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude") / "projects"
-    paths = sorted(projects.glob("*/*.jsonl"))
+    asking = os.environ.get("CLAUDE_CODE_SESSION_ID")  # holds the terms in its own prompt
+    paths = sorted(p for p in projects.glob("*/*.jsonl") if p.stem != asking)
     if not paths:
         print(f"no transcripts under {projects}", file=sys.stderr)
         return 1

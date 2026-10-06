@@ -60,6 +60,9 @@ uv run --no-project ~/.claude/skills/find-session/scripts/find-session.py <term>
 - **The first hit is the tightest, not the newest.** Hits rank by where
   every term met, a name, then one prompt, one summary, one reply, then
   scattered, and newest first within each.
+- **The asking session is left out.** Its own prompt holds the terms, so
+  the script drops the transcript `CLAUDE_CODE_SESSION_ID` names, which
+  Claude Code sets in both its shells (2026-10-06).
 - **The last line gives the reach**: the oldest transcript on disk. A
   session last active before that date can no longer be found.
 
