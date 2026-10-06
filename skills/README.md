@@ -34,6 +34,16 @@ internal cross-references stay intact.
   self-consistent commits: splitting rules, conventional-commit
   messages with motivation in the body, explicit-path staging,
   never-push/amend rails, Fabric Git-synced repo checks.
+- [find-session/](workflow/find-session/) — find a past Claude Code
+  session by what was said in it, in any repo on this machine: its
+  bundled script reads every transcript under `~/.claude/projects/` for
+  the sessions holding every given term, ranks one prompt holding them
+  all above terms scattered through a long session, and prints the
+  `claude --resume` command for each and how far back the transcripts
+  reach. Exists because a name is a weak index, since Claude Code titles
+  a session once, from its first prompt, and because the script began in
+  this repo's `scripts/`, where only a session here could learn of it;
+  inside the skill it deploys with the junction. Reads only.
 - [land/](workflow/land/) — the step after `/commit`: push the branch,
   confirm which GitHub account each tool actually acts as, open the PR
   through the one that matches, then fast-forward `main` and verify CI.
