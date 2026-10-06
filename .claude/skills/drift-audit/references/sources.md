@@ -119,13 +119,23 @@ repo's SHAs, so upstream bytes are still reachable under another namespace.
    advertises the dead public mirror and is worthless here.
 
 2. **Search with a date qualifier, not a sort.**
-   `powerbi-docs in:name fork:only created:>=<floor-date>`, anchored at or
-   just before the window floor. **Repository search has no `created`
+   `powerbi-docs in:name fork:only created:>=<updated_at-date>`, anchored
+   at the date of the commit Learn serves, never at the window floor: an
+   unmodified fork holds that SHA only if it was made after the commit,
+   so a floor later than the commit drops every fork made between the two.
+   Learn's `updated_at` is the usable stand-in for the commit's date. It
+   lands at or just after the commit (16:26Z commit, 17:13Z publish, on
+   2026-08-25), and a date qualifier at its date includes forks made that
+   day. **Repository search has no `created`
    sort** — `sort=created` is accepted and silently ignored, so results
    return by relevance and "the most recent fork" cannot be expressed as a
    sort. Measured 2026-09-07: the bare query returned **1162** results
    whose first page contained no in-window fork at all; adding
    `created:>=2026-08-20` returned **3** and surfaced both usable ones.
+   Measured 2026-10-06, with a floor of 2026-09-01 after a commit of
+   2026-08-25: `created:>=2026-09-01` returned **5** and no usable fork;
+   `created:>=2026-08-25`, Learn's `updated_at` date, returned **7** and
+   both matching forks.
 
 3. **Filter the candidates.**
    - `name` must be exactly `powerbi-docs`. `in:name` matches substrings,
@@ -186,14 +196,20 @@ remain detectable for the reason below.
 the written rule literally against three more — which is what produced
 steps 1–3 above: the audit's own draft named the wrong metadata field,
 relied on a sort that does not exist, and had no substring guard. It has
-now been exercised **twice by two independent runs, but still on only one
-window** (floor 2026-08-01). The second run followed steps 1–4 as
+now been exercised **by three independent runs, on two windows** (floors
+2026-08-01 and 2026-09-01). The second run followed steps 1–4 as
 written, reached the same `git_commit_id` via two forks that agreed
 (`jajin7`, `bsnyder9`), and the exact-name guard fired twice to drop
-`powerbi-docs-powershell` — so the *rule* has been replicated even though
-the window has not. Both runs also independently recovered the same three
+`powerbi-docs-powershell` — so the *rule* had been replicated even though
+the window had not. Both runs also independently recovered the same three
 in-window commits. A run that finds it insufficient should say so in the
 report rather than improvising again in silence.
+The third run, on 2026-10-06 against the 2026-09-01 floor, did just that
+on the second window: step 2, then anchored at the floor, found no
+usable fork, and the run widened the anchor by hand and said so in its
+report. The rest of the rule held. The exact-name guard fired four
+times, the empty-fork rejection once (`martinps3`, created 2026-09-24,
+default branch `live`), and two forks agreed on the SHA again.
 
 #### Squash-merged monthly release — size before you fetch
 

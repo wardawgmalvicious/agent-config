@@ -158,3 +158,38 @@ Surfaced by the 2026-10-06 `/drift-audit --sources powerbi --since
 pair, and the first whose floor falls after the commit Learn serves. The
 run followed step 2 literally, found no usable fork, then widened the
 anchor by hand and said so in its audit-window block.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; no warm
+  cap applied)
+- **Files changed**: `.claude/skills/drift-audit/references/sources.md`
+- **Verification**:
+  - Step 1 — **passed**. Learn still serves `git_commit_id`
+    `0e80b00bf4b83809178cdce6b055171e9e0c9604`, `updated_at`
+    2026-08-25T17:13Z, title "August 2026", so the known answer holds.
+    Step 2 as edited, `powerbi-docs in:name fork:only
+    created:>=2026-08-25`, returned `total_count` 7, the brief's seven,
+    `jajin7/powerbi-docs` and `bsnyder9/powerbi-docs` among them. Step 4
+    passed for both: `list_commits` on the path, `perPage: 1`, returned
+    `0e80b00b` on each.
+  - Step 2 — **passed**. The one instruction left anchors at
+    `<updated_at-date>`; the other three `created:>=` hits are dated
+    measurements.
+  - Step 3 — **passed**. `lint-frontmatter.py` on `SKILL.md`, exit 0.
+  - Step 4 (`pre-commit run --all-files`) runs once at the end of the
+    run.
+- **Deferred**: step 5, the cold `/drift-audit --sources powerbi --since
+  2026-09-01` run. This is a self-referential brief, and this run cannot
+  re-audit against the registry it just edited. Valid only while Learn
+  still serves `0e80b00b`.
+- **Deviations**: none to the edits. Two notes. Step 2's placeholder
+  `<floor-date>` became `<updated_at-date>`, since it named the old
+  anchor. Correcting "still on only one window" in place also put the
+  paragraph's restatement of it, "the *rule* has been replicated even
+  though the window has not", into the past tense, so the paragraph no
+  longer asserts both.
+- **Needs**: the next powerbi drift audit — step 5's cold re-run, which
+  must reach a verified fork with no widening by hand while Learn still
+  serves `0e80b00b`.
