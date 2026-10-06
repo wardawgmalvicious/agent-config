@@ -33,7 +33,8 @@ not one prompt read from them exits 2.
 It reaches back only as far as transcripts are kept, so the summary line
 names the day the oldest one on disk was last written: `cleanupPeriodDays`
 is the most that can be, and on 2026-10-06 the store held 7 days against a
-setting of 15. That date bounds a transcript's last write, not its
+setting of 15, because a lower value had been set for a while first.
+That date bounds a transcript's last write, not its
 session's last activity: Claude Code writes title and state records after
 a session's last prompt, so on 2026-10-06 one last prompted 2026-09-24 was
 found while the oldest transcript read as written 2026-09-29.

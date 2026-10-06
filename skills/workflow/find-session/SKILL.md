@@ -98,8 +98,9 @@ session lost:
   oldest transcript's last write, not its last activity (§2): say it is
   most likely gone, and why. Claude Code deletes transcripts older than
   `cleanupPeriodDays`, 30 days by default, and the store can hold less
-  than the setting says: 7 days against 15 on 2026-10-06, cause not
-  found. Do not search the transcripts by hand.
+  than the setting says once a lower value has run: 7 days against 15 on
+  2026-10-06, after the setting had been turned down for a while. Do not
+  search the transcripts by hand.
 
 Exit 2 has two meanings, told apart by stderr. `the transcript format
 may have changed` means the script read transcripts and found not one
