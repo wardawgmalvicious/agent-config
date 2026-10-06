@@ -31,8 +31,12 @@ change, this fails rather than reporting nothing: transcripts on disk but
 not one prompt read from them exits 2.
 
 It reaches back only as far as transcripts are kept, so the summary line
-names the oldest one on disk: `cleanupPeriodDays` is the most that can be,
-and on 2026-10-06 the store held 7 days against a setting of 15.
+names the day the oldest one on disk was last written: `cleanupPeriodDays`
+is the most that can be, and on 2026-10-06 the store held 7 days against a
+setting of 15. That date bounds a transcript's last write, not its
+session's last activity: Claude Code writes title and state records after
+a session's last prompt, so on 2026-10-06 one last prompted 2026-09-24 was
+found while the oldest transcript read as written 2026-09-29.
 
 The session running the search is left out, by CLAUDE_CODE_SESSION_ID,
 which Claude Code sets in its shells, since its own prompt holds the
@@ -269,7 +273,7 @@ def main(argv: list[str] | None = None) -> int:
         more = f", first {len(shown)} shown" if len(matches) > len(shown) else ""
         reach = datetime.fromtimestamp(oldest).strftime("%Y-%m-%d")
         print(f"{len(matches)} of {len(paths)} sessions matched{more}; "
-              f"oldest transcript {reach}; times are local")
+              f"oldest transcript written {reach}; times are local")
     return 0 if matches else 1
 
 

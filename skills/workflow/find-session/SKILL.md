@@ -46,7 +46,7 @@ uv run --no-project ~/.claude/skills/find-session/scripts/find-session.py <term>
 2026-09-29 23:18  agent-config  contributing-md
     prompt: …ood point. I always wanted to rename and group my Claude Code sessions to keep better track of them. Is there …
     claude --resume 053abce6-857e-4d2b-b5d8-77150b3e4e75
-12 of 212 sessions matched, first 2 shown; oldest transcript 2026-09-29; times are local
+12 of 212 sessions matched, first 2 shown; oldest transcript written 2026-09-29; times are local
 ```
 
 - **The first line** is the last activity in local time, the repo (the
@@ -63,8 +63,11 @@ uv run --no-project ~/.claude/skills/find-session/scripts/find-session.py <term>
 - **The asking session is left out.** Its own prompt holds the terms, so
   the script drops the transcript `CLAUDE_CODE_SESSION_ID` names, which
   Claude Code sets in both its shells (2026-10-06).
-- **The last line gives the reach**: the oldest transcript on disk. A
-  session last active before that date can no longer be found.
+- **The last line gives the reach**: the day the oldest transcript on
+  disk was last written. That bounds a transcript's last write, not its
+  session's last activity: Claude Code writes title and state records
+  after a session's last prompt, so a hit can predate the reach, as one
+  last active 2026-09-24 did beside a reach of 2026-09-29 (2026-10-06).
 
 ## 3. Narrow or widen
 
@@ -91,10 +94,12 @@ session lost:
   word only Claude used needs `--replies`.
 - Add `--probes` if it may have been a test run.
 - **Then read the reach.** A session last active before the summary's
-  oldest transcript is gone. Claude Code deletes transcripts older than
+  date is most likely gone, but not certainly, since the date bounds the
+  oldest transcript's last write, not its last activity (§2): say it is
+  most likely gone, and why. Claude Code deletes transcripts older than
   `cleanupPeriodDays`, 30 days by default, and the store can hold less
   than the setting says: 7 days against 15 on 2026-10-06, cause not
-  found. Say it is gone; do not search the transcripts by hand.
+  found. Do not search the transcripts by hand.
 
 Exit 2 has two meanings, told apart by stderr. `the transcript format
 may have changed` means the script read transcripts and found not one

@@ -113,7 +113,8 @@ check "ranks one prompt holding every term above a newer scattered match" \
 check "quotes the prompt that matched" "$(grep -q 'prompt: .*rename and group my sessions' "$tmproot/out"; echo $?)"
 check "says when the terms are only scattered" "$(grep -q 'some terms; the rest elsewhere' "$tmproot/out"; echo $?)"
 check "prints the resume command" "$(grep -q 'claude --resume 11111111-1111-4111-8111-111111111111' "$tmproot/out"; echo $?)"
-check "the summary names the oldest transcript" "$(grep -q 'oldest transcript 2026-09-28;' "$tmproot/out"; echo $?)"
+check "the summary names when the oldest transcript was written" \
+    "$(grep -q 'oldest transcript written 2026-09-28;' "$tmproot/out"; echo $?)"
 search rename CONTRIBUTING-nowhere
 check "every term must appear: exits 1" "$([ "$(rc)" = 1 ] && echo 0 || echo 1)"
 
