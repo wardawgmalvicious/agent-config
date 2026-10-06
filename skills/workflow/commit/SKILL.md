@@ -151,6 +151,12 @@ left it on, or when the user says so. **Rule out the two innocent
 explanations first**: your own stepping edits, and a hook that rewrites
 files, which leaves its rewrite *unstaged*. Neither is contention.
 
+A linked worktree is a tree of its own: git keeps its index and HEAD
+under `.git/worktrees/<name>/`, so a session alone in one has nothing
+to suspect and commits with the plain commands. The `EnterWorktree`
+guard refuses the chained form below there as too complex to verify
+(2026-10-06, 2.1.289), and a worktree needs none of it.
+
 - **Ask them.** `ListAgents` names every live session
   `<cwd-basename>-<hash>` — its working directory, not its repo — and
   `SendMessage` reaches one. **Read every row rather than filtering by
