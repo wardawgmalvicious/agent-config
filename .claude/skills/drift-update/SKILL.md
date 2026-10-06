@@ -100,14 +100,17 @@ have it committed first, or the worktree starts without it.
 
 Then, in the resolved directory:
 
-- `Glob` the numbered briefs. `00-audit-report.md` is not a brief; it is
-  evidence, and step 4 governs when to open it. `README.md` is not one
-  either: it is the generated index of the directory, worth a glance for
-  where things stand, but the `## Execution log` in each brief is the
-  resume mechanism, not the index's status column.
+- `Glob` the numbered briefs, at the top and under `completed/`.
+  `00-audit-report.md` is not a brief; it is evidence, and step 4 governs
+  when to open it. `README.md` is not one either: it is the generated
+  index of the directory, worth a glance for where things stand, but the
+  `## Execution log` in each brief is the resume mechanism, not the
+  index's status column or the brief's folder.
 - **Skip any brief already carrying an `## Execution log` section.** That is
-  the resume mechanism. Report skipped-as-done briefs by name so a short run is
-  never mistaken for an empty one.
+  the resume mechanism. Every brief under `completed/` carries one, since
+  4.5 files a brief there only once its log leaves nothing open; the top
+  holds the rest, unstamped or stamped open. Report skipped-as-done briefs
+  by name so a short run is never mistaken for an empty one.
 - If every brief is already stamped, say so and stop. Nothing to do is a
   result, not a failure.
 
@@ -197,6 +200,16 @@ brief says it does: `Grep` for the quoted offending line at the named path.
 - **Some targets found, some not** — treat it as a stop. A partially valid
   brief means the tree diverged in a way nobody predicted, and that deserves a
   human look before anything is written.
+
+**A target that is itself an audit brief may since have moved** into its
+directory's `completed/`, where 4.5 files a brief whose log leaves
+nothing open. If the named path is missing and
+`completed/<same filename>` exists, it is the same file, not a
+lookalike: grep it for the post-fix text. Found, it is
+`already-applied` as above, with the **Verification** run against that
+path and the path recorded under **Deviations**. Anything else stops
+the run: the brief it targets finished by a route this one did not
+foresee.
 
 **An explicit instruction is the one way past a missing quote.** When the
 user names where the quoted text now sits ("it moved two paragraphs
@@ -298,10 +311,14 @@ uv run scripts/audit-status.py --dir <the resolved directory>
 ```
 
 That rewrites its `README.md` from the briefs, so this brief's row moves from
-`pending` to the outcome and date just stamped. The index is derived, never
-edited, and the `lint-audit-index` pre-commit hook fails a commit whose index
-disagrees with its briefs — so a stamp and its regenerated README are one
-commit.
+`pending` to the outcome and date just stamped. It also **files the brief
+under the directory's `completed/`** when the stamp leaves nothing open,
+`applied` or `already-applied`, so the top lists only briefs still unrun
+or open; an escalated, deferred or applied-with-deferrals brief stays
+there until its `**Closed**:` line. The index and the folder are derived,
+never edited, and the `lint-audit-index` pre-commit hook fails a commit
+whose index disagrees with its briefs or whose brief sits on the wrong
+side — so a stamp, its move and its regenerated README are one commit.
 
 **`- **Closed**: <ISO date> — <how>` is the key added after the stamp**,
 by whichever later session discharges what the log left open — an
@@ -313,7 +330,9 @@ row as `closed`. Without it an escalated brief reads as open forever, which is
 how the four skills authored from 2026-09-10 brief 07 left no trace in the
 ledger until a later audit wrote a brief to record them. The one other key a
 later session appends is a fresh `**Needs**:` line, when what the open work
-waits on changes; the last one counts.
+waits on changes; the last one counts. A `**Closed**:` line moves the brief
+into `completed/` at the next regeneration, so re-point any live path to it
+in that commit, though never a stamped brief's own text.
 
 `docs/audits/` is tracked, so these stamps are history and not just working
 state: they make a re-run resumable, and they are also the record of what a
@@ -371,10 +390,12 @@ Close with:
 
 Then hand off to `/commit`. Unlike `/drift-handoff`, this skill changes tracked
 files, so there is a real diff — and `/commit` splits it logically, which is
-why this skill does not commit per brief. If the run stopped early, say plainly
-which edits are applied and uncommitted before handing over. A run that wrote
-nothing has nothing to hand over: report the clean tree and stop, rather than
-invoking `/commit` against an empty diff.
+why this skill does not commit per brief. A brief 4.5 filed under
+`completed/` shows as a deletion plus an untracked file until both are
+staged, when git reads the pair as a rename. If the run stopped early, say
+plainly which edits are applied and uncommitted before handing over. A run
+that wrote nothing has nothing to hand over: report the clean tree and stop,
+rather than invoking `/commit` against an empty diff.
 
 **The pass lands as a brief's worktree does**: from the main checkout, by
 fast-forward with no push, by the commands `docs/handoffs/CLAUDE.md`
