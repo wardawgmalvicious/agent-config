@@ -30,10 +30,12 @@ compaction, and for one long session it lacked 31 of the 50 prompts typed
 change, this fails rather than reporting nothing: transcripts on disk but
 not one prompt read from them exits 2.
 
-It reaches back only as far as transcripts are kept, `cleanupPeriodDays` in
-claude/settings.json. Probe sessions -- cwd in the temp folder, or named
-"probe: ..." -- are left out unless --probes. Exits 1 when nothing matches.
-No dependencies.
+It reaches back only as far as transcripts are kept, so the summary line
+names the oldest one on disk: `cleanupPeriodDays` is the most that can be,
+and on 2026-10-06 the store held 7 days against a setting of 15. Probe
+sessions -- cwd in the temp folder, or named "probe: ..." -- are left out
+unless --probes. Exits 1 when nothing matches. No dependencies;
+tests/scripts/find-session/ holds each case.
 """
 
 from __future__ import annotations
@@ -212,6 +214,7 @@ def main(argv: list[str] | None = None) -> int:
     if not paths:
         print(f"no transcripts under {projects}", file=sys.stderr)
         return 1
+    oldest = min(p.stat().st_mtime for p in paths)
     if args.days is not None:
         cutoff = time.time() - args.days * 86400
         paths = [p for p in paths if p.stat().st_mtime >= cutoff]
@@ -260,7 +263,9 @@ def main(argv: list[str] | None = None) -> int:
             print(f"    {where}: {snippet(text, terms)}")
             print(f"    claude --resume {s.session_id}")
         more = f", first {len(shown)} shown" if len(matches) > len(shown) else ""
-        print(f"{len(matches)} of {len(paths)} sessions matched{more}; times are local")
+        reach = datetime.fromtimestamp(oldest).strftime("%Y-%m-%d")
+        print(f"{len(matches)} of {len(paths)} sessions matched{more}; "
+              f"oldest transcript {reach}; times are local")
     return 0 if matches else 1
 
 

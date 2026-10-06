@@ -73,6 +73,7 @@ user "$f" "$REAL" 2026-09-28T10:00:00.000Z 'start on the CONTRIBUTING file'
 user "$f" "$REAL" 2026-09-28T10:05:00.000Z 'I always wanted to rename and group my sessions'
 user "$f" "$REAL" 2026-09-28T11:00:00.000Z 'This session is being continued from a previous conversation. Summary: CONTRIBUTING work.' '{"isCompactSummary":true}'
 rec "$f" '{type: "custom-title", customTitle: "contributing-md"}'
+touch -d '2026-09-28 11:00' "$f" # the oldest file, which the summary names
 # s2: newer, every term present but scattered across prompts.
 f=$p/22222222-2222-4222-8222-222222222222.jsonl
 user "$f" "$REAL" 2026-10-02T09:00:00.000Z 'rename the column'
@@ -107,6 +108,7 @@ check "ranks one prompt holding every term above a newer scattered match" \
 check "quotes the prompt that matched" "$(grep -q 'prompt: .*rename and group my sessions' "$tmproot/out"; echo $?)"
 check "says when the terms are only scattered" "$(grep -q 'some terms; the rest elsewhere' "$tmproot/out"; echo $?)"
 check "prints the resume command" "$(grep -q 'claude --resume 11111111-1111-4111-8111-111111111111' "$tmproot/out"; echo $?)"
+check "the summary names the oldest transcript" "$(grep -q 'oldest transcript 2026-09-28;' "$tmproot/out"; echo $?)"
 search rename CONTRIBUTING-nowhere
 check "every term must appear: exits 1" "$([ "$(rc)" = 1 ] && echo 0 || echo 1)"
 
