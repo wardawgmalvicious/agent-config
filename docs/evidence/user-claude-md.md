@@ -892,6 +892,34 @@ sessions; whether a hook's `ask` still prompts under auto mode is
 untested. Reached this repo as an inbox note, and was approved by name
 at `/triage`.
 
+**2026-10-06.** The cold probe takes a name, `-n 'probe: <topic>'`, and
+sessions now name themselves. Both answer a 2026-09-30 exploration that
+was found again only by searching transcripts, its generated title being
+"CONTRIBUTING.md for repo". Measured on 2.1.289 with throwaway Haiku
+sessions:
+
+- **A name set at the first prompt is the address.** A `UserPromptSubmit`
+  hook's `sessionTitle` set the name `ListAgents` and `claude agents
+  --json` showed for a background session, and wrote the `custom-title`
+  and `agent-name` records `/rename` writes; on the next prompt the
+  hook's input carried it as `session_title`. A `SessionStart` hook's
+  title reached a background session's transcript but not its live name,
+  which stayed its prompt. So the `name-session` hook names once, on the
+  first prompt, by five rules that would have named about half of 195
+  past sessions, and renames nothing already named or under way.
+- **Claude Code's generated title never moves past the first prompt**:
+  all 233 titled sessions on this machine held exactly one. `/rename`
+  with no argument names a session from its whole conversation, and does
+  under `-p` too, where from Git Bash the leading `/` is rewritten into a
+  Git install path unless `MSYS2_ARG_CONV_EXCL` covers it.
+- **A probe named `probe: ...` is swept.** `-n` on a `-p` probe reached
+  its first hook as `session_title`, so the naming hook leaves it be, and
+  the `prune-probe-sessions` hook deletes it two days after it last ran,
+  as it does every session whose cwd is in the temp folder: 88 of them,
+  23.7 MB, on its first report. Two days, because a probe's transcript is
+  the witness its test reads after it ends. A probe run from a repo
+  without the name stays until `cleanupPeriodDays` removes it.
+
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude

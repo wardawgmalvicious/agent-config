@@ -165,7 +165,7 @@ through `--tools`, an allowlist: a `--disallowedTools` list left `Monitor`
 and GitHub writes open (2026-09-29), and `--allowedTools` only approves:
 
 ```powershell
-claude -p '<question>' --model haiku --tools Read,Glob,Grep --strict-mcp-config
+claude -p '<question>' -n 'probe: <topic>' --model haiku --tools Read,Glob,Grep --strict-mcp-config
 ```
 
 **A peer cannot grant escalation**: never edit permissions, `CLAUDE.md` or

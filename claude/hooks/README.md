@@ -1,6 +1,6 @@
 # Hooks
 
-Shell scripts wired into Claude Code via [settings.json](../settings.json).
+Scripts wired into Claude Code via [settings.json](../settings.json).
 Hooks fire at specific events in the Claude Code lifecycle (session
 start, before/after tool use, on stop, etc.).
 
@@ -70,6 +70,21 @@ start, before/after tool use, on stop, etc.).
   first prompt starts nothing but bash, and every later prompt costs one
   bash start and two file tests. Its cases are
   [tests/hooks/name-session/](../../tests/hooks/name-session/test-name-session.sh).
+- [prune-probe-sessions.sh](prune-probe-sessions.sh) and
+  [prune-probe-sessions.py](prune-probe-sessions.py) — fire on
+  `SessionStart` (matcher `startup`, async) and, at most once a day,
+  delete each probe session two days after it last ran: one whose cwd is
+  in the temp folder, where every probe root lives, or whose name starts
+  `probe:`, which a probe started from a real repo takes with
+  `-n "probe: <topic>"`. Then go folders left holding no file, chiefly
+  the empty scratch folders Claude Code's `cleanupPeriodDays` leaves under
+  `<temp>/claude`. The `.sh` is the gate and spawns nothing until a sweep
+  is due; the `.py` does the work through the Agent SDK's
+  `list_sessions()`, via uv. Run the `.py` by hand to see what it would
+  delete: without `--apply` it only reports. Its deletions are logged to
+  `~/.claude/logs/prune-probe-sessions.log`, its errors to `.err` beside
+  it. Its cases are
+  [tests/hooks/prune-probe-sessions/](../../tests/hooks/prune-probe-sessions/test-prune-probe-sessions.sh).
 
 ## Querying the logs
 
