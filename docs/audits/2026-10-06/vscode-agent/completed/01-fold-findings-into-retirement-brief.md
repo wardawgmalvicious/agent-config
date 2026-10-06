@@ -206,3 +206,31 @@ blobless clone at pinned SHAs, and confirmed the hooks and
 custom-instructions tables on the live site the same day. The README,
 `claude/CLAUDE.md` and rule line numbers were read that day at
 `689d714`.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied
+- **Session**: fresh (no audit or handoff run in this session; the
+  report arrived by @-mention only)
+- **Files changed**: `docs/handoffs/execute/copilot-payload-retirement.md`
+- **Verification**: the retirement brief was still at `689d714`, and
+  every quoted line sat where this brief put it: README `:208-214`,
+  `:220`, `:234-239`, `:266-268`, `:273-279`, `:383-389` and
+  `:391-395`; the rule's `:141-149` and `:151-154`; `claude/CLAUDE.md`
+  `:181-185`. Step 1 — **passed**: `git diff --stat` listed the
+  retirement brief alone. Step 2 — **passed**: hits under each bullet,
+  `:447` under the `claude/CLAUDE.md` one, `:461` and `:463` under
+  "Three statements from `6545f2e`", and `:488`, `:493`, `:504` and
+  `:520` under "The docs a reader starts from". Step 3 — **passed**:
+  `untouched`. Step 4 — **passed**: `copilot-payload-retirement.md`
+  listed under "needs you". Step 5 (`pre-commit run --all-files`) runs
+  once at the end of the run.
+- **Deferred**: none
+- **Deviations**: none to the edits. Three notes. The first bullet's
+  six passages went in as a nested list, one item per passage, since
+  each carries its own evidence, and its opening sentence names this
+  audit's directory as their source. The `:220` item cites the hooks
+  page as rendered 2026-10-06 and no commit, since E-4 names none. The
+  `:208-214` item calls the Local agent's profile-storage row
+  documented, not settled, and points at the bundle reading and the
+  2026-09-09 measurement it disagrees with, per the second constraint.

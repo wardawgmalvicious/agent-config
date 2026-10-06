@@ -436,12 +436,35 @@ deployed state, but the hook and the files it reads leave in one commit.
   Claude target on a Copilot model answers (§ "The corporate network,
   2026-10-05"). The file sits at its 200-line cap, so the rewrite pays
   for the rule's lines.
+  The file's `:181-183`, as read 2026-10-06, "never `~/.claude`, except
+  `CLAUDE.md` where `chat.useClaudeMdFile` is on. That is the Copilot
+  harness.", puts a Local-agent setting on the Copilot harness. The
+  custom-instructions page now says "The Local agent searches for
+  Claude instructions in these locations when
+  `setting(chat.useClaudeMdFile)` is enabled", and its "Choose a
+  format" table (`4f4413d`, 2026-09-23) gives Copilot
+  `.github/copilot-instructions.md` or `AGENTS.md`, and
+  `.github/instructions/**/*.instructions.md`, but no `CLAUDE.md`.
+  The 2026-09-30 Copilot panel listed the repo's root one all the
+  same, by a route not traced (§ "What each target lists"). Its
+  `:184-185`, "unprobed here", is settled by § "How it graded".
 - **Three statements from `6545f2e` are corrected, not cut.** They were
   written that morning, before the panels were seen.
   `claude/rules/agent-instructions-scoping.md` calls the other
   harnesses' formats "unprobed on this machine", and its Copilot row
   omits the root `CLAUDE.md` that target lists; `claude/rules/README.md`
   and `claude/CLAUDE.md` each say "unprobed here".
+  The rule's table (`:151-154`, read 2026-10-06) also lacks the
+  **Local** row of the custom-instructions page's "Choose a format"
+  table (`4f4413d`, 2026-09-23): `.github/copilot-instructions.md`,
+  `AGENTS.md` or `CLAUDE.md` for project instructions, and
+  `.github/instructions/**/*.instructions.md` or Markdown files in
+  `.claude/rules` for targeted ones. The page writes Copilot's
+  targeted glob as `.github/instructions/**/*.instructions.md`, where
+  the rule has `.github/instructions/*.instructions.md`. The rule's
+  `:141-149`, which ties `chat.useAgentsMdFile`,
+  `chat.useNestedAgentsMdFiles` and `chat.useClaudeMdFile` to the
+  Local agent, already matches the page.
 - **The docs a reader starts from**: `README.md` § "Tool support", which
   is mostly Copilot; `skills/README.md`, `scripts/README.md` and
   `.claude/skills/README.md`; what
@@ -451,6 +474,56 @@ deployed state, but the hook and the files it reads leave in one commit.
   Copilot; and the comments and messages naming the script in
   `.gitattributes`, `scripts/lint-claude-md.py`,
   `scripts/lint-skill-scopes.py` and `scripts/skill-overlap.py`.
+  Six passages of § "Tool support" went stale against VS Code's docs
+  between 2026-09-08 and 2026-09-23, by the 2026-10-06 `vscode-agent`
+  audit (`docs/audits/2026-10-06/vscode-agent/`), which checked the
+  live pages that day. Line numbers as read then:
+  - `:208-214`, the location table "Checked 2026-09-09 against
+    `microsoft/vscode-docs@main`": its Instructions row gives
+    `~/.copilot/instructions` and `~/.claude/rules` as user defaults
+    for every consumer. The custom-instructions page now gives a row
+    per session and format (`4f4413d`, 2026-09-23): Agent Host reads
+    `~/.copilot/instructions` for the Copilot format and
+    `~/.claude/rules` for the Claude one, and the Local agent's user
+    scope is "VS Code profile storage". That row is documented, not
+    settled: it disagrees with the 1.139.0 bundle as
+    [copilot-harness-switches.md](copilot-harness-switches.md) reads
+    it, and with `:202-206`, measured 2026-09-09.
+  - `:220`, "The Local agent *is* the sidebar Chat". The hooks page,
+    as rendered 2026-10-06: "The **Session Target** control selects
+    the agent harness", the Chat view and Agents window are "clients
+    that display and control sessions on either host", and its table
+    lists five targets, Local, Copilot, Claude, Codex and Cloud.
+  - `:234-239`, "Its defaults are `.github/hooks`,
+    `.claude/settings.json`, `.claude/settings.local.json` and
+    `~/.claude/settings.json`", and the watch item that "a release
+    that adds a default location adds it **enabled**". The hooks page
+    (`91b05da`, 2026-09-21) now says `chat.hookFilesLocations`'
+    "default value is empty because the built-in locations are
+    registered separately", and that each Claude-format location
+    requires `chat.useClaudeHooks`, "which is off by default".
+  - `:266-268`, Agent Host "reads user-level customizations from
+    harness-agnostic folders like `~/.copilot` and `~/.claude`", "so
+    the payload keeps reaching Copilot without these settings at
+    all". The quote still stands on the Agent Host concept page
+    (`docs/agents/concepts/agent-host.md:87`), but the
+    custom-instructions page dropped its own version in `dc7c2ba`
+    (2026-09-08), and that page's per-harness rows contradict the
+    conclusion. They also answer `:273-279`, which asks the
+    `vscode-docs` drift source to watch for exactly this: the docs
+    pair Copilot-format folders with the Copilot harness and
+    Claude-format folders with the Claude harness, as the panels in
+    § "What each target lists" showed.
+  - `:383-389`, "Copilot parses the Claude hook format, not its
+    semantics. Matchers are read and **ignored**". The hooks page
+    (`91b05da`) now says that of the Local harness only, with
+    `chat.useClaudeHooks` on; the Claude target runs the Claude Agent
+    SDK and is sent to Claude Code's own hooks reference.
+  - `:391-395`, "Sessions on **Agent Host** read user-level
+    instructions and agents from harness-agnostic folders
+    (`~/.copilot/instructions`, `~/.claude/rules`,
+    `~/.copilot/agents`)": the custom-instructions page now pairs each
+    instructions folder with one format, as under `:208-214`.
 - **`.vscode/mcp.json` and `.vscode/mcp.template.json` left on
   2026-10-04**, ahead of the turn, at the user's word: `.mcp.json` is
   the one MCP file. The `**2026-10-04.**` entry under "Preamble" in
