@@ -260,6 +260,15 @@
         "references": "5feeebe9b925d077"
       }
     },
+    "find-session": {
+      "behaviour": {
+        "date": "2026-10-06",
+        "commit": "6f5138c",
+        "routing": "581329170c26bd7f",
+        "body": "a0f9542a1094b5ed",
+        "references": "8fef6272d27ed3ca"
+      }
+    },
     "land": {
       "behaviour": {
         "date": "2026-10-01",
