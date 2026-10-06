@@ -190,6 +190,15 @@ completeness check does not apply. There is no commit list, so the window
 resolves from the page's own dated entries, per the `url` schema row — no
 true prior-ref diff, and a silently edited row is undetectable. Additions
 remain detectable for the reason below.
+After Learn's next publish, expect to land here (inferred 2026-10-06,
+not yet observed). No fork can sync a commit made after the public
+mirror went away, so the first run after Learn republishes should expect
+every candidate to fail step 4. That is **the expected path, not a broken
+route**, and a run that meets it does not improvise. The measured half:
+on 2026-10-06, Learn's `git_commit_id` alone settled the window, and the
+forks only reconfirmed it. What confirms the rest is that first run's
+step-4 results against the new SHA, and that run corrects this text in
+place.
 
 **Young, but no longer improvised.** The route was improvised during the
 2026-09-07 audit on a single fork, then hardened the same day by running
@@ -250,6 +259,14 @@ diff. Two consequences:
 - The fallback degrades gracefully rather than failing: the live page
   hands you the current month's additions directly, which is most of what
   a monthly run wants.
+  That holds for one publish per window. Inferred 2026-10-06, not yet
+  observed: a window spanning two publishes loses the earlier month from
+  the live page, and
+  [the archive page](https://learn.microsoft.com/en-us/power-bi/fundamentals/desktop-latest-update-archive)
+  carries it under a dated, versioned heading. Its status column is
+  `In preview as of this release`, so the `columns` mapping above does
+  not carry over unchanged. The first run whose window spans two
+  publishes measures this, and corrects it in place.
 
 ### `vscode-agent` — VS Code agent customization surface
 

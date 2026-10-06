@@ -5,9 +5,9 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 2 — applied with deferrals 1 · pending 1
+Briefs: 2 — applied with deferrals 2
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
 | [01 re-anchor the powerbi fork search](01-re-anchor-powerbi-fork-search.md) | 1 | correction to one step of the `powerbi` entry's fetch procedure | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
-| [02 record the powerbi fetch route's two expected limits](02-record-powerbi-fetch-route-limits.md) | 2 | prose addition recording two inferred limits of the `powerbi` entry's fetch route | pending |
+| [02 record the powerbi fetch route's two expected limits](02-record-powerbi-fetch-route-limits.md) | 2 | prose addition recording two inferred limits of the `powerbi` entry's fetch route | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |

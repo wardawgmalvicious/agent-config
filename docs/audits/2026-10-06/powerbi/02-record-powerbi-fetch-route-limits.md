@@ -165,3 +165,31 @@ Both gaps are reasoned from how forks work and from the page's
 single-month shape, not observed. The archive, timing and alternate-page
 evidence was gathered after the report in the same session, through
 Microsoft Learn search and `WebFetch`.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; no warm
+  cap applied)
+- **Files changed**: `.claude/skills/drift-audit/references/sources.md`
+- **Verification**:
+  - Step 1 — **passed**. `desktop-latest-update-archive` hits once, at
+    line 265, inside the `### powerbi` entry (lines 53–271).
+  - Step 2 — **passed**. Read top to bottom: against `HEAD`, the only
+    hunks inside steps 1–5 are brief 01's two on step 2. Gap 1 ends the
+    *Fallback* paragraph and gap 2 ends the second *Single-month
+    document* bullet, each labeled "inferred 2026-10-06, not yet
+    observed". The one sentence written as measured is this brief's own
+    measured half: Learn's `git_commit_id` alone settled the 2026-10-06
+    window.
+  - Step 3 — **passed**. `lint-frontmatter.py` on `SKILL.md`, exit 0.
+  - Step 4 (`pre-commit run --all-files`) runs once at the end of the
+    run.
+- **Deferred**: step 5, not runnable yet. Learn still served `0e80b00b`,
+  title "August 2026", when brief 01 was verified in this run, so no
+  republish has happened to test either gap.
+- **Deviations**: none
+- **Needs**: the first powerbi drift audit after Learn republishes —
+  step 5: its step-4 results against the new SHA confirm or refute gap
+  1, a window spanning two publishes tests gap 2, and it corrects the
+  entry in place.
