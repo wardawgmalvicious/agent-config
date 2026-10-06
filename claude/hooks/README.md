@@ -55,6 +55,21 @@ start, before/after tool use, on stop, etc.).
   no jq needed), which a repo opts into through its pre-commit config —
   agent-config does — so a commit from Copilot, VS Code's Source Control
   view or a terminal is gated too.
+- [name-session.sh](name-session.sh) — fires on `UserPromptSubmit` and
+  names a session from its first prompt, so `ListAgents`, `claude agents`
+  and the `/resume` picker show what it is for rather than a default such
+  as `agent-config-67`. First match wins: a skill or command
+  (`/test-skill prune-branches` → `test-skill: prune-branches`), a handoff
+  brief (`brief: <slug>`), an inbox note (`inbox: <slug>`), a worktree
+  (`brief: <name>` when that brief exists, else `worktree: <name>`), or a
+  branch other than `main` or `master`. Anything else keeps the default,
+  and `/rename` with no argument names a session from its conversation.
+  It decides once, and never renames a session that already has a name or
+  was under way when it first saw it: `SendMessage` addresses a live
+  session by name, so a rename strands the peer using it. A new session's
+  first prompt starts nothing but bash, and every later prompt costs one
+  bash start and two file tests. Its cases are
+  [tests/hooks/name-session/](../../tests/hooks/name-session/test-name-session.sh).
 
 ## Querying the logs
 
