@@ -5,11 +5,11 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 11 — pending 11
+Briefs: 11 — escalated 1 · pending 10
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
-| [01 decide how fabric-ontology treats the two ontology experiences](01-decide-ontology-experience-stance.md) | 1 | a decision on how `fabric-ontology` treats the old and new ontology experiences | pending |
+| [01 decide how fabric-ontology treats the two ontology experiences](01-decide-ontology-experience-stance.md) | 1 | a decision on how `fabric-ontology` treats the old and new ontology experiences | escalated 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [02 rename the ontology tenant settings](02-rename-ontology-tenant-settings.md) | 2 | factual correction of one renamed tenant setting and one newly required one, across one… | pending |
 | [03 drop the OneLake-security exclusion](03-drop-onelake-security-exclusion.md) | 3 | removal of a claim Learn withdrew, from one skill's `description`, body and reference | pending |
 | [04 rewrite the ontology binding rules](04-rewrite-ontology-binding-rules.md) | 4 | partial rewrite of one skill section whose source page was rewritten for the new… | pending |

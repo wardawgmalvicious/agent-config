@@ -133,3 +133,32 @@ asked for. Both refs of every registered page were downloaded at pinned
 SHAs and diffed on disk in the audit session, not by a subagent. The
 `fabric/04` quotes are that brief's, from the `fabric` audit run the
 same day.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — escalated
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: none
+- **Verification**: step 1 — the answer and its option number are
+  below. Step 2 waits on briefs 03–09.
+- **Decision**: **option 4, in-place dated markers**, put to the user
+  beside options 1–3 and chosen. Each section states the
+  new-experience rule as current. Where the old experience differs,
+  the same section carries it under a dated marker, in the two forms
+  `fabric/04` wrote: the `### Old experience (legacy): the JSON layout`
+  subsection, and elsewhere a paragraph opening **Old experience
+  (legacy, retires 2027-01-31):**, sourced to the `old-experience/`
+  page that states it. Brief 03's constraint, 08 D-2 and 11 D-1 each
+  turn on whether the skill keeps old-experience facts: it does.
+- **Deferred**: verification step 2, once briefs 03–09 land, by the
+  `/drift-update` run that executes them.
+- **Deviations**: option 4 is not in the brief. `fabric/04` was pending
+  when the brief was written; by this run it had been applied,
+  uncommitted, in the `2026-10-06-fabric` worktree, marking legacy
+  material in place, a shape none of options 1–3 names. Option 4
+  restructures none of that work, and the date in every marker makes
+  the 2027-01-31 removal one grep.
+- **Needs**: the rest of this pass — briefs 02–11, once the 2026-10-06
+  `fabric` pass lands `fabric/04` and `fabric/07` on `main`. They
+  apply this answer, and step 2 checks it.
