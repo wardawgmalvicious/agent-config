@@ -1480,6 +1480,21 @@ sequencing outranks branching. Its other open item went the other way: a
 directory, as `docs/handoffs/execute/README.md` § "Audit briefs are a
 second queue" says.
 
+**2026-10-06.** An unstaged `.pre-commit-config.yaml` blocks every
+commit in the tree. A session edited the file's `lint-audit-index`
+comment while two peers were committing on `main`; when the second
+asked it to hold writes, it reverted the edit before that peer's
+commit and re-applied it, staged, in its own (`54e7c0b`). Nothing was
+refused, so the measurement is a scratch repo's (pre-commit 4.6.2, git
+2.55.0.windows.3): a commit of an unrelated file, with an edit to the
+config left unstaged, failed with `[ERROR] Your pre-commit
+configuration is unstaged.` and `` `git add .pre-commit-config.yaml`
+to fix this. ``, exit 1, no commit made. Under the same edit,
+`pre-commit run --all-files` and `pre-commit run --files a.txt` both
+exited 0, and staging the config let the commit through. In a shared
+tree the error's own fix is the hazard: it stages a peer's half-made
+edit into another session's commit.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

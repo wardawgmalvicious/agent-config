@@ -42,3 +42,11 @@ paths:
 - Only `tests/` is gitleaks-allowlisted, because its fixtures hold fake
   credential-shaped strings. `docs/` is scanned (2026-09-07): if a doc ever
   needs an exemption, allowlist that path, never the tree.
+- An unstaged edit to `.pre-commit-config.yaml` makes pre-commit refuse
+  every commit in the tree, a peer's included, while your own
+  `pre-commit run --all-files` still passes, so nothing tells you. With
+  another session live here, make the edit last and stage it in the
+  chain that commits it, or revert it until then: staged early, it
+  rides in a peer's commit instead, since the index is shared
+  (2026-10-06). The refusal, and the peer's side of it: `/commit` §
+  "When another session shares this tree".
