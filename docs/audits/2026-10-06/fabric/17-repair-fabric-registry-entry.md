@@ -141,3 +141,32 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric` (floor
 2026-09-01), the first run of this source since 2026-09-01. Every figure
 above was measured directly in the audit session on files downloaded at
 pinned SHAs, not by a subagent.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied (D-1 through D-4, all four)
+- **Session**: fresh (no audit or handoff run in this session; brief 17
+  run alone, by number)
+- **Files changed**: `.claude/skills/drift-audit/references/sources.md`
+- **Verification**: the live `whats-new.md` downloaded at 147,892 bytes,
+  the head size D-4 records, so the page had not moved since the audit.
+  Step 1 — **passed**: `## Features currently in preview` (line 31) and
+  `## Generally available features` (line 239) both exist. Step 2 —
+  **passed**: `| **Feature** | **Learn more** |` and
+  `|**Month** | **Feature** | **Learn more** |`, as the new `columns`
+  maps them. Step 3 — **passed**: 108 `#community-…-mcetoc_…` anchors,
+  0 `#community-` or `mcetoc` left after stripping with the new pattern.
+  Step 4 — **passed**: `lint-frontmatter.py` on `SKILL.md`, exit 0, which
+  this brief did not touch. Step 5 (`pre-commit run --all-files`) runs
+  once at the end of the run.
+- **Deferred**: none of this brief's steps. D-1's open question stays
+  with brief 18, as the brief directs; D-1's fix does not wait on it.
+- **Deviations**: none to the edits. Three notes. D-1's `sections` value
+  carries a dated clause naming the restructure, so a reader can tell
+  when it last held. D-4 cites the 150 KB budget as `SKILL.md` § 4a's,
+  where it sits; the brief named no section. Step 3's strip ran as
+  PowerShell `-replace` with the same regex, because the worktree's git
+  guard refuses `sed -b`. D-2's knock-on held: the `powerbi` live page,
+  fetched in this session for that source's briefs, still heads its
+  tables `| Feature | Description | Currently in preview |`, so its
+  entry's `columns` string is unchanged.
