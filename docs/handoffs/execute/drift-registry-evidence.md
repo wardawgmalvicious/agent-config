@@ -2,16 +2,16 @@
 status: deferred
 priority: 3
 needs: [user]
-blocked-by: [drift-registry-per-source.md]
+blocked-by: []
 reopen-when: an entry file under drift-audit's references/sources/ passes 20 KB, or a run misses a rule buried in an entry's dated history
 written: 2026-10-06
 ---
 
 # Handoff: move the registry's dated history out of its entries
 
-- **Written**: 2026-10-06, for the pass that
-  [drift-registry-per-source.md](drift-registry-per-source.md) leaves out
-  of scope. The user asked that day for it to wait in a brief of its own.
+- **Written**: 2026-10-06, for the pass that the registry's split into
+  one file per source, landed the same day, left out of scope. The user
+  asked that day for it to wait in a brief of its own.
 - **Kind**: a decision of the user's, on what moves and where it goes,
   then an edit to the entry files. It starts after the split lands.
 

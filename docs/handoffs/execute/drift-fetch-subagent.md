@@ -231,8 +231,9 @@ mapping, drilling and the report. Re-count after drafting.
    (`github-mcp` or WebFetch). The parent picks the path once per run so all
    sources agree; the agent does not re-decide it.
 3. **Read the contract from disk, do not restate it** — `Read`
-   `.claude/skills/drift-audit/references/sources.md` for the source's entry
-   and the Shape contract, and `.claude/skills/drift-audit/SKILL.md` §4 for
+   `.claude/skills/drift-audit/references/sources.md` for the Shape contract,
+   `.claude/skills/drift-audit/references/sources/<id>.md` for the source's
+   entry, and `.claude/skills/drift-audit/SKILL.md` §4 for
    the fetch mechanics, sizing rules, budget and escape hatch. This section is
    the single most important structural decision in the brief: the agent body
    holds the **loop and the return contract**, and §4 stays the **only** copy
@@ -342,9 +343,10 @@ tightening:
   requires edit.** Add `Agent` to `allowed-tools`; add a delegation step at the
   top of §4 with the inline path retained as fallback. §4's contents are
   otherwise unchanged and remain the single source of the mechanics.
-- `.claude/skills/drift-audit/references/sources.md` — **(a) already
-  converted, no edit.** Read by the agent at runtime. Its Shape contracts and
-  per-source fields are the agent's input.
+- `.claude/skills/drift-audit/references/sources.md` and the source files
+  under `references/sources/` — **(a) already converted, no edit.** Read by
+  the agent at runtime: the Shape contracts in `sources.md` and its
+  source's fields in `sources/<id>.md` are the agent's input.
 - `.claude/skills/drift-handoff/SKILL.md` — **(c) unaffected.** It reads the
   report from the conversation; the report is still produced by the parent.
 - `.claude/skills/drift-update/SKILL.md` — **(c) unaffected.**

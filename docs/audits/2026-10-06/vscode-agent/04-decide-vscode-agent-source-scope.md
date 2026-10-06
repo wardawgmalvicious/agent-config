@@ -10,8 +10,8 @@
   `vscode-agent` audit fetches and where it maps findings, and is
   verified by a re-run. The decision is the user's: `/drift-update`
   puts it back to the user rather than executing it.
-- **Target**: `.claude/skills/drift-audit/references/sources.md`,
-  § "`vscode-agent` — VS Code agent customization surface"; possibly
+- **Target**: `.claude/skills/drift-audit/references/sources/vscode-agent.md`,
+  the entry's own file since the registry split on 2026-10-06; possibly
   `.claude/skills/drift-audit/SKILL.md` (its `description` and § 1)
 
 ## The problem

@@ -72,9 +72,9 @@ last section.
 - [drift-audit/](drift-audit/) — audit registered upstream docs sources
   for skill staleness, drift in existing skills, new-skill candidates,
   and MCP/tooling additions. Findings only — no edits. Sources are a
-  registry ([references/sources.md](drift-audit/references/sources.md)),
-  not a hardcoded list — Fabric and Power BI What's New today, and
-  widening the audit to another domain is an entry there plus a
+  registry, [references/sources.md](drift-audit/references/sources.md)
+  and one file per source under `references/sources/`, not a hardcoded
+  list; widening the audit to another domain is a file there plus a
   validated run. Named for the job, not the target: it audits rules,
   `CLAUDE.md`, and the MCP templates too, so `skill-audit` would name a
   quarter of its scope and would collide with a plausible future skill
