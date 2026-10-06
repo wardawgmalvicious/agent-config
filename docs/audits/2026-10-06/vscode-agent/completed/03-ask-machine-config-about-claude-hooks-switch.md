@@ -86,3 +86,23 @@ The 2026-10-06 audit raised this question from `vscode-scoping.md`
 same day answered it. The brief stays because the report lists the
 action (`00-audit-report.md`, recommended action 3), and every action
 takes exactly one brief.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied (the answered case: no note)
+- **Session**: fresh (no audit or handoff run in this session; the
+  report arrived by @-mention only)
+- **Files changed**: none
+- **Verification**: What to change, step 1, read only: machine-config's
+  `configs/vscode/profiles/profiles.psd1` still lists
+  `'chat.useClaudeHooks'  = $false` in `ClaudeSwitches` (`:121-124`),
+  so step 2 held and no note was written. Its
+  `scripts/vscode-profiles.ps1` reads `ClaudeSwitches` at `:402` and
+  passes it to `Find-ClaudeInheritance` for Default at `:411` and for
+  each named profile at `:462`. Verification step 1 — **passed**: the
+  grep printed `:123`, the `ClaudeSwitches` line, and
+  `~/handoff-inbox/machine-config/` holds no file newer than
+  2026-10-05. Step 2, the note case, did not apply.
+- **Deferred**: none
+- **Deviations**: none. The `13c7b89` attribution is this brief's, not
+  re-checked, since the worktree's guard refuses git in another repo.
