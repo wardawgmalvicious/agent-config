@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Exercise scripts/find-session.py against a fake session store.
+# Exercise skills/workflow/find-session/scripts/find-session.py against a
+# fake session store.
 #
 # A search over the live store finding something proves little: the first
 # version found the session it was written to find, buried tenth behind
@@ -37,7 +38,8 @@ check() { # <label> <condition-exit-code>
 }
 search() {
     CLAUDE_CONFIG_DIR=$(native "$store") PYTHONIOENCODING=utf-8 \
-        uv run --quiet "$repo/scripts/find-session.py" "$@" >"$tmproot/out" 2>&1
+        uv run --quiet --no-project "$repo/skills/workflow/find-session/scripts/find-session.py" \
+        "$@" >"$tmproot/out" 2>&1
     echo $? >"$tmproot/rc"
 }
 rc() { cat "$tmproot/rc"; }

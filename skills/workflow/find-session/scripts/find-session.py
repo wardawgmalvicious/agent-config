@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 """Find a past Claude Code session by what was said in it.
 
-    uv run scripts/find-session.py rename session      # every term, anywhere in a session
-    uv run scripts/find-session.py --repo machine-config winget
-    uv run scripts/find-session.py --days 3 --limit 5 worktree
-    uv run scripts/find-session.py --json pbir         # for a script or a session to read
+    uv run --no-project <skill>/scripts/find-session.py rename session  # every term, anywhere
+    uv run --no-project <skill>/scripts/find-session.py --repo machine-config winget
+    uv run --no-project <skill>/scripts/find-session.py --days 3 --limit 5 worktree
+    uv run --no-project <skill>/scripts/find-session.py --json pbir     # for a session to parse
+
+<skill> is the find-session skill's folder, ~/.claude/skills/find-session
+once deployed; --no-project keeps uv from syncing the Python project of
+whatever repo it runs in.
 
 A session matches when every term appears in it, ignoring case: in its
 name, a prompt you typed, or a compaction summary of what it did; --replies
