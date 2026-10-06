@@ -23,6 +23,20 @@ Helper scripts for repo maintenance and observability.
   [pre-commit](https://pre-commit.com/) framework via
   [uv](https://docs.astral.sh/uv/) and wire git hooks for this repo.
   Idempotent; safe to re-run. Run on a fresh clone before committing.
+- [find-session.py](find-session.py) — find a past Claude Code session by
+  what was said in it: `uv run scripts/find-session.py rename session`.
+  Every term must appear in the session's name, a prompt typed, or a
+  compaction summary (`--replies` adds Claude's text). Every term inside
+  one prompt ranks above terms scattered across a session, and each hit
+  prints the `claude --resume` command that reopens it. Reads the
+  transcripts itself, as `skill-telemetry.py` does, because the Agent
+  SDK's `get_session_messages()` returns only the chain since the last
+  compaction: for one long session it lacked 31 of the 50 prompts typed
+  (2026-10-06). When the format stops parsing it exits 2, never an empty
+  result. Leaves out probe sessions unless `--probes`, and reaches back
+  only `cleanupPeriodDays`. Its negative cases are
+  [tests/scripts/find-session/test-find-session.sh](../tests/scripts/find-session/test-find-session.sh).
+  No dependencies.
 - [handoff-status.py](handoff-status.py) — every repo's open handoff
   briefs and inbox notes in one view, read out of each repo's own index;
   nothing is kept here. Defaults to every repo two levels under
