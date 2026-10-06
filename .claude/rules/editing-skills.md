@@ -83,3 +83,12 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   firing. It is `false` everywhere here.
 - `ultracode` is not an effort level (it reports as `xhigh`), so `max` is
   the highest pin.
+- `allowed-tools` pre-approves a call for the invoking turn by matching
+  the command text as the model spells it: the permissions page says a
+  Bash rule matches "the whole command text", and its `~/` anchor is for
+  path rules only. `find-session`'s rule names
+  `~/.claude/skills/find-session/scripts/find-session.py`; under
+  `dontAsk` an Opus arm that kept the `~` ran, and a Haiku arm that wrote
+  the expanded, quoted path was refused (2026-10-06, 2.1.291). So the
+  body spells the command as the rule does, and a model that expands `~`
+  loses the grant.
