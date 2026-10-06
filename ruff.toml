@@ -1,4 +1,4 @@
-# Ruff configuration for the maintenance scripts in scripts/.
+# Ruff configuration for the repo's Python, all but the fixtures in tests/.
 #
 # The rule set is pinned rather than left to ruff's defaults, because the
 # effective default is neither stable across releases nor what the docs

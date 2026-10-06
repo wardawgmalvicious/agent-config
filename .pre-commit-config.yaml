@@ -26,14 +26,17 @@ repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.16.5
     hooks:
-      # Scoped to scripts/ for the same reason tests/ is gitleaks-allowlisted:
+      # Everything but tests/, for the same reason tests/ is gitleaks-allowlisted:
       # the five .py files under tests/ are FIXTURES, and their defects are the
       # point. Unscoped, this hook fails on a bare `except`, an unused variable
       # and two undefined `spark` references that the code-review and
-      # security-reviewer fixtures put there deliberately.
+      # security-reviewer fixtures put there deliberately. An exclude, not a
+      # list of folders, so a script that moves stays linted: scoped to
+      # scripts/, the hook never saw the skills' stage-part.py and
+      # find-session.py or claude/hooks/prune-probe-sessions.py (2026-10-06).
       - id: ruff-check
         name: Lint Python scripts (ruff)
-        files: '^scripts/.*\.py$'
+        exclude: '^tests/'
 
   # Each hook below that runs over the whole set (pass_filenames: false)
   # also names its own script in `files:`, and any script that script
