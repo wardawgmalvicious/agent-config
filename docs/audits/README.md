@@ -5,8 +5,10 @@ holding the audit report verbatim as `00-audit-report.md` plus the
 numbered briefs `/drift-handoff` derived from it.
 
 These are **tracked and kept**. A directory is written once, executed
-once, stamped in place, and then left where it is as the dated record
-of what upstream looked like that day.
+once, stamped brief by brief, and then kept whole as the dated record of
+what upstream looked like that day. A brief whose log leaves nothing
+open moves into the directory's `completed/`, so its top lists only what
+is still unrun or open; nothing is deleted.
 
 ## Lifecycle
 
@@ -14,7 +16,7 @@ of what upstream looked like that day.
 | --- | --- | --- |
 | Audit | `/drift-audit` | nothing — findings only, emitted to the conversation |
 | Handoff | `/drift-handoff` | the directory: `00-audit-report.md` + `NN-*.md` briefs + a generated `README.md` index |
-| Execute | `/drift-update` | an execution log appended to each brief it runs, and the index regenerated |
+| Execute | `/drift-update` | an execution log appended to each brief it runs, the index regenerated, and each finished brief moved into `completed/` |
 | Commit | `/commit` | the directory, then the stamps alongside the edits they describe |
 
 Commit the directory **before** executing it, even when the same
@@ -63,6 +65,15 @@ and they are exactly what stops a later audit re-litigating a decision.
   later session discharged the brief and recorded it with a `**Closed**:`
   line in the log. Added 2026-09-13, after eleven briefs in one directory
   meant eleven files to open to learn which had run.
+- **What sits at the top is still open.** When it regenerates the index,
+  `audit-status.py` moves each brief whose log leaves nothing open —
+  applied, already-applied or closed — into the directory's
+  `completed/`, and `lint-audit-index` fails a commit with one on the
+  wrong side, so the folder is derived like the table. A move breaks
+  any path naming the old place: re-point a live reference in the same
+  commit, and leave a stamped brief's text as written. Added 2026-10-06,
+  so the file tree shows which briefs still need a session without
+  opening the index.
 - **`/drift-update` with no argument takes the most recent date
   directory.** Retention does not change that, but it does mean older
   directories are now sitting there to be named explicitly. Pass a path

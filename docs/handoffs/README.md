@@ -46,12 +46,13 @@ here, holds what a session must know before touching one — not this file.
 `docs/audits/` holds handoff briefs too — the two directories split by
 lifecycle, not by kind. Both are tracked; what differs is what happens
 when a brief is spent. A `docs/audits/` directory is a generated whole,
-numbered `01-`, `02-`, executed in one pass and then **kept in place**
-as a dated ledger, its briefs not citing each other. `execute/` briefs
-are hand-derived, deleted individually as each is spent, and
-cross-linked by filename — so the filename is the link target, it stays
-stable, and a brief's priority lives in its frontmatter. The reasoning is
-in [execute/README.md](execute/README.md) and
+numbered `01-`, `02-`, executed in one pass and then **kept** as a dated
+ledger, a spent brief moving only into the directory's `completed/`, its
+briefs not citing each other. `execute/` briefs are hand-derived, deleted
+individually as each is spent, and cross-linked by filename — so the
+filename is the link target, it stays stable, and a brief's priority
+lives in its frontmatter. The reasoning is in
+[execute/README.md](execute/README.md) and
 [../audits/README.md](../audits/README.md).
 
 Two conventions there worth knowing before writing a new one. **Briefs on
@@ -70,19 +71,19 @@ deliberately omits the directory: briefs deleted before 2026-09-02 live
 under this directory's old name, `docs/handoff-briefs/`, and `docs/**/`
 spans both. A retained copy only competes with the artifact it produced.
 
-This is *not* the `docs/audits/` rule, which keeps its briefs where they
-were written. The difference is what the directory is *for*. An
-`execute/` brief is a queue row, and a spent row is a hazard — it
-invites re-execution of work already done. An audit directory is a
-dated snapshot of what upstream looked like on a day, so its value
-survives execution and the date is the index. Deleting from a queue is
-tidying; deleting from a ledger is losing the entry.
+This is *not* the `docs/audits/` rule, which keeps every brief, filing a
+spent one under its directory's `completed/`. The difference is what the
+directory is *for*. An `execute/` brief is a queue row, and a spent row
+is a hazard — it invites re-execution of work already done. An audit
+directory is a dated snapshot of what upstream looked like on a day, so
+its value survives execution and the date is the index. Deleting from a
+queue is tidying; deleting from a ledger is losing the entry.
 
 The one exception is a brief that is still *referenced* — cited by a
 skill, or worth lifting as design source. That one gets promoted into
 [examples/](examples/) under the `.example.md` name, and the citation
 updated to the new path. Promotion is the deliberate keep-path; there is
-no third "completed" state.
+no third "completed" state for an `execute/` brief.
 
 ## For consumers cherry-picking from this repo
 

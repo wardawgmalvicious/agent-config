@@ -262,8 +262,9 @@ after a dash, and `lint-briefs` fails a commit on an open brief without
 one. A deferred re-check gets one too, naming the audit that performs
 it. When the need changes, append a new line, since the last one counts;
 when the work lands, append `**Closed**: <date> — <how>` in the same
-commit, which drops the brief from the view and shows it `closed` in its
-directory's index.
+commit, which drops the brief from the view, shows it `closed` in its
+directory's index and, once `audit-status.py` regenerates that index,
+moves it into the directory's `completed/`.
 
 **A pass takes a worktree too** (decided 2026-09-30, in
 `worktree-per-brief.md`), named after its directory, as `/drift-update`
