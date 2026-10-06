@@ -193,7 +193,11 @@ A thing that failed once is not yet a rule. Before proposing, confirm
 at least one of:
 
 - Official docs (`microsoft_docs_search` / `microsoft_docs_fetch`, or
-  the library's README / changelog) state or corroborate it.
+  the library's README / changelog) state or corroborate it. For a
+  Claude Code fact, read the page's bytes: `code.claude.com/docs/en/`
+  serves each page as markdown at its URL plus `.md`, while `WebFetch`
+  answers through a small model, which on 2026-10-06 gave PostCompact
+  an `additionalContext` field the page never grants it.
 - A second reproduction in the session (different input, same result).
 - The user explicitly confirms it's known behaviour, not a fluke.
 
