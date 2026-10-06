@@ -85,6 +85,26 @@ start, before/after tool use, on stop, etc.).
   `~/.claude/logs/prune-probe-sessions.log`, its errors to `.err` beside
   it. Its cases are
   [tests/hooks/prune-probe-sessions/](../../tests/hooks/prune-probe-sessions/test-prune-probe-sessions.sh).
+- [offer-handoff.sh](offer-handoff.sh) — fires on `SessionStart` with
+  matcher `compact`, after every compaction, auto or manual. Where the
+  checkout holding the session's `cwd` keeps briefs under `docs/handoffs/`,
+  it tells Claude that a brief could be written while the summary still
+  holds the thread, that the user decides when to hand off, and which
+  briefs exist, one line each: status, priority, needs, blockers and a
+  deferred brief's trigger. Elsewhere it prints nothing. It offers and
+  never blocks: a PreCompact hook that stopped a bare `/compact` was tried
+  in a client repo on 2026-10-01 and dropped the same day, since the user
+  judges when a session has run long enough. No other event could make the
+  offer: nothing PreCompact or PostCompact prints reaches Claude (each
+  event's readers are in
+  [coding-bash.md](../rules/coding-bash.md#claude-code-hooks)), and no hook
+  input carries the context's size as it fills, so nothing can warn before
+  an auto compaction. Claude Code runs an identical command once across
+  settings files, but a repo's own copy of this hook under another command
+  runs beside it, so the two would offer twice. A brief is what
+  `scripts/handoff-status.py` counts; the cases, a comparison with that
+  script among them, are
+  [tests/hooks/offer-handoff/](../../tests/hooks/offer-handoff/test-offer-handoff.sh).
 
 ## Querying the logs
 

@@ -64,6 +64,16 @@
             "async": true
           }
         ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $HOME/.claude/hooks/offer-handoff.sh",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
