@@ -119,3 +119,26 @@ source is fetched. This brief decides what one source is for.
 Surfaced by the 2026-10-06 `vscode-agent` run while it mapped its
 findings: every one landed outside `artifacts`, and three of the pages
 it needed sat outside `files`.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — escalated
+- **Session**: fresh (no audit or handoff run in this session; the
+  report arrived by @-mention only)
+- **Files changed**: none
+- **Verification**: none run, since a decision brief is put to the user
+  rather than executed. The entry still read as quoted, at
+  `.claude/skills/drift-audit/references/sources/vscode-agent.md`:
+  `artifacts` at `:15`, "reaches GitHub Copilot" at `:18` and "VS Code
+  ships monthly" at `:49`. Asked 2026-10-06 whether to keep the source,
+  re-scoped to which VS Code session targets read `~/.claude`, or retire
+  it; the user chose to decide after the retirement lands, as the
+  Sequencing note advises.
+- **Deferred**: the whole brief, D-1 to D-4. The Kind makes it the
+  user's, D-1's fix is a choice of its own, D-2's waits on what the
+  retirement leaves, and a retired source would make D-3 moot, so no
+  defect was applied around D-4's open question.
+- **Deviations**: none
+- **Needs**: user, after `copilot-payload-retirement.md` lands — the
+  D-4 call, keep `vscode-agent` re-scoped or retire it, and then its
+  registry edit as a task of its own, verified by this brief's steps.
