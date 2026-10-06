@@ -126,7 +126,12 @@ arms of three then split their reads and ran the script. A `git push`
 inside a `{ }` block was refused in both modes. A Haiku probe given
 `--permission-mode auto` reported `default` in its `init` record, so a
 cheap Haiku check of the envelope tests the wrong mode. Measured
-2026-10-01 on 2.1.282 (`32f6847`).
+2026-10-01 on 2.1.282 (`32f6847`). Under `dontAsk` a `Skill` call is
+refused with the same generic form, so an arm that reaches a skill by
+description needs `Skill` allowed; the slash path, which inlines the
+body, is unaffected. A Haiku arm reports `dontAsk` as given where it
+reports `auto` as `default` (one `dontAsk` arm and three `auto` arms,
+2026-10-06, 2.1.291).
 
 **A probe's environment is its arm's environment.** A variable set to
 launch a slash probe from Bash stays in the `claude` process, and its
