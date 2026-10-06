@@ -1,0 +1,607 @@
+# Drift audit — fabric, 2026-10-06
+
+## Audit window
+
+- Floor: 2026-09-01 (resolved from: date)
+- Fetch path: github-mcp to resolve HEAD, the in-window commits and the diff base. File bytes were fetched from `raw.githubusercontent.com` at pinned SHAs into the session scratchpad and diffed on disk; per-commit stats came from 14 anonymous GitHub API calls.
+  - 13 commits is more than 5, so § 4a picks the two-ref diff. I ran it on disk: the two versions are 207,309 and 147,892 bytes, about 2.4 times the 150 KB budget if loaded with `get_file_contents`.
+  - I then diffed each of the 13 versions against the one before it. `9eda27f8` deleted 22 rows that had been added inside the window, and a base-to-head diff cannot show them.
+- Sources audited: fabric — skipped: powerbi, vscode-agent, claude-code, fabric-iq-ontology, skills-for-fabric (not selected by `--sources`)
+- Microsoft Fabric (incl. RTI): 13 commits in window — prior `8375c89d` (2026-08-31) → head `7ff5f2b3` (2026-10-02)
+  - `7ff5f2b3` (2026-10-02) — merge, "20261002 WSPL SQL DB PuPr": re-applies `fa2eb4b1`'s private-link row and restores the "Stream Mirrored Database change feeds into Eventstreams (Preview)" row that `9eda27f8` dropped, `whats-new.md` +2/-1 against `9eda27f8`
+  - `9eda27f8` (2026-10-02) — "20260929 whats new (#16748)", **the restructure**: deletes every per-workload section (platform, CI/CD, Data Factory, Fabric Apps, Data Engineering, Data Science, Cosmos DB, SQL database, Data Warehouse, Mirroring, RTI, Fabric IQ), adds "Stay up to date", and folds the September 2026 feature summary into the two main tables, `whats-new.md` +135/-368
+  - `fa2eb4b1` (2026-10-02) — "20261002 WSPL SQL DB PuPr": SQL database private links widened from tenant to tenant and workspace level, `whats-new.md` +2/-1
+  - `0c0b89cb` (2026-10-01) — "20260929 database hub (#16771)": Database Hub row edits, `whats-new.md` +2/-2
+  - `32ce042b` (2026-09-29) — "Split Fabric Maps map and layer settings documentation (#16609)": link edits in the map-styling row, `whats-new.md` +2/-2
+  - `80a24c9b` (2026-09-29) — "FabCon EU 2026 Release 9/28 (#16710)": 7 preview and 4 GA rows plus per-workload rows. The release touches 300+ files, so the API's stats page omits `whats-new.md`; the count is from the on-disk diff, `whats-new.md` +32/-5
+  - `27532aaa` (2026-09-23) — "RSC on by default (#16617)": Result set caching GA row, `whats-new.md` +2/-0
+  - `bbb26566` (2026-09-18) — "Update Fabric runtime lifecycle guidance (#16528)": link edit in the vscode.dev notebook-debug row, `whats-new.md` +1/-1
+  - `0ac0f42e` (2026-09-09) — "[SCOPED] 20260902 SQL Endpoint -> SQL analytics endpoint fixes (#16245)": terminology in the Lakehouse utility suite row, `whats-new.md` +1/-1
+  - `91e49056` (2026-09-09) — "Fabric august 2026 whats new digest (#16331)": 11 preview and 10 GA rows plus per-workload rows, `whats-new.md` +47/-4
+  - `6724b585` (2026-09-02) — "[SCOPED] 20260902 terminology (#16239)": Custom Live Pools row wording, `whats-new.md` +1/-1
+  - `ebc6f751` (2026-09-01) — "20260901 whats new (#16211)": Advanced DAX generation (Preview) plus two guidance rows, `whats-new.md` +10/-1
+  - `ecb721f5` (2026-09-01) — "20260831 whats new (#16196)": June rows rolled to `whats-new-archive.md`, Fabric Maps in Real-Time Dashboards (Preview) added, Planning renamed to Plan, `whats-new.md` +19/-89
+- Net change across the window:
+  - 152 rows at HEAD that were not anywhere at base.
+  - 22 rows added and then deleted inside the window ("transient" below).
+  - 6 rows that moved from the preview table to the GA table under the same name.
+  - 24 base preview rows gone under their original name. Each was matched to its renamed or promoted row, or found to have none.
+- How the mapping was done:
+  - Five parallel read-only subagents each took one cluster of skills and drilled their own drift entries on Learn.
+  - I mapped `claude/mcp/`, `claude/CLAUDE.md` and the registry myself.
+  - I independently checked these against Learn or the raw bytes: result set caching, MLV incremental refresh, GQL set operations and the Query API, the TMDL ontology definition, the bulk-import `byPath` example, the three MCP endpoints, and the `fabric-warehouse` truncation. Every other line number and quote below is as the agents measured it.
+- Anchors: I also stripped the `#community-<id>-mcetoc_…` anchor form, which `drill.strip` does not list yet (first drift bullet).
+
+## Drift / gap candidates (existing artifacts)
+
+- **drift-audit** (`references/sources.md`, `fabric` entry) — page restructure in `9eda27f8` _(fabric)_
+  - Specific change:
+    - `sections` names the platform section and eight workload subsections. HEAD keeps only `Features currently in preview`, `Generally available features`, `Community`, `Power BI`, `Stay up to date` and `Related content`.
+    - `columns` names `Description` and `Currently in preview`, columns that neither version has. The preview table is `Feature | Learn more` and the GA table is `Month | Feature | Learn more`; status comes from which table a row is in plus a `(Preview)` / `(Generally Available)` suffix on the name.
+    - `drill.strip` misses `#community-<postid>-mcetoc_<id>_<n>`: 108 at HEAD, 0 at base.
+  - Reference: https://github.com/MicrosoftDocs/fabric-docs/commit/9eda27f80e2c0beee0201826368e8271d31e0da0
+  - Proposed action: partial rewrite
+- **drift-audit** (`SKILL.md` § 4a, § 4b) — page size and transient rows _(fabric)_
+  - Specific change:
+    - § 4b says both What's New pages are ~50 KB, and it prices `fabric`'s WebFetch run from 11 sections that no longer exist.
+    - § 4a's route for a `table` source with more than 5 commits puts both versions in context, about 355 KB here; the on-disk exemption covers `changelog` sources only.
+    - A base-to-head diff missed 22 rows added and then deleted inside the window, among them the new T-SQL syntax, the new ontology experience and three GQL rows.
+  - Reference: https://github.com/MicrosoftDocs/fabric-docs/commits/main/docs/fundamentals/whats-new.md
+  - Proposed action: minor edit
+- **fabric-activator** — Activator stateful conditions (GA) _(fabric)_
+  - Specific change: `SKILL.md:338` and `:350` name `BECOMES`, `INCREASES` and `DECREASES`; Learn adds `EXIT RANGE` and absence of data (heartbeat).
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/data-activator/activator-rules-overview
+  - Proposed action: minor edit
+- **fabric-activator** — Fabric Activator integration with warehouse SQL queries (Preview) _(fabric)_
+  - Specific change: `SKILL.md:273-274` says Teams channels are "not supported at all". The new warehouse-SQL alert page offers **Channel post**, but `activator-limitations` still says channels aren't supported, so Learn contradicts itself.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/data-activator/set-alerts-warehouse-sql-query
+  - Proposed action: flag
+- **fabric-ai-functions** — Warehouse AI functions (preview), renamed from "AI functions in Fabric Data Warehouse" _(fabric)_
+  - Specific change:
+    - `SKILL.md:189` lists three T-SQL functions and points to `fabric-warehouse`, which has no AI-function content.
+    - Learn lists seven: it adds `AI_ANALYZE_SENTIMENT`, `AI_EXTRACT`, `AI_TRANSLATE` and `AI_FIX_GRAMMAR`, plus a `NULL ON ERROR` clause. The feature is still preview.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-warehouse/ai-functions
+  - Proposed action: minor edit
+- **fabric-catalog-governance** — OneLake catalog Govern experience (GA) _(fabric)_
+  - Specific change: `SKILL.md:11-13` describes three areas; Govern now also lists Policies and admin experiences. The three area names, the daily refresh and the Private Link limit still match.
+  - Reference: https://learn.microsoft.com/en-us/fabric/governance/onelake-catalog-govern
+  - Proposed action: minor edit
+- **fabric-catalog-governance** — OneLake Catalog table discovery (Preview) _(fabric)_
+  - Specific change: `SKILL.md:276-279` limits search to display name, description and workspace name. The entry adds table and column-name search, but the Search API reference still documents only those three fields, so the extension is blog-only.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/catalog/search
+  - Proposed action: flag
+- **fabric-cicd** — Bulk item definition APIs (GA), promoted from "Bulk import and export items definition (Preview)" _(fabric)_
+  - Specific change: `SKILL.md:261` says "(beta; non-prod)", but the API is GA. The library's own flag status is unverified.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/items/bulk-import-item-definitions
+  - Proposed action: minor edit
+- **fabric-cicd** — Deployment plans (Preview) _(fabric)_
+  - Specific change: the surface table at `SKILL.md:21-25` doesn't mention deployment plans; Learn says "The `fabric-cicd` library doesn't support deployment plans."
+  - Reference: https://learn.microsoft.com/en-us/fabric/cicd/deployment-plan/deployment-plan-overview
+  - Proposed action: flag
+- **fabric-cicd** — Microsoft Fabric CI/CD resources (transient) _(fabric)_
+  - Specific change:
+    - `SKILL.md:270` says attached-lakehouse GUIDs need parameterization and notebook resources aren't source-controlled.
+    - Learn: with "Lakehouse Auto-Binding in Git" on (it is off by default), notebooks bind to lakehouses by logical ID, including through deployment pipelines and bulk import.
+    - The Resources folder can optionally be committed to Git.
+  - Reference: https://learn.microsoft.com/en-us/fabric/cicd/cross-workspace-dependency-binding
+  - Proposed action: minor edit
+- **fabric-cli** — Bulk item definition APIs (GA) _(fabric)_
+  - Specific change: `SKILL.md:200` calls the feature "**Experimental, v1.7+.**". The API underneath is GA; the CLI flag's own status is unverified.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/items/bulk-import-item-definitions
+  - Proposed action: flag
+- **fabric-cli** — OneLake Catalog table discovery (Preview) _(fabric)_
+  - Specific change: `SKILL.md:62` limits `fab find` to name, description and workspace name. This is the same blog-only extension as above.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/catalog/search
+  - Proposed action: flag
+- **fabric-copy-job** — Copy job CDC, Copy job SCD Type 2, Snowflake read-only CDC, Oracle CDC initial-load improvements (GA) _(fabric)_
+  - Specific change:
+    - What's New moves CDC and SCD Type 2 to GA. Learn still says "SCD Type 2 in Copy job is currently in preview" and titles CDC "(Preview)", so `SKILL.md:49` ("still labelled Preview") still agrees with Learn.
+    - Separately, the source matrix on Learn has moved away from `REF:26-30`: Fabric Data Warehouse now supports SCD Type 2; Oracle, BigQuery and Snowflake show yes in all three columns; there are two new rows.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/cdc-copy-job
+  - Proposed action: flag (status); partial rewrite (matrix)
+- **fabric-copy-job** — SQL CDC custom capture names (GA) _(fabric)_
+  - Specific change: the GA row contradicts `SKILL.md:85` ("Only the default capture instance is supported"), but Learn's CDC page still says "Custom capture instances aren't supported".
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/cdc-copy-job
+  - Proposed action: flag until Learn agrees
+- **fabric-copy-job** — Copy job workspace monitoring (GA), promoted from "Workspace Monitoring for Copy job (Preview)" _(fabric)_
+  - Specific change: `SKILL.md:78` lists only Job events; Learn documents a `CopyJobActivityRunDetailsLogs` table.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/copy-job-workspace-monitoring
+  - Proposed action: minor edit
+- **fabric-copy-job** — Activator Fabric-item actions (GA) _(fabric)_
+  - Specific change: `SKILL.md:3`, `SKILL.md:77` and `REF:13` label the Activator action "(Preview)"; Learn now lists Copy jobs without a preview label. "Copy jobs don't accept parameters" still holds.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/data-activator/activator-trigger-fabric-items
+  - Proposed action: minor edit
+- **fabric-copy-job** — Custom Copy job staging, Copy job audit columns (GA); Copy job and Eventstream integration (Preview) _(fabric)_
+  - Specific change:
+    - The `activities[]` summary at `SKILL.md:55` mentions neither staging nor audit columns. The definition page shows only `enableStaging`. Audit columns work on every connector except Office 365 and Databricks Delta Lake.
+    - No Learn page yet names Eventstream as a Copy job endpoint (drill failed).
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/audit-columns-copy-job
+  - Proposed action: flag (pin the JSON shape with a `getDefinition` round-trip)
+- **fabric-data-agent** — Fabric Data Agent integration with Microsoft Copilot Studio (GA, promoted) _(fabric)_
+  - Specific change:
+    - `SKILL.md:42` marks Copilot Studio as preview with "SPN not supported". The same claim appears at `:23`, `:75`, `references/authentication.md:11` and `references/consumption-surfaces.md:17`.
+    - The tool-based path (Fabric IQ Data MCP) is GA and runs as **User** or **Maker**; the older connected-agent path is still preview.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/data-agent-microsoft-copilot-studio-tool
+  - Proposed action: partial rewrite
+- **fabric-data-agent** — Ontology as data-agent context (Preview); GQL enhancements (transient) _(fabric)_
+  - Specific change:
+    - `SKILL.md:21` works around missing aggregation by adding `Support group by in GQL` to the agent's instructions.
+    - The agent now treats the ontology as context and generates SQL, KQL or DAX against the source, and GQL documents `GROUP BY`.
+    - A known issue blocks ontologies bound to semantic models.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/data-agent-ontology-sources
+  - Proposed action: partial rewrite (that paragraph)
+- **fabric-data-agent** — Data-agent MCP tasks (GA) _(fabric)_
+  - Specific change: `SKILL.md:40` labels the MCP endpoint preview, as do `:74`, `references/consumption-surfaces.md:10,23` and `references/authentication.md:10`. Learn's page has no preview label and adds MCP tasks for long-running questions.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/data-agent-mcp-server
+  - Proposed action: minor edit
+- **fabric-data-agent** — Fabric data agent visualizations (GA); Data agents return up to 1,000 rows (Preview) _(fabric)_
+  - Specific change:
+    - The skill never mentions visuals; Learn says "Visuals currently support up to 200 rows of data."
+    - The 25-row, 25-column cap at `SKILL.md:115` still matches the concept page, so the 1,000-row preview is unconfirmed.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/data-agent-visuals
+  - Proposed action: minor edit (visuals); flag (1,000 rows)
+- **fabric-data-agent** — Data agent topics, Data agent runtime model upgrade (Preview) _(fabric)_
+  - Specific change:
+    - "The four configuration layers" (`SKILL.md:46`) omits topics and schema descriptions, which apply to SQL sources on the preview runtime.
+    - "LLM is fixed" (`:117`) still holds, but the standard/preview runtime selector isn't mentioned.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/data-agent-topics
+  - Proposed action: minor edit
+- **fabric-data-agent** — Fabric IQ in Microsoft 365 Copilot (GA) _(fabric)_
+  - Specific change: `SKILL.md:69` says "every surviving surface is preview", but answering from Power BI content in M365 Copilot Chat is GA. Data agents and ontologies there still need a published M365 agent.
+  - Reference: https://learn.microsoft.com/en-us/fabric/iq/connectors/microsoft-365-copilot-overview
+  - Proposed action: minor edit
+- **fabric-data-agent** — Data agent feedback in Microsoft 365 Copilot, Fabric IQ data-agent and ontology answers (Preview) _(fabric)_
+  - Specific change: neither entry has a Learn page to compare against.
+  - Reference: drill failed: the first entry's aka.ms link lands on Foundry observability; the second is blog-only
+  - Proposed action: flag
+- **fabric-data-pipeline** — Pipeline retry backoff (GA) _(fabric)_
+  - Specific change: `REF:171-176` describes Increasing Delay but omits the 3,600-second default maximum and that "Retry interval fields don't support dynamic expressions."
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/activity-retries
+  - Proposed action: minor edit
+- **fabric-data-pipeline** — Lakehouse maintenance activity (GA); Refresh SQL analytics endpoint, Business Actions and Fabric Actions activities (Preview) _(fabric)_
+  - Specific change:
+    - `SKILL.md:82` says "The enum has 36 entries". None of the four new activities is in the REST enum, and their JSON `type` strings are undocumented.
+    - The maintenance activity doesn't support schema-enabled lakehouses.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/activity-overview
+  - Proposed action: flag
+- **fabric-data-pipeline** — Pipeline-level dependencies (Preview) _(fabric)_
+  - Specific change: `SKILL.md:72-74` covers activity-level `dependsOn` only. Run conditions (Custom, Data availability, Window coverage) add a pipeline-level layer, and how it serializes to Git is undocumented.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/pipeline-run-conditions
+  - Proposed action: flag
+- **fabric-database** — Vector indexes and vector search in SQL database in Fabric (GA) _(fabric)_
+  - Specific change: the comparison table at `SKILL.md:17-29` has no vector row. SQL database has GA vector indexes (minimum 100 non-NULL vectors); Warehouse has no vector type or search.
+  - Reference: https://learn.microsoft.com/sql/sql-server/ai/vectors?view=sql-server-ver17
+  - Proposed action: minor edit
+- **fabric-dataflow** — New Dataflow destinations, Optimized Dataflow copy to lakehouse (GA) _(fabric)_
+  - Specific change:
+    - `REF:78-81` keeps "Snowflake destination (preview) limitations … gateway unsupported". Snowflake is now GA and works through the latest on-premises gateway.
+    - An Excel destination is new, and the Scale tab gains an "Optimized copy to Lakehouse" option that is off by default.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/dataflow-gen2-staged-data-options
+  - Proposed action: minor edit
+- **fabric-dataflow** — Dataflow destination expressions, Dataflow dynamic warehouse schema (Preview) _(fabric)_
+  - Specific change:
+    - `SKILL.md:263-267` says "Connections are statically bound", and `REF:88` says Warehouse and Snowflake require a fixed schema.
+    - The entries make destination names expression-driven and let warehouse schemas change, but Learn still says "only fixed schema is supported".
+    - `coding-m` is unaffected: the new editor "isn't a general-purpose Power Query M expression editor".
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/dataflow-gen2-dynamic-expression-editor-data-destinations
+  - Proposed action: flag
+- **fabric-dataflow** — Updated workspace monitoring experience (Preview, transient) _(fabric)_
+  - Specific change: `REF:212-214` says enabling *Log workspace activity* creates an eventhouse and a KQL database. Workspace monitoring is now managed through a **monitoring item**, and that toggle is filed under "Legacy".
+  - Reference: https://learn.microsoft.com/en-us/fabric/fundamentals/workspace-monitoring-overview
+  - Proposed action: partial rewrite
+- **fabric-deployment-pipelines** — Deployment plans (Preview) _(fabric)_
+  - Specific change:
+    - Deploy now takes `options.deploymentPlan` (with `?beta=true` and the extra `Item.Execute.All` scope), next to the `allowCrossRegionDeployment` example at `SKILL.md:170`.
+    - A plan is itself a pipeline-supported item (preview) but is missing from `REF:24`. A plan cannot switch a Variable Library value set.
+    - The entry's own link 404s.
+  - Reference: https://learn.microsoft.com/en-us/fabric/cicd/deployment-plan/deployment-plan-automation
+  - Proposed action: partial rewrite
+- **fabric-deployment-pipelines** — dbt job in Fabric Data Factory (GA), Event Schema Registry (GA) _(fabric)_
+  - Specific change: `REF:18-19` lists "dbt Job *(preview)*" and "Event Schema Set *(preview)*". Both items went GA, but these rows copy Learn's pipeline-support list, which may lag the items. "Plan *(preview)*" at `:26` still matches Learn.
+  - Reference: https://learn.microsoft.com/en-us/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines
+  - Proposed action: flag
+- **fabric-error-handling** — Updated workspace monitoring experience (Preview, transient) _(fabric)_
+  - Specific change: `REF:36` says "Eventhouse-backed cross-item logs". This is now a monitoring item, with the old form moved to a separate "legacy" section.
+  - Reference: https://learn.microsoft.com/en-us/fabric/fundamentals/workspace-monitoring-overview
+  - Proposed action: minor edit
+- **fabric-event-schema-set** — Event Schema Registry (GA), promoted from "Schema Registry (Preview)" _(fabric)_
+  - Specific change:
+    - No status claim needs flipping, but `SKILL.md:335-336` lists business events (`BusinessEventType`) as untested.
+    - Learn: the registry also manages Business Events schemas, its roles are deny-by-default, and schema-aware Eventstreams are preview.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/schema-sets/schema-registry-overview
+  - Proposed action: flag
+- **fabric-eventhouse** — Update policies on accelerated shortcuts (Preview) _(fabric)_
+  - Specific change: `REF:29` lists the query-acceleration limitations. The Kusto update-policy page now allows an external delta table with query acceleration as an update-policy source (preview), while the query-acceleration overview still says "update policies aren't supported". Learn contradicts itself.
+  - Reference: https://learn.microsoft.com/kusto/management/update-policy?view=microsoft-fabric
+  - Proposed action: minor edit
+- **fabric-eventhouse** — Eventhouse workspace-monitoring logs (Preview) _(fabric)_
+  - Specific change: `REF:75` names five log tables; Learn adds capacity throttling, sub-optimal size and scale-out event logs.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/monitor-eventhouse
+  - Proposed action: minor edit
+- **fabric-eventhouse** — Granular shortcut-database sharing (GA) _(fabric)_
+  - Specific change: the access model at `SKILL.md:200` has no shortcut-database sharing. A shortcut can now share all or selected subitems of the source database.
+  - Reference: https://learn.microsoft.com/fabric/onelake/onelake-shortcuts
+  - Proposed action: flag
+- **fabric-eventstream** — Eventstream MQTT connector (GA) _(fabric)_
+  - Specific change: `SKILL.md:40` and `references/source-connectors.md:25` say "MQTT (preview)", and `SKILL.md:38` and `references/kafka-mtls.md:3-8` say custom CA / mTLS works only for Kafka-family sources. MQTT is GA and has its own **TLS/mTLS settings**, so the Kafka-only claim is false.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/add-source-mqtt
+  - Proposed action: partial rewrite
+- **fabric-eventstream** — Eventstream processing logs (Preview); Updated workspace monitoring experience (transient) _(fabric)_
+  - Specific change:
+    - `SKILL.md:74-76` describes three tables created by **Log workspace activity**, and `:85` and `references/monitoring.md:16-36` filter on `ArtifactId`.
+    - Learn now lists four tables (adding `EventStreamDiagnosticLogs`) with `ItemId` / `ItemName` columns.
+    - Activity logging is now opt-in per eventstream under the monitoring item.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/fabric-workspace-monitoring
+  - Proposed action: partial rewrite (confirm the column names on a live monitoring database)
+- **fabric-eventstream** — New Eventstream connectors (GA) _(fabric)_
+  - Specific change:
+    - `SKILL.md:35-39` and `source-connectors.md:16,18,24` still label MongoDB, Mirrored Database and Solace PubSub+ preview, and have no Cribl or SAP Datasphere rows.
+    - Hold the Mirrored Database row: Learn's source list still says "Mirrored Database Change Feed (preview)".
+    - Cribl and MongoDB don't support Git integration or deployment pipelines.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/add-source-cribl
+  - Proposed action: minor edit
+- **fabric-eventstream** — Activator rules in Eventstream (GA) _(fabric)_
+  - Specific change: `SKILL.md:61` ("## Activator destination (preview)") and `references/activator-destination.md:3` still say preview; it is now GA.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/add-destination-activator
+  - Proposed action: minor edit
+- **fabric-eventstream** — Eventstream custom connector, Reference data enrichment (Preview) _(fabric)_
+  - Specific change:
+    - The sources table (`SKILL.md:33-40`) has no custom connector. It takes a Kafka Connect plugin and can't reach sources on private networks.
+    - The transformations list (`:24`) has no reference-data source node, which reads Lakehouse Delta tables.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/event-streams/enrich-events-with-reference-data
+  - Proposed action: minor edit
+- **fabric-gotchas** — Warehouse pre/post deployment support (Preview) _(fabric)_
+  - Specific change: `SKILL.md:54` says to drop the object by hand on the target or accept the drift. A post-deployment T-SQL script is now a third option, though Learn doesn't mention table drops specifically.
+  - Reference: https://learn.microsoft.com/fabric/data-warehouse/deployment-scripts
+  - Proposed action: minor edit
+- **fabric-gotchas** — COPY INTO with workspace identity (GA) _(fabric)_
+  - Specific change: `SKILL.md:20` says "Grant role or use SAS in CREDENTIAL". `CREDENTIAL = (IDENTITY = 'Workspace Identity')` is now a third option.
+  - Reference: https://learn.microsoft.com/fabric/data-warehouse/ingest-data
+  - Proposed action: minor edit
+- **fabric-gotchas** — Warehouse CI/CD 2.0 (Preview) _(fabric)_
+  - Specific change: `SKILL.md:23-24` and `:50-51` treat definition 2.0 as settled; Learn says "This feature is in preview."
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-warehouse/warehouse-system-file-version-history
+  - Proposed action: flag
+- **fabric-gotchas** — Bulk item definition APIs (GA) _(fabric)_
+  - Specific change: `SKILL.md:41` repeats `fabric-rest-api`'s claim that `byPath` is not accepted, which Learn's bulk-import example contradicts (see the `fabric-rest-api` bullet below).
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/items/bulk-import-item-definitions
+  - Proposed action: flag
+- **fabric-graph** — Graph in Microsoft Fabric: GQL enhancements, Extended graph traversal (transient) _(fabric)_
+  - Specific change:
+    - `SKILL.md:115` says set operations are unsupported, including `UNION DISTINCT`; `:113` caps variable-length patterns at 8 hops; `REF:159-160` marks set operations and `NEXT` as "No".
+    - Learn: "`UNION ALL` and `UNION DISTINCT` are supported. `INTERSECT`, `EXCEPT`, and `OTHERWISE` aren't yet supported."
+    - The eight-hop limit applies only to the Explore UI.
+    - `NEXT`, `FOR`, `CALL`, `WHEN`, `OPTIONAL MATCH` and `ANY SHORTEST` are now documented.
+  - Reference: https://learn.microsoft.com/en-us/fabric/graph/limitations
+  - Proposed action: partial rewrite
+- **fabric-graph** — GQL Query API surface, found while drilling the GQL entries _(fabric)_
+  - Specific change:
+    - `SKILL.md:75-87` and `REF:173,205-213` describe a six-character status string with a `03` prefix.
+    - Learn documents `executeQuery?beta=true` (`preview=true` still accepted) and five-character status codes: `00000`, `00001`, `01000`, `02000`, `42000` and `50000`.
+    - It also documents continuation polling, where `02000` with a `nextPage` token means the query is still running.
+    - Responses are truncated above 64 MB (status `01000`), and the 20-minute limit includes continuations (HTTP 408 `QueryTimeout`).
+  - Reference: https://learn.microsoft.com/fabric/graph/gql-query-api
+  - Proposed action: partial rewrite
+- **fabric-graph** — Graph in Microsoft Fabric: Incremental data updates (transient) _(fabric)_
+  - Specific change: `SKILL.md:21` (no schema evolution) and `:107` ("Save = ingest") still match Learn, which says every save refreshes the data and schema changes trigger a reload. Incremental updates are announced but not yet documented.
+  - Reference: https://learn.microsoft.com/en-us/fabric/graph/manage-data
+  - Proposed action: flag
+- **fabric-mirroring** — Extended mirroring capabilities, SharePoint List mirroring (GA); Snowflake security-role mirroring (Preview) _(fabric)_
+  - Specific change:
+    - `SKILL.md:198` says "Extended capabilities (paid, preview)", and `:56` lists "SharePoint List (preview) | Database".
+    - Learn's pages still mark mirroring views and SharePoint List preview, so the status question is unresolved.
+    - SharePoint List supports both Database and Metadata mirroring.
+    - Learn still says Snowflake RLS and CLS aren't replicated (`:253-258`).
+  - Reference: https://learn.microsoft.com/en-us/fabric/mirroring/overview
+  - Proposed action: flag (status); minor edit (SharePoint List mirroring kinds)
+- **fabric-mirroring** — Updated workspace monitoring experience (Preview, transient) _(fabric)_
+  - Specific change: `SKILL.md:315-317` describes the legacy workspace-monitoring toggle.
+  - Reference: https://learn.microsoft.com/en-us/fabric/fundamentals/workspace-monitoring-overview
+  - Proposed action: minor edit
+- **fabric-mlv** — Optimal refresh for materialized lake view updates and deletes (Preview) _(fabric)_
+  - Specific change:
+    - `SKILL.md:117` sends sources with updates or deletes to a full refresh, and `:125-126` do the same for aggregates and `GROUP BY`.
+    - Learn: updates and deletes refresh incrementally when the view declares a `REFRESH_HINT <name> UNIQUE (<cols>)` clause. This is preview, and the clause is missing from the CREATE grammar at `:27-37`.
+    - Learn also lists "GROUP BY / aggregates" as supported. `AVG()` and `STDDEV()` need every source partitioned, with the partition column in `GROUP BY`. `SUM`, `MIN`, `MAX` and `COUNT` (without `DISTINCT`) are exempt from that rule.
+  - Reference: https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/refresh-materialized-lake-view
+  - Proposed action: partial rewrite
+- **fabric-mlv** — Materialized lake views (GA, September 2026) _(fabric)_
+  - Specific change: the description says Spark SQL MLVs went "GA March 2026"; the What's New row dates GA September 2026. PySpark MLVs are still preview, as the skill says.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-engineering/materialized-lake-views/create-materialized-lake-view-pyspark
+  - Proposed action: flag (date)
+- **fabric-ontology** — Ontology new experience (transient); Ontology as Real-Time Dashboard source, Ontology as data-agent context (Preview) _(fabric)_
+  - Specific change:
+    - `SKILL.md:38` and `REF:10` say ontology definitions are JSON only.
+    - Learn: the new experience is the default for new items, and its definition is TMDL (`.tmdl` parts plus `.platform`).
+    - The JSON experience "retires on Jan 31, 2027", and its docs moved under `iq/ontology/old-experience/`.
+    - The new definition has `decimal`; `SKILL.md:68-69` says there is none.
+    - New-experience items also need the *Users can create Fabric items* tenant setting; `:204` names only the ontology setting.
+    - Real-Time Dashboards are a new consumer, and the GQL group-by workaround at `:197-200` is moot.
+  - Reference: https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition
+  - Proposed action: partial rewrite
+- **fabric-ontology** — Fabric IQ MCP Server (GA) _(fabric)_
+  - Specific change:
+    - `REF:149` says Copilot Studio reaches ontologies through "the **Fabric IQ MCP (preview)** tool".
+    - The GA Fabric IQ MCP is a different server, for Power BI content, and "doesn't currently support Fabric ontologies or data agents".
+    - The Copilot Studio ontology tool is still preview under a confusingly similar name.
+  - Reference: https://learn.microsoft.com/en-us/fabric/iq/connectors/fabric-iq-mcp
+  - Proposed action: minor edit
+- **fabric-operations-agent** — Workspace outbound access protection for Operations Agent (Preview) _(fabric)_
+  - Specific change:
+    - `SKILL.md:14-16`, `:289` ("Register nothing as GA") and `REF:5` call the item preview throughout.
+    - Learn: "Operations agent is generally available. Support for operations agent with workspace OAP is in preview." The GA row is dated June 2026, so the skill was already wrong before this window.
+    - Under workspace OAP, Teams, Power Automate and cross-workspace actions are blocked.
+  - Reference: https://learn.microsoft.com/en-us/fabric/security/workspace-outbound-access-protection-operations-agent
+  - Proposed action: partial rewrite
+- **fabric-operations-agent** — Operations Agent performance view, Fabric Observability Insights (Preview); Updated workspace monitoring experience (transient) _(fabric)_
+  - Specific change: the monitoring item now contains an Operations Agent (Learn doesn't say which item type), and the agent page gains a **View performance** dashboard. `SKILL.md:42` ("One item type, two front doors") doesn't account for either.
+  - Reference: https://learn.microsoft.com/en-us/fabric/real-time-intelligence/operations-agent-performance-dashboard
+  - Proposed action: flag
+- **fabric-realtime-dashboard** — Fabric Maps in Real-Time Dashboards, Ontology as Real-Time Dashboard source, Real-Time Dashboard AI custom visual builder (Preview); Richer Real-Time Dashboard visuals (GA) _(fabric)_
+  - Specific change:
+    - A Maps tile points at a map item by ID and has no query. That breaks the skill's rule that every `queryId` is referenced exactly once (`SKILL.md:28`, `:55`), and the tile's JSON shape is undocumented.
+    - Ontology is now a data source, but its `dataSources[].kind` value has not been checked against a real dashboard (`:39`).
+    - Reference lines now cover eight visual types; that doesn't settle the "static numbers only" claim at `:95-97`.
+    - The AI custom visual builder drill failed: its link lands on the Copilot dashboard page.
+  - Reference: https://learn.microsoft.com/fabric/real-time-intelligence/dashboard-real-time-create
+  - Proposed action: flag
+- **fabric-rest-api** — Fabric Core MCP Server (GA, promoted) _(fabric)_
+  - Specific change: `references/REFERENCE.md:54` calls Core MCP a "preview MCP server". It is GA, with the same endpoint and scope.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/articles/mcp-servers/core-remote/get-started-core
+  - Proposed action: minor edit
+- **fabric-rest-api** — Bulk item definition APIs (GA) _(fabric)_
+  - Specific change:
+    - `SKILL.md:162` says `byPath` "is not accepted by the Fabric REST endpoints".
+    - Learn's Bulk Import example sends `MyReport.Report/definition.pbir` with `"datasetReference": {"byPath": {"path": "../../MyDataset.SemanticModel"}}`. I decoded that from the page's base64 payload.
+    - That is a documentation example, not a test, so narrow the claim to the single-item endpoints rather than reversing it.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/items/bulk-import-item-definitions
+  - Proposed action: flag
+- **fabric-rest-api** — File-level Git commit (Preview) _(fabric)_
+  - Specific change: the Git section (`SKILL.md:164-219`) has no commit call, and `commitToGit` now takes a `FileLevelSelective` mode.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/git/commit-to-git
+  - Proposed action: minor edit
+- **fabric-rest-api** — OneLake Catalog table discovery (Preview) _(fabric)_
+  - Specific change: `SKILL.md:20` limits Catalog Search to catalog metadata. This is the same blog-only extension as in `fabric-catalog-governance`.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/catalog/search
+  - Proposed action: flag
+- **fabric-security** — OneLake security Members and Data UX (GA) _(fabric)_
+  - Specific change: the supported items at `SKILL.md:85` lack **Mirrored catalogs** (`Read`). The `DefaultReader` membership at `:87` differs by item type.
+  - Reference: https://learn.microsoft.com/en-us/fabric/onelake/security/create-manage-roles
+  - Proposed action: minor edit
+- **fabric-semantic-model-ai-instructions** — Fabric IQ in Microsoft 365 Copilot (GA) _(fabric)_
+  - Specific change: the consumer list at `SKILL.md:21` is missing this GA consumer of semantic models.
+  - Reference: https://learn.microsoft.com/en-us/fabric/iq/connectors/microsoft-365-copilot-overview
+  - Proposed action: minor edit
+- **fabric-semantic-model-audit** — Plan (GA), renamed from Planning _(fabric)_
+  - Specific change: `SKILL.md:324` says "Plan is a preview workload"; the page has dated Plan GA as July 2026.
+  - Reference: https://learn.microsoft.com/en-us/fabric/iq/plan/overview
+  - Proposed action: minor edit
+- **fabric-semantic-model-audit** — Advanced DAX generation for semantic models (Preview) _(fabric)_
+  - Specific change:
+    - The claim at `SKILL.md:264-266` that DAX generation ignores agent instructions still holds.
+    - On the preview runtime it now also searches column values and needs Q&A turned on.
+    - Semantic-model sources take no source-level instructions or descriptions, which contradicts `fabric-data-agent` `references/configuration-layers.md:94`.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/semantic-model-best-practices
+  - Proposed action: minor edit
+- **fabric-semantic-model-audit** — Fabric IQ in Microsoft 365 Copilot (GA) _(fabric)_
+  - Specific change: "One pass per consumer" (`SKILL.md:253`) has no pass for this GA consumer.
+  - Reference: https://learn.microsoft.com/en-us/fabric/iq/connectors/microsoft-365-copilot-overview
+  - Proposed action: minor edit
+- **fabric-spark** — Custom Live Pools (GA); Delegated Custom Live Pool management (Preview) _(fabric)_
+  - Specific change:
+    - Pool selection (`SKILL.md:112`) and the Environment parts (`:146-154`) don't mention live pools.
+    - Live pools work for notebooks only and are managed in the portal only: they "can't be managed via environment public APIs or CI/CD pipelines".
+    - Spark job definitions aren't supported.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-engineering/custom-live-pools-overview
+  - Proposed action: minor edit
+- **fabric-spark** — Refresh SQL analytics endpoint activity (Preview) _(fabric)_
+  - Specific change: `SKILL.md:61` sends schema changes to the REST refresh API. A pipeline activity now does the same job, though Learn says it "might intermittently fail" while other processes are writing.
+  - Reference: https://learn.microsoft.com/fabric/data-factory/refresh-sql-endpoint-activity
+  - Proposed action: flag
+- **fabric-spark-monitoring** — Fabric Livy API high concurrency (GA, promoted) _(fabric)_
+  - Specific change:
+    - `SKILL.md:49` names high-concurrency sessions `HC_<NotebookName>_<livyId>`, and `:156-158` allows at most five notebooks.
+    - Livy-API high concurrency works at the REPL level, groups by `sessionTag`, names sessions `HC_<LakehouseName>_<LivySessionId>`, and allows up to five REPLs per session.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-engineering/high-concurrency-livy
+  - Proposed action: minor edit
+- **fabric-tmdl-api** — Bulk item definition APIs (GA) _(fabric)_
+  - Specific change:
+    - `REF:16` labels Bulk Import / Export "(beta)" with a `%28beta%29` URL; both APIs are GA and cover SemanticModel.
+    - Bulk import accepts `.platform` parts, so "Never include `.platform`" (`SKILL.md:15`) applies to `updateDefinition` only.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/items
+  - Proposed action: minor edit
+- **fabric-warehouse** — New T-SQL syntax (transient); Warehouse T-SQL enhancements, Warehouse analytical functions (Preview) _(fabric)_
+  - Specific change:
+    - `references/t-sql-surface.md:6-15` lists none of the new syntax: FROM-first queries, `GROUP BY ALL` / `ORDER BY ALL`, `ROLLUP` / `CUBE` / `GROUPING SETS`, `QUALIFY`, or `MEDIAN`, `QUANTILE`, `APPROX_MEDIAN` and `APPROX_QUANTILE`.
+    - All of it works in Warehouse and the SQL analytics endpoint only, not in SQL database in Fabric.
+    - What's New calls the enhancements preview, but the Learn pages carry no preview banner.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-warehouse/tsql-surface-area
+  - Proposed action: minor edit
+- **fabric-warehouse** — COPY INTO with workspace identity (GA) _(fabric)_
+  - Specific change: `SKILL.md:154-156` ("Needs Storage Blob Data Reader on ADLS or a SAS in CREDENTIAL") lacks `WITH (CREDENTIAL = (IDENTITY = 'Workspace Identity'))`. These are the same lines as the truncated fragment listed under "Incidental" below. The entry's own link (`ingest-data-copy`) says nothing about authentication.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-warehouse/ingest-data
+  - Proposed action: minor edit
+- **fabric-warehouse** — Warehouse pre/post deployment support (Preview) _(fabric)_
+  - Specific change: `references/platform-features.md:86` ("Security never deploys") and `:110` predate deployment scripts. A warehouse now takes one pre-deployment and one post-deployment script at most, and Learn suggests the post-deployment script for recreating such objects.
+  - Reference: https://learn.microsoft.com/fabric/data-warehouse/deployment-scripts
+  - Proposed action: minor edit
+- **fabric-warehouse** — Lakehouse maintenance activity (GA) _(fabric)_
+  - Specific change: `references/table-health-metrics.md:23,25` sends compaction to Spark or a notebook. A pipeline activity now exists, but it doesn't work on schema-enabled lakehouses.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/lakehouse-maintenance-activity
+  - Proposed action: flag
+- **fabric-warehouse-monitoring** — Result set caching (GA, September 2026) _(fabric)_
+  - Specific change:
+    - `SKILL.md:99-101` is titled "Result Set Caching (currently disabled)", cites a 2026-09-11 known issue, and says "Don't recommend it as a tuning step".
+    - Learn: "enabled by default for all Fabric Warehouses and Lakehouse SQL Analytics Endpoints". Commit `27532aaa` is titled "RSC on by default".
+    - Learn's off switches are `ALTER DATABASE <item> SET RESULT_SET_CACHING OFF` and `OPTION (USE HINT ('DISABLE_RESULT_SET_CACHE'))`.
+    - Learn lists 15 disqualifications, including results over 10,000 rows, no referenced table of at least 100,000 rows, cross-database queries, RLS or dynamic data masking, and time travel. `:103` names only non-deterministic functions.
+  - Reference: https://learn.microsoft.com/fabric/data-warehouse/result-set-caching
+  - Proposed action: partial rewrite
+- **fabric-warehouse-monitoring** — Monitor for Fabric Data Warehouse (Preview), renamed from "Data Warehouse Monitor" _(fabric)_
+  - Specific change: `REF:5,13` link to `query-activity`. The feature is now **Monitor** (slug `/monitor`), and only workspace admins can open it. The 15-minute lag and the `Invalid object name` gotcha (`SKILL.md:31`) still hold.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-warehouse/monitor
+  - Proposed action: minor edit
+- **fabric-warehouse-monitoring** — Updated workspace monitoring experience (Preview, transient) _(fabric)_
+  - Specific change: `REF:42-43` describe the Workspace Settings toggle. Monitoring is now a cross-workspace monitoring item, Warehouse query-execution logs are a source, and the URL at `:43` now opens the pipeline-logs page.
+  - Reference: https://learn.microsoft.com/en-us/fabric/fundamentals/workspace-monitoring-overview
+  - Proposed action: minor edit
+- **coding-expressions** (rule) — Pipeline-level dependencies (Preview) _(fabric)_
+  - Specific change: `:130-141` treats `dependsOn` conditions as the only dependency layer; run conditions add one at the pipeline level.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-factory/pipeline-run-conditions
+  - Proposed action: flag
+- **coding-tsql** (rule) — New T-SQL syntax (transient); Warehouse T-SQL enhancements, Warehouse analytical functions (Preview) _(fabric)_
+  - Specific change:
+    - The Warehouse-only carve-out at `:30-35` names only the ANSI string operators and `FOR TIMESTAMP AS OF`. Learn says "`FROM`-first query syntax isn't supported in … SQL database in Fabric", and the same goes for `MEDIAN`.
+    - `QUALIFY` replaces the top-N-per-group CTE that `:134` prescribes.
+    - A FROM-first query with no `SELECT` is an implicit `SELECT *`, which `:201` forbids in production code.
+  - Reference: https://learn.microsoft.com/en-us/sql/t-sql/queries/select-qualify-clause-transact-sql?view=fabric
+  - Proposed action: minor edit
+- **fabric-git-serialization** (rule) — Branch workspaces and selective branching, Compare and commit Git changes (GA); File-level Git commit (Preview) _(fabric)_
+  - Specific change:
+    - `:88-91` treats a partial branch-out as an accident. Selective branching now builds partial workspaces on purpose.
+    - The compare dialog marks each file new, modified or deleted before commit (`:77-78`).
+    - Deletions can now be left uncommitted, which undercuts `:75-83`.
+  - Reference: https://learn.microsoft.com/en-us/fabric/cicd/git-integration/granular-compare
+  - Proposed action: minor edit
+
+**Incidental: not tied to any in-window entry.** These are as the agents reported them unless marked; each is a one-line check.
+- `fabric-warehouse`: `SKILL.md:152-156` contains an orphaned sentence fragment, and `references/t-sql-surface.md:28-29` ends two bullets mid-sentence ("`FILE_TYPE`:" and "statements are"). I verified both: they have been broken since `dbed250` (2026-08-31), when that skill's detail was split into `references/`.
+- `fabric-database`: `SKILL.md:22` still says Warehouse `MERGE` is "Preview only"; `fabric-warehouse:132` and Learn say GA.
+- `fabric-copy-job`: `REF:86,88` and `SKILL.md:57` give CDC `writeBehavior: "Merge"`, but the REST definition page's CDC examples use `"Upsert"` with `upsertSettings`.
+- `fabric-data-agent`:
+  - `SKILL.md:23` calls Git/CI-CD support GA; Learn says "Source control for Fabric data agents is currently in preview."
+  - Learn documents a 15,000-character instruction limit, while `references/authoring-workflow.md:24` says there is no documented limit.
+- `fabric-mlv`:
+  - The Runtime 2.0 re-check that `SKILL.md:20` scheduled for late September is now due.
+  - The South Central US exclusion at `:21` is gone from the overview page.
+- `fabric-operations-agent`: `REF:44` (shortcut tables unsupported) and `:168` (regions) disagree with the limitations page.
+- `fabric-git-serialization` `paths:` has no globs for item types that Learn's Git list now names: Deployment plan, Plan, Maps, Graph QuerySet, Cosmos DB, ML experiment and model, and dbt Job. The folder suffixes are unverified.
+- `fabric-deployment-pipelines` is missing two things:
+  - Deployment pipelines don't support a workspace with inbound access protection.
+  - Deploy accepts per-item `validateOnly` through `options.itemOptionsBySourceItemId`.
+- `coding-tsql` `:240-241` groups `||` with the preview fuzzy-match functions, but Learn's `||` page has no preview banner.
+- `coding-kql` `:188-189` prefers `=~` over `tolower()`, against Learn's "Don't use `=~`" (low confidence).
+- `fabric-semantic-model-ai-instructions`: Learn dates the retirement of Q&A to December 2026 on one page and February 2027 on another.
+
+## New-skill candidates
+
+- **Business Events**: GA this window, promoted from "Business Events in Real-Time Intelligence (Preview)". It has Eventhouse persistence, a schema-registry role and two guidance rows. No skill covers it; `fabric-activator:200` and `fabric-event-schema-set:335` only mention it. Worth a skill if the item is in use.
+  - Source: fabric / Generally available features
+- **dbt job**: GA (promoted), plus a "Common dbt job patterns" guidance row. Nothing mentions dbt except the pipeline-support list. Worth a skill only if dbt is in use; otherwise ignore. At HEAD the page lists dbt Job in both tables.
+  - Source: fabric / Generally available features
+- **Fabric Maps**: data-driven styling (GA); external feature services, outbound access protection and the Real-Time Dashboard Maps tile (Preview). Nothing covers it beyond an item-type name. Worth a skill only if a Maps item is in use.
+  - Source: fabric / Generally available features, Features currently in preview
+- **Capacity administration**: capacity overage (GA, promoted), workspace-level surge protection (Preview), alert templates and Metrics app enhancements (GA), capacity operation events (Preview). Nothing covers capacity beyond `CapacityLimitExceeded` and `fab start/stop`. A section or a short note, not a skill.
+  - Source: fabric / both tables
+- **Network security and CMK**: OneLake and Eventhouse outbound access protection, Eventhouse workspace Private Link and Eventhouse CMK (GA); Eventstream, SQL database and Maps private networking (Preview). `fabric-security` has only a list of links. A section in `fabric-security`, not a skill.
+  - Source: fabric / both tables
+- **Connection governance**: authentication and tenant allowlists (GA), plus the cloud connection admin and recency APIs. A section in `fabric-security` or `fabric-rest-api`.
+  - Source: fabric / Generally available features
+- **Already briefed, so fold rather than re-propose**:
+  - Plan and Native Planning Engine (Preview) → `docs/handoffs/execute/item-type-skill-fabric-plan.md`
+  - Warehouse User Data Function integration (Preview) → `docs/handoffs/execute/fabric-user-data-functions-skill.md`
+  - Source: fabric / both tables
+- **Weak, so fold into an existing skill or ignore**:
+  - Native Execution Engine JSON acceleration → `fabric-spark`, which never mentions the Native Execution Engine.
+  - Custom SQL pools behind the GA statement classifier → `fabric-warehouse-monitoring`.
+  - Real-Time hub capacity events, item soft-delete events and Anomaly Detector alerts → `fabric-activator`.
+  - Ignore for now: Spark connector for SQL databases (GA), Fabric policies (Preview; `PolicySet` is now an item type), ML endpoint runtime, Migration Assistant for Teradata, Database Hub, Database agent, gateway soft delete, and the branch workspace admin profile.
+  - Source: fabric / both tables
+
+## MCP / tooling / CLI additions
+
+- **fabric-core** (Fabric Core MCP Server): GA.
+  - Learn's endpoint is `https://api.fabric.microsoft.com/v1/mcp/core` over Streamable HTTP, with scope `https://api.fabric.microsoft.com/.default`. That matches the project template's URL and its `headersHelper` token audience, which was measured connecting on 2026-09-14.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/articles/mcp-servers/core-remote/get-started-core
+  - Proposed action: flag. No template change is needed; the `claude/mcp/README.md` row could record GA.
+- **fabric-iq** (Fabric IQ MCP Server): GA, and `claude/mcp/README.md` already records it as GA. The template's URL and `X-Variants: Fabric.Routing.FabricIQ.V1` match Learn. New on the Learn page:
+  - a private-link endpoint, `https://api.fabric.microsoft.com/v1/mcp/fabriciq`;
+  - delegated `Item.Read.All`, `Item.Execute.All` and `Dataset.Read.All` permissions, with no service-principal or app-only auth;
+  - `ExecuteQuery` returns 250 rows by default (`maxRows` raises it);
+  - no support for ontologies or data agents.
+  - It is still unprobed here.
+  - Reference: https://learn.microsoft.com/en-us/fabric/iq/connectors/fabric-iq-mcp
+  - Proposed action: flag (add a README note for the private-link URL)
+- **data-agent-remote-mcp**: Data-agent MCP tasks (GA).
+  - A long-running question now returns an `io.modelcontextprotocol/tasks` task (`tasks/get`, `tasks/cancel`); clients without that extension see no change.
+  - Whether Claude Code supports the tasks extension is unmeasured.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-science/data-agent-mcp-server
+  - Proposed action: flag
+- **Notebook toolkit for agentic development** (Preview): "gives coding agents notebook-aware tools for authoring and validation". The entry links only to a blog.
+  - A Learn search found *Develop Fabric notebooks with Claude Code and Codex in Visual Studio Code* (an integration in the Fabric Data Engineering extension). It is not confirmed to be this toolkit.
+  - Reference: endpoint TBD — verify before template add
+  - Proposed action: flag
+- **Fabric data engineering agent (Project Osmos)** (Preview): the entry says it starts from a command-line client.
+  - Reference: endpoint TBD — verify
+  - Proposed action: flag
+- **sqldw-cli** (Warehouse operations skill, GA): an upstream `skills-for-fabric` skill. Learn now documents it, alongside new overview and install pages for Skills for Fabric. The registry's counterpart table already maps it to `fabric-warehouse` and `fabric-warehouse-monitoring`.
+  - Reference: https://learn.microsoft.com/en-us/fabric/data-warehouse/skills-for-data-warehouse-operations
+  - Proposed action: flag for the `skills-for-fabric` source's next run
+- **Fabric REST surface**: none of these appears in `fabric-rest-api` or `fabric-auth`.
+  - Create Workspace Relation API (Preview).
+  - Get Upstream / Downstream Relations (beta).
+  - List Networking Communication Policies admin API (GA).
+  - Connection admin and recency APIs (GA).
+  - OneLake table read API (Preview), at `onelake.table.fabric.microsoft.com`. It accepts the same token audience as the OneLake filesystem.
+  - Reference: https://learn.microsoft.com/en-us/rest/api/fabric/core/items
+  - Proposed action: flag
+- **Activation globs**:
+  - New-experience ontology parts are `.tmdl` files, so the `**/*.tmdl` globs in `fabric-tmdl`, `coding-tmdl` and `coding-dax` would load semantic-model guidance whenever an ontology file is read.
+  - No repo here has an ontology item yet.
+  - Reference: https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition
+  - Proposed action: flag (narrow the globs before the first ontology export lands)
+
+## No-op
+
+- Partner and marketplace listings: Atlan, ArcGIS Maps for Fabric, Telmai, Celonis, Spectral Core, Financial Fabric DataHub, IntuigenceAI, Metropolis VoiceLake
+- Community: Fabric Influencers Spotlight August 2026, SQLCon/FabCon Europe SQL sessions
+- UI-only changes that no skill makes a claim about: SQL query editor enhancements, copy and share warehouse queries, Lakehouse Explorer resizable columns, Modern Get Data Azure browsing, Refreshed Monitor hub, Dataflow data visuals, custom sort, offset transformation, shared queries, send email, refresh details, back up query results, the Gen1-to-Gen2 Upgrade Wizard, the modern pipeline canvas, My Queries in Dataflow Gen2 (GA), Eventhouse entity diagram (GA), guided streaming monitoring
+- Guidance and release notes: Business Event consumer and scenario guidance, private Eventstream sources, BACPAC/DACPAC, AI functions with Power BI, warehouse medallion practices, managing connections at scale, private Snowflake connectivity, the gateway August 2026 release
+- Drivers and connectors that no skill references: the ODBC-to-ADBC transition, ADO.NET/JDBC/ODBC high concurrency, the Copy job PostgreSQL connector, multi-folder and SharePoint-folder sources
+- Checked on Learn, no drift: SQL pool statement classifier, Delta Checkpoint V2 metadata sync, the Activator / User Data Functions lifecycle exclusion, Dataflow monitoring, distributed bitmap filters (blog only), DLP restrict access (Purview still says preview)
+- Page housekeeping:
+  - June rows rolled to the archive page (`ecb721f5`).
+  - Planning renamed to Plan, plus three other renames.
+  - dbt Job left in both tables.
+  - "Stream Mirrored Database change feeds" dropped by `9eda27f8` and restored by `7ff5f2b3`.
+  - A new "Stay up to date" section.
+
+## Recommended actions
+
+1. **fabric-warehouse-monitoring**: rewrite the Result Set Caching section for GA and on-by-default. Also update the Monitor rename and the workspace-monitoring row.
+2. **fabric-mlv**: rewrite the optimal-refresh and blocked-construct tables for aggregates, `GROUP BY` and `REFRESH_HINT`. Flag the GA date, and run the overdue Runtime 2.0 re-check.
+3. **fabric-graph**: rewrite the GQL support section (set operations, `NEXT`, traversal limits) and the Query API surface (`beta=true`, five-character codes, continuation). Flag incremental updates.
+4. **fabric-ontology**: rewrite for the TMDL new experience and the retirement of the JSON experience on 2027-01-31, and fix the confusion with the Fabric IQ MCP name. Then run `/drift-audit --sources fabric-iq-ontology`, the source built for this skill.
+5. **fabric-operations-agent**: correct the status to GA (outbound access protection support is still preview) and add the actions that protection blocks.
+6. **fabric-eventstream**: rewrite MQTT (GA, TLS/mTLS) and the monitoring tables. Update the Activator destination and connector statuses, but hold the Mirrored Database row.
+7. **fabric-data-agent**: rewrite the Copilot Studio rows and the GQL group-by paragraph. Update the MCP endpoint status, M365 Copilot, visuals, topics and runtime.
+8. **fabric-warehouse**: repair the two truncated passages first. Then add the new T-SQL syntax, COPY INTO with workspace identity, and deployment scripts.
+9. **coding-tsql**: extend the Warehouse-only carve-out, and reconcile `QUALIFY` and FROM-first queries with the CTE and `SELECT *` rules.
+10. **fabric-copy-job**:
+    - Rebuild the CDC / SCD Type 2 matrix.
+    - Keep the status and capture-instance flags until Learn agrees.
+    - Add workspace monitoring and relabel the Activator action.
+11. **fabric-deployment-pipelines**: add deployment plans to the deploy options and the item list, and re-check the dbt Job and Event Schema Set labels.
+12. **fabric-rest-api**: mark Core MCP GA, add file-level commit, and narrow the `byPath` gotcha in light of the bulk-import example. Make the same narrowing in **fabric-gotchas** `:41`.
+13. **fabric-git-serialization**: update for selective branching, compare-before-commit and file-level commit.
+14. **fabric-dataflow**, **fabric-mirroring**, **fabric-error-handling**: move workspace monitoring to the monitoring-item model, as one task per skill.
+15. **fabric-spark**, **fabric-spark-monitoring**: add custom live pools, and the Livy high-concurrency session naming and grouping.
+16. **fabric-dataflow**, **fabric-data-pipeline**:
+    - Update the Snowflake and Excel destinations, optimized copy, and the retry-backoff limits.
+    - Flag the new activities and run conditions.
+17. **fabric-eventhouse**, **fabric-activator**, **fabric-realtime-dashboard**, **fabric-event-schema-set**: make each skill's minor edits and carry its flags, one task per skill.
+18. **fabric-cicd**, **fabric-cli**, **fabric-tmdl-api**, **fabric-gotchas**: relabel the bulk definition APIs as GA and make each skill's remaining edits, one task per skill.
+19. **fabric-ai-functions**, **fabric-database**, **fabric-security**, **fabric-catalog-governance**, **fabric-semantic-model-audit**, **fabric-semantic-model-ai-instructions**: make each skill's minor edits, one task per skill.
+20. **drift-audit** registry: repair the `fabric` entry (`sections`, `columns`, the `#community-…-mcetoc_…` strip pattern, and the size note).
+21. **drift-audit** `SKILL.md`: decide whether a `table` source with more than 5 commits should be diffed on disk with every in-window version walked, and correct the ~50 KB claim.
+22. Decide on the new-skill candidates (Business Events, dbt job, Fabric Maps), and fold the Plan and User Data Functions entries into their open briefs.
+23. **fabric-tmdl**, **coding-tmdl**, **coding-dax**: narrow the `**/*.tmdl` globs before an ontology export lands, and check the incidental findings.
+
+## Next run
+
+Pass one of these as the prior reference next time:
+
+- Microsoft Fabric (incl. RTI) head: `7ff5f2b3` (2026-10-02)
+- Or a single date: `2026-10-06`
+
+A SHA from any registered source's repo, or any ISO date, is accepted.

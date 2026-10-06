@@ -1,0 +1,168 @@
+# Handoff: rewrite fabric-ontology for the TMDL experience
+
+- **Audit run**: 2026-10-06
+- **Source**: `fabric`
+- **Window**: floor `2026-09-01` (diff base `8375c89d`, 2026-08-31) →
+  head `7ff5f2b3` (2026-10-02)
+- **Covers recommended actions**: 4
+- **Kind**: partial rewrite of a skill whose premise changed: ontology
+  definitions are now TMDL, not JSON. Also one naming correction, then a
+  follow-up `/drift-audit` run of the source registered for this skill.
+  A `description` edit, if any, needs a retest.
+- **Target**: `skills/fabric/fabric-ontology/SKILL.md` (lines 38, 68–69,
+  84–101, 178, 197–200, 204), `skills/fabric/fabric-ontology/references/REFERENCE.md`
+  (lines 10, 149)
+
+## The problem
+
+`fabric-ontology` says an ontology definition is JSON, and only JSON.
+Since the new ontology experience became the default for new items, an
+ontology's definition is TMDL: flat `.tmdl` files plus `.platform`. The
+JSON format survives only as the "old experience", which retires on
+2027-01-31. Anything the skill says about the definition layout now
+describes the legacy format.
+
+The skill was written entirely from documentation, with no local
+sample, so Learn is its only ground truth. The `fabric-iq-ontology`
+registry source exists for exactly this reason. The root Learn pages it
+fetches now describe the new experience, and the pages the skill was
+built on moved under `old-experience/`.
+
+## Evidence
+
+**What's New.** "Ontology new experience (preview)" was added by
+`80a24c9b` (2026-09-29) and deleted by the restructure `9eda27f8`
+(2026-10-02), so it is absent from the live page. "Ontology as
+Real-Time Dashboard source (Preview)", "Ontology as data-agent context
+(Preview)" and "Fabric IQ MCP Server (Generally Available)" were added
+by `9eda27f8`.
+
+**Learn, checked in the audit session on 2026-10-06** —
+https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition,
+titled "Ontology definition (TMDL/new experience)":
+
+> A new experience ontology expresses its definition as **TMSL / TMDL**
+> (the Analysis Services tabular-model format, plus ontology-only
+> extensions) instead of the old experience's entity-type JSON. Because
+> the definition is TMDL, the item plugs into the platform's
+> item-definition ALM surface — **Git integration**, the Public API
+> `getDefinition` / `updateDefinition`, and **Deployment Pipelines**.
+
+> New experience ontology items support the **TMDL** format (Tabular
+> Model Definition Language). The parts are flat, item-folder-relative
+> `.tmdl` text files plus the platform-owned `.platform` metadata file.
+
+The page documents a `tables/{name}.tmdl` part whose measures carry DAX
+expressions. The JSON layout the skill describes now lives at
+`.../definitions/ontology-old-definition`: `definition.json`,
+`.platform`, `EntityTypes/{ID}/…` and `RelationshipTypes/{ID}/…`.
+
+https://learn.microsoft.com/fabric/iq/ontology/overview:
+
+> The new ontology experience is the default experience for new ontology
+> items.
+
+> You can't create new instances of the old ontology experience through
+> the ontology interface in Fabric. It's still possible to create
+> instances of the old experience by using the ontology APIs and CI/CD.
+
+> The old experience of ontology retires on Jan 31, 2027.
+
+Migration is a copy into a new item: agents, dashboards and other
+integrations must be reconnected, and rules recreated. The old docs now
+sit under `/fabric/iq/ontology/old-experience/`.
+
+**Further facts, agent-measured on 2026-10-06:**
+
+- Tenant settings:
+  https://learn.microsoft.com/en-us/fabric/iq/ontology/overview-tenant-settings
+  — "This setting is **required** to create ontology (preview) items
+  with the new experience: *Users can create Fabric items*."
+  `SKILL.md:204` names only the ontology setting.
+- The new definition lists a `decimal` type; `SKILL.md:68-69` says
+  "There is no `Decimal`".
+- `concepts-generate` lost the storage-mode matrix that `SKILL.md:84-101`
+  is built on.
+- Real-Time Dashboards consume ontologies:
+  https://learn.microsoft.com/en-us/fabric/real-time-intelligence/dashboard-supported-data-sources
+  — "To connect, select **Add data source** > **Ontology**".
+- `SKILL.md:197-200` carries the "Support group by in GQL" instruction
+  workaround that brief 07 retires for `fabric-data-agent`. Learn's
+  data-agent ontology page: "It then generates a source-native SQL, KQL,
+  or DAX query, runs the query against that source, and presents the
+  result."
+
+**The Fabric IQ MCP name.** `REF:149` says "Copilot Studio reaches
+ontology through the **Fabric IQ MCP (preview)** tool". The GA Fabric
+IQ MCP server is a different server, for Power BI reports and semantic
+models. https://learn.microsoft.com/en-us/fabric/iq/connectors/fabric-iq-mcp,
+checked in the audit session: "It doesn't currently support Fabric
+ontologies or data agents." The Copilot Studio how-to still says
+"select **Fabric IQ MCP (Preview)**".
+
+**Skill text** (agent-measured): `SKILL.md:38` "Ontology definitions are
+JSON. Only the first two are required:"; `REF:10` "Ontology items
+support the **JSON** format only."; `SKILL.md:178` "Five paths".
+
+## What to change
+
+1. Make the TMDL definition the primary layout: parts, `.platform`,
+   `tables/{name}.tmdl`, and what Git, `getDefinition`/`updateDefinition`
+   and deployment pipelines carry. Quote Learn's definition page; do not
+   compose TMDL syntax the page does not show.
+2. Keep the JSON layout as a clearly marked legacy section with the
+   2027-01-31 retirement date. Existing items, and items created through
+   the API, still use it until then.
+3. `SKILL.md:68-69` — `decimal` exists in the new definition.
+4. `SKILL.md:84-101` — re-derive the storage-mode guidance from the
+   current pages, or mark it legacy if it described the old experience.
+5. `SKILL.md:204` — add *Users can create Fabric items* for the new
+   experience.
+6. `SKILL.md:197-200` — retire the GQL group-by workaround in the same
+   terms as brief 07.
+7. Real-Time Dashboards as a consumer, wherever the skill lists them.
+8. `REF:149` — separate the GA Fabric IQ MCP (Power BI) from the
+   Copilot Studio ontology tool that shares the name.
+9. Then run `/drift-audit --sources fabric-iq-ontology` with the floor at
+   that source's last run, or at 2026-09-02 (its registration) if it has
+   none. Record its findings as their own audit directory.
+
+## Constraint on the fix
+
+- No ontology item exists in any repo on this machine (registry note,
+  re-measured 2026-09-09). Do not invent TMDL that Learn does not show:
+  a first local export is the ground truth for layout.
+- The registry entry's retirement rule still applies after this rewrite:
+  a sample retires the layout half of that source, not the source.
+
+## Sequencing note
+
+Run this before brief 20, which narrows the `**/*.tmdl` activation
+globs. An ontology's `.tmdl` parts are what make those globs collide,
+and this brief establishes the folder layout that brief relies on.
+Brief 07 rewrites the same GQL group-by paragraph in `fabric-data-agent`;
+keep the two in agreement.
+
+## Verification
+
+1. `grep -n -i "json\|decimal\|tmdl\|old experience\|2027" skills/fabric/fabric-ontology/SKILL.md skills/fabric/fabric-ontology/references/REFERENCE.md`
+   — no hit still says JSON is the only format, and the retirement date
+   appears.
+2. `grep -n "Fabric IQ MCP" skills/fabric/fabric-ontology/references/REFERENCE.md`
+   — the Power BI server and the Copilot Studio tool are distinguished.
+3. `uv run --with pyyaml scripts/lint-frontmatter.py skills/fabric/fabric-ontology/SKILL.md`
+4. If the `description` changed: `uv run --with pyyaml scripts/skill-status.py --stale`,
+   then retest per `/test-skill` or stamp the retest as owed.
+5. The `fabric-iq-ontology` audit has run, and its directory exists under
+   `docs/audits/`.
+6. `pre-commit run --all-files`
+
+## Provenance
+
+Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
+2026-09-01, by the IQ mapping subagent. The audit session checked the
+TMDL definition and the retirement date itself. The decisive row was
+transient: added on 2026-09-29 and deleted on 2026-10-02, so a plain
+base-to-head diff would have missed it. The `fabric-iq-ontology` source
+was not selected for this run, so the page-level diff it would produce
+does not exist yet.
