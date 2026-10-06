@@ -25,7 +25,7 @@ Briefs: 21 — applied 1 · pending 20
 | [14 update dataflow destinations and pipeline activities](14-update-dataflow-destinations-and-pipeline-activities.md) | 16 | minor edits for Dataflow destinations and pipeline retry backoff, plus two flags (new… | pending |
 | [15 apply the Real-Time Intelligence edits and flags](15-apply-real-time-intelligence-edits.md) | 17 | minor edits and flags across four Real-Time Intelligence skills | pending |
 | [16 apply the minor edits across six skills](16-apply-minor-edits-across-six-skills.md) | 19 | independent minor edits and one flag across six skills | pending |
-| [17 repair the fabric registry entry](17-repair-fabric-registry-entry.md) | 20 | four mechanical defects in one registry entry of the project-scope `drift-audit` skill | applied 2026-10-06 |
+| [17 repair the fabric registry entry](completed/17-repair-fabric-registry-entry.md) | 20 | four mechanical defects in one registry entry of the project-scope `drift-audit` skill | applied 2026-10-06 |
 | [18 decide how the audit fetches a large table source](18-decide-table-source-fetch-strategy.md) | 21 | a decision on the audit pipeline itself, followed by a `SKILL.md` edit | pending |
 | [19 decide the new-skill candidates](19-decide-new-skill-candidates.md) | 22 | a decision | pending |
 | [20 scope the TMDL globs and check the incidental findings](20-scope-tmdl-globs-and-check-incidentals.md) | 23 | two unrelated tasks that share one recommended action | pending |

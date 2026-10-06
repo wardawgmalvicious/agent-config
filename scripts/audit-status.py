@@ -49,6 +49,17 @@ through follow_ups() below, grouped by the `**Needs**:` line each open log
 carries. The index says what state a brief is in; the queue says what its
 outstanding work needs. Neither restates the other.
 
+Where a brief sits is derived the same way. One whose log leaves nothing
+open -- applied or already-applied, or any outcome once a `**Closed**:`
+line follows it -- belongs in its directory's completed/, and every other
+brief at the top, so the file tree alone shows which briefs still need a
+session. Regenerating moves a brief found on the wrong side, either way,
+and --check fails on one, so the folder can no more drift from the logs
+than the table can. A log too malformed to parse stays at the top, beside
+its `unparsed` row. Nothing is deleted: the directory is still the whole
+ledger entry. Added 2026-10-06, so that which briefs are open shows in the
+file tree and not only in the index.
+
 Parsing is deliberately strict about shape and loose about words: a
 brief with an `## Execution log` but no `**Executed**:` line, or one whose
 Executed line has no date, is reported as `unparsed` so it is visible in
@@ -68,6 +79,8 @@ REPO = Path(__file__).resolve().parents[1]
 AUDITS = REPO / "docs" / "audits"
 QUEUE = "handoffs/execute/README.md"  # relative to docs/
 QUEUE_ANCHOR = "audit-briefs-are-a-second-queue"
+# Where a brief whose log leaves nothing open is filed, inside its directory.
+COMPLETED = "completed"
 
 # 00-audit-report.md, and 00b-audit-report-rerun.md when a source was
 # audited twice in one day and the second report was kept beside the first.
@@ -108,6 +121,15 @@ def audit_dirs(audits: Path = AUDITS) -> list[Path]:
             if src_dir.is_dir() and any(REPORT_RE.match(p.name) for p in src_dir.iterdir()):
                 found.append(src_dir)
     return found
+
+
+def briefs_in(src_dir: Path) -> list[Path]:
+    """Every brief in a directory, at its top or under completed/, in number order."""
+    found = [p for p in src_dir.iterdir() if BRIEF_RE.match(p.name)]
+    done = src_dir / COMPLETED
+    if done.is_dir():
+        found += [p for p in done.iterdir() if BRIEF_RE.match(p.name)]
+    return sorted(found, key=lambda p: (p.name, p.parent.name))
 
 
 def read_text(path: Path) -> str:
@@ -224,24 +246,50 @@ def needs_of(log: dict[str, str]) -> list[str] | None:
     return [] if items == ["none"] else items
 
 
+def finished(log: dict[str, str] | None) -> bool:
+    """Whether a log leaves nothing open, which files its brief under completed/.
+
+    The complement of follow_ups() for every log this script can parse. One
+    it cannot is neither, and stays at the top beside its `unparsed` row.
+    """
+    if log is None:
+        return False
+    parsed = outcome_of(log.get("Executed", ""))
+    if parsed is None:
+        return False
+    return "Closed" in log or parsed[1] not in OPEN_OUTCOMES
+
+
 def follow_ups(audits: Path = AUDITS) -> list[FollowUp]:
     """Every brief not yet run, or whose log leaves work open and unclosed.
 
     handoff-status.py prints these as the audit follow-up queue, so the rule
     for what is open lives here, beside the index built from the same logs,
-    and in no second parser.
+    and in no second parser. The log decides, not the folder: an open brief
+    moved under completed/ by hand is still listed.
     """
     found = []
     for src_dir in audit_dirs(audits):
-        for brief in sorted(p for p in src_dir.iterdir() if BRIEF_RE.match(p.name)):
+        for brief in briefs_in(src_dir):
             log = execution_log(read_text(brief).split("\n"))
             if log is None:
                 found.append(FollowUp(brief, "pending", "", None))
                 continue
             parsed = outcome_of(log.get("Executed", ""))
-            if parsed and parsed[1] in OPEN_OUTCOMES and "Closed" not in log:
+            if parsed and not finished(log):
                 found.append(FollowUp(brief, parsed[1], parsed[0], needs_of(log)))
     return found
+
+
+def misplaced(src_dir: Path) -> list[tuple[Path, Path]]:
+    """(where it is, where its log puts it) for every brief on the wrong side."""
+    moves = []
+    for brief in briefs_in(src_dir):
+        done = finished(execution_log(read_text(brief).split("\n")))
+        home = src_dir / COMPLETED if done else src_dir
+        if brief.parent != home:
+            moves.append((brief, home / brief.name))
+    return moves
 
 
 def render(src_dir: Path) -> str:
@@ -250,7 +298,7 @@ def render(src_dir: Path) -> str:
     depth = len(src_dir.relative_to(REPO / "docs").parts)
     rel_queue = "../" * depth + QUEUE
     reports = sorted(p.name for p in src_dir.iterdir() if REPORT_RE.match(p.name))
-    briefs = sorted(p for p in src_dir.iterdir() if BRIEF_RE.match(p.name))
+    briefs = briefs_in(src_dir)
 
     rows = []
     tally: dict[str, int] = {}
@@ -264,7 +312,8 @@ def render(src_dir: Path) -> str:
         kind = kind_summary(meta.get("Kind", "?"))
         status, head = status_cell(execution_log(lines), rel_queue)
         tally[head] = tally.get(head, 0) + 1
-        rows.append(f"| [{number} {title}]({brief.name}) | {actions} | {kind} | {status} |")
+        link = brief.relative_to(src_dir).as_posix()
+        rows.append(f"| [{number} {title}]({link}) | {actions} | {kind} | {status} |")
 
     report_links = ", ".join(f"[{r}]({r})" for r in reports)
     summary = " · ".join(f"{k} {v}" for k, v in sorted(tally.items()))
@@ -284,10 +333,15 @@ def render(src_dir: Path) -> str:
     return "\n".join(out)
 
 
+def rel(path: Path) -> str:
+    return path.relative_to(REPO).as_posix()
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--dir", action="append", type=Path, help="one audit directory; repeatable")
-    ap.add_argument("--check", action="store_true", help="fail if any README.md is missing or stale")
+    ap.add_argument("--check", action="store_true",
+                    help="fail if any README.md is missing or stale, or a brief sits on the wrong side")
     args = ap.parse_args()
 
     dirs = [d.resolve() for d in args.dir] if args.dir else audit_dirs()
@@ -296,30 +350,53 @@ def main() -> int:
         return 0
 
     stale = []
+    moved = 0
     for src_dir in dirs:
         if not src_dir.is_dir():
             print(f"not a directory: {src_dir}", file=sys.stderr)
             return 2
+        moves = misplaced(src_dir)
+        if args.check:
+            stale += [f"misplaced: {rel(old)}, whose log puts it in {rel(new.parent)}/"
+                      for old, new in moves]
+        else:
+            # A brief on both sides is two copies to reconcile by hand; a
+            # move would overwrite one of them.
+            clashes = [(old, new) for old, new in moves if new.exists()]
+            for old, new in clashes:
+                print(f"both exist, so nothing moved: {rel(old)} and {rel(new)}", file=sys.stderr)
+            if clashes:
+                return 2
+            for old, new in moves:
+                new.parent.mkdir(exist_ok=True)
+                old.rename(new)
+                print(f"moved {rel(old)} -> {rel(new)}")
+                moved += 1
+            done = src_dir / COMPLETED
+            if done.is_dir() and not any(done.iterdir()):
+                done.rmdir()
         target = src_dir / "README.md"
         wanted = render(src_dir)
         current = read_text(target) if target.exists() else None
-        rel = target.relative_to(REPO).as_posix()
         if args.check:
             if current != wanted:
-                stale.append(rel)
+                stale.append(f"stale or missing: {rel(target)}")
         elif current != wanted:
             target.write_text(wanted, encoding="utf-8", newline="\n")
-            print(f"wrote {rel}")
+            print(f"wrote {rel(target)}")
         else:
-            print(f"current {rel}")
+            print(f"current {rel(target)}")
 
+    if moved:
+        print("note: a path naming a moved brief's old place now finds nothing. Re-point "
+              "the live ones (git grep -n <filename>), never a stamped brief's own text.")
     if args.check and stale:
-        for rel in stale:
-            print(f"stale or missing: {rel}")
+        for line in stale:
+            print(line)
         print("regenerate with: uv run scripts/audit-status.py")
         return 1
     if args.check:
-        print(f"{len(dirs)} audit index(es) current")
+        print(f"{len(dirs)} audit index(es) current, every brief where its log puts it")
     return 0
 
 

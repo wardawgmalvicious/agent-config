@@ -173,9 +173,12 @@ repos:
       # it stays a derived view rather than a second copy of the fact only
       # because this hook refuses a commit where the two disagree. Whole
       # set, not changed files: a stamp and its index are two files, and
-      # either one alone is the interesting case.
+      # either one alone is the interesting case. A brief's folder is
+      # derived the same way, since 2026-10-06: one whose log leaves nothing
+      # open belongs in its directory's completed/, and this fails on one
+      # on the wrong side.
       - id: lint-audit-index
-        name: Check each audit directory's README matches its briefs
+        name: Check each audit directory's README and completed/ match its briefs
         entry: python scripts/audit-status.py --check
         language: python
         files: '^(docs/audits/|scripts/audit-status\.py$)'

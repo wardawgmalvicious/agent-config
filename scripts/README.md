@@ -16,9 +16,10 @@ Helper scripts for repo maintenance and observability.
   stands. Writes a generated `README.md` into each
   `docs/audits/<date>/<source>/`, derived from the briefs' metadata blocks
   and execution logs, so learning which of eleven briefs ran is one file
-  rather than eleven. Never edit an index by hand; `--check` is the
-  pre-commit gate that fails when one is stale or missing. No
-  dependencies.
+  rather than eleven, and moves each brief whose log leaves nothing open
+  into that directory's `completed/`. Never edit an index or move a brief
+  by hand; `--check` is the pre-commit gate that fails when an index is
+  stale or missing or a brief sits on the wrong side. No dependencies.
 - [bootstrap-pre-commit](bootstrap-pre-commit) — install the
   [pre-commit](https://pre-commit.com/) framework via
   [uv](https://docs.astral.sh/uv/) and wire git hooks for this repo.

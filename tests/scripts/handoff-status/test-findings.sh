@@ -179,6 +179,10 @@ stamp 04-closed "**Executed**: 2026-09-02 — escalated" "**Closed**: 2026-09-03
 stamp 05-waits "**Executed**: 2026-09-02 — applied with deferrals" "**Needs**: desktop, a CLI — why"
 stamp 06-free "**Executed**: 2026-09-02 — deferred" "**Needs**: none — a session can act"
 echo "# 07-unrun" > "$audits/07-unrun.md"
+# Its log says whether a brief is open, wherever audit-status.py has filed it.
+mkdir -p "$audits/completed"
+stamp completed/08-filed "**Executed**: 2026-09-02 — applied"
+stamp completed/09-misfiled "**Executed**: 2026-09-02 — escalated" "**Needs**: user — still open"
 
 # 1. Every finding planted above fires, and --check fails on them.
 expect_exit "planted findings fail --check" 1
@@ -242,6 +246,9 @@ expect_line "Needs: none is listed" "2026-09-01/src/06-free.md"
 expect_no_line "Needs: none needs nothing" "06-free.md  needs"
 expect_no_line "an applied brief is not open" "03-done"
 expect_no_line "a closed brief is not open" "04-closed"
+expect_no_line "a brief filed under completed/ is not open" "08-filed"
+expect_line "an open brief is listed wherever it sits" \
+    "2026-09-01/src/completed/09-misfiled.md  needs user"
 expect_line "an unrun brief counts under its directory" "2026-09-01/src/  1 brief(s)"
 
 # 5. --no-inbox leaves the inbox alone, so one repo can be checked by itself.
