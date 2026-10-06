@@ -142,7 +142,7 @@ metadata block's most load-bearing field and it classifies the brief:
   until 2026-09-11, and runs improvised it: one probed for a running
   Desktop before escalating, another relabelled a measurement as a decision.
 - **Self-referential** — the target is the drift skills' own machinery, most
-  often `.claude/skills/drift-audit/references/sources.md`. Apply it, but
+  often `.claude/skills/drift-audit/references/`. Apply it, but
   understand what verification is available: such a brief typically specifies
   "verified by re-running an audit, not by grepping prose", and this skill
   cannot re-run an audit against its own just-edited registry. Run the gates

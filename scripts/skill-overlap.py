@@ -157,13 +157,16 @@ def allowlist() -> dict[str, str]:
         for server in data.get("mcpServers") or {}:
             out.setdefault(server, "MCP server")
 
-    # drift-audit source ids, from the `### <id>` headings in its registry.
-    sources = REPO / ".claude/skills/drift-audit/references/sources.md"
-    if sources.is_file():
-        for sid in re.findall(
-            r"^### `([a-z0-9-]+)`", sources.read_text(encoding="utf-8"), re.M
-        ):
-            out.setdefault(sid, "drift-audit source id")
+    # drift-audit source ids: one registry file per source, named for its id.
+    # A tree without the skill, like a test fixture, has none to derive. One
+    # with the skill and no source files has moved its registry, and a glob
+    # over a moved directory is as silently empty as the old heading regex.
+    skill = REPO / ".claude/skills/drift-audit"
+    sources = sorted((skill / "references/sources").glob("*.md"))
+    if skill.is_dir() and not sources:
+        sys.exit("skill-overlap: no drift-audit sources found; did the registry move?")
+    for f in sources:
+        out.setdefault(f.stem, "drift-audit source id")
 
     return out
 

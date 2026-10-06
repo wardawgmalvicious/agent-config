@@ -17,11 +17,11 @@ Audit the source markdown of registered upstream docs pages against the local Cl
 
 ## 1. Sources
 
-The audit input is a **registry**, not a fixed pair of pages. `Read` [references/sources.md](references/sources.md) at the start of every run and drive the pipeline from it. Never hardcode a repo, path, section heading, or doc host into the run — if something needed for a source isn't in its registry entry, the entry is incomplete and that is the finding.
+The audit input is a **registry**, not a fixed pair of pages. At the start of every run, `Read` [references/sources.md](references/sources.md), which holds the schema and the shape contracts, then each selected source's own file, `references/sources/<id>.md`: the ids `--sources` names, or with no `--sources` every file there. List them with `Glob`, pattern `*.md`, `path` this skill's `references/sources/` directory: a pattern carrying a directory, `references/sources/*.md` under the skill's own directory, answered `No files found` with all six files present when that `path` sat inside the working directory (2026-10-06, CLI 2.1.291). **A lookup that finds no file has failed; it never means an empty registry** — stop and say so. Drive the pipeline from them. Never hardcode a repo, path, section heading, or doc host into the run — if something needed for a source isn't in its registry entry, the entry is incomplete and that is the finding.
 
 Each entry carries an `id` (what `--sources` matches), its GitHub repo / branch / path (plus `files`, when that path is a directory) or plain `url`, a `shape` (`table` / `prose` / `changelog`) that drives extraction, `sections` for the WebFetch fallback, a `drill` block (host, mechanism, anchor-strip patterns) for Phase 3, and the `artifacts` classes it can produce findings against. The registry's Shape contracts section defines what "an entry" means per shape; its Adding a source checklist is the procedure for widening the audit.
 
-As registered today: `fabric` and `powerbi` (`table`), `vscode-agent` and `fabric-iq-ontology` (`prose`), and `claude-code` and `skills-for-fabric` (`changelog`). Don't restate that set as a count anywhere — the registry owns it, and this line already went stale once by omitting `fabric-iq-ontology` for five days after it was registered on 2026-09-02. These are public and fetchable anonymously with two exceptions. `claude-code` (~590 KB) and `skills-for-fabric` (~58 KB) are files with no `sections` list, so in practice only the `github-mcp` path can read them. And `powerbi`'s upstream repo was taken down — 404 at the API, web and raw endpoints as of 2026-09-07 — so that source fetches by the strategy written into its own registry entry rather than from a `repo` field.
+Don't restate the set of sources anywhere, as a list or as a count — the directory owns it, and the list this line carried until 2026-10-06 went stale once by omitting `fabric-iq-ontology` for five days after it was registered on 2026-09-02. The sources are public and fetchable anonymously with two exceptions. `claude-code` (~590 KB) and `skills-for-fabric` (~58 KB) are files with no `sections` list, so in practice only the `github-mcp` path can read them. And `powerbi`'s upstream repo was taken down — 404 at the API, web and raw endpoints as of 2026-09-07 — so that source fetches by the strategy written into its own registry entry rather than from a `repo` field.
 
 ## 2. Argument parsing
 
@@ -34,7 +34,7 @@ The user invokes with a prior reference — slash form `/drift-audit <ref>`, nat
 
 A single reference applied to every source is intentional: the audit window is "what changed since I last checked," not "what changed in the Fabric repo specifically." Each source resolves the window against its own commits.
 
-**`--sources <id,id>`** narrows the run to the named registry ids. Absent, audit every registered source. An id with no registry entry is an error — list the valid ids and stop rather than silently auditing a subset. Skipped sources are named in the report so an empty bucket is never mistaken for a clean one.
+**`--sources <id,id>`** narrows the run to the named registry ids. Absent, audit every registered source. An id with no file under `references/sources/` is an error — list the valid ids, those files' names less `.md`, and stop rather than silently auditing a subset. Skipped sources are named in the report so an empty bucket is never mistaken for a clean one.
 
 ## 3. Read-only scope
 
@@ -48,7 +48,7 @@ This separation matters because a single bad rewrite during audit triage can sil
 
 ## 4. Phase 1 — Fetch and diff each source
 
-Work through the selected sources in registry order. Two fetch paths; pick once, at the top of the run, and say which one the report used.
+Work through the selected sources in id order, alphabetical. Two fetch paths; pick once, at the top of the run, and say which one the report used.
 
 **An entry may override both.** Where a registry entry documents its own fetch strategy — because its upstream repo is gone, or it was never GitHub-hosted — that strategy replaces 4a and 4b for that source, and any trust check it specifies is mandatory rather than advisory. § 1's no-hardcoding rule is what makes the entry authoritative: read it before assuming `repo` is a static field, and name the path taken in the report as you would for 4a or 4b.
 
@@ -153,7 +153,7 @@ Emit one markdown report to the conversation, sections in this exact order. If a
 - <label>: <commit-count> commits in window — prior `<prior-sha-or-floor>` (<prior-date>) → head `<head-sha>` (<head-date>)
   - `<sha>` (<date>) — <what the commit is>, `<path>` <+n/-m>
   - ...one line per in-window commit, newest first...
-- ...one block per audited source, registry order...
+- ...one block per audited source, id order...
 
 ## Drift / gap candidates (existing artifacts)
 
@@ -213,7 +213,7 @@ After emitting the report, restate the read-only contract briefly so any follow-
 Constraints to honour throughout the turn:
 
 - **Read-only.** `Edit` / `Write` / `MultiEdit` / `NotebookEdit` are off-limits.
-- **Registry-driven.** Every repo, path, section, doc host, and anchor pattern comes from `references/sources.md`. Nothing about a source is hardcoded here.
+- **Registry-driven.** Every repo, path, section, doc host, and anchor pattern comes from the source's own file under `references/sources/`. Nothing about a source is hardcoded here.
 - **Selective drill.** Upstream fetches only for bucket (a) and bucket (c)-with-reference.
 - **Anchor stripping.** Every URL emitted to the report has the source's `drill.strip` patterns removed.
 - **No invention.** Quote the upstream reference for MCP transports / URLs / server names, or say "TBD". Never fabricate.

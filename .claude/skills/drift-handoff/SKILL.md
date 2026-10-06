@@ -38,7 +38,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 `docs/audits/<audit-date>/<source-id>/`
 
 - `<audit-date>` — the date the audit **ran**, ISO format. Not the window floor.
-- `<source-id>` — the registry id from `.claude/skills/drift-audit/references/sources.md` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
+- `<source-id>` — the registry id: the filename, less `.md`, of the source's file under `.claude/skills/drift-audit/references/sources/` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
 
 `Write` creates missing parent directories, so there is no separate mkdir step. The only `Bash` call this skill makes is the index generation in step 7.
 
