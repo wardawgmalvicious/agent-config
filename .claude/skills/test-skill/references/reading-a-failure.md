@@ -488,6 +488,17 @@ same diff, same prompt — and expect Y not to happen. Measured
 2026-09-23 on `commit` step 4: the PR-free history committed on `main`
 ("No PR convention here") where the `(#n)` history had branched.
 
+**A probe cannot witness what a skill does with the asking session when
+the skill drops probes.** `find-session`'s script leaves out a session
+whose cwd is under the temp folder or whose name starts `probe:`, as
+every arm of its first run was, by both marks, so no arm could see the
+one defect a real session showed at once: the asking session's own
+prompt holds the terms, and the search ranked itself first (`5ae945e`).
+Where a skill's subject is the session store, the probe is part of the
+subject: run that check from a live session, as the `/test-skill`
+session itself did, and expect the arms to pass. Measured 2026-10-06,
+the live session on 2.1.289 and the arms on 2.1.291.
+
 **Parallel probes read each other as peers, and only the payload arms
 look.** A `-p` probe is a live session in the tree: `ListAgents` names
 it by its directory, `agent-config-<hash>` here, lists it as
