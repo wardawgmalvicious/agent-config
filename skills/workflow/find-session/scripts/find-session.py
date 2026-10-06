@@ -12,8 +12,8 @@ whatever repo it runs in.
 
 A session matches when every term appears in it, ignoring case: in its
 name, a prompt you typed, or a compaction summary of what it did; --replies
-adds Claude's own text. Newest first, each with the passage that matched
-best and the command that resumes it.
+adds Claude's own text. The tightest match comes first, then the newest,
+each with the passage that matched best and the command that resumes it.
 
 Names alone are a weak index, which is why this sits beside the
 name-session hook: Claude Code titles a session from its first prompt and
