@@ -227,6 +227,14 @@ guard refuses the chained form below there as too complex to verify
 - **`fatal: Unable to create '.git/index.lock': File exists` is their
   git command in flight**, not a stale lock. Wait and retry; never
   delete it.
+- **`[ERROR] Your pre-commit configuration is unstaged.` is their
+  edit** when you never touched `.pre-commit-config.yaml`: pre-commit
+  refuses every commit in the tree while that file has unstaged changes,
+  whoever made them. Don't run the `git add` it suggests, which commits
+  their half-made config under your message; ask them to finish or
+  revert it. A config edit of yours blocks them the same way: make it
+  last, and stage it in the chain that commits it (pre-commit 4.6.2,
+  2026-10-06).
 - **Record what you left.** Commit only what is yours, and name the
   deferred piece in the commit message so `git log` carries it rather
   than this conversation.
