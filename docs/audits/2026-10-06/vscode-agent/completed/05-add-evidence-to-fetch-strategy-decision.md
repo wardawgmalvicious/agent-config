@@ -129,3 +129,32 @@ Surfaced by the 2026-10-06 `vscode-agent` run, which departed from
 § 4a on purpose and said so in its audit-window block. E-2 and E-3 came
 from comparing the API's path-filtered listing with `git log` in the
 clone.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied
+- **Session**: fresh (no audit or handoff run in this session; the
+  report arrived by @-mention only)
+- **Files changed**:
+  `docs/audits/2026-10-06/fabric/18-decide-table-source-fetch-strategy.md`
+- **Verification**: brief 18 was still at `c982a59`, with no execution
+  log in this tree or in the fabric pass's worktree, whose copy matched
+  `HEAD` byte for byte; § "Decisions to put to the user" and its
+  decisions 1 and 3 were where this brief put them. Step 1 —
+  **passed**: one line, `:114`. Step 2 — **passed**: `git diff --stat`
+  listed brief 18 beside briefs 01 to 04's files and nothing else, and
+  brief 18's diff is two pure insertions, after its old `:113` and
+  `:132`, so its metadata, decisions and verification are untouched.
+  Step 3 (`pre-commit run --all-files`) runs once at the end of the
+  run.
+- **Deferred**: none
+- **Deviations**: one, in E-3's citation. This brief cites the
+  `skills-for-fabric` entry at
+  `.claude/skills/drift-audit/references/sources.md`, but `9f829a8`
+  gave each source a file of its own after this brief was written, and
+  `7fb5186` re-pointed the registry's readers, brief 04 among them, but
+  not this one. Brief 18 cites the entry's current file,
+  `references/sources/skills-for-fabric.md`, where both quotes stand
+  verbatim at `:99-110`. Also, the pointer to the report is a repo-root
+  code span rather than a relative link, so it survives brief 18's move
+  under `completed/`.

@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 5 — applied 3 · escalated 1 · pending 1
+Briefs: 5 — applied 4 · escalated 1
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -13,4 +13,4 @@ Briefs: 5 — applied 3 · escalated 1 · pending 1
 | [02 fold three documented VS Code facts into the harness-switches brief](completed/02-fold-documented-facts-into-harness-switches.md) | 2 | an edit to one blocked handoff brief, adding three documented facts and two passages of… | applied 2026-10-06 |
 | [03 ask machine-config whether its profile audit checks `chat.useClaudeHooks`](completed/03-ask-machine-config-about-claude-hooks-switch.md) | 3 | an edit outside this repo, at most one note to `~/handoff-inbox/machine-config/`, and… | applied 2026-10-06 |
 | [04 decide what the vscode-agent source audits after the retirement](04-decide-vscode-agent-source-scope.md) | 4 | a decision on one registry entry of the project-scope `drift-audit` skill, then an edit… | escalated 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
-| [05 add this run's evidence to the fetch-strategy decision](05-add-evidence-to-fetch-strategy-decision.md) | 5 | an edit adding evidence to another audit run's open decision brief, before the user… | pending |
+| [05 add this run's evidence to the fetch-strategy decision](completed/05-add-evidence-to-fetch-strategy-decision.md) | 5 | an edit adding evidence to another audit run's open decision brief, before the user… | applied 2026-10-06 |
