@@ -328,3 +328,21 @@ re-read them on the page before quoting them in the README.
   `powerbi-remote-mcp`, and none elsewhere until measured. `1d4dcb7`
   sets it and retitles the README's timeout section, both deployed on
   `main` and diffing clean (step 6).
+- **Needs**: tenant, the landing — one `fabric-iq` tool call that
+  succeeds, so under its 30-second cap, before `powerbi-remote-mcp`
+  leaves the template, carried from the entry above; and step 6 for
+  this entry's two files, `link-claude.ps1` on `main` after the
+  landing, then each deployed copy diffed against the repo. D-5 is done (2026-10-07, a session of its own, CLI 2.1.292):
+  with `~/.claude.json` backed up, a script using the two switches
+  added a top-level key while two sessions were open in
+  `machine-config`; the terminal one's exit then wrote the file
+  (`lastSessionId` and `lastGracefulShutdown` set at 16:19) and the key
+  survived, as it did the VS Code one's close, which wrote nothing; the
+  key was removed, each round trip equal to what it read but for the
+  key. The README's § "If you script an edit to `~/.claude.json`
+  yourself" and `claude-config-scoping.md` § "`~/.claude.json` is
+  runtime state, not payload" now say a scripted write survives an open
+  session since 2.1.259, and keep "Back up first" (step 3: that probe;
+  step 4 passed). Adjacent, unbriefed: `scripts/link-claude.ps1` lines
+  99 and 560–562 and `claude/rules/README.md` line 157 still state the
+  revert hazard.
