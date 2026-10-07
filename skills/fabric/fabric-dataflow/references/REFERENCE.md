@@ -90,7 +90,8 @@ SharePoint files, Snowflake, PostgreSQL.
   2026-10-06).
 - **KQL and Azure Data Explorer do not support `replace`** as an update
   method; most others support append and replace.
-- **Warehouse and Snowflake require fixed schema.**
+- **Warehouse requires fixed schema.** Snowflake does not: under Replace,
+  a new Snowflake table takes dynamic or fixed schema (Learn, 2026-10-06).
 - **Warehouse writes require staging** and only into the same workspace
   as the dataflow.
 - **A new table that you later delete is recreated** on the next
@@ -98,7 +99,8 @@ SharePoint files, Snowflake, PostgreSQL.
   dataflow stops writing.
 - **Automatic settings** mean replace + managed mapping + drop-and-
   recreate on every refresh, which removes relationships or measures
-  added to the table. Available for Lakehouse and Azure SQL only.
+  added to the table. Available for Lakehouse, Azure SQL Database and
+  Snowflake (Learn, 2026-10-06).
 - **Schema options apply only to `replace`.** With dynamic schema a
   mismatch drops and recreates the table; with fixed schema a mismatched
   query fails the publish.
