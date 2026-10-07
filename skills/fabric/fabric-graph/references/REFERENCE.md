@@ -156,8 +156,9 @@ Selected rows from MS Learn `gql-conformance`. Useful to avoid generating unsupp
 | GD01 | Updatable graphs | **No** | No GQL `INSERT`/`SET`/`DELETE`. Load/refresh via data management. |
 | GD02 | Graph label set changes | No | |
 | GD03/GD04 | `DELETE` statement variants | No | |
-| — | Set operations (`UNION DISTINCT`, `EXCEPT ALL/DISTINCT`, `INTERSECT ALL/DISTINCT`, `OTHERWISE`) | **No** | Not yet supported — use linear statement chaining (`MATCH`/`LET`/`FILTER`/`RETURN`). |
-| — | `NEXT` statement chaining | **No** | Conformance still in progress. |
+| — | Set operations `UNION ALL`, `UNION DISTINCT` | **Yes** | Also inside `NEXT` stages. |
+| — | Set operations `EXCEPT ALL/DISTINCT`, `INTERSECT ALL/DISTINCT`, `OTHERWISE` | **No** | Not yet supported. |
+| — | `NEXT` statement chaining | **Yes** | Composes query stages, including stages that contain `UNION`. |
 
 Implication: treat GQL as **query-only** against an already-ingested graph. All structural
 and data changes go through the model editor (save = ingest) or the REST item-definition API.
@@ -167,11 +168,15 @@ Full in-progress conformance list → `gql-conformance` / [limitations](https://
 
 ## 4. GQL Query API — request/response contract
 
-**Endpoint (single RPC over HTTP POST):**
+**Endpoint (single RPC over HTTP POST), in beta:**
 
 ```
-POST https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/GraphModels/{GraphModelId}/executeQuery?preview=true
+POST https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/GraphModels/{GraphModelId}/executeQuery?beta=true
 ```
+
+The Query API is in beta and not recommended for production. `beta=true` is required; the older
+`preview=true` remains supported for backward compatibility, but use `beta=true` in new
+integrations. The one optional parameter, `continuationToken`, is for continuation polling below.
 
 Headers: `Content-Type: application/json`, `Accept: application/json`,
 `Authorization: Bearer <token>` (audience `https://api.fabric.microsoft.com`).
@@ -202,21 +207,37 @@ az rest --method get --resource "https://api.fabric.microsoft.com" \
 }
 ```
 
-**Status codes** are 6-character strings, hierarchical by prefix:
+**Status codes** in `status.code` are five-character public API codes:
 
-| Prefix | Meaning |
+| Code | Meaning |
 | --- | --- |
-| `00xxxx` | Complete success |
-| `01xxxx` | Success with warnings |
-| `02xxxx` | Success with no data |
-| `03xxxx` | Success with information |
-| `04xxxx`+ | Errors / exception conditions |
+| `00000` | Success with at least one row |
+| `00001` | Omitted result — reserved for future DDL/DML; current queries always return a table |
+| `01000` | Warning or informational condition |
+| `02000` | No rows currently available; with `result.nextPage`, the query is still running |
+| `42000` | Syntax, access-rule or other user-correctable query error |
+| `50000` | System or unclassified error |
+
+- The engine's canonical five-character GQLSTATUS is kept in
+  `status.diagnostics._graphaneGqlStatus`: numeric overflow (`22003`) and division by zero
+  (`22012`) both surface as `42000`. Use it to tell specific conditions apart, and never parse
+  `description`, whose text varies. Each additional status and nested cause carries its own.
 
 - **Always check `status.code`** — do NOT infer success from HTTP 200. Transport errors
   (network/HTTP) use real 4xx/5xx; **application errors return HTTP 200** with the error in
   `status`. `status.cause` chains an underlying cause; `additionalStatuses` may list more.
 - Diagnostic keys starting with `_` (e.g. `_errorLocation`) are graph-specific and their
   values are JSON-encoded GQL values.
+
+**Continuation polling.** A query that doesn't finish within the request returns HTTP 200 with
+`status.code` `02000`, an empty table and `result.nextPage`. Re-send the same body to
+`…/executeQuery?beta=true&continuationToken=<token>`, with the opaque token percent-encoded
+exactly once (RFC 3986), until `nextPage` is absent. Execution can run 20 minutes in total from
+the first request, continuations included; past that the API returns HTTP 408 `QueryTimeout`.
+
+**Truncation.** A response whose internal binary form exceeds 64 MB is truncated: the rows that
+fit come back, with a `01000` status in `additionalStatuses` (canonical `01M11`), and no
+`nextPage` covers the omitted rows. Narrow with filters, projections or `LIMIT` and rerun.
 
 **Result kinds** (discriminated union on `result.kind`):
 - `TABLE` → `columns[]` (`name`, `gqlType`, `jsonType`), `isOrdered`, `isDistinct`, `data[]`.

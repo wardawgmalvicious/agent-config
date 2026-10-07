@@ -72,19 +72,21 @@ Full social-network schema example + the GQL standard-conformance table (what's 
 
 ## GQL Query API (REST)
 
-Single RPC-over-HTTP endpoint — the current documented URL carries **`?preview=true`**:
+Single RPC-over-HTTP endpoint, in **beta** and not recommended for production. The documented URL carries **`?beta=true`**, which is required; the older `preview=true` still works for backward compatibility, but use `beta=true` in new code:
 
 ```bash
 az rest --method post \
   --resource "https://api.fabric.microsoft.com" \
-  --url "https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/GraphModels/{graphModelId}/executeQuery?preview=true" \
+  --url "https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}/GraphModels/{graphModelId}/executeQuery?beta=true" \
   --headers "Content-Type=application/json" "Accept=application/json" \
   --body '{ "query": "MATCH (n:Person) WHERE n.birthday > 19800101 RETURN n.firstName, n.lastName LIMIT 100" }'
 ```
 
 - **Token audience is `https://api.fabric.microsoft.com`** (`az account get-access-token --resource https://api.fabric.microsoft.com`). See fabric-auth.
 - List graphs in a workspace: `GET /v1/workspaces/{workspaceId}/GraphModels`.
-- **Application errors return HTTP 200**, not 4xx. You MUST inspect the GQL `status.code` (6-char string): `00`/`01`/`02`/`03` prefixes = success (possibly with warnings); anything else is an error, with detail in `status.diagnostics` and chained `status.cause`. Do not assume success from HTTP 200.
+- **Application errors return HTTP 200**, not 4xx. You MUST inspect `status.code`, a **five-character** code: `00000` success with rows, `00001` omitted result (reserved for future DDL/DML), `01000` warning or information, `02000` no rows yet, `42000` user-correctable query error, `50000` system error. Detail is in `status.diagnostics`, where `_graphaneGqlStatus` keeps the engine's canonical GQLSTATUS (`22003` overflow and `22012` division by zero both surface as `42000`), and in chained `status.cause`. Do not assume success from HTTP 200, and don't parse `description`.
+- **A still-running query is not an empty result.** A query that doesn't finish within the request returns HTTP 200, `02000`, an empty table and `result.nextPage`. Re-send the same body with `&continuationToken=<nextPage>`, percent-encoded exactly once, until `nextPage` is absent. Execution gets **20 minutes in total, continuations included**, then HTTP 408 `QueryTimeout`.
+- **Responses over 64 MB are truncated**: the rows that fit come back, with a `01000` status in `additionalStatuses` (canonical `01M11`) and no `nextPage` for the rest. Narrow the query and rerun it.
 - Result is a discriminated union on `result.kind` (`TABLE` with `columns`+`data`, or `NOTHING`). Values carry `gqlType`; large `INT64`/`UINT64` outside JS safe range and float `Inf`/`-Inf`/`NaN` arrive as **strings**.
 
 Request/response schema, value-encoding table, and status-code families → [references/REFERENCE.md](references/REFERENCE.md).
@@ -110,9 +112,9 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 ## Other gotchas / limits
 
 - **Storage floor 100 GB** provisioned (billed at OneLake Cache rate); compute billed by CPU uptime at **10 CU-seconds per second**, rounded up to the minute. Uses your existing Fabric capacity — no separate SKU.
-- **Hard limits:** max **10 graph models per workspace**; the GA SKU processes roughly **2 billion graph elements** (nodes + edges — contact the product team for larger); variable-length patterns support up to **8 hops**; queries **time out at 20 minutes** and responses are **truncated above 64 MB** (aggregation gets unstable past 128 MB). String property max 65,535 chars; `List<T>` property max 65,535 elements. See [limitations](https://learn.microsoft.com/fabric/graph/limitations).
+- **Hard limits:** max **10 graph models per workspace**; the GA SKU processes roughly **2 billion graph elements** (nodes + edges — contact the product team for larger); the **Explore** UI's path builder stops variable-length patterns at **8 hops**, a limit GQL in the code editor doesn't share; queries **time out at 20 minutes** and responses are **truncated above 64 MB** (aggregation gets unstable past 128 MB). String property max 65,535 chars; `List<T>` property max 65,535 elements. See [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - **NL2GQL** (natural-language → GQL via Fabric Data Agent, see fabric-data-agent) is **preview**. **openCypher** support is preview and is the KQL-graph path, not this item.
-- **Set operations not yet supported.** `UNION DISTINCT`, `EXCEPT`, `INTERSECT`, and `OTHERWISE` are not available — compose with linear chaining of core statements (`MATCH`/`LET`/`FILTER`/`RETURN`) instead. Full conformance-gap list → [limitations](https://learn.microsoft.com/fabric/graph/limitations).
+- **Set operations: `UNION` only.** `UNION ALL` and `UNION DISTINCT` are supported, including inside `NEXT` stages; `INTERSECT`, `EXCEPT` and `OTHERWISE` aren't yet. Full conformance-gap list → [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - Governed by OneLake security + workspace RBAC (see fabric-security).
 
 ## Reference
