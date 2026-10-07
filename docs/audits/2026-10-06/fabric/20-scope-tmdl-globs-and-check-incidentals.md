@@ -209,3 +209,11 @@ in the report's "Incidental" list.
   deployed-rules check; the next `fabric` audit — `coding-tsql.md:33`'s
   carve-out for `||` and `UNISTR`, and the Operations agent region line
   once Learn agrees with itself.
+- **Needs**: a fresh session — `/test-skill fabric-tmdl` and the
+  real-path activation runs; the next `fabric` audit —
+  `coding-tsql.md:33`'s carve-out for `||` and `UNISTR`, and the
+  Operations agent region line once Learn agrees with itself. The
+  deploy and the deployed-rules check are done: `link-claude.ps1` ran
+  on `main` at `f82cfd5`, and the deployed `coding-tmdl`,
+  `coding-dax`, `coding-tsql` and `fabric-git-serialization` match the
+  repo (`cmp`, 2026-10-06).

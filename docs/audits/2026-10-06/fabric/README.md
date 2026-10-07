@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 21 — applied 3 · applied with deferrals 16 · escalated 2
+Briefs: 21 — applied 3 · applied with deferrals 15 · closed 1 · escalated 2
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -18,7 +18,7 @@ Briefs: 21 — applied 3 · applied with deferrals 16 · escalated 2
 | [07 update the data agent's consumption surfaces](07-update-data-agent-consumption-surfaces.md) | 7 | partial rewrite of a status table and one workaround paragraph, plus minor edits across… | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [08 repair and extend the warehouse T-SQL surface](08-repair-and-extend-warehouse-tsql-surface.md) | 8 and 9 | four independent defects in one skill and one rule | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [09 rebuild the Copy job CDC matrix](09-rebuild-copy-job-cdc-matrix.md) | 10 | partial rewrite of one reference matrix, two status flags held against Learn, and two… | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
-| [10 update deployment-plan and Git guidance](10-update-deployment-plans-and-git-guidance.md) | 11 and 13 | three defects across one skill and one path-scoped rule, all verified against Learn's… | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [10 update deployment-plan and Git guidance](completed/10-update-deployment-plans-and-git-guidance.md) | 11 and 13 | three defects across one skill and one path-scoped rule, all verified against Learn's… | applied with deferrals 2026-10-06 · closed 2026-10-06 |
 | [11 relabel the bulk definition APIs and scope the byPath claim](11-relabel-bulk-definition-apis-and-scope-bypath.md) | 12 and 18 | status relabels and one claim narrowed across five skills, plus per-skill minor edits… | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [12 move workspace monitoring to the monitoring item](completed/12-move-workspace-monitoring-to-the-monitoring-item.md) | 14 | factual correction of one cross-cutting fact in three skills | applied 2026-10-06 |
 | [13 add custom live pools and Livy high concurrency](completed/13-add-custom-live-pools-and-livy-high-concurrency.md) | 15 | additive documentation in two Spark skills, plus one naming correction | applied 2026-10-06 |

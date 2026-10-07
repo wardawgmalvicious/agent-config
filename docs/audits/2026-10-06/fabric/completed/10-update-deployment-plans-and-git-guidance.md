@@ -168,3 +168,8 @@ session read `REF:18-26` itself; the Learn quotes are the agents'.
   side only as "file-level commit", the term brief 11 uses.
 - **Needs**: the landing — `link-claude.ps1` deploys the
   `fabric-git-serialization` edit.
+- **Closed**: 2026-10-06 — the deploy it waited on ran:
+  `link-claude.ps1` on `main` at `f82cfd5`, after the landing, and the
+  deployed `fabric-git-serialization` matches the repo (`cmp`). The
+  skill's owed retest stays with `skill-status.py`, which dates it to
+  the 2026-09-24 `description` edits, not to this brief.
