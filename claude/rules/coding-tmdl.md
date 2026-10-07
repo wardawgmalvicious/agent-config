@@ -19,6 +19,17 @@ supersedes this one.
 > are community-driven (SQLBI, MS Fabric community) rather than from a
 > canonical Microsoft style guide. Treat as opinionated defaults.
 
+## Copying syntax from Learn
+
+**`microsoft_docs_fetch` deletes each newline followed by a tab inside
+a code fence**, joining every tab-indented line onto the line above.
+The TMDL overview's `database Sales`, then a tab-indented
+`compatibilityLevel: 1567`, comes back as one line:
+`database SalescompatibilityLevel: 1567`. Space-indented lines survive,
+so a block can look half right. The page's HTML keeps the bytes:
+`curl -s` it and read the `lang-tmdl` `<pre><code>` block, unescaping
+`&lt;`, `&gt;`, `&amp;` and `&quot;` (two Learn pages, 2026-10-07).
+
 ## Naming and aliasing
 
 Pattern: **PascalCase identifier, aliased display name with spaces.**
