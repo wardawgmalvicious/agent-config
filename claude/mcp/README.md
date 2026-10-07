@@ -124,6 +124,8 @@ Three runtimes, needed only for the servers you keep:
 
 `sql-mcp` additionally needs the Data API Builder CLI (`dab`) on `PATH`.
 
+Since 2.1.292 Claude Code asks every stdio server for MCP protocol revision 2026-07-28 by default (`CHANGELOG.md`; the MCP docs, read 2026-10-07, still describe a rollout from 2.1.285). A server that ignores the question costs one slow connect, and is then connected the older way, without the wait, for seven days. `MCP_PROTOCOL_NEGOTIATION=legacy` keeps every server on the earlier handshake.
+
 **The hosted Fabric `http` endpoints** — every `http` entry but `github-mcp` — need no runtime, but each needs the **Azure CLI on `PATH` and a live `az login`**: the `headersHelper` shells out on every connection, and Claude Code does not cache the result. When a tool call returns `401` or `403`, it re-runs the helper, reconnects with the fresh headers and retries the call once, and marks the server as needing authentication in `/mcp` only if that retry fails too (MCP docs, read 2026-10-07). **Which** login answers is the harness's, not the repo's — see [the helper's login](#the-helpers-login-is-the-harnesss-not-the-folders). Without a login they fail with an error that reads like an unsupported auth flow or a network fault rather than a missing credential; see [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure). The tenant must also have the relevant preview enabled for the signed-in user — the Fabric MCP preview, and for `powerbi-remote-mcp` and `powerbi-modeling-remote-mcp` the tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*. The item-bound servers add capacity and tenant settings of their own, listed in their rows.
 
 ### Install (project scope)
