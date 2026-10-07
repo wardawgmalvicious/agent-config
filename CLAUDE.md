@@ -64,7 +64,7 @@ deletes `meta`: restore one on purpose.
 | Repo path | Deployed to | Mechanism | Live when |
 | --- | --- | --- | --- |
 | `skills/<group>/` | `~/.claude/skills/<name>` | one junction per skill (`scripts/link-claude.ps1`) | immediately — same files |
-| `.claude/skills/<name>/`, `.claude/rules/` | nowhere — read in place at project scope | none; no deploy script touches them | in sessions here only: skills immediately, a rule at its next matching Read |
+| `.claude/skills/<name>/`, `.claude/rules/` | nowhere — read in place at project scope | none; no deploy script touches them | in sessions here only: skills immediately, a rule at the next Read, Write or Edit of a file it matches |
 | `claude/agents/`, `claude/hooks/`, `claude/rules/`, `claude/mcp/` | `~/.claude/agents`, `hooks`, `rules`, `mcp` | directory copy (`scripts/link-claude.ps1`) | after `scripts/link-claude.ps1` |
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | key-level merge: target-only keys kept, shared keys replaced whole | after `scripts/link-claude.ps1 -Force` |
@@ -148,8 +148,8 @@ refused, `cd` back too, until `EnterWorktree` (probed 2026-09-24, 2.1.282).
 ## Editing conventions
 
 - **Read a file before changing it, and change it with Edit or Write**: the
-  Read is what loads its `.claude/rules/` guidance, and a `sed` or heredoc
-  edit loads nothing, silently. For a new file, Read a sibling.
+  Read loads its `.claude/rules/` guidance first, an Edit or Write after the
+  change, `sed` or heredoc never, silently. For a new file, Read a sibling.
 - Rules here: `editing-skills.md`, `editing-rules.md`, `copilot-payload.md`,
   `editing-claude-md.md`, `deploy-scripts.md`, `hooks-and-agents.md`,
   `pre-commit-hooks.md`, `activation-testing.md` and `skill-overrides.md`.

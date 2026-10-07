@@ -730,6 +730,15 @@ repo's manifest carries against what matches. A `-WhatIf` run of
 eight ports, held back Bicep, C#, M and XAML, and would prune the three
 it carries.
 
+**2026-10-07.** The table's `.claude/rules/` row said a project rule goes
+live "at its next matching Read"; it now names Read, Write and Edit.
+`6751e6e` corrected the trigger elsewhere in root and left this row,
+which the 2026-10-06 `claude-code` audit's brief 02 found. Write was
+measured on 2.1.291 (§ "Validating a change", 2026-10-06). Edit rests on
+the 2.1.288 changelog bullet and the memory docs, which say a path-scoped
+rule triggers on "the Read, Write, or Edit tool", and was not measured
+here.
+
 ## How the pieces trigger
 
 - **Skills** (`skills/<group>/<name>/SKILL.md` for deployable payload,
@@ -1894,6 +1903,15 @@ measured in a scratch copy of `scripts/`, `claude/rules/` and `copilot/`:
 
 So from this date a stamped manifest no longer says a port matches its
 rule. That is what freezing means, and the removal deletes both.
+
+**2026-10-07.** The first bullet's reason was "the Read is what loads its
+`.claude/rules/` guidance". Since 2.1.288 an Edit or a Write loads a
+matching rule too, so the instruction stands and only its reason
+changed: their load arrives with the tool's result, after the change the
+rule should have governed, so only a Read puts it in front of the edit.
+Write was measured on 2.1.291 (§ "Validating a change", 2026-10-06);
+Edit rests on the 2.1.288 changelog bullet and the memory docs, not
+measured here. The 2026-10-06 `claude-code` audit's brief 02 found it.
 
 ## Validating a change
 

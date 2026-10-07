@@ -15,10 +15,12 @@ exactly when the rules themselves are being worked on.
 
 ## How they trigger
 
-Each rule's frontmatter declares a `paths:` glob list. When a file
-matching one of those globs enters Claude Code's session scope (via
-Read, session-context, or an agent inspecting the working tree), the
-rule is loaded into context.
+Each rule's frontmatter declares a `paths:` glob list. When the session's
+own Read, Write or Edit touches a file matching one of those globs, the
+rule is loaded into context, a Write's or an Edit's with the tool's
+result (Write probed 2026-10-06 on 2.1.291, inside the working
+directory; Edit per the memory docs). A subagent's Read loads it into
+the subagent only.
 
 The rules don't enforce style — they tell the model the conventions to
 follow when generating or reviewing code in that language. Pair with
