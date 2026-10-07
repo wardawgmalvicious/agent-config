@@ -1,11 +1,13 @@
 # Custom CA / mTLS for Kafka connectors
 
-GA July 2026. Applies to the Kafka-protocol sources only (Kafka, Amazon MSK,
-Confluent Cloud Kafka) — the Azure Event Hubs source has no TLS/mTLS block.
+GA July 2026 for the Kafka-protocol sources (Kafka, Amazon MSK, Confluent Cloud
+Kafka). The **MQTT** source has its own **TLS/mTLS settings** with the same Key
+Vault PEM rules (Learn, 2026-10-06); the Azure Event Hubs source has no TLS/mTLS
+block.
 
 **GA July 2026.** For Kafka, Amazon MSK, and Confluent Cloud Kafka sources, you can specify a **custom CA certificate** and a **client certificate** sourced from **Azure Key Vault** to enforce TLS / mTLS. Configured in the source connection step under **TLS/mTLS settings**. Use when the broker is behind a private CA or requires client-cert auth.
 
-The What's New row phrases this as "Eventstream **connectors**", but as documented it is still the Kafka-protocol connectors: the Azure Event Hubs source's connection UI has no TLS/mTLS block at all. Don't read GA as having widened the connector set.
+The What's New row phrases this as "Eventstream **connectors**". As of 2026-10-06 Learn documents the block on the Kafka-protocol connectors and on MQTT, and not on Event Hubs, whose connection UI has no TLS/mTLS block at all. Check a connector's own page before assuming it has one.
 
 Which **Security protocol** you pick decides what you must supply:
 

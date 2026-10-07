@@ -1,6 +1,6 @@
 # Activator destination — set alert from Eventstream
 
-Preview. The in-place Rules pane, its condition shapes, and available actions.
+GA (August 2026). The in-place Rules pane, its condition shapes, and available actions.
 
 Configure rules in-place without leaving Eventstream. Add an Activator destination, then select the **alert icon** on it to open the **Rules** pane:
 

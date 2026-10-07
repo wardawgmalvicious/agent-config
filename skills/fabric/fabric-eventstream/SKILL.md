@@ -1,6 +1,6 @@
 ---
 name: fabric-eventstream
-description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and producing events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC, Activator destination + `Set Alert` flow, workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`), mTLS Key Vault on Kafka, Event Hubs workspace-identity auth, custom-endpoint CloudEvents producer format (binary mode, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath, SAS policy), schema-registry URL anatomy, and gotchas (republish required, ~6h status lag, filter by ArtifactId not name, CloudEventPropertyMissingException)."
+description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and producing events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC, Activator destination + `Set Alert` flow, workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`), mTLS Key Vault on Kafka, Event Hubs workspace-identity auth, custom-endpoint CloudEvents producer format (binary mode, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath, SAS policy), schema-registry URL anatomy, and gotchas (republish required, ~6h status lag, filter by ID not name, CloudEventPropertyMissingException)."
 paths:
   - "**/*.Eventstream/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -21,7 +21,7 @@ For real-time analytics on the resulting events, pair an Eventstream with `fabri
 ## Authoring model
 
 - **Edit mode** vs **Live mode**: changes only take effect after **Publish**. New nodes added in Edit mode produce no traffic until publish.
-- **Sources** = where events come from. **Transformations** = inline filter / aggregate / GroupBy / Manage Fields / SQL. **Destinations** = where events go. Each destination can have its own format (Delta / JSON / Avro) where applicable.
+- **Sources** = where events come from. **Transformations** = inline filter / aggregate / GroupBy / Manage Fields / SQL, plus a join against a **reference data source** (preview): *Add source* → *Reference data sources*, a Lakehouse Delta table that adds context to each event. **Destinations** = where events go. Each destination can have its own format (Delta / JSON / Avro) where applicable.
 - **Permissions**: workspace **Contributor** or higher to author; **Viewer** can read **Data insights** monitoring on a published stream.
 - **Virtual-network injection** (private-network sources): use Eventstream connector VNet injection for sources behind a firewall — see Microsoft Learn.
 
@@ -32,12 +32,13 @@ per-source notes: [references/source-connectors.md](references/source-connectors
 
 | Family | Connectors | The thing that bites |
 |---|---|---|
-| **Database CDC** | Azure SQL, SQL MI, SQL Server on VM, PostgreSQL, MySQL, MongoDB (preview), Cosmos DB | Azure SQL needs `sys.sp_cdc_enable_db`; you cannot enable Mirroring **and** Eventstream CDC on the same database |
-| **Mirrored DB Delta CDF** | Mirrored Database (preview, April 2026) | Row-level CDC off a Mirrored DB's Delta Change Data Feed — opt in per database |
+| **Database CDC** | Azure SQL, SQL MI, SQL Server on VM, PostgreSQL, MySQL, MongoDB, Cosmos DB | Azure SQL needs `sys.sp_cdc_enable_db`; you cannot enable Mirroring **and** Eventstream CDC on the same database; MongoDB (GA September 2026) has no Git integration or deployment-pipeline support |
+| **Mirrored DB Delta CDF** | Mirrored Database (preview, April 2026) | Row-level CDC off a Mirrored DB's Delta Change Data Feed — opt in per database. What's New calls it GA (September 2026), but Learn's source list still says preview (2026-10-06), so it stays preview here |
 | **Native Azure** | Event Hubs, IoT Hub | Auth is **Shared Access Key**; workspace-identity auth is preview (Aug 2026) and the UI leads the docs |
-| **Kafka protocol** | Apache Kafka, Amazon MSK, Confluent Cloud | GA June 2026. Custom CA / mTLS GA July 2026 — Kafka-family only |
-| **Other cloud / broker** | Kinesis, Service Bus, Google Pub/Sub, Solace PubSub+ | Service Bus GA June 2026 |
-| **Protocol / pull** | MQTT (preview), HTTP (preview), Azure Data Explorer, Real-time weather | HTTP ships predefined public feeds for testing |
+| **Kafka protocol** | Apache Kafka, Amazon MSK, Confluent Cloud | GA June 2026. Custom CA / mTLS GA July 2026, under **TLS/mTLS settings** — MQTT has the same block |
+| **Other cloud / broker** | Kinesis, Service Bus, Google Pub/Sub, Solace PubSub+, Cribl, SAP Datasphere | Service Bus GA June 2026; Solace PubSub+, Cribl and SAP Datasphere GA September 2026. Cribl has no Git integration or deployment-pipeline support |
+| **Protocol / pull** | MQTT, HTTP (preview), Azure Data Explorer, Real-time weather | MQTT is GA (August 2026) with its own TLS/mTLS settings, though Learn's source list still labels it preview (2026-10-06). HTTP ships predefined public feeds for testing |
+| **Custom** | Custom stream connector (preview) | You upload a Kafka Connect **source** plugin; sources on private networks aren't supported |
 
 **DeltaFlow** (preview) is the schema-handling mode that turns raw Debezium CDC
 into a tabular shape mirroring the source table, plus an `Op` column, automatic
@@ -58,9 +59,9 @@ injection](https://learn.microsoft.com/fabric/real-time-intelligence/event-strea
 | **Derived stream** | Chain a downstream Eventstream — useful for fan-out and reusable transforms |
 | **Custom endpoint** | Push to an external Event Hubs / Kafka / AMQP-compatible system |
 
-## Activator destination (preview)
+## Activator destination
 
-Add an Activator destination, then use the **alert icon** on it to view, add,
+GA (August 2026). Add an Activator destination, then use the **alert icon** on it to view, add,
 edit, and stop/start rules without leaving Eventstream. Conditions fire **on
 each event**, **on each event when** (single-field condition), or **on each
 event grouped by** a field. Actions: Teams, email, webhook, Power Automate,
@@ -71,20 +72,27 @@ Pane walkthrough and condition detail:
 
 ## Workspace monitoring (preview)
 
-Workspace settings → **Monitoring** → **Log workspace activity** auto-creates a
-monitoring Eventhouse with three Eventstream tables. **Republish any Eventstream
-that existed before monitoring was enabled** — pre-existing streams emit nothing
-until republished.
+Workspace monitoring is managed through a **monitoring item**, created from
+Workspace settings → **Monitoring**; the old **Log workspace activity** toggle is
+now legacy. Eventstream logging is then **opt-in per eventstream**: turn on **Log
+Eventstream activity** on each one, because enabling monitoring for the workspace
+doesn't (Learn, 2026-10-06). Four tables land in the monitoring database.
+**Republish any Eventstream that existed before monitoring was enabled** —
+pre-existing streams emit nothing until republished.
 
 | Table | Cadence | What it tells you |
 |---|---|---|
 | `EventStreamNodeStatus` | ~6 hours | Each node's running / paused / failed state |
 | `EventStreamMetrics` | 1 minute | Incoming / outgoing counts, bytes, watermark delay, backlog |
 | `EventStreamErrorMetrics` | 1 minute | Error counts by type (runtime, deserialization, conversion) |
+| `EventStreamDiagnosticLogs` | As conditions occur; repeats throttled or aggregated | The message behind an error: type, code, severity, whether it is fatal |
 
-**Filter by `ArtifactId` / `WorkspaceId`, never the name columns** — those cache
-at emission time and go stale after a rename or move. For live per-node numbers
-during authoring, the editor's **Data insights** tab needs no monitoring setup.
+**Filter by the ID columns, never the name columns** — names cache at emission
+time and go stale after a rename or move. Learn now names the eventstream's ID
+column `ItemId` (with `ItemName` and `ItemKind`), not `ArtifactId`; the samples in
+the reference predate that and are unmeasured against it (2026-10-06), so check
+the table's schema first. For live per-node numbers during authoring, the
+editor's **Data insights** tab needs no monitoring setup.
 
 Worked KQL queries and the full shared-dimension list:
 [references/monitoring.md](references/monitoring.md).
@@ -172,10 +180,10 @@ when verified.
 |---|---|---|
 | Existing Eventstream emits no monitoring data | Stream was published before workspace monitoring was enabled | Open in editor and **Republish** — required once per pre-existing stream |
 | Monitoring tables don't appear after enabling | Database refresh delay | Workspace settings → **Monitoring** → toggle off then on |
-| `ArtifactName` / `WorkspaceName` show stale values | Name columns cached from emission time | Filter / join by `ArtifactId` / `WorkspaceId` only |
+| `ItemName` / `WorkspaceName` show stale values | Name columns cached from emission time | Filter / join by `ItemId` / `WorkspaceId` only (`ArtifactId` in samples written before 2026-10-06) |
 | `EventStreamNodeStatus` shows old status after a node failed | Status is emitted ~every 6 hours | For real-time status, use the Eventstream editor's live view |
 | `CorrelationId` maps to multiple nodes | Advanced processing (e.g. SQL operator with multiple destinations) | Disambiguate using `NodeDirection` + `NodeType` together with `CorrelationId` |
-| No detailed log messages in monitoring | Preview limitation — only metrics + error counts | Use the editor's runtime logs for the message text; full diagnostic logs are planned |
+| An error count with no message behind it | `EventStreamErrorMetrics` holds counts only | Query `EventStreamDiagnosticLogs`: error type and code, severity, `IsFatal` and a message. Repeated events can be throttled or aggregated, so rows don't equal errors |
 | Mirrored DB CDC source rejected | Can't enable Mirroring AND Eventstream CDC on same DB | Pick one — the docs explicitly call this out |
 | New Activator rule doesn't fire | Eventstream wasn't republished after adding the destination | Republish the Eventstream after wiring the destination |
 | Connector behind firewall fails | Source not publicly reachable | Use [Eventstream connector VNet injection](https://learn.microsoft.com/fabric/real-time-intelligence/event-streams/streaming-connector-private-network-support-guide) |

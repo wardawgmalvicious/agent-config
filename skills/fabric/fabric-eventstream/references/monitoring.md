@@ -1,19 +1,22 @@
 # Eventstream workspace monitoring
 
 Monitoring table dimensions and worked KQL queries. `SKILL.md` carries the
-three table names, their cadence, and the republish rule.
+four table names, their cadence, and the republish rule.
 
 ## Workspace monitoring (preview) — KQL tables
 
-Enable workspace monitoring (Workspace settings → **Monitoring** → **Log workspace activity**) and Fabric auto-creates a monitoring Eventhouse with three Eventstream-specific tables. Republish any Eventstream that existed *before* monitoring was enabled — pre-existing streams emit nothing until they're republished.
+Workspace monitoring is managed through a **monitoring item** (Workspace settings → **Monitoring**); the old **Log workspace activity** toggle, which created a monitoring Eventhouse in the workspace, is now legacy. Eventstream logging is opt-in per eventstream: turn on **Log Eventstream activity** on each one, because enabling monitoring for the workspace doesn't (Learn, 2026-10-06). Republish any Eventstream that existed *before* monitoring was enabled — pre-existing streams emit nothing until they're republished.
 
 | Table | Cadence | What it tells you |
 |---|---|---|
 | `EventStreamNodeStatus` | ~6 hours | Each node's running / paused / failed state |
 | `EventStreamMetrics` | 1 minute | Incoming / outgoing message counts, bytes, watermark delay, backlog |
 | `EventStreamErrorMetrics` | 1 minute | Error counts by type (runtime, deserialization, conversion) |
+| `EventStreamDiagnosticLogs` | As conditions occur; repeats throttled or aggregated | `Category`, `Severity`, `ErrorType`, `ErrorCode`, `IsFatal`, `Message` — the text behind an error count |
 
-All three tables share base dimensions: `Timestamp`, `ArtifactId`, `ArtifactName`, `WorkspaceId`, `WorkspaceName`, `CustomerTenantId`, `Level`, `OperationId`, `PremiumCapacityId`, `PlatformMonitoringCategory`, `PlatformMonitoringTableName`, `LogAnalyticsResourceId`. **Filter by `ArtifactId` / `WorkspaceId`** — name columns can lag after rename / move.
+The tables share base dimensions, per Learn on 2026-10-06: `Timestamp`, `ItemId`, `ItemName`, `ItemKind` (always `Event Stream`), `WorkspaceId`, `WorkspaceName`, `CustomerTenantId`, `OperationId`, `CapacityId`. The earlier list, which the samples below were written against, named `ArtifactId` / `ArtifactName` and carried `Level`, `PremiumCapacityId`, `PlatformMonitoringCategory`, `PlatformMonitoringTableName` and `LogAnalyticsResourceId` instead. **Filter by the ID columns** — name columns can lag after rename / move.
+
+**The samples are unmeasured against the new schema (2026-10-06).** They filter on `ArtifactId`; no workspace monitoring database was reachable to confirm what a current one carries. Run `EventStreamMetrics | getschema` first, and swap `ArtifactId` for `ItemId` if that is the column you find.
 
 ```kql
 // Most-recent status per node in one Eventstream
