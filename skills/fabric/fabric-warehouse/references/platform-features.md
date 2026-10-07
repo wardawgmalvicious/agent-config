@@ -10,7 +10,7 @@ tenant-level concerns rather than things that change the T-SQL you write.
 | CREATE / ALTER / DROP base tables | ✅ |
 | INSERT / UPDATE / DELETE / MERGE | ✅ (MERGE **GA Jan 2026**) |
 | COPY INTO, OPENROWSET (read + ingest) | ✅ |
-| `bcp` bulk copy utility | 🔶 Preview (`BULK LOAD` / `BULK INSERT` T-SQL not supported) |
+| `bcp` bulk copy utility | 🔶 Preview (`BULK LOAD` T-SQL not supported; `BULK INSERT` works for compatibility, mapped to `COPY INTO`: Learn, 2026-10-06) |
 | Transactions | ✅ (snapshot isolation only) |
 | `IDENTITY` columns (`bigint` only) | ✅ (**GA Aug 2026**) |
 | Time travel (`OPTION (FOR TIMESTAMP AS OF ...)`) | ✅ (1–120 day **table-history** retention, default 30) |
