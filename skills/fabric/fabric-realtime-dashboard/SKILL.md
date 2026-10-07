@@ -48,7 +48,9 @@ All KQL text lives in `queries[]`; everything else points at it:
   `getDefinition`'s for a REST create, which bound and ran its tiles; a REST
   create in git's shape is untested. Learn's template shows the v63 shape
   instead: `scopeId`, and no `databaseArtifactId` (schemas and seven public
-  exports, 2026-09-29).
+  exports, 2026-09-29). Learn also lists Ontology (preview), Azure Data
+  Explorer, Application Insights and Log Analytics sources; no `kind` but
+  `kusto-trident` has been checked against a real dashboard (2026-10-06).
 
 ## Load-time validation rules
 
@@ -56,6 +58,10 @@ All KQL text lives in `queries[]`; everything else points at it:
   `tiles[].queryRef.queryId`, `baseQueries[].queryId`, and
   `parameters[].dataSource.queryRef.queryId`. Duplicating a tile means
   duplicating its query with a fresh id too.
+- **A Fabric Maps tile (preview) has no query.** It embeds a pre-authored
+  map item as-is and references it by item ID, so it stands outside both
+  this rule and the `queries[]` rule above. Learn shows no JSON for it, so
+  its tile shape is undocumented (2026-10-06).
 - **Every `id` is an RFC-4122 UUID**, unique within its category. Readable
   pseudo-ids are rejected. For deterministic scripted edits use
   `uuid.uuid5(namespace, label)`.
@@ -84,6 +90,11 @@ visual (`multiStat__labelColumn`, `map__latitudeColumn`, `kpi__valueColumn`,
 generic `xColumn`/`yColumns`/`hideLegend`/…). Minimal or empty
 `visualOptions: {}` is valid — column inference handles the simple cases.
 
+What's New (2026-10-02) adds an AI custom visual builder (preview) that
+generates HTML visuals from a natural-language description. Learn has no
+page for it, and its link lands on the Copilot dashboard page, so its
+`visualType` value is unknown (2026-10-06).
+
 - **multistat**: rows = stats; `multiStat__labelColumn` / `multiStat__valueColumn`,
   `multiStat__displayOrientation`, `multiStat__slot: {width, height}` (inner
   grid of stat slots, 1×1 to 5×5). **The tile needs 3 grid columns per slot
@@ -95,7 +106,11 @@ generic `xColumn`/`yColumns`/`hideLegend`/…). Minimal or empty
 - **kpi** (gauge/bar/donut/number via `kpi__visualType`): `kpi__minValue`,
   `kpi__maxValue`, and `kpi__referenceLines` take **static numbers only** — a
   dynamic (query-computed) target cannot be bound. For "actual vs computed
-  target" use a multistat or fold the comparison into the query.
+  target" use a multistat or fold the comparison into the query. Reference
+  lines now reach eight visuals (anomaly, area, bar, column, KPI,
+  multistat, scatter, time chart; GA per What's New, 2026-10-02), but
+  Learn doesn't say whether a line can take a query value, so that
+  doesn't settle this (2026-10-06).
 - `card` and `multistat` render **string** values fine — the basis of the
   display-edge formatting pattern below.
 
