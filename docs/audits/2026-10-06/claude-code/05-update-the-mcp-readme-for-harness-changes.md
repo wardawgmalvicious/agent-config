@@ -245,3 +245,20 @@ re-read them on the page before quoting them in the README.
   hosted Fabric call. Step 6 is done: `link-claude.ps1` ran on `main` at
   `4d473d7`, and the deployed README matches the repo (`diff`,
   2026-10-07).
+- **Needs**: tenant, a session of its own — D-4's one-endpoint probe with
+  `AZURE_CONFIG_DIR` pinned, recording only the CLI version and the
+  result; D-5's write-while-open probe of `~/.claude.json`, after a
+  backup, relaxing both passages only if the key survives; and the
+  adjacent finding, the 60-second first-byte timer on an `http` server
+  with no `timeout`, unmeasured against a slow hosted Fabric call. D-3
+  is done in `3e56c38` (2026-10-07; step 3: the MCP page's raw
+  markdown, § "Exempt a server from deferral", read that day): the
+  README's scope sentence, and `claude-config-scoping.md` § "The MCP
+  scope test", which said the same, now say a server's tools are
+  deferred by default, name `alwaysLoad: true` as what loads a whole
+  surface, and keep the binding argument. Step 6 for both files is done:
+  `link-claude.ps1` ran on `main` at `3e56c38`, and each deployed copy
+  diffs clean against the repo. D-5 waits for a session of its
+  own, the user's call that day, after auto mode refused this session's
+  probe, a `claude -p` child held open while a script wrote the key, as
+  creating an agent.
