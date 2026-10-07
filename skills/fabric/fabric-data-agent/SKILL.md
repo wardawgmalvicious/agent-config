@@ -1,6 +1,6 @@
 ---
 name: fabric-data-agent
-description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / MS Graph (≤5 sources per agent), consumed in-product or via the agent's MCP endpoint (Assistants API and Copilot-in-Power-BI paths retired 2026-08-26). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, governance precedence (organizational → role-based → developer → user), best practices (right-layer scoping, iteration, version control), and key limitations (read-only, structured data only, English only, 25-row/25-col response cap, no example queries on semantic models). The Creator Agent ('Build agent with AI', SQL/Eventhouse only), MCP endpoint, M365 Copilot Agent Store, Python SDK, Copilot Studio, Azure AI Foundry, and service-principal auth (not Foundry/Copilot or KQL) remain in preview."
+description: "Use when configuring Microsoft Fabric Data Agents (GA March 2026) — conversational Q&A over Lakehouse / Warehouse / KQL / Semantic Model / Fabric SQL DB / Mirrored DB / Ontology / MS Graph (≤5 sources per agent), consumed in-product or via the agent's MCP endpoint (Assistants API and Copilot-in-Power-BI paths retired 2026-08-26). Covers the four configuration layers (agent instructions, data source instructions, descriptions for routing, example queries ≤100/source), when to use vs semantic-model AI instructions, governance precedence (organizational → role-based → developer → user), best practices (right-layer scoping, iteration, version control), and key limitations (read-only, structured data only, English only, 25-row/25-col response cap, no example queries on semantic models). The Creator Agent ('Build agent with AI', SQL/Eventhouse only), M365 Copilot Agent Store, Python SDK, Copilot Studio connected agent, Foundry, and service-principal auth (not Foundry/Copilot or KQL) remain in preview."
 paths:
   - "**/*.DataAgent/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -18,9 +18,9 @@ A Fabric Data Agent is a conversational Q&A interface. It accepts natural-langua
 
 Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power BI Semantic Model, Fabric SQL Database, Mirrored Database, Ontology, Microsoft Graph**. A single agent supports up to **5 data sources in any combination**. Read-only by design — it never generates create/update/delete queries.
 
-**Ontology as a source** is the one entry there that is a whole item type of its own — see `fabric-ontology` for modelling it, binding it to data, and its semantic enrichment, which is what makes an ontology-grounded agent answer well. Three data-agent-side behaviours belong here rather than there: an ontology source is still **preview**, the agent's first few queries after creation can fail while it initializes (wait and retry), and **aggregation is a known gap** — add the instruction `Support group by in GQL` to the agent's instructions.
+**Ontology as a source** is the one entry there that is a whole item type of its own — see `fabric-ontology` for modelling it, binding it to data, and its semantic enrichment, which is what makes an ontology-grounded agent answer well. Three data-agent-side behaviours belong here rather than there: an ontology source is still **preview**, the agent's first few queries after creation can fail while it initializes (wait and retry), and a **known issue** stops the agent working with an ontology that uses semantic models for binding. The old aggregation workaround, adding `Support group by in GQL` to the agent instructions, is moot: the agent consumes the ontology as context, then "generates a source-native SQL, KQL, or DAX query, runs the query against that source, and presents the result" (Learn, checked 2026-10-06).
 
-**GA since March 2026** for the core surface: create / configure / publish / share, built-in diagnostics, and lifecycle management via Git integration + deployment pipelines. Everything else named in this skill as *preview* — Creator Agent, MCP endpoint, M365 Copilot, Python SDK, Copilot Studio, Foundry, SPN auth — should be gated behind an explicit decision. **Two integration paths retired 2026-08-26**: the Azure OpenAI **Assistants API** (migrate to the MCP endpoint; within the SDK, to the Fabric OpenAI **Responses** client) and **Copilot in Power BI**. Full status breakdown and migration detail:
+**GA since March 2026** for the core surface: create / configure / publish / share and built-in diagnostics. Lifecycle management via Git integration and deployment pipelines is **preview** on its own Learn page, though Git's supported-items list gives Data Agents no label (2026-10-06). The **MCP endpoint** and Copilot Studio's **tool** path are GA too (checked 2026-10-06). Everything else named in this skill as *preview* — Creator Agent, M365 Copilot (Agent Store), Python SDK, Copilot Studio's connected-agent path, Foundry, SPN auth — should be gated behind an explicit decision. **Two integration paths retired 2026-08-26**: the Azure OpenAI **Assistants API** (migrate to the MCP endpoint; within the SDK, to the Fabric OpenAI **Responses** client) and **Copilot in Power BI**. Full status breakdown and migration detail:
 [references/status-and-retirements.md](references/status-and-retirements.md).
 
 ## When you use this vs. Semantic Model AI Instructions
@@ -37,9 +37,10 @@ The identity model and the token scope both change with the surface — mixing t
 | Surface | Identity | Token scope |
 |---|---|---|
 | **In-product chat** (GA) | Signed-in Entra user | none — Fabric brokers it |
-| **MCP server endpoint** (preview) | User **or** service principal | `https://api.fabric.microsoft.com/.default` |
+| **MCP server endpoint** (GA) | User **or** service principal | `https://api.fabric.microsoft.com/.default` |
 | **Published query endpoint, SPN** (preview) | Service principal, client-credentials | `https://analysis.windows.net/powerbi/api/.default` |
-| **Foundry / Copilot Studio** (preview) | End user, On-Behalf-Of — **SPN not supported** | n/a |
+| **Copilot Studio tool** (GA, *Fabric IQ Data MCP*) | **User** (whoever chats) or **Maker** (whoever set the agent up), chosen per data agent | n/a |
+| **Foundry / Copilot Studio connected agent** (preview) | End user, On-Behalf-Of — **SPN not supported** | n/a |
 
 The two `.default` scopes are **not** interchangeable; match the scope to the endpoint you are calling. SPN auth additionally needs the **Service principals can use Fabric APIs** tenant setting, workspace Member/Contributor, and **read on every attached source** — sharing the agent item alone is not enough. Managed identities and KQL-database sources are not supported under SPN. Full setup and caveats: [references/authentication.md](references/authentication.md).
 
@@ -60,19 +61,22 @@ Hard limits, and the caveat that catches people:
 - **Example queries are not supported on Power BI semantic model sources.** The UI won't stop you in all flows, but they have no effect — rely on the model's own AI instructions, TMDL metadata, and Verified Answers instead.
 - **Data source routing went GA in August 2026** and feeds on layers 2–4 plus schema metadata. A weak description ("contains sales data") makes the agent guess; always say what a source IS good for AND what it ISN'T.
 
+**Two more inputs, SQL sources on the preview runtime only** (both preview, 2026-10-06): **topics**, up to 1 million characters of instructions organized by topic, from which the agent retrieves the sections relevant to a question for NL2SQL; and **schema object descriptions**, business context on tables and columns. Both need the agent switched from the **standard runtime** (GA, the default) to the **preview runtime**, which carries the newest orchestration and query-generation tools before they graduate.
+
 One well-chosen example query can outperform paragraphs of prose instructions. Microsoft's recommended markdown structure for each layer, with worked examples: [references/configuration-layers.md](references/configuration-layers.md). A complete end-to-end configuration for one agent: [assets/example-retail-agent.md](assets/example-retail-agent.md).
 
 To author the layers conversationally rather than by hand, the **Creator Agent** ("Build agent with AI", preview) generates and validates all four — but only on **SQL and Eventhouse sources**, and it refuses to run if any unsupported source is attached: [references/creator-agent.md](references/creator-agent.md).
 
 ## Consumption surfaces
 
-Beyond in-product chat (GA), every surviving surface is preview:
+Beyond in-product chat (GA), the MCP endpoint and Copilot Studio's tool path are GA; every other surviving surface is preview:
 
 | Surface | Notes |
 |---|---|
-| **M365 Copilot (Agent Store)** | **Publish to Agent Store** at publish time. Needs F2+/P1+, M365 Copilot licences, and the **cross-geo processing and storing for AI** tenant settings |
-| **MCP server endpoint** | The replacement for the retired Assistants API. Exactly **one** MCP tool per agent |
-| **Copilot Studio / Azure AI Foundry** | On-Behalf-Of passthrough. Foundry now connects through MCP |
+| **M365 Copilot (Agent Store)** (preview) | **Publish to Agent Store** at publish time. Needs F2+/P1+, M365 Copilot licences, and the **cross-geo processing and storing for AI** tenant settings. Answering from Power BI content in M365 Copilot Chat is GA, but a data agent answers there only through an explicitly published Microsoft 365 agent |
+| **MCP server endpoint** (GA) | The replacement for the retired Assistants API. Exactly **one** MCP tool per agent. A long-running question returns an MCP task (`tasks/get`, `tasks/cancel`) to clients that support the `io.modelcontextprotocol/tasks` extension; other clients see no change |
+| **Copilot Studio tool** (GA) | Add **Fabric IQ Data MCP** to a Copilot Studio agent on the GitHub Copilot harness, pick each published data agent, and set its auth mode, User or Maker |
+| **Copilot Studio connected agent / Azure AI Foundry** (preview) | On-Behalf-Of passthrough. Foundry now connects through MCP |
 | ~~Copilot in Power BI~~ | **Retired 2026-08-26** — the Learn page still reads as preview; trust the date, not the page |
 
 MCP endpoint shape (streamable HTTP):
@@ -112,9 +116,10 @@ The positive-form counterpart — the authoring loop, regression question banks,
 Restating the caps from above: **read-only**, **5 data sources** per agent, **100 example queries** per source, **none on semantic model sources**. Beyond those:
 
 - **Structured data only**: no `.pdf`, `.docx`, `.txt`. For lakehouse sources, only tables are queried — standalone files under `Files/` are not read unless exposed as tables.
-- **Response row/column cap**: agent responses are capped at 25 rows and 25 columns to keep chat output concise. Previous chat history can influence the cap on follow-ups — start a new chat if you need a clean context.
+- **Response row/column cap**: agent responses are capped at 25 rows and 25 columns to keep chat output concise. Previous chat history can influence the cap on follow-ups — start a new chat if you need a clean context. What's New announces a 1,000-row preview, but its link lands on the visuals page and the concept page still says 25: treat 1,000 as unconfirmed (2026-10-06).
+- **Visuals** (GA): answers come with charts by default, steered or switched off through agent instructions. A chart takes at most **200 rows** (the rest are truncated), its styling is fixed, and it renders only in Fabric's own data agent experience — not the SDK, M365 Copilot, Teams or Foundry.
 - **English only**: no current non-English language support.
-- **LLM is fixed**: you can't change the underlying LLM.
+- **LLM is fixed**: you can't change the underlying LLM. The runtime selector (standard or preview) changes the orchestration and query-generation tools, not the model: model upgrades land on both runtimes alike.
 - **Same-region requirement**: a data source's workspace capacity must be in the same region as the data agent's workspace capacity. Cross-region queries fail.
 - **Conversation history may not persist** across service updates, infrastructure changes, or model upgrades.
 - **Purview-sensitive data**: responses may be truncated or blocked if Purview DLP or access restriction policies apply.

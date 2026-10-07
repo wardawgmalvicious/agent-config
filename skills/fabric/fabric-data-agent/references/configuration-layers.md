@@ -91,7 +91,7 @@ B2B warehouse. Data is refreshed nightly; expect a 24-hour lag.
   never through a raw string in `sales_fact`.
 ```
 
-For a semantic model data source, most of this content already lives in the model's AI instructions and TMDL metadata. Keep the data-source-level instructions here lean to avoid duplication.
+For a semantic model data source this layer doesn't exist: "unlike other data sources, data agent doesn't support data source instructions or descriptions for semantic models" (Learn, 2026-10-06). Put that content in the model's AI instructions and TMDL metadata instead.
 
 ## 3. Data source descriptions
 
