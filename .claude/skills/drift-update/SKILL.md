@@ -244,6 +244,14 @@ typos while you're in there": the request supplies neither the evidence
 nor the verification step. List them as adjacent findings in the closing
 report, where they can be briefed or fixed outside the run.
 
+**Text this run wrote is not adjacent.** When a later brief, or a later
+verification step, makes text an earlier brief wrote this run false,
+correct it before the run ends, and record it under **Deviations** in
+the log of the brief that caught it; the earlier log stays as written,
+true when stamped. In the 2026-10-06 `fabric-iq-ontology` pass, brief
+09 explained in §1 what brief 08 had just written that nothing
+explained (2026-10-07).
+
 Equally, **do not re-open the brief's reasoning.** If the brief looks wrong,
 stop the run and say so in chat rather than improving it in passing — the same
 rule `/drift-handoff` follows when transcribing.
@@ -427,7 +435,7 @@ next source's briefs. Both are separate, deliberate invocations.
 - **A pass runs in its own worktree** (step 2) and lands from the main
   checkout (step 5).
 - **The brief set is the scope.** No unbriefed edits, no adjacent fixes, no
-  re-opened reasoning.
+  re-opened reasoning. Text this run wrote is in scope (4.3).
 - **Kind decides.** Decision and investigation briefs are escalated, never
   executed — and anything a run leaves for later gets a `**Needs**:` line.
 - **Stale splits two ways, and neither is improvising.** A missing quoted
