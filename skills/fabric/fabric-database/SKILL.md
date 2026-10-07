@@ -19,7 +19,7 @@ Fabric SQL Database is an Azure SQL Database hosted within a Fabric workspace. I
 | Engine | Distributed Synapse DW | Azure SQL Database |
 | `nvarchar`, `datetime`, `money` | Not supported | Fully supported |
 | Triggers | Not supported | Fully supported |
-| MERGE | Preview only | Fully supported |
+| MERGE | Supported (GA) | Fully supported |
 | ALTER COLUMN | Not supported | Fully supported |
 | Recursive CTEs | Not supported | Fully supported |
 | `FOR XML` | Not supported | Fully supported |
@@ -27,6 +27,7 @@ Fabric SQL Database is an Azure SQL Database hosted within a Fabric workspace. I
 | `CREATE USER` | Not supported | Fully supported |
 | Temporal tables | Not supported | Fully supported |
 | Full-text search | Not supported | Fully supported |
+| Vector type, index and search | Not supported | GA; an index needs at least 100 rows with non-`NULL` vectors |
 
 ## Fabric-Specific Context
 
