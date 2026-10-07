@@ -49,8 +49,11 @@ session. Before 2.1.257 `bypassPermissions` took effect from any file
 
 The dividing line is **not** how often you use a server. It is whether a
 session that has nothing to do with that workload should still pay for
-it: every user-scope server loads its whole tool surface into every
-session on the machine, including ones where it cannot fire.
+it: every user-scope server is in every session on the machine,
+including ones where it cannot fire. With tool search on, the default,
+that is its tool names and instructions; `alwaysLoad: true` loads its
+whole tool surface at session start (MCP docs, 2026-10-07). Deferral
+cuts the cost, not the binding, so it moves no server to user scope.
 
 - **User scope** — answers questions about your work in general and is
   bound to nothing: docs lookup. Useful in any repo and in a scratch

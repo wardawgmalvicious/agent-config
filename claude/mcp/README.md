@@ -15,7 +15,17 @@ VS Code reads a workspace `.mcp.json` too, beside its own `.vscode/mcp.json`, wh
 
 ## What belongs at which scope
 
-The dividing line is **not** how often you use a server; it is whether a session that has nothing to do with that workload should still pay for it. Every user-scope server loads its whole tool surface into every session on the machine, including sessions in repos where it can do nothing useful.
+The dividing line is **not** how often you use a server; it is whether a
+session that has nothing to do with that workload should still pay for
+it. Every user-scope server is in every session on the machine,
+including sessions in repos where it can do nothing useful. With tool
+search on, the default, each session pays for the server's tool names
+and instructions, and a tool's definition loads only when a search finds
+it; `alwaysLoad: true` on the server loads its whole tool surface at
+session start instead (MCP docs § "Exempt a server from deferral", read
+2026-10-07). **Deferral is a lever on that cost, not on scope**: a
+deferred server is still bound to its workspace or tenant, so it moves
+no server to user scope.
 
 - **User scope** — servers bound to nothing: no workspace, no account, no tenant. Docs lookup is the case that qualifies — useful in a Fabric repo, a config repo, and a scratch directory alike, and answering as nobody in particular.
 - **Project scope** — servers bound to a workload or an identity: anything needing a workspace ID, a database, a connection string, or a running desktop application, and anything that acts as a GitHub account or an Azure tenant. `.mcp.json` in the repo that has those things.
