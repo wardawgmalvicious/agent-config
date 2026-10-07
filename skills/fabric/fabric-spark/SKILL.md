@@ -109,7 +109,7 @@ One default lakehouse per notebook. Additional lakehouses are reachable via 3-pa
 `POST /v1/workspaces/{ws}/items/{itemId}/jobs/instances?jobType=RunNotebook` (see fabric-rest-api skill for the full jobType table).
 
 - **`defaultLakehouse` requires both `id` AND `name`** in the execution config. Supplying only `id` returns 400 — common cause of "DefaultLakehouse: missing name" errors.
-- **Pool selection** via `executionData.configuration`: `useStarterPool: true` (dev/shared), `useWorkspacePool: true` (prod), or a custom pool name (high-memory/GPU). Starter pool falls back when the workspace pool is at capacity.
+- **Pool selection** via `executionData.configuration`: `useStarterPool: true` (dev/shared), `useWorkspacePool: true` (prod), or a custom pool name (high-memory/GPU). Starter pool falls back when the workspace pool is at capacity. **Custom live pools** (GA, September 2026) are a fourth option: pre-warmed clusters with ~5-second starts once hydrated, kept warm on a required schedule with an attached environment. They serve **notebooks only** — interactive, scheduled and pipeline-triggered — never Spark job definitions; they need a paid capacity, not a trial; and they're configured **in the portal only**, not through the Environment APIs or CI/CD. When every warm cluster is busy, a session falls back to on-demand provisioning. Members can manage them once an admin turns on *Customize compute configuration for items*; What's New lists delegated management as preview.
 - **Job states**: `NotStarted → Running → Completed | Failed | Cancelled`. Poll `GET {Location}` from the 202 response, or `GET .../jobs/instances/{jobInstanceId}` if you captured the ID.
 - **Never retry POST after a network/timeout error.** Query `GET .../jobs/instances` filtered to the last 5 minutes first; if a recent run exists, monitor that. Retrying creates duplicate runs and burns CUs.
 - Job stuck in `NotStarted` longer than ~2 minutes usually means pool warm-up or capacity SKU contention, not a notebook bug.
@@ -152,6 +152,8 @@ Default format (omit `format` or set to `null`). Key parts:
 | `Libraries/PublicLibraries/environment.yml` | Conda / pip dependencies |
 | `Setting/Sparkcompute.yml` | Pool config: `driver_cores`, `driver_memory`, `executor_cores`, `executor_memory`, `dynamic_executor_allocation` (`min_executors` / `max_executors`), `runtime_version` |
 | `Libraries/CustomLibraries/<name>.{jar\|py\|whl\|tar.gz}` | Custom user uploads — JAR + Python + wheel + R archive all supported here (unlike SparkJobDefinition V2 `Main`/`Libs`) |
+
+A custom live pool attaches to an environment, but its configuration doesn't travel in these parts: Learn says live pools can't be managed via environment public APIs or CI/CD, so a deploy carries the environment and not its pool. Set the pool up in the portal in each workspace.
 
 ## Reference
 
