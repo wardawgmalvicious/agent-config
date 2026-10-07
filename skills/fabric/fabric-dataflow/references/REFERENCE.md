@@ -83,6 +83,11 @@ SharePoint files, Snowflake, PostgreSQL.
 - **Only tabular queries** can take a destination — functions and lists
   cannot.
 - **Lakehouse alone supports both files and tables.**
+- **Excel is a file format, not a destination.** A file-based
+  destination, such as SharePoint, writes delimited text or Excel: one
+  sheet as a table or a chart, one sheet per value of a partition
+  column, or an Advanced workbook built from navigation tables (Learn,
+  2026-10-06).
 - **KQL and Azure Data Explorer do not support `replace`** as an update
   method; most others support append and replace.
 - **Warehouse and Snowflake require fixed schema.**
@@ -101,16 +106,29 @@ SharePoint files, Snowflake, PostgreSQL.
 - **V-Order** has two separate controls — one on the destination, one on
   the staging Lakehouse under the Scale tab. Preview, default true,
   roughly 10% read improvement, recommended for Direct Lake.
+- **Optimized copy to Lakehouse** sits beside the staging V-Order
+  control (Options → Scale → Staged Data), GA since September 2026 and
+  **off by default**. It takes a faster write path for staged queries
+  that land in a Lakehouse destination, does nothing for any other
+  destination, and covers every qualifying query, with no per-query
+  override (Learn, 2026-10-06).
 - **Vacuum conflicts with incremental refresh** — turn vacuuming off
   when incremental refresh is in use. Default retention is seven days
   and going below that risks time-travel breakage.
 - **SQL analytics endpoint metadata sync** defaults true; disable it
   when a large delta-log backlog is inflating refresh times.
 
-### Snowflake destination (preview) limitations
+### Snowflake destination
 
-Dynamic schema unsupported; default destination only works for new
-tables; gateway unsupported, cloud only.
+GA. Update methods are Replace and Append; with Replace, a new table
+takes dynamic or fixed schema, while fixed schema or Append allows no
+automatic schema change. Managed (automatic) settings cover new tables,
+a Snowflake default destination included: add, rename or remove a
+column, republish, and the next refresh updates the destination schema
+with no remapping. Under manual dynamic schema, update the column
+mapping yourself before republishing. Through an on-premises data
+gateway, install the latest gateway version; older ones lack the
+connector changes Snowflake destinations need (Learn, 2026-10-06).
 
 ### Type support
 
@@ -209,9 +227,12 @@ and some bytes.
 
 ### Workspace monitoring
 
-Covers **CI/CD dataflows only**. Enabling *Log workspace activity*
-creates an eventhouse plus a read-only KQL database. Records land in
-`ItemJobEventLogs` with `ItemKind == "DataFlow"`.
+Covers **CI/CD dataflows only**. Workspace monitoring is managed through
+a **monitoring item**, created from Workspace settings → **Monitoring**,
+whose Eventhouse holds a read-only KQL database; the old *Log workspace
+activity* toggle, which created the eventhouse in the workspace itself,
+is now legacy (Learn, 2026-10-06). Records land in `ItemJobEventLogs`
+with `ItemKind == "DataFlow"`.
 
 Two job types: `Refresh` and `Publish`. **Each operation writes an
 `InProgress` record and a terminal `Completed` or `Failed` record sharing
