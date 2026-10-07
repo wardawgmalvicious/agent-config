@@ -262,3 +262,16 @@ re-read them on the page before quoting them in the README.
   own, the user's call that day, after auto mode refused this session's
   probe, a `claude -p` child held open while a script wrote the key, as
   creating an agent.
+- **Needs**: tenant, a session of its own — D-5's write-while-open probe
+  of `~/.claude.json`, after a backup, relaxing both passages only if
+  the key survives; and the adjacent finding, the 60-second first-byte
+  timer on an `http` server with no `timeout`, unmeasured against a
+  slow hosted Fabric call, which a connect does not exercise. D-4 is
+  done (2026-10-07, a session of its own, in a tenant the user picked):
+  `fabric-core`, probed alone on CLI 2.1.292 with `AZURE_CONFIG_DIR`
+  pinned and the template's helper, returned `✔ Connected` with no
+  `bareElicitationCapability` key, so the templates are unchanged and
+  the README's § "The DCR error is a credential failure" records the
+  version in `ff7aecc` (step 3: that probe), deployed on `main` at that
+  commit and diffing clean (step 6). The other hosted endpoints were not
+  re-probed.
