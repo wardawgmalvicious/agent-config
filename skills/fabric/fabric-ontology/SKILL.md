@@ -1,6 +1,6 @@
 ---
 name: fabric-ontology
-description: "Use for the Microsoft Fabric Ontology item (preview, Fabric IQ workload) — `<Name>.Ontology/` in a Git-synced repo, `.platform` type `Ontology`. Covers the definition layout (an empty `definition.json` envelope, `EntityTypes/{bigint-id}/definition.json` plus `DataBindings/{guid}.json`, `Documents`, `Overviews`, `ResourceLinks`, and `RelationshipTypes/{id}/` plus `Contextualizations`), generating an ontology from a semantic model and the Import / Direct Lake / DirectQuery support matrix whose Direct Lake bindings fail silently when the backing lakehouse workspace has inbound public access disabled, the data-binding rules (one static binding per entity type but many time-series ones, static before time-series, entity keys string/integer only, managed tables only, no OneLake security, no delta column mapping), the `Decimal`-returns-null trap and its `Double` remedy, semantic enrichment, and consuming an ontology from the five agent paths including its own MCP endpoint."
+description: "Use for the Microsoft Fabric Ontology item (preview, Fabric IQ workload) — `<Name>.Ontology/` in a Git-synced repo, `.platform` type `Ontology`. Covers the definition layout (an empty `definition.json` envelope, `EntityTypes/{bigint-id}/definition.json` plus `DataBindings/{guid}.json`, `Documents`, `Overviews`, `ResourceLinks`, and `RelationshipTypes/{id}/` plus `Contextualizations`), generating an ontology from semantic models, and the old experience's Import / Direct Lake / DirectQuery matrix whose Direct Lake bindings fail silently when the lakehouse workspace has inbound public access disabled, the data-binding rules (one static binding per entity type but many time-series ones, secondary sources joined on a common column, optional string/integer keys, managed tables only, no delta column mapping), the `Decimal`-returns-null trap and its `Double` remedy, semantic enrichment, and consuming an ontology through its built-in agent, other agents or its MCP endpoint."
 when_to_use: "Fires on any file under `*.Ontology/`. Owns the ontology item itself — its definition files, generation, data binding, enrichment. Defers graph mechanics and GQL to fabric-graph (ontology is built on that item), agent configuration to fabric-data-agent and fabric-operations-agent (ontology is one source among theirs), and semantic-model authoring to fabric-tmdl. Preview workload: claims here are dated, and the item is not the Fabric IQ Plan item."
 paths:
   - "**/*.Ontology/**"
@@ -28,11 +28,20 @@ relying on a limit; this surface moves.
 
 **Not here, deliberately.** The ontology graph is *provided by* [Graph in
 Microsoft Fabric](https://learn.microsoft.com/fabric/graph/overview) — a
-separate `GraphModel` item. GQL, graph-type DDL and `executeQuery` belong
-to `fabric-graph`; this skill only carries the graph constraints that bite
+separate `GraphModel` item — and is **optional and opt-in**: every
+ontology has a schema graph, but its instance data is materialized only
+when you opt in through **Manage graph** (`how-to-use-ontology-graph`,
+checked 2026-10-07). GQL, graph-type DDL and `executeQuery` belong to
+`fabric-graph`; this skill only carries the graph constraints that bite
 at **ontology** time. Agent configuration belongs to `fabric-data-agent`
 (conversational, ≤5 sources) and `fabric-operations-agent` (autonomous,
 single-source) — ontology is one *source* for each of those.
+
+**Old experience (legacy, retires 2027-01-31):** the graph is built
+automatically, "a queryable instance graph built from your data bindings
+and relationship definitions" that "follows a scheduled data refresh"
+([old-experience overview](https://learn.microsoft.com/fabric/iq/ontology/old-experience/overview),
+checked 2026-10-07).
 
 ## The Git definition layout
 
@@ -134,16 +143,32 @@ old-experience data binding and the Eventhouse variant, are in
 
 ## Generating an ontology from a semantic model
 
-Generation creates the item, entity types from tables, static properties
-from columns, and relationship types from model relationships. **What it
-does not do** is bind time series data, review entity keys, or bind
-relationship types — all three are manual follow-ups, every time.
+Generation creates the item, entity types from tables, properties and
+their data bindings from columns, relationship types from model
+relationships, and **metrics** from the model's DAX measures. The
+overview adds calculated columns, and the source model stays "the owner
+of the DAX expression" (both pages checked 2026-10-07). **What it does
+not do** is bind time series data, review entity keys, bind
+relationship types, or rename entity types and relationships to
+friendly names — manual follow-ups, every time.
+
+Generating, and querying the model through the ontology, needs both
+**Read and Build** permissions on the semantic model, as binding one
+does. You **cannot generate from `My workspace`** — move the semantic
+model to a real workspace first (troubleshooting page, checked
+2026-10-07). A second semantic model joins an existing ontology **only
+through the ontology agent**, the built-in path under § "Consuming an
+ontology".
 
 **Old experience (legacy, retires 2027-01-31):** support depends
 entirely on the **semantic model's storage mode**. This matrix and the
 two paragraphs after it come from the old experience's generation page;
 the new experience's (`how-to-generate-from-semantic-models`, checked
-2026-10-06) carries no storage-mode matrix.
+2026-10-07) carries no storage-mode matrix. The troubleshooting page,
+checked the same day, still blames Import mode and disabled inbound
+public access for a generated ontology with no data bindings, linking
+that row to the old page, so whether the failure holds in the new
+experience is unverified.
 
 | | Import | Direct Lake | DirectQuery |
 | --- | --- | --- | --- |
@@ -162,17 +187,17 @@ condition: they generate only where a **primary key is identified**.
 So an Import-mode model generates a correct-looking *schema* and nothing
 queryable, by design. Check the mode before blaming the data.
 
-You also **cannot generate from `My workspace`** — move the semantic
-model to a real workspace first.
-
 ## The constraints that produce silent or confusing failures
 
 - **Managed lakehouse tables only.** External tables that merely *appear*
   in a lakehouse are not supported, and the symptom is "entity type
   details shows no data" rather than an error at binding time.
-- **No OneLake security on the source lakehouse.** A lakehouse with it
-  enabled does not appear in the data-source picker at all — it looks
-  like a permissions problem and is not.
+- **OneLake security is enforced, not excluded.** Authoring and querying
+  "respect access to bound data, including OneLake security" and
+  source-enforced RLS, OLS and CLS (overview, checked 2026-10-07). The
+  old rule that a lakehouse with OneLake security enabled cannot be a
+  binding source was withdrawn in September 2026, and neither
+  experience's binding page carries it.
 - **No delta column mapping.** It is enabled *automatically* when column
   names contain `,` `;` `{}` `()` `\n` `\t` `=` **or a space**, and
   automatically on the delta tables backing **import-mode** semantic
@@ -182,9 +207,23 @@ model to a real workspace first.
   types go missing from a generated ontology.
 - **Renaming a source table after binding breaks it.** Bindings carry
   `sourceTableName` as a string.
-- **Refresh is manual.** New rows upstream are invisible until the graph
-  model is refreshed; a refresh *schedule* on the child Graph item is
-  what shows up as capacity usage.
+- **Upstream changes need a refresh.** A schema change re-ingests all
+  bound data, but new, updated or deleted upstream rows leave a
+  materialized graph stale until an ingestion runs: ask the ontology
+  agent to update the entity type, or *Refresh now* (or schedule) the
+  graph model in the workspace (`how-to-use-ontology-graph`, checked
+  2026-10-07).
+- **Three meters cost capacity** in the new experience: **Ontology
+  Discovery**, 1,000 CU-seconds per definition read, one about every 20
+  minutes included while the item is open, so close it when done; the
+  child Graph and Eventhouse items' usage at their own rates, graph
+  refreshes included; and dynamic **Ontology AI Reasoning** for the MCP
+  server and the ontology agent (`resources-capacity-usage`, checked
+  2026-10-07).
+
+  **Old experience (legacy, retires 2027-01-31):** its own capacity
+  page meters *Ontology Modeling* per definition-hour and AI by tokens,
+  and counts graph refreshes too.
 
 **Verify these at the lakehouse, not in TMDL.** A semantic model's TMDL
 `dataType` is not the delta column type and the TMDL table name is not
@@ -209,25 +248,47 @@ it is that lakehouse `decimal(p, s)` maps to **string**, not double.
 
 ## Binding data: the ordering and cardinality rules
 
+From the binding page, checked 2026-10-07:
+
+- **Seven source types bind**: eventhouse, KQL database, lakehouse,
+  mirrored database, semantic model, SQL database and warehouse. Binding
+  a **semantic model** needs both **Read and Build** permissions on it.
 - **One static binding per entity type.** You cannot union static data
-  from two sources into one entity type. Static sources must be
-  OneLake-backed.
+  from two sources into one entity type. The page's Limitations still
+  say "You must use OneLake-backed sources for static data", beside a
+  source list that includes semantic models, and do not reconcile the
+  two.
 - **Many time-series bindings per entity type**, from lakehouse *and*
   eventhouse sources together.
-- **Static first.** A time-series binding needs an existing statically
-  bound property to contextualize against, and the static value must
-  **exactly match** a column in the time-series data.
-- **Entity type keys are `string` or `integer` only.** One or more
-  columns, together unique.
+- **The first source is primary; each one added later is secondary**,
+  related to the primary on a common column picked from each table. A
+  column name present in both tables gets a **`_2`** suffix on the new
+  source's default property name. The page no longer states the old
+  static-first rule below, and does not say a time-series source can
+  bind without a static one.
+- **An entity type key is optional**, since the overview announces
+  keyless entity types; when one is defined, its properties are
+  `string` or `integer` only.
 - Time series data must be **columnar** — one row per timestamped
   observation.
+
+**Old experience (legacy, retires 2027-01-31):** static data comes from
+OneLake only and time series from OneLake or an eventhouse, bound in two
+steps. **Static first**: a time-series binding needs an existing
+statically bound property to contextualize against, and the static value
+must **exactly match** a column in the time-series data. The key is set
+while binding, with *Define entity type key*: one or more `string` or
+`integer` columns, together unique
+([old-experience binding page](https://learn.microsoft.com/fabric/iq/ontology/old-experience/how-to-bind-data),
+checked 2026-10-07).
 
 ## Semantic enrichment is what makes agents work
 
 Descriptions, synonyms, and key-value metadata on entity types and
-properties. It is not decoration: the documented example is a data agent
-that cannot answer "which ice cream shops sold the most frozen desserts?"
-until `Products` gains the synonym `frozen desserts`.
+properties. It is not decoration: Learn says it "improves agent answer
+correctness, especially for prompts that depend on contextual
+information like units of measurement, sensitivity levels, or business
+definitions" (`how-to-add-metadata`, checked 2026-10-07).
 
 Scope it honestly, because the docs do: enrichment helps the agent during
 **schema exploration and reasoning**, and **query generation does not use
@@ -235,9 +296,15 @@ the metadata directly**. Only entity types support synonyms — properties
 and relationship types get descriptions and key-value pairs only, and
 keys must be unique within each object.
 
+**Old experience (legacy, retires 2027-01-31):** "Data agent doesn't use
+the semantic enrichment fields"
+([old-experience enrichment page](https://learn.microsoft.com/fabric/iq/ontology/old-experience/how-to-add-semantic-enrichment),
+checked 2026-10-07).
+
 ## Consuming an ontology
 
-Five agent paths, detailed in [references/REFERENCE.md](references/REFERENCE.md):
+Six agent paths, detailed in [references/REFERENCE.md](references/REFERENCE.md):
+the built-in **ontology agent**, a chat that authors as well as consumes,
 Fabric **operations agent** (monitoring + actions), Fabric **data agent**
 (conversational Q&A), **Foundry IQ** agent, **Copilot Studio** agent, and
 **custom agents over the ontology MCP server**. One consumer is not an
@@ -256,7 +323,8 @@ Both IDs come out of the portal URL
 shape differs from the data agent's endpoint
 (`/v1/mcp/workspaces/{ws}/dataagents/{id}/agent`) — `dataPlane`, `items`,
 and a trailing `ontologyEndpoint`. It needs **F2+ capacity** and the
-*Ontology item (preview)* tenant setting.
+tenant settings *Users can create ontology (preview) items* and *Users
+can create Fabric items*.
 
 One known agent behaviour worth carrying: a data agent's first few
 queries after creation can fail while it initializes (wait, retry). The
@@ -268,8 +336,8 @@ query against that source, and presents the result" (Learn, checked
 
 ## Before you start: tenant settings
 
-Creating the item at all requires the **Ontology item (preview)** tenant
-setting, and a new-experience item also requires **Users can create
-Fabric items**. Failure to create a new ontology is *most commonly* one
-of these and not anything about your data. Data agent and operations agent each need their
-own settings on top.
+Creating the item at all requires the **Users can create ontology
+(preview) items** tenant setting, and a new-experience item also requires
+**Users can create Fabric items**. Failure to create a new ontology is
+*most commonly* one of these and not anything about your data. Data agent
+and operations agent each need their own settings on top.
