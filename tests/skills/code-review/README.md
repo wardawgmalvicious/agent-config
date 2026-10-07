@@ -35,7 +35,8 @@ tests/skills/code-review/
     │   └── sparksql_fixture.sql       (path-discriminated)
     ├── pipeline/
     │   └── pipeline_fixture.json      (path-discriminated)
-    ├── tmdl_fixture.tmdl
+    ├── Fixture.SemanticModel/definition/tables/
+    │   └── tmdl_fixture.tmdl          (path-discriminated)
     ├── dax_fixture.dax
     └── kql_fixture.kql
 ```
@@ -44,7 +45,11 @@ tests/skills/code-review/
 globs in `~/.claude/rules/coding-sparksql.md` and
 `~/.claude/rules/coding-expressions.md` match on these path segments.
 The expressions rule covers all WDL contexts (Fabric pipelines,
-ADF/Synapse, Logic Apps, Power Automate), not just Fabric. If the
+ADF/Synapse, Logic Apps, Power Automate), not just Fabric. Since
+2026-10-06 `coding-tmdl.md` and `coding-dax.md` match `.tmdl` only
+inside a `*.SemanticModel` folder, so the TMDL fixture lives in one; it
+also pulls `fabric-git-serialization`, `fabric-tmdl` and
+`fabric-tmdl-api`, which glob that folder. If the
 T-SQL rule uses a discriminated glob (e.g. `**/warehouse/**/*.sql`),
 move `tsql_fixture.sql` under a matching subdirectory accordingly.
 

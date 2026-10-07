@@ -1,14 +1,16 @@
 ---
 paths:
-  - "**/*.tmdl"
+  - "**/*.SemanticModel/**/*.tmdl"
   - "**/definition/**/model.bim"
 ---
 
 # TMDL Coding Conventions
 
-Applies to TMDL (Tabular Model Definition Language) files in
-Fabric Semantic Models, Power BI Project (PBIP) format, and
-Tabular Editor TMDL output.
+Applies to TMDL (Tabular Model Definition Language) files inside a
+`*.SemanticModel` folder: Fabric Semantic Models, Power BI Project
+(PBIP) format, and Tabular Editor TMDL output saved into one. A
+`.tmdl` file elsewhere, such as an ontology's parts, doesn't load this
+rule (2026-10-06).
 
 If a project-scope `.claude/rules/coding-tmdl.md` exists, that file
 supersedes this one.

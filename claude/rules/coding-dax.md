@@ -1,7 +1,7 @@
 ---
 paths:
   - "**/*.dax"
-  - "**/*.tmdl"
+  - "**/*.SemanticModel/**/*.tmdl"
   - "**/*.bim"
 ---
 

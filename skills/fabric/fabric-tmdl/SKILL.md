@@ -2,7 +2,6 @@
 name: fabric-tmdl
 description: TMDL (Tabular Model Definition Language) authoring rules for Fabric and Power BI semantic models. Use when editing .tmdl files, adding measures or columns to a semantic model, defining relationships or calculation groups, working in a PBIP definition/ folder, configuring Direct Lake partitions, or debugging TMDL validation errors. Covers syntax (tabs not spaces, /// descriptions, single-quoting names), DAX measure patterns, row-level security roles, calendar groups, and common gotchas.
 paths:
-  - "**/*.tmdl"
   - "**/*.SemanticModel/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'

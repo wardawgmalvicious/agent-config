@@ -238,7 +238,7 @@ null safety ✓ dependency conditions ✓.
 
 ---
 
-## tmdl_fixture.tmdl
+## Fixture.SemanticModel/definition/tables/tmdl_fixture.tmdl
 
 TMDL identifier-with-display-alias pattern + format-string discipline
 fixture.

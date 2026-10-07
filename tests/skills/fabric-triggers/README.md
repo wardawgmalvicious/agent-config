@@ -78,6 +78,8 @@ tests/skills/fabric-triggers/fixtures/
 │                                   EntityTypes/<id>/definition.json,
 │                                   EntityTypes/<id>/DataBindings/<guid>.json,
 │                                   RelationshipTypes/<id>/definition.json
+├── SampleOntTmdl.Ontology/         .platform, database.tmdl
+│                                   (TMDL layout from Learn — see below)
 ├── SampleRX.Reflex/                .platform, ReflexEntities.json
 │                                   (ReflexEntities.json is the two bytes [])
 ├── SampleAct.Activator/            .platform
@@ -157,7 +159,7 @@ strings, so the allowlist cannot catch a real one that lands here.
 
 ### Fixtures built on an unverified shape
 
-One, as of 2026-09-12: **`SampleAct.Activator/`**. `fabric-activator`
+Two, as of 2026-10-06. The first is **`SampleAct.Activator/`**. `fabric-activator`
 globs `**/*.Reflex/**` and `**/*.Activator/**`, and only the first arm is
 observed. The second is defensive against the portal name ever being used
 for a folder, and no export produces one, so the fixture exists to keep
@@ -165,6 +167,15 @@ that arm from being asserted solely by the glob that defines it — it is
 the control that makes dropping the arm visible, not evidence that Fabric
 writes `.Activator` directories. Its `.platform` says so in its own
 `description`.
+
+The second is **`SampleOntTmdl.Ontology/`**, added 2026-10-06. Its two
+files follow Learn's ontology definition page for the new experience,
+flat `.tmdl` parts beside `.platform`, `database.tmdl` among them. No
+export exists on this machine, so the layout and the `.Ontology` suffix
+are the page's and `SampleOnt`'s, not observed. It pins the `**/*.tmdl`
+narrowing of that date: an ontology's `.tmdl` part must load
+`fabric-ontology` and no semantic-model guidance (assertion 10 in
+[expected_activations.md](expected_activations.md)).
 
 Three others were built this way until 2026-08-31: their folder names
 came from their own skills' claims, so the fixture could only prove that

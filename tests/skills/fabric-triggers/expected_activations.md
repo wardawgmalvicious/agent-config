@@ -15,10 +15,11 @@ Shapes are modelled on a production Fabric Git-synced repo — *the
 reference repo* below — except `GraphModel`, `SQLDatabase` and
 `DataAgent`, which are modelled on the public Git-synced exports pinned
 in the README. `SampleESS.EventSchemaSet/` is modelled on a real item in
-a sandbox workspace, bytes included — see assertion 9. One fixture rests
-on an unverified shape and says so:
-`SampleAct.Activator/`, whose folder suffix no export produces — see
-assertion 7.
+a sandbox workspace, bytes included — see assertion 9. Two fixtures rest
+on unverified shapes and say so: `SampleAct.Activator/`, whose folder
+suffix no export produces — see assertion 7 — and
+`SampleOntTmdl.Ontology/`, whose TMDL layout comes from Learn alone —
+see assertion 10.
 
 **This table lists skills only.** Rules in `claude/rules/` have `paths:`
 globs of their own and load on the same files — `fabric-git-serialization`
@@ -99,6 +100,8 @@ an apparent one.
 | `SampleOnt.Ontology/EntityTypes/8813598896083/definition.json` | `fabric-ontology` | 2,746 |
 | `…/DataBindings/66253a71-c26f-4c9d-877f-3af5632a4be2.json` | `fabric-ontology` | 2,746 |
 | `SampleOnt.Ontology/RelationshipTypes/3110733855942077719/definition.json` | `fabric-ontology` | 2,746 |
+| `SampleOntTmdl.Ontology/.platform` | `fabric-ontology` | 2,746 |
+| `SampleOntTmdl.Ontology/database.tmdl` | `fabric-ontology` | 2,746 |
 | `SampleRX.Reflex/.platform` | `fabric-activator` | 5,205 |
 | `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
 | `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
@@ -250,8 +253,8 @@ Both are real; the pairing is not. `endDateTime` is mandatory in both,
 which is why the `Weekly` block carries the far-future `9999-12-31`
 workaround and the `Cron` block carries a deliberately expired one.
 
-**7. `SampleAct.Activator/` is synthetic, and is the only fixture here
-that is.** `fabric-activator` globs two arms, and only one is observed.
+**7. `SampleAct.Activator/` is synthetic, and no page or export backs
+its suffix.** `fabric-activator` globs two arms, and only one is observed.
 `.Reflex` is the suffix Fabric writes — the Git-integration docs show
 only that form, and so did the one real item measured 2026-09-12, whose
 `.platform` carries `metadata.type: "Reflex"`; the portal name reaches
@@ -324,6 +327,17 @@ reaches it only through `**/*.EventSchemaSet/**`, and reached no rule at
 all before. The real-path run cannot witness that arm, because the rule
 is already active from the first `.platform` the probe reads; the static
 rules pass is the check.
+
+**10. An ontology's `.tmdl` part activates `fabric-ontology` and nothing
+else.** The new ontology experience serializes as flat `.tmdl` parts,
+which the bare `**/*.tmdl` that `fabric-tmdl`, `coding-tmdl` and
+`coding-dax` carried until 2026-10-06 would have matched. Since then
+`fabric-tmdl` globs `**/*.SemanticModel/**` alone and the two rules
+`**/*.SemanticModel/**/*.tmdl` (fabric audit brief 20, D-1). A second
+skill on `SampleOntTmdl.Ontology/database.tmdl`, or either rule in the
+rules pass, means a bare `**/*.tmdl` is back. The fixture follows
+Learn's ontology definition page, with no export behind it; the README's
+unverified-shape section says so.
 
 ## Rules load here too
 
