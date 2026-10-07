@@ -83,7 +83,7 @@ Copilot takes only `CLAUDE.md` from `~/.claude`, where a profile turns on
 
 A skill fires on its `description` and `when_to_use` (its whole model
 trigger), on `/<name>`, or on a `paths:` glob, which hides it from the
-startup listing until a Read or Write matches it: until then `/<name>` is
+listing until a Read, Write or Edit matches it: until then `/<name>` is
 `Unknown command` (2026-09-02). A rule carries only `paths:` and loads the
 same way. A hook edit is not live until `link-claude.ps1` runs; the old copy
 runs on, silently. Test `identity-guard` with `tests/hooks/identity-guard/`
@@ -187,7 +187,7 @@ The two `tests/skills/*-triggers/expected_activations.md` assert every
 conditional skill. Never restate their total: read it there, or run
 `grep -l '^paths:' skills/*/*/SKILL.md | wc -l`. The static check,
 `test-activation.ps1 -Set fabric -StaticOnly` then `-Set pbip`, holds the
-tables to the globs. Activation is keyed to Read and Write, not `cat` or
+tables to the globs. Activation keys on Read, Write and Edit, not `cat` or
 `Grep`: a probe pins `--allowedTools Read --disallowedTools Bash …`, and the
 transcript is the witness (`.claude/rules/activation-testing.md`).
 

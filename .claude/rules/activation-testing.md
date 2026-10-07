@@ -11,9 +11,9 @@ paths:
 
 # Activation testing, and what can witness an activation
 
-- Activation is keyed to the `Read` and `Write` tools, not to the file: a
-  `cat` through Bash, or a `Grep`, loads no skill and no rule, and auto
-  mode, which every session on this machine starts in, prefers `cat`.
+- Activation is keyed to the `Read`, `Write` and `Edit` tools, not to the
+  file: a `cat` through Bash, or a `Grep`, loads no skill and no rule, and
+  auto mode, which every session on this machine starts in, prefers `cat`.
   `--allowedTools` alone removes nothing, so a probe measuring activation
   pins `--allowedTools Read --disallowedTools Bash …` and asserts each
   `tool_use` really was a `Read` (2026-09-01). A `Write` that creates a
@@ -21,6 +21,11 @@ paths:
   its result (2026-10-06, 2.1.291). On Windows the Bash deny turns off
   PowerShell too, so the probe has no shell tool at all, which is what it
   wants (changelog, 2.1.287).
+- An `Edit` activates as a `Write` does once it succeeds, but one that
+  changes an existing file succeeds only after a `Read` of it, which
+  activates first. A refused `Edit`, "File has not been read yet", still
+  fires a skill, though no rule or nested `CLAUDE.md`: an Edit-only probe
+  of an existing file shows a skill delta alone (2026-10-07, 2.1.291).
 - `--tools` keeps only the tools it names, and a session without `Skill`
   gets no skill listing at all, initial or delta: a probe measuring a
   skill names `Skill` in `--tools` (2026-10-06, 2.1.291).

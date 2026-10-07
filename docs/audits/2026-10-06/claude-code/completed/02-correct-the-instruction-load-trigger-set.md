@@ -202,3 +202,16 @@ brief was being written, landed as `6751e6e`, and not re-run here.
   (step 7). Step 6 is done: `link-claude.ps1` ran on `main` at
   `4d473d7`, and both deployed files match the repo (`diff`,
   2026-10-07).
+- **Closed**: 2026-10-07 — by the cold probe session that also ran brief
+  04's D-1. D-2's six haiku `claude -p` arms on 2.1.291 are cited in the
+  root ledger's 2026-10-07 entry under § "Validating a change" (step 7):
+  an Edit fires a skill's `paths:`, even one refused for want of a
+  `Read`, and loads a rule or nested `CLAUDE.md` only once it applies.
+  Edit is now named in root's § "How the pieces trigger" and
+  § "Validating a change" and in `.claude/rules/activation-testing.md`,
+  which also gained the refused-Edit split. The **Fix**'s design cannot
+  apply an Edit, since a file present before the session starts is
+  refused until it is Read, so two arms had Edit create their file, and
+  the refusals answered the skill question themselves. Steps 3, 4 and 5
+  passed again, and step 1 returned the two artifacts accepted above,
+  unchanged.

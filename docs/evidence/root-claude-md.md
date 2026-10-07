@@ -815,6 +815,13 @@ but the load arrives with the Write's result, once the file exists. Root's
 "until a matching file is Read" became "until a Read or Write matches
 it". The probe is under § "Validating a change".
 
+**2026-10-07.** "until a Read or Write matches it" became "until a Read,
+Write or Edit matches it": an Edit fires a skill's `paths:`, even one the
+harness refuses, measured under § "Validating a change" that day for the
+2026-10-06 `claude-code` audit's brief 02. "startup listing" lost
+"startup" to keep the line; the startup listing is the one a conditional
+skill is withheld from, so the meaning holds.
+
 ## Working on this repo
 
 This repo's own operating procedure lives in `.claude/skills/` at
@@ -2152,6 +2159,38 @@ a Read, Write or Edit beneath it, though not one the session wrote or read
 itself. Every file measured sat inside the session's working directory.
 Once, in a warm session, Writes of files outside it that a user rule's
 globs matched loaded nothing; not isolated.
+
+**2026-10-07.** `Edit` activates too, split by outcome. No source said
+whether an Edit fires a skill's `paths:`, since the 2.1.288 changelog
+bullet names rules and nested files only (the 2026-10-06 `claude-code`
+audit's brief 02). Six haiku `claude -p` arms on 2.1.291, from the
+2026-10-06 set-up plus two pinned skills for that audit's brief 04, each
+ran with `--tools Edit,Skill` and `--permission-mode acceptEdits`, asked
+for one Edit with an empty `old_string`. A "present" file existed, empty,
+before its session began:
+
+| Arm | Edit | Result | Loaded after the result |
+| --- | --- | --- | --- |
+| G | `notes/g.probe`, present | refused | the skill, in a listing delta |
+| G2 | `notes/g2.probe`, present | refused | the skill, in a listing delta |
+| GC | `notes/gc.probe`, created | applied | the rule, and the skill in a listing delta |
+| H | `sub/h.txt`, present | refused | nothing |
+| HC | `sub/hc.txt`, created | applied | `sub/CLAUDE.md` |
+| I | `notes/i.txt`, present | refused | nothing |
+
+Each refusal read "File has not been read yet. Read it first before
+writing to it.", the empty file and empty `old_string` notwithstanding,
+so the brief's design, an Edit-only session against a file that exists
+before it starts, can never apply one. Given the `Read` it needs, that
+`Read` loads all three first and the Edit's own load would be a
+suppressed duplicate, so an applied Edit of an existing file went
+unmeasured, and has nothing left to load. The refusals split the
+triggers: a skill answers the attempt, a rule or nested `CLAUDE.md` the
+change, as the 2.1.288 bullet's "creates or changes" reads. Root's
+"Activation is keyed to Read and Write" became "Activation keys on Read,
+Write and Edit", and `activation-testing.md` gained the split.
+Transcripts `38193cd3` (G), `19c039d4` (G2), `1f548672` (GC), `9d9527b2`
+(H), `a0b7556b` (HC), `16e851f3` (I).
 
 ## Line endings
 
