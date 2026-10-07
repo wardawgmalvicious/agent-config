@@ -275,3 +275,21 @@ re-read them on the page before quoting them in the README.
   version in `ff7aecc` (step 3: that probe), deployed on `main` at that
   commit and diffing clean (step 6). The other hosted endpoints were not
   re-probed.
+- **Needs**: user, tenant, a session of its own — D-5's write-while-open
+  probe of `~/.claude.json`, in a session of its own; the remedy for
+  the one-minute cut below, a session the user starts with a `timeout`
+  on a scratch entry or `MCP_TIMEOUT=180000`, running the same 90-second
+  query, before the user decides whether the templates set `timeout`
+  (their call, 2026-10-07: measure first); and one read-only `fabric-iq`
+  tool call, which decides whether `powerbi-remote-mcp` leaves the
+  template (their call that day: a connect is not enough). The adjacent
+  finding is measured, by the D-4 session on 2026-10-07 on 2.1.292: with
+  no `timeout` set, a 90-second query to the bare `dataPlane/sqlEndpoint`
+  failed after about 67 seconds while a 45-second one succeeded, and the
+  endpoint answered the same call at 91 seconds outside Claude Code.
+  `5413488` records that in the timeout section and narrows its 27.8-hour
+  reasoning to stdio. The same session found the other three bare
+  endpoints and `fabric-iq` connecting, each alone, with no
+  `bareElicitationCapability` (`5413488`, `acbfd19`), and a shell
+  health check stopping at `Pending approval` (`e3df691`); all three
+  deployed on `main` and diffing clean (step 6).
