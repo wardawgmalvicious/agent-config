@@ -38,6 +38,13 @@ local scope — present in one repo instead of all of them. And VS Code
 uses a top-level **`servers`** key where Claude Code uses `mcpServers`,
 so a block copied between the two files parses fine and exposes nothing.
 
+**`permissions.defaultMode` set to `auto` or `bypassPermissions` counts
+only in user or managed settings.** Either value in a project's
+`.claude/settings.json` or `.claude/settings.local.json` is ignored: set
+it in `~/.claude/settings.json`, or pass `--permission-mode` for one
+session. Before 2.1.257 `bypassPermissions` took effect from any file
+(settings docs, read 2026-10-07).
+
 ## The MCP scope test
 
 The dividing line is **not** how often you use a server. It is whether a
