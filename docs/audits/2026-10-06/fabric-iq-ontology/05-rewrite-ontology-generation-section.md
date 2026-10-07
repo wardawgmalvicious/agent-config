@@ -151,3 +151,48 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 against both its successor and its `old-experience/` copy, each
 downloaded at pinned SHAs; the troubleshooting rows come from the same
 session's diff of that page.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: step 1 — `how-to-generate-from-semantic-models`
+  and `old-experience/concepts-generate` were fetched live this session
+  (2026-10-07), with `resources-troubleshooting` and the overview. Each
+  current claim traces to the new page, bar two the brief itself
+  sources to the overview (calculated columns; the model owning the
+  DAX) and `My workspace`, re-sourced to the troubleshooting page;
+  every legacy claim traces to the old page. Step 2: the only
+  `concepts-generate` hit is the `old-experience/` link. Step 3: the
+  additions are present, and the matrix sits under the legacy marker.
+  Step 4: the frontmatter lints. Step 5: the `description` changed;
+  `--stale` lists `fabric-ontology`, and the retest is owed. Step 6,
+  `pre-commit run --all-files`, runs once at the end of the pass.
+- **Deferred**: the `description` retest, owed once with briefs 03, 04
+  and 07.
+- **Deviations**: item 2 kept `fabric/04`'s legacy marking of the
+  matrix, as the constraint says the second to run reads the first's
+  result. Per that constraint's "say which page was checked", the
+  marker paragraph now also records that the troubleshooting page,
+  checked 2026-10-07, still blames Import mode and disabled inbound
+  public access for a generated ontology with no bindings, linking the
+  old page, so the failure is unverified for the new experience; its
+  "checked" date moved to 2026-10-07. Item 3 moved `My workspace` out
+  from under the legacy paragraphs, beside item 4's Read-and-Build and
+  multi-model sentences, so it no longer reads as legacy. Item 4 went
+  in `SKILL.md` only, since it names no file. Item 7's sentence became
+  a legacy paragraph. Item 8: the `description` now reads "generating
+  an ontology from semantic models, and the old experience's Import /
+  Direct Lake / DirectQuery matrix whose Direct Lake bindings fail
+  silently when the lakehouse workspace has inbound public access
+  disabled": 975 of 1,024 characters after. Brief 01's step 2, run
+  after brief 09, found item 6's manual list still calling the legacy
+  JSON part the way to bind relationship types, "(the
+  `Contextualizations` above)"; it now reads "(in the old experience,
+  the `Contextualizations` above)".
+- **Needs**: a fresh session — after this pass lands and `fabric/04`'s
+  last Needs line folds the TMDL layout into the `description`, the one
+  `/test-skill fabric-ontology` retest every `description` edit here
+  shares.

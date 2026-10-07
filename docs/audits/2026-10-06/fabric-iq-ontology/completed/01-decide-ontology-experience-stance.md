@@ -162,3 +162,10 @@ same day.
 - **Needs**: the rest of this pass — briefs 02–11, once the 2026-10-06
   `fabric` pass lands `fabric/04` and `fabric/07` on `main`. They
   apply this answer, and step 2 checks it.
+- **Closed**: 2026-10-07 — briefs 02–11 applied option 4 in one cold
+  `/drift-update` pass, and step 2 ran after brief 09. Every
+  old-experience fact in both files sits under a dated marker; the one
+  pointer left unmarked, "(the `Contextualizations` above)" in
+  REFERENCE §5, was marked then, as brief 05's log records. The
+  `description`'s definition-layout clause still names only the JSON
+  layout: that is `fabric/04`'s last Needs line, tracked there.

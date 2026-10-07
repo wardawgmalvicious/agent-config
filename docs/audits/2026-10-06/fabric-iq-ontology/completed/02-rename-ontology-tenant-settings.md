@@ -130,3 +130,23 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 `fabric-iq-ontology`, floor 2026-09-02. The base and head quotes come
 from files downloaded at pinned SHAs and diffed on disk in the audit
 session; the head page was also checked against live Learn there.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: steps 1–4 passed. No "Ontology item (preview)"
+  under `skills/` or `claude/`; both names at each of the five sites;
+  `claude/mcp/README.md:254` uses the same two names; the frontmatter
+  lints. Step 5, `pre-commit run --all-files`, runs once at the end of
+  the pass.
+- **Deferred**: none
+- **Deviations**: every target was matched by its quote, since
+  `fabric/04` had moved the line numbers. At site 2, § "Before you
+  start: tenant settings", `fabric/04` item 5 had already added *Users
+  can create Fabric items*, so per the sequencing note that site was
+  only renamed; the rename lengthened its first line, so the paragraph
+  was rewrapped to 76, a 91-character line in it included. The admin
+  path, optional per item 5, was not added.

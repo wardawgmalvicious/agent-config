@@ -169,3 +169,48 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 `how-to-add-metadata` fetched live through `microsoft-learn-mcp`; D-2's
 commit figures from the GitHub API; D-3's rows and D-4's listings from
 the on-disk diff and the directory listings at both pinned refs.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: step 1 — every hit points at an `old-experience/`
+  page on purpose: the D-2 legacy link and §8's old-experience lists.
+  Step 2: `resources-troubleshooting` was fetched live (2026-10-07) and
+  carries the three rows and the pointer. Step 3: `docs/iq/ontology/`
+  and `old-experience/` were listed on `main` with `get_file_contents`
+  the same day; every page §8 names is in one of them. Step 4: the
+  frontmatter lints. Step 5, `pre-commit run --all-files`, runs once at
+  the end of the pass.
+- **D-1**: §4 now cites `how-to-add-metadata`, fetched live; it carries
+  every §4 claim. The skill's term "semantic enrichment" was kept.
+- **D-2**: the open question was a lookup, and brief 01's log already
+  answers where an old-experience fact goes, naming this defect. Both
+  `how-to-add-metadata` and `old-experience/how-to-add-semantic-enrichment`,
+  fetched live, lack the example, so it was dropped and replaced by
+  the current page's own statement of what metadata improves.
+- **D-3**: the three rows went in before the data-agent rows, so those
+  stay last, and the known-issues pointer after the table. The
+  knock-on put the service-principal issue beside §3's MCP
+  prerequisites, sourced to `how-to-use-ontology-mcp-server`, fetched
+  live. Every existing §6 row was checked against the live page and
+  holds, so the source line now carries that date.
+- **D-4**: §8 was rewritten against the listing. It names what this
+  pass drilled, briefs 05–07 and this one, with the brief 01 and 03
+  lookups, and what it did not. `how-to-create-data-agent` and
+  `how-to-create-agent-copilot-studio` are listed as not drilled,
+  though `fabric/04` quoted single claims from Learn on 2026-10-06,
+  since a quote is not a drill. Brief 09 has not run, so §8 says only
+  that §1's schemas come from the REST pages, outside this doc set.
+- **Deferred**: an adjacent finding, not fixed. §6's note "the last
+  four are data-agent-side" sits under three data-agent rows, which
+  was so before this pass.
+- **Deviations**: D-2 also added a dated legacy line quoting the old
+  enrichment page, "Data agent doesn't use the semantic enrichment
+  fields", under brief 01's option 4: that page now says the opposite
+  of what the dropped example implied, and a reader with an old item
+  would otherwise expect the current page's agent benefit.
+- **Needs**: a fresh session — a one-word edit, by `/learn` or the
+  next brief to touch §6, that corrects "the last four" to three.

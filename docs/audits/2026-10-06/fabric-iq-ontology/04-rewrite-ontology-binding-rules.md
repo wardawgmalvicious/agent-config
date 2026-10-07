@@ -194,3 +194,37 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 `fabric-iq-ontology`, floor 2026-09-02, from both refs of the page
 downloaded at pinned SHAs and diffed on disk in the audit session. The
 overview and include quotes come from the same diff.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: step 1 — `how-to-bind-data` and
+  `old-experience/how-to-bind-data` were fetched live this session
+  (2026-10-07), with the overview for "keyless entity types"; each
+  rewritten claim traces to one of them, the Limitations quote
+  verbatim. Step 2: every hit matches the page or sits under the
+  legacy marker. Step 3: the frontmatter lints. Step 4: the
+  `description` changed, and `--stale` lists `fabric-ontology`
+  (`untested-behaviour`); the retest is owed, per brief 03's
+  sequencing note. Step 5, `pre-commit run --all-files`, runs once at
+  the end of the pass.
+- **Deferred**: the `description` retest, owed once with briefs 03, 05
+  and 07.
+- **Deviations**: the section now opens "From the binding page,
+  checked 2026-10-07", the skill's own convention for a section newer
+  than its 2026-09-02 header. Per brief 01's option 4, item 3's
+  static-first rule and the key-while-binding step moved to an **Old
+  experience (legacy, retires 2027-01-31):** paragraph sourced to the
+  old-experience page, and the primary-and-secondary bullet says the
+  new page neither states that rule nor lets a time-series source
+  bind without a static one, per the constraint. Item 7 replaced
+  "static before time-series, entity keys string/integer only" in the
+  `description` with "secondary sources joined on a common column,
+  optional string/integer keys": 974 of 1,024 characters after.
+- **Needs**: a fresh session — after this pass lands and `fabric/04`'s
+  last Needs line folds the TMDL layout into the `description`, the one
+  `/test-skill fabric-ontology` retest every `description` edit here
+  shares.

@@ -126,3 +126,33 @@ SHAs and diffed on disk in the audit session. The commit titles and
 file stats came from the GitHub API in the same session. The registry
 entry lists this exclusion among the claims "most likely to move", and
 it moved.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: the constraint's lookup first. Brief 01's answer
+  keeps old-experience facts, so
+  [old-experience/how-to-bind-data](https://learn.microsoft.com/fabric/iq/ontology/old-experience/how-to-bind-data)
+  was fetched live (2026-10-07): its prerequisite reads "They're
+  **managed** and don't have column mapping enabled" and its
+  Limitations carry no OneLake-security bullet, so the claim went to no
+  legacy marker. The overview's sentence was confirmed live the same
+  day. Step 1: every hit is the replacement bullet, which states the
+  exclusion as withdrawn. Step 2: the frontmatter lints. Step 3:
+  `--stale` lists `fabric-ontology` as `untested-behaviour`, a verdict
+  `skill-status.py` checks before `retest-routing`, so the Phase B it
+  owes covers this `description` edit too. Step 4,
+  `pre-commit run --all-files`, runs once at the end of the pass.
+- **Deferred**: the `description` retest, per the sequencing note
+  run once after briefs 04, 05 and 07 here land their edits to it.
+- **Deviations**: the bullet was replaced rather than only removed, as
+  item 2 allows. The replacement quotes the overview's sentence, and
+  adds the September 2026 withdrawal and that neither experience's
+  binding page carries the old rule, both checked above.
+- **Needs**: a fresh session — after this pass lands and `fabric/04`'s
+  last Needs line folds the TMDL layout into the `description`, the one
+  `/test-skill fabric-ontology` retest every `description` edit here
+  shares.

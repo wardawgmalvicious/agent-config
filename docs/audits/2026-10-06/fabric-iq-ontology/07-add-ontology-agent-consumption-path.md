@@ -135,3 +135,36 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 `fabric-iq-ontology`, floor 2026-09-02. Every quote above comes from
 the on-disk diff of the integration, overview and troubleshooting
 pages at pinned SHAs in the audit session.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: step 1 — the body's "Six agent paths" and
+  `REFERENCE.md` §3's heading each match a six-item list; the
+  `description` keeps no count; the other hits ("Seven source types",
+  "five more source types", §8's "five-part tutorial") count nothing
+  here. Step 2: `concepts-agent-integration` was fetched live
+  (2026-10-07) and the row is verbatim. Step 3: the frontmatter lints.
+  Step 4: `--stale` lists `fabric-ontology`; the retest is owed. Step 5,
+  `pre-commit run --all-files`, runs once at the end of the pass.
+- **Deferred**: the `description` retest that briefs 03, 04, 05 and
+  this one share; this is the last of them.
+- **Deviations**: at the staleness gate the quote's first line read
+  "Five agent paths", not "Five paths": `fabric/04` item 7 had
+  inserted "agent", the change this brief's constraint and sequencing
+  note anticipate, while its other three lines and the `description`
+  quote were verbatim, so the run went on. The count stays in the body
+  and `REFERENCE.md` §3's heading, each beside its list, and left the
+  `description`, which now reads "consuming an ontology through its
+  built-in agent, other agents or its MCP endpoint": 979 of 1,024
+  characters. Item 3's subsection, "The built-in ontology agent", sits
+  before "The MCP endpoint" and also carries the integration page's
+  summary of what the agent does; its limits are quoted from the
+  troubleshooting page, fetched live the same day.
+- **Needs**: a fresh session — after this pass lands and `fabric/04`'s
+  last Needs line folds the TMDL layout into the `description`, the one
+  `/test-skill fabric-ontology` retest every `description` edit here
+  shares.

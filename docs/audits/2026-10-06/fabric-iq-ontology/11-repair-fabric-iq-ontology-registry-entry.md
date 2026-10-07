@@ -166,3 +166,50 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 with a directory under `docs/audits/`. The directory listings at both
 refs, and the template and README lines, were read in the audit
 session. The REST page facts in D-3 are `fabric/04`'s.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**:
+  `.claude/skills/drift-audit/references/sources/fabric-iq-ontology.md`
+- **Verification**: step 1 — `docs/iq/ontology/`, `includes/` and
+  `old-experience/` were listed on `main` with `get_file_contents`
+  (2026-10-07), and all 17 names in `files` exist. Step 2: each repair
+  is present. Step 4: `.claude/skills/drift-audit/SKILL.md` is
+  untouched and lints. Step 5, `pre-commit run --all-files`, runs once
+  at the end of the pass. Step 3 is deferred, below.
+- **D-1**: `concepts-generate.md` became
+  `how-to-generate-from-semantic-models.md`; the four pages and two
+  includes the Cause table names joined; and, since brief 01's log
+  answers the open question for this defect by name (the skill keeps
+  old-experience facts), so did the five `old-experience/` pages the
+  skill cites, until 2027-01-31: 17 names, the pages REFERENCE §8 lists
+  as drilled plus the includes. Knock-ons: the entry now says to list
+  `includes/` and `old-experience/` for § 4a's blob-SHA narrowing, and
+  carries the raw-path price, `1 + 2 x 17` = 35 calls.
+- **D-2**: put to the user, who chose "strip every `#` fragment"
+  (2026-10-07); the field records the choice with its evidence.
+- **D-3**: a dated paragraph records the 2026-09-29 split and the
+  2027-01-31 retirement; the layout a sample settles now names both
+  formats; one sentence notes that three of the listed claims moved in
+  the window; the REST note points at both pages, checked 2026-10-07.
+  The retirement rule's substance stands, as brief 01's answer keeps
+  both experiences in the skill.
+- **D-4**: put to the user, who chose to add `claude/mcp/`
+  (2026-10-07).
+- **Deferred**: step 3, re-running
+  `/drift-audit --sources fabric-iq-ontology 2026-09-02` against the
+  amended entry, with `00-audit-report.md` as the known answer: the
+  registry cannot be exercised by the session that edited it. Also
+  § 4b's worked price, left alone because step 4 keeps `SKILL.md`
+  untouched: it gives this source 13 calls and the set ~36 of 60, and
+  with 17 names the source costs 35, putting the set near 58.
+- **Deviations**: D-1 added the two includes, which its fix ("the pages
+  the rewritten skill cites") does not name: its Cause table gives them
+  as the homes of the type table and the refresh wording, and a raw
+  fetch of a citing page returns only the include directive. The
+  re-derived price went in the entry rather than § 4b, per step 4.
+- **Needs**: the next `/drift-audit --sources fabric-iq-ontology` run —
+  step 3's re-run against the amended entry, which should also
+  re-derive § 4b's worked price for the registered set.

@@ -138,3 +138,35 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 troubleshooting quotes come from the on-disk diff at pinned SHAs. The
 two pages in the table were listed with their sizes and commit stats,
 but not fetched, which is why this brief starts with a lookup.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`
+- **Verification**: step 1 — both pages were fetched live in this
+  session (2026-10-07): `how-to-use-ontology-graph` and
+  `resources-capacity-usage`, with the overview and, for brief 01's
+  answer, `old-experience/overview` and
+  `old-experience/resources-capacity-usage`. Step 2: every hit agrees
+  with them, bar `REFERENCE.md` §8's undrilled list, which still names
+  `resources-capacity-usage` and the old refresh page; brief 08 D-4
+  rewrites §8 after this brief, per the sequencing note. Step 3: the
+  frontmatter lints. Step 4, `pre-commit run --all-files`, runs once at
+  the end of the pass.
+- **Deferred**: an adjacent finding, not fixed here. The graph page's
+  Limitations, in no section of the skill: an entity needs an entity
+  type key to be projected, only lakehouse and mirrored-database delta
+  tables project, entities bound to a semantic model or with several
+  backing tables are ineligible, and Binary and Variant become String.
+  The first qualifies brief 04's "An entity type key is optional".
+- **Deviations**: item 3 left `REFERENCE.md` §6's capacity row as it
+  was: the troubleshooting page, checked live, still says it, and the
+  capacity page meters graph usage as the child item's, which agrees.
+  Per brief 01's option 4, two dated legacy paragraphs were added, each
+  sourced to the old-experience page that states it: the old graph is
+  built automatically, and old capacity meters differently. The
+  refresh bullet became two, refresh and capacity.
+- **Needs**: a fresh session — an edit, by `/learn` or a brief, that
+  adds the graph page's projection limitations to the skill and says
+  graph projection needs the key the binding section calls optional.

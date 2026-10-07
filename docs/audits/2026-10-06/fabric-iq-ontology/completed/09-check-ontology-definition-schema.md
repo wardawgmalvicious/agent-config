@@ -109,3 +109,31 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 the on-disk diff at pinned SHAs. The REST pages sit outside this
 source's registry entry by design, so the audit did not fetch them;
 the facts about them here are `fabric/04`'s.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: step 1 — both REST pages were fetched in this
+  session (2026-10-07): `ontology-definition`, whose 122k-character
+  result was read by section from the saved output, and
+  `ontology-old-definition`. Step 2: each of the five concepts is
+  documented from the TMDL page, and the legacy tables from the
+  old-definition page; none needed an "unverified" mark. Step 3: the
+  frontmatter lints. Step 4, `pre-commit run --all-files`, runs once at
+  the end of the pass.
+- **Deferred**: none
+- **Deviations**: item 2 went in as a `####` subsection under §1's TMDL
+  heading, keywords only: the fetch collapsed the page's TMDL examples,
+  and the constraint bars composing any. It carries one trap verbatim:
+  `projected` and `enrichment` metrics, the kinds that surface a DAX
+  measure, lose their `backingMeasure` "on the TMDL round trip". Item 3
+  found §1's JSON tables still hold (`namespace` still only `usertypes`,
+  `baseEntityTypeId` and `redefines` unchanged) but missing the
+  `semanticEnrichment` object the page now gives entity types,
+  properties and relationship types, so it was added, and the
+  "not re-checked" sentence now dates the re-check. §8, rewritten by
+  brief 08 earlier this run, said nothing here explains rules and
+  metrics and named no date for the REST pages; item 2 made the first
+  false and this lookup supplied the second, so both were corrected.

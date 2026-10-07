@@ -83,3 +83,22 @@ Surfaced by the 2026-10-06 `/drift-audit` run against
 troubleshooting page at pinned SHAs. `fabric-data-agent` is in this
 source's `artifacts`, which is why an ontology page produced a finding
 against it.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied
+- **Session**: fresh
+- **Files changed**: `skills/fabric/fabric-data-agent/SKILL.md`
+- **Verification**: step 1 — both issues sit in the paragraph at
+  line 21, and the group-by workaround is still called moot, not
+  restored. Step 2: the frontmatter lints. Step 3,
+  `pre-commit run --all-files`, runs once at the end of the pass. The
+  duplicate-names row was confirmed on `resources-troubleshooting`,
+  fetched live the same day.
+- **Deferred**: none
+- **Deviations**: the quote's last clause, the group-by workaround, was
+  gone: `fabric/07` item 2 had rewritten the paragraph, retiring it and
+  adding the semantic-model issue. Per the sequencing note, only the
+  duplicate relationship-name issue was added, and "Three" became
+  "Four". The paragraph stays on one line, as every paragraph in that
+  file is.
