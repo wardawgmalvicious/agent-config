@@ -75,19 +75,26 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   when slash-invoked (2026-10-07, 2.1.291). It is inert on a conditional
   skill, which has no cold slash route, and live on an unconditional
   one. `effort` applies on both paths, at either scope.
-- The session default is `"effortLevel": "max"` in `claude/settings.json`.
+- The session default is saved per model, under `modelSettings` in
+  `claude/settings.json`: `claude-opus-5-5` at `xhigh`. A top-level
+  `effortLevel` in user settings no longer counts for Opus 5.5 or later,
+  which start at their own default, `medium` for Opus 5.5, until a level
+  is saved (2.1.280); `/effort` saves to the deployed copy, which the next
+  `-Force` replaces whole (`deploy-scripts.md`). A setting holds at most
+  `xhigh`, never `max` (settings reference, 2026-10-07).
   `effort: max` sits on every behavioural skill but `commit` (`xhigh`); on
   platform skills it stays commented, because they auto-trigger beside real
   work and a pin would govern that turn. Derive the set with
   `grep -rln "^effort: max" skills/ .claude/skills/`, never a count. The
   session level is live state, not the file: it can drift mid-session with
   nothing warning, and only the transcript shows the real value. Below
-  `max`, the pins raise effort, the floor they exist for (2026-09-01).
+  `max`, the pins raise effort while their skill is active, the floor they
+  exist for (2026-09-01), and no setting reaches `max`.
 - `disable-model-invocation: true` drops the description from the listing in
   every session on the machine and blocks subagent preloading and scheduled
   firing. It is `false` everywhere here.
-- `ultracode` is not an effort level (it reports as `xhigh`), so `max` is
-  the highest pin.
+- `ultracode` is not an effort level but a toggle in `/effort` that leaves
+  the level unchanged (2.1.284), so `max` is the highest pin.
 - `allowed-tools` pre-approves a call for the invoking turn by matching
   the command text as the model spells it: the permissions page says a
   Bash rule matches "the whole command text", and its `~/` anchor is for

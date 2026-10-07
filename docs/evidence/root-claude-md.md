@@ -1978,6 +1978,31 @@ on the slash path, against SMH's Haiku. So `editing-skills.md`'s "the pin
 silently ignored" became the session being told it runs on the pin, and
 the bullet gained the auto-mode caveat.
 
+**2026-10-07.** The session default moved from `"effortLevel": "max"` to
+`modelSettings`, with `claude-opus-5-5` at `xhigh`, on the user's answer
+to the 2026-10-06 `claude-code` audit's brief 03 (D-1). 2.1.280 stopped
+a level saved before `/effort` went per-model from applying to newly
+released models, and the settings reference, read 2026-10-07, says the
+top-level key in user settings "keeps applying where it applied before,
+on Opus 5, Fable 5.1, and earlier models", while "Opus 5.5 and models
+released after it ignore it and start at their own default", `medium`
+for Opus 5.5 (model-config page, same day). The deployed copy, read
+2026-10-06, had already lost the top-level key and held the
+`modelSettings` entry `/effort` writes; dropping the key leaves Opus 5
+and Fable 5.1 at their own defaults. Neither key takes `max`: a
+setting's levels run `low` to `xhigh`, and `max` survives in frontmatter
+and as a `maxEffortLevel` that sets no cap. So the `max` pins always
+raise effort while active, as the model-config page says: "Frontmatter
+effort applies when that skill or subagent is active, overriding the
+session level". The 2026-09-01 reading above predates 2.1.267, which
+"Fixed `effort:` frontmatter ... being ignored on models whose default
+effort is still pinned (Opus 4.7, Opus 4.8, Fable 5)"; it ran on Opus 5
+and Sonnet 5, neither named, so it stands. And 2.1.284 made Ultracode
+"its own toggle in `/effort`" that "no longer forces xhigh effort", and
+the model-config page says turning it on or off "leaves the effort level
+unchanged": the "reports as `xhigh`" quoted above is gone, and `max`
+stays the highest pin.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

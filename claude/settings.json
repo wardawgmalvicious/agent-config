@@ -96,7 +96,11 @@
     "cowork-plugin-management@synced": false
   },
   "extraKnownMarketplaces": {},
-  "effortLevel": "max",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    }
+  },
   "cleanupPeriodDays": 15,
   "autoUpdatesChannel": "latest",
   "permissions": {
