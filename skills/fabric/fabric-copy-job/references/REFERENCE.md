@@ -8,28 +8,34 @@ Full connector matrix, definition payload examples, and the end-to-end REST work
 |---|---|
 | Copy job item (`CopyJob`) | GA |
 | Full copy / watermark-based incremental | GA |
-| CDC replication (`jobMode: "CDC"`) | **Preview** |
+| CDC replication (`jobMode: "CDC"`) | **Preview** on Learn; What's New says GA (September 2026) — see below |
 | Auto-partitioning | **Preview** |
-| Activator invocation of a Copy job | **Preview** |
+| Activator invocation of a Copy job | GA (no parameters) |
 | Fabric Lakehouse table as CDC source/dest | **Preview** |
 
-The drift audit that spawned this skill said "CDC for SQL estates GA." The connectors doc page still titles the section **"CDC Replication (Preview)."** Treat CDC as Preview until the connectors page and per-connector tutorial titles drop the label.
+The drift audit that spawned this skill said "CDC for SQL estates GA." The connectors doc page still titles the section **"CDC Replication (Preview)."** Treat CDC as Preview until the connectors page and per-connector tutorial titles drop the label. On 2026-10-06 they still carry it, while What's New lists Copy job CDC and Copy job SCD Type 2 as GA (September 2026): the conflict is real and dated, and Learn wins.
 
 ## CDC connector matrix (Preview)
 
-| Connector | CDC Source | CDC Destination | SCD Type 2 |
+Transcribed from Learn's [CDC in Copy job](https://learn.microsoft.com/fabric/data-factory/cdc-copy-job#supported-connectors) page on 2026-10-06; the connectors page carries the same table. The page labels no row preview.
+
+| Connector | CDC Source | CDC Destination | Write — SCD Type 2 |
 |---|---|---|---|
 | Azure SQL DB | ✅ | ✅ | ✅ |
 | Azure SQL Managed Instance | ✅ | ✅ | ✅ |
+| Fabric Data Warehouse | ❌ | ✅ | ✅ |
+| Fabric Lakehouse table | ✅ | ✅ | ✅ |
+| Google BigQuery | ✅ | ✅ | ✅ |
 | On-premises SQL Server | ✅ | ✅ | ✅ |
-| Fabric Lakehouse table (Preview) | ✅ | ✅ | ✅ |
-| Fabric Data Warehouse | ❌ | ✅ | ❌ |
-| Oracle (Preview) | ✅ | ❌ | ❌ |
-| Google BigQuery (Preview) | ✅ | ❌ | ❌ |
-| SAP Datasphere Outbound (ADLS Gen2) | ✅ | ❌ | ❌ |
-| Snowflake | ✅ (own tutorial) | — | — |
+| Oracle | ✅ | ✅ | ✅ |
+| SAP Datasphere Outbound for ADLS Gen2 | ✅ | ❌ | ❌ |
+| SAP Datasphere Outbound for AWS S3 | ✅ | ❌ | ❌ |
+| SAP Datasphere Outbound for Google CloudStorage | ✅ | ❌ | ❌ |
+| Snowflake | ✅ | ✅ | ✅ |
+| SQL database in Fabric | ❌ | ✅ | ✅ |
+| Synapse Data Warehouse | ❌ | ✅ | ✅ |
 
-**SQL family = the only full-loop CDC path** (source + destination + SCD2). Everything else is source-only or destination-only.
+**Full-loop CDC** (source + destination + SCD Type 2) now covers the SQL family, Fabric Lakehouse tables, Google BigQuery, Oracle and Snowflake. Fabric Data Warehouse, SQL database in Fabric and Synapse Data Warehouse are destinations only; the three SAP Datasphere Outbound variants are sources only. The page's note narrows two cells: SCD Type 2 isn't supported when replicating **from an Oracle source**, nor when you create the destination schema yourself.
 
 ## Watermark / incremental notes
 
@@ -83,9 +89,9 @@ Minimal skeleton (before base64):
 ```
 
 - **`jobMode`**: `"Batch"` (full / watermark incremental) or `"CDC"`.
-- **`writeBehavior`** (per activity destination): `"Overwrite"` (full), `"Merge"` (CDC / upsert), append is the default.
+- **`writeBehavior`** (per activity destination): `"Append"`, `"Overwrite"` (full), or, in the REST definition's CDC example, `"Upsert"` with `upsertSettings.keys` (optional `useTempDB`, `interimSchemaName`). `"Merge"`, the portal's update-method name, appears nowhere in that page's JSON (2026-10-06).
 - **Column mapping** (optional) goes in `activities[].properties.translator` (`type: "TabularTranslator"`, `mappings[]` with `source`/`destination` `name`/`type`/`physicalType`) plus `typeConversionSettings` (`allowDataTruncation`, `treatBooleanAsNumber`).
-- To flip a job to CDC: set `properties.jobMode = "CDC"` and each activity's `destination.writeBehavior = "Merge"`.
+- To flip a job to CDC: set `properties.jobMode = "CDC"`, give each activity's source `changeDataSettings` with `readMethod: "SnapshotPlusIncremental"`, and its destination `writeBehavior: "Upsert"` with `upsertSettings.keys`, as the REST definition's CDC example does (2026-10-06; not exercised here).
 
 ## Create / update wrapper payload
 

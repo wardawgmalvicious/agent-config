@@ -1,6 +1,6 @@
 ---
 name: fabric-copy-job
-description: "Use for Fabric Data Factory Copy job — the no-pipeline data-movement item (`CopyJob`) for many-source→many-destination ingestion. Covers copy modes (full vs incremental), watermark-based incremental (GA: ROWVERSION/datetime/int columns) vs CDC-based incremental (Preview: captures inserts/updates/deletes, SCD Type 2, Merge default), the CDC-vs-watermark rubric, switching full↔incremental via `jobMode` and resetting to full, the JSON definition (`copyjob-content.json`, base64 getDefinition/updateDefinition — replaces all parts), REST surface + on-demand run (`?jobType=Execute` gotcha) + fabric-data-factory-mcp tools, event-driven invocation via Activator (Preview — no parameters) and Job events alerting, plus gotchas (change-retention window, net-change-only, CDC+non-CDC table demotion, Lakehouse CDF undetectable) and CU pricing (full 1.5 / incremental 3 CU-hr). For continuous whole-database replication into OneLake, use fabric-mirroring."
+description: "Use for Fabric Data Factory Copy job — the no-pipeline data-movement item (`CopyJob`) for many-source→many-destination ingestion. Covers copy modes (full vs incremental), watermark-based incremental (GA: ROWVERSION/datetime/int columns) vs CDC-based incremental (Preview: captures inserts/updates/deletes, SCD Type 2, Merge default), the CDC-vs-watermark rubric, switching full↔incremental via `jobMode` and resetting to full, the JSON definition (`copyjob-content.json`, base64 getDefinition/updateDefinition — replaces all parts), REST surface + on-demand run (`?jobType=Execute` gotcha) + fabric-data-factory-mcp tools, event-driven invocation via Activator (no parameters) and Job events alerting, plus gotchas (change-retention window, net-change-only, CDC+non-CDC table demotion, Lakehouse CDF undetectable) and CU pricing (full 1.5 / incremental 3 CU-hr). For continuous whole-database replication into OneLake, use fabric-mirroring."
 paths:
   - "**/*.CopyJob/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -44,9 +44,9 @@ Watermark column types: **ROWVERSION, datetime, date, integer, string interprete
 
 ## CDC replication (Preview)
 
-CDC connector support (per the [connectors matrix](https://learn.microsoft.com/fabric/data-factory/copy-job-connectors#cdc-replication-preview)) — the **SQL family is the most complete** (source + destination + SCD Type 2): **Azure SQL DB, Azure SQL Managed Instance, on-premises SQL Server**. Others are narrower: Oracle / Google BigQuery / SAP Datasphere Outbound = CDC **source only** (no SCD2); Fabric Warehouse = CDC **destination only**; Fabric Lakehouse table = source + destination + SCD2 (Preview). Snowflake CDC is covered by its own tutorial.
+CDC connector support (per the [connectors matrix](https://learn.microsoft.com/fabric/data-factory/copy-job-connectors#cdc-replication-preview), re-read 2026-10-06) — **full loop** (source + destination + SCD Type 2): **Azure SQL DB, Azure SQL Managed Instance, on-premises SQL Server, Fabric Lakehouse tables, Google BigQuery, Oracle and Snowflake**. **Destination only**, with SCD Type 2: Fabric Data Warehouse, SQL database in Fabric, Synapse Data Warehouse. **Source only**: SAP Datasphere Outbound, for ADLS Gen2, AWS S3 or Google Cloud Storage. SCD Type 2 still isn't supported when replicating **from an Oracle source**, nor when you create the destination schema yourself. Full matrix: [references/REFERENCE.md](references/REFERENCE.md).
 
-> The audit that flagged this skill said "CDC for SQL estates **GA**." As of the docs, **CDC replication is still labelled Preview** (the item and watermark-incremental are GA). Re-verify per connector before telling a client CDC is GA.
+> The audit that flagged this skill said "CDC for SQL estates **GA**." As of the docs, **CDC replication is still labelled Preview** (the item and watermark-incremental are GA). Re-verify per connector before telling a client CDC is GA. What's New lists Copy job CDC and SCD Type 2 as GA (September 2026), but on 2026-10-06 Learn still says preview: the connectors page heads its section "CDC Replication (Preview)", the BigQuery, Snowflake and Oracle tutorials carry "(Preview)", and the CDC page says "SCD Type 2 in Copy job is currently in preview". Status follows Learn.
 
 ## JSON definition & editing
 
@@ -54,7 +54,7 @@ The definition is a base64 part, **`copyjob-content.json`**, with two sections:
 - `properties` — **`jobMode`**, source/destination connection references, `policy` (e.g. `timeout`).
 - `activities[]` — one object per table mapping (source/destination table, `translator` column mappings, `writeBehavior`, type conversion).
 
-**`jobMode` is the full↔incremental switch in JSON**: `"Batch"` = full or watermark-incremental copy; `"CDC"` = change-data-capture incremental. Per-activity `writeBehavior` (`Overwrite` / `Merge`) sets append-vs-merge. So "switch a job from full to CDC" = flip `jobMode` and set `writeBehavior: "Merge"`, then `updateDefinition`.
+**`jobMode` is the full↔incremental switch in JSON**: `"Batch"` = full or watermark-incremental copy; `"CDC"` = change-data-capture incremental. Per-activity `writeBehavior` (`Append` / `Overwrite` / `Upsert`) sets the write. So "switch a job from full to CDC" = flip `jobMode`, add the source's `changeDataSettings` and set `writeBehavior: "Upsert"` with `upsertSettings.keys`, then `updateDefinition`: the REST definition's CDC example, where `"Merge"` is no documented value (2026-10-06).
 
 Get the JSON from the UI via **View → View JSON code**, or over REST:
 - `POST /v1/workspaces/{wsId}/copyJobs/{id}/getDefinition` → base64 `copyjob-content.json` (+ `.platform`).
@@ -74,15 +74,16 @@ MCP (`fabric-data-factory-mcp`, `dnx Microsoft.DataFactory.MCP --prerelease`) co
 
 ## Event-driven invocation
 
-- **Activator (Preview)**: a Fabric Activator rule can run a Copy job as its action when a condition fires. **Gotcha — Copy job actions don't accept parameters** (pipelines/notebooks/dataflows do). So Activator can *trigger* a Copy job but can't parameterize the run.
+- **Activator**: a Fabric Activator rule can run a Copy job as its action when a condition fires. **Gotcha — Copy job actions don't accept parameters** (pipelines/notebooks/dataflows do). So Activator can *trigger* a Copy job but can't parameterize the run.
 - **Job events / alerting**: `CopyJob` is a supported item type for Fabric **Job events** (`Microsoft.Fabric.ItemJobSucceeded` / `ItemJobFailed`, etc.). Route these through Real-Time hub → Activator to alert on copy-job success/failure or chain downstream work.
+- **Workspace monitoring**: Copy job writes the **`CopyJobActivityRunDetailsLogs`** table to the workspace monitoring database — one row per source-to-destination mapping per run, with status, duration, rows and data read and written, throughput, and error code — for KQL queries beside Job events.
 - **Pipeline event triggers**: wrapping the Copy job in a pipeline Copy-job activity lets you use pipeline event triggers (e.g. new files in a lake) for richer, parameterized orchestration.
 
 ## Gotchas
 
 - **Change-retention window** must exceed the run interval — CDC retention / Oracle redo-log / Snowflake change-tracking / BigQuery change-history. If changes age out before the next run, **they're silently lost**.
 - **Net change only** today (full change history "coming later"): between two runs you get the net effect, not every intermediate change.
-- **Only the default capture instance** is supported — custom SQL Server CDC capture instances aren't.
+- **Only the default capture instance** is supported — custom SQL Server CDC capture instances aren't (Learn's CDC page, 2026-10-06). What's New lists "SQL CDC custom capture names" as GA (September 2026); flip this when Learn does.
 - **Mixing CDC and non-CDC tables in one job demotes ALL tables to watermark-based** incremental. Split them into separate jobs to keep true CDC.
 - **Fabric Lakehouse tables**: Copy job can't auto-detect whether CDF is enabled.
 - **Plain (non-CDC) incremental can't capture deletes** from the source.
