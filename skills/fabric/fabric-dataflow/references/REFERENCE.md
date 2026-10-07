@@ -92,6 +92,10 @@ SharePoint files, Snowflake, PostgreSQL.
   method; most others support append and replace.
 - **Warehouse requires fixed schema.** Snowflake does not: under Replace,
   a new Snowflake table takes dynamic or fixed schema (Learn, 2026-10-06).
+  What's New lists "Dataflow dynamic warehouse schema" as a preview that
+  evolves destination tables when query output changes, but the
+  destinations page it links still says only fixed schema is supported
+  for Warehouse, so how the preview behaves is undocumented (2026-10-07).
 - **Warehouse writes require staging** and only into the same workspace
   as the dataflow.
 - **A new table that you later delete is recreated** on the next

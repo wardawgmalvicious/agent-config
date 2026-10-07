@@ -266,6 +266,17 @@ server or database named in a connection cannot be swapped by a variable
 or a parameter. Deployment rules do not help — they modify some item
 properties but not connections or mashup logic.
 
+**A destination's name can vary, though its connection cannot** — in
+preview. The dynamic expression editor builds a supported field, such as
+**Table name** or **File name**, from text plus a parameter, a workspace
+variable (a built-in such as `currentWorkspaceId`, or a variable-library
+value) or the run's UTC date and time, resolved at each run; a resolved
+name the destination rejects can fail validation or the run. How an
+expression is written into `mashup.pq` is undocumented. Settings the
+editor does not reach take advanced edit of the destination query's M,
+also preview, after which only the advanced editor can change that
+destination (Learn, 2026-10-07).
+
 Two more constraints worth knowing before choosing:
 
 - **Variables work only inside `mashup.pq`**, only for basic types
