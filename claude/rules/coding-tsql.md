@@ -32,9 +32,13 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
   apply is the two Fabric Warehouse sections at the end of this file:
   the ANSI string operators (`||`, `EDIT_DISTANCE`, `UNISTR`) and
   `OPTION (FOR TIMESTAMP AS OF ...)` are Warehouse and SQL analytics
-  endpoint features. Equally, the Warehouse's T-SQL *restrictions* do
-  not apply there — see the `fabric-database` skill, which co-loads on
-  those files.
+  endpoint features. So are FROM-first queries, `GROUP BY ALL` /
+  `ORDER BY ALL` without a column list, `QUALIFY`, and `MEDIAN`,
+  `QUANTILE`, `APPROX_MEDIAN`, `APPROX_QUANTILE`, which Learn says SQL
+  database in Fabric doesn't support (What's New calls them preview,
+  2026-10-02; their Learn pages carry no preview label, 2026-10-06).
+  Equally, the Warehouse's T-SQL *restrictions* do not apply there — see
+  the `fabric-database` skill, which co-loads on those files.
 
 ## Casing
 
@@ -134,6 +138,11 @@ Acceptable; the readability win on long column lists outweighs it.
 - Use CTEs (`WITH`) for any non-trivial multi-step logic.
 - One CTE per logical step. Name describes the step's purpose.
 - Avoid nested derived tables when a CTE chain reads cleaner.
+- On Fabric Warehouse and the SQL analytics endpoint, filter a window
+  function with `QUALIFY` instead of a CTE that exists only to do so:
+  top-N per group is `QUALIFY ROW_NUMBER() OVER (...) <= N`. Elsewhere,
+  SQL database in Fabric included, `QUALIFY` doesn't exist and the CTE
+  stays.
 
 ```sql
 -- Good
@@ -200,7 +209,9 @@ INNER JOIN RecentOrder AS ord
 
 Forbidden in production code, views, stored procs. Acceptable for
 ad-hoc exploration only. List columns explicitly so schema changes are
-visible in PRs.
+visible in PRs. That includes its implicit form on Fabric Warehouse: a
+FROM-first query with no trailing `SELECT` (`FROM dbo.Customer;`) means
+`SELECT *`.
 
 ## Comments
 
@@ -237,9 +248,11 @@ END
 
 Fabric Warehouse and the SQL analytics endpoint (also SQL Server 2025,
 Azure SQL DB/MI on the 2025 update policy) add ANSI string operators and
-fuzzy-match/Unicode functions. As of mid-2026 these are **Preview** —
-gate production use, and don't assume portability to Synapse dedicated
-SQL pools or pre-2025 SQL Server.
+fuzzy-match/Unicode functions. Learn marks the Jaro-Winkler functions
+**preview**, while the `||` and `UNISTR` pages carry no preview label
+(2026-10-06). Gate the fuzzy-match functions in production, and don't
+assume portability to Synapse dedicated SQL pools or pre-2025 SQL
+Server.
 
 ### `||` and `||=` concatenation
 
