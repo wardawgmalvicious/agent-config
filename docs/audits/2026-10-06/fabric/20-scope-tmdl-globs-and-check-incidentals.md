@@ -217,3 +217,12 @@ in the report's "Incidental" list.
   on `main` at `f82cfd5`, and the deployed `coding-tmdl`,
   `coding-dax`, `coding-tsql` and `fabric-git-serialization` match the
   repo (`cmp`, 2026-10-06).
+- **Needs**: a fresh session — `/test-skill fabric-tmdl` and the
+  real-path activation runs. Both next-audit items landed 2026-10-06.
+  The carve-out now gives SQL database in Fabric the string operators
+  and fuzzy matching, which Learn's Applies-to lists name, and keeps
+  time travel and the Warehouse-only syntax out (`97eef36`);
+  `link-claude.ps1` deployed it from `main` at `84b7883`, and the
+  deployed copy matches the repo (`cmp`, 2026-10-07). The Operations
+  agent region line records both pages: the limitations page excludes
+  East US, the region-availability page East US and South Central US.

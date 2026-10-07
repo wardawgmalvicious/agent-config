@@ -207,3 +207,8 @@ nothing but their size, so split them freely at execution time.
   fields, as a search scope; the flag went beside it as briefed.
 - **Needs**: the next `fabric` audit — `fabric-data-agent`
   `configuration-layers.md:117-120`'s semantic-model description sample.
+- **Closed**: 2026-10-06 — the description sample now shows a KQL
+  database, which Learn's data-source table marks as taking one, and a
+  line after it says a semantic model takes none ("Semantic Models do
+  not support data source descriptions") and is routed to from the
+  agent instructions.

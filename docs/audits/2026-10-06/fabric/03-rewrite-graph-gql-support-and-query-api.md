@@ -214,3 +214,8 @@ these rows, which is brief 18's subject.
 - **Needs**: the next fabric drift audit — whether Learn documents
   incremental graph updates, which settles item 5; the `description`
   fix under Deferred needs only its retest.
+- **Needs**: the next fabric drift audit, a fresh session — whether
+  Learn documents incremental graph updates, which settles item 5; and
+  `/test-skill fabric-graph`, the routing retest the `description` edit
+  owes. That edit landed 2026-10-06: the `description` now gives
+  `executeQuery?beta=true`.

@@ -215,3 +215,7 @@ a side.
 - **Needs**: the next `fabric` audit — `fabric-eventhouse` `REF:29`'s
   missing GA exception for accelerated external tables in update policy
   queries.
+- **Closed**: 2026-10-06 — `REF:29` now names the exception: an update
+  policy query can read an accelerated external table with
+  `external_table()` when its acceleration policy's `Hot` period covers
+  all data, GA since July 2026 per What's New.

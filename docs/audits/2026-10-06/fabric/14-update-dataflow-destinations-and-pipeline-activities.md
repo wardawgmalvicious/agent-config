@@ -180,3 +180,18 @@ rather than edits.
   `REF:93` and `REF:101` for Snowflake, beside the destination-expression
   and dynamic-warehouse-schema flag that no brief carries (audit report
   `:181-187`).
+- **Needs**: the next `fabric` audit — the destination-expression and
+  dynamic-warehouse-schema flag that no brief carries (audit report
+  `:181-187`). The Snowflake corrections landed 2026-10-06, from Learn's
+  destinations page: the fixed-schema line now names Warehouse alone, and
+  automatic settings name Snowflake beside Lakehouse and Azure SQL
+  Database.
+- **Needs**: a fresh session — the destination-expression and
+  dynamic-warehouse-schema flag (audit report `:181-187`), moved off the
+  next audit on the user's word, 2026-10-06. Fetch Learn's
+  destination-expression page (that report's link) and its Dataflow Gen2
+  destinations page, then correct `fabric-dataflow` `SKILL.md:263-267`
+  ("Connections are statically bound under all three") and `REF:93`
+  ("Warehouse requires fixed schema") only as far as Learn establishes,
+  and append a `**Closed**:` line, or a fresh `**Needs**:` line naming
+  what Learn still leaves undocumented.

@@ -243,3 +243,6 @@ was transient, so a plain base-to-head diff would have missed it.
 - **Needs**: none — the `platform-features.md:13` fix under Deferred.
   The landing is done: `link-claude.ps1` ran on `main` at `f82cfd5`,
   and the deployed `coding-tsql` matches the repo (`cmp`, 2026-10-06).
+- **Closed**: 2026-10-06 — `platform-features.md:13` now says
+  `BULK LOAD` is unsupported and `BULK INSERT` works for compatibility,
+  mapped to `COPY INTO`, as `SKILL.md`'s Ingestion bullet does.

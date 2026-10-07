@@ -203,3 +203,7 @@ commit `27532aaa`, whose title states the new default outright.
   titles the feature "Data Warehouse Monitor". A measurement slip in
   the brief, not tree drift.
 - **Needs**: none — the two adjacent one-line fixes under Deferred.
+- **Closed**: 2026-10-06 — both one-line fixes landed. `REF:5` now
+  names the query-labels link that the parent `SKILL.md` § Reference
+  carries, and `REF:11` calls the feature Monitor (formerly Query
+  activity), as `REF:13` does.

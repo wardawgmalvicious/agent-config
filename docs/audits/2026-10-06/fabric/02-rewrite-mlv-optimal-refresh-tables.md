@@ -200,3 +200,8 @@ either way.
   Spark SQL MLV GA month, to settle `SKILL.md:3` and
   `references/REFERENCE.md:3`; the `REFERENCE.md:52` fix under
   Deferred needs nothing and can land first.
+- **Needs**: the next fabric drift audit — a Learn statement of the
+  Spark SQL MLV GA month, to settle `SKILL.md:3` and
+  `references/REFERENCE.md:3`. The `REFERENCE.md:52` fix landed
+  2026-10-06: Runtime 2.0 is still opt-in, quoting the runtime page's
+  "By default, all new workspaces currently use Runtime 1.3".
