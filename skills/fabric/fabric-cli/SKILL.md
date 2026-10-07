@@ -197,7 +197,7 @@ fab deploy --config <config_file> [-tenv <env>] [-P '<json-array>'] [-f] [--outp
 | `-P`, `--params '<json>'` | JSON-array of override parameters: `'[{"p1":"v1","p2":"v2"}]'`. **Quote the whole array** — single object form (`-P key=value`) is *not* what this verb accepts (that's `fab find`'s param style — they differ). |
 | `-f`, `--force` | Skip interactive confirmation (required in CI). |
 | `--output_format <fmt>` | Override output format (json / text / etc.). |
-| `--bulk_publish` | **Experimental, v1.7+.** Publish every item in one bulk-import API call instead of one at a time. |
+| `--bulk_publish` | **v1.7+**, flagged experimental by `fab` when last read. Publish every item in one bulk-import API call instead of one at a time; the Bulk Import Item Definitions API underneath is GA (September 2026). |
 
 Examples:
 

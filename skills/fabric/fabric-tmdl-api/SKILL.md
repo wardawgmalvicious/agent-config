@@ -12,7 +12,7 @@ disable-model-invocation: false
 
 - **Two audiences**: Fabric API (`api.fabric.microsoft.com`) for CRUD on definitions; Power BI API (`analysis.windows.net/powerbi/api`) for refresh, data sources, permissions
 - **`updateDefinition` must include ALL parts** — modified AND unmodified. The API replaces the entire definition; omitting parts deletes them.
-- **Never include `.platform`** in `updateDefinition` payloads — it is Git integration metadata and causes errors
+- **Never include `.platform`** in `updateDefinition` payloads — it is Git integration metadata and causes errors. Bulk Import is the exception: its parts carry each item's `.platform`
 - **Base64-encode all TMDL content** in definition payloads
 - **`getDefinition` is a POST** (not GET) — requires `--body '{}'`
 - **Poll LRO to completion** — `createItemWithDefinition`, `getDefinition`, and `updateDefinition` return 202

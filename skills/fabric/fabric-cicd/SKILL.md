@@ -22,6 +22,8 @@ Microsoft's official open-source Python library for **code-first CI/CD into Fabr
 | `fab deploy --config config.yml` | Git | Same engine, CLI wrapper — one-command deploys; see fabric-cli skill |
 | Fabric deployment pipelines (service-side) | Workspace | Dev workspace promoted stage-to-stage in the portal / REST; no local code involved |
 
+`fabric-cicd` doesn't support **deployment plans** (preview); attach one through Update From Git, Deploy Stage Content or Bulk Import instead (Learn, 2026-10-06).
+
 `fab deploy` **wraps fabric-cicd** and consumes the same `config.yml` / `parameter.yml`. Don't mix Git-driven deploys and service-side deployment pipelines on the same workspaces. Decision guide: [Choose the best Fabric CI/CD workflow](https://learn.microsoft.com/fabric/cicd/manage-deployment).
 
 **Deployment pipelines don't rewrite OneLake image URLs.** A report whose visuals
@@ -258,7 +260,7 @@ deploy_with_config("config.yml", token_credential=cred, environment="prod",
 | `disable_workspace_folder_publish` | Don't create workspace subfolders |
 | `enable_environment_variable_replacement` | Activate `$ENV:` in parameter.yml |
 | `enable_response_collection` | `publish_all_items` returns collected API responses |
-| `enable_experimental_features` + `enable_bulk_publish` | Single bulk-import API call instead of per-item (beta; non-prod) |
+| `enable_experimental_features` + `enable_bulk_publish` | Single bulk-import API call instead of per-item. The Bulk Import Item Definitions API is GA (September 2026); the library still gates it behind its experimental flag, whose own status is unverified |
 | `enable_experimental_features` + `enable_items_to_include` / `enable_exclude_folder` / `enable_include_folder` / `enable_shortcut_exclude` | Activate the selective-publish parameters |
 
 Enumerate at runtime: `get_supported_feature_flags()`.
@@ -267,7 +269,7 @@ Enumerate at runtime: `get_supported_feature_flags()`.
 
 - **Warehouse / SQL Database**: **shell only** — no tables/views/procs deployed. Pair with SqlPackage/dacpac for schema (see fabric-database skill).
 - **Lakehouse**: shell + (flag-gated) shortcuts; schemas only deployed when a schema contains a shortcut. Deletion blocked unless `enable_lakehouse_unpublish`.
-- **Notebook**: `.py` and `.ipynb` supported; attached-lakehouse GUIDs need parameterization (regex example above); notebook resources aren't source-controlled.
+- **Notebook**: `.py` and `.ipynb` supported. Attached-lakehouse GUIDs need parameterization (regex example above) unless the notebook has **Lakehouse Auto-Binding in Git** on — per notebook, off by default — which stores a logical ID that Git sync, deployment pipelines and bulk import rebind. The built-in **Resources** folder can now be committed to Git too (optional, off by default), though Learn says deployment pipelines and public APIs don't carry it yet. Whether fabric-cicd honours either is unverified: keep the parameterization until it's tested.
 - **Environment**: custom pool references need the `spark_pool` section; resources not source-controlled.
 - **Semantic Model / Report**: use `semantic_model_binding` for connections; report→model rebinding handled when both deploy together.
 - **Dataflow**: same-workspace dependencies auto-ordered; first deployment still needs a manual publish/refresh.

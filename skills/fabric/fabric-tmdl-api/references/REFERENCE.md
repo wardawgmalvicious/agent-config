@@ -13,7 +13,7 @@ The 3 highest-leverage entry points (Item Definition overview, Semantic Model de
 - [Get Item Definition (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/core/items/get-item-definition) — POST-with-empty-body endpoint; LRO behavior; returns base64 parts.
 - [Update Item Definition (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/core/items/update-item-definition) — REPLACES entire definition (omitted parts are deleted); `?updateMetadata=true` flag for `.platform`.
 - [Create Item with Definition (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/core/items/create-item) — combined POST that creates the item and seeds its definition in one LRO.
-- [Bulk Import / Bulk Export Item Definitions (beta)](https://learn.microsoft.com/rest/api/fabric/core/items/bulk-import-item-definitions%28beta%29) — multi-item versions for migration scenarios.
+- [Bulk Import Item Definitions](https://learn.microsoft.com/rest/api/fabric/core/items/bulk-import-item-definitions) / Bulk Export — GA (September 2026); multi-item versions for migration scenarios. Bulk import takes SemanticModel parts, and `.platform` parts with them.
 - [Long-running operations (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/articles/long-running-operation) — 202 → poll `/operations/{id}` → `/result` pattern for all three definition APIs.
 
 ## Two audiences (Fabric API for definitions vs Power BI API for refresh)

@@ -51,4 +51,4 @@ The 3 highest-leverage entry points (item management overview, long-running oper
 
 ## MCP server (agent-driven Fabric REST)
 
-- [Fabric Core MCP Server tools reference](https://learn.microsoft.com/rest/api/fabric/articles/mcp-servers/core-remote/tools-core-mcp-server) — preview MCP server exposing Fabric Core API (workspaces, items, folders, capacities, operations) as MCP tools. Useful when wiring Claude or other agents directly to a Fabric tenant.
+- [Fabric Core MCP Server tools reference](https://learn.microsoft.com/rest/api/fabric/articles/mcp-servers/core-remote/tools-core-mcp-server) — MCP server (GA, September 2026) exposing Fabric Core API (workspaces, items, folders, capacities, operations) as MCP tools; endpoint `https://api.fabric.microsoft.com/v1/mcp/core`, scope `https://api.fabric.microsoft.com/.default`. Useful when wiring Claude or other agents directly to a Fabric tenant.

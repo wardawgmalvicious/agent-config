@@ -159,7 +159,7 @@ PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
 | KQLDatabase | `JSON` | `DatabaseProperties.json` (+ optional `DatabaseSchema.kql`) |
 | Other (KQLDashboard, CopyJob, Dataflow, Eventstream, MirroredDatabase, GraphQLApi, etc.) | varies | see [MS schema index](https://github.com/microsoft/json-schemas/tree/main/fabric/item) |
 
-**`definition.pbir` `byConnection` only**: Fabric REST API supports only `byConnection` semantic-model references in PBIR. The `byPath` form (used locally with pbir-cli) is not accepted by the Fabric REST endpoints — switch to `byConnection` before deploying.
+**`definition.pbir` `byConnection` for single-item calls**: the single-item create and update-definition endpoints accept only `byConnection` semantic-model references in PBIR. The `byPath` form (used locally with pbir-cli) is not accepted there — switch to `byConnection` before deploying one report. Learn's **Bulk Import** example, by contrast, sends a report whose `definition.pbir` holds `"byPath": { "path": "../../MyDataset.SemanticModel" }` beside that model in the same request; that path is a documentation example, unmeasured here.
 
 ## Git Integration APIs
 
@@ -204,6 +204,16 @@ refuses, and never overwrites. Add either field on purpose, after reading
   host, not `api.fabric.microsoft.com`, and polling
   `/v1/operations/{x-ms-operation-id}` on the base URL worked. Polling
   that `Location` itself was not tried.
+
+[Commit To Git](https://learn.microsoft.com/rest/api/fabric/core/git/commit-to-git),
+`POST …/git/commitToGit` (scope `Workspace.GitCommit.All`), commits by
+`mode`: `All`; `Selective`, with `items`, each a `logicalId` or `objectId`;
+or **`FileLevelSelective`** (preview), with `itemsWithFileSelection`, each
+item plus `selectedFiles` — paths relative to the item root, forward
+slashes, no wildcards, an empty list meaning every file. Pass
+`workspaceHead` from `git/status`. It needs the same Git credentials and is
+long-running like the two calls above. Committing only some of an item's
+files can leave its definition incomplete (Learn, 2026-10-06).
 
 **`git/status` types items outside its documented enum.** One call
 (2026-09-30, one tenant) typed a semantic model, a Plan and a SQL
