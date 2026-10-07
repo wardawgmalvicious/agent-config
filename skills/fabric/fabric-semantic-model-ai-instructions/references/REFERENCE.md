@@ -27,5 +27,5 @@ The three highest-leverage entry points (instructions, prep-for-AI overview, ver
 ## Linguistic schema (Q&A — overlaps with but is distinct from AI instructions)
 
 - [Q&A best practices](https://learn.microsoft.com/power-bi/natural-language/q-and-a-best-practices) — naming, synonyms, relationships. Per-column synonyms belong in TMDL `synonyms`, not in the AI instructions blob — this page explains the right home.
-- [Enable Q&A and Q&A data sources](https://learn.microsoft.com/power-bi/natural-language/q-and-a-data-sources) — turning Q&A on for the model (prerequisite for the "Prep data for AI" tabs to be enabled in Desktop and service).
+- [Enable Q&A and Q&A data sources](https://learn.microsoft.com/power-bi/natural-language/q-and-a-data-sources) — turning Q&A on for the model (prerequisite for the "Prep data for AI" tabs to be enabled in Desktop and service). Its banner dates Q&A's retirement February 2027; `semantic-model-best-practices` still says December 2026 (2026-10-06).
 - [Intro to Q&A tooling](https://learn.microsoft.com/power-bi/natural-language/q-and-a-tooling-intro) — the Q&A setup window where synonyms and linguistic relationships live, with Copilot-suggested options.

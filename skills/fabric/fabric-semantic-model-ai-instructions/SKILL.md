@@ -18,7 +18,7 @@ A practical, reusable guide for configuring AI instructions on a semantic model.
 
 A single text blob (up to 10,000 characters) attached directly to the semantic model. It provides context, business logic, and guidance that Copilot uses when interpreting user questions against the model.
 
-It applies **wherever the model is consumed by Copilot** — Power BI reports, Q&A visuals, the Copilot pane, and any downstream surface that uses this model. Not just a single surface.
+It applies **wherever the model is consumed by Copilot** — Power BI reports, Q&A visuals, the Copilot pane, and any downstream surface that uses this model. Not just a single surface. Microsoft 365 Copilot Chat now answers from the model too: "Data answering from Power BI content in Microsoft 365 Copilot Chat is a generally available (GA) feature of Microsoft Fabric." Learn says Prep-data-for-AI features reach "everywhere that Copilot in Power BI is available" but not whether that includes Copilot Chat, so don't promise these instructions apply there (2026-10-06).
 
 ---
 
@@ -37,7 +37,7 @@ Authoring is now available in **both** Power BI Desktop and the Power BI service
 
 1. Open the semantic model in Power BI Desktop, or select the model in the Power BI service.
 2. On the **Home** ribbon, click **Prep data for AI**.
-3. If the tabs are disabled, enable **Power BI Q&A** on the model first.
+3. If the tabs are disabled, enable **Power BI Q&A** on the model first. Q&A itself is retiring: February 2027 on every Q&A page and in Microsoft's extension notice, December 2026 on `semantic-model-best-practices` (both read 2026-10-06).
 4. Go to the **Add AI instructions** tab.
 5. Paste or author the instructions.
 6. Click **Apply**.
