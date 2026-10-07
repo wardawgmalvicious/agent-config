@@ -214,3 +214,5 @@ the on-disk diff and the directory listings at both pinned refs.
   would otherwise expect the current page's agent benefit.
 - **Needs**: a fresh session — a one-word edit, by `/learn` or the
   next brief to touch §6, that corrects "the last four" to three.
+- **Closed**: 2026-10-07 — by `/learn`, in the session that ran the
+  pass: §6's note now reads "the last three are data-agent-side".

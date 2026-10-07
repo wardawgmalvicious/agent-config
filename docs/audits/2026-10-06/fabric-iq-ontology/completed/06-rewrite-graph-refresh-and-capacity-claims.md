@@ -170,3 +170,8 @@ but not fetched, which is why this brief starts with a lookup.
 - **Needs**: a fresh session — an edit, by `/learn` or a brief, that
   adds the graph page's projection limitations to the skill and says
   graph projection needs the key the binding section calls optional.
+- **Closed**: 2026-10-07 — by `/learn`, in the session that ran the
+  pass: `fabric-ontology`'s constraints section gained a graph
+  projection eligibility bullet, and its binding section now says a
+  keyless entity type cannot be projected, both from the graph page
+  fetched live that day.

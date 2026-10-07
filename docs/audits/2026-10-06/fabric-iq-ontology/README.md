@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 11 — applied 3 · applied with deferrals 7 · closed 1
+Briefs: 11 — applied 3 · applied with deferrals 5 · closed 3
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -14,9 +14,9 @@ Briefs: 11 — applied 3 · applied with deferrals 7 · closed 1
 | [03 drop the OneLake-security exclusion](03-drop-onelake-security-exclusion.md) | 3 | removal of a claim Learn withdrew, from one skill's `description`, body and reference | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [04 rewrite the ontology binding rules](04-rewrite-ontology-binding-rules.md) | 4 | partial rewrite of one skill section whose source page was rewritten for the new… | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [05 rewrite the ontology generation section](05-rewrite-ontology-generation-section.md) | 5 | partial rewrite of one skill section and one reference section, whose source page moved… | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
-| [06 rewrite the graph-refresh and capacity claims](06-rewrite-graph-refresh-and-capacity-claims.md) | 6 | doc lookup, then a partial rewrite of three claims about the ontology graph | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [06 rewrite the graph-refresh and capacity claims](completed/06-rewrite-graph-refresh-and-capacity-claims.md) | 6 | doc lookup, then a partial rewrite of three claims about the ontology graph | applied with deferrals 2026-10-07 · closed 2026-10-07 |
 | [07 add the ontology agent as a consumption path](07-add-ontology-agent-consumption-path.md) | 7 | additive documentation in one skill, its reference table and its trigger `description` | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
-| [08 refresh the ontology reference sections](08-refresh-ontology-reference-sections.md) | 8 | four independent minor edits, three in one skill's reference and one in its body | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [08 refresh the ontology reference sections](completed/08-refresh-ontology-reference-sections.md) | 8 | four independent minor edits, three in one skill's reference and one in its body | applied with deferrals 2026-10-07 · closed 2026-10-07 |
 | [09 check the ontology definition schema](completed/09-check-ontology-definition-schema.md) | 9 | doc lookup on the REST item-definition pages, which lie outside this source, then an… | applied 2026-10-07 |
 | [10 add the data agent's ontology known issues](completed/10-add-data-agent-ontology-known-issues.md) | 10 | minor edit adding two known issues to one paragraph of `fabric-data-agent` | applied 2026-10-07 |
 | [11 repair the fabric-iq-ontology registry entry](11-repair-fabric-iq-ontology-registry-entry.md) | 11 | four defects in one registry entry of the project-scope `drift-audit` skill | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
