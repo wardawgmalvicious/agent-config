@@ -20,6 +20,7 @@ written: 2026-09-02
 - **Run in**: a fresh session, after re-measuring the sample item from
   the main checkout (§ Re-measure before acting), since a worktree's
   guard refuses git in another repo.
+- **Audit 2026-10-06**: What's New renamed the GA row "Planning" to "Plan" and added "Native Planning Engine (Preview)" ([report](../../audits/2026-10-06/fabric/00-audit-report.md)).
 
 ## Why this brief exists: a premise correction
 

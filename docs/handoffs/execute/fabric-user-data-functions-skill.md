@@ -21,6 +21,7 @@ written: 2026-10-01
   `paths: "**/*.UserDataFunction/**"`, the serialization rule's glob.
   Nothing is drafted. The report side of translytical task flows is a
   second skill, [translytical-task-flow-skill.md](translytical-task-flow-skill.md).
+- **Audit 2026-10-06**: What's New added "Warehouse User Data Function integration (Preview)" ([report](../../audits/2026-10-06/fabric/00-audit-report.md)).
 
 Labels: **documented** is Learn or the fabric-cicd repo, read by the
 note's session 2026-09-30 or 2026-10-01, several only as search excerpts
