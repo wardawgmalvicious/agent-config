@@ -96,11 +96,28 @@ EXEC sys.sp_dw_refresh_ext_table 'dbo.<table>';
 
 Schema changes (add/drop tables or columns, type changes) need the full-item Refresh SQL endpoint metadata REST API instead. Full preview note — enablement, architecture, limitations — lives in the **fabric-spark skill**; the slow-SQLEP gotcha cross-references it in the **fabric-gotchas skill**.
 
-## Result Set Caching (currently disabled)
+## Result Set Caching
 
-**Disabled in Fabric Data Warehouse and the SQL analytics endpoint as of 2026-09-11, per Learn** — see the [known issue](https://aka.ms/fabricdwrscki). Don't recommend it as a tuning step while that stands. The feature is disabled, not retired, so the rules below apply again when it returns.
+**On by default for every Warehouse and Lakehouse SQL analytics endpoint** (GA; Learn and What's New, checked 2026-10-06). A [known issue](https://aka.ms/fabricdwrscki) reported it disabled as of 2026-09-11; whether that issue is closed was not confirmed on 2026-10-06, so check the setting before relying on the default:
 
-`result_cache_hit` field in `exec_requests_history`: `2` = cache hit, `1` = the query created the cache, `0` = not applicable for cache creation or use. Learn documents only these three values. Non-deterministic functions (`GETDATE()`, `NEWID()`) prevent caching. Cache auto-invalidates when underlying data changes.
+```sql
+-- Is it on for the connected item?
+SELECT name, is_result_set_caching_on
+FROM sys.databases
+WHERE database_id = db_id();
+
+-- Turn it off for the item
+ALTER DATABASE <Fabric_item_name>
+SET RESULT_SET_CACHING OFF;
+
+-- Or for one query, e.g. to debug or A/B test it
+SELECT ... FROM ...
+OPTION ( USE HINT ('DISABLE_RESULT_SET_CACHE') );
+```
+
+`result_cache_hit` field in `exec_requests_history`: `2` = cache hit, `1` = the query created the cache, `0` = not applicable for cache creation or use. Learn documents only these three values.
+
+Only a pure `SELECT` qualifies, and Learn lists 15 [disqualifiers](https://learn.microsoft.com/fabric/data-warehouse/result-set-caching#qualify-for-result-set-caching). The ones that bite most often: a result estimated above 10,000 rows; no referenced table of at least 100,000 rows; a cross-database reference; runtime constants (`GETDATE()`, `CURRENT_USER`), non-deterministic functions, window aggregates or `PARTITION BY … ORDER BY`; row-level security, dynamic data masking or another security feature; time travel; an explicit transaction or `WHILE` loop; a session with non-default `SET` options. Any change to a referenced table invalidates the cache, and a cache goes unused after 24 hours idle, or from a different connection, column list or alias set.
 
 ## Statistics
 
