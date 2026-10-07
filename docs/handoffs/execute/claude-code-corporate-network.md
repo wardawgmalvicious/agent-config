@@ -96,7 +96,10 @@ Nothing until IT answers, or the tell above is seen.
 - IT allows the hosts: this brief is deleted, with that recorded.
 - IT keeps the block: the user picks between the Claude target alone, the
   token and a gateway. The token is a note to machine-config's inbox; a
-  gateway is a project of its own.
+  gateway is a project of its own. **Assuming the block holds, a note
+  scoping the gateway was drafted to machine-config's inbox on
+  2026-10-07** (`2026-10-07-claude-code-gateway.md`), as the search for a
+  solution; this brief stays deferred until IT answers.
 - The WebFetch tell is seen: `skipWebFetchPreflight` goes into
   `claude/settings.json` on the user's yes, deployed with
   `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
