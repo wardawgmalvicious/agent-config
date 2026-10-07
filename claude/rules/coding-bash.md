@@ -257,6 +257,12 @@ a non-zero exit's first stderr line as a `hook error` notice, while
 stderr from an exit 0 reaches only the debug log (hooks docs, read
 2026-09-27), so an exit-0 abstention reads as a clean pass.
 
+**A failure before the hook runs now blocks.** Since 2.1.288, when
+matching a PreToolUse or PermissionRequest hook fails, or the tool's
+input cannot be serialized to JSON, the call is blocked rather than the
+hook skipped; the changelog says so and the hooks page does not
+(2026-10-07). The script's own crash still fails open, as above.
+
 **Exit 2's stderr has a different reader per event.** Claude reads it
 for PreToolUse; for PreCompact, which it blocks, only the user sees it,
 on a manual `/compact`; for SessionStart it is a `hook error` notice
