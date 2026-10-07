@@ -2,7 +2,10 @@
 
 Detail that belongs to the *running* agent rather than to
 `Configurations.json`. All verified **2026-09-02** against the Learn
-pages listed at the bottom. The item is preview throughout.
+pages listed at the bottom. The item is generally available (June
+2026); Investigator insights, Git integration, deployment-pipeline
+support and workspace OAP support are still preview (re-checked
+2026-10-06).
 
 ## Conditions: state vs transition
 
@@ -41,8 +44,8 @@ Decide these while designing the Eventhouse or ontology — none is
 workaroundable once the agent exists.
 
 - **One data source per agent.** Full stop.
-- **Eventhouse: regular tables only.** Shortcut tables, functions and
-  materialized views are all unsupported. Flatten nested JSON columns
+- **Eventhouse: tables and shortcut tables only.** Functions and
+  materialized views are unsupported (Learn, 2026-10-06). Flatten nested JSON columns
   before configuring the agent — flat tables with descriptive column
   names parse better.
 - **Populate the ingestion time column.** The agent defaults to a

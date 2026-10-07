@@ -1,6 +1,6 @@
 ---
 name: fabric-operations-agent
-description: "Use for the Microsoft Fabric Operations Agent item (preview) — `<Name>.OperationsAgent/` + `Configurations.json` — the autonomous LLM agent that queries one Eventhouse/KQL database or Ontology every 5 minutes, messages Teams, and can run a pipeline or notebook under its creator's delegated identity. Covers the draft-07 definition schema (`configuration`/`playbook`/`shouldRun` all required, `dataSource.type` KustoDatabase|Ontology, `action.kind` FabricJobAction|PowerAutomateAction with `connection` required iff the first, Recipient|TeamsChannel `messageDestination`, `identity.sponsor`), the ALM traps (Git integration lists it under Data Factory not RTI; `shouldRun: true` deploys a running 0.46 CU-hour/hour meter; `dataSources` accepts a `$(/ws/lib/var)` reference the variable-library docs omit; `jobArtifactId` is the target's byte-reversed `logicalId`), serializer artifacts (absent `playbook`, duplicate `kind` key, parameter values in `description`), state vs transition conditions, and `fab` reach."
+description: "Use for the Microsoft Fabric Operations Agent item — `<Name>.OperationsAgent/` + `Configurations.json` — the autonomous LLM agent that queries one Eventhouse/KQL database or Ontology every 5 minutes, messages Teams, and can run a pipeline or notebook under its creator's delegated identity. Covers the draft-07 definition schema (`configuration`/`playbook`/`shouldRun` all required, `dataSource.type` KustoDatabase|Ontology, `action.kind` FabricJobAction|PowerAutomateAction with `connection` required iff the first, Recipient|TeamsChannel `messageDestination`, `identity.sponsor`), the ALM traps (Git integration lists it under Data Factory not RTI; `shouldRun: true` deploys a running 0.46 CU-hour/hour meter; `dataSources` accepts a `$(/ws/lib/var)` reference the variable-library docs omit; `jobArtifactId` is the target's byte-reversed `logicalId`), serializer artifacts (absent `playbook`, duplicate `kind` key, parameter values in `description`), state vs transition conditions, and `fab` reach."
 when_to_use: "Fires on any file under `*.OperationsAgent/`. Not the same item as a Data Agent (fabric-data-agent): that one is read-only, user-initiated, conversational, up to 5 sources; this one is autonomous, single-source, unattended, and takes write actions. Data Factory's 'operations agent for pipelines' is a template that generates this same item, not a second type. For authoring the KQL database it monitors see fabric-eventhouse; for deterministic non-LLM alerting, that is Activator."
 paths:
   - "**/*.OperationsAgent/**"
@@ -11,9 +11,12 @@ disable-model-invocation: false
 
 # Fabric Operations Agent: the definition file and its ALM consequences
 
-Everything below was verified **2026-09-02**. The item, its Git
-integration, its deployment-pipeline support and Investigator insights
-are all **preview** — re-check dated claims before relying on them.
+Everything below was verified **2026-09-02** unless dated later. The
+item itself is **generally available** (June 2026); its Git
+integration, its deployment-pipeline support, Investigator insights and
+its support for workspace outbound access protection are still
+**preview** (each re-checked 2026-10-06) — re-check dated claims before
+relying on them.
 
 This skill is about the *file*. The portal click-path is documented and
 not repeated here; what is not documented is what `Configurations.json`
@@ -283,10 +286,21 @@ same split `fabric-graph` documents for `GraphModel`.
 
 ## 9. Constraints
 
-- **Everything here is preview** — the item, its Git integration, its
-  deployment-pipeline support, and Investigator insights. Two doc trees
-  describing one item is itself a sign the surface has not settled.
-  Register nothing as GA.
+- **The item is GA; its edges are not.** Git integration,
+  deployment-pipeline support, Investigator insights and workspace OAP
+  support are all still preview (Learn, 2026-10-06). Register the item
+  as GA and those four as preview: item GA does not make every surface
+  GA. Two doc trees describing one item is still a sign the surface has
+  not settled.
+- **Workspace outbound access protection (OAP) blocks actions.** With
+  OAP on, Teams notifications go out only if the workspace policy allows
+  them, and Power Automate flows and actions on Fabric items in another
+  workspace are blocked outright during the preview; Fabric actions in
+  the agent's own workspace are unaffected, and nothing bypasses OAP
+  from code. A block is not silent: the agent shows a *Limited agent
+  functionality* banner, sends its creator a Teams card when the tenant
+  allows Teams, and records it in its Activity Log. Keep the agent and
+  its action targets in one workspace.
 - **Don't hand-craft the item folder.** Create it in the portal and
   commit what Fabric writes; hand-edit `Configurations.json` afterwards.
 - **Don't validate a committed file against the schema in CI** as-is. It
