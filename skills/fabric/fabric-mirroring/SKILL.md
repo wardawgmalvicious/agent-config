@@ -1,6 +1,6 @@
 ---
 name: fabric-mirroring
-description: "Use for Mirroring in Fabric — the `MirroredDatabase` item that brings an external database or catalog into OneLake with no ETL pipeline. Three kinds, and which each source uses: database mirroring (continuous replication to Delta — Azure SQL DB/MI, SQL Server, Cosmos DB, PostgreSQL, MySQL, Oracle, SAP, BigQuery), metadata mirroring (catalog sync over OneLake shortcuts, data never moves — Snowflake, Databricks, Dremio, AWS Glue, Azure Monitor), open mirroring (you write change files to a landing zone). REST surface (`mirroring.json`, `mountedTables`, `retentionInDays`, startMirroring/getTablesMirroringStatus), landing-zone protocol (`_metadata.json` keyColumns, `__rowMarker__`), extended capabilities (change data feed, mirroring views), and gotchas: 1,000-table cap, 1 TB/day throttle, no views, DDL and capacity-pause reseeds, varchar truncation, RLS/DDM not propagated. For many-source→many-destination ingestion use fabric-copy-job."
+description: "Use for Mirroring in Fabric — the `MirroredDatabase` item that brings an external database or catalog into OneLake with no ETL pipeline. Three kinds, and which each source uses: database mirroring (continuous replication to Delta — Azure SQL DB/MI, SQL Server, Cosmos DB, PostgreSQL, MySQL, Oracle, SAP, BigQuery, Snowflake tables), metadata mirroring (catalog sync over OneLake shortcuts, data never moves — Snowflake Iceberg, Databricks, Dremio, AWS Glue, Azure Monitor), open mirroring (you write change files to a landing zone). REST surface (`mirroring.json`, `mountedTables`, `retentionInDays`, startMirroring/getTablesMirroringStatus), landing-zone protocol (`_metadata.json` keyColumns, `__rowMarker__`), extended capabilities (change data feed, mirroring views), and gotchas: 1,000-table cap, 1 TB/day throttle, no views, DDL and capacity-pause reseeds, varchar truncation, RLS/DDM not propagated. For many-source→many-destination ingestion use fabric-copy-job."
 paths:
   - "**/*.MirroredDatabase/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -42,7 +42,9 @@ tenant via OneLake external data sharing with no copy.
 
 ## 2. Which kind each source uses
 
-From the `mirroring/overview` platform table as of 2026-08-30.
+From the `mirroring/overview` platform table, re-read 2026-10-06. AWS
+Glue and Azure Monitor are not in it; their rows come from their own
+catalog-mirroring pages.
 
 | Source | Kind |
 | --- | --- |
@@ -53,13 +55,18 @@ From the `mirroring/overview` platform table as of 2026-08-30.
 | Azure Database for MySQL (preview) | Database |
 | Google BigQuery | Database — **GA as of Aug 2026** |
 | Oracle, SAP | Database |
-| SharePoint List (preview) | Database |
-| Snowflake | Metadata |
+| SharePoint List (preview) | Database and Metadata |
+| Snowflake | Database (managed tables, views) and Metadata (Iceberg tables, through shortcuts) |
 | Azure Databricks | Metadata (Unity Catalog structure) |
 | Dremio catalog (preview) | Metadata |
 | AWS Glue catalog (preview) | Metadata — Iceberg tables stay in S3 |
 | Azure Monitor (preview) | Metadata — connection-based, surfaces via Eventhouse |
 | Open mirrored database | Open |
+
+**SharePoint List** replicates its list data and surfaces Document
+Library data through shortcuts. What's New lists SharePoint List
+mirroring GA (September 2026), while Learn's source table still marks
+it preview (2026-10-06).
 
 Not in the table: **Cosmos DB in Fabric**, the native `CosmosDBDatabase`
 item, mirrors itself to OneLake like Fabric SQL database, automatically,
@@ -197,6 +204,10 @@ doesn't work without it.
 
 ## 7. Extended capabilities (paid, preview)
 
+What's New lists extended mirroring capabilities GA (September 2026),
+while Learn still marks both change data feed and mirroring views
+preview (2026-10-06).
+
 Core mirroring is free; these are not. Billing resumed in all regions the
 week of 2026-05-25.
 
@@ -207,7 +218,8 @@ week of 2026-05-25.
   and it increases storage through extra `_change_data` files. Enable
   selectively.
 - **Mirroring views** — replicates source view logic instead of physical
-  tables. **Snowflake only** in preview.
+  tables. **Snowflake only** in preview. Fabric refreshes views every 12
+  hours, not in near real time as it does tables (Learn, 2026-10-06).
 
 Core mirroring pricing is unaffected by enabling either.
 
@@ -312,9 +324,11 @@ Work down, in order:
 4. **Is it only the SQL analytics endpoint?** Data in OneLake but not in
    T-SQL is a metadata-sync delay. Hit **Refresh** on the SQL analytics
    endpoint page and re-query.
-5. **Enable workspace monitoring** for latency: mirrored-database operation
-   logs land in the `MirroredDatabaseTableExecution` table in the monitoring
-   KQL database; `ReplicatorBatchLatency` is the execution-latency value.
+5. **Enable workspace monitoring** for latency, through a **monitoring
+   item** (Workspace settings → **Monitoring**); the old *Log workspace
+   activity* toggle is now legacy. Mirrored-database operation logs land in
+   the `MirroredDatabaseTableExecution` table in the monitoring KQL
+   database; `ReplicatorBatchLatency` is the execution-latency value.
 6. **Then go source-specific.** Azure SQL DB, Azure SQL MI, MySQL, and
    PostgreSQL each have their own troubleshooting page with SQL checks.
 

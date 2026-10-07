@@ -12,7 +12,9 @@ the general limits, and they lag (`snowflake-limitations` still says a
 
 ## The matrix
 
-Source: `learn.microsoft.com/fabric/mirroring/overview`, fetched 2026-08-30.
+Source: `learn.microsoft.com/fabric/mirroring/overview`, re-read 2026-10-06.
+AWS Glue catalog and Azure Monitor are not in it; their rows come from
+their own pages.
 
 | Source | Kind | Limitations / considerations page |
 | --- | --- | --- |
@@ -26,18 +28,23 @@ Source: `learn.microsoft.com/fabric/mirroring/overview`, fetched 2026-08-30.
 | Google BigQuery (GA Aug 2026) | Database | `mirroring/google-bigquery-limitations` |
 | Oracle | Database | `mirroring/oracle-limitations` |
 | SAP | Database | `mirroring/sap-limitations` |
-| SharePoint List (preview) | Database | — |
-| Snowflake | Metadata | `mirroring/snowflake-limitations` |
+| SharePoint List (preview) | Database and Metadata | — |
+| Snowflake | Database and Metadata | `mirroring/snowflake-limitations` |
 | Azure Databricks | Metadata | `mirroring/azure-databricks-limitations` |
 | Dremio catalog (preview) | Metadata | — |
 | AWS Glue catalog (preview) | Metadata | `mirroring/catalog-mirroring/aws-glue` |
 | Azure Monitor (preview) | Metadata | `mirroring/catalog-mirroring/azure-monitor#considerations` |
 | Open mirrored database | Open | `mirroring/open-mirroring-landing-zone-format` |
 
-**Not in this matrix, despite appearing in Fabric What's New:** Snowflake
-Iceberg mirroring (July 2026) and Google Lakehouse Runtime Catalog mirroring.
-Neither has a page in the mirroring overview table as of 2026-08-30 and
-neither was drilled — this skill says nothing about them.
+**SharePoint List** is both kinds: list data replicates, and Document
+Library data comes through shortcuts. What's New lists it GA (September
+2026), while this table still marks it preview (2026-10-06).
+
+**Not in this matrix, despite appearing in Fabric What's New:** Google
+Lakehouse Runtime Catalog mirroring, absent from the overview table on
+2026-10-06 and not drilled — this skill says nothing about it. Snowflake
+Iceberg mirroring (July 2026) is now the Snowflake row's metadata half;
+see the Snowflake section below.
 
 **Supported regions:** database mirroring and open mirroring are available in
 all Fabric regions.
@@ -185,8 +192,18 @@ Microsoft ships an onboarding skill for this in the Skills for Fabric repo:
 
 ### Snowflake — pointer only, one drilled note
 
-Metadata mirroring. Its limitations page still states a **500**-table cap
-where the general pages say 1,000, and it records that native tables only are
-supported (external, transient, temporary, and dynamic tables are not) and
-that Snowflake auth is username/password or Entra SSO. **Mirroring views**,
-the paid preview extended capability, is currently Snowflake-only.
+Database mirroring for managed tables and views, metadata mirroring through
+shortcuts for Iceberg tables. Its limitations page still states a **500**-table
+cap where the general pages say 1,000. Both pages, read 2026-10-06, list
+managed tables, Iceberg tables, views and materialized views as supported,
+views and materialized views syncing every 12 hours; external, transient,
+temporary and dynamic tables are not. Iceberg tables need a storage
+connection to their underlying storage, and only tables reachable through
+one connection mirror together. Auth is username/password, Entra SSO or key
+pair; workspace identity is not supported. **Mirroring views**, the paid
+preview extended capability, is currently Snowflake-only.
+
+What's New announced Snowflake security-role mirroring in preview
+(September 2026), which "brings Snowflake role definitions into Fabric".
+Learn documented no such feature on 2026-10-06, and `snowflake-limitations`
+still says RLS and CLS policies aren't replicated.
