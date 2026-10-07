@@ -293,3 +293,15 @@ re-read them on the page before quoting them in the README.
   `bareElicitationCapability` (`5413488`, `acbfd19`), and a shell
   health check stopping at `Pending approval` (`e3df691`); all three
   deployed on `main` and diffing clean (step 6).
+- **Needs**: user, tenant, a session of its own — D-5's write-while-open
+  probe of `~/.claude.json`, in a session of its own; one 75-second
+  query through Claude Code with `timeout` set on the bare
+  `dataPlane/sqlEndpoint`, to show whether a call between the one-minute
+  cut and the endpoint's own cap succeeds, before the user decides
+  whether the templates set `timeout`; and one read-only `fabric-iq`
+  tool call, before `powerbi-remote-mcp` leaves the template. The
+  remedy is half measured, by the D-4 session on 2026-10-07 on 2.1.292:
+  `"timeout": 600000` let a 90-second call run past 60 seconds, though
+  it still timed out at about 100, and the endpoint itself failed a
+  150-second query sent outside Claude Code at 100.6 seconds. `ac948d5`
+  records both, deployed on `main` and diffing clean (step 6).
