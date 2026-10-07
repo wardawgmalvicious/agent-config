@@ -318,3 +318,13 @@ re-read them on the page before quoting them in the README.
   100 seconds and `fabric-iq` at about 30, which Claude Code shows as
   `Error POSTing to endpoint:`. `6e6ece2` records all of it, deployed on
   `main` and diffing clean (step 6).
+- **Needs**: tenant, a session of its own — D-5's write-while-open
+  probe of `~/.claude.json`, in a session of its own; and one
+  `fabric-iq` tool call that succeeds, so under its 30-second cap,
+  before `powerbi-remote-mcp` leaves the template. The template
+  decision is made: the user chose, on 2026-10-07, to set
+  `"timeout": 120000` on the three entries measured succeeding past a
+  minute with the key, `fabric-sqlendpoint`, `fabric-kqlendpoint` and
+  `powerbi-remote-mcp`, and none elsewhere until measured. `1d4dcb7`
+  sets it and retitles the README's timeout section, both deployed on
+  `main` and diffing clean (step 6).
