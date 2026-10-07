@@ -1,13 +1,56 @@
 # Fabric Ontology (preview) — reference
 
 Detail split out of [SKILL.md](../SKILL.md). Everything here was verified
-against the Microsoft Learn docs on **2026-09-02**. The workload is in
-preview; re-check anything load-bearing.
+against the Microsoft Learn docs on **2026-09-02** unless a section gives
+a later date. The workload is in preview; re-check anything load-bearing.
 
 ## 1. Definition part schemas
 
-Source: [Ontology definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition)
-(REST item-management). Ontology items support the **JSON** format only.
+### New experience: TMDL parts
+
+Source: [Ontology definition (TMDL/new experience)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-definition)
+(REST item-management), checked 2026-10-06. New-experience items support
+the **TMDL** format: flat, item-folder-relative `.tmdl` files plus the
+platform-owned `.platform`. Git integration, `getDefinition` /
+`updateDefinition` and deployment pipelines all carry these parts.
+
+| Definition part path | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `.platform` | PlatformDetails (JSON) | yes | `metadata.type` = `Ontology`, `displayName`, `config.version` = `2.0`, `logicalId`. Platform-owned. |
+| `database.tmdl` | TMDL `database` | yes | `compatibilityLevel` 1000000, the level the ontology extensions need. |
+| `model.tmdl` | TMDL `model` | yes † | The tabular model and its `ref` statements, including `ref namespace default`. |
+| `tables/{name}.tmdl` | TMDL `table` | no | A backing table: columns, a DirectLake `partition`, optional table-level `measure` objects carrying DAX. |
+| `metrics/{name}.tmdl` | TMDL `metric` | no | One top-level metric per file, referenced from `model.tmdl` by `ref metric {name}`. |
+| `relationships.tmdl` | TMDL `relationship` | no | TOM (table-to-table) relationships. |
+| `expressions.tmdl` | TMDL `expression` | no | Shared M expressions, such as the DirectLake `DatabaseQuery` source. |
+| `entities/{namespace}#{name}.tmdl` | TMDL `entity` | no | Ontology extension: an entity type and its `property` list. An unqualified file name such as `Sensor.tmdl` is in the default namespace. |
+| `entityRelationships.tmdl` | TMDL `entityRelationship` | no | Ontology extension: each name is `<Namespace>#<EntityRelationship>`. |
+| `namespaces/{namespace}.tmdl` | TMDL `namespace` | `default` only † | Ontology extension. `namespaces/default.tmdl` is required and referenced by `ref namespace default`; other namespaces are optional. |
+| `rules/{rule}.tmdl` | TMDL `rule` | no | Ontology extension: one rule per file, named after the rule. |
+
+† Required in what `getDefinition` returns, not in what a write must
+send: the service synthesizes `model.tmdl` and `namespaces/default.tmdl`
+when a create or update omits them, so the smallest write is `.platform`
+plus `database.tmdl`.
+
+- `getDefinition` always returns `.platform`; `updateDefinition` accepts
+  it only with `updateMetadata=true`.
+- File names under `entities/`, `namespaces/` and `rules/` come from the
+  element's `name`, never its server-derived `displayName`.
+- Defaults are elided on read: an absent property is "at its default",
+  not "unsupported".
+- Property `dataType`: a primitive (`string`, `int64`, `double`,
+  `dateTime`, `boolean`, `decimal`), `Any`, `TimeSeries<T>`, or
+  `complex` with a `complexDataType`.
+
+### Old experience (legacy): JSON parts
+
+Retires **2027-01-31**; SKILL.md says who still meets it. Source:
+[Ontology (old) definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-old-definition).
+The tables below were verified on 2026-09-02, when the definition page
+above still described this layout, and have not been re-checked against
+the old-definition page since. Old-experience items support the **JSON**
+format only.
 
 | Definition part path | Required | Notes |
 | --- | --- | --- |
@@ -25,7 +68,7 @@ Note the asymmetry: **entity and relationship type IDs are bigints used
 as directory names; binding and contextualization IDs are GUIDs used as
 file names.**
 
-### EntityType — `EntityTypes/{ID}/definition.json`
+#### EntityType — `EntityTypes/{ID}/definition.json`
 
 | Property | Type | Required | Notes |
 | --- | --- | --- | --- |
@@ -45,15 +88,16 @@ file names.**
 (pointer to a base-type property this one redefines), `baseTypeNamespaceType`,
 and `valueType` ∈ **String, Boolean, DateTime, Object, BigInt, Double**.
 
-**There is no `Decimal` in that enum.** That is the schema-level
-statement of the null-values trap in SKILL.md.
+**There is no `Decimal` in that enum**, unlike the new experience's
+`dataType` above. That is the schema-level statement of the null-values
+trap in SKILL.md.
 
 The **portal** caps custom property names at **1–26 characters**
 (alphanumerics, hyphens, underscores; must start and end alphanumeric)
 and requires them **unique across all entity types** — stricter than the
 128-character API regex above. Assume the portal limit when authoring.
 
-### DataBinding — `EntityTypes/{ID}/DataBindings/{guid}.json`
+#### DataBinding — `EntityTypes/{ID}/DataBindings/{guid}.json`
 
 `{ id, dataBindingConfiguration }`, where the configuration is:
 
@@ -76,12 +120,12 @@ optional `sourceSchema`.
 Because a binding names properties only by `targetPropertyId`, reading a
 binding diff requires the entity type's `definition.json` alongside it.
 
-### RelationshipType — `RelationshipTypes/{ID}/definition.json`
+#### RelationshipType — `RelationshipTypes/{ID}/definition.json`
 
 `{ id, namespace: "usertypes", name, namespaceType: "Custom", source, target }`
 where `source` and `target` are each `{ entityTypeId }`. Directional.
 
-### Contextualization — `RelationshipTypes/{ID}/Contextualizations/{guid}.json`
+#### Contextualization — `RelationshipTypes/{ID}/Contextualizations/{guid}.json`
 
 `{ id, dataBindingTable, sourceKeyRefBindings, targetKeyRefBindings }`.
 `dataBindingTable` is the lakehouse variant above; the two
@@ -90,7 +134,7 @@ pairs naming the columns that make up each end's key. This is how a
 relationship gets bound to data — the step ontology generation does *not*
 do for you.
 
-### Overviews and ResourceLinks
+#### Overviews and ResourceLinks
 
 `Overviews/definition.json` — `{ widgets, settings }`. Widget `type` ∈
 `lineChart`, `barChart`, `file`, `graph`, `liveMap`; `yAxisPropertyId`
@@ -146,9 +190,19 @@ data source there must be in the **same workspace** as the agent and does
 not support `AND` conditions, which is narrower than ontology's own
 limits.
 
-Copilot Studio reaches ontology through the **Fabric IQ MCP (preview)**
-tool: *Tools → Add a tool → Model Context Protocol → Fabric IQ Ontology*,
-then a connection taking **Workspace ID** and **Ontology ID**.
+One consumer is not an agent: a **Real-Time Dashboard** takes an
+ontology as a data source (preview) — *Add data source* → *Ontology*,
+pick the item, *Connect* ([supported data sources](https://learn.microsoft.com/fabric/real-time-intelligence/dashboard-supported-data-sources),
+checked 2026-10-06).
+
+Copilot Studio reaches ontology through a tool listed as **Fabric IQ MCP
+(preview)**: *Tools → Add a tool → Model Context Protocol*, search
+*Fabric IQ Ontology*, pick it, then a connection taking **Workspace ID**
+and **Ontology ID**; the tool exposes `list_ontology_entity_types` and
+`search_ontology`. **It is not the GA Fabric IQ MCP server**, a different
+server for Power BI reports and semantic models that "doesn't currently
+support Fabric ontologies or data agents" (Learn, checked 2026-10-06).
+Same name, different server: check which one a setup guide means.
 
 ### The MCP endpoint
 

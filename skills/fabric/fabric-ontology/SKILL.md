@@ -23,7 +23,8 @@ items"** alongside Plan — *not* under Data Science or Real-Time
 Intelligence, which is where people look first.
 
 Everything below is **preview**, verified against the docs on
-**2026-09-02**. Re-check before relying on a limit; this surface moves.
+**2026-09-02** unless a section gives a later date. Re-check before
+relying on a limit; this surface moves.
 
 **Not here, deliberately.** The ontology graph is *provided by* [Graph in
 Microsoft Fabric](https://learn.microsoft.com/fabric/graph/overview) — a
@@ -35,7 +36,63 @@ single-source) — ontology is one *source* for each of those.
 
 ## The Git definition layout
 
-Ontology definitions are JSON. Only the first two are required:
+**Two formats, one per experience.** The **new ontology experience**, the
+default for new items, writes its definition as **TMDL**: "flat,
+item-folder-relative `.tmdl` text files plus the platform-owned
+`.platform` metadata file" (Learn, checked 2026-10-06). The JSON layout
+further down is the **old experience**'s, which retires on
+**2027-01-31**. A folder holding `database.tmdl` is new; one holding a
+root `definition.json` and `EntityTypes/` is old.
+
+Because the new definition is TMDL, the item rides the ordinary
+item-definition surface: **Git integration**, `getDefinition` /
+`updateDefinition`, and **deployment pipelines** all carry these parts:
+
+```
+<Name>.Ontology/
+  .platform                          # JSON; metadata.type = "Ontology", config.version = "2.0"
+  database.tmdl                      # REQUIRED; compatibilityLevel 1000000
+  model.tmdl                         # the tabular model and its `ref` statements
+  tables/{name}.tmdl                 # a backing table: columns, a DirectLake partition, optional DAX measures
+  metrics/{name}.tmdl                # one top-level metric per file
+  relationships.tmdl                 # table-to-table (TOM) relationships
+  expressions.tmdl                   # shared M expressions
+  entities/{namespace}#{name}.tmdl   # ontology extension: an entity type and its properties
+  entityRelationships.tmdl           # ontology extension: relationships between entity types
+  namespaces/{namespace}.tmdl        # ontology extension; namespaces/default.tmdl is required
+  rules/{rule}.tmdl                  # ontology extension: one rule per file
+```
+
+- **A two-part definition is valid on write.** Only `.platform` and
+  `database.tmdl` must be sent: the service synthesizes `model.tmdl`
+  (with `ref namespace default`) and `namespaces/default.tmdl` when they
+  are omitted, so `getDefinition` returns at least four parts.
+- **`entity`, `entityRelationship`, `rule` and `namespace` are
+  ontology-only extensions** layered on the Analysis Services tabular
+  model, so `tables/`, `relationships.tmdl` and `expressions.tmdl` read
+  like a semantic model and the rest do not. An unqualified entity file
+  such as `Sensor.tmdl` is in the default namespace.
+- **Defaults are elided on read.** A property left at its default is
+  accepted on write and omitted by `getDefinition`: absent means "at its
+  default", not "unsupported".
+- Property `dataType` is a primitive — `string`, `int64`, `double`,
+  `dateTime`, `boolean` or **`decimal`** — or `Any`, `TimeSeries<T>`, or
+  `complex`.
+
+No ontology export exists on this machine, so this is Learn's layout,
+not a measured one: write no TMDL the page does not show, and treat a
+first local export as the ground truth.
+
+### Old experience (legacy): the JSON layout
+
+The old experience **retires on 2027-01-31**. The Fabric UI no longer
+creates it, but the ontology APIs and CI/CD still can, so an existing
+item, or one created that way, uses this layout until then. Migration is
+the in-product **create a copy in the new experience**: a separate item,
+so agents, dashboards and other consumers must be reconnected and rules
+recreated.
+
+Old-experience definitions are JSON. Only the first two are required:
 
 ```
 <Name>.Ontology/
@@ -66,12 +123,13 @@ Three things about the IDs, all of which surprise people reading a diff:
 
 Property `valueType` is one of *String, Boolean, DateTime, Object,
 BigInt, Double* (plus *Any* for untyped properties). **There is no
-`Decimal`** — see the trap below. Entity type and property `name` must
-match `^[a-zA-Z][a-zA-Z0-9_-]{0,127}$`; note the portal is stricter than
-the API here and caps custom property names at **26** characters.
+`Decimal` in this old enum** — see the trap below. Entity type and
+property `name` must match `^[a-zA-Z][a-zA-Z0-9_-]{0,127}$`; note the
+portal is stricter than the API here and caps custom property names at
+**26** characters.
 
-Full part-by-part schemas, including every field of a data binding and
-the Eventhouse variant, are in
+Part-by-part schemas for both formats, including every field of an
+old-experience data binding and the Eventhouse variant, are in
 [references/REFERENCE.md](references/REFERENCE.md).
 
 ## Generating an ontology from a semantic model
@@ -81,7 +139,11 @@ from columns, and relationship types from model relationships. **What it
 does not do** is bind time series data, review entity keys, or bind
 relationship types — all three are manual follow-ups, every time.
 
-Support depends entirely on the **semantic model's storage mode**:
+**Old experience (legacy, retires 2027-01-31):** support depends
+entirely on the **semantic model's storage mode**. This matrix and the
+two paragraphs after it come from the old experience's generation page;
+the new experience's (`how-to-generate-from-semantic-models`, checked
+2026-10-06) carries no storage-mode matrix.
 
 | | Import | Direct Lake | DirectQuery |
 | --- | --- | --- | --- |
@@ -175,12 +237,14 @@ keys must be unique within each object.
 
 ## Consuming an ontology
 
-Five paths, detailed in [references/REFERENCE.md](references/REFERENCE.md):
+Five agent paths, detailed in [references/REFERENCE.md](references/REFERENCE.md):
 Fabric **operations agent** (monitoring + actions), Fabric **data agent**
 (conversational Q&A), **Foundry IQ** agent, **Copilot Studio** agent, and
-**custom agents over the ontology MCP server**.
+**custom agents over the ontology MCP server**. One consumer is not an
+agent: a **Real-Time Dashboard** takes an ontology as a data source
+(preview), through *Add data source* → *Ontology*.
 
-The last is the one that matters outside Fabric: **an ontology is itself
+The MCP path is the one that matters outside Fabric: **an ontology is itself
 an MCP server**, at
 
 ```
@@ -194,14 +258,18 @@ shape differs from the data agent's endpoint
 and a trailing `ontologyEndpoint`. It needs **F2+ capacity** and the
 *Ontology item (preview)* tenant setting.
 
-Two known agent behaviours worth carrying: a data agent's first few
-queries after creation can fail while it initializes (wait, retry), and
-aggregation is a known gap — add `Support group by in GQL` to the agent
-instructions.
+One known agent behaviour worth carrying: a data agent's first few
+queries after creation can fail while it initializes (wait, retry). The
+old aggregation workaround, adding `Support group by in GQL` to the
+agent instructions, is moot: the data agent consumes the ontology as
+context, then "generates a source-native SQL, KQL, or DAX query, runs the
+query against that source, and presents the result" (Learn, checked
+2026-10-06).
 
 ## Before you start: tenant settings
 
 Creating the item at all requires the **Ontology item (preview)** tenant
-setting. Failure to create a new ontology is *most commonly* this and not
-anything about your data. Data agent and operations agent each need their
+setting, and a new-experience item also requires **Users can create
+Fabric items**. Failure to create a new ontology is *most commonly* one
+of these and not anything about your data. Data agent and operations agent each need their
 own settings on top.
