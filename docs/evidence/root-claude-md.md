@@ -2261,6 +2261,30 @@ either left Edit out or rested it on "the memory docs". GC and HC above
 measured it, so each now names Edit beside Write, and all but
 `editing-claude-md.md` say a refused Edit loads nothing.
 
+**2026-10-07.** A `--safe-mode` baseline runs in the payload arm's
+permission mode, auto here, so the baseline sentence above needs no pin.
+The 2026-10-06 `claude-code` audit's brief 09 D-1 asked it: 2.1.284
+starts interactive sessions in auto mode when no mode is configured, so
+a `--safe-mode` that dropped `permissions.defaultMode` with the payload
+would leave the baseline's mode to that default. It keeps the key, as
+the help's "permissions work normally" says. Sonnet `-p` arms on 2.1.291
+replied `ok`, since Haiku cannot report auto: under `--safe-mode` the
+`init` record read `permissionMode` `auto` from a scratch directory and
+from this repo, as did controls without the flag, while one leaving user
+settings out (`--setting-sources project,local`) read `default`. They
+ran as children of this VS Code session and recorded `claude-vscode`, as
+the arms above did, and the control's `default` shows that entrypoint
+brought no auto default with it. A typed `claude --safe-mode` in a
+console, transcript `655da078`, recorded `auto`, entrypoint `cli`, with
+no payload skill in its initial listing; a second start, from this repo,
+left no transcript, and the `-p` arms and this repo's settings, which
+set no mode, cover it. The brief's suggested pin,
+`--permission-mode default` on the baseline, would have set it apart
+from a payload arm in auto from `claude/settings.json` since `b7c2260`
+(2026-08-31). So root's sentence stands, at the user's call, and the
+measurement went to `test-skill`'s `references/reading-a-failure.md`
+beside the other `--safe-mode` facts.
+
 ## Line endings
 
 Nothing moved: this section stands in root unchanged.

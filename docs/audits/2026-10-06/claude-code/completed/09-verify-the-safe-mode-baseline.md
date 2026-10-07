@@ -112,3 +112,12 @@ audit did not run it.
   (step 1); then § "Validating a change" and the test-skill
   `reading-a-failure.md` say which mode the baseline runs in, and how to
   pin it if auto.
+- **Closed**: 2026-10-07 — D-1 probed on 2.1.291, in a session with the
+  user: `--safe-mode` keeps `permissions.defaultMode`, so a baseline runs
+  in auto as the payload arm does. Sonnet `-p` arms read `auto` under the
+  flag from a scratch directory and this repo, a control without user
+  settings read `default`, and a typed console start recorded `auto`
+  (`655da078`). The suggested `--permission-mode default` pin would have
+  set the arms apart, so root `CLAUDE.md` stays as it is, at the user's
+  call, and the fact went to `reading-a-failure.md` and the root ledger.
+  Steps 1 to 5 passed.

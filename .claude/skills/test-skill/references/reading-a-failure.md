@@ -315,6 +315,20 @@ so for a skill whose claims overlap them, such as `commit` or `land`, it
 thins the baseline beyond the snapshot: read the log for the claim
 instead of setting it there.
 
+**`--safe-mode` keeps the permission mode too**, so a baseline runs in
+the payload arm's: `permissions.defaultMode`, `auto` in user scope here
+since 2026-08-31, survives the strip. Measured 2026-10-07 on 2.1.291 on
+Sonnet, since Haiku reports auto as `default` (above): under
+`--safe-mode` the `init` record read `permissionMode` `auto` from a
+scratch directory and from this repo, `slash_commands` down from 79 and
+85 to 58, while a control leaving user settings out with
+`--setting-sources project,local` read `default`. A typed
+`claude --safe-mode` in a console recorded `auto` on its user record,
+entrypoint `cli`, its initial listing 17 skills with no `commit`. So a
+`--permission-mode` goes on both arms or neither: on the baseline alone
+it sets a mode the payload arm lacks. The help now lists `manual` where
+`default` stood; both parse, and `init` reports either as `default`.
+
 **A conditional skill answers `Unknown command` cold.** Measured
 2026-09-02 on 2.1.252: `/fabric-data-pipeline` was `Unknown command`
 while `/fabric-gotchas` — same session shape, no `paths:` — ran normally.
