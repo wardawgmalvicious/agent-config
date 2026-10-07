@@ -1920,6 +1920,64 @@ Write was measured on 2.1.291 (§ "Validating a change", 2026-10-06);
 Edit rests on the 2.1.288 changelog bullet and the memory docs, not
 measured here. The 2026-10-06 `claude-code` audit's brief 02 found it.
 
+**2026-10-07.** `model:` is still slash-only on 2.1.291. Re-measured for
+the 2026-10-06 `claude-code` audit's brief 04, because 2.1.259 "Fixed
+frontmatter `model:` on custom commands and skills being ignored in
+interactive sessions" after the 2026-09-01 measurement above. Ten cold
+`claude -p` arms, each a Sonnet session with `--tools Skill
+--allowedTools Skill`, ran in the scratch project of that day's Edit
+arms (§ "Validating a change"), which held two unconditional skills, one
+pinned `haiku` and one `opus`, each the only source of one question's
+answer. The reply's `message.model` decided each arm, and `modelUsage`
+agreed:
+
+| Path | Mode | Pin | Arms | Ran on |
+| --- | --- | --- | --- | --- |
+| description | default | haiku | MH | Sonnet |
+| description | auto | haiku | AH | Sonnet |
+| description | auto | opus | AO, SA, CSA, CAO | Sonnet |
+| `/name` | auto | opus | SA2, CSA2 | Opus |
+| `/name` | default | haiku | SMH | Haiku |
+| `/name` | auto | haiku | SAH | Sonnet |
+
+SA and CSA were typed `/probe-pin-opus`, which Git Bash rewrote to
+`C:/Program Files/Git/probe-pin-opus`, so the model reached the skill by
+its description; SA2 and CSA2 repeated them under
+`MSYS2_ARG_CONV_EXCL='*'`. The C arms dropped every inherited `CLAUDE*`
+variable and recorded `sdk-cli` where the rest recorded `claude-vscode`,
+with no change. Each arm's transcript holds a `command_permissions`
+attachment naming the pinned model, on both paths. On the description
+path a `model` attachment then told the session it was the pinned model,
+in every arm but AH, whose Haiku auto mode drops. On the slash path,
+each arm's first prompt, none followed, so the Opus and Haiku turns ran
+still told they were Sonnet, though all 20 of the field's slash turns
+below were told Fable. The model's own account of itself is no witness.
+Transcripts MH `a89e2ff0`, AH `0665b2bb`, AO `bfea9253`, SA `bb0351bc`, CSA
+`269ee1c3`, CAO `7dcdd729`, SA2 `014432b8`, CSA2 `e821c8cc`, SMH
+`49f27a83`, SAH `dddf750f`.
+
+The field agrees. Every transcript on this machine, the oldest from
+2026-09-28, was searched for `learn`, `drift-audit` and `author-skill`,
+each pinned `fable`: 65 invocations, all in VS Code sessions on 2.1.282
+to 2.1.291, in auto mode wherever the transcript records a mode. The 20
+typed as `/name` ran on `claude-fable-5-1`, and in `154a54df` the next
+turn, a peer's message, went back to Opus; the 45 reached through the
+Skill tool ran on `claude-opus-5-5`, the session model, in each one that
+answered, two sessions having ended first. All 65 recorded `fable-5-1`
+as the pin. No transcript here holds an interactive terminal session,
+the kind 2.1.259 names, with a pinned skill, so that case stays
+unmeasured.
+
+Auto mode supports "Claude Opus 4.6 or later, Sonnet 4.6 or later, or a
+Fable model" on the Anthropic API, and "Older models, including Sonnet
+4.5, Opus 4.5, Haiku, and claude-3 models, are not supported on any
+provider" (permission-modes page, read 2026-10-07). The skills page, read
+the same day: "In auto mode, ... a model that auto mode doesn't support
+also isn't used, and the session keeps its current model." SAH shows it
+on the slash path, against SMH's Haiku. So `editing-skills.md`'s "the pin
+silently ignored" became the session being told it runs on the pin, and
+the bullet gained the auto-mode caveat.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
@@ -2190,7 +2248,11 @@ change, as the 2.1.288 bullet's "creates or changes" reads. Root's
 "Activation is keyed to Read and Write" became "Activation keys on Read,
 Write and Edit", and `activation-testing.md` gained the split.
 Transcripts `38193cd3` (G), `19c039d4` (G2), `1f548672` (GC), `9d9527b2`
-(H), `a0b7556b` (HC), `16e851f3` (I).
+(H), `a0b7556b` (HC), `16e851f3` (I). The arms ran as children of a VS
+Code session and inherited its `CLAUDE*` variables, so each records
+`claude-vscode`; the `model:` arms run beside them (§ "Editing
+conventions", 2026-10-07) found that stripping those variables changed
+nothing.
 
 ## Line endings
 

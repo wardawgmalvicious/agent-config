@@ -123,3 +123,17 @@ the audit session's own model notices, not a designed probe.
   root-ledger entry (step 1), then the `model:` bullet rewritten to the
   result. Brief 03's answers rewrite two other bullets of that section:
   land one before starting the other, and re-read it first.
+- **Closed**: 2026-10-07 — by the cold probe session that also ran brief
+  02's D-2. D-1's ten Sonnet `claude -p` arms on 2.1.291, in default and
+  auto mode, are cited in the root ledger's 2026-10-07 entry under
+  § "Editing conventions" (step 1), beside a search of this machine's
+  transcripts that found 65 invocations of the three `fable`-pinned
+  skills. The pin still holds only when the skill is slash-invoked, and
+  auto mode drops one it does not support, Haiku among them, even then.
+  The `model:` bullet in `.claude/rules/editing-skills.md` is rewritten
+  to that, with the auto-mode caveat and the date: its claim stands, and
+  "the pin silently ignored" became the session being told it runs on
+  the pin. Beyond the **Fix**, slash arms were added as the control, and
+  that search; two of the slash arms ran first as description arms,
+  Git Bash having rewritten their `/name`. Steps 2, 3 and 4 passed.
+  Interactive terminal sessions, which 2.1.259 names, stay unmeasured.

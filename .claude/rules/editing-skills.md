@@ -68,10 +68,13 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   `winget list --id Anthropic.ClaudeCode` before trusting a model-routing
   reading (2026-09-12).
 - `model:` lasts one turn, and only when the skill is slash-invoked: one
-  reached by its description runs on the session model, the pin silently
-  ignored (2026-09-01). It is inert on a conditional skill, which has no
-  cold slash route, and live on an unconditional one. `effort` applies on
-  both paths, at either scope.
+  reached by its description runs on the session model, while the session
+  is told it runs on the pin, so only `message.model` in the transcript
+  shows which ran. In auto mode, where sessions here start, a pin to a
+  model auto mode does not support, Haiku among them, is dropped even
+  when slash-invoked (2026-10-07, 2.1.291). It is inert on a conditional
+  skill, which has no cold slash route, and live on an unconditional
+  one. `effort` applies on both paths, at either scope.
 - The session default is `"effortLevel": "max"` in `claude/settings.json`.
   `effort: max` sits on every behavioural skill but `commit` (`xhigh`); on
   platform skills it stays commented, because they auto-trigger beside real
