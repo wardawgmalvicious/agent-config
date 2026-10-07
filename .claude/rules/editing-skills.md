@@ -16,7 +16,9 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   a platform skill its group's prefix, `fabric-`, `pbir-`/`pbid-`/`pbip-`
   or `msix-`: `PLATFORM_PREFIXES` in `scripts/lint-skill-overrides.py` is
   the list. Names are one flat namespace across both trees
-  (`pre-commit-hooks.md`).
+  (`pre-commit-hooks.md`). The harness reserves `anthropic-skills`, and
+  every `anthropic-skills:<name>`, for skills synced from claude.ai, so no
+  skill here takes that name (2026-10-06).
 - The listing truncates `description` + `when_to_use` at 1536 characters
   (`skillListingMaxDescChars`), silently. The budget is split per field:
   `description` ≤ 1024, the Agent Skills spec cap and one of the fields the
