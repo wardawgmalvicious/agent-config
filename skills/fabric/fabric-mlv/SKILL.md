@@ -17,8 +17,7 @@ Use MLVs for medallion bronze→silver→gold pipelines, frequently-queried aggr
 ## Prerequisites
 
 - **Schema-enabled lakehouse** — required. `enableSchemas` is immutable per lakehouse; you can't retrofit it.
-- **Fabric Runtime 1.3** — earlier runtimes can't author MLVs. Upstream still names 1.3 exactly (checked 2026-08-29), and **has not** extended the prerequisite to **Runtime 2.0** (GA Aug 2026 — Spark 4.1, Delta Lake 4.2, Python 3.13), so treat 2.0 as unverified for MLV authoring rather than assumed. This has a deadline: 2.0 is planned to become the default for new workspaces and environment items in **late September 2026**, at which point a new workspace stops defaulting to a runtime MLVs are documented against. Re-check the prerequisite then.
-- **Region** — not available in South Central US (as of 2026-04).
+- **Fabric Runtime 1.3** — earlier runtimes can't author MLVs. Upstream still names 1.3 exactly (re-checked 2026-10-06), and **has not** extended the prerequisite to **Runtime 2.0** (GA Aug 2026 — Spark 4.1, Delta Lake 4.2, Python 3.13), so treat 2.0 as unverified for MLV authoring rather than assumed. 2.0 was planned to become the default for new workspaces and environment items in late September 2026, but as of 2026-10-06 Learn's runtime page still says new workspaces use 1.3, now marked end of support announced. When the default does move, a new workspace stops defaulting to a runtime MLVs are documented against: re-check the prerequisite then.
 - **CDF on source tables** — required for incremental refresh: `ALTER TABLE bronze.x SET TBLPROPERTIES (delta.enableChangeDataFeed = true)`. Without it, optimal refresh degrades to skip-or-full only.
 
 ## Spark SQL — CREATE
@@ -29,6 +28,9 @@ CREATE [OR REPLACE] MATERIALIZED LAKE VIEW [IF NOT EXISTS]
 [(
     CONSTRAINT name1 CHECK (expr1) [ON MISMATCH DROP | FAIL],
     CONSTRAINT name2 CHECK (expr2) [ON MISMATCH DROP | FAIL]
+)]
+[(
+    REFRESH_HINT hint_name UNIQUE (col1 [, col2, ...])   -- preview
 )]
 [PARTITIONED BY (col1, col2, ...)]
 [COMMENT "..."]
@@ -42,8 +44,11 @@ AS select_statement
 | `CONSTRAINT ... CHECK` | Multiple allowed. Only deterministic built-ins permitted |
 | `ON MISMATCH DROP` | Silently drops violating rows. Each row dropped at most once even if it violates multiple constraints |
 | `ON MISMATCH FAIL` | Default. Stops the refresh with an error |
+| `REFRESH_HINT … UNIQUE (…)` | **Preview.** Declares the output columns that uniquely identify a row, so source updates and deletes can refresh incrementally instead of in full |
 | `PARTITIONED BY` | Improves filtered-read performance |
 | `TBLPROPERTIES` | Set `delta.enableChangeDataFeed=true` here to enable CDF on the MLV itself for downstream MLVs |
+
+**`REFRESH_HINT` (preview) is trusted, not checked.** Fabric doesn't validate uniqueness at runtime: declared columns that aren't unique can leave the view inconsistent, with no error or warning. Before declaring one, check the candidate key for duplicates (`SELECT <cols>, COUNT(*) FROM <view> GROUP BY <cols> HAVING COUNT(*) > 1`) and for `NULL`s, and check again whenever the definition or an upstream source changes. A source schema change between refreshes forces a full refresh.
 
 Workspace names with spaces require backtick-quoting: `` `My Workspace`.lakehouse.schema.view_name ``.
 
@@ -113,8 +118,8 @@ Optimal refresh is on by default. Per-run, Fabric picks one of three strategies 
 | Strategy | When |
 |---|---|
 | **Skip** | No new Delta commits on any source table |
-| **Incremental** | New commits + query uses only the supported-construct subset + all sources have CDF enabled + append-only |
-| **Full** | Source has updates/deletes, unsupported constructs, non-Delta source, or PySpark-defined MLV |
+| **Incremental** | New commits + query uses only the supported-construct subset + all sources have CDF enabled + either append-only sources, or updates/deletes with a `REFRESH_HINT` declaring row identity (preview) |
+| **Full** | Updates/deletes with no refresh hint, unsupported constructs, non-Delta source, PySpark-defined MLV, or a source small enough that a full recompute is faster than incremental |
 
 Toggle: lakehouse → **Materialized lake views** → **Manage** → **Optimal refresh**. Off = every scheduled run does a full rebuild. A **schedule can override it** under its own **Advanced settings**; per-schedule settings beat lakehouse defaults, which beat system defaults.
 
@@ -122,13 +127,16 @@ Toggle: lakehouse → **Materialized lake views** → **Manage** → **Optimal r
 
 | Construct | Behavior |
 |---|---|
-| `SELECT` aggregates (`SUM`, `COUNT`, `AVG`, `MIN`, `MAX`, `STDDEV`) | Full refresh |
-| `GROUP BY`, `DISTINCT`, window functions | Full refresh |
+| `GROUP BY` / aggregates: `SUM`, `MIN`, `MAX`, `COUNT` (without `DISTINCT`) | Incremental, with no partitioning requirement |
+| `GROUP BY` / aggregates: any other (`AVG`, `STDDEV`, …), including one mixed with the four above | Incremental only if every source table is partitioned and its partition column is in the `GROUP BY`; otherwise full refresh |
+| `DISTINCT`, window functions | Full refresh |
 | Non-deterministic funcs (`rand()`, `uuid()`, `current_timestamp()`) | Full refresh |
 | `INNER JOIN`, `LEFT OUTER`, `LEFT SEMI`, `UNION ALL` | Incremental — but `LEFT` joins fall back to full if the right-side table changes |
 | Subqueries / `EXISTS` | Full refresh if any referenced table changes |
 | `WITH` (CTE) | Incremental if every clause inside is supported |
 | Source is non-Delta table | Always full refresh |
+
+`GROUP BY` columns must appear in the `SELECT` list.
 
 Unsupported constructs **don't block creation** — they just downgrade to full refresh. Audit MLVs whose runs always show as Full when you expected Incremental.
 
@@ -279,7 +287,7 @@ Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. La
 | UDF / temp view in definition rejected | Not supported in `CREATE MATERIALIZED LAKE VIEW` | Rewrite without UDFs, or switch to PySpark `fmlv` |
 | Schema name `MYSCHEMA` rejected | All-uppercase schema names not supported | Use mixed-case or lowercase schema names |
 | `spark.conf.set(...)` doesn't apply on refresh | Session-level Spark properties are dropped on scheduled refresh | Set lakehouse- or workspace-level properties instead |
-| Optimal refresh always picks Full | Unsupported construct (aggregates / window / non-deterministic / non-Delta source) or no CDF on source | Check the supported-construct table; enable CDF; restructure SELECT |
+| Optimal refresh always picks Full | Unsupported construct (window / non-deterministic / non-Delta source, or an aggregate other than `SUM`/`MIN`/`MAX`/`COUNT` over unpartitioned sources) or no CDF on source | Check the supported-construct table; enable CDF; restructure SELECT |
 | Incremental refresh skips changes from a LEFT join's right side | Right-side change triggers full refresh by design | Expected; or rewrite as INNER if right side is fully populated |
 | PySpark MLV refresh fails after notebook edit | Decorator changed but notebook wasn't re-run | Re-execute every cell once after editing; refresh re-uses the latest cell contents |
 | PySpark MLV stops refreshing | Defining notebook deleted | The notebook is load-bearing for PySpark MLVs — don't delete it |
