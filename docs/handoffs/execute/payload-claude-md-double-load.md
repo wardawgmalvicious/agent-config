@@ -55,6 +55,18 @@ Worth settling first, cheaply: whether a direct Read of a nested
 `CLAUDE.md` does suppress its later nested load, by a probe in
 `scripts/test-instruction-loading.py`, and what the 3 transcripts share.
 
+**2026-10-06.** Three loader fixes bear on these figures. 2.1.281
+stopped `CLAUDE.md` and rules files from an `--add-dir` directory inside
+the working directory being sent twice in headless and SDK sessions;
+2.1.286 stopped subagents spawned with worktree isolation loading the
+project `CLAUDE.md` and its imports a second time from the worktree copy
+on their first file read; 2.1.287 stopped a folder's `CLAUDE.md` being
+attached a second time after a resume or a compaction. The measurements
+above ran on 2.1.268 to 2.1.281, so they predate the last two and reach
+2.1.281 only at their end. None of the three names a nested file loaded
+twice in one uninterrupted session, this brief's case, though 2.1.287
+bears on the two loads after `/compact`.
+
 ## What others do
 
 Surveyed 2026-09-27; the first two read in the repos themselves.
