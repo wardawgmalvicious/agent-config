@@ -4,7 +4,7 @@
 - `branch`: `main`
 - `path`: `CHANGELOG.md`
 - `shape`: `changelog`
-- `sections`: none — the file is ~590 KB, far past the WebFetch
+- `sections`: none — the file is 945 KB (2026-10-06), far past the WebFetch
   summarization threshold, and there is no heading set worth re-fetching
   by name. This source is **github-mcp-only** in practice.
 - `filter`: keep a bullet only if it names the config surface this repo
@@ -37,23 +37,32 @@ every change they would eventually reflect.
 Two measured facts drive the fields above, both of which stress the
 pipeline harder than the What's New sources do:
 
-- **Volume, per window length.** Two measured samples, not one operating
-  range: ~29 commits and ~550 bullets across 35 days, and 85 commits,
-  77 version sections and 1713 bullets across 89 days. That is roughly
-  **0.95 commits/day and ~19 bullets/day** — scale by the window rather
-  than reading the 35-day figures as the source's steady state. Roughly
+- **Volume, per window length.** Three measured samples, not one operating
+  range: ~29 commits and ~550 bullets across 35 days; 85 commits, 77
+  version sections and 1713 bullets across 89 days; and 38 commits, 34
+  version sections and 2336 bullets across the 39 days to 2026-10-06.
+  Commits hold near one a day in all three, but bullets ran ~16 and ~19
+  a day in the first two and ~60 in the third, so the bullet rate moves
+  from window to window and is **no constant to scale by**. Roughly
   two thirds of bullets are `Fixed` TUI or platform bugs, so without
   `filter` the report is unreadable; the 89-day run passed 418 of 1713
   bullets, which is the evidence the filter earns its place. Do not filter
   on the leading verb alone, though — `Fixed Grep and Glob not applying
   Read(...) deny rules to files reached through a symlinked search path`
   is a permissions-model finding wearing a bugfix prefix.
-- **Size.** ~590 KB, 380+ version sections, and it only grows. This is why
+- **Size.** 945 KB and 414 version sections on 2026-10-06, and it only
+  grows. This is why
   SKILL.md § 4a treats `changelog` sources specially: letting two full
   files into context to diff them would pull ~1.2 MB to learn what a small
   append-at-top region already says. The bound is not "always patch" — it
   is to keep the full files out of the conversation, by per-commit patch
-  on short windows and by an on-disk two-ref diff on long ones.
+  on short windows and by an on-disk two-ref diff on long ones. On a
+  five-week window the new region alone outgrows the ~150 KB per-source
+  budget — 358 KB in the 39 days to 2026-10-06 — and must be read in
+  slices of about 420 lines to pass the Read tool's 25,000-token cap. The
+  file is a prepend almost always, but a bullet is now and then reworded
+  in place — one 2.1.252 bullet in that window — so a run reads the
+  diff's removed lines too.
 
 **This source never produces a new-skill candidate, and that is deliberate.**
 The harness ships live coverage of itself — the `claude-code-guide` subagent
