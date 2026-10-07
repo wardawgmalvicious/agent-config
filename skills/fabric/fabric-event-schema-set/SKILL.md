@@ -334,7 +334,10 @@ semantic versions (Learn). Up to three versions per schema were seen on
   pipelines, beyond `fabric-eventstream`'s note that schema-enabled
   eventstreams don't survive one with their registries intact; business
   events (`eventTypeCategory` `BusinessEventType`); and the create form's
-  description cap.
+  description cap. Schema Registry itself went GA in September 2026
+  (What's New), and Learn says it "also manages any schemas that you
+  create as part of Business Events" (2026-10-06): documentation, not a
+  test, so business events stay on this list.
 
 Scripts for the Git route — reading `versions[]` back, and appending a
 version in the portal's bytes — are in
