@@ -33,7 +33,7 @@ The 3 highest-leverage entry points (NotebookUtils notebook run/orchestration, p
 
 ## Workspace monitoring (after the fact)
 
-- [What is workspace monitoring (preview)?](https://learn.microsoft.com/fabric/fundamentals/workspace-monitoring-overview) — Eventhouse-backed cross-item logs.
+- [What is workspace monitoring (preview)?](https://learn.microsoft.com/fabric/fundamentals/workspace-monitoring-overview) — cross-item logs, managed through a **monitoring item** whose Eventhouse holds a read-only KQL database; the old *Log workspace activity* settings toggle is now legacy (Learn, 2026-10-06).
 - [Monitor Fabric items with item job event logs](https://learn.microsoft.com/fabric/fundamentals/item-job-event-logs) — `ItemJobEventLogs` table; the post-hoc place to see which Tier 1/Tier 2 runs failed across the workspace.
 
 ## See also (this repo)
