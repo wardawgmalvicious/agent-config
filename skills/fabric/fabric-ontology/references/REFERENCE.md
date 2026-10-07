@@ -387,7 +387,7 @@ Symptom → most likely cause, which is the direction you actually need:
 | Data agent **aggregates wrongly** | Known issue. Add `Support group by in GQL` to the agent instructions. |
 | Data agent answers **vague** | Ontology not added as a knowledge source, or entity/relationship names not meaningful. |
 
-Note the last four are data-agent-side; `fabric-data-agent` owns the rest
+Note the last three are data-agent-side; `fabric-data-agent` owns the rest
 of that surface.
 
 For known issues beyond these, see

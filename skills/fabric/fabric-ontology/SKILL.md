@@ -213,6 +213,12 @@ queryable, by design. Check the mode before blaming the data.
   agent to update the entity type, or *Refresh now* (or schedule) the
   graph model in the workspace (`how-to-use-ontology-graph`, checked
   2026-10-07).
+- **Graph projection has its own eligibility.** *Manage graph* marks an
+  entity type *Ineligible* when it has no entity type key, no binding,
+  more than one backing table, or data bound to a semantic model: only
+  lakehouse and mirrored-database delta tables project. Binary and
+  Variant properties project as String, and time-series ones as their
+  base type (same page, checked 2026-10-07).
 - **Three meters cost capacity** in the new experience: **Ontology
   Discovery**, 1,000 CU-seconds per definition read, one about every 20
   minutes included while the item is open, so close it when done; the
@@ -268,7 +274,8 @@ From the binding page, checked 2026-10-07:
   bind without a static one.
 - **An entity type key is optional**, since the overview announces
   keyless entity types; when one is defined, its properties are
-  `string` or `integer` only.
+  `string` or `integer` only. A keyless entity type cannot be projected
+  into a graph (see the constraints above).
 - Time series data must be **columnar** — one row per timestamped
   observation.
 
