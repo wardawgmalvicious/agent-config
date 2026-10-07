@@ -414,6 +414,17 @@ and `vscode-agent`. Record that result either way; a source-shape-dependent
 answer is a legitimate outcome and should be written into §4's delegation step
 as a condition rather than papered over.
 
+**2026-10-06: an inline single-source run, measured.** That day's
+`claude-code` audit ran Phase 1 inline over 38 commits by the on-disk
+two-ref diff, so both refs, 587,814 and 945,458 bytes, stayed on disk.
+The added region, 2,438 lines and 357,781 bytes, entered context whole,
+2.4× the ~150 KB per-source budget, in six Read slices: 620-line slices
+were refused at 29–34k tokens against the Read tool's 25,000-token cap,
+and 420-line slices passed. The run did not compact and left no file
+undiffed, so the reopen trigger as written did not fire. These are the
+inline half of the comparison above; no delegated run on that window
+exists to set beside them.
+
 ## Confidence
 
 - **Structure: H.** The one-source-per-invocation boundary follows the
