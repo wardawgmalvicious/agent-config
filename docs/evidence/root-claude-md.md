@@ -798,6 +798,14 @@ and `handoff-status.py`. The push gate's "before a Claude session has
 reviewed it" overstated: its own header says it guards against accidents,
 not intent, and `--no-verify` skips it.
 
+**2026-10-06.** The limit on governing file creation, now in
+`editing-rules.md`, stands on new ground. It was reasoned on 2026-09-16
+from activation being keyed to `Read`, and no arm had tried `Write`. A
+Write does load a matching rule and ends a `paths:` skill's listing hold,
+but the load arrives with the Write's result, once the file exists. Root's
+"until a matching file is Read" became "until a Read or Write matches
+it". The probe is under § "Validating a change".
+
 ## Working on this repo
 
 This repo's own operating procedure lives in `.claude/skills/` at
@@ -2096,6 +2104,36 @@ and `Project` for one under this repo's `.claude/rules/`.
 for a rule with 6 globs and 3 for one with 3, so it never says which
 glob matched, and no field of the record names the file whose Read did:
 the hook log's `trigger_file_path` does, for the loads that log sees.
+
+**2026-10-06.** `Write` activates as `Read` does. A drift-update session
+on 2.1.289 wrote an ontology fixture's `database.tmdl`, and the deployed
+`coding-dax` and `coding-tmdl`, then globbing `**/*.tmdl`, loaded at
+once: their `nested_memory` records follow the Write's tool_result, and
+that transcript (`4427a920`, 0-based records 2759–2765) holds no other
+Read, Write or Edit of a `.tmdl`. Reproduced cold the same day on
+2.1.291, in six haiku `claude -p` sessions run from a scratch project
+holding one project rule and one conditional skill, both globbing
+`**/*.probe`, and a `sub/CLAUDE.md`; one file tool per session,
+transcripts read by script:
+
+| Arm | `--tools` | Action | Loaded after the result |
+| --- | --- | --- | --- |
+| A | `Write` | create `notes/a.probe` | the rule |
+| B | `Read` | read `notes/b.probe` | the rule |
+| C | `Write` | create `notes/c.txt` | nothing |
+| D | `Write` | create `sub/x.txt` | `sub/CLAUDE.md` |
+| E | `Write,Skill` | create `notes/e.probe` | the rule, and the skill in a listing delta |
+| F | `Read,Skill` | read `notes/b.probe` | the rule, and the skill in a listing delta |
+
+Arms A to D got no skill listing at all, initial included, because
+`--tools` dropped `Skill`; E's and F's initial listings held 38 skills
+and withheld the probe's. D contradicts `agent-instructions-scoping.md`'s
+"Write, Grep, Glob and Bash load nothing", probed on 2.1.282, and matches
+the memory docs, read the same day: a subdirectory's `CLAUDE.md` loads on
+a Read, Write or Edit beneath it, though not one the session wrote or read
+itself. Every file measured sat inside the session's working directory.
+Once, in a warm session, Writes of files outside it that a user rule's
+globs matched loaded nothing; not isolated.
 
 ## Line endings
 

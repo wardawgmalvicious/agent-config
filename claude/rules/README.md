@@ -160,7 +160,7 @@ conformance checking.
   coding convention: which home a piece of agent guidance takes — root
   `CLAUDE.md`, a `paths:` rule, a nested file, a skill, a hook, a README
   — and how each misses in silence. Carries when Claude Code loads each
-  file (a nested one only on the session's own Read, never on Write,
+  file (a nested one on the session's own Read, Write or Edit, never on
   Grep or a subagent's Read), that a `CLAUDE.md` anywhere on the path
   silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
   and the `@AGENTS.md` import form that loses none, with the two

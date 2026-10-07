@@ -11,12 +11,17 @@ paths:
 
 # Activation testing, and what can witness an activation
 
-- Activation is keyed to the `Read` tool, not to the file: a `cat` through
-  Bash, or a `Grep`, loads no skill and no rule, and auto mode, which every
-  session on this machine starts in, prefers `cat`. `--allowedTools` alone
-  removes nothing, so a probe measuring activation pins
-  `--allowedTools Read --disallowedTools Bash …` and asserts each `tool_use`
-  really was a `Read` (2026-09-01).
+- Activation is keyed to the `Read` and `Write` tools, not to the file: a
+  `cat` through Bash, or a `Grep`, loads no skill and no rule, and auto
+  mode, which every session on this machine starts in, prefers `cat`.
+  `--allowedTools` alone removes nothing, so a probe measuring activation
+  pins `--allowedTools Read --disallowedTools Bash …` and asserts each
+  `tool_use` really was a `Read` (2026-09-01). A `Write` that creates a
+  matching file activates the same way, its attachments arriving after
+  its result (2026-10-06, 2.1.291).
+- `--tools` keeps only the tools it names, and a session without `Skill`
+  gets no skill listing at all, initial or delta: a probe measuring a
+  skill names `Skill` in `--tools` (2026-10-06, 2.1.291).
 - The session transcript, `~/.claude/projects/<project>/<session-id>.jsonl`,
   is the one complete witness. A skill match appends a
   `{"type":"attachment"}` record whose `attachment.type` is `skill_listing`,

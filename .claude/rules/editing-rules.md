@@ -7,13 +7,13 @@ paths:
 
 # Editing a rule, or its Copilot port
 
-- A rule carries only `paths:`, and loads when a file matching it is Read.
-  So it never loads for a `cat`, `sed` or heredoc edit, and it cannot govern
-  creating a file, since the first file in a directory has nothing to Read:
-  guidance about making something belongs in a skill description or a hook
-  (reasoned 2026-09-16, not measured).
+- A rule carries only `paths:`, and loads when a file matching it is Read
+  or Written, never for a `cat`, `sed` or heredoc edit. A Write's load
+  arrives with its result, once the file exists, so a rule still cannot
+  govern creating a file: guidance about making something belongs in a
+  skill description or a hook (2026-10-06, 2.1.291).
 - A rule's whole body is paid again after each compaction, at the next
-  matching Read, not once a session: without a compaction no rule loaded
+  match, not once a session: without a compaction no rule loaded
   more than twice, with them one loaded 21 times, and one client session
   paid 574 KB of user rules in 77 loads across 12 compactions, against
   71 KB had each loaded once (164 sessions, seven repos, 2026-09-30). A
@@ -32,8 +32,8 @@ paths:
   name a rule in `.claude/rules/` after one in `claude/rules/`: the
   collision would silently switch that rule off in this repo.
 - A rule in `.claude/rules/` is this repo's own: project scope, deployed
-  nowhere, no deploy step. It is read when a matching file is Read, so a new
-  one loads at its next matching Read even mid-session, and an edit to one
+  nowhere, no deploy step. It loads like any rule (above), so a new
+  one loads at its next match even mid-session, and an edit to one
   already loaded reaches the session as a change notice (2026-09-24,
   2.1.268). It must carry `paths:`, since an unscoped rule loads at launch
   like `CLAUDE.md` and undoes the split, and no glob may reach
