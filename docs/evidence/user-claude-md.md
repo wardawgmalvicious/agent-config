@@ -79,6 +79,33 @@ wrong.** Where a translation layer sits on both the read and the write
 because the read undoes the write before the check looks. Go under the
 layer to the bytes, or check from the other side of it.
 
+**2026-10-07.** Re-measured on 2.1.291 for the 2026-10-06 `claude-code`
+audit, brief 08 D-1, after two releases changed the Bash tool on
+Windows: 2.1.287 removed "a subshell that ran before every command", and
+2.1.274 stopped re-sourcing the profile after every plugin reload. Both
+act once per tool call, not per spawn, and the figure held. The same 120
+spawns, 60 each of `git --version` and `date`, timed inside one Git Bash:
+50.1 s and 55.5 s from the Bash tool (417 and 462 ms each), 64.1 s
+through `bash.exe` from the PowerShell tool (534 ms), and 39.3 s from a
+real console (327 ms), which matched the tool shell on 2026-09-04 and
+now ran faster. The 462 and 534 ms runs had other sessions busy beside
+them; the 417 ms one ran with every peer idle. A new arm made the same
+120 spawns straight from pwsh, with no Git Bash between: 9.5 s and 9.3 s
+from the PowerShell tool (79 and 78 ms), and 10.4 s from the console
+(86 ms). So the cost is Git Bash's fork, not process creation, and the
+rule now names the shell: "A spawn costs ~0.4 s" became "A Git Bash
+spawn costs ~0.4 s", with pwsh's ~0.08 s beside it.
+
+The two modes were re-read in the same pass, and only the login form
+turned up. Four sessions on 2.1.291, this one in VS Code and three cold
+`claude -p` Haiku sessions, each read
+`/usr/bin/bash -c -l export TEMP=… && … && eval '<command>'`, and each
+still wrote a `~/.claude/shell-snapshots/snapshot-bash-*.sh` as it
+started. In the VS Code one, `$-` read `hBc`, `shopt -q login_shell`
+answered yes, `AZURE_CONFIG_DIR` was set by the profile and `gh` was a
+function, as the login form above describes. Four sessions cannot show
+the snapshot form gone, so the rule keeps both.
+
 ### Python
 
 There is no system Python — but the names still resolve, so the failure
