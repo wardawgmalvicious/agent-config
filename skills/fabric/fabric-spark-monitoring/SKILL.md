@@ -46,7 +46,7 @@ Field guide for the session objects:
 |---|---|
 | `sparkApplicationId` | YARN application id — required for SHS drill-down below |
 | `livyId` | The Livy session id used in per-application URLs |
-| `livyName` | `HC_<NotebookName>_<livyId>` prefix marks a high-concurrency session |
+| `livyName` | `HC_` prefix marks a high-concurrency session: `HC_<NotebookName>_<livyId>` for notebook high concurrency, `HC_<LakehouseName>_<LivySessionId>` for Livy-API high concurrency |
 | `state` | Session lifecycle state |
 | `origin`, `submitter`, `jobType` | Who/what launched the session |
 | `submittedDateTime` / `startDateTime` / `endDateTime` | Submission vs actual start vs end |
@@ -156,6 +156,16 @@ the dominant cost, so reuse is usually the single biggest lever.
 Reuse conditions (all must hold): same session tag, same submitting
 user, same default lakehouse + compute configuration, target session
 still alive, and ≤ 5 notebooks already attached to the session.
+
+**Livy-API high concurrency** (GA, September 2026) is a second mode,
+packed at the REPL level: each acquired HC session is a REPL inside a
+shared Livy session, grouped by an optional `sessionTag`, with at most
+**five REPLs per Livy session**. The tag is a packing hint, not a lock —
+rapid concurrent acquires can still open extra Livy sessions — and
+acquisition isn't idempotent, so each call returns a new HC session id.
+The monitoring hub names these `HC_<LakehouseName>_<LivySessionId>`,
+after the request's lakehouse, so search for that pattern, not the
+notebook one.
 
 ## Gotchas
 
