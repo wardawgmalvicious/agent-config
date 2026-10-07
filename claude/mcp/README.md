@@ -246,15 +246,18 @@ Two pairs of alternatives; keep at most one of each.
   TMDL files on disk, so a PBIP repo keeps local.
 - **Querying**: `fabric-iq` or `powerbi-remote-mcp`. Learn now calls the
   second the earlier consumption endpoint and prefers Fabric IQ; keep
-  `powerbi-remote-mcp` until a `fabric-iq` tool call is measured here,
+  `powerbi-remote-mcp` until a `fabric-iq` tool call succeeds here,
   since a connect cannot show the tool list its `X-Variants` header pins.
+  They differ in one more way: `fabric-iq` ends a call at about 30
+  seconds and `powerbi-remote-mcp` at about 100 ([measured
+  2026-10-07](#per-server-timeout--deliberately-absent)).
 
 | Server | Runtime | Purpose |
 | --- | --- | --- |
 | `powerbi-modeling-mcp` | stdio (`npx @microsoft/powerbi-modeling-mcp`) | Semantic-model authoring over TOM — tables, columns, measures, relationships, partitions, calculation groups, RLS roles, translations, plus DAX execution and validation. Connects to a model in **Power BI Desktop**, a **Fabric workspace**, or a **PBIP TMDL folder** on disk. It **writes**, and since GA it refuses every tool until its EULA is accepted — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
 | `powerbi-modeling-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi/authoring`) | **Unprobed.** The hosted Power BI Authoring server (preview): the local server's modeling tools against models in a Fabric workspace, without Desktop, PBIP files, transactions or traces. Stateful, so the client must return `mcp-Session-Id` on every request. Microsoft's own [Claude Code setup](https://github.com/microsoft/skills-for-fabric/blob/main/mcp-setup/README.md) authenticates it with this same `headersHelper`. Needs the tenant setting in the prerequisites. It **writes** — see [below](#powerbi-modeling-mcp-is-a-write-tool). |
-| `fabric-iq` | http (`fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq`) | Fabric IQ MCP (GA), Learn's preferred server for querying Power BI: finds reports and semantic models by name or browser URL, reads their metadata and schema, searches stored values and runs DAX — read-only, under the signed-in user's RLS and OLS, with no IDs to configure. The `X-Variants` header pins its tool contract; Learn's troubleshooting blames a missing one when the tools don't match its list. Microsoft's [Claude Code setup](https://github.com/microsoft/skills-for-fabric/blob/main/mcp-setup/README.md) uses this same `headersHelper` and says a Power BI-audience token works too. Needs a tenant whose home region runs every Fabric workload. Measured connecting 2026-10-07 on 2.1.292, with the `X-Variants` header; no tool called yet. |
-| `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The earlier Power BI *Consumption* server (preview): execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user, who needs **Build** permission on the model, with RLS enforced. Read-only, unlike `powerbi-modeling-remote-mcp` one path segment further on. Measured connecting 2026-09-14 and again 2026-10-07; drop it once a `fabric-iq` tool call is measured. |
+| `fabric-iq` | http (`fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq`) | Fabric IQ MCP (GA), Learn's preferred server for querying Power BI: finds reports and semantic models by name or browser URL, reads their metadata and schema, searches stored values and runs DAX — read-only, under the signed-in user's RLS and OLS, with no IDs to configure. The `X-Variants` header pins its tool contract; Learn's troubleshooting blames a missing one when the tools don't match its list. Microsoft's [Claude Code setup](https://github.com/microsoft/skills-for-fabric/blob/main/mcp-setup/README.md) uses this same `headersHelper` and says a Power BI-audience token works too. Needs a tenant whose home region runs every Fabric workload. Measured connecting 2026-10-07 on 2.1.292, with the `X-Variants` header. It ends a call at about 30 seconds on its own side, which Claude Code shows as `Error POSTing to endpoint:` with nothing after the colon: its one tool call here, a 70-second DAX query, failed that way the same day, and none has yet succeeded. |
+| `powerbi-remote-mcp` | http (`api.fabric.microsoft.com/v1/mcp/powerbi`) | The earlier Power BI *Consumption* server (preview): execute a DAX query, get a semantic-model schema, get report metadata, and generate DAX from a prompt (that last one consumes Copilot capacity — disable it in the client to avoid that). Every tool takes a **semantic model ID or report ID**, which is what makes it project scope. Queries run as the signed-in user, who needs **Build** permission on the model, with RLS enforced. Read-only, unlike `powerbi-modeling-remote-mcp` one path segment further on. Measured connecting 2026-09-14 and again 2026-10-07; drop it once a `fabric-iq` tool call succeeds here. |
 
 #### Data agents and ontologies
 
@@ -318,7 +321,7 @@ approving any. Approve the server in an interactive `claude` first, as
 the cmd recipe above does, or health-check a scratch copy registered at
 local scope and removed after, as that probe did.
 
-The bound-URL text is the trap, because it reads like a network or URL fault rather than an auth one. A genuinely absent endpoint is a fourth text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL. Claude Code redacts the ids out of the `Error dialing` URL it prints, so that text cannot tell you which workspace or item was dialled.
+The bound-URL text is the trap, because it reads like a network or URL fault rather than an auth one. A genuinely absent endpoint is a fourth text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL. A fifth, `Error POSTing to endpoint:` with nothing after the colon, is no transport fault either: it is how Claude Code showed `fabric-iq` ending a slow call at its own 30-second cap (2026-10-07; [the timeout section](#per-server-timeout--deliberately-absent)). Claude Code redacts the ids out of the `Error dialing` URL it prints, so that text cannot tell you which workspace or item was dialled.
 
 **Both URL shapes work, and every hosted endpoint probed so far connects.** Measured 2026-09-14, each against its own control: bare `dataPlane/sqlEndpoint`, bare `dataPlane/kqlEndpoint`, `core`, `powerbi`, a workspace/item-bound `kqlEndpoint` (two repeated rounds), and a workspace/reflex-bound Activator URL. The bound shape is not second-class, and nothing needs rewriting to the bare form to work from Claude Code. The one measured failure is a workspace/item-bound `dataPlane/sqlEndpoint`, which returns `MCP endpoint not found` for every item type tried in one tenant while the bound `kqlEndpoint` beside it connects — a tenant-side gap in that variant, not a credential or client problem. The four bare ones, `core`, `dataPlane/sqlEndpoint`, `dataPlane/kqlEndpoint` and `powerbi`, were probed again on 2026-10-07, each alone, on CLI 2.1.292, since 2.1.287 offers URL elicitation on the 2025-11-25 protocol and its changelog warns that some servers stop connecting: each `✔ Connected`, with the template's helper and no `bareElicitationCapability` key, so the templates carry none. The bound `kqlEndpoint` and Activator forms were not re-probed.
 
@@ -582,9 +585,37 @@ Neither template sets a timeout. Two upstream sources disagree about the field a
 - **`timeout`** (milliseconds) is the real key. It is accepted on every transport and is what `claude mcp get <name>` echoes back as `Timeout:`.
 - **`request_timeout_ms`** — named in the 2.1.206 changelog — is an internal remote-transport hint, declared in the bundle as `@internal CCR backend wire hint; folded into timeout at parse`. On an `http` / `sse` / `ws` server it folds into `timeout`, capped at 300000 ms in the 2.1.251 bundle, a cap not re-read since 2.1.274 fixed the five-minute stop below. On a **stdio** server it is not in the schema at all and is **silently dropped**. Never put it in a template.
 
-`timeout` is left out too, because for a stdio server the default is not 60 seconds. Claude Code overrides the MCP SDK's 60s default with `timeout ?? MCP_TOOL_TIMEOUT ?? 1e8` — roughly **27.8 hours**, a hard wall-clock limit per tool call — so a slow stdio start, such as `npx` fetching `@azure/mcp` on first launch, has no deadline worth raising. An `http` server also carries a second, per-request timer, covering each request through to the server's first response byte: the greatest of 60 seconds, `MCP_TIMEOUT` and a tool timeout that is actually set, so with neither template setting one it is 60 seconds unless `MCP_TIMEOUT` is longer. Stdio servers have no such timer (MCP docs, read 2026-10-07). **That timer cuts a slow hosted Fabric call at about a minute.** The bare `dataPlane/sqlEndpoint` sends no byte until its query completes: with no `timeout` and neither variable set, a 45-second read-only query succeeded in a Claude Code 2.1.292 session and a 90-second one failed with `The operation timed out.` inside a 67-second bracket, while the same 90-second call made to the endpoint outside Claude Code answered at 91 seconds (2026-10-07). So the 27.8 hours bound a stdio call, while an `http` call to a server that holds its first byte, as this one does, has about a minute when no `timeout` is set. **A `timeout` lifts that cut, but the endpoint has its own cap near 100 seconds.** With `"timeout": 600000` on that server, a fresh session's 90-second call ran past 60 seconds, yet still ended in `The operation timed out.`, at about 100 seconds, from a side the error text does not settle; and a 150-second query sent outside Claude Code got HTTP 500 at 100.6 seconds, JSON-RPC `-32603` (2026-10-07). So on `dataPlane/sqlEndpoint` a `timeout` raises the ceiling from about a minute to about 100 seconds at most, and no call in between has yet succeeded through Claude Code; the other hosted endpoints' own caps are unmeasured. And before 2.1.274 a Streamable HTTP call stopped at about five minutes, whatever `timeout` said. One more limit is unrelated and unreachable from here: a call running past `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (default 120000) moves to a background task without being aborted, and no `timeout` value changes that.
+`timeout` is left out too, because for a stdio server the default is not 60 seconds. Claude Code overrides the MCP SDK's 60s default with `timeout ?? MCP_TOOL_TIMEOUT ?? 1e8` — roughly **27.8 hours**, a hard wall-clock limit per tool call — so a slow stdio start, such as `npx` fetching `@azure/mcp` on first launch, has no deadline worth raising. An `http` server also carries a second, per-request timer, covering each request through to the server's first response byte: the greatest of 60 seconds, `MCP_TIMEOUT` and a tool timeout that is actually set, so with neither template setting one it is 60 seconds unless `MCP_TIMEOUT` is longer. Stdio servers have no such timer (MCP docs, read 2026-10-07). And before 2.1.274 a Streamable HTTP call stopped at about five minutes, whatever `timeout` said. One more limit is unrelated and unreachable from here: a call running past `CLAUDE_CODE_MCP_AUTO_BACKGROUND_MS` (default 120000) moves to a background task without being aborted, and no `timeout` value changes that.
 
-Verified against Claude Code **2.1.251** (2026-08-31) by reading the shipped config schema and round-tripping a scratch `.mcp.json` through `claude mcp get`; the `http` timers are from the MCP docs and the 2.1.274 changelog, read 2026-10-07, and the one-minute cut and the endpoint's cap were measured that day on 2.1.292. Re-check on a major version bump.
+**On a hosted Fabric `http` server that timer is the limit, and
+`timeout` lifts it only as far as the endpoint's own cap.** No endpoint
+measured sends a byte before its result is ready, so with no `timeout` a
+call past about a minute fails with `The operation timed out.`: a
+75-second warehouse query did, inside a 77-second bracket, and the same
+query succeeded in a fresh session with `"timeout": 600000` on the
+server. Set that way, a call of 70 to 80 seconds succeeded on three
+endpoints, and each endpoint then ends a call on its own side, measured
+by calling it directly outside Claude Code. All on 2026-10-07 on
+2.1.292, read-only, one call at a time, with `MCP_TIMEOUT` and
+`MCP_TOOL_TIMEOUT` unset:
+
+| Endpoint | Through Claude Code, `timeout` set | Longest direct success | Direct failure |
+| --- | --- | --- | --- |
+| `dataPlane/sqlEndpoint` | 75-second query succeeded | 91.3 s | HTTP 500 at 100.6 s, JSON-RPC `-32603` |
+| `dataPlane/kqlEndpoint` | 73-second query succeeded | 81.6 s | HTTP 500 at 100.7 s, `-32603` |
+| `powerbi` | DAX query of about 70 seconds succeeded | 70.0 s | HTTP 500 at 100.3 s, `-32603` |
+| `fabric-iq` | the same DAX query: `Error POSTing to endpoint:`, nothing after the colon | 19.7 s | HTTP 504 at 30.1 s, empty body |
+
+So on the three `api.fabric.microsoft.com` endpoints a `timeout` buys
+calls of about 60 to 100 seconds, and any value from about 100000
+reaches that cap; above it, the value sets only the client's wall-clock
+limit, which the server reaches first. `fabric-iq` stops a call at about
+30 seconds, under the client's 60, so a `timeout` buys it nothing, and
+Claude Code shows its 504 as an error that reads like a transport fault.
+Not measured: `core`, the hosted authoring, data agent and ontology
+endpoints, and whether `MCP_TIMEOUT` alone does the same.
+
+Verified against Claude Code **2.1.251** (2026-08-31) by reading the shipped config schema and round-tripping a scratch `.mcp.json` through `claude mcp get`; the `http` timers are from the MCP docs and the 2.1.274 changelog, read 2026-10-07, and the one-minute cut and the endpoints' own caps were measured that day on 2.1.292. Re-check on a major version bump.
 
 ---
 
