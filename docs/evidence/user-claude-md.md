@@ -947,6 +947,52 @@ sessions:
   the witness its test reads after it ends. A probe run from a repo
   without the name stays until `cleanupPeriodDays` removes it.
 
+**2026-10-07.** The read-block sentence answers the 2026-10-06
+`claude-code` audit's brief 08 D-2, which the user settled as a line
+here. `CHANGELOG.md` 2.1.257 added "a one-time prompt in auto mode
+before the first file read outside the working directories, with the
+option to block such reads
+(`permissions.blockReadsOutsideWorkingDirectories`)", and 2.1.284 the
+answer "Yes, but ask again next time". The docs, read that day for
+brief 08's log, give `false` as the same as unset and make the offer
+while the block is off, so a `false` cannot stop it; "Yes, and keep
+allowing any reads outside the working directories" records the answer,
+and the offer does not return. What stays readable under the block the
+docs list open-endedly, "such as" Claude Code's skills, rules, agents
+and `CLAUDE.md`.
+
+Measured on 2.1.291 with `claude -p --model sonnet --tools Read` from a
+scratch directory, the block set through `--settings`, one Read a path:
+
+- **Refused:** `~/handoff-inbox/README.md`, another repo's `README.md`,
+  another project's transcript and its memory's `MEMORY.md`,
+  `~/.claude/logs/skills-invoked.log`, `~/.claude/settings.json`, and
+  `~/.claude/skills/commit/SKILL.md`, a junction into this repo's
+  `skills/workflow/commit/`, as was the junction's target.
+- **Allowed:** `~/.claude/CLAUDE.md`, `~/.claude/rules/coding-bash.md`,
+  a claude.ai skill in `~/.claude/skills/synced/`, a real directory, and
+  a transcript of the probe's own project.
+- **Without the block** the first probe's six reads all succeeded, in
+  auto mode.
+
+A refusal reads "`<path>` is outside `<working directories>`; the
+permissions.blockReadsOutsideWorkingDirectories setting blocks reads
+outside the working directories. Ask the user to add the directory with
+/add-dir, or to remove that setting." The synced skill was read and the
+junctioned one refused, so the block follows a junction to its target:
+from any working directory outside this repo, a deployed skill's own
+files, its `references/` among them, are out of reach. The line names
+that, the inbox the paragraph routes notes to, other repos, and other
+projects' transcripts.
+
+To fit the cap, the three-line pointer to this ledger at the top of
+`claude/CLAUDE.md` went out. Only a session editing that file follows
+it, and `.claude/rules/editing-claude-md.md`, which that session's Read
+of the file loads, names this ledger too; the pointer was also a repo
+path, which the user asked on 2026-09-23 to keep out of the file.
+`claude/rules/coding-bash.md` cited this ledger twice as "the evidence
+file it names", and now names it by path.
+
 ### GitHub Copilot no longer inherits this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude

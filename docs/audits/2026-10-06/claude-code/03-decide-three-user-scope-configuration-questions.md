@@ -230,3 +230,7 @@ and the docs pages read that day. The deployed settings file and
   match, and "Below `max`, the pins raise effort" is checked against
   2.1.267, beside brief 04's bullet in the same section; then steps 1,
   2, 4 and 6, and step 7's `-Force` deploy from `main`.
+- **Needs**: a session of its own, the landing — the line above, and
+  step 7's `-Force` deploy now also carries brief 08's `claude/CLAUDE.md`
+  and `claude/rules/coding-bash.md` edits (2026-10-07): run 08's step 4
+  diff after it and append 08's `**Closed**:`.

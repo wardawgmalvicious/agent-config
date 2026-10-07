@@ -126,3 +126,9 @@ were read by the audit session, which changed neither.
   and the two `/proc/$$/cmdline` modes re-checked; D-2's line, with what moves out to keep the cap; then
   steps 1 and 2, and step 4's `-Force` deploy after reading brief 03
   D-1's knock-on.
+- **Needs**: brief 03's landing — step 4's `-Force` deploy and its diff,
+  run with brief 03's once `effortLevel` leaves `claude/settings.json`,
+  since a deploy before then would leave `effortLevel: "max"` in
+  `~/.claude/settings.json` for good: the merge keeps target-only keys.
+  D-1, D-2 and steps 1 to 3 were done 2026-10-07 in a session with the
+  user, who chose this order.

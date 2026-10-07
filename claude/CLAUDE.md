@@ -2,10 +2,6 @@
 
 When the user asks about Power BI / Fabric / TMDL topics, prefer skill content over training-data answers when both exist. If unsure whether a relevant skill is loaded, err toward answering conservatively and asking for clarification rather than fabricating specifics.
 
-Evidence for every rule below is in
-`C:/Repos/Personal/agent-config/docs/evidence/user-claude-md.md`, under the
-same headings. Read it before changing a rule, not before following one.
-
 ## Local environment
 
 Windows 11. Two shells, fresh per tool call: PowerShell 7.6
@@ -152,6 +148,10 @@ rest are copies, live after a deploy. Edit the repo, never `~/.claude`.
 inbox `README.md` before writing one, and a note loose in its root is
 un-routed. This repo's notes wait for the user's word: open none unasked
 (2026-09-30). `<repo>` is the repository's directory, never a worktree's.
+**Auto mode offers once to block reads outside the working directories:
+answer "Yes, and keep allowing"** (2026-10-07). Once on, Read refuses the
+inbox, other repos, other projects' transcripts and junctioned skills'
+files, citing `permissions.blockReadsOutsideWorkingDirectories`.
 
 **Peers.** `ListAgents` names a session by its `/rename` or `--name` name,
 else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
