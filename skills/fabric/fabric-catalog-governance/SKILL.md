@@ -10,9 +10,12 @@ disable-model-invocation: false
 
 The OneLake catalog's **Govern** tab reports a tenant's governance
 posture across three areas — *Manage your data estate*, *Protect, secure
-& comply*, and *Discover, trust, and reuse*. This skill does the same
-work through the REST APIs, where it can be counted, scheduled and
-fixed in bulk.
+& comply*, and *Discover, trust, and reuse*. It also hosts governance
+experiences, **Policies** (preview) among them, and administrative ones
+— capacities, workspaces, tenant settings, Azure connections, workloads
+and more — each shown as far as the viewer's admin role allows (Learn,
+2026-10-06). This skill does the same work through the REST APIs, where
+it can be counted, scheduled and fixed in bulk.
 
 The output is **findings**, not a rewrite. Do not write to a tenant
 unless asked separately, and then only through §6.
@@ -277,6 +280,11 @@ Produce a named route instead.
   and returns only `id`, `type`, `displayName`, `description`,
   `catalogEntryType` and `hierarchy.workspace` — no label, endorsement
   or refresh state. It cannot be the basis of a coverage statistic.
+  What's New (2026-10-02) adds table discovery (preview): tables from
+  semantic models, lakehouses and mirrored databases, found by table
+  name, description or exact column name. The Search API reference still
+  says search covers only display name, workspace display name and
+  description, so the extension is undocumented there (2026-10-06).
 - **Domain assignment is not access.** Assigning a workspace to a domain
   "doesn't affect item visibility or accessibility"; access is workspace
   role plus item permissions. All tenant users can see all domains.
