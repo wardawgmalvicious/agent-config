@@ -211,12 +211,23 @@ path and the path recorded under **Deviations**. Anything else stops
 the run: the brief it targets finished by a route this one did not
 foresee.
 
-**An explicit instruction is the one way past a missing quote.** When the
-user names where the quoted text now sits ("it moved two paragraphs
-down"), they have taken the human look this stop exists to force. Run the
-post-fix grep first, as above; then apply the fix at the line they named,
-and record the brief's quote, the line edited and that the user directed
-it under **Deviations**. A line this run found for itself never counts.
+**A brief can foresee its own staleness.** When its **Sequencing note**
+names the sibling brief that rewrites the quoted text, and says what to
+do once that brief has run, the divergence is predicted, not unknown:
+confirm the sibling's log stamps it applied, grep for whatever of the
+quote the note says survives, follow the note, and record the changed
+quote and the note under **Deviations**. Anything the note does not
+cover still stops the run. Three of ten briefs in the 2026-10-06
+`fabric-iq-ontology` pass met this, each quoting text `fabric/04` or
+`fabric/07` had since rewritten as its note predicted (2026-10-07).
+
+**Otherwise, an explicit instruction is the one way past a missing
+quote.** When the user names where the quoted text now sits ("it moved
+two paragraphs down"), they have taken the human look this stop exists
+to force. Run the post-fix grep first, as above; then apply the fix at
+the line they named, and record the brief's quote, the line edited and
+that the user directed it under **Deviations**. A line this run found
+for itself never counts.
 
 ### 4.3 Apply
 
@@ -422,6 +433,8 @@ next source's briefs. Both are separate, deliberate invocations.
 - **Stale splits two ways, and neither is improvising.** A missing quoted
   line means the fix already landed (stamp `already-applied`) or the target
   moved (stop the run). Never substitute a line that looks close enough.
+  A rewrite the brief's own sequencing note foresaw is neither: follow
+  the note (4.2).
 - **Two mechanics yield to an explicit instruction, and nothing else
   does**: applying a moved line where the user names it (4.2), and a commit
   per brief (5), each recorded under **Deviations**. Adjacent fixes and a
