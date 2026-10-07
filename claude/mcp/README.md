@@ -306,6 +306,17 @@ cd /d c:\Repos\<repo>
 claude
 ```
 
+**A shell health check stops short of a project server not yet
+approved.** `claude mcp get <name>` on a `.mcp.json` server the folder
+has not approved prints ``⏸ Pending approval (run `claude` to approve)``
+instead of a connect result (MCP docs, read 2026-10-07). Approval is
+stored apart from trust, so a trusted folder can still answer this way:
+a probe in another repo hit it on 2026-10-07 on 2.1.292, its one
+project key trusted with no server approved and no settings file
+approving any. Approve the server in an interactive `claude` first, as
+the cmd recipe above does, or health-check a scratch copy registered at
+local scope and removed after, as that probe did.
+
 The bound-URL text is the trap, because it reads like a network or URL fault rather than an auth one. A genuinely absent endpoint is a fourth text again — `MCP endpoint not found at <host>` — which is the one that really does indicate a wrong URL. Claude Code redacts the ids out of the `Error dialing` URL it prints, so that text cannot tell you which workspace or item was dialled.
 
 **Both URL shapes work, and every hosted endpoint probed so far connects.** Measured 2026-09-14, each against its own control: bare `dataPlane/sqlEndpoint`, bare `dataPlane/kqlEndpoint`, `core`, `powerbi`, a workspace/item-bound `kqlEndpoint` (two repeated rounds), and a workspace/reflex-bound Activator URL. The bound shape is not second-class, and nothing needs rewriting to the bare form to work from Claude Code. The one measured failure is a workspace/item-bound `dataPlane/sqlEndpoint`, which returns `MCP endpoint not found` for every item type tried in one tenant while the bound `kqlEndpoint` beside it connects — a tenant-side gap in that variant, not a credential or client problem. `core` alone was probed again on 2026-10-07, on CLI 2.1.292, since 2.1.287 offers URL elicitation on the 2025-11-25 protocol and its changelog warns that some servers stop connecting: `✔ Connected`, with the template's helper and no `bareElicitationCapability` key, so the templates carry none. The other endpoints above were not re-probed.
