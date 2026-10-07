@@ -217,9 +217,10 @@ week of 2026-05-25.
   incremental compute for real changes only — no charge for idle periods —
   and it increases storage through extra `_change_data` files. Enable
   selectively.
-- **Mirroring views** — replicates source view logic instead of physical
-  tables. **Snowflake only** in preview. Fabric refreshes views every 12
-  hours, not in near real time as it does tables (Learn, 2026-10-06).
+- **Mirroring views** — materializes each source view's results into
+  OneLake as Delta tables. **Snowflake only** in preview. Fabric refreshes
+  views every 12 hours, not in near real time as it does tables (Learn,
+  2026-10-06).
 
 Core mirroring pricing is unaffected by enabling either.
 
