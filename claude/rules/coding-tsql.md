@@ -28,11 +28,12 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
   Warehouse — **this rule applies normally**, Warehouse sections and all.
   Read the header before choosing; do not infer the dialect from `.sql`.
 - **Fabric SQL Database** — a `<Name>.SQLDatabase/**/*.sql` *is* Azure
-  SQL, so the style guidance below applies normally. What does **not**
-  apply is the two Fabric Warehouse sections at the end of this file:
-  the ANSI string operators (`||`, `EDIT_DISTANCE`, `UNISTR`) and
-  `OPTION (FOR TIMESTAMP AS OF ...)` are Warehouse and SQL analytics
-  endpoint features. So are FROM-first queries, `GROUP BY ALL` /
+  SQL, so the style guidance below applies normally, string operators
+  and fuzzy matching included: Learn lists SQL database in Fabric for
+  `||`, `||=`, `UNISTR` and all four fuzzy-match functions (2026-10-06).
+  What does **not** apply is the time-travel section at the end of this
+  file: `OPTION (FOR TIMESTAMP AS OF ...)` is a Warehouse and SQL
+  analytics endpoint feature. So are FROM-first queries, `GROUP BY ALL` /
   `ORDER BY ALL` without a column list, `QUALIFY`, and `MEDIAN`,
   `QUANTILE`, `APPROX_MEDIAN`, `APPROX_QUANTILE`, which Learn says SQL
   database in Fabric doesn't support (What's New calls them preview,
@@ -246,13 +247,13 @@ END
 
 ## Fabric Warehouse string operators and functions
 
-Fabric Warehouse and the SQL analytics endpoint (also SQL Server 2025,
-Azure SQL DB/MI on the 2025 update policy) add ANSI string operators and
-fuzzy-match/Unicode functions. Learn marks the Jaro-Winkler functions
-**preview**, while the `||` and `UNISTR` pages carry no preview label
-(2026-10-06). Gate the fuzzy-match functions in production, and don't
-assume portability to Synapse dedicated SQL pools or pre-2025 SQL
-Server.
+Fabric Warehouse and the SQL analytics endpoint (also SQL database in
+Fabric, SQL Server 2025, Azure SQL DB/MI on the 2025 update policy) add
+ANSI string operators and fuzzy-match/Unicode functions. Learn marks all
+four fuzzy-match functions **preview**, while the `||` and `UNISTR` pages
+carry no preview label (2026-10-06). Gate the fuzzy-match functions in
+production, and don't assume portability to Synapse dedicated SQL pools
+or pre-2025 SQL Server.
 
 ### `||` and `||=` concatenation
 
