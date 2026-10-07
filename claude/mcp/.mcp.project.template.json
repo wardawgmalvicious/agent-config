@@ -69,7 +69,8 @@
         "fabric-sqlendpoint": {
             "type": "http",
             "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/sqlEndpoint",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors",
+            "timeout": 120000
         },
         "fabric-data-factory-mcp": {
             "type": "stdio",
@@ -83,7 +84,8 @@
         "fabric-kqlendpoint": {
             "type": "http",
             "url": "https://api.fabric.microsoft.com/v1/mcp/dataPlane/kqlEndpoint",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors",
+            "timeout": 120000
         },
         "activator-remote-mcp": {
             "type": "http",
@@ -129,7 +131,8 @@
         "powerbi-remote-mcp": {
             "type": "http",
             "url": "https://api.fabric.microsoft.com/v1/mcp/powerbi",
-            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors"
+            "headersHelper": "az account get-access-token --resource https://api.fabric.microsoft.com --query \"{Authorization: join(' ', ['Bearer', accessToken])}\" --output json --only-show-errors",
+            "timeout": 120000
         },
         "data-agent-remote-mcp": {
             "type": "http",
