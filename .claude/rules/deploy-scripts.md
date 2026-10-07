@@ -37,7 +37,11 @@ edit goes live.
   only to delete a target-only file.
 - Claude Code finds a skill one level deep, `<skills-root>/<name>/SKILL.md`,
   so `~/.claude/skills` is a real directory of per-skill junctions, not one
-  junction for `skills/`. A branch that lacks a linked skill leaves its
+  junction for `skills/`. Beside them Claude Code keeps `synced/`, the
+  claude.ai account's skills, and `.trash/`, where it moves the ones it
+  drops: both are Claude Code's, not the payload's, and the prune never
+  touches them, since it skips every entry that is not a reparse point
+  (2026-10-06). A branch that lacks a linked skill leaves its
   junction dangling once checked out, until the script runs again. Claude
   Code never reads `~/.claude/mcp`; that copy exists so the template-copy
   commands in `claude/mcp/README.md` resolve.
