@@ -219,3 +219,10 @@ the MCP-tasks text on Learn. The remaining quotes are the agent's.
   The tool page was added to `consumption-surfaces.md`'s Learn list.
 - **Needs**: a fresh session — `/test-skill fabric-data-agent`, the
   routing retest the `description` edit owes.
+- **Needs**: a fresh session — `/test-skill fabric-data-agent`, the
+  routing retest the `description` edit owes; and the outage warning,
+  if Learn's data-agent ontology page still carries it, added to the
+  ontology paragraph at `SKILL.md:21` once the `fabric-iq-ontology`
+  pass has landed its brief 10, which edits that paragraph. The
+  Deferred line above gives the warning to brief 10, which does not
+  list it.

@@ -217,3 +217,13 @@ does not exist yet.
 - **Needs**: the `fabric-iq-ontology` pass — its briefs 03 and 07
   edit the `description`; fold the TMDL layout in there and retest
   once.
+- **Needs**: a fresh session, after the `fabric-iq-ontology` pass
+  lands — fold the TMDL layout into the `description`, then run the
+  one `/test-skill fabric-ontology` retest that pass's `description`
+  edits share. This replaces the line above, which counted on that
+  pass for two follow-ups none of its briefs lists. Its briefs 03, 04,
+  05 and 07 edit the `description` without folding the layout in, and
+  quote its current text, so folding it in first could stop them at
+  the staleness gate. Its brief 10 does not list the data-agent outage
+  warning the Deferred line gives it; that is now on `fabric/07`'s
+  last Needs line.
