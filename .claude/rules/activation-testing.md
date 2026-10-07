@@ -18,7 +18,9 @@ paths:
   pins `--allowedTools Read --disallowedTools Bash …` and asserts each
   `tool_use` really was a `Read` (2026-09-01). A `Write` that creates a
   matching file activates the same way, its attachments arriving after
-  its result (2026-10-06, 2.1.291).
+  its result (2026-10-06, 2.1.291). On Windows the Bash deny turns off
+  PowerShell too, so the probe has no shell tool at all, which is what it
+  wants (changelog, 2.1.287).
 - `--tools` keeps only the tools it names, and a session without `Skill`
   gets no skill listing at all, initial or delta: a probe measuring a
   skill names `Skill` in `--tools` (2026-10-06, 2.1.291).
