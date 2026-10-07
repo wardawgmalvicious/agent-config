@@ -101,6 +101,7 @@
       "effortLevel": "xhigh"
     }
   },
+  "bashOutputMaxChars": 128000,
   "cleanupPeriodDays": 15,
   "autoUpdatesChannel": "latest",
   "permissions": {
