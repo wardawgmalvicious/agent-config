@@ -90,6 +90,15 @@ Sept 2026, all silent:
   `DatabaseSchema.kql` 19 tables → 1, because that sandbox genuinely
   held one table.
 
+Three Git features now guard these (Learn, 2026-10-06). **Selective
+branching** (*Select items individually* at branch-out) builds a partial
+workspace on purpose, though branching out into an *existing* workspace
+can still delete items not saved to Git. The **compare dialog** marks
+every file new, modified or deleted before commit: read the deletions
+there. **File-level commit** (preview, supported items in the Modified
+state only) leaves unselected files uncommitted, a deletion included, at
+the risk of a partial definition Fabric warns about.
+
 Recover a deleted definition with
 `git checkout <commit-before-the-delete> -- <item path>`, but **keep the
 new `.platform`**: a recreated item has a different `logicalId`, and
