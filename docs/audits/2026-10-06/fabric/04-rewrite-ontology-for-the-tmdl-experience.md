@@ -166,3 +166,54 @@ transient: added on 2026-09-29 and deleted on 2026-10-02, so a plain
 base-to-head diff would have missed it. The `fabric-iq-ontology` source
 was not selected for this run, so the page-level diff it would produce
 does not exist yet.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-ontology/SKILL.md`,
+  `skills/fabric/fabric-ontology/references/REFERENCE.md`
+- **Verification**: steps 1–3 and 5 passed; step 4 did not apply, as
+  the `description` is unchanged; step 6 runs once at the end of the
+  run. Step 1: JSON is called the only format solely inside the
+  old-experience sections, and 2027-01-31 appears in both files. Step
+  2: `REFERENCE.md:198-204` separates the Copilot Studio ontology tool
+  from the GA Fabric IQ MCP server. Step 3: lint clean. Step 5:
+  `docs/audits/2026-10-06/fabric-iq-ontology/` exists; an earlier
+  session ran that audit today (`631fbee`), floor 2026-09-02, as item
+  9 asks, so item 9 needed no run here.
+- **Sources, re-opened 2026-10-06**: the TMDL definition page (parts
+  table, the synthesized `model.tmdl` and `namespaces/default.tmdl`,
+  elided defaults, `decimal` among the property `dataType`
+  primitives); the ontology overview (default experience, 2027-01-31,
+  copy-to-migrate); the tenant-settings page; the old-experience
+  `concepts-generate` page, which holds the storage-mode matrix, and
+  the new `how-to-generate-from-semantic-models` page, which has none,
+  so item 4 marked the matrix legacy rather than re-deriving it; the
+  Fabric IQ MCP page and the Copilot Studio how-to; the Real-Time
+  Dashboard data-source pages; and the data-agent ontology page for
+  item 6's quote. Every TMDL fact written is on the definition page.
+- **Deferred**: the `description` still describes only the JSON
+  layout. It was left alone because the brief did not target line 3 and
+  the `fabric-iq-ontology` briefs 03 and 07 already edit it and share
+  its retest. Learn's data-agent ontology page now carries an
+  outage warning: a data agent may not be able to add a new-experience
+  ontology. That belongs to brief 07 and `fabric-iq-ontology` brief 10,
+  not here. Behavioural confirmation needs a fresh session:
+  `/test-skill fabric-ontology` with this brief.
+- **Deviations**: four, each so the new text does not contradict what
+  it sits beside. (1) Both files' opening "verified on 2026-09-02"
+  line gained "unless a section gives a later date". (2) Item 7: a
+  Real-Time Dashboard is a consumer but not an agent, so "Five paths"
+  became "Five agent paths" with the dashboard named after them. The
+  `description`'s "five agent paths" therefore stays true, and "The
+  last" became "The MCP path" so its referent survives. (3)
+  `REFERENCE.md` §1's five JSON subsections went from `###` to `####`
+  under the new legacy subsection, keeping §2–§8 numbered as the
+  `fabric-iq-ontology` briefs cite them. (4) Item 5 added the second
+  setting at `SKILL.md`'s tenant-settings paragraph only; renaming the
+  first is `fabric-iq-ontology` brief 02's.
+- **Needs**: the `fabric-iq-ontology` pass — its briefs 03 and 07
+  edit the `description`; fold the TMDL layout in there and retest
+  once.

@@ -213,3 +213,53 @@ later that day, at the user's request. It re-read every page as raw
 markdown at `main` and walked the include's history, which dated the
 SharePoint List change to `e42ed53c` and turned up D-4. D-4 rests on
 that re-read alone.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-mirroring/SKILL.md`,
+  `skills/fabric/fabric-mirroring/references/source-matrix.md`
+- **Verification**: steps 1–3 and 5 passed; step 4 is below; step 6
+  runs once at the end of the run. Step 1: both SharePoint List rows
+  read "Database and Metadata", each with the dated status note beside
+  it. Step 2: the §7 heading still says "(paid, preview)", with the
+  What's New note under it. Step 3: no hunk falls inside "Security does
+  not travel" (`:265`; the `:315` hunk is brief 12's), and the role line
+  sits in the Snowflake section. Step 5: lint clean; the `description`
+  changed, to 970 characters, and `skill-status.py --stale` lists
+  `fabric-mirroring`.
+- **Learn, read 2026-10-06**: a subagent fetched, quoting verbatim,
+  `mirroring/overview` (every row; SharePoint List and Snowflake are
+  "Database mirroring, Metadata mirroring"; no AWS Glue, Azure Monitor
+  or Google Lakehouse Runtime Catalog row), `mirroring/sharepoint-list`
+  (no label), `extended-capabilities` (both sections "(preview)"),
+  `extended-capabilities-views` (12-hour refresh),
+  `mirroring/snowflake` and `snowflake-limitations` (the same object-type
+  and authentication tables on both), and What's New's three rows. Every
+  quote in the brief matched.
+- **Step 4, one verdict per D-4 row**:
+  1. a. Edited: the row reads Database for managed tables and views and
+     Metadata for Iceberg tables through shortcuts; the `description` now
+     names "Snowflake tables" under database mirroring and "Snowflake
+     Iceberg" under metadata.
+  2. b. Edited: key pair joins username/password and Entra SSO;
+     workspace identity is not supported.
+  3. c. Edited: managed tables, Iceberg tables, views and materialized
+     views, with Iceberg's storage connection; Snowflake Iceberg left the
+     "Not in this matrix" note.
+  4. d. Edited: views refresh every 12 hours.
+- **Deferred**: the routing retest the `description` edit owes, and
+  behavioural confirmation; an edited `SKILL.md` does not reliably
+  reload mid-session on Windows. One adjacent finding: `SKILL.md:221`
+  says mirroring views "replicates source view logic", where Learn says
+  Fabric materializes view results into Delta tables on a schedule.
+- **Deviations**: two. (1) Both table headers are re-dated 2026-10-06,
+  since the whole source table was re-read, and each names AWS Glue and
+  Azure Monitor as absent from it, as the constraint asks. (2) The
+  Snowflake section was rewritten beyond rows b and c: it credited
+  "native tables only" and the two auth methods to the limitations page,
+  which now repeats the main page's tables.
+- **Needs**: a fresh session — `/test-skill fabric-mirroring`, the
+  routing retest the `description` edit owes.

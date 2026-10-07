@@ -184,3 +184,52 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 session decoded the bulk-import payload itself (`curl` the page, then
 `base64 -d` the `definition.pbir` part) and checked the Core MCP page
 itself. The other quotes are the agents'.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-rest-api/SKILL.md`,
+  `skills/fabric/fabric-rest-api/references/REFERENCE.md`,
+  `skills/fabric/fabric-gotchas/SKILL.md`,
+  `skills/fabric/fabric-cicd/SKILL.md`,
+  `skills/fabric/fabric-cli/SKILL.md`,
+  `skills/fabric/fabric-tmdl-api/SKILL.md`,
+  `skills/fabric/fabric-tmdl-api/references/REFERENCE.md`
+- **Verification**: steps 1–4 passed; step 5 runs once at the end of
+  the run. Step 1: no hit. Step 2: both `byPath` claims are scoped to
+  the single-item endpoints, and both cite the bulk-import example as
+  unmeasured. Step 3: no hit. Step 4: lint clean on all five
+  `SKILL.md` files; no `description` changed.
+- **Learn, read 2026-10-06**: the Bulk Import reference (no beta or
+  preview text and no `beta=true` on the URI; SemanticModel and
+  `.platform` parts in its example; the `byPath` `definition.pbir` as
+  the audit decoded it); Commit To Git (`FileLevelSelective` with
+  `itemsWithFileSelection` / `selectedFiles`, scope
+  `Workspace.GitCommit.All`; file-level commit is preview per the
+  compare-and-commit page); the cross-workspace binding and
+  notebook-source-control pages (auto-binding off by default, per
+  notebook; the Resources folder committable, but "integration with
+  deployment pipelines and public APIs are not currently supported");
+  the warehouse system-file release notes ("This feature is in
+  preview"); and the deployment-plan pages. D-3's endpoint and scope
+  are the audit session's check.
+- **Deferred**: D-7 is a flag with no edit. `fab find` (`fabric-cli`
+  `SKILL.md:62`) keeps its three search fields until the Catalog Search
+  API reference documents table and column search.
+- **Deviations**: four. (1) D-1, `fabric-cli`: the brief leaves the
+  flag's own status alone while step 1 wants "Experimental, v1.7" gone,
+  so the line now says the flag was experimental "when last read"
+  beside the GA API. (2) D-1, `fabric-tmdl-api` `REF:16`: Bulk Export
+  is named without a link, since only the import page's URL was
+  verified. (3) D-6: Learn's note that deployment pipelines and public
+  APIs don't carry the notebook Resources folder rode along with the
+  Git half, since it bears on the library directly. (4) D-4: the commit
+  call sits after the existing "Both calls" bullets, so "both" still
+  means Get Status and Update From Git. The workspace-identity and
+  deployment-script wording in `fabric-gotchas` follows brief 08's in
+  `fabric-warehouse`.
+- **Needs**: the next fabric drift audit — D-7: whether the Catalog
+  Search API documents table and column search, before `fabric-cli`'s
+  `fab find` line changes.

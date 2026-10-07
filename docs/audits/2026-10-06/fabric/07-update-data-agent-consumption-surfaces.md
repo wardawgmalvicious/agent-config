@@ -168,3 +168,54 @@ runs second reads the first one's text.
 Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 2026-09-01, by the IQ mapping subagent. The audit session itself checked
 the MCP-tasks text on Learn. The remaining quotes are the agent's.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-data-agent/SKILL.md`, and
+  under its `references/`: `consumption-surfaces.md`,
+  `authentication.md`, `status-and-retirements.md`
+- **Verification**: steps 1–4 ran; step 5 runs once at the end of the
+  run. Step 1: every surviving "preview" names a surface Learn still
+  marks preview: the connected-agent path, M365 Copilot (Agent Store),
+  the Python SDK, Foundry, SPN auth, the Creator Agent, topics and the
+  preview runtime. "SPN not supported" survives only on the
+  connected-agent/Foundry row; the group-by instruction survives only
+  as the retired workaround; "25 rows" is kept per item 5. Step 2:
+  the Copilot Studio tool page and the MCP server page were re-opened
+  on 2026-10-06 and read as quoted. Step 3: lint clean, after the
+  `description` was brought back under 1,024 (see Deviations). Step
+  4: the `description` changed, so the routing retest is owed below.
+- **Learn, re-read 2026-10-06**: the tool page (Fabric IQ Data MCP,
+  User or Maker, no service-principal mode named, no preview label);
+  the connected-agent page and the M365 Copilot data-agent page, both
+  still "This feature is in preview"; the Fabric IQ M365 overview (GA
+  for Power BI content; data agents need a published M365 agent);
+  visuals (200 rows); topics and schema object descriptions (preview,
+  SQL sources on the preview runtime only); the runtime page ("Runtime
+  selection doesn't control which model"); and the semantic-model
+  binding known issue.
+- **Deferred**: the routing retest the `description` edit owes. Also
+  noted, not acted on: Learn's ontology troubleshooting page still
+  prescribes `Support group by in GQL`, against the data-agent page's
+  source-native queries. The skill follows the brief and brief 04,
+  which retired the workaround in the same words. The data-agent
+  ontology page now warns of an ongoing outage: an ontology in the new
+  experience may not be addable. That is `fabric-iq-ontology` brief
+  10's, which adds the data agent's ontology known issues.
+- **Deviations**: four. (1) Two lines outside the named ones still
+  called the MCP endpoint and Copilot Studio preview, and step 1
+  covers them: `consumption-surfaces.md:7` and
+  `status-and-retirements.md:7`. Both were corrected. (2) The
+  `description` was exactly 1,024 characters, so naming the GA
+  surfaces there failed lint at 1,068. It now just drops "MCP
+  endpoint" from its preview list, narrows "Copilot Studio" to its
+  connected agent, and shortens "Azure AI Foundry" to "Foundry", ending
+  at 1,010. (3) Item 1: the tool page names User and Maker and no
+  service-principal mode, so the tool's rows say so rather than "SPN
+  not supported", which stays on the connected-agent/Foundry rows. (4)
+  The tool page was added to `consumption-surfaces.md`'s Learn list.
+- **Needs**: a fresh session — `/test-skill fabric-data-agent`, the
+  routing retest the `description` edit owes.

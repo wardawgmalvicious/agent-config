@@ -149,3 +149,58 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 every page quoted above. The audit session did not re-check them. The
 Mirrored Database hold exists because What's New and Learn disagree,
 and Learn is the source the skill transcribes.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-eventstream/SKILL.md`, and
+  under its `references/`: `source-connectors.md`, `kafka-mtls.md`,
+  `activator-destination.md`, `monitoring.md`
+- **Verification**: steps 1–3 passed; step 4 runs once at the end of
+  the run. Step 1: no hit calls MQTT or the Activator destination
+  preview, and none calls mTLS Kafka-only. Each surviving
+  `ArtifactId` was checked: two are dated history, one is the
+  instruction to swap it, and three are the samples the constraint
+  keeps, marked unmeasured. Step 2: the Mirrored Database rows in
+  `SKILL.md` and `source-connectors.md` stay preview, each with the
+  dated What's New/Learn disagreement. Step 3: lint clean.
+- **Learn, re-read 2026-10-06** (the audit session had not): Eventstream
+  workspace monitoring (four tables, `ItemId`/`ItemName`/`ItemKind`,
+  per-eventstream **Log Eventstream activity**); `add-source-mqtt` (no
+  preview text, its own **TLS/mTLS settings**);
+  `add-destination-activator` (no preview text, the Rules-pane
+  sentence as quoted); Cribl's and MongoDB CDC's CI/CD limitation;
+  `add-custom-stream-connector` (preview, source plugins only, no
+  private-network sources); `enrich-events-with-reference-data`
+  (preview, Lakehouse Delta tables); and the source list in
+  `add-manage-eventstream-sources`.
+- **Deferred**: the constraint's live check. No workspace monitoring
+  database was reachable, so the prose changed and the three KQL
+  samples in `monitoring.md` still filter on `ArtifactId`, marked
+  unmeasured against the new schema with a `getschema` step. Adjacent,
+  not fixed: the gotcha "Monitoring tables don't appear after enabling"
+  (`SKILL.md:174`) still prescribes the legacy toggle, where the
+  per-eventstream opt-in is now the likelier cause; the `description`
+  names three tables, not four. Learn's monitoring page itself still
+  opens by saying workspace monitoring "automatically creates an
+  eventhouse in your workspace", so it is only partly updated.
+  Behavioural confirmation, including the routing retest the
+  `description` edit owes, needs a fresh session.
+- **Deviations**: three. (1) MQTT: the brief makes it GA, but Learn's
+  source list still reads "MQTT (preview)". That is the same
+  disagreement the brief holds Mirrored Database for. Its own page
+  carries no preview text and What's New dates GA to August 2026, so
+  MQTT was written as GA, with the list's label recorded and dated
+  beside it in both files. (2) Step 1's grep covers the `description`,
+  so its "filter by ArtifactId not name" became "filter by ID not
+  name". (3) The custom connector went into `source-connectors.md` as
+  well as the `SKILL.md` sources table, since that file is the
+  exhaustive list. The gotcha naming `ArtifactName`/`ArtifactId`
+  (`SKILL.md:183`) was renamed to the `Item*` columns, for step 1's
+  check.
+- **Needs**: tenant, a fresh session — a workspace monitoring database
+  with Eventstream logging on, to confirm `ItemId` against `ArtifactId`
+  and rewrite the three samples; then `/test-skill fabric-eventstream`
+  for the routing retest.

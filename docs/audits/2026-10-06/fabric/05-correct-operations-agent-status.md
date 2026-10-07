@@ -87,3 +87,36 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 2026-09-01, by the IQ mapping subagent, through the OAP row. The base
 version of the page confirms the June 2026 GA date, so this correction
 does not depend on the agent's Learn reading alone.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-operations-agent/SKILL.md`,
+  `skills/fabric/fabric-operations-agent/references/REFERENCE.md`
+- **Verification**: steps 1–4 ran; step 5 runs once at the end of the
+  run. Step 1: every surviving "preview" names a surface Learn still
+  marks preview, namely Git integration, deployment pipelines,
+  Investigator insights, OAP support and the *Operations agent for
+  pipelines* page title. Step 2: the OAP page, re-opened 2026-10-06,
+  reads "Operations agent is generally available. Support for
+  operations agent with workspace OAP is in preview." Step 3: lint
+  clean. Step 4: `skill-status.py --stale` lists
+  `fabric-operations-agent` as `untested-behaviour`. Its activation
+  stamp covers only `paths:`, which is unchanged, and it has no
+  behaviour stamp to go stale, so the retest the `description` edit
+  owes is Phase B, owed below.
+- **Item 1, one by one, 2026-10-06**: Git integration's supported-items
+  list still reads "Operations Agent *(preview)*" under Data Factory;
+  deployment pipelines' list reads the same; Investigator insights is
+  headed "(preview)" on the operations-agent actions page. All three
+  kept "preview"; only the item flipped.
+- **Deferred**: the routing retest. Step 1's grep covers line 3, whose
+  "Operations Agent item (preview)" named the GA item, so `(preview)`
+  was dropped from the `description`. That needs `/test-skill
+  fabric-operations-agent` in a fresh session.
+- **Deviations**: the `description` edit above. It is outside the named
+  lines, but step 1 required it and the brief's Kind allows it.
+- **Needs**: a fresh session — `/test-skill fabric-operations-agent`,
+  the retest the `description` edit owes.

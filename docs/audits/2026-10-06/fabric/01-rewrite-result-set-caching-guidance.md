@@ -163,3 +163,43 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 then checked the result set caching page itself. The skill's "disabled"
 claim was dated 2026-09-11 and was overtaken twelve days later by
 commit `27532aaa`, whose title states the new default outright.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**:
+  `skills/fabric/fabric-warehouse-monitoring/SKILL.md`,
+  `skills/fabric/fabric-warehouse-monitoring/references/REFERENCE.md`,
+  `skills/fabric/fabric-warehouse/references/REFERENCE.md`
+- **Verification**: steps 1–4 passed; step 5 runs once at the end of
+  the run. Step 1: the only hit that says disabled is the dated
+  2026-09-11 history at `SKILL.md:101`; the other two are the new
+  check and off-switch SQL. Step 2: no `query-activity` hit left in
+  `skills/fabric`. Step 3: the result set caching page, re-opened
+  2026-10-06, still reads "enabled by default for all Fabric
+  Warehouses and Lakehouse SQL Analytics Endpoints". Step 4: lint
+  clean.
+- **Deferred**: behavioural confirmation of the edited skill, which
+  needs a fresh session: `/test-skill fabric-warehouse-monitoring`
+  with this brief. Two adjacent findings, not fixed: (1)
+  `fabric-warehouse-monitoring/references/REFERENCE.md:11` still names
+  "Query activity" in the overview link's gloss, the stale name this
+  brief renamed at `:5`, `:13` and `fabric-warehouse`'s `:40`; (2)
+  `:5` says the parent `SKILL.md` § Reference links Monitor, but that
+  section links query labels instead.
+- **Deviations**: two. (1) The constraint's known issue
+  (`aka.ms/fabricdwrscki`) redirects to a script-rendered Power Apps
+  portal: WebFetch saw no issue content, and the page's
+  `/fabric-json2/` feed returned none, so whether it is closed could
+  not be read. The constraint's conservative branch was taken: the
+  reference stays, as dated history beside the 2026-10-06 Learn fact,
+  with the `sys.databases` check to settle it. (2) What to change 3
+  calls `fabric-warehouse/references/REFERENCE.md:40` a
+  `query-activity` link. That line, unchanged since `419ac5e`
+  (2026-05-05), links `monitoring-overview` and names Query activity
+  only in its gloss, so the rename went there; Learn's overview now
+  titles the feature "Data Warehouse Monitor". A measurement slip in
+  the brief, not tree drift.
+- **Needs**: none — the two adjacent one-line fixes under Deferred.

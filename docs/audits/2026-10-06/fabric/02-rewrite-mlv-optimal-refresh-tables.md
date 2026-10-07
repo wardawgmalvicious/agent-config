@@ -152,3 +152,51 @@ then checked the refresh pages itself. The aggregate rule may have
 changed on Learn before this window; the window's
 updates-and-deletes row is what surfaced it, and the skill is wrong
 either way.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-mlv/SKILL.md`
+- **Verification**: steps 1–3 passed; step 4 did not apply, as line 3
+  is unchanged; step 5 runs once at the end of the run. Step 1:
+  aggregates and `GROUP BY` now read as incremental (`SUM`/`MIN`/
+  `MAX`/`COUNT`) or conditional on partitioned sources, never as a
+  full-refresh trigger; `REFRESH_HINT` appears four times, each marked
+  preview; South Central is gone; `GA March` survives only at line 3,
+  per item 4. Step 2: both Learn pages re-opened 2026-10-06; the
+  `GROUP BY / aggregates` row, the non-append quote, the
+  small-source full-refresh reason, the `REFRESH_HINT` grammar, "Fabric
+  doesn't validate uniqueness at runtime" and both limitations read as
+  quoted. Step 3: lint clean.
+- **Item 5, the re-check, 2026-10-06**: the get-started page still
+  names "Fabric Runtime 1.3"; Learn's runtime page still says "By
+  default, all new workspaces currently use Runtime 1.3", lists 1.3
+  as EOSA and 2.0 as GA, so the late-September default switch had not
+  happened. The MLV notebook-utilities page (preview) says it is
+  "supported in Spark 4.1", the one 2.0 signal; it is left out of the
+  skill, as the brief puts that API out of scope. The region bullet
+  was dropped: neither the MLV overview nor the South Central US row
+  of Fabric's region-availability page lists MLVs as unavailable.
+- **Deferred**: item 4, flag only. The description is exactly 1,024
+  characters, the `DESCRIPTION_MAX` cap, so recording both months
+  there would cut other trigger text; `GA March 2026` stays until a
+  Learn page states the month. It came from `0424c18` (2026-05-18),
+  whose message cites no source. Adjacent, not fixed:
+  `references/REFERENCE.md:3` carries the same `GA March 2026`, and
+  `references/REFERENCE.md:52` still says 2.0 is the "planned default
+  … in late September 2026", which the re-check above overtook.
+  Behavioural confirmation needs a fresh session:
+  `/test-skill fabric-mlv` with this brief.
+- **Deviations**: one. The "Limitations and gotchas" row "Optimal
+  refresh always picks Full" (now line 290), outside the named lines,
+  listed aggregates as an unsupported construct. Step 1 requires that
+  aggregates are no longer listed as full-refresh triggers anywhere in
+  the file, and the brief's own Learn row is the evidence, so the
+  parenthetical now names only an aggregate other than
+  `SUM`/`MIN`/`MAX`/`COUNT` over unpartitioned sources.
+- **Needs**: the next fabric drift audit — a Learn statement of the
+  Spark SQL MLV GA month, to settle `SKILL.md:3` and
+  `references/REFERENCE.md:3`; the `REFERENCE.md:52` fix under
+  Deferred needs nothing and can land first.

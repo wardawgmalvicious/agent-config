@@ -96,3 +96,34 @@ them:
 Found by the warehouse/Spark mapping subagent during the 2026-10-06
 `/drift-audit` run against `fabric` (floor 2026-09-01). The Learn quotes
 above are the agent's own; the audit session did not re-check them.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-spark/SKILL.md`,
+  `skills/fabric/fabric-spark-monitoring/SKILL.md`
+- **Verification**: steps 1–3 passed; step 4 runs once at the end of
+  the run. Step 1: custom live pools appear beside the three pool
+  options at `:112`, with their limits, and after the Environment
+  parts table. Step 2: both `HC_` patterns appear at `:49`, each
+  attributed to its mode, plus the Livy one beside the reuse
+  conditions. Step 3: lint clean on both.
+- **Learn, re-read 2026-10-06** (the audit session had not):
+  `custom-live-pools-overview` (notebooks only, Spark job definitions
+  unsupported, paid capacity, schedule required, portal-only, not
+  through environment public APIs or CI/CD);
+  `high-concurrency-livy` (REPL-level, `sessionTag` a packing hint
+  only, "up to five REPLs per Livy session",
+  `HC_<LakehouseName>_<LIVY_SESSION_ID>`).
+- **Deferred**: no behavioural confirmation; an edited `SKILL.md` does
+  not reliably reload mid-session on Windows, so a fresh session would
+  exercise it.
+- **Deviations**: none to the edits. Two notes. Learn's live-pool page
+  has no separate delegation setting: Members manage pools once an admin
+  enables *Customize compute configuration for items*. So the skill
+  states that, and records What's New's "Delegated management
+  (preview)" beside it rather than as a setting. The notebook-mode name
+  `HC_<NotebookName>_<livyId>` was kept unchanged and not re-checked, as
+  the constraint says.

@@ -87,3 +87,29 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 2026-09-01. Three mapping subagents (Data Factory, warehouse/Spark, and
 platform/CI-CD) found it independently in their own skills. The source
 row was transient: added on 2026-09-29 and deleted on 2026-10-02.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-dataflow/references/REFERENCE.md`,
+  `skills/fabric/fabric-mirroring/SKILL.md`,
+  `skills/fabric/fabric-error-handling/references/REFERENCE.md`
+- **Verification**: steps 1–3 passed; step 4 runs once at the end of
+  the run. Step 1: each hit names the toggle as legacy. The dataflow and
+  mirroring lines wrap the phrase across a line break, so the grep
+  misses them, but both read as legacy. The two survivors,
+  `fabric-warehouse-monitoring` `REF:3,40` ("Eventhouse-backed"), stay
+  true under the new model, whose monitoring item writes to an
+  Eventhouse. Step 2: the overview, read this session (2026-10-06, for
+  brief 01), carries both quoted sentences and the "Legacy workspace
+  monitoring" section. Step 3: lint clean.
+- **Deferred**: no behavioural confirmation; an edited `SKILL.md` does
+  not reliably reload mid-session on Windows, so a fresh session would
+  exercise it.
+- **Deviations**: none. The wording follows briefs 01 and 06: "managed
+  through a monitoring item", created from Workspace settings →
+  Monitoring, with the old *Log workspace activity* toggle "now legacy".
+  The Dataflow and Mirroring table names are unchanged, as the brief
+  says.

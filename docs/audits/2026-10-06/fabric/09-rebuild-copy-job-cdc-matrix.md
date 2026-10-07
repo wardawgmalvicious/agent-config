@@ -121,3 +121,40 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 2026-09-01, by the Data Factory mapping subagent. The agent noted that
 Learn's index may lag What's New on several Data Factory pages, which is
 why the status items are flags and not flips.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-copy-job/SKILL.md`,
+  `skills/fabric/fabric-copy-job/references/REFERENCE.md`
+- **Verification**: steps 1–4 ran; step 5 runs once at the end of the
+  run. Step 1: no Activator line carries "(Preview)"; CDC and SCD Type
+  2 keep it, with the dated What's New note at `SKILL.md:49` and
+  `REF:11,16`. Step 2: the rebuilt matrix matches, row by row, the
+  `cdc-copy-job` page and the connectors page, read 2026-10-06; the two
+  carry the same 13 rows. Step 3: lint clean. Step 4: line 3 changed,
+  so the routing retest is owed.
+- **Learn, read 2026-10-06**: the CDC page (matrix, the SCD Type 2
+  preview note with its Oracle-source and own-schema exceptions, and
+  "Custom capture instances aren't supported"); the connectors page,
+  still headed "CDC Replication (Preview)"; the BigQuery, Snowflake and
+  Oracle tutorials, still "(Preview)"; `copy-job-workspace-monitoring`
+  (`CopyJobActivityRunDetailsLogs`, one record per source-to-destination
+  mapping per run); and Activator's Fabric-item pages (Copy jobs listed
+  with no preview label; "Copy jobs don't accept parameters").
+- **Deferred**: the routing retest. Also noted:
+  `copy-job-workspace-monitoring` still describes the legacy **Log
+  workspace activity** toggle, so it is only partly moved to the
+  monitoring item; brief 12 covers that model for other skills.
+- **Deviations**: two. (1) The matrix gained four rows, not two: SAP
+  Datasphere Outbound for AWS S3 and for Google CloudStorage, SQL
+  database in Fabric, and Synapse Data Warehouse. Item 1 said to take
+  the rows from the page. The "(Preview)" labels on the Lakehouse,
+  Oracle and BigQuery rows were dropped because the page labels no row.
+  (2) `SKILL.md:47`'s connector summary was rewritten to match the
+  rebuilt matrix, beside item 2's status note, since its old "source
+  only" claims for Oracle and BigQuery contradicted it.
+- **Needs**: a fresh session — `/test-skill fabric-copy-job`, the
+  routing retest the `description` edit owes.

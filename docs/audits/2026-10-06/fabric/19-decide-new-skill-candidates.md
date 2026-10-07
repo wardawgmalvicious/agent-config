@@ -124,3 +124,29 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric` (floor
 subagents found that no skill covers these features. The audit session
 read the fold-in targets from `handoff-status.py` and `grep` before
 recommending fold-ins rather than new candidates.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — escalated (D-1 to D-3 decided by the
+  user), then D-4 applied
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `docs/handoffs/execute/item-type-skill-fabric-plan.md`,
+  `docs/handoffs/execute/fabric-user-data-functions-skill.md`
+- **Decision (D-1 to D-3)**: put to the user with each candidate's
+  evidence and the audit's test, whether the item is in use. **Answer:
+  accept all three for `/author-skill`**: Business Events, the dbt job,
+  and Fabric Maps. Nothing went to the declines ledger.
+- **Verification**: steps 1–3 passed; step 4 runs once at the end of
+  the run. Step 1: the three decisions are recorded above. Step 2: `git
+  diff --numstat` shows `1 0` for each brief. Step 3: `handoff-status.py`
+  still lists both, P2, with their state unchanged. Both were re-read
+  just before editing, after checking that neither differed from `main`
+  and that no live peer was named for either.
+- **Deferred**: authoring the three skills, each a separate
+  `/author-skill` run.
+- **Deviations**: each fold-in is one unwrapped line in the brief's top
+  list, past the 76-character wrap, because step 2 wants a single added
+  line.
+- **Needs**: `/author-skill` — three new skills, for Business Events,
+  the dbt job item and Fabric Maps, each from this brief's evidence.

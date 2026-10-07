@@ -129,3 +129,42 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 dbt Job label was raised by the Data Factory subagent, and its Event
 Schema Set label by the Real-Time Intelligence subagent. The audit
 session read `REF:18-26` itself; the Learn quotes are the agents'.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-deployment-pipelines/SKILL.md`,
+  `skills/fabric/fabric-deployment-pipelines/references/REFERENCE.md`,
+  `claude/rules/fabric-git-serialization.md`
+- **Verification**: steps 1–4 passed; step 5 runs once at the end of
+  the run. Step 1: `DeploymentPipeline.Deploy.All` at `SKILL.md:99`,
+  the `deploymentPlan` paragraph after the deploy example, and
+  Deployment plan *(preview)* at `REF:24`. Step 2: dbt Job and Event
+  Schema Set still read *(preview)*, matching Learn's list as read
+  2026-10-06, with a dated note after the table. Step 3: selective
+  branching, the compare dialog and file-level commit are in the rule.
+  Step 4: lint clean on `SKILL.md` and on the rule. `lint-instructions`
+  passes: the rule has no Copilot port and is listed as `deferred`, so
+  no hash was stamped.
+- **Learn, read 2026-10-06**: `deployment-plan-automation` (the plan
+  inside `options`, `?beta=true`, `Pipeline.Deploy` or
+  `DeploymentPipeline.Deploy.All` plus `Item.Execute.All`, `ByItemId`
+  for Deploy Stage Content); `deployment-plan-overview` (no Variable
+  Library value-set switch, `fabric-cicd` unsupported, no rollback, one
+  plan per operation); the deployment-pipelines supported-items list
+  (updated 2026-09-29: Deployment plan *(preview)* under CI/CD, dbt Job
+  and Event Schema Set still *(preview)*); `branched-workspace`;
+  `granular-compare` (file-level commit preview, Modified items only,
+  with a partial-definition warning).
+- **Deferred**: `claude/rules/fabric-git-serialization.md` is a copied
+  payload, so the edit goes live when `link-claude.ps1` runs on `main`
+  after the landing. Behavioural confirmation of the skill needs a
+  fresh session.
+- **Deviations**: none. The plan's limits (no default plan, no rollback,
+  one per operation) went in beside the brief's two because the same
+  automation page states them in the same breath. D-3 names the REST
+  side only as "file-level commit", the term brief 11 uses.
+- **Needs**: the landing — `link-claude.ps1` deploys the
+  `fabric-git-serialization` edit.

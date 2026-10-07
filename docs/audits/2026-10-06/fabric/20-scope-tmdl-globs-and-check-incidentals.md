@@ -104,3 +104,108 @@ drilling the ontology definition, and the audit session verified the
 TMDL format and read the three `paths:` blocks itself. The incidental
 rows came from the five mapping subagents' coverage notes, as recorded
 in the report's "Incidental" list.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: D-1: `skills/fabric/fabric-tmdl/SKILL.md`,
+  `claude/rules/coding-tmdl.md`, `claude/rules/coding-dax.md`,
+  `tests/skills/code-review/fixtures/Fixture.SemanticModel/definition/tables/tmdl_fixture.tmdl`
+  (moved by `git mv`), `tests/skills/code-review/README.md`,
+  `tests/skills/code-review/expected_findings.md`,
+  `tests/skills/fabric-triggers/fixtures/SampleOntTmdl.Ontology/.platform`
+  and `database.tmdl` (new), `tests/skills/fabric-triggers/README.md`,
+  `tests/skills/fabric-triggers/expected_activations.md`,
+  `copilot/.source-hashes.json`. D-2:
+  `skills/fabric/fabric-database/SKILL.md`,
+  `skills/fabric/fabric-copy-job/SKILL.md` and `references/REFERENCE.md`,
+  `skills/fabric/fabric-data-agent/SKILL.md`,
+  `references/status-and-retirements.md` and
+  `references/authoring-workflow.md`,
+  `skills/fabric/fabric-operations-agent/references/REFERENCE.md`,
+  `claude/rules/fabric-git-serialization.md`,
+  `skills/fabric/fabric-deployment-pipelines/SKILL.md` and
+  `references/REFERENCE.md`, `claude/rules/coding-tsql.md`,
+  `skills/fabric/fabric-semantic-model-ai-instructions/SKILL.md` and
+  `references/REFERENCE.md`, `skills/fabric/fabric-semantic-model-audit/SKILL.md`
+- **Decision (D-1)**: the open question and the three options were put
+  to the user. Exclude was out: the Claude Code memory docs say only
+  that `paths:` patterns are "matched against absolute file paths using
+  glob syntax", and an open feature request asks for an `exclude:` field.
+  Of 132 `.tmdl` files under `C:\Repos`, the code-review fixture was the
+  only one outside a `.SemanticModel` folder. **Answer: Narrow.**
+- **Verification**: steps 1–3 passed, bar the deploy half of step 1;
+  step 4 runs once at the end of the run. Step 1:
+  `test-activation.ps1 -StaticOnly` passed on all 74 fabric and 16 pbip
+  fixtures; `grep -l '^paths:'` still counts 30, as the tables say. A
+  rules pass (wcmatch, as the fabric README does it) gives
+  `SampleOntTmdl.Ontology/database.tmdl` `fabric-ontology` and
+  `fabric-git-serialization` alone, and the moved fixture still
+  `coding-tmdl` and `coding-dax`. Step 2, one verdict per row:
+  1. Edited: Warehouse `MERGE` is GA, per `tsql-surface-area`.
+  2. Edited: the REST definition's CDC example writes `"Upsert"` with
+     `upsertSettings.keys` and a source `changeDataSettings.readMethod`
+     of `"SnapshotPlusIncremental"`; `"Merge"` is not on the page.
+  3. Edited: `data-agent-source-control` says "Source control for Fabric
+     data agents is currently in preview"; Git's supported-items list
+     gives Data Agents no label, which both lines now say.
+  4. Edited: 15,000 characters for the agent's own instructions; Learn
+     gives no data-source limit.
+  5. Split. Edited: "Only Eventhouse tables or shortcut tables are
+     supported." Left: the limitations page says "excluding East US",
+     but the region-availability page, read earlier in this run, lists
+     South Central US without Operations agent; Learn disagrees with
+     itself, so `REF:171-172` keeps both regions.
+  6. Edited in part: `**/*.Plan/**` added, its folder observed on a real
+     item 2026-09-30. The other seven stay out: Learn gives no folder
+     suffix for any, only REST `ItemType` names, and Deployment plan has
+     none. The fabric table's Known gaps names them.
+  7. Edited: the inbound-protection precondition, a network paragraph
+     with the REST path for the Git outbound policy, and per-item
+     `itemOptionsBySourceItemId` with `validateOnly`.
+  8. Edited: the Jaro-Winkler pages are preview; the `||` and `UNISTR`
+     pages carry no label.
+  9. Left: the rule's `=~`-over-`tolower()` advice is Learn's own
+     case-insensitive row ("Use `Col =~ "lowercasestring"`. Don't use
+     `tolower(Col) == "lowercasestring"`."), and the eventhouse table's
+     partial-index `=~` row matches Learn's prefer-`==` row.
+  10. Edited: both dates, each dated: February 2027 on every Q&A page and
+     in Microsoft's extension notice, December 2026 on
+     `semantic-model-best-practices`.
+
+  Each edited row's grep returns the corrected text. Step 3: lint clean
+  on the seven skills and four rules; `skill-status.py --stale` lists
+  `fabric-tmdl` as `retest-activation`. `lint-instructions.py --stamp`
+  changed only the `coding-dax`, `coding-tmdl` and `coding-tsql` hashes.
+- **Deferred**: the deploy (`link-claude.ps1 -SkillGroups
+  workflow,social,meta` after landing) and the check that the deployed
+  `coding-tmdl`, `coding-dax`, `coding-tsql` and
+  `fabric-git-serialization` match the repo; the real-path
+  `test-activation.ps1 -Set fabric` and `-Set pbip`; and `/test-skill
+  fabric-tmdl`. Two adjacent findings: `coding-tsql.md:33` says `||` and
+  `UNISTR` don't apply to SQL database in Fabric, which their Learn pages
+  list under Applies to; and, observed once and not isolated, the
+  deployed `coding-dax` and `coding-tmdl` loaded right after a Write
+  created `SampleOntTmdl.Ontology/database.tmdl`, with no `.tmdl` Read
+  since the last flush, where `.claude/rules/editing-rules.md` says a
+  rule "cannot govern creating a file".
+- **Deviations**: five. (1) User-directed: Narrow, with the fixture moved
+  as the option said; it now also pulls `fabric-git-serialization` and
+  `fabric-tmdl-api`, as the code-review README says. (2) `fabric-tmdl`
+  dropped `**/*.tmdl` rather than gaining `**/*.SemanticModel/**/*.tmdl`,
+  which its `**/*.SemanticModel/**` already covers. (3) `coding-tmdl`'s
+  "Applies to" line now names the `.SemanticModel` scope, since it listed
+  Tabular Editor output that the narrowed glob no longer reaches outside
+  one. (4) The new `SampleOntTmdl.Ontology/` fixture has two rows,
+  assertion 10 and an entry among the unverified shapes, and assertion
+  7's heading no longer calls `SampleAct.Activator/` the only synthetic
+  fixture. (5) Row 10 also corrected the December-only date that brief
+  16 wrote into `fabric-semantic-model-audit` earlier in this run. Rows
+  2, 5 and 8 sat at lines briefs 09, 05 and 08 had shifted.
+- **Needs**: a fresh session — `/test-skill fabric-tmdl` and the
+  real-path activation runs; the deploy after landing, then the
+  deployed-rules check; the next `fabric` audit — `coding-tsql.md:33`'s
+  carve-out for `||` and `UNISTR`, and the Operations agent region line
+  once Learn agrees with itself.

@@ -129,3 +129,54 @@ Found by the Data Factory mapping subagent during the 2026-10-06
 are the agent's own. The agent noted that Learn's Data Factory index may
 lag What's New, which is why the activities and run conditions are flags
 rather than edits.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**:
+  `skills/fabric/fabric-dataflow/references/REFERENCE.md`,
+  `skills/fabric/fabric-data-pipeline/SKILL.md`,
+  `skills/fabric/fabric-data-pipeline/references/REFERENCE.md`
+- **Verification**: steps 1–3 passed; step 4 runs once at the end of
+  the run. Step 1: no Snowflake hit says preview or gateway-unsupported;
+  `REF:93`, the old `:88`, is the line the constraint leaves out.
+  Step 2: `3,600`, `static`, `Run conditions` and the REST enum's `36
+  entries` all hit. Step 3: lint clean; no `description` changed.
+- **Learn, read 2026-10-06**:
+  `dataflow-gen2-data-destinations-and-managed-settings`, fetched in
+  full (11 destinations, Excel as a file format, the Snowflake
+  destination settings and gateway note);
+  `dataflow-gen2-staged-data-options`; `activity-retries`;
+  `activity-overview`; `lakehouse-maintenance-activity`;
+  `refresh-sql-endpoint-activity`; `business-actions-activity`;
+  `fabric-actions-activity`; `pipeline-run-conditions`; and the
+  DataPipeline definition, whose `DataPipelineActivityTypes` enum still
+  counts 36, none of them the four new activities. A subagent read all
+  but the first, quoting verbatim. Learn's search index still serves the
+  older Snowflake text, so a search-only check contradicts the edit;
+  fetch the page.
+- **Deferred**: no behavioural confirmation; an edited `SKILL.md` does
+  not reliably reload mid-session on Windows, so a fresh session would
+  exercise it. Two adjacent findings in the dataflow reference stay as
+  they are: `REF:93` (was `:88`) still says "Warehouse and Snowflake
+  require fixed schema", though Learn now gives new Snowflake tables
+  dynamic schema under Replace, and the constraint holds that line for
+  the dynamic-warehouse-schema flag; `REF:101` (was `:96`) limits
+  automatic settings to "Lakehouse and Azure SQL only", where Learn adds
+  Snowflake.
+- **Deviations**: three. (1) The brief's dataflow line labels are off:
+  the Snowflake section sat at `REF:110-113`, not `:78-81` (the
+  destination list), and the Scale-tab text at `:101-103`, not
+  `:110-113`. The quotes matched, so the edits went where the quotes
+  were. (2) User-directed: the Snowflake section was rewritten from
+  Learn, not only retitled with the gateway clause dropped, because
+  Learn also contradicts its "Dynamic schema unsupported"; the user
+  chose "Correct from Learn". (3) Excel went in as a file format of
+  file-based destinations, not as a destination: Learn's list of 11
+  destinations has no Excel, contrary to the brief's evidence.
+- **Needs**: the next `fabric` audit — correct `fabric-dataflow`
+  `REF:93` and `REF:101` for Snowflake, beside the destination-expression
+  and dynamic-warehouse-schema flag that no brief carries (audit report
+  `:181-187`).

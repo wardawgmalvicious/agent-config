@@ -170,3 +170,48 @@ Found by the Real-Time Intelligence mapping subagent during the
 contradicts itself on update policies (D-1) and on Teams channels
 (D-3); both flags exist to preserve that disagreement rather than pick
 a side.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-eventhouse/SKILL.md`,
+  `skills/fabric/fabric-eventhouse/references/REFERENCE.md`,
+  `skills/fabric/fabric-activator/SKILL.md`,
+  `skills/fabric/fabric-realtime-dashboard/SKILL.md`,
+  `skills/fabric/fabric-event-schema-set/SKILL.md`
+- **Verification**: steps 1–4 passed; step 5 runs once at the end of
+  the run. Step 1: `update polic` hits `REF:29`, and `throttling` and
+  `scale-out` hit `REF:75`. Step 2: `EXIT RANGE` and `heartbeat` hit
+  `SKILL.md:342,356,358`. Step 3: D-2 sits after the access-model line;
+  D-3 closes the recipients paragraph; D-5's four notes close the
+  `dataSources[]` bullet, follow the `queryId` rule, follow the visual
+  list and close the `kpi` bullet; D-6 closes the untested-edge bullet.
+  Each is dated. Step 4: lint clean on all four; no `description`
+  changed.
+- **Learn, read 2026-10-06**: a subagent fetched every page the brief
+  cites, quoting verbatim: the Kusto `update-policy` page (Fabric view),
+  `query-acceleration-overview`, `monitor-eventhouse`,
+  `onelake-shortcuts`, `set-alerts-warehouse-sql-query`,
+  `activator-limitations`, `activator-rules-overview`,
+  `dashboard-real-time-create`, `dashboard-supported-data-sources`,
+  `dashboard-visuals-customize`, `schema-registry-overview`, and What's
+  New for the status rows. Every quote in the brief matched. Sixteen
+  searches found no page for the AI custom visual builder.
+- **Deferred**: no behavioural confirmation; an edited `SKILL.md` does
+  not reliably reload mid-session on Windows, so a fresh session would
+  exercise it. One adjacent finding: `fabric-eventhouse` `REF:29`'s "no
+  external data" misses a GA exception, July 2026 per What's New. An
+  update policy query can read an accelerated external table through
+  `external_table()` when its `Hot` period covers all data
+  (`Hot` >= 100 years). D-1 added only the preview `Source` change.
+- **Deviations**: one, in D-4. `:350` doesn't repeat the three
+  operators, as the brief says; it reads "Prefer stateful operators"
+  and has done so since before the audit. The full stateful list went
+  there. `:338`, a fix for alert spam, gained `EXIT RANGE` only, since
+  absence of data is no cure for spam; its heartbeat rule already sat at
+  `:352`.
+- **Needs**: the next `fabric` audit — `fabric-eventhouse` `REF:29`'s
+  missing GA exception for accelerated external tables in update policy
+  queries.

@@ -183,3 +183,34 @@ itself a What's New row. All three GQL rows were transient: added and
 deleted inside the window. The audit session checked the set-operation
 and Query API facts itself. A plain base-to-head diff would have missed
 these rows, which is brief 18's subject.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-graph/SKILL.md`,
+  `skills/fabric/fabric-graph/references/REFERENCE.md`
+- **Verification**: steps 1–3 passed; step 4 runs once at the end of
+  the run. Step 1: no hit denies `UNION DISTINCT` or `NEXT`, and none
+  describes a six-character status; the one `preview=true` without
+  `beta=true` beside it is the `description`, under Deferred. Step 2:
+  the limitations, Query API and status-code pages, re-opened
+  2026-10-06, read as quoted, including the Explore-only 8-hop
+  sentence. Step 3: lint clean.
+- **Item 3**: the conformance table lists selected features, not
+  statements, so only the set-operation and `NEXT` rows changed; the
+  set-operation row split in two, supported and not.
+- **Deferred**: item 5, flag only. Incremental graph updates were
+  announced in What's New on 2026-09-29 (`80a24c9b`, removed again by
+  `9eda27f8`) with no Learn page yet, so `SKILL.md:21` ("no schema
+  evolution") and `:107` ("Save = ingest") stand as written. Adjacent,
+  not fixed: the `description` (`SKILL.md:3`) still gives
+  `executeQuery?preview=true`, which Learn keeps only for backward
+  compatibility; changing it changes the trigger and needs a retest.
+  Behavioural confirmation needs a fresh session:
+  `/test-skill fabric-graph` with this brief.
+- **Deviations**: none.
+- **Needs**: the next fabric drift audit — whether Learn documents
+  incremental graph updates, which settles item 5; the `description`
+  fix under Deferred needs only its retest.

@@ -161,3 +161,49 @@ Found during the 2026-10-06 `/drift-audit` run against `fabric` (floor
 D-3 and D-4 from the platform subagent, and D-5 and D-6 from the IQ
 subagent. All Learn quotes are the agents' own. The six items share
 nothing but their size, so split them freely at execution time.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-ai-functions/SKILL.md`,
+  `skills/fabric/fabric-database/SKILL.md`,
+  `skills/fabric/fabric-security/SKILL.md`,
+  `skills/fabric/fabric-catalog-governance/SKILL.md`,
+  `skills/fabric/fabric-semantic-model-audit/SKILL.md`,
+  `skills/fabric/fabric-semantic-model-ai-instructions/SKILL.md`,
+  `skills/fabric/fabric-data-agent/references/configuration-layers.md`
+- **Verification**: steps 1–2 passed; step 3 runs once at the end of
+  the run. Step 1: none of "see `fabric-warehouse`", "Plan is a preview"
+  or "lean to avoid duplication" remains, and each D-section's new text
+  hits at its line. Step 2: lint clean on all six; no `description`
+  changed.
+- **Learn, read 2026-10-06**: a subagent fetched, quoting verbatim,
+  `data-warehouse/ai-functions` (seven functions; `NULL`, `ERROR` and
+  `DEFAULT <value> ON ERROR`; preview; Warehouse and SQL analytics
+  endpoint), the SQL `vectors` and `create-vector-index` pages (GA in
+  SQL database in Fabric; 100 non-`NULL` rows), `tsql-surface-area`,
+  `create-manage-roles` and `data-access-control-model` (the default
+  role per item type), `onelake-catalog-govern`, the Catalog Search API,
+  `iq/plan/overview`, `semantic-model-best-practices`,
+  `microsoft-365-copilot-overview`, and What's New for the status rows.
+  A search of the Prep-data-for-AI pages found their reach is "everywhere
+  that Copilot in Power BI is available". No Learn page documents table
+  discovery.
+- **Deferred**: no behavioural confirmation; an edited `SKILL.md` does
+  not reliably reload mid-session on Windows, so a fresh session would
+  exercise it. One adjacent finding: `fabric-data-agent`
+  `configuration-layers.md:117-120` offers a "good description" sample
+  for a semantic-model source, which Learn says data agents don't
+  support. It is the knock-on's fact, but the brief names only `:94`.
+- **Deviations**: two. (1) D-5 and D-6: Learn's Microsoft 365 Copilot
+  page names no semantic-model setting it reads beyond RLS, OLS and
+  sensitivity labels. So D-5's new pass names only those, and D-6 adds
+  Copilot Chat as a consumer with that caveat, rather than listing it as
+  a surface the AI instructions reach. (2) The knock-on was applied,
+  since brief 07 had not touched `configuration-layers.md:94`. The
+  brief's D-4 symptom also paraphrases `:276-279`, a list of returned
+  fields, as a search scope; the flag went beside it as briefed.
+- **Needs**: the next `fabric` audit — `fabric-data-agent`
+  `configuration-layers.md:117-120`'s semantic-model description sample.

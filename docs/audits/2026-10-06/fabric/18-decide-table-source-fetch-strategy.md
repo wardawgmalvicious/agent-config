@@ -225,3 +225,39 @@ Surfaced by the 2026-10-06 `/drift-audit` run against `fabric`, floor
 and walked every in-window version. It said so in its audit-window
 block. The deviation is what found the 22 rows, so the evidence for the
 change is the run's own output.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — escalated (decisions 1–4 answered by the
+  user)
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: none
+- **Decision**: put to the user with the brief's problem and evidence,
+  plus the vscode-agent pass's E-1 to E-4. That pass added them in
+  `36d7e77`, which had not reached this worktree's copy when the
+  decisions were put, and it asked for them to go to the user with this
+  brief. Each answer was the recommended option:
+  1. Extend the on-disk two-ref exemption to **any source whose two
+     refs exceed the budget**, not only `table` sources.
+  2. **Always** walk every in-window version of a `table` source.
+  3. **Sanction scratchpad-only Bash** (`curl` or `git clone`) and
+     on-disk diffing in § 3; the `powerbi` entry's "WebFetch, not curl"
+     line changes to match.
+  4. Make the § 4b corrections as described.
+- **Verification**: none ran, since a decision brief edits nothing in
+  this run. Its steps belong to the follow-up: the re-run must recover
+  all 22 transient rows in the Evidence table and keep the full files
+  out of context.
+- **Deferred**: the `SKILL.md` edit the answers imply, and its
+  verification. E-2 and E-3, on commit enumeration, were shown to the
+  user, but no decision asks about them: a `since:` listing misses a
+  commit merged in the window but dated before it, and a path-filtered
+  listing returns branch commits, not what landed. The follow-up should
+  put them to the user before it edits § 4a and § 7.
+- **Deviations**: none.
+- **Needs**: a fresh session — apply decisions 1–4 to
+  `.claude/skills/drift-audit/SKILL.md` (§ 3, § 4a step 3, § 4b, § 4c)
+  and the `powerbi` registry entry, asking about E-2 and E-3 first, then
+  re-run `/drift-audit --sources fabric --since 2026-09-01` to recover
+  the 22 transient rows.

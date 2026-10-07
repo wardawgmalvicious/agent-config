@@ -182,3 +182,61 @@ confirmed the truncation itself and recovered the pre-split text from
 `dbed250^`. The truncation is a repo defect, not upstream drift. It
 travels here only because D-3 edits the same lines. The new-syntax row
 was transient, so a plain base-to-head diff would have missed it.
+
+## Execution log
+
+- **Executed**: 2026-10-06 — applied with deferrals
+- **Session**: fresh (the audit report was in context via the
+  invocation's @-mention; no audit or handoff ran in this session)
+- **Files changed**: `skills/fabric/fabric-warehouse/SKILL.md`,
+  `skills/fabric/fabric-warehouse/references/t-sql-surface.md`,
+  `skills/fabric/fabric-warehouse/references/platform-features.md`,
+  `claude/rules/coding-tsql.md`, `copilot/.source-hashes.json`
+- **Verification**: steps 1–4 passed, with the deviation in step 2
+  below; step 5 runs once at the end of the run. Step 1: no line ends
+  mid-sentence, and `SKILL.md` has no fragment after "Keep
+  transactions short". Step 2: FROM-first, `GROUP BY ALL`, `QUALIFY`
+  and the `MEDIAN` family appear in both files, marked Warehouse and
+  SQL analytics endpoint only; `GROUPING SETS` is in
+  `t-sql-surface.md` only, per deviation 2. Step 3: Workspace Identity
+  is in `t-sql-surface.md`, and the deployment scripts are in
+  `platform-features.md`. Step 4: lint clean on `SKILL.md` and on the
+  rule.
+- **Learn, re-read 2026-10-06**: `tsql-surface-area` (`GROUP BY ALL` /
+  `ORDER BY ALL`, `QUALIFY`, the four functions; among the
+  limitations, `BULK LOAD` only); the FROM-first page (Warehouse and
+  SQL analytics endpoint only; omitting `SELECT` means `SELECT *`); the
+  `QUALIFY`, `MEDIAN`, `QUANTILE` and `APPROX_*` pages (not in SQL
+  database in Fabric, with no preview label); the GROUP BY page (the
+  ISO `ROLLUP`/`CUBE`/`GROUPING SETS` syntax applies to SQL Server,
+  Azure SQL, MI and SQL database in Fabric); `ingest-data` (the
+  Workspace Identity section as quoted, plus "The Warehouse also
+  supports the traditional `BULK INSERT` statement for compatibility");
+  and `deployment-scripts` (preview, at most one of each, used to
+  recreate SQL security).
+- **D-2's open question**: settled by its own instruction. Both
+  statuses are recorded, dated, in each file: What's New preview
+  (2026-10-02) and no Learn preview label (2026-10-06).
+- **Deferred**: `claude/rules/coding-tsql.md` is a copied payload, so
+  the edit goes live only when `link-claude.ps1` runs on `main` after
+  the landing. Adjacent, not fixed: `platform-features.md:13` still
+  says "(`BULK LOAD` / `BULK INSERT` T-SQL not supported)", the claim
+  deviation 1 corrected elsewhere; it was outside the brief's lines and
+  the user's answer. Behavioural confirmation needs a fresh session.
+- **Deviations**: four. The first two were user-directed on 2026-10-06,
+  after asking. (1) D-1's `bcp` bullet was completed from Learn, not
+  verbatim: the pre-split text called `BULK INSERT` unsupported, which
+  Learn no longer says. `SKILL.md`'s Ingestion bullet, inside the
+  brief's lines, was corrected the same way. (2) D-2: `ROLLUP`, `CUBE`
+  and `GROUPING SETS` are recorded as supported in Warehouse but not
+  Warehouse-only, and stay out of the rule's SQL-database carve-out,
+  because Learn's GROUP BY page gives that syntax to SQL database in
+  Fabric. (3) The rule gained no new section: the constructs went into
+  the carve-out, plus the two knock-ons, since the rule loads on every
+  `.sql` file. (4) `lint-instructions.py --stamp` re-recorded the
+  rule's hash for its Copilot port, per `editing-rules.md`, leaving the
+  port itself untouched. Only the `coding-tsql` entry changed; the
+  script wrote the file with CRLF, which `.gitattributes` normalizes.
+- **Needs**: the landing — `link-claude.ps1` deploys the
+  `coding-tsql` edit; the `platform-features.md:13` fix under Deferred
+  needs nothing.
