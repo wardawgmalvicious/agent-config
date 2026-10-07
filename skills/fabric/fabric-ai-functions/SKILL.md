@@ -186,7 +186,7 @@ AI Functions bill against the **Copilot and AI** meter on your capacity — **se
 
 Same capability, different engines — not covered in depth here:
 
-- **Warehouse / SQL analytics endpoint** — T-SQL functions `ai_summarize`, `ai_classify`, `ai_generate_response` (see `fabric-warehouse`).
+- **Warehouse / SQL analytics endpoint** (preview) — T-SQL functions `AI_ANALYZE_SENTIMENT`, `AI_CLASSIFY`, `AI_EXTRACT`, `AI_SUMMARIZE`, `AI_GENERATE_RESPONSE`, `AI_TRANSLATE` and `AI_FIX_GRAMMAR`. An optional `ON ERROR` clause after the last argument sets failure handling: `NULL ON ERROR` (the default), `ERROR ON ERROR` (fail the whole query) or `DEFAULT <value> ON ERROR`. See [Use AI functions (preview)](https://learn.microsoft.com/fabric/data-warehouse/ai-functions) (Learn, 2026-10-06).
 - **Dataflow Gen2** — the *AI Prompt* transform adds AI-generated columns in Power Query.
 
 ## Reference
