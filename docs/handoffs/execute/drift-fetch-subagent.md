@@ -171,6 +171,14 @@ edit might want:
   See the open question below: `security-reviewer` records that the Task tool's
   `mode` parameter is deprecated and ignored, and it is not established here
   whether the **frontmatter** field is honoured.
+  **2026-10-06:** the subagents docs now document the field. "If you leave
+  it unset, the subagent inherits the main conversation's permission
+  mode." A parent in `bypassPermissions`, `acceptEdits` or auto mode runs
+  the subagent in its own mode and ignores the field; under a `default`,
+  `dontAsk` or `plan` parent, "the subagent runs in the permission mode
+  you set, except `bypassPermissions`. A subagent that declares
+  `bypassPermissions` keeps the main conversation's mode instead."
+  Documented, not measured.
 - `skills` — preloading `drift-audit` would inject its whole body, including
   the read-only refusal script and the report format, neither of which this
   agent uses. It reads §4 from disk instead (see Body structure outline).
