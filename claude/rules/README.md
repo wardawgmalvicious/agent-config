@@ -18,9 +18,9 @@ exactly when the rules themselves are being worked on.
 Each rule's frontmatter declares a `paths:` glob list. When the session's
 own Read, Write or Edit touches a file matching one of those globs, the
 rule is loaded into context, a Write's or an Edit's with the tool's
-result (Write probed 2026-10-06 on 2.1.291, inside the working
-directory; Edit per the memory docs). A subagent's Read loads it into
-the subagent only.
+result, and never for an Edit the harness refuses (both probed on 2.1.291
+inside the working directory, Write 2026-10-06 and Edit 2026-10-07). A
+subagent's Read loads it into the subagent only.
 
 The rules don't enforce style — they tell the model the conventions to
 follow when generating or reviewing code in that language. Pair with

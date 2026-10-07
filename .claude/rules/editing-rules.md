@@ -7,11 +7,12 @@ paths:
 
 # Editing a rule, or its Copilot port
 
-- A rule carries only `paths:`, and loads when a file matching it is Read
-  or Written, never for a `cat`, `sed` or heredoc edit. A Write's load
-  arrives with its result, once the file exists, so a rule still cannot
-  govern creating a file: guidance about making something belongs in a
-  skill description or a hook (2026-10-06, 2.1.291).
+- A rule carries only `paths:`, and loads when a file matching it is Read,
+  Written or Edited, never for a `cat`, `sed` or heredoc edit. A Write's or
+  an Edit's load arrives with its result, once the file exists, and a
+  refused Edit loads nothing, so a rule still cannot govern creating a
+  file: guidance about making something belongs in a skill description or
+  a hook (2026-10-07, 2.1.291).
 - A rule's whole body is paid again after each compaction, at the next
   match, not once a session: without a compaction no rule loaded
   more than twice, with them one loaded 21 times, and one client session

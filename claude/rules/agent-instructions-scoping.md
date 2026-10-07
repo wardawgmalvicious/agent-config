@@ -25,8 +25,8 @@ Claude Code 2.1.282 on 2026-09-25; `AGENTS.md` support needs 2.1.277.
 | Guidance is… | Home | Fails silently when |
 | --- | --- | --- |
 | Needed before any Read: commands, repo-wide conventions | root `CLAUDE.md` | it passes ~200 lines and adherence drops |
-| About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, or only Grep or `cat` touch it; a Write loads it only once the file exists |
-| About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads or Writes there itself (below), or has compacted and done neither there since |
+| About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, or only Grep or `cat` touch it; a Write or Edit loads it only once the file exists |
+| About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads, Writes or Edits there itself (below), or has compacted and done none of them there since |
 | A procedure asked for in words | skill | its description never matches |
 | Must hold before the agent acts | hook or `permissions.deny` | the hook itself fails open |
 | Long reference for people | README, or a short nested `CLAUDE.md` of `@README.md` | the agent never opens it |
@@ -44,11 +44,12 @@ a rule or a nested file, and the README keeps the rest.
 - **Root and every ancestor `CLAUDE.md` and `CLAUDE.local.md` load at
   launch.** A subdirectory's loads on the session's own first Read,
   Write or Edit beneath it, after its ancestors' (Write probed 2026-10-06
-  on 2.1.291, Edit per the memory docs), but not one the session wrote or
-  read itself, which is in context already. Grep, Glob and Bash load
-  nothing, and a subagent's Read loads it into the subagent only.
+  and Edit 2026-10-07, on 2.1.291; a refused Edit loads nothing), but not
+  one the session wrote or read itself, which is in context already. Grep,
+  Glob and Bash load nothing, and a subagent's Read loads it into the
+  subagent only.
 - **After `/compact`** root is re-read at once, while nested files and
-  `paths:` rules return only at the next matching Read or Write.
+  `paths:` rules return only at the next matching Read, Write or Edit.
 - **A `.claude/rules/` file with no `paths:` loads at launch**, like root.
   A user-scope rule and a same-named project rule both load; neither
   overrides the other unless its text says so.
@@ -64,9 +65,9 @@ a rule or a nested file, and the README keeps the rest.
   from user, managed and `--settings` files, and ignored in project and
   local settings.
 - **The transcript is the only reliable witness.** A nested `CLAUDE.md`
-  arrives as a `nested_memory` attachment after the Read or Write, a nested
-  `AGENTS.md` as `hook_additional_context`. The InstructionsLoaded hook
-  never fires for an `AGENTS.md` read directly, and missed two of four
+  arrives as a `nested_memory` attachment after the Read, Write or Edit,
+  a nested `AGENTS.md` as `hook_additional_context`. The InstructionsLoaded
+  hook never fires for an `AGENTS.md` read directly, and missed two of four
   confirmed rule loads in one test (2026-09-01).
 - **A `claudeMdExcludes` pattern stays driveless**, `**/<dir>/**`: one
   naming the drive misses whenever the letter's case differs from how the

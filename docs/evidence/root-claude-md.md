@@ -2254,6 +2254,13 @@ Code session and inherited its `CLAUDE*` variables, so each records
 conventions", 2026-10-07) found that stripping those variables changed
 nothing.
 
+**2026-10-07.** Four more rules followed, at the user's word once these
+arms were in: `editing-rules.md`, `editing-claude-md.md`,
+`claude/rules/agent-instructions-scoping.md` and `claude/rules/README.md`
+either left Edit out or rested it on "the memory docs". GC and HC above
+measured it, so each now names Edit beside Write, and all but
+`editing-claude-md.md` say a refused Edit loads nothing.
+
 ## Line endings
 
 Nothing moved: this section stands in root unchanged.

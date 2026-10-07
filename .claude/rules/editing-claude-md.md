@@ -34,9 +34,9 @@ paths:
   to a skill, and what a session must know before working in one directory
   to a `CLAUDE.md` there. Never an unscoped rule or an `@import`: both load
   at launch anyway.
-- A nested `CLAUDE.md` loads on the session's own first Read or Write
-  beneath it, never at launch, after `/compact` only at the next one, so
-  it can hold nothing needed sooner. It keeps to the must-knows, and
+- A nested `CLAUDE.md` loads on the session's own first Read, Write or
+  Edit beneath it, never at launch, after `/compact` only at the next one,
+  so it can hold nothing needed sooner. It keeps to the must-knows, and
   its directory's README keeps the reasoning and evidence. None goes under
   `claude/`, `.claude/`, `tests/` or a skill's own directory, and no
   `AGENTS.md` anywhere: the lint's message says why for each (2026-09-27).
