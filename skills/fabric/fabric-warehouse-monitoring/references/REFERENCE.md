@@ -2,13 +2,13 @@
 
 Curated set of Microsoft Learn pages relevant to monitoring Fabric Warehouse / SQL analytics endpoint queries and the broader workspace monitoring surface (Eventhouse-backed logs for pipelines, semantic models, GraphQL, mirrored DBs).
 
-The 3 highest-leverage entry points (Monitor Fabric DW overview, Query Insights, Monitor) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
+The 3 highest-leverage entry points (Monitor Fabric DW overview, Query Insights, query labels) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
 
 **Scope note:** This skill focuses on Warehouse / SQL endpoint monitoring (`queryinsights` schema + DMVs) plus capacity-level visibility. Item-level workspace monitoring (Eventhouse, semantic models) is included for cross-reference but is covered more deeply in `fabric-eventhouse` and the workspace-monitoring docs.
 
 ## Warehouse / SQL endpoint monitoring (primary)
 
-- [Monitor Fabric Data Warehouse (overview)](https://learn.microsoft.com/fabric/data-warehouse/monitoring-overview) — entry point: Capacity Metrics app, Query activity, Query insights, DMVs. Read first.
+- [Monitor Fabric Data Warehouse (overview)](https://learn.microsoft.com/fabric/data-warehouse/monitoring-overview) — entry point: Capacity Metrics app, Monitor (formerly Query activity), Query insights, DMVs. Read first.
 - [Query insights in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/query-insights) — 30-day retention, query-shape aggregation via `query_hash`, why system queries are excluded, full view list (`exec_requests_history`, `exec_sessions_history`, `long_running_queries`, `frequently_run_queries`, `sql_pool_insights`).
 - [Monitor T-SQL queries (preview)](https://learn.microsoft.com/fabric/data-warehouse/monitor) — **Monitor**, previously named Query activity: the portal UI over the queryinsights views (Query history, Long running queries, Frequently run queries), with a per-column reference. Preview, and open to workspace admins only. Also documents the 15-minute appearance lag and the `Invalid object name queryinsights.exec_requests_history` workaround.
 - [Use query labels in Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/query-label) — `OPTION (LABEL = '...')` syntax + canonical example queries that filter `queryinsights.*` by `label`.
