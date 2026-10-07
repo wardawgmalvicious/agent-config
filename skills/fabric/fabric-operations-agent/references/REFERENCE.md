@@ -168,8 +168,10 @@ produces irrelevant information, or exceeds Teams message limits.
 - Heavy usage can throttle messages, in which case Teams gets simplified
   non-LLM-generated text.
 - Outputs are probabilistic. **English only** for instructions and goals.
-- Azure public cloud Fabric regions only, **excluding South Central US
-  and East US**. Not in sovereign clouds (GCC-High, Bleu). Not in
+- Azure public cloud Fabric regions only, **excluding East US and South
+  Central US**: Fabric's region-availability page lists the agent as
+  unavailable in both, while the limitations page names East US alone
+  (2026-10-06). Not in sovereign clouds (GCC-High, Bleu). Not in
   workspaces encrypted with customer-managed keys. **Trial capacities are
   not supported.**
 - Tenant settings required: operations agent, Microsoft Copilot and Azure
