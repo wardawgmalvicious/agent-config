@@ -132,3 +132,9 @@ were read by the audit session, which changed neither.
   `~/.claude/settings.json` for good: the merge keeps target-only keys.
   D-1, D-2 and steps 1 to 3 were done 2026-10-07 in a session with the
   user, who chose this order.
+- **Closed**: 2026-10-07 — by brief 03's landing session. Step 4's
+  `-Force` deploy ran from `main` with brief 03's `claude/settings.json`,
+  so the deployed file kept no top-level `effortLevel`. It reported
+  `CLAUDE.md (in sync)` and rules `0 pushed`: both edits were already
+  live. `diff claude/CLAUDE.md ~/.claude/CLAUDE.md` printed nothing, nor
+  did the same diff for `claude/rules/coding-bash.md`.

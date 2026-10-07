@@ -234,3 +234,19 @@ and the docs pages read that day. The deployed settings file and
   step 7's `-Force` deploy now also carries brief 08's `claude/CLAUDE.md`
   and `claude/rules/coding-bash.md` edits (2026-10-07): run 08's step 4
   diff after it and append 08's `**Closed**:`.
+- **Closed**: 2026-10-07 — by a session of its own, the landing.
+  `claude/settings.json` drops `effortLevel` and gains `modelSettings`,
+  `claude-opus-5-5` at `xhigh`, and `bashOutputMaxChars: 128000`. The two
+  `editing-skills.md` bullets are rewritten to the answers, against the
+  settings reference and model-config page read again that day, which
+  also confirmed the new key. "Below `max`, the pins raise effort" stands
+  against 2.1.267: its fix names Opus 4.7, Opus 4.8 and Fable 5, and the
+  2026-09-01 reading ran on Opus 5 and Sonnet 5. Beyond the **Fix**, that
+  evidence went to a dated entry at the end of the root ledger's
+  § "Editing conventions", since the ledger is never corrected in place.
+  Steps 1, 2, 4 and 6 passed. Step 7's `-Force` deploy from `main` ended
+  `Done. Payload verified`: the deployed file holds both answers and no
+  top-level `effortLevel`, its repo keys match the repo file, `model`,
+  `tui`, `theme`, `switchModelsOnFlag` and `agentPushNotifEnabled`
+  survived, and `modelSettings`, now the repo's, was replaced whole, so
+  the empty `claude-opus-5` entry went. The prune grep printed nothing.
