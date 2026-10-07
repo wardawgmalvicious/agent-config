@@ -346,3 +346,11 @@ re-read them on the page before quoting them in the README.
   step 4 passed). Adjacent, unbriefed: `scripts/link-claude.ps1` lines
   99 and 560–562 and `claude/rules/README.md` line 157 still state the
   revert hazard.
+- **Needs**: tenant, a small edit — one `fabric-iq` tool call that
+  succeeds, so under its 30-second cap, before `powerbi-remote-mcp`
+  leaves the template; and the adjacent finding above, the revert
+  hazard still stated in `scripts/link-claude.ps1`'s help text and
+  `-GlobalMcp` warning and in `claude/rules/README.md`. Step 6 for
+  D-5's two files is done: `link-claude.ps1` ran on `main` at
+  `081cacd`, and each deployed copy diffs clean against the repo
+  (2026-10-07).
