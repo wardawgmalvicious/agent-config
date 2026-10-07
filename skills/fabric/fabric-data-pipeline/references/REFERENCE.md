@@ -8,8 +8,11 @@ exports on 2026-09-02.
 
 ## `DataPipelineActivityTypes` — the full enum
 
-36 values. The ones marked **Fabric** have no Azure Data Factory
-equivalent and are where an ADF-trained assumption goes wrong.
+36 values, as the REST definition lists them (re-counted 2026-10-06).
+Activities newer than the enum, with no documented `type`, are in
+[SKILL.md](../SKILL.md) §4. The ones marked **Fabric** have no Azure
+Data Factory equivalent and are where an ADF-trained assumption goes
+wrong.
 
 | `type` | What it does |
 | --- | --- |
@@ -173,7 +176,9 @@ wait every attempt) and Increasing Delay (exponential back-off: each
 retry waits a random interval from a range that doubles per attempt,
 bounded by a configured maximum). The randomization is deliberate — it
 stops concurrent pipeline retries from colliding on the same upstream
-system.
+system. That maximum, **Max retry interval (sec)**, defaults to 3,600.
+**Retry interval fields take static integers only**; they accept no
+dynamic expression (Learn, 2026-10-06).
 
 **`retryConditions` matching fields** are error message, failure type
 (user vs system error) and error code, combined with And/Or. The common

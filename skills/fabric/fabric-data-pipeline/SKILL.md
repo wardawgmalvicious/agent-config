@@ -73,15 +73,28 @@ shape is type-specific. `dependencyConditions` are `Succeeded`,
 `Failed`, `Skipped`, `Completed` — an activity with several `dependsOn`
 entries waits for **all** of them.
 
+**Run conditions (preview)** are a pipeline-level layer above
+`dependsOn`: they decide when the pipeline itself can start. How they
+serialize to Git is undocumented (Learn, 2026-10-06).
+
 `externalReferences.connection` is a single connection GUID. It is not
 source-controlled meaningfully across workspaces — parameterize it
 (`fabric-cicd`) or bind it to a Variable Library connection reference.
 
 ## 4. Activity types
 
-The enum has 36 entries; the full table is in
-[references/REFERENCE.md](references/REFERENCE.md). The Fabric-specific
-ones and their required `typeProperties`:
+The REST definition's `DataPipelineActivityTypes` enum has 36 entries;
+the full table is in [references/REFERENCE.md](references/REFERENCE.md).
+Learn's activity overview lists more activities than the enum carries.
+
+**Four newer activities have no documented `type` string**: Lakehouse
+maintenance (GA), and Refresh SQL analytics endpoint, Business actions
+and Fabric actions (all three preview), per What's New of 2026-10-02.
+None is in the enum and no Learn page shows its JSON, and a guessed
+string breaks the definition silently. Lakehouse maintenance doesn't yet
+support lakehouses with schemas enabled (Learn, 2026-10-06).
+
+The Fabric-specific enum entries and their required `typeProperties`:
 
 | `type` | Required `typeProperties` | Notes |
 | --- | --- | --- |
