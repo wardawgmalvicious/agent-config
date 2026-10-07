@@ -305,3 +305,16 @@ re-read them on the page before quoting them in the README.
   it still timed out at about 100, and the endpoint itself failed a
   150-second query sent outside Claude Code at 100.6 seconds. `ac948d5`
   records both, deployed on `main` and diffing clean (step 6).
+- **Needs**: user, tenant, a session of its own — the user's decision
+  on whether the templates set `timeout`, now that the remedy is
+  measured; D-5's write-while-open probe of `~/.claude.json`, in a
+  session of its own; and one `fabric-iq` tool call that succeeds, so
+  under its 30-second cap, before `powerbi-remote-mcp` leaves the
+  template. The remedy is measured, by the D-4 session on 2026-10-07 on
+  2.1.292: a 75-second warehouse query failed with no `timeout` and
+  succeeded with `"timeout": 600000`; set that way, calls of 70 to 80
+  seconds succeeded on `dataPlane/sqlEndpoint`, `dataPlane/kqlEndpoint`
+  and `powerbi`; and called directly, those three end a call at about
+  100 seconds and `fabric-iq` at about 30, which Claude Code shows as
+  `Error POSTing to endpoint:`. `6e6ece2` records all of it, deployed on
+  `main` and diffing clean (step 6).
