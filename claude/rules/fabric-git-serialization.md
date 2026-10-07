@@ -30,6 +30,7 @@ paths:
   - "**/*.OperationsAgent/**"
   - "**/*.Ontology/**"
   - "**/*.EventSchemaSet/**"
+  - "**/*.Plan/**"
 ---
 
 # Fabric Git-synced repos: portal serialization

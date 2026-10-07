@@ -468,7 +468,10 @@ over-broad.
   confirmed against real Git-synced exports and added, and `Dataflow` was
   checked and is **correct** — 246 public exports use `<name>.Dataflow`,
   while `DataflowGen2` is a portal name that never reaches Git.
-  `EventSchemaSet` was added on 2026-10-01, from a real item. The rest
+  `EventSchemaSet` was added on 2026-10-01, from a real item, and `Plan`
+  on 2026-10-06, from the real `.Plan` folder measured 2026-09-30. Learn's
+  Git list names seven more with no suffix on any page: Deployment plan,
+  Maps, Graph QuerySet, Cosmos DB, ML experiment and model, dbt Job. The rest
   of the list was never re-verified, and nothing keeps it current as
   Fabric ships item types. A full pass is cheap: one `filename:.platform`
   code search per candidate name. A missing entry here means an item type
