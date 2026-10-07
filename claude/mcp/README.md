@@ -108,7 +108,7 @@ $config = Get-Content "$HOME\.claude.json" -Raw |
 - **`-AsHashtable`** — the file accumulates project keys that differ only in drive-letter casing (`C:/Repos/...` and `c:/Repos/...`). A plain `ConvertFrom-Json` rejects that as a duplicate-key collision and *throws on a perfectly valid file*.
 - **`-DateKind String`** (pwsh 7.5+) — without it, every ISO-8601 timestamp in the file is parsed into `[datetime]` and re-emitted in **local** time on write. Same instant, different bytes, so a run that changes no server still silently rewrites rate-limit caches. With both switches the round trip is semantically identical, verified by canonical diff against the live file.
 
-And a live session rewrites this file from memory on its own schedule, so a write made while one is open can be reverted when it exits. Back up first, and confirm in a **fresh** session with `claude mcp list`.
+A scripted write made while a session is open now survives it. Before 2.1.259 a live session rewrote this file from memory and could revert such a write when it exited; that release fixed concurrent sessions reverting each other's changes (changelog), and on 2.1.292 a top-level key a script added while a session was open was still there after that session's exit had written the file (measured 2026-10-07). Back up first, and confirm in a **fresh** session with `claude mcp list`.
 
 ### Servers (user scope)
 

@@ -86,10 +86,11 @@ this machine that key is reconciled against
 `scripts/link-claude.ps1 -GlobalMcp`, which is off by default even under
 `-Force` for exactly that reason.
 
-- **A live session rewrites it from memory on its own schedule**, so an
-  edit made while a session is open can be silently reverted when that
-  session exits. Back up first and confirm in a **fresh** session with
-  `claude mcp list`.
+- **A scripted edit made while a session is open survives it** since
+  2.1.259, which fixed sessions reverting each other's changes: on
+  2.1.292 a key a script added outlived the open session's exit write
+  (2026-10-07). Back up first anyway, and confirm in a **fresh** session
+  with `claude mcp list`.
 - **Parsing it in PowerShell needs two switches, both silent when
   omitted.** `ConvertFrom-Json -AsHashtable -DateKind String`.
   `-AsHashtable` because the file accumulates project keys differing only
