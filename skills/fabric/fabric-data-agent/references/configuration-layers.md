@@ -114,11 +114,13 @@ FinanceWarehouse — Monthly aggregated financial data: revenue, cost of goods
 sold, operating expense, margin, budget, and variance. Use for any P&L-shaped
 question or anything involving budget vs. actual.
 
-CustomerModel — Power BI semantic model with customer segmentation, loyalty
-tier, lifetime value, and churn scores. Use for any question that asks
-"which customers" or "what kind of customers". Do NOT use for transaction
-details — route those to SalesLakehouse.
+StoreTelemetryKQL — Eventhouse KQL database of store-device telemetry since
+2024: footfall counts, POS terminal uptime and error events, at one-minute
+grain. Use for device health, outages, or foot traffic by hour. Do NOT use
+for sales figures — route those to SalesLakehouse.
 ```
+
+A semantic model takes no description: Learn's data-source table says "Semantic Models do not support data source descriptions" (2026-10-06). Route to one from the agent instructions instead, as §1 routes `CustomerModel`.
 
 Weak descriptions ("contains sales data") make the agent guess at routing. Always say what the source IS good for AND what it ISN'T.
 
