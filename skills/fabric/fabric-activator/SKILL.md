@@ -272,6 +272,10 @@ which is the one to design around.
 addresses on the creator's tenant or a verified domain — never external
 or guest. Teams **channels are not supported at all**, private channels
 included, and a group chat must be recently active to be selectable.
+Learn contradicts itself on channels (2026-10-06): `activator-limitations`
+still says "Teams channels aren't currently supported", while the
+warehouse SQL query alert page, for a preview source, documents a
+**Channel post** action that takes a team and a channel.
 
 Also unsupported: alerts on a report using Dynamic M parameters, alerts
 from the Capacity Metrics app, and alerts from a SQL analytics endpoint.
@@ -335,7 +339,7 @@ recreate the ingestion and its rules under the new user.
 | A job ran with a 0 or `false` parameter | Silent coercion of an unparseable value | Match the target item's parameter name and type exactly |
 | A cloned attribute reads the wrong column | Only `payload.name` was changed, not the `EventFieldSelector` `fieldName` | Edit both, inside the escaped `instance` |
 | Consumption continues after stopping every rule | Event listeners outlive stopped rules | Delete the rules |
-| Alert spam on every matching event | A stateless operator where a transitional one was meant | Use `BECOMES` / `INCREASES` / `DECREASES` |
+| Alert spam on every matching event | A stateless operator where a transitional one was meant | Use `BECOMES` / `INCREASES` / `DECREASES` / `EXIT RANGE` |
 | Rule never fires, no error | Field-name or type mismatch binding rule to data | Check the live sample; Activator can fail to bind silently |
 
 Activator emails an error code when something breaks after creation, and
@@ -348,7 +352,9 @@ Every code, grouped by stage, with cause and fix, is in
 - **Preview it.** Activator can show how often the rule *would* have
   fired on historical data. Use it on any high-volume stream.
 - **Prefer stateful operators** so a value sitting past a threshold does
-  not re-alert forever.
+  not re-alert forever: `BECOMES`, `INCREASES`, `DECREASES`,
+  `EXIT RANGE`, or absence of data, the heartbeat below (Learn,
+  2026-10-06).
 - **Add a heartbeat rule** to catch a stream going silent — a rule that
   never fires and a source that died look identical otherwise.
 - **Check the ceiling**: 500 rules per item, and the per-recipient
