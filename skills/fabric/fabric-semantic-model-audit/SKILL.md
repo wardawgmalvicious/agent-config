@@ -264,11 +264,22 @@ One pass per consumer, each deferring to the skill that owns it.
   agent** (move them into the model), and the DAX generation tool reads
   only model metadata and Prep-for-AI configuration — it **ignores
   data-agent-level instructions**, so model-specific guidance placed on
-  the agent is silently dead. Defer agent configuration to
-  `fabric-data-agent`.
+  the agent is silently dead, and a semantic-model source takes no
+  data-source instructions or descriptions either. On the preview
+  runtime, advanced DAX generation (preview) also searches column values
+  for filters; that needs the model's Q&A setting on, the default for
+  Import and Direct Lake models, until Q&A retires (February 2027 on the
+  Q&A pages, December 2026 on that one) and a promised replacement
+  setting takes over (Learn, 2026-10-06). Defer
+  agent configuration to `fabric-data-agent`.
 - **Ontology** — carry only the model-shape consequences; the generation
   constraint matrix belongs to `fabric-ontology`. Cite it, don't restate
   it.
+- **Microsoft 365 Copilot** — Fabric IQ answers Copilot Chat questions
+  from Power BI reports and their semantic models (GA, September 2026),
+  under the asking user's RLS and OLS and the content's sensitivity
+  labels, so those carry over as they stand. Learn names no other model
+  setting it reads, AI instructions included (2026-10-06).
 
 **Non-descriptive names (check 13) are the one finding here with a
 documented bulk remediation.** On a large model the finding is otherwise
@@ -321,9 +332,9 @@ remediation is unavailable in this storage mode is not a finding yet.
   copy with the carve-out stripped confirmed it is what stops check 1
   prescribing "collapse the snowflake" on that model. But a published
   sample is not a production model, no *real* planning model has been
-  audited from this machine, and Plan is a preview workload. If a
-  check-1 finding is contested on planning grounds, re-read the source
-  rather than insisting.
+  audited from this machine, and Plan has been GA only since July 2026.
+  If a check-1 finding is contested on planning grounds, re-read the
+  source rather than insisting.
 - **The notebook tier is documented, not exercised.** As of 2026-09-02
   nothing in §2's third row has been run from this machine — it cannot
   be, without a capacity. Treat its invocations as first-party
