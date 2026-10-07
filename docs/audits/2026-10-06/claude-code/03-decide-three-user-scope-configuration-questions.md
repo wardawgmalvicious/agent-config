@@ -194,3 +194,39 @@ lines 655–656 on 2026-10-06). It holds whatever D-2 decides.
 The changes are from the 2026-10-06 `claude-code` run's changelog diff
 and the docs pages read that day. The deployed settings file and
 `~/.claude/skills` were read by the audit session, which wrote neither.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (D-1 to D-3 answered by the
+  user; D-4 applied)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `.claude/rules/deploy-scripts.md`
+- **Open question**: all four put to the user on 2026-10-07, with the
+  brief's evidence:
+  - D-1 — **a)**: `modelSettings` per model, `claude-opus-5-5` at
+    `xhigh` as deployed, and the top-level `effortLevel` dropped.
+  - D-2 — **a)**: both syncs stay on, so neither key is set.
+  - D-3, first — **a)**: `bashOutputMaxChars` at 128000, the maximum.
+  - D-3, second — **b)**: the probe recipe stays as it is. Put with
+    evidence the brief lacked: on 2.1.268 `--bare` read only an API key,
+    never OAuth, and skipped `CLAUDE.md` discovery altogether
+    (`docs/handoffs/execute/linkedin-article-skill.md`).
+- **Verification**: D-4's quote sat at lines 38–40, and the linker's
+  skip at `scripts/link-claude.ps1` lines 655–656, as the brief says.
+  Step 3 — **passed**: `synced` at `.claude/rules/deploy-scripts.md:40`.
+  Step 4 — **passed**: `lint-frontmatter.py` on both rules, exit 0.
+  Step 5 does not apply: `claude/CLAUDE.md` is unchanged, as D-3's
+  second answer leaves it. Step 6 (`pre-commit run --all-files`) runs
+  once at the end of the run.
+- **Deferred**: steps 1 and 2 check the D-1 and D-3 edits, which are the
+  answers' own task; step 7 needs the deployed payload, after that task.
+- **Deviations**: none to D-4's text. One note: its evidence stays in
+  this brief, since the brief names no ledger entry.
+- **Needs**: a session of its own, the landing — apply the answers:
+  `claude/settings.json` drops `effortLevel` and gains `modelSettings`,
+  with `claude-opus-5-5` at `xhigh`, and `bashOutputMaxChars: 128000`;
+  the two `editing-skills.md` bullets quoted above are rewritten to
+  match, and "Below `max`, the pins raise effort" is checked against
+  2.1.267, beside brief 04's bullet in the same section; then steps 1,
+  2, 4 and 6, and step 7's `-Force` deploy from `main`.

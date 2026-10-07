@@ -91,3 +91,38 @@ repo paths (2026-09-23).
 Both from the 2026-10-06 `claude-code` run's changelog diff; D-2 was
 confirmed on the permissions page that day, and the two settings files
 were read by the audit session, which changed neither.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (D-1 to a session with the user;
+  D-2 answered: a line in `claude/CLAUDE.md`)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: none
+- **Open question**: both put to the user. D-1: a later session with the
+  user, who times the real-console arm while the session times the two
+  tool shells. D-2: **a)**, one line in `claude/CLAUDE.md` saying to
+  answer "Yes, and keep allowing" and what the block breaks, with no repo
+  path in it, and a line moved out to stay under the cap.
+- **Verification**: none of the brief's steps apply, since no file
+  changed. A docs lookup, raw markdown read 2026-10-07, settled what
+  option **b)** called unmeasured, and the user chose with it in hand.
+  The settings reference gives `false` as "the same as unset", and the
+  permission-modes page makes the offer while the block is off, so a
+  `false` cannot stop it. "Yes, and keep allowing any reads outside the
+  working directories" records the answer, so the offer does not return.
+  Under the block, files Claude Code itself needs stay readable, "such
+  as" its skills, rules, agents and `CLAUDE.md`: `~/handoff-inbox/` is
+  refused, while whether transcripts and logs are is open, as the list
+  is open-ended. The deployed `~/.claude/settings.json` still lacks the
+  key on 2026-10-07. `pre-commit run --all-files` runs once at the end
+  of the run.
+- **Deferred**: D-1, and the edit D-2's answer implies, with steps 1, 2
+  and 4 after them.
+- **Deviations**: none.
+- **Needs**: user, a session of its own — D-1's spawn timing with the
+  user at a real console, where brief 09's `--safe-mode` probe runs too,
+  the figure corrected in place with a ledger entry only if it moved,
+  and the two `/proc/$$/cmdline` modes re-checked; D-2's line, with what moves out to keep the cap; then
+  steps 1 and 2, and step 4's `-Force` deploy after reading brief 03
+  D-1's knock-on.

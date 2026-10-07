@@ -87,3 +87,29 @@ Re-read the file before editing it.
 Both from the 2026-10-06 `claude-code` run's changelog diff. D-1 was
 confirmed on the settings page that day; D-2 is on no docs page the
 audit read.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `claude/rules/claude-config-scoping.md`,
+  `claude/rules/coding-bash.md`
+- **Verification**: both quotes were in place, the table row at line 27
+  and the exit-code sentence at lines 252–253. The two pages were
+  re-read as raw markdown on 2026-10-07: the settings page still states
+  D-1, and the hooks page still says nothing of a matching or
+  serialization failure, so D-2's "the hooks page does not" holds that
+  day. Step 1 — **passed**: `bypassPermissions` at lines 41 and 45.
+  Step 2 — **passed**: `2.1.288` at line 260. Step 3 — **passed**:
+  `lint-frontmatter.py` on both, exit 0. Step 4 (`pre-commit run
+  --all-files`) runs once at the end of the run; both rules are under
+  `deferred` in `copilot/.source-hashes.json`, so no stamp is due.
+- **Deferred**: step 5 needs the deployed payload: from the main
+  checkout after the landing, `link-claude.ps1 -SkillGroups
+  workflow,social,meta`, then the two diffs.
+- **Deviations**: none. D-1 went under the table as its own bold-led
+  paragraph, the form § "`~/.claude.json` is runtime state" uses, and
+  D-2 as its own paragraph after the exit-code one, which is unchanged.
+- **Needs**: the landing — `link-claude.ps1` deploys both rules, then
+  step 5's diffs.

@@ -98,3 +98,28 @@ probe.
 Found by the 2026-10-06 `claude-code` run in its changelog diff and
 checked against the skills page the same day. The Fable observation is
 the audit session's own model notices, not a designed probe.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (D-1 to a cold probe session;
+  D-2 applied)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `.claude/rules/editing-skills.md`
+- **Open question**: where D-1's probe runs, put to the user, who chose
+  the fresh session that runs brief 02's D-2: both are cold skill probes
+  on one scratch project, and each brief's rewrite and ledger entry
+  still lands on its own.
+- **Verification**: D-2's quote sat at lines 18–19, and D-1's is still
+  at line 70 for the probe to find. Step 2 — **passed**:
+  `anthropic-skills` at lines 19–20. Step 3 — **passed**:
+  `lint-frontmatter.py`, exit 0. Step 4 (`pre-commit run --all-files`)
+  runs once at the end of the run.
+- **Deferred**: step 1 is D-1's.
+- **Deviations**: none. One note: D-2's evidence stays in this brief,
+  since only D-1's step names a ledger entry.
+- **Needs**: a cold probe session, shared with brief 02's D-2 — D-1's
+  description-path arms in default and auto mode, cited in a dated
+  root-ledger entry (step 1), then the `model:` bullet rewritten to the
+  result. Brief 03's answers rewrite two other bullets of that section:
+  land one before starting the other, and re-read it first.

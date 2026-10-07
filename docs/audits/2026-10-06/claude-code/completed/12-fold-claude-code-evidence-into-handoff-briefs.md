@@ -87,3 +87,25 @@ The fixes are from the 2026-10-06 `claude-code` run's changelog diff.
 The Phase 1 figures are that run's own: the byte and line counts are in
 `00-audit-report.md` § "Audit window", and the slice sizes are from the
 Read tool's refusals in the same session.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `docs/handoffs/execute/payload-claude-md-double-load.md`,
+  `docs/handoffs/execute/drift-fetch-subagent.md`
+- **Verification**: D-1's quote sat at lines 42–43, and D-2's success
+  criterion in § "Notes", which the file was re-read for after brief
+  07's fold into § "Frontmatter". Step 1 — **passed**: `2026-10-06`
+  once in the double-load brief and twice in the drift-fetch one, the
+  second being brief 07's. Step 2 — **passed**: additions only, at line
+  58 of the first and lines 174 and 417 of the second, none in a
+  frontmatter block. Step 3 — **passed**: both listed as before, open
+  with `needs user` and deferred with their `reopen-when`. Step 4
+  (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deviations**: one wording, put right against the brief's own figures.
+  **Fix** says the measurements predate the three fixes, but they ran
+  on 2.1.268 to 2.1.281, so D-1's paragraph says they predate 2.1.286
+  and 2.1.287 and reach 2.1.281 only at their end. It draws no
+  conclusion, as the brief asks.

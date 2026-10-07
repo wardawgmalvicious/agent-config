@@ -115,3 +115,38 @@ Found by the 2026-10-06 `claude-code` run in its changelog diff
 (2.1.271, 2.1.292) and the subagent docs page fetched that day through
 WebFetch, which answers through a small model; re-read the quoted
 passages on the page before quoting them in the prompt.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (D-1 answered: leave it out; D-2
+  and D-3 applied)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `claude/agents/security-reviewer.md`,
+  `docs/handoffs/execute/drift-fetch-subagent.md`
+- **Open question**: D-1, put to the user, who chose **b)**, leaving
+  `omitClaudeMd` out, so every scan keeps `~/.claude/CLAUDE.md`'s
+  identity rules and shell traps. That answer needs no edit.
+- **Verification**: the quoted passages were re-read on the raw
+  subagents page, `code.claude.com/docs/en/sub-agents.md`, on
+  2026-10-07: the `omitClaudeMd` row and both `permissionMode` passages
+  stand as the brief quotes them, and `manual` is listed as an alias of
+  `default`. Step 1 — **passed**: `permissionMode` at line 16, no
+  `omitClaudeMd`, as answered. Step 4 — **passed**: `2026-10-06` at
+  line 174. Step 5 — **passed**: `drift-fetch-subagent.md` still listed
+  under `deferred`, its frontmatter untouched. Step 6 (`pre-commit run
+  --all-files`) runs once at the end of the run.
+- **Deferred**: step 2 needs the deployed payload: from the main
+  checkout after the landing, `link-claude.ps1 -SkillGroups
+  workflow,social,meta`, then the diff. Step 3 needs a fresh session: the
+  procedure in `tests/agents/security-reviewer/README.md` against its
+  `expected_findings.md`, then `git status`.
+- **Deviations**: none. Two notes. The page adds that a parent in
+  `bypassPermissions`, `acceptEdits` or auto mode overrides a subagent's
+  `permissionMode`; D-3's fold carries that, since the drift-fetch brief
+  reasons from `defaultMode: auto`, while the reviewer's prompt only
+  names the field, as D-2's **Fix** asks. The fold went into
+  § "Frontmatter"'s `permissionMode` bullet, where the open question
+  sits; § "Confidence" keeps its words.
+- **Needs**: a fresh session, the landing — step 2's deploy and diff on
+  `main`, then step 3's manual retest of the reviewer's changed prompt.

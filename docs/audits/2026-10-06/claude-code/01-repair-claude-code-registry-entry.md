@@ -101,3 +101,35 @@ byte, line and section counts are exact; the bullet count is
 `grep -c '^- '` over the added region, and the ~46 kept bullets are the
 audit's own tally of its filter. Self-referential: the entry is the
 audit's input, so the next `claude-code` run is what checks it.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**:
+  `.claude/skills/drift-audit/references/sources/claude-code.md`
+- **Verification**: Step 1 — **passed**: no hit for `19 bullets/day`,
+  `~590 KB` or `380+`. Step 2 — **passed**: `2026-10-06` on the new
+  sample (line 43) and on the size figures (lines 7, 53 and 61). Step 3
+  — **passed**: `leading verb alone` at line 50. Step 4 — **passed**:
+  4,832 bytes, under the 20 KB trigger. Step 5 (`pre-commit run
+  --all-files`) runs once at the end of the run. `lint-frontmatter.py`
+  does not apply: the file is a `references/` page, not a `SKILL.md` or
+  a rule.
+- **Deferred**: the behavioural check, as Provenance says: the next
+  `claude-code` audit is what reads the corrected entry, and this run
+  cannot re-run an audit against it.
+- **Deviations**: line 7's `sections` field carried the same undated
+  `~590 KB`, outside the three bullets **What to change** lists, so
+  step 1 could not pass with it unedited. Put to the user, who chose to
+  correct it too: it reads `945 KB (2026-10-06)`. Two notes. The 35-day
+  sample's own rate is ~16 bullets a day (550 over 35), so the bullet
+  gives ~16 and ~19 for the first two windows rather than one ~19. The
+  region's cost follows "two-ref diff on long ones" rather than the
+  figures, so "This is why SKILL.md § 4a…" still points at the file's
+  size and not at a region larger than the budget, which the brief
+  leaves undecided.
+- **Needs**: the next claude-code drift audit — reading the corrected
+  entry is the behavioural check; and the Size bullet's "~1.2 MB" for
+  two full files, which predates the 945 KB head and was unbriefed here.

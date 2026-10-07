@@ -153,3 +153,46 @@ The 2026-10-06 `claude-code` run read the 2.1.288 bullet in its
 changelog diff and the memory docs the same day. The Write measurement
 is another session's, found uncommitted in the working tree while this
 brief was being written, landed as `6751e6e`, and not re-run here.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals (D-1 applied, D-2
+  escalated)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `CLAUDE.md`, `claude/rules/README.md`,
+  `docs/evidence/root-claude-md.md`
+- **Verification**: the staleness gate matched this brief's table:
+  targets 1, 3 and 9 still carried their quotes, 2 and 4 to 8 held
+  `6751e6e`'s post-fix text, and no commit had touched a target since.
+  Target 9's quote spans lines 19–20, so step 1's pattern could not see
+  it even before the fix. Step 1 — **failed as written, on two artifacts
+  the user accepted** (Deviations): the first command's one hit is
+  `claude/rules/agent-instructions-scoping.md:51`, and the second counts
+  1 to 3 in five files and 0 in `.claude/rules/editing-rules.md`. Step 2
+  — **passed**: target 3 keeps "Read a file before changing it", with
+  the corrected reason. Step 3 — **passed**: `lint-claude-md.py`, root at
+  200 of 200. Step 4 — **passed**: `lint-frontmatter.py` on the five
+  rule files, exit 0. Step 5 (`pre-commit run --all-files`) runs once at
+  the end of the run.
+- **Deferred**: step 6 needs the deployed payload, which the worktree
+  cannot reach: from the main checkout after the landing,
+  `link-claude.ps1 -SkillGroups workflow,social,meta`, then the two
+  diffs. Step 7 is D-2's.
+- **Open question**: D-2, put to the user, who chose a fresh session of
+  its own for the probe, as the brief's **Fix** describes it.
+- **Deviations**: step 1's two results are pattern artifacts, put to the
+  user, who accepted them as such, so neither spot was edited. Line 51
+  reads "next matching Read or Write", `6751e6e`'s own correction, which
+  the pattern written for target 1 also matches. `editing-rules.md`'s
+  "Read / or Written" wraps across a line; with the lines joined, the
+  second command's pattern finds it once. Three notes. Target 9's
+  "session-context" went with the parenthetical, since the fix names the
+  documented triggers and it is none of them. Targets 1 and 3 each got a
+  dated entry under their heading in the root ledger, the **Knock-on**.
+  Target 3 stays three lines, since root sits at its cap.
+- **Needs**: a cold probe session, the landing — D-2's Edit probe, in
+  the session that also runs brief 04's D-1, cited in a dated
+  root-ledger entry, then Edit named in the activation wording or
+  recorded as loading no skill (step 7); and step 6's deploy and two
+  diffs, run on `main`.

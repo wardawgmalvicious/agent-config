@@ -80,3 +80,22 @@ the trial session in passing.
 Found by the 2026-10-06 `claude-code` run in its changelog diff, with
 `/doctor prompt-audit` checked against the memory docs that day.
 `/skill-doctor` is on no docs page the audit read.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (the trial needs the user)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: none
+- **Open question**: where the trial runs, put to the user, who chose a
+  session with them. Both are built-in commands the user types, which
+  this run cannot invoke. The adoption question waits on their reports.
+- **Verification**: none of the brief's steps apply, since no file
+  changed. `pre-commit run --all-files` runs once at the end of the run.
+- **Deferred**: the whole trial, steps 1 and 2 with it.
+- **Deviations**: none.
+- **Needs**: user — run `/doctor prompt-audit` and `/skill-doctor` once
+  each in a fresh session here, applying nothing; record both reports
+  and what each cost against `lint-claude-md.py`, the pre-commit hooks,
+  the drift audits and `skill-telemetry.py`; then put the adoption
+  question to the user, any finding going through its file's own route.

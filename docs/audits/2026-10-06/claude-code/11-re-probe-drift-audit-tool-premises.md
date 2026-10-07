@@ -90,3 +90,27 @@ run, as `drift-update` does for such briefs.
 Both premises were written from measurement on or before 2026-10-06.
 The WebFetch observation is the audit session's own; the Grep
 observation was made in the same session while this brief was written.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (both probes to a session of
+  their own)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: none
+- **Open question**: where the probes run, put to the user, who chose a
+  session of their own, from the main checkout rather than a worktree,
+  so D-1's Glob sees the layout its miss happened in. A tool probe is
+  more than a doc lookup, so this run made none.
+- **Verification**: none of the brief's steps apply, since no file
+  changed. Both premises are still in `SKILL.md`, § 1 at line 20 and
+  § 4b at line 90, for the probe session to find. `pre-commit run
+  --all-files` runs once at the end of the run.
+- **Deferred**: both probes and the self-referential edit, steps 1 to 3
+  with them; the next `/drift-audit` run is the behavioural check, as
+  the constraint says.
+- **Deviations**: none.
+- **Needs**: a session of its own — from the main checkout, D-1's three
+  Glob and Grep calls and D-2's two WebFetch fetches, with the CLI
+  version recorded; then § 1 and § 4b rewritten to the results (steps 1
+  to 3), and the next drift audit as the behavioural check.

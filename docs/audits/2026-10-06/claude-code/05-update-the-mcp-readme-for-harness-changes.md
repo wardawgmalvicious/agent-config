@@ -183,3 +183,53 @@ Found in the 2026-10-06 `claude-code` run's changelog diff. The MCP
 docs page was fetched that day through WebFetch, which answers through a
 small model: the passages above are the ones it returned as quotes, so
 re-read them on the page before quoting them in the README.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — applied with deferrals (D-1 and D-2
+  applied; D-3 answered, D-4 and D-5 escalated)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `claude/mcp/README.md`
+- **Open question**: three, put to the user. D-3: deferral adds a lever
+  beside the scope rule and does not change it. D-4: a session of its
+  own, in a tenant the user picks then, which stays out of this log.
+  D-5: a session of its own.
+- **Verification**: every quote D-1 and D-2 rely on was in place
+  (README lines 127, 561 and 563). Step 1 — **passed**: `2.1.274` and
+  `per-request` in the timeout section, lines 556–569. Step 2 —
+  **passed**: `MCP_PROTOCOL_NEGOTIATION=legacy` at line 127. Step 3 —
+  **holds**: this run made no D-3 to D-5 edit. D-3's lookup is the MCP
+  page's raw markdown, `code.claude.com/docs/en/mcp.md`, fetched
+  2026-10-07, which documents `alwaysLoad` under § "Exempt a server from
+  deferral", where the audit's fetch the day before found nothing.
+  Step 4 does not apply: `claude-config-scoping.md` is unchanged. Step 5
+  (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: step 6 needs the deployed payload: from the main
+  checkout after the landing, `link-claude.ps1 -SkillGroups
+  workflow,social,meta`, then the diff.
+- **Deviations**: none to the edits. Notes. D-1's docs passages were
+  re-read on that raw page with `curl`, not WebFetch, as **Provenance**
+  asks, and the README cites them as read 2026-10-07. The page carries
+  two facts the brief's quote stopped short of, both used: an unset
+  `MCP_TOOL_TIMEOUT`'s 28 hours never enters the per-request comparison,
+  so with no `timeout` set that timer is 60 seconds unless `MCP_TIMEOUT`
+  is longer, and stdio servers have no such timer. The "capped at 300000
+  ms" clause is now dated to the 2.1.251 bundle and marked not re-read
+  since 2.1.274, as nothing in reach re-establishes it. D-3's page shows
+  more than the brief foresaw: with `ENABLE_TOOL_SEARCH` unset, every
+  MCP tool is deferred by default, and `alwaysLoad: true` exempts a
+  server.
+- **Needs**: tenant, a session of its own, the landing — D-3's edit per
+  the answer: the scope section's tool-surface sentence corrected to the
+  default deferral, with `alwaysLoad: true` named as what loads a whole
+  surface, and the binding argument kept (step 3: cite the page); D-4's
+  one-endpoint probe with `AZURE_CONFIG_DIR` pinned, recording only the
+  CLI version and the result; D-5's write-while-open probe of
+  `~/.claude.json`, after a backup, relaxing both passages only if the
+  key survives (brief 06 also edits `claude-config-scoping.md`);
+  step 6's deploy and diff, on `main`; and an adjacent finding, unbriefed:
+  with no `timeout` set, an `http` server's per-request timer is 60
+  seconds to the first byte, so whether that cuts off a slow hosted
+  Fabric call, and so whether "deliberately absent" still holds for
+  `http` servers, is unmeasured.

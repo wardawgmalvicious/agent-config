@@ -61,3 +61,28 @@ instruction, if step 1 finds `simplify` named; c) neither.
 Found by the 2026-10-06 `claude-code` run in its changelog diff and the
 skills page fetched that day through WebFetch; the `simplify` listing
 is the audit session's own.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (the check first, then the
+  decision)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: none
+- **Open question**: put to the user with the brief's evidence, who
+  chose to run step 1's check before deciding among a), b) and c). The
+  check reads transcripts under `~/.claude/projects/`, which is more
+  than a doc lookup, so this run made none. This session's own git
+  guidance names neither skill while `simplify` is listed, which leaves
+  open whether the instruction arrives at commit time: what the check
+  is for. This pass's own `/commit`, on 2.1.286 or later, is a
+  qualifying commit.
+- **Verification**: none of the brief's steps apply, since no file
+  changed. `pre-commit run --all-files` runs once at the end of the run.
+- **Deferred**: step 1's check, then the decision and whatever it
+  implies, with steps 1 and 2.
+- **Deviations**: none.
+- **Needs**: a session of its own, user — step 1's check in a 2.1.286+
+  commit's transcript here, recorded with the record it came from; then
+  the a/b/c question to the user, an `/author-skill` or `commit` task
+  following from the answer.

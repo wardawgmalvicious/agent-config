@@ -81,3 +81,34 @@ them.
 From the 2026-10-06 `claude-code` run's changelog diff. Whether
 `--safe-mode` keeps `permissions.defaultMode` is the open part; the
 audit did not run it.
+
+## Execution log
+
+- **Executed**: 2026-10-07 — escalated (D-1 to the user's console
+  session that brief 08 D-1 holds; D-2 applied)
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `.claude/rules/activation-testing.md`
+- **Open question**: where D-1's probe runs, put to the user, who chose
+  the real-console session brief 08's D-1 already needs: the baseline is
+  typed, so it starts interactively, and 2.1.284's auto-mode default
+  covers interactive sessions while `claude -p` follows 2.1.285's rule.
+- **Verification**: the sequencing note held: brief 02's correction of
+  this bullet landed on `main` as `6751e6e`, this run's brief 02 left
+  the file alone, and the bullet was re-read before D-2 went in. D-2's
+  quote sat at line 18, D-1's at root `CLAUDE.md` lines 175–176. Step 2
+  — **passed**: `PowerShell` at line 22. Step 3 — **passed**:
+  `lint-claude-md.py`, root unchanged at 200 of 200. Step 4 —
+  **passed**: `lint-frontmatter.py`, exit 0. Step 5 (`pre-commit run
+  --all-files`) runs once at the end of the run.
+- **Deferred**: step 1 is D-1's.
+- **Deviations**: none. One note: D-2 went at the bullet's end as its own
+  sentence, leaving the lines `6751e6e` wrote unreflowed, and its
+  evidence stays in this brief, since only D-1's step names a ledger
+  entry.
+- **Needs**: user, shared with brief 08 — D-1's `claude --safe-mode`
+  start in a scratch directory and in this repo, its mode read from
+  `/status` or the transcript and cited in a dated root-ledger entry
+  (step 1); then § "Validating a change" and the test-skill
+  `reading-a-failure.md` say which mode the baseline runs in, and how to
+  pin it if auto.
