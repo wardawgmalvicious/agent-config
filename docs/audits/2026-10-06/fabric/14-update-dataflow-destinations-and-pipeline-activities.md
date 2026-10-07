@@ -195,3 +195,14 @@ rather than edits.
   ("Warehouse requires fixed schema") only as far as Learn establishes,
   and append a `**Closed**:` line, or a fresh `**Needs**:` line naming
   what Learn still leaves undocumented.
+- **Needs**: the next `fabric` audit — what Learn still leaves
+  undocumented, read 2026-10-07: the "Dataflow dynamic warehouse schema
+  (Preview)" row links the destinations page, which still allows
+  Warehouse only fixed schema, and no page shows how a destination
+  expression is written into `mashup.pq`. Correct `fabric-dataflow`
+  `REF:93-98` or `SKILL.md:269-278` once Learn documents either. The
+  rest landed the same day: `SKILL.md:269-278` says a destination's table
+  or file name can take a run-time expression (preview, with advanced
+  edit for the settings it does not reach) while its connection stays
+  bound, as Learn's CI/CD architecture page still says; `REF:93-98` keeps
+  fixed schema for Warehouse and flags the preview.
