@@ -233,3 +233,15 @@ re-read them on the page before quoting them in the README.
   seconds to the first byte, so whether that cuts off a slow hosted
   Fabric call, and so whether "deliberately absent" still holds for
   `http` servers, is unmeasured.
+- **Needs**: tenant, a session of its own — D-3's edit per the answer,
+  the scope section's tool-surface sentence corrected to the default
+  deferral, with `alwaysLoad: true` named as what loads a whole surface
+  and the binding argument kept (step 3: cite the page); D-4's
+  one-endpoint probe with `AZURE_CONFIG_DIR` pinned, recording only the
+  CLI version and the result; D-5's write-while-open probe of
+  `~/.claude.json`, after a backup, relaxing both passages only if the
+  key survives; and the adjacent finding, the 60-second first-byte timer
+  on an `http` server with no `timeout`, unmeasured against a slow
+  hosted Fabric call. Step 6 is done: `link-claude.ps1` ran on `main` at
+  `4d473d7`, and the deployed README matches the repo (`diff`,
+  2026-10-07).

@@ -113,3 +113,6 @@ audit read.
   D-2 as its own paragraph after the exit-code one, which is unchanged.
 - **Needs**: the landing — `link-claude.ps1` deploys both rules, then
   step 5's diffs.
+- **Closed**: 2026-10-07 — the landing: `link-claude.ps1` ran on `main`
+  at `4d473d7`, and step 5's two diffs print nothing, both deployed
+  rules matching the repo.

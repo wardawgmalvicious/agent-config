@@ -196,3 +196,9 @@ brief was being written, landed as `6751e6e`, and not re-run here.
   root-ledger entry, then Edit named in the activation wording or
   recorded as loading no skill (step 7); and step 6's deploy and two
   diffs, run on `main`.
+- **Needs**: a cold probe session — D-2's Edit probe, in the session
+  that also runs brief 04's D-1, cited in a dated root-ledger entry, then
+  Edit named in the activation wording or recorded as loading no skill
+  (step 7). Step 6 is done: `link-claude.ps1` ran on `main` at
+  `4d473d7`, and both deployed files match the repo (`diff`,
+  2026-10-07).

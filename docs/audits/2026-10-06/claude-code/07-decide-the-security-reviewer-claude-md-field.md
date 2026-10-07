@@ -150,3 +150,7 @@ passages on the page before quoting them in the prompt.
   sits; § "Confidence" keeps its words.
 - **Needs**: a fresh session, the landing — step 2's deploy and diff on
   `main`, then step 3's manual retest of the reviewer's changed prompt.
+- **Needs**: a fresh session — step 3's manual retest of the reviewer's
+  changed prompt. Step 2 is done: `link-claude.ps1` ran on `main` at
+  `4d473d7`, and the deployed agent matches the repo (`diff`,
+  2026-10-07).
