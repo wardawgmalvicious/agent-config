@@ -26,7 +26,7 @@ The 3 highest-leverage entry points (Eventhouse overview, KQL string-operator be
 - [.create-merge table](https://learn.microsoft.com/kusto/management/create-merge-table-command?view=microsoft-fabric) — idempotent table creation/extension. Preferred form for repeatable deployments.
 - [.alter table](https://learn.microsoft.com/kusto/management/alter-table-command?view=microsoft-fabric) — schema and policy modification entry point.
 - [.create function / .create-or-alter function](https://learn.microsoft.com/kusto/management/create-function?view=microsoft-fabric) — stored functions: docstring, folder, default param values.
-- [.alter table policy update (Update policy)](https://learn.microsoft.com/kusto/management/update-policy?view=microsoft-fabric) — automatic transform on ingestion; `IsTransactional`, query limitations (no cross-eventhouse, no external data, no plugins), the streaming-ingestion-vs-join interaction.
+- [.alter table policy update (Update policy)](https://learn.microsoft.com/kusto/management/update-policy?view=microsoft-fabric) — automatic transform on ingestion; `IsTransactional`, query limitations (no cross-eventhouse, no external data, no plugins), the streaming-ingestion-vs-join interaction. **Preview:** the policy's `Source` can be an external delta table, such as a OneLake shortcut, that has a query acceleration policy enabled; `IsTransactional` must then be false. The [query acceleration overview](https://learn.microsoft.com/fabric/real-time-intelligence/query-acceleration-overview) still says accelerated shortcuts don't support update policies, so the two pages disagree (2026-10-06).
 - [Update policy use cases](https://learn.microsoft.com/kusto/management/update-policy-use-cases?view=microsoft-fabric) — common transform patterns (parse, lookup, project).
 - [.update table command](https://learn.microsoft.com/kusto/management/update-table-command?view=microsoft-fabric) — explicit row update; covers when to use update vs materialized view vs update policy.
 
@@ -72,7 +72,7 @@ The 3 highest-leverage entry points (Eventhouse overview, KQL string-operator be
 
 ## Monitoring (Eventhouse-specific)
 
-- [Eventhouse monitoring](https://learn.microsoft.com/fabric/real-time-intelligence/monitor-eventhouse) — Metrics / Command logs / Data operation logs / Ingestion results / Query logs tables. Built-in dashboard templates.
+- [Eventhouse monitoring](https://learn.microsoft.com/fabric/real-time-intelligence/monitor-eventhouse) — Metrics / Command logs / Data operation logs / Ingestion results / Query logs tables, plus Capacity throttling / Sub-optimal size / Scale-out event logs (the last three preview, per What's New of 2026-10-02). Built-in dashboard templates.
 - [Command logs](https://learn.microsoft.com/fabric/real-time-intelligence/monitor-logs-command) — `.show commands` style audit feed via workspace monitoring.
 - [Query logs](https://learn.microsoft.com/fabric/real-time-intelligence/monitor-logs-query) — completed-query log table.
 - [Ingestion results logs](https://learn.microsoft.com/fabric/real-time-intelligence/monitor-logs-ingestion-results) — per-batch ingestion success/failure feed.

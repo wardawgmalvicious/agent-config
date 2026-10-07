@@ -199,6 +199,8 @@ external_table("ExternalSales") | where OrderDate > ago(30d) | summarize sum(Amo
 
 Layered with **Fabric workspace roles** (Admin/Member/Contributor/Viewer). `restrict access` and security functions provide RLS.
 
+A **database shortcut** in an eventhouse can share selected subitems (tables, shortcut tables, materialized views, functions) instead of the whole source database, GA since September 2026 (Learn, 2026-10-06).
+
 ## Query Patterns
 
 | Pattern | Why |
