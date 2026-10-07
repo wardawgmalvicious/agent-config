@@ -1,6 +1,6 @@
 ---
 name: fabric-eventstream
-description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and producing events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC, Activator destination + `Set Alert` flow, workspace-monitoring KQL tables (`EventStreamNodeStatus`/`EventStreamMetrics`/`EventStreamErrorMetrics`), mTLS Key Vault on Kafka, Event Hubs workspace-identity auth, custom-endpoint CloudEvents producer format (binary mode, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath, SAS policy), schema-registry URL anatomy, and gotchas (republish required, ~6h status lag, filter by ID not name, CloudEventPropertyMissingException)."
+description: "Use for Microsoft Fabric Eventstream — the streaming-ingestion item routing CDC / Event Hubs / Kafka / IoT / HTTP / MQTT events into Lakehouse, Eventhouse, Activator, or derived streams, and producing events to a schema-associated custom endpoint. Covers source connectors (Azure SQL / SQL MI / PostgreSQL / MySQL / MongoDB / Cosmos DB CDC, Mirrored DB Delta CDF preview, Event Hubs / IoT Hub / Kafka / MSK / Confluent / Kinesis / Service Bus / MQTT / HTTP / Solace), DeltaFlow analytics-ready CDC, Activator destination + `Set Alert` flow, workspace-monitoring KQL tables (`EventStream{NodeStatus,Metrics,ErrorMetrics,DiagnosticLogs}`), mTLS Key Vault on Kafka, Event Hubs workspace-identity auth, custom-endpoint CloudEvents producer format (binary mode, `dataschema` version routing), custom-endpoint connection anatomy (eseh* namespace, EntityPath, SAS policy), schema-registry URL anatomy, and gotchas (republish required, ~6h status lag, filter by ID not name, CloudEventPropertyMissingException)."
 paths:
   - "**/*.Eventstream/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -179,7 +179,7 @@ when verified.
 | Issue | Cause | Fix |
 |---|---|---|
 | Existing Eventstream emits no monitoring data | Stream was published before workspace monitoring was enabled | Open in editor and **Republish** — required once per pre-existing stream |
-| Monitoring tables don't appear after enabling | Database refresh delay | Workspace settings → **Monitoring** → toggle off then on |
+| Monitoring tables don't appear after enabling | **Log Eventstream activity** is off: enabling workspace monitoring doesn't turn it on | Turn it on per eventstream (§ Workspace monitoring); if it's on, allow for the database's refresh delay |
 | `ItemName` / `WorkspaceName` show stale values | Name columns cached from emission time | Filter / join by `ItemId` / `WorkspaceId` only (`ArtifactId` in samples written before 2026-10-06) |
 | `EventStreamNodeStatus` shows old status after a node failed | Status is emitted ~every 6 hours | For real-time status, use the Eventstream editor's live view |
 | `CorrelationId` maps to multiple nodes | Advanced processing (e.g. SQL operator with multiple destinations) | Disambiguate using `NodeDirection` + `NodeType` together with `CorrelationId` |
