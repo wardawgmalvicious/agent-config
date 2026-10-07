@@ -96,7 +96,7 @@ the registration do nothing for its token.
 | List / Get pipelines, stages, stage items, operations | `Pipeline.Read.All` **or** `Pipeline.ReadWrite.All` |
 | Create / Update / Delete pipeline, Update stage, role assignments | `Pipeline.ReadWrite.All` |
 | Assign / Unassign workspace | `Pipeline.ReadWrite.All` **and** `Workspace.ReadWrite.All` |
-| **Deploy stage content** | **`Pipeline.Deploy`** |
+| **Deploy stage content** | **`Pipeline.Deploy`** or **`DeploymentPipeline.Deploy.All`**; add `Item.Execute.All` when a deployment plan is attached |
 
 **Deploy has its own scope.** An app holding only
 `Pipeline.ReadWrite.All` can create pipelines and assign workspaces and
@@ -177,6 +177,23 @@ path without it, is a 404 that reads like a missing feature.
 
 Write the body to a file rather than inlining it — a multi-line inline
 JSON body is mangled on Windows shells.
+
+**Attaching a deployment plan (preview)** adds an explicit item order and
+pre- or post-deploy actions; it never changes which items deploy. Add
+`?beta=true` to the deploy URL, put the plan **inside** the existing
+`options` — `"deploymentPlan": { "itemId": "<plan item id>",
+"referenceType": "ByItemId" }`, with `referenceType` case-sensitive — and
+add `Item.Execute.All` to the token (Learn, 2026-10-06). One plan per
+operation, attached on every call, with no default plan; a failed
+deployment is not rolled back; a plan can't switch a Variable Library's
+active value set; and the `fabric-cicd` library doesn't support plans.
+
+**Per-item options** go in the same `options`:
+`"itemOptionsBySourceItemId": [ { "sourceItemId": "<uuid>", "options":
+{ "validateOnly": true } } ]`, each item at most once, its option names
+those of the item type's Update Definition API. Learn shows
+`validateOnly` only in an example, not in a definitions table
+(2026-10-06).
 
 **It is a long-running operation with two success shapes.** Usually the
 call returns **`202 Accepted`** with an empty body and the operation ID

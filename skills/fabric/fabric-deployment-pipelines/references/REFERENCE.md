@@ -21,9 +21,14 @@ skipped rather than failing the deploy.
 | **Power BI** | Dashboard *(preview)* · Dataflow *(preview)* · Org app *(preview)* · Paginated report *(preview)* · Report, based on supported semantic models *(preview)* · Semantic model originating from a .pbix and not a PUSH dataset *(preview)* |
 | **Database** | SQL database · Cosmos database *(preview)* |
 | **Graph** | Graph Model · Graph QuerySet |
-| **CI/CD** | Variable Library |
+| **CI/CD** | Variable Library · Deployment plan *(preview)* — a plan can't switch a Variable Library's active value set |
 | **Industry solutions** | Healthcare *(preview)* · HealthCare Cohort *(preview)* |
 | **IQ** | Ontology *(preview)* · Plan *(preview)* |
+
+The list still read this way on **2026-10-06**, Deployment plan added. dbt
+Job and Event Schema Set kept their *(preview)* labels there although
+both items went GA in September 2026: pipeline support can lag an item's
+own GA, so copy the list, not the item's status.
 
 **Two exclusions that surprise people, one contradicted in use.** The
 general limitations say outright that PBIR-format reports are not
@@ -107,9 +112,21 @@ hold. Anything else and it is silently absent from the dropdown.
 5. The workspace contains no Power BI **samples**.
 6. The workspace is not a **template app** workspace and has no template
    app installed.
+7. The workspace has no **inbound access protection**: deployment
+   pipelines aren't supported there (Learn `cicd-security`, 2026-10-06).
 
 Assignment also fails outright when two or more items in the workspace
 share a name, type **and** folder — pairing cannot resolve them.
+
+**Network protection decides the route** (Learn `cicd-security`,
+2026-10-06). Inbound access protection rules out deployment pipelines
+but leaves Git integration on, with branch-out blocked. Outbound access
+protection (preview) blocks Git until an admin turns on **Allow Git
+integration** in the workspace's outbound settings; read or set it with
+`GET` or `PUT /v1/workspaces/{workspaceId}/networking/communicationPolicy/outbound/git`,
+`defaultAction` `Deny` or `Allow` (the prose page calls it
+`gitOutboundPolicy`). Neither setting copies to a branched-out
+workspace.
 
 ## Deployment rules — full limitations
 
