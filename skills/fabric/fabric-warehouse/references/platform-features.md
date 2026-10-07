@@ -83,9 +83,13 @@ in Source control.
 | `BlockOnPossibleDataLoss = true` | Any change that would drop or truncate user data **fails** the sync/deploy. Apply the destructive statement live, then sync — `SKILL.md` *Schema Evolution* |
 | `DropObjectsNotInSource = false` | An object deleted from source is **not** dropped in the target, and the deploy still reports **success**. Check *Compare* after any deploy that removed an object |
 | `IncludeTransactionalScripts = false` | The generated script is non-transactional — a multi-statement schema change can stop half-way, unlike the same T-SQL run by hand inside `BEGIN TRAN` |
-| `ExcludeObjectTypes = Logins, Users, Permissions` | Security never deploys; migrate GRANT/DENY/RLS separately |
+| `ExcludeObjectTypes = Logins, Users, Permissions` | Security never deploys with the schema; recreate GRANT/DENY/RLS separately, for example in a post-deployment script (preview, below) |
 | `GenerateSmartDefaults = true` | Tightening a column (`NULL`→`NOT NULL`, new column with a default) gets baseline values populated rather than failing |
 | `ScriptDatabaseOptions = false` | `ALTER DATABASE ... SET` is never scripted — so a `data-retention` change does not travel through source control (inferred: retention is an `ALTER DATABASE` option) |
+
+### Pre- and post-deployment scripts (preview)
+
+What the fixed settings leave out, T-SQL around the deployment can put back. **A warehouse takes at most one pre-deployment and one post-deployment script**, each a **shared query** designated in the portal (Object Explorer, or Settings → CI/CD) or as a single `PreDeploy` / `PostDeploy` item in the `.sqlproj`. The pre script runs before the schema plan is applied and the post script after it, on **every** deployment, through Git updates and deployment pipelines alike, so write both idempotent. Learn suggests the post-deployment script for recreating SQL security — roles, users, `GRANT`/`DENY` — which the project never carries. Neither script is validated at build time: an error surfaces at deployment and halts it. `:r` includes aren't supported, and a second entry of either type fails the Git update. Git round-tripping needs the latest source-control experience; deployment pipelines don't (Learn, 2026-10-06).
 
 ### Build-time failures that pass `sqlcmd`
 
@@ -107,7 +111,7 @@ never checks. Each of these runs fine interactively and fails only there:
 
 - An explicit `COLLATE` equal to the warehouse default is **not written to Git** and never shows as a difference — only a column whose collation differs from the default keeps its clause.
 - `XMLA.json` (the default semantic model's metadata) — excluded from every commit and update.
-- Security objects — permissions need their own export and migration path.
+- Security objects — permissions need their own export and migration path; a post-deployment script (preview, above) can recreate them on every deployment.
 - Commit granularity is the warehouse **item**, never the object; SQL analytics endpoints have no version control of their own (separate preview, above).
 
 ## Microsoft Learn

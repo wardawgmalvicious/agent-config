@@ -151,11 +151,9 @@ mandatory `DBCC CHECKIDENT(..., RESEED)`):
   `fabric-git-serialization` rule.
 - **Keep transactions short** to shrink the conflict window. Error 24556 / 24706
   = snapshot conflict → serialize and retry with exponential backoff.
-  `PARQUET` / `CSV` / `JSONL` (JSONL April 2026). Needs Storage Blob Data Reader
-  on ADLS or a SAS in CREDENTIAL; `WITH (AUTO_CREATE_TABLE = 'TRUE')` creates the
-  target. Files ≥ 4 MB optimal.
 - **Ingestion**: `COPY INTO` for external files (highest throughput), `OPENROWSET`
-  in-engine. `bcp` is preview; `BULK LOAD` / `BULK INSERT` are **not supported**.
+  in-engine. `bcp` is preview; `BULK LOAD` is **not supported**, while `BULK INSERT`
+  works for compatibility, mapped to `COPY INTO` (Learn, 2026-10-06).
   Options and file-size guidance: [references/t-sql-surface.md](references/t-sql-surface.md).
 
 ## Snapshot Isolation Conflict Matrix
