@@ -37,7 +37,7 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   (2026-09-02, 2.1.252). That proves the listing refreshes, not that a
   reworded trigger then fires.
 - A `skills/workflow/` skill reaches Copilot only as a copy, and the copy
-  is no longer refreshed: the Copilot payload is being retired, so run no
+  is not refreshed while the Copilot payload is being retired: run no
   `copy-copilot.ps1` after editing one (2026-09-30,
   `docs/handoffs/execute/copilot-payload-retirement.md`).
 
@@ -60,7 +60,8 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
 - Where `model:` is active the pin is live, since those skills are reached
   by typing their names. Pin `fable` only where judgment is irreducible —
   wording a `description`, not executing a numbered brief — because it costs
-  twice the Opus tier (2026-09-12). List the pins with
+  2.5 times Opus 5.5 per input and output token, 1.25 times per cache hit
+  (pricing page, 2026-10-08). List the pins with
   `grep -rn "^model:" .claude/skills skills`.
 - Pin the alias, not the dated ID, which freezes on one release once the
   next ships. The CLI carries its own model table, so a stale CLI resolves
@@ -76,9 +77,9 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   skill, which has no cold slash route, and live on an unconditional
   one. `effort` applies on both paths, at either scope.
 - The session default is saved per model, under `modelSettings` in
-  `claude/settings.json`: `claude-opus-5-5` at `xhigh`. A top-level
-  `effortLevel` in user settings no longer counts for Opus 5.5 or later,
-  which start at their own default, `medium` for Opus 5.5, until a level
+  `claude/settings.json`: `claude-opus-5-5` at `xhigh`. Opus 5.5 and later
+  take that entry from user settings, never a top-level `effortLevel`, and
+  start at their own default, `medium` for Opus 5.5, until a level
   is saved (2.1.280); `/effort` saves to the deployed copy, which the next
   `-Force` replaces whole (`deploy-scripts.md`). A setting holds at most
   `xhigh`, never `max` (settings reference, 2026-10-07).

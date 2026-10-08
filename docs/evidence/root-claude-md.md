@@ -2041,6 +2041,22 @@ the model-config page says turning it on or off "leaves the effort level
 unchanged": the "reports as `xhigh`" quoted above is gone, and `max`
 stays the highest pin.
 
+**2026-10-08.** Three of `editing-skills.md`'s claims were restated for a
+prompt audit (`docs/audits/2026-10-08/prompt-audit/`, findings 19 to
+21). The Copilot-copy bullet now states the 2026-09-30 freeze above
+without "no longer". The effort bullet names the setting Opus 5.5 and
+later take: the settings reference, re-read that day, says a top-level
+`effortLevel` in user settings "keeps applying where it applied before,
+on Opus 5, Fable 5.1, and earlier models", while "Opus 5.5 and models
+released after it ignore it and start at their own default until you
+save a level for them, which `/effort` writes under `modelSettings`".
+The `fable` pin's price moved from twice the Opus tier to 2.5 times: the
+pricing page (`platform.claude.com/docs/en/about-claude/pricing`), read
+2026-10-08, lists Fable 5.1 at $10 input and $50 output per MTok against
+Opus 5.5's $4 and $20, and cache hits at $0.25 against $0.20, which is
+1.25 times. Opus 5 still lists at $5/$25, the price measured on
+2026-09-12, so the ratio moved with the session model, Opus 5.5.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
