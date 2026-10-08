@@ -173,25 +173,24 @@ result_df = (
 
 ### Lazy evaluation awareness
 
-- DataFrame operations are lazy. `.count()`, `.collect()`, `.show()`,
-  `.write` trigger execution. Don't call them inside loops unless that's
-  the actual intent.
+- No `.count()`, `.collect()`, `.show()` or `.write` inside a loop
+  unless that's the actual intent: each one triggers execution.
 - `.collect()` pulls all rows to the driver — guard with
   `.limit(n)` or aggregate first. Never `.collect()` an unaggregated
   dataset of unknown size.
 
 ### Caching
 
-- Cache only when the same DataFrame is reused 2+ times in a job.
-- `df.cache()` is `MEMORY_AND_DISK` by default, fine for most cases.
+- Cache only when the same DataFrame is reused 2+ times in a job, at
+  `df.cache()`'s default storage level unless a measurement says
+  otherwise.
 - Always `.unpersist()` when done if the dataset is large and the job
   continues. Otherwise let job termination clean up.
 
 ### Repartition vs coalesce
 
-- `repartition(n)` — full shuffle, increases or decreases partitions.
-- `coalesce(n)` — no shuffle, only decreases. Prefer for write-time
-  partition control.
+- Prefer `coalesce(n)` for write-time partition control: it only
+  lowers the count, and skips the full shuffle `repartition(n)` runs.
 
 ### UDFs
 

@@ -53,8 +53,10 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
   the whole DacFx build. Symptom and why it hides: `fabric-gotchas`.
 - **Identifiers** (tables, columns, schemas, parameters, variables,
   indexes, constraints, procs, functions): PascalCase.
-- **Aliases**: PascalCase, descriptive, not single letters except for
-  the most local scope (single-statement queries with no ambiguity).
+- **Aliases**: a column alias is PascalCase, like a column
+  (`AS TotalSpend`); a table alias is lowercase and descriptive (`cust`,
+  `line`), not a single letter except in the most local scope
+  (single-statement queries with no ambiguity).
 
 ## Identifier quoting
 

@@ -179,8 +179,8 @@ change the user cannot see is worse than a complete report with three
 
 ## Strict mode
 
-Scripts here run `Set-StrictMode -Version Latest`, which turns two
-quiet lookups into throws:
+A script that runs `Set-StrictMode -Version Latest` turns two quiet
+lookups into throws:
 
 - **An absent hashtable key throws** instead of returning `$null` —
   guard optional keys with `.ContainsKey()` before reading.

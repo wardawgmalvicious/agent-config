@@ -144,8 +144,13 @@ SELECT a.id FROM a INNER JOIN b ON a.key <=> b.key;
 ## Spark SQL vs T-SQL gotchas
 
 - No `TOP n` — use `LIMIT n`.
-- No procedural SQL — no variables (`DECLARE`), no `IF`/`WHILE`,
-  no stored procs. Wrap procedural logic in PySpark.
+- Procedural SQL depends on the runtime. Fabric Runtime 1.3 (Spark
+  3.5) has no variables, no `IF`/`WHILE` and no stored procs: wrap
+  procedural logic in PySpark. Spark 4.1, which Runtime 2.0 runs, has
+  session variables (`DECLARE VARIABLE`) and SQL scripting, on by
+  default (`BEGIN ... END`, `IF`, `WHILE`). Databricks has variables
+  from Runtime 14.1, scripting from 16.3 and SQL stored procedures
+  from 17.0 (2026-10-08).
 - `DATEADD`/`DATEDIFF` argument order differs. Use `DATE_ADD()`,
   `DATE_SUB()`, `DATEDIFF()` (Spark) and verify against docs.
 - `STRING` not `NVARCHAR`. `BIGINT` not `INT`.

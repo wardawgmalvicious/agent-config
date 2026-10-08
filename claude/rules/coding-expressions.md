@@ -6,13 +6,15 @@ paths:
 
 # Fabric Pipeline Expression Coding Conventions
 
-Applies to expressions in Fabric data pipelines (`pipeline-content.json`).
+Applies to expressions in Fabric data pipelines (`pipeline-content.json`)
+and in any pipeline JSON kept in a `pipeline/` folder: the two globs above.
 
 The rules below apply to any Workflow Definition Language (WDL)
 context — same language family, same function library, same idioms:
 
 - Fabric pipeline expressions (auto-loads via `paths:` above)
-- ADF / Synapse pipeline expressions (manually reference; no auto-load)
+- ADF / Synapse pipeline expressions (auto-loads where the repo keeps
+  their JSON in a `pipeline/` folder; reference by hand otherwise)
 - Logic Apps / Power Automate expressions (manually reference)
 
 **Out of scope**: Power Fx (Power Apps canvas formulas, Dataverse

@@ -114,8 +114,9 @@ SigninLogs
 ## Joins
 
 - Specify `kind` explicitly: `kind=inner`, `kind=leftouter`,
-  `kind=fullouter`, `kind=leftanti`, `kind=rightsemi`. Default
-  changed historically; explicit is safe.
+  `kind=fullouter`, `kind=leftanti`, `kind=rightsemi`. The default,
+  `innerunique`, keeps one arbitrary left row per join key before
+  joining, so it silently drops rows a T-SQL inner join would keep.
 - Filter both sides before joining.
 - Smaller table on the **left** of `join` (KQL broadcasts the left
   side). Opposite of T-SQL muscle memory.
