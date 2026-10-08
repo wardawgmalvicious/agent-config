@@ -207,11 +207,9 @@ FILE_PATH_UNIX=$(cygpath -u "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
   when stdout is a terminal (`[[ -t 1 ]]`), or send them to stderr.
   Claude Code builds a session's Bash snapshot by sourcing the profile
   and capturing `PATH` from the shell's output, so whatever the profile
-  prints to stdout lands inside `PATH` for every later tool call. This
-  machine's startup banner, ANSI escapes and all, sat at the head of
-  the snapshot's `export PATH=` line until machine-config fixed it on
-  2026-09-22 (`c9a2ed4`, banner only to a terminal); a snapshot taken
-  the next morning held a plain `export PATH='/c/...`.
+  prints to stdout lands inside `PATH` for every later tool call: a
+  startup banner, ANSI escapes and all, sat at the head of the
+  snapshot's `export PATH=` line (2026-09-22).
 
 ## Quoting and tests
 
@@ -285,9 +283,8 @@ preview, which nothing asks it to read, and no setting raises the cap
 the hook's shell dies mid-pipeline, `jq` is left blocking on a stdin that
 never closes and holds the session's cwd forever. That is enough to make
 Windows refuse to rename any ancestor directory — reported as "Access is
-denied", indistinguishable from a permissions problem. A stranded `jq`
-from `log-instructions-loaded.sh` blocked the `C:\GitHub` -> `C:\Repos`
-migration and was invisible to every command-line and window scan.
+denied", indistinguishable from a permissions problem — and a stranded
+`jq` shows in no command-line or window scan.
 
 ```bash
 jq_input() {
@@ -308,10 +305,10 @@ fi
 **Run `timeout`; never probe for it.** `command -v timeout` proves the
 file is on `PATH`, not that it runs: under Defender's ASR rule "Block use
 of copied or impersonated system tools", a per-user Git install's
-`timeout.exe` exits **126** (measured 2026-09-17), and the probe this
-example once carried handed every jq call to a wrapper that never
-started, so a guard hook allowed every commit and push with output
-identical to a clean pass. 126 and 127, could not execute and not found,
+`timeout.exe` exits **126** (measured 2026-09-17), so a probe that
+passes hands every jq call to a wrapper that never starts, and a guard
+hook allows every commit and push with output identical to a clean
+pass. 126 and 127, could not execute and not found,
 are codes jq's own errors never use, so either retries bare `jq`, and a
 healthy call spawns what it did before. To test the fallback, shadow
 `timeout` with a file whose shebang names no interpreter (exit 126): a

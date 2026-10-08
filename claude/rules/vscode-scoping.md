@@ -105,7 +105,7 @@ Profiles accumulate. Extensions are installed once on a whim and never
 removed, and Default is where they land, so the working set grows
 monotonically unless something measures it. On this machine
 `machine-config`'s `scripts/vscode-profiles.ps1 -Audit` reports the four
-failure modes above — Default-only extensions, dangling formatter
-references, live-vs-repo drift, and profiles re-linked to Default — plus,
-since 2026-09-24, any profile leaving a Claude location or switch on, and
+failure modes — Default-only extensions, dangling formatter
+references, live-vs-repo drift, and profiles re-linked to Default — plus
+any profile leaving a Claude location or switch on, and
 exits non-zero on findings.

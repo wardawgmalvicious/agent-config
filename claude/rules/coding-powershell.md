@@ -146,8 +146,8 @@ npm install -g $pkg
 if ($LASTEXITCODE -ne 0) { Fail "npm install $pkg exited $LASTEXITCODE" }
 ```
 
-(Hit live Sep 2026: an npm E401 registry rejection logged as
-`[INSTALL]` success in a machine-config bootstrap run.)
+(Seen Sep 2026: an npm E401 registry rejection logged as `[INSTALL]`
+success.)
 
 **That check is unreliable when the command is piped into an operator
 that stops the pipeline early.** `Select-Object -First` and `-Index`

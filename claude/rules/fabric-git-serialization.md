@@ -166,9 +166,7 @@ Check early in any Fabric repo: `git config core.autocrlf` and whether
 scoped to the workspace folders holding item definitions:
 
 ```gitattributes
-Engineering/** -text
-RealTime/**    -text
-Analytics/**   -text
+<workspace-folder>/** -text
 ```
 
 `-text` (no translation at all), **not** `text eol=lf` — forcing LF

@@ -68,8 +68,7 @@ whichever login the shared `~/.azure` holds, the one store no folder
 pin reaches, so at user scope it gives every repo on the machine a
 client pointed at whichever tenant last logged in. At project scope a
 repo that does not declare it **fails closed**: no server, no tools,
-nothing to point at the wrong tenant. Both moved to project scope on
-2026-09-22.
+nothing to point at the wrong tenant.
 
 `.mcp.json` declares which servers *exist*; `settings.json` says which of
 their tools may run **unattended**. Keep that split — a permission entry
@@ -86,8 +85,7 @@ this machine that key is reconciled against
 `scripts/link-claude.ps1 -GlobalMcp`, which is off by default even under
 `-Force` for exactly that reason.
 
-- **A scripted edit made while a session is open survives it** since
-  2.1.259, which fixed sessions reverting each other's changes: on
+- **A scripted edit made while a session is open survives it**: on
   2.1.292 a key a script added outlived the open session's exit write
   (2026-10-07). Back up first anyway, and confirm in a **fresh** session
   with `claude mcp list`.
