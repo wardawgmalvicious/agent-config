@@ -78,7 +78,7 @@ table 'Transaction Line'
 		sourceColumn: OrderTotal
 		summarizeBy: sum
 
-	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
+	measure 'Total Sales' = SUM ( 'Transaction Line'[Order Total] )
 		formatString: "$#,##0.00"
 ```
 
@@ -111,11 +111,11 @@ Good: measures grouped by subject in a hidden table:
 table '_Sales Measures'
 	isHidden: true
 
-	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
+	measure 'Total Sales' = SUM ( 'Transaction Line'[Order Total] )
 		displayFolder: "Core"
 		formatString: "$#,##0.00"
 
-	measure 'Total Sales YTD' = TOTALYTD([Total Sales], 'Date'[Date])
+	measure 'Total Sales YTD' = TOTALYTD ( [Total Sales], 'Date'[Date] )
 		displayFolder: "YTD"
 		formatString: "$#,##0.00"
 ```
@@ -167,7 +167,7 @@ property it does not know (§ "What TMDL rejects").
 table 'Transaction Line'
 
 	/// Sum of order totals across all transactions. Excludes refunds.
-	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
+	measure 'Total Sales' = SUM ( 'Transaction Line'[Order Total] )
 		formatString: "$#,##0.00"
 ```
 
