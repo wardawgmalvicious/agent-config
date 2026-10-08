@@ -163,7 +163,8 @@ conformance checking.
   `CLAUDE.md`, a `paths:` rule, a nested file, a skill, a hook, a README
   — and how each misses in silence. Carries when Claude Code loads each
   file (a nested one on the session's own Read, Write or Edit, never on
-  Grep or a subagent's Read), that a `CLAUDE.md` anywhere on the path
+  Grep, and on a subagent's Read into that subagent only), that a
+  `CLAUDE.md` anywhere on the path
   silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
   and the `@AGENTS.md` import form that loses none, with the two
   conditions a client Fabric repo found for it. Built from cold probes
