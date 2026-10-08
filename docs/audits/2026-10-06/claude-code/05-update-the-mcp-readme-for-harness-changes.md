@@ -354,3 +354,21 @@ re-read them on the page before quoting them in the README.
   D-5's two files is done: `link-claude.ps1` ran on `main` at
   `081cacd`, and each deployed copy diffs clean against the repo
   (2026-10-07).
+- **Needs**: tenant — `fabric-iq`'s `ExecuteQuery` returning a table
+  here, before `powerbi-remote-mcp` leaves the template; and step 6 for
+  this entry's README edit, `link-claude.ps1` on `main` after it, then
+  the diff. The `fabric-iq` call is measured, by two sessions in a
+  client repo on 2026-10-07 on 2.1.293, with the shared Azure profile
+  signed in to that repo's tenant: `fabric-iq` listed six tools, no
+  `GenerateQuery` among them, and its `DiscoverArtifacts` succeeded; its
+  `ExecuteQuery` of `EVALUATE ROW("ok", 1)` returned an HTTP 500 once
+  and then, twice, a reply holding only an `artifact_citation` object,
+  while `powerbi-remote-mcp`'s `ExecuteQuery` returned the row from the
+  same model. So a `fabric-iq` call succeeds but its DAX returns
+  nothing here, and `powerbi-remote-mcp` stays, the user's call that
+  day, until DAX works through `fabric-iq`. The README's querying
+  bullet and both rows record it (step 3: those calls). The adjacent
+  finding is done: `ac140a6` drops the revert hazard from
+  `scripts/link-claude.ps1`'s help and `-GlobalMcp` warning and from
+  `claude/rules/README.md`, deployed on `main` and diffing clean
+  (step 6).
