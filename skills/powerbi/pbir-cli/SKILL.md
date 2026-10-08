@@ -88,6 +88,10 @@ See references/REFERENCE.md § Discovery and references/REFERENCE.md § Schema f
 | `pbir download` fails | fab CLI not authenticated | Run `fab auth login` first |
 | Visual overlaps existing header | Placed coordinates without measuring scaffold | Inspect the scaffolded page.json before laying out |
 | `pbir new report` creates new theme each time | Default is sqlbi | Do NOT re-apply unless user requests different theme |
+| `Got unexpected extra argument(s) (Overview)` from `pbir pages rename` | The new name is an option; the hint to quote the path misleads | `pbir pages rename "<R>.Report/<Page>.Page" --to Overview -f`, a dry run without `-f` |
+| After `pages rename --to`, `page.json` `name` and `pages.json` `pageOrder` / `activePageName` keep the old id | The rename moves only the folder and `displayName` (0.9.29 and 0.9.32, 2026-10-08) | Set all three to the new folder name by hand, then `pbir validate` |
+| `Role 'Fields' not valid for card. Available: Values` from `add visual -d`, after `schema describe` listed `Fields` | 0.9.29's `describe` prints roles' display names (column chart `X-axis`, `Y-axis`; table `Columns`); `-d` takes the internal ones | Use the names the error lists, or upgrade: 0.9.32 prints `Values`, `Category`, `Y` (2026-10-08) |
+| `semantic_model_path must stay inside …` from `pbir validate` | `definition.pbir` `byPath` leads out of the report's parent folder, as `../../<Folder>/<Model>.SemanticModel` does; Fabric Git sync resolves it | Validate bound `byConnection`, then switch to `byPath` (0.9.29 and 0.9.32, 2026-10-08) |
 
 ### See also
 

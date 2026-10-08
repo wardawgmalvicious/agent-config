@@ -62,7 +62,7 @@ pbir restore  "Sales.Report"
 ```bash
 pbir add page    "Sales.Report/Detail.Page" -n "Detail"
 pbir add page    "Sales.Report/Dash.Page"  --from-template executive-dashboard
-pbir pages rename "Sales.Report/Page 1.Page" "Overview"
+pbir pages rename "Sales.Report/Page 1.Page" --to Overview -f       # dry run without -f
 pbir pages move   "Sales.Report/Detail.Page" --to 1
 pbir pages resize "Sales.Report/Overview.Page" --width 1920 --height 1080
 pbir pages type   "Sales.Report/Tooltip.Page" --type tooltip              # 16:9 | 4:3 | letter | tooltip | custom

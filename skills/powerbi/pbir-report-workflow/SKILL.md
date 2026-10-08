@@ -57,9 +57,14 @@ Ask the user (via `AskUserQuestion`) to confirm:
 ```bash
 mkdir -p SalesDashboard && cd SalesDashboard
 pbir new report "Sales.Report" -c "MyWorkspace/Sales.SemanticModel"
-pbir pages rename "Sales.Report/Page 1.Page" "Overview"
+pbir pages rename "Sales.Report/Page 1.Page" --to Overview -f
 pbir pages active-page "Sales.Report" "Overview"
 ```
+
+The rename moves the folder and `displayName` only. Set `page.json`
+`name` and `pages.json` `pageOrder` and `activePageName` to the new
+folder name by hand, then `pbir validate` (0.9.29 and 0.9.32,
+2026-10-08).
 
 Resulting layout:
 
@@ -312,7 +317,7 @@ measure 'Turnover 1YP' = CALCULATE([Turnover], DATEADD('Date'[Date], -1, YEAR))
 | Issue | Cause | Fix |
 |---|---|---|
 | Visual overlaps existing scaffold element | Placed `y` before measuring scaffold | Run `pbir ls` + inspect `position` of every pre-existing visual first |
-| Extra blank page on report open | `pbir add page` called instead of rename | `pbir pages rename "Page 1.Page" "Overview"` |
+| Extra blank page on report open | `pbir add page` called instead of rename | `pbir pages rename "<Name>.Report/Page 1.Page" --to Overview -f`, then align the page ids — see Step 2 |
 | Charts show wrong sort order | Default auto-sort not set after bind | `pbir visuals sort -f ... -d Descending` |
 | Theme overridden by visual formatting | Inline formatting applied | `pbir visuals clear-formatting --only-containers -f` |
 | Publish 401 | Wrong Fabric token audience | `az account get-access-token --resource https://api.fabric.microsoft.com` |
