@@ -167,3 +167,9 @@ the same day, not Learn.
   `docs/handoffs/execute/rule-naming-conflicts.md`; then that brief and
   this one in one pass, in its worktree, which puts decision 8 to the
   user once Learn says where a relationship's reason can go.
+- **Needs**: the landing — the joint pass ran in worktree
+  `rule-naming-conflicts` on the user's 2026-10-08 decisions, and
+  `link-claude.ps1` refuses a worktree, so from the main checkout after
+  the landing, `./scripts/link-claude.ps1 -SkillGroups
+  workflow,social,meta` deploys both rules for step 6's diff, and step
+  4's fixture test runs against the deployed payload.
