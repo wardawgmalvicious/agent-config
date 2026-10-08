@@ -40,7 +40,7 @@ If the invocation named a `<source-id>` argument, restrict output to that source
 - `<audit-date>` — the date the audit **ran**, ISO format. Not the window floor.
 - `<source-id>` — the registry id: the filename, less `.md`, of the source's file under `.claude/skills/drift-audit/references/sources/` (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …), spelled exactly as the report's `Sources audited` line spells it. Multiple sources in one run get sibling directories, never a merged one.
 
-`Write` creates missing parent directories, so there is no separate mkdir step. The only `Bash` call this skill makes is the index generation in step 7.
+`Write` creates missing parent directories, so there is no separate mkdir step. The only `Bash` calls this skill makes are step 7's: the index generation, and a read-only `--retirable` listing after the commit.
 
 **Before writing anything, `Glob` the target directory.** If files already exist there, `Read` them and stop to ask. Two audits of one source on one day are different audits; silently overwriting the first one's briefs destroys the only copy. Offer to suffix the directory rather than overwrite.
 
@@ -97,7 +97,7 @@ Once every brief is on disk, generate the directory's index:
 uv run scripts/audit-status.py --dir docs/audits/<audit-date>/<source-id>
 ```
 
-That writes a `README.md` beside the briefs — one row per brief with the actions it covers, its Kind and its status, every row `pending` at this point — derived from the metadata blocks step 5 wrote. It is the one `Bash` call this skill makes, scoped with `--dir` so it creates this directory's index and touches no other. Never write the README by hand: it is generated, `/drift-update` regenerates it after every stamp, and the `lint-audit-index` pre-commit hook fails a commit whose index is missing or disagrees with its briefs. If the script reports a brief as `unparsed`, the metadata block is malformed — fix the brief, not the README.
+That writes a `README.md` beside the briefs — one row per brief with the actions it covers, its Kind and its status, every row `pending` at this point — derived from the metadata blocks step 5 wrote. It is the only `Bash` call this skill makes that writes, scoped with `--dir` so it creates this directory's index and touches no other. Never write the README by hand: it is generated, `/drift-update` regenerates it after every stamp, and the `lint-audit-index` pre-commit hook fails a commit whose index is missing or disagrees with its briefs. If the script reports a brief as `unparsed`, the metadata block is malformed — fix the brief, not the README.
 
 Then list the files written, one line each:
 
@@ -114,3 +114,5 @@ Then the deliberate omissions from step 6. Then stop.
 Do **not** start the work the briefs describe. That is `/drift-update`'s job — preferably from a fresh session, which is what proves the briefs are readable cold. Doing it here re-merges the two halves the split separated.
 
 Then hand off to `/commit`. `docs/audits/` is tracked, so a normal run leaves the whole directory to commit — as one `docs(drift-audit):` commit, before any brief is executed. Commit it even when `/drift-update` will run in the same session: the point of the split is that the briefs stand on their own, and an unexecuted directory in git is what a second machine picks up.
+
+**A run this one supersedes may now be retirable.** Once that commit lands, run `uv run scripts/audit-status.py --retirable`, which reads only. A run of this source it lists has every brief finished, and the run just written now holds the source's next floor. Name each in chat and ask whether to retire it. Retiring deletes that directory and re-points the links into it, which this skill never does, so on a yes hand it to `/triage docs/audits/<date>/<source-id>`, whose `references/audit-follow-ups.md` step 8 carries it out. A superseded run with briefs still open is not listed: its follow-ups wait for a sweep. Added 2026-10-08, when the user stopped keeping finished runs whole.

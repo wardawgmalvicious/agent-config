@@ -4,11 +4,13 @@ One directory per audit run: `docs/audits/<audit-date>/<source-id>/`,
 holding the audit report verbatim as `00-audit-report.md` plus the
 numbered briefs `/drift-handoff` derived from it.
 
-These are **tracked and kept**. A directory is written once, executed
-once, stamped brief by brief, and then kept whole as the dated record of
-what upstream looked like that day. A brief whose log leaves nothing
-open moves into the directory's `completed/`, so its top lists only what
-is still unrun or open; nothing is deleted.
+These are **tracked**, and kept until a later run supersedes them. A
+directory is written once, executed once and stamped brief by brief. A
+brief whose log leaves nothing open moves into the directory's
+`completed/`, so its top lists only what is still unrun or open. Once
+nothing in a run is open and a later run of its source exists, the run
+is retired, deleted whole, with git history keeping it
+([below](#retiring-a-run)).
 
 ## Lifecycle
 
@@ -19,6 +21,7 @@ is still unrun or open; nothing is deleted.
 | Execute | `/drift-update` | an execution log appended to each brief it runs, the index regenerated, and each finished brief moved into `completed/` |
 | Commit | `/commit` | the directory, then the stamps alongside the edits they describe |
 | Sweep | `/triage <directory>` | a `**Closed**:` line on each open follow-up it settles, saying where its work went, and the index regenerated |
+| Retire | `/triage <directory>`, offered by `/drift-handoff` | the directory deleted, once every brief is finished and a later run of its source exists |
 
 Commit the directory **before** executing it, even when the same
 session will go straight on to `/drift-update`. An unexecuted directory
@@ -99,11 +102,32 @@ and they are exactly what stops a later audit re-litigating a decision.
   unscanned. If a legitimate quote ever trips a rule, allowlist that
   path rather than the tree.
 
-## Not the `execute/` rule
+## Retiring a run
 
-[`docs/handoffs/execute/`](../handoffs/execute/) briefs are deleted
-individually when spent, and git history is their archive. That is the
-right rule for a **queue**, where a spent row invites re-execution of
-work already done. This directory is a **ledger**, where the date is the
-index and the entry's value survives its execution. Deleting from a
-queue is tidying; deleting from a ledger is losing the entry.
+A run is retired, its directory deleted whole, once every brief in it
+is finished and a later run of the same source exists.
+`uv run scripts/audit-status.py --retirable` lists each, and the queue
+view prints the same list. `/drift-handoff` offers the runs its new run
+supersedes, and `/triage` retires them on the user's yes, after their
+closing commit, re-pointing live links to the commit that last held
+them (`.claude/skills/triage/references/audit-follow-ups.md` § 8).
+
+**The newest run of each source stays**, finished or not. The next audit
+of that source starts from it, as the 2026-10-06 `powerbi` run took its
+floor from the 2026-09-07 directory, and its no-action calls are the
+freshest record of what was decided.
+
+Decided by the user on 2026-10-08. Until then this section held that a
+ledger, unlike [`docs/handoffs/execute/`](../handoffs/execute/), keeps
+every entry, since an entry's value survives its execution. That value
+survives in git: deleting a committed directory loses no byte, which is
+what [Why this is tracked](#why-this-is-tracked) was about, so a
+finished run now follows the queue's rule, git history its archive.
+What retiring gives up is grep: a search of `docs/audits/` no longer
+sees a retired run's decisions, though `git log -S` still does. Read a
+retired run back with:
+
+```bash
+git log --diff-filter=D --format=%h -1 -- docs/audits/<date>/<source-id>
+git show <that-sha>^:docs/audits/<date>/<source-id>/00-audit-report.md
+```

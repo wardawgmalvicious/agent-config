@@ -14,7 +14,9 @@ sweep carries what is still worth doing to `docs/handoffs/execute/`,
 where a brief has all three, and closes the follow-up in the ledger
 with a line saying where its work went. Decided 2026-10-07; the
 reasoning is in `docs/handoffs/execute/README.md` § "Audit briefs are
-a second queue".
+a second queue". A run left with nothing open is then retired whole,
+once a later run of its source exists, on the user's yes (step 8;
+decided 2026-10-08).
 
 ## 1. Take stock
 
@@ -36,6 +38,10 @@ sha256sum docs/audits/<date>/<source-id>/[0-9]*.md  # keep: step 6 compares befo
 - **A pass still running is left whole**: a worktree named
   `<date>-<source-id>` (`/drift-update` step 2), or a peer in
   `ListAgents` at work in the directory.
+- **A named run with nothing open is no sweep.** If
+  `uv run scripts/audit-status.py --retirable` lists it, the run goes
+  straight to step 8's question, which is how `/drift-handoff` hands one
+  over; if not, say so and stop.
 - **Size the batch** as SKILL.md says. The ten September follow-ups ran
   to 2,202 lines (2026-10-07).
 
@@ -98,7 +104,8 @@ but Stays closes the follow-up, with one line appended to its log:
   A brief that already cites the follow-up is the likeliest fold.
 - **`completed/` then means nothing is left in the ledger**, not that
   the work is done. The Closed line says where the work went, and when
-  that brief lands and is deleted, the line stays as written.
+  that brief lands and is deleted, the line stays as written, until
+  the run itself is retired.
 - **A decision still open is the user's.** It is Briefed with
   `needs: [user]`, unless the user answers it at the table, which makes
   the row theirs.
@@ -109,8 +116,10 @@ but Stays closes the follow-up, with one line appended to its log:
 ## 5. The table
 
 Each row names its follow-up, and the Closed line it would gain or why
-it stays. Nothing is deleted, so the only question is whether to apply
-the table and commit it.
+it stays. No note is deleted, so the questions are whether to apply the
+table and commit it, and whether to retire each run the commit would
+leave retirable: every brief finished, and a later run of its source on
+disk.
 
 ## 6. Carry out what was approved
 
@@ -150,13 +159,48 @@ not yet committed points at nothing. The regenerated index and the
 re-points ride with it. The message says what each follow-up became,
 and the Closed lines say it again in the ledger.
 
-## 8. Nothing is deleted
+## 8. Retire what a later run supersedes
 
-SKILL.md's step 8 belongs to the notes alone. A follow-up ends at its
-Closed line, and `audit-status.py` is the only thing that moves it.
+SKILL.md's step 8 deletes notes. Here a follow-up ends at its Closed
+line, and `audit-status.py` alone moves it, but a whole run is retired
+once it is spent: every brief finished, and a later run of its source
+on disk. `uv run scripts/audit-status.py --retirable` lists each such
+run, and `handoff-status.py` prints the same list. The newest run of a
+source is never listed, finished or not: the next audit of that source
+starts from it, as the 2026-10-06 `powerbi` run took its floor from the
+2026-09-07 directory. Decided by the user on 2026-10-08, ending the rule
+that kept finished runs whole; git history is a retired run's archive.
+
+On the user's yes, and only once the commit that closed the run has
+landed, for each run:
+
+1. **Note the commit that last holds it**: `HEAD`, right after that
+   closing commit.
+2. **Re-point every live link into it** to that commit, in the form
+   `git show <sha>:<path>`, since a path into a deleted directory finds
+   nothing. Inside `docs/audits/`, leave reports and stamped briefs as
+   written.
+
+   ```bash
+   git grep -n "<date>/<source-id>/" -- . ':!docs/audits/'
+   ```
+
+3. **Delete it**: `git rm -r -q docs/audits/<date>/<source-id>`.
+4. **Commit through `/commit`** as `docs(audits): retire …`, the
+   re-points with the delete, the message naming the commit that last
+   holds the run.
+
+To read a retired run later, find the commit that deleted it, then show
+any file as it stood just before:
+
+```bash
+git log --diff-filter=D --format=%h -1 -- docs/audits/<date>/<source-id>
+git show <that-sha>^:docs/audits/<date>/<source-id>/00-audit-report.md
+```
 
 ## 9. Report
 
 Per follow-up: its verdict, its Closed line or why it stays, and the
 commit that holds it. A directory left with open follow-ups says how
-many, and why each stays.
+many, and why each stays. Each run retired names the commit that last
+holds it.

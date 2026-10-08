@@ -289,7 +289,9 @@ directory re-measures each and gives it a verdict as it does a note's
 learning, folding or briefing the work here and closing the follow-up
 with a `**Closed**:` line that names the brief, so the work has one
 home. `completed/` then means nothing is left in the ledger, not that
-the work is done. A re-check that the next audit of its source performs
+the work is done, and once a later run of its source exists the run is
+retired whole (`docs/audits/README.md` § "Retiring a run", decided
+2026-10-08). A re-check that the next audit of its source performs
 stays in its log, and
 [drift-audit-owed-rechecks.md](drift-audit-owed-rechecks.md) takes up
 why that audit never reads it.

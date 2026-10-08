@@ -104,7 +104,8 @@ last section.
   until the user approves one table, and deletes a note only on the
   user's yes. Since 2026-10-07 it also sweeps an old drift audit's open
   follow-ups into the queue, closing each in the ledger with a
-  `**Closed**:` line and deleting nothing. It is the receiving half
+  `**Closed**:` line, and since 2026-10-08 it retires a finished run
+  that a later run supersedes. It is the receiving half
   `/learn`'s note mode never had:
   until 2026-09-30 that skill addressed its notes to `/learn` here, and
   no step of it, or of `/author-skill`, took one in; they name `/triage`
