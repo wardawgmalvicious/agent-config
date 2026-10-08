@@ -240,21 +240,24 @@ null safety ✓ dependency conditions ✓.
 
 ## Fixture.SemanticModel/definition/tables/tmdl_fixture.tmdl
 
-TMDL identifier-with-display-alias pattern + format-string discipline
-fixture.
+TMDL reader-facing names + `///` descriptions + format-string
+discipline fixture.
 
 🔴 Critical:
 
-- `tmdl_fixture.tmdl:1` — Table identifier `transaction_line` is
-  snake_case. Should be `TransactionLine` with `displayName:
-  "Transaction Line"` alias. (Naming per coding-tmdl.md)
+- `tmdl_fixture.tmdl:1` — Table `transaction_line` carries the
+  source's snake_case name. Should be `'Transaction Line'`, the name a
+  report reader sees. (Naming per coding-tmdl.md)
 - `tmdl_fixture.tmdl:4` — Column `transaction_date` is snake_case.
-  Should be `TransactionDate` with `displayName: "Transaction Date"`.
-  (Naming)
+  Should be `'Transaction Date'`, with `sourceColumn: transaction_date`
+  keeping the source's name. (Naming)
+- `tmdl_fixture.tmdl:8` — Column `OrderTotal` shows the source's
+  PascalCase name in visuals. Should be `'Order Total'`, with
+  `sourceColumn: OrderTotal`. (Naming)
 - `tmdl_fixture.tmdl:16` — Measure `totalSales` is camelCase. Should
-  be `TotalSales` with `displayName: "Total Sales"`. (Naming)
+  be `'Total Sales'`. (Naming)
 - `tmdl_fixture.tmdl:18` — Measure `margin` is lowercase. Should be
-  `Margin` with `displayName: "Margin"`. (Naming)
+  `Margin`. (Naming)
 
 🟡 Warning:
 
@@ -268,10 +271,8 @@ fixture.
 - `tmdl_fixture.tmdl:12-14` — `CustomerId` missing `isHidden: true` if
   surrogate key not meant for direct user consumption. (Style —
   context-dependent)
-- `tmdl_fixture.tmdl:16,18` — Both measures missing `displayName`
-  aliases. (Naming)
-- `tmdl_fixture.tmdl:16,18` — Both measures missing `description`.
-  (Per coding-tmdl.md)
+- `tmdl_fixture.tmdl:16,18` — Both measures missing a `///`
+  description on the line above. (Per coding-tmdl.md)
 
 🟢 Suggestion:
 
@@ -280,8 +281,13 @@ fixture.
 - `tmdl_fixture.tmdl:1` — Measures inline in fact table instead of
   dedicated `_Measures` table. (Style per coding-tmdl.md)
 
-Coverage: TMDL rule co-load ✓ identifier-with-display-alias ✓ format
-string discipline ✓ summarizeBy on IDs ✓.
+Not findings: `CustomerId` keeps its source name, since a hidden key
+is a name no reader sees (only the `isHidden` warning applies). A
+suggested fix that adds a `displayName:` or `description:` line fails:
+TMDL rejects both, and the model stops loading.
+
+Coverage: TMDL rule co-load ✓ reader-facing names ✓ `///`
+descriptions ✓ format string discipline ✓ summarizeBy on IDs ✓.
 
 ---
 
@@ -311,14 +317,9 @@ decomposition fixture.
 - `dax_fixture.dax:1` — Single-line measure for non-trivial logic;
   should be multi-line with function args on separate lines. (Style)
 
-🟢 Suggestion:
-
-- `dax_fixture.dax:1,3,5,11` — Measure names use spaces (`Total
-  Sales`, `Margin Pct`, `Sales YoY %`, `Customer Tier`). DAX measure
-  names with spaces are legal; in TMDL context, identifier should be
-  PascalCase with display alias. Skill should flag if reviewing in
-  TMDL context, accept if reviewing standalone DAX. (Style —
-  context-dependent)
+Not a finding: measure names with spaces (`Total Sales`, `Margin Pct`,
+`Sales YoY %`, `Customer Tier`) follow coding-tmdl.md § "Naming", in
+TMDL context or standalone DAX alike.
 
 Coverage: DAX rule co-load ✓ function casing ✓ table-qualified column
 refs ✓ DIVIDE over `/` ✓ VAR/RETURN decomposition ✓ IF→SWITCH ✓.

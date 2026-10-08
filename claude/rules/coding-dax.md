@@ -21,8 +21,8 @@ supersedes this one.
 - **Functions**: UPPERCASE — `CALCULATE`, `SUMX`, `FILTER`, `VAR`,
   `RETURN`, `IF`, `SWITCH`. By convention; DAX is case-insensitive but
   consistency matters for readability.
-- **Table names**: match the model identifier (PascalCase per TMDL
-  rule), wrapped in single quotes when referenced:
+- **Table names**: the model's own name, as the TMDL rule names it,
+  wrapped in single quotes when referenced:
   `'Transaction Line'`.
 - **Column references**: always table-qualified — `'Customer'[CustomerId]`.
   Never bare `[CustomerId]` for columns; that's measure syntax.

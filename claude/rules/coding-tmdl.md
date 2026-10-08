@@ -15,7 +15,7 @@ rule (2026-10-06).
 If a project-scope `.claude/rules/coding-tmdl.md` exists, that file
 supersedes this one.
 
-> **Verification note**: TMDL is newer; some style conventions below
+> **Verification note**: some style conventions below
 > are community-driven (SQLBI, MS Fabric community) rather than from a
 > canonical Microsoft style guide. Treat as opinionated defaults.
 
@@ -32,60 +32,70 @@ so a block can look half right. The page's HTML keeps the bytes:
 
 TMDL indents with one tab per level by default, and indentation that
 breaks its rules is a parsing error (TMDL overview, read 2026-10-08).
-This file's examples are space-indented for display: write tabs.
+This file's examples indent with tabs too: copy them as they stand.
 
-## Naming and aliasing
+## What TMDL rejects
 
-Pattern: **PascalCase identifier, aliased display name with spaces.**
+TMDL takes TOM's properties, in its own syntax, and nothing else, and
+one line it cannot read stops the whole model loading. A property TOM
+lacks, such as `displayName:`, fails with `Unsupported property -
+displayName is not a supported property in the current context!`; a
+`#` or `//` line, which TMDL does not read as a comment, fails with
+`Unexpected line type: Other!` (TOM 19.96.1's `TmdlSerializer`, probed
+2026-10-08).
 
-Applies to:
+## Naming
 
-- **Tables**: `TransactionLine` ↔ `"Transaction Line"`
-- **Columns**: `OrderTotal` ↔ `"Order Total"`
-- **Measures**: `TotalSalesYtd` ↔ `"Total Sales YTD"`
-- **Hierarchies**: `Geography` ↔ `"Geography"` (single-word OK)
-- **Hierarchy levels**: `CountryCode` ↔ `"Country"` (display can drop
-  `Code` suffix if context is clear)
-- **Roles**: `RegionalManager` ↔ `"Regional Manager"`
-- **Perspectives**: `FinanceCore` ↔ `"Finance — Core"`
-- **Calculation groups / items**: same pattern.
+Pattern: **name each object as a report reader sees it**, with spaces
+and proper case, and keep the source's own name in `sourceColumn`, as
+the TMDL overview does: `column 'Product Key'` over
+`sourceColumn: ProductKey` (read 2026-10-08). There is no second,
+display name to alias: TOM's `Column` and `Measure` have no such
+property, and a `displayName:` line fails the model (§ "What TMDL
+rejects"). The name is what visuals show and what DAX references:
+`'Transaction Line'[Order Total]`.
+
+Applies to tables, columns, measures, hierarchies and their levels,
+roles, perspectives, and calculation groups and items. A hidden column
+no reader sees, such as a surrogate key, can keep its source name.
+Enclose a name in single quotes when it holds a space, `.`, `=`, `:` or
+`'`, and double a `'` inside one (TMDL overview).
+
+Good: the names a reader sees, the source's names in `sourceColumn`:
 
 ```tmdl
-# Good
-table TransactionLine
-    lineageTag: <guid>
+table 'Transaction Line'
 
-    column TransactionDate
-        displayName: "Transaction Date"
-        dataType: dateTime
-        formatString: "yyyy-mm-dd"
-        summarizeBy: none
+	column 'Transaction Date'
+		dataType: dateTime
+		formatString: "yyyy-mm-dd"
+		sourceColumn: TransactionDate
+		summarizeBy: none
 
-    column OrderTotal
-        displayName: "Order Total"
-        dataType: decimal
-        formatString: "$#,##0.00;-$#,##0.00"
-        summarizeBy: sum
+	column 'Order Total'
+		dataType: decimal
+		formatString: "$#,##0.00;-$#,##0.00"
+		sourceColumn: OrderTotal
+		summarizeBy: sum
 
-    measure TotalSales = SUM('Transaction Line'[Order Total])
-        displayName: "Total Sales"
-        formatString: "$#,##0.00"
-
-# Bad (no display alias, snake_case identifier)
-table transaction_line
-    column transaction_date
-    column order_total
+	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
+		formatString: "$#,##0.00"
 ```
 
-## Why both forms
+Bad: the source's names carried through, which every visual then shows
+as they are:
 
-- **Identifier (PascalCase)**: stable reference for DAX, M, lineage,
-  and version-control diffs. No spaces means no escaping in DAX.
-- **Display (with spaces)**: end-user-facing. Spaces and proper case
-  read naturally in visuals.
+```tmdl
+table transaction_line
 
-DAX always references display names: `'Transaction Line'[Order Total]`.
-You write the identifier in TMDL but DAX consumes the display.
+	column transaction_date
+		dataType: dateTime
+		sourceColumn: transaction_date
+
+	column OrderTotal
+		dataType: decimal
+		sourceColumn: OrderTotal
+```
 
 ## Measure organization
 
@@ -93,22 +103,21 @@ You write the identifier in TMDL but DAX consumes the display.
   `_Sales Measures`, `_Finance Measures`). Hidden tables that hold
   measures only — no rows.
 - **Display folders**: group related measures within the table.
-  `displayFolder: "YTD\\Sales"` — backslash creates nested folders.
+  `displayFolder: YTD\Sales` — a backslash nests one folder in another.
+
+Good: measures grouped by subject in a hidden table:
 
 ```tmdl
-# Good — measures organized by subject
 table '_Sales Measures'
-    isHidden: true
+	isHidden: true
 
-    measure TotalSales = SUM('Transaction Line'[Order Total])
-        displayName: "Total Sales"
-        displayFolder: "Core"
-        formatString: "$#,##0.00"
+	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
+		displayFolder: "Core"
+		formatString: "$#,##0.00"
 
-    measure TotalSalesYtd = TOTALYTD([Total Sales], 'Date'[Date])
-        displayName: "Total Sales YTD"
-        displayFolder: "YTD"
-        formatString: "$#,##0.00"
+	measure 'Total Sales YTD' = TOTALYTD([Total Sales], 'Date'[Date])
+		displayFolder: "YTD"
+		formatString: "$#,##0.00"
 ```
 
 ## Format strings
@@ -138,20 +147,28 @@ table '_Sales Measures'
 - Star schema by default.
 - Single direction unless bi-directional has a specific, documented
   reason.
-- Inactive relationships need a comment explaining when they're
-  activated (`USERELATIONSHIP` in measures).
+- An inactive relationship can carry no description: TOM's
+  relationship has no `Description`, and a `///` above one fails the
+  model with `Property 'description' is unknown` (probed 2026-10-08).
+  Say when it is activated in the `///` description of each measure
+  that calls `USERELATIONSHIP` on it.
 
 ## Descriptions
 
-Use the `description` property on tables, columns, and measures. Shows
-in tooltips inside Power BI Desktop and Tabular Editor. Critical for
-self-service consumers.
+Describe tables, columns and measures with `///` lines directly above
+the declaration, with no blank line between (TMDL overview, read
+2026-10-08). They show in tooltips inside Power BI Desktop and Tabular
+Editor, and matter most to self-service consumers. TMDL never writes a
+description as `description:`, and that line fails the model like any
+property it does not know (§ "What TMDL rejects").
 
 ```tmdl
-measure TotalSales = SUM('Transaction Line'[Order Total])
-    displayName: "Total Sales"
-    description: "Sum of order totals across all transactions. Excludes refunds. Source: bronze.transaction_line."
-    formatString: "$#,##0.00"
+/// One row per order line, from bronze.transaction_line.
+table 'Transaction Line'
+
+	/// Sum of order totals across all transactions. Excludes refunds.
+	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
+		formatString: "$#,##0.00"
 ```
 
 ## Calculation groups
