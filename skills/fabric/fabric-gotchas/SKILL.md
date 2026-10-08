@@ -12,6 +12,7 @@ disable-model-invocation: false
 |---|---|---|
 | `401 Unauthorized` | Wrong token audience | Check audience table in fabric-auth skill; verify `aud` claim at jwt.ms |
 | `403 Forbidden` on Power BI API | User has Viewer role | Refresh/data sources/permissions APIs require Contributor+. Stop retrying — it's permissions. |
+| `401 PowerBINotAuthorizedException` from `executeQueries` as a service principal, with its tenant settings on and a workspace role | Service principals aren't supported on a model with RLS or SSO, whatever the setting, and a Direct Lake model uses SSO by default (documented; observed 2026-10-07, cause inferred) | Query as a user, or bind the model to a fixed-identity connection with SSO off, a security decision. See [[fabric-semantic-model-audit]] |
 | `404 EntityNotFound` on getDefinition | Insufficient permissions masquerading as 404 | Check workspace role first; don't retry with different URLs |
 | `PowerBIEntityNotFound` / `EntityNotFound` from pipeline, Variable Library, or REST call | Used `.platform` `logicalId` instead of runtime item ID | Fetch runtime ID from Fabric portal URL or `GET /v1/workspaces/{wsId}/items`. See fabric-rest-api skill (Item IDs section) |
 | `Login failed... database not found` | Wrong Initial Catalog | Use item display name, not FQDN. Verify workspace role. Connections with no Initial Catalog now land deterministically on `master` (drill-verified) — confirm with `SELECT DB_NAME()` and switch with `USE [<item display name>]` instead of reconnecting. |

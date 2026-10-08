@@ -100,8 +100,17 @@ Three caveats, all of which produce wrong answers rather than errors:
 3. One `EVALUATE` per call; 100,000 rows or 1,000,000 values, whichever
    comes first, and 15 MB; 120 requests per minute. Exceeding the row cap
    truncates and reports the error inside a **200** response. Requires
-   the *Dataset Execute Queries REST API* tenant setting plus Build
-   permission.
+   the *Semantic Model Execute Queries REST API* tenant setting, as the
+   admin portal titles it (*Dataset Execute Queries REST API* on the REST
+   reference), plus Read and Build.
+
+A service principal is refused outright on a model with RLS or SSO,
+"regardless of the admin tenant setting" (executeQueries reference), and
+a Direct Lake model uses SSO unless it is bound to a fixed-identity
+connection with SSO off. The refusal is a 401
+`PowerBINotAuthorizedException`, which reads like a missing permission
+(observed 2026-10-07 on Direct Lake on OneLake). Query as a user there;
+fabric-gotchas has the row.
 
 ## 4. Fabric notebook tier — `sempy.fabric`
 
