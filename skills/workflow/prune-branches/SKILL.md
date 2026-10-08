@@ -122,8 +122,7 @@ below sees them, and the `--force` a dirty tree needs discards them.
 **A remote-tracking ref is not evidence the branch is still on the
 remote.** `origin/<name>` can survive locally long after the branch is
 gone. `ls-remote` asks the remote itself and is the only thing that
-settles it. The observed run opened with a user who believed these
-branches were already deleted; this is the command that answered it.
+settles it.
 
 ## 3. Rung 1 — ahead/behind
 
@@ -136,8 +135,7 @@ git rev-list --count origin/<branch>..main   # commits it is behind by
 
 **Zero ahead ends the analysis.** The branch is fully contained in
 `main` and is safe to delete regardless of how it got that way — no PR
-lookup, no content reading. In the observed run this disposed of a third
-of the set in one pass, including one branch identical to `main`.
+lookup, no content reading.
 
 Anything with commits ahead goes to rung 2.
 
@@ -246,6 +244,10 @@ Cherry-picking it onto a fresh branch manufactures the very debris this
 audit is for. Observed 2026-09-14 on a one-commit branch with no PR: the
 whole branch was the survivor, and the right output was "keep".
 
+In a tree another session shares, a switch moves its HEAD too: run
+`ListAgents` and read every row before the first command, as `land`
+step 1 does.
+
 ```bash
 git switch main && git pull --ff-only
 git switch -c <type>/<kebab-slug>
@@ -264,8 +266,10 @@ Report the new branch and hand the landing to `land`. Do not push it.
 a branch left in place predates every merge since its fork point, and
 `land`'s `--ff-only` refuses that rather than fixing it: it stops and
 says `main` has moved. `git merge-base --is-ancestor main <branch>`
-answers it (exit 0 means fine); if not, rebase onto `main` before the
-handoff and say so, so the SHAs `land` reports are not a surprise.
+answers it (exit 0 means fine). If not, say so and ask the user whether
+to rebase it onto `main` before the handoff: a rebase rewrites its
+SHAs, and a branch already pushed would then need the force push
+`land` never makes.
 
 ## 8. Report, and stop
 
