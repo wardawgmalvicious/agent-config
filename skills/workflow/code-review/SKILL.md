@@ -68,15 +68,9 @@ Apply in priority order and report every finding with its severity. Cut a later 
 
 ### Naming & style
 
-Opinionated defaults (overridable by project CLAUDE.md):
+Each language's conventions belong to its rule, and none is copied here: `coding-tsql.md` and `coding-sparksql.md` for SQL, `coding-python.md` for Python, PySpark and notebook variables, `coding-expressions.md` for pipeline parameters and activity names, `coding-kql.md`, `coding-dax.md` and `coding-tmdl.md`. A rule loads only when its file is Read, so Read each file under review, even when the target is a diff; a project's own `.claude/rules/` copy supersedes the user-scope rule, and a project CLAUDE.md can override either.
 
-- **SQL**: PascalCase tables and columns, leading commas, CTEs for any multi-join query, full column names — no `c`, `t1`, `tx_ln`
-- **Python / PySpark**: `snake_case` variables and functions, full names — no `cols`, `df_tmp`, `join_cols`, `res`, `tmp`
-- **Pipeline parameters & activity names**: PascalCase
-- **Notebook variables (cell-scope)**: `lower_snake_case`
-- **TMDL**: PascalCase identifiers; alias multi-word source columns rather than carrying the raw name
-- **DAX measures**: PascalCase, descriptive — no `Measure 1`, `Calc`, `Total2`
-- **KQL**: `camelCase` for `let`-bound variables; full table names as published
+In every language, flag abbreviated or placeholder names: `c`, `t1`, `tx_ln`, `df_tmp`, `res`, `Measure 1`, `Calc`, `Total2`.
 
 ### Maintainability
 
