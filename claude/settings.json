@@ -95,6 +95,20 @@
     "claude-code-setup@claude-plugins-official": false,
     "cowork-plugin-management@synced": false
   },
+  "skillOverrides": {
+    "anthropic-skills:personal-init": "off",
+    "anthropic-skills:project-init": "off",
+    "anthropic-skills:import-memory": "off",
+    "anthropic-skills:computer-use": "off",
+    "anthropic-skills:built-in-browser": "off",
+    "anthropic-skills:docs": "off",
+    "anthropic-skills:skill-creator": "off",
+    "anthropic-skills:chrome-browser": "off",
+    "anthropic-skills:docx": "user-invocable-only",
+    "anthropic-skills:pptx": "user-invocable-only",
+    "anthropic-skills:xlsx": "user-invocable-only",
+    "anthropic-skills:pdf": "user-invocable-only"
+  },
   "extraKnownMarketplaces": {},
   "modelSettings": {
     "claude-opus-5-5": {
