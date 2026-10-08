@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: []
-blocked-by: []
+blocked-by: [platform-skill-portfolio.md]
 written: 2026-10-07
 ---
 
