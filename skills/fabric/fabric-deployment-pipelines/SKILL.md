@@ -207,6 +207,14 @@ before reading a header. `deployment-id` is a **different** UUID from
 ID; poll with the latter. For **24 hours** after completion the extended
 result is available from Get Operation Result.
 
+**A failed deploy keeps its error on the step.** The operation reads
+`Failed` with no error of its own. Its `executionPlan.steps[]` has one
+step per item, each with `status`, `sourceAndTarget`
+(`sourceItemDisplayName`, `itemType`) and, on the one that failed,
+`error` (`errorCode`, `message`). The steps after it stay `NotStarted`:
+those items were not deployed, and the next deploy has to carry them
+(observed once, 2026-10-07; fields per Get Deployment Pipeline Operation).
+
 `az rest` does not surface response headers cleanly; use `curl -i` or
 `requests` to capture the header, then poll.
 
