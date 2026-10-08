@@ -142,14 +142,20 @@ Fabric repo, from `/doctor` and `/skill-doctor`; cited here by kind.
   `pbid-tom-live`, `powerbi-report-authoring` and
   `powerbi-report-design`, and kept `fabric-rest-api`. That holds in
   that repo alone; archiving here removes a skill everywhere.
-- **The synced skills have a switch in Claude Code**:
-  `syncClaudeAiSkills: false` stops it loading them, in user or local
-  settings, and a repository cannot set it (settings reference, read
-  2026-10-07). The relay said only claude.ai could turn them off; the
-  reference says otherwise. The user kept both syncs on on 2026-10-07
-  (2026-10-06 `claude-code` brief 03, D-2). That all 14 have no lifetime
-  use is new evidence; revisiting it, per repo or machine-wide, is the
-  user's call.
+- **The synced skills are hidden in Claude Code since 2026-10-08**, by
+  user-scope `skillOverrides` in `claude/settings.json` (`0778339`,
+  deployed), so in every repo. Of the 13 synced to this machine, those
+  that cannot work here or repeat a local skill are `"off"`, the four
+  office skills `"user-invocable-only"`, and `deep-research` stays
+  listed; the file says which is which, the commit why. Both syncs stay
+  on, as the user left them on 2026-10-07 (2026-10-06 `claude-code`
+  brief 03, D-2): `syncClaudeAiSkills: false`, read from user or local
+  settings and never a repository's, drops all 13, and turning one off
+  on claude.ai, the only route the relay knew, drops it there too, where
+  `personal-init` and `project-init` are meant to run. Cold probes on
+  2.1.293: an override reaches a synced skill by its short name or its
+  `anthropic-skills:` name, and two scopes' blocks merge rather than
+  replace. What the client repo's listing holds since is unmeasured.
 - **`skillOverrides` takes four values**: `"on"`, `"name-only"`,
   `"user-invocable-only"`, where Claude does not see the skill but
   `/name` still works, and `"off"` (settings reference). The third fits
