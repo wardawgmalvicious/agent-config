@@ -55,6 +55,6 @@ What a session must know before it writes, starts or lands a brief here;
   skills need a retest.
 - **Audit briefs are a second queue**, which the view prints after the
   first from their logs: one left open carries a `**Needs**:` line, and
-  gains a `**Closed**:` line in the commit that lands its work
+  a `**Closed**:` one lands with its work, or as `/triage` carries it here
   ([why](execute/README.md#audit-briefs-are-a-second-queue)).
 - **A filename is a link target**, so it carries no date or number.

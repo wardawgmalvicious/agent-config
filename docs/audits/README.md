@@ -18,6 +18,7 @@ is still unrun or open; nothing is deleted.
 | Handoff | `/drift-handoff` | the directory: `00-audit-report.md` + `NN-*.md` briefs + a generated `README.md` index |
 | Execute | `/drift-update` | an execution log appended to each brief it runs, the index regenerated, and each finished brief moved into `completed/` |
 | Commit | `/commit` | the directory, then the stamps alongside the edits they describe |
+| Sweep | `/triage <directory>` | a `**Closed**:` line on each open follow-up it settles, saying where its work went, and the index regenerated |
 
 Commit the directory **before** executing it, even when the same
 session will go straight on to `/drift-update`. An unexecuted directory
@@ -83,6 +84,14 @@ and they are exactly what stops a later audit re-litigating a decision.
   hours, and a repo reorganization can invalidate every path in a
   directory at once. A stamped brief is history; an unstamped one in an
   old directory is a claim to re-check, not an instruction.
+- **An old directory's open follow-ups sweep into the queue.**
+  `/triage docs/audits/<date>` re-measures each, gives it one verdict,
+  carries what is still worth doing to `docs/handoffs/execute/`, where a
+  brief has a priority and a deferral, and closes it here with a
+  `**Closed**:` line saying where its work went. `completed/` then
+  means nothing is left in this ledger, not that the work is done.
+  Added 2026-10-07, when ten September follow-ups had gone untouched
+  since 2026-09-27.
 - **`gitleaks` scans this directory.** `docs/` used to be allowlisted
   wholesale in [`.gitleaks.toml`](../../.gitleaks.toml); that entry was
   removed when this became tracked, because audit reports quote upstream

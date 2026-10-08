@@ -278,6 +278,22 @@ user asks for one, so a claim would guard nothing. `/drift-handoff`
 commits the directory before any pass, which the worktree needs, since
 it branches from local `HEAD`.
 
+**A finished pass's follow-ups sweep into this queue** (decided
+2026-10-07). The view lists them, but under no priority, with no
+deferral and nothing to claim one by, so none ever reads as the next
+thing to do: the ten of 2026-09-07 and 2026-09-10 went untouched from
+2026-09-27, and two waited on what had since happened, a `pbir` schema
+that had gained the properties one lacked and a `powerbi` audit, run
+2026-10-06, that closed nothing of the other's. `/triage` on an audit
+directory re-measures each and gives it a verdict as it does a note's
+learning, folding or briefing the work here and closing the follow-up
+with a `**Closed**:` line that names the brief, so the work has one
+home. `completed/` then means nothing is left in the ledger, not that
+the work is done. A re-check that the next audit of its source performs
+stays in its log, and
+[drift-audit-owed-rechecks.md](drift-audit-owed-rechecks.md) takes up
+why that audit never reads it.
+
 ## Filenames are stable
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`
