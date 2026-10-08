@@ -372,3 +372,8 @@ re-read them on the page before quoting them in the README.
   `scripts/link-claude.ps1`'s help and `-GlobalMcp` warning and from
   `claude/rules/README.md`, deployed on `main` and diffing clean
   (step 6).
+- **Needs**: tenant — `fabric-iq`'s `ExecuteQuery` returning a table
+  here, before `powerbi-remote-mcp` leaves the template. Step 6 for the
+  entry above's README edit is done: `link-claude.ps1` ran on `main` at
+  `58aadb0`, and the deployed README diffs clean against the repo
+  (2026-10-07).
