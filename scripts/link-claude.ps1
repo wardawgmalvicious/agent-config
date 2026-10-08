@@ -95,8 +95,8 @@
 
     ~/.claude.json IS STRICTER STILL and is off by default even under
     -Force, because it is not payload at all: it is Claude Code's own
-    runtime state - oauth account, project history, usage counters - and a
-    live session rewrites it from memory on its own schedule. -GlobalMcp
+    runtime state - oauth account, project history, usage counters - that
+    Claude Code writes itself. -GlobalMcp
     opts into reconciling exactly ONE key in it, top-level mcpServers,
     against claude/mcp/.mcp.global.template.json, pruning user-scope
     servers the template does not declare. Every other key is round-tripped
@@ -557,9 +557,9 @@ function Sync-GlobalMcp {
     foreach ($name in $differing) { Write-Host "Updated mcpServers/$name" }
     Write-Host ("Synced  .claude.json mcpServers ($($desired.Keys.Count) server(s): " +
                 "$($desired.Keys -join ', '))")
-    Write-Warning ("Claude Code rewrites $ConfigPath from memory, so a session that " +
-        "started BEFORE this run can revert it on exit. Confirm in a fresh session with " +
-        "'claude mcp list'.")
+    # An open session's exit no longer reverts this write: 2.1.259 fixed it, and
+    # claude/mcp/README.md has the 2026-10-07 measurement on 2.1.292.
+    Write-Host "Confirm in a fresh session with 'claude mcp list'."
 }
 
 if (-not (Test-Path $ClaudeDir)) {

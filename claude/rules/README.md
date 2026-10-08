@@ -153,11 +153,11 @@ conformance checking.
   convention: which Claude Code config file a server or permission
   belongs in — user `~/.claude.json` vs local `projects.<path>` vs a
   committed `.mcp.json` — plus the editing traps around them: the two
-  `ConvertFrom-Json` switches that are silent when omitted, a live
-  session rewriting `~/.claude.json` from memory, `request_timeout_ms`
-  being dropped on stdio, and `${VAR}` shipping literally when the
-  editor was reloaded rather than restarted. Triggers on `.mcp.json`,
-  `.claude/settings*.json`, `.claude.json`, and `.vscode/mcp.json`.
+  `ConvertFrom-Json` switches that are silent when omitted,
+  `request_timeout_ms` being dropped on stdio, and `${VAR}` shipping
+  literally when the editor was reloaded rather than restarted. Triggers
+  on `.mcp.json`, `.claude/settings*.json`, `.claude.json`, and
+  `.vscode/mcp.json`.
 - [agent-instructions-scoping.md](agent-instructions-scoping.md) — not a
   coding convention: which home a piece of agent guidance takes — root
   `CLAUDE.md`, a `paths:` rule, a nested file, a skill, a hook, a README
