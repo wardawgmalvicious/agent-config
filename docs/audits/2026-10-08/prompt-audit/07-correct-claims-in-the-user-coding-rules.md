@@ -136,3 +136,8 @@ wrote this brief did not check them against their sources.
 - **Needs**: the landing, an ADF or Synapse Git repo — `link-claude.ps1`
   deploys the six rules for step 4's diff; then where such a repo's
   pipelines land, to name the folder in `coding-expressions.md`.
+- **Needs**: an ADF or Synapse Git repo — where its pipelines land, to
+  name the folder in `coding-expressions.md`. Step 4 ran 2026-10-08:
+  `link-claude.ps1 -SkillGroups workflow,social,meta` on `main` at
+  `66ada3c`, after the landing, and all six deployed rules match the
+  repo's (`cmp`).

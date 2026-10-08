@@ -109,3 +109,7 @@ where the constraint above comes from.
   short line rather than rewrapping the entry below it.
 - **Needs**: the landing — `link-claude.ps1` deploys the `README.md`
   edit.
+- **Closed**: 2026-10-08 — the deploy it waited on ran:
+  `link-claude.ps1 -SkillGroups workflow,social,meta` on `main` at
+  `66ada3c`, after the landing, and the deployed `README.md` matches
+  the repo's (`cmp`).
