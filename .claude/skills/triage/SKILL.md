@@ -99,8 +99,9 @@ compared before each `**Closed**:` line, not before a delete.
   Step 4 needs both.
 - `docs/handoffs/declined.md`, if it exists yet, is every learning
   refused so far.
-- `ListAgents`, reading every row: a name is `<cwd-basename>-<hash>`,
-  its directory and not its repo. Another session in this tree shares
+- `ListAgents`, reading every row: a name is the session's `/rename` or
+  `--name` name, else `<cwd-basename>-<hash>`, its directory and not
+  its repo. Another session in this tree shares
   its files and its index. Say that it is there, re-read any existing
   file right before editing it, and leave the commit's gate to
   `/commit`. One that is busy is asked, before anything is written,
