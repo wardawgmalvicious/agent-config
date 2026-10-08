@@ -173,3 +173,28 @@ the same day, not Learn.
   the landing, `./scripts/link-claude.ps1 -SkillGroups
   workflow,social,meta` deploys both rules for step 6's diff, and step
   4's fixture test runs against the deployed payload.
+- **Closed**: 2026-10-08 — the joint pass landed on `main`,
+  `5395313`..`b0a8b24` then `d68e755`, on the user's answers: objects
+  named as readers see them, `sourceColumn` keeping the source's name
+  (the naming brief, now landed); fences in real tabs, so the
+  indentation choice is tabs; decision 8 as the `///` description of
+  the measure that calls `USERELATIONSHIP`, since a `///` above a
+  relationship fails to load; and `fabric-tmdl`'s space claim briefed
+  as `docs/handoffs/execute/tmdl-space-indentation.md`. Step 1: the
+  [TMDL overview](https://learn.microsoft.com/en-us/analysis-services/tmdl/tmdl-overview),
+  read 2026-10-08 by `curl -s` of its `lang-tmdl` blocks, with TOM
+  19.96.1's `TmdlSerializer` probed the same day. Step 2 — **passed**:
+  only prose naming the lines invalid. Step 3 — **passed**: no
+  space-indented line inside a fence. Step 4 — **passed**, slash review
+  only, cold on 2.1.293 and Opus 5.5 with read-only tools: TMDL 11 of
+  11 cheat-sheet findings, DAX 6 of 6, KQL 8 of 8, each rule loaded as
+  a `nested_memory` attachment; the TMDL naming findings came in at 🟢
+  against the sheet's 🔴. A first run from Git Bash turned
+  `/code-review` into a Git install path and invoked no skill, so it
+  was discarded. Steps 5, 6 and 7 — **passed**: both deployed rules
+  byte-identical to `main` after each deploy. Beyond the brief:
+  `displayFolder: "YTD\\Sales"` stored two backslashes and is now
+  `YTD\Sales`; a hidden column may keep its source name; a section
+  quotes what TMDL rejects; and the fixture run caught the fences'
+  `SUM(` against `coding-dax.md`'s `SUM (`, fixed in `d68e755`. Not
+  run: fixture modes 2 to 4 and the other five fixtures.

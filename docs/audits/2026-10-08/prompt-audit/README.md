@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 10 — applied 3 · applied with deferrals 4 · closed 1 · escalated 2
+Briefs: 10 — applied 3 · applied with deferrals 4 · closed 2 · escalated 1
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -14,7 +14,7 @@ Briefs: 10 — applied 3 · applied with deferrals 4 · closed 1 · escalated 2
 | [03 correct stale claims in the pipeline skills](03-correct-stale-claims-in-the-pipeline-skills.md) | findings 11, 12, 13, 14, 15, 42, 43, 44 and 46 | corrections to project-scope skill bodies that a newer file contradicts | applied with deferrals 2026-10-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [04 refresh the editing-skills rule](completed/04-refresh-the-editing-skills-rule.md) | findings 19, 20 and 21 | wording in a project-scope rule, plus one cost ratio to re-measure | applied 2026-10-08 |
 | [05 fold the Copilot and reviewer items into their open briefs](completed/05-fold-copilot-and-reviewer-items-into-open-briefs.md) | findings 17, 18 and 24, and decision 2 | edits to two open handoff briefs | applied 2026-10-08 |
-| [06 rewrite the TMDL rule against Learn](06-rewrite-the-tmdl-rule-against-learn.md) | findings 3, 4, 5 and 30, and decision 8 | correctness rewrite of a user-scope rule's syntax and examples, with the code-review… | escalated 2026-10-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [06 rewrite the TMDL rule against Learn](completed/06-rewrite-the-tmdl-rule-against-learn.md) | findings 3, 4, 5 and 30, and decision 8 | correctness rewrite of a user-scope rule's syntax and examples, with the code-review… | escalated 2026-10-08 · closed 2026-10-08 |
 | [07 correct claims in the user-scope coding rules](07-correct-claims-in-the-user-coding-rules.md) | findings 6, 16, 25, 26, 29, 31 and 33 | factual corrections to user-scope coding rules, each checked against its own source | applied with deferrals 2026-10-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [08 strip history and contradictions from the user-scope rules](completed/08-strip-history-and-contradictions-from-user-rules.md) | findings 7, 22, 23, 27, 28 and 32 | wording in user-scope rules | applied with deferrals 2026-10-08 · closed 2026-10-08 |
 | [09 correct the user-scope skills](09-correct-the-user-scope-skills.md) | findings 8, 34, 35, 36, 37, 38, 39, 40 and 41 | corrections to junctioned user-scope skills | applied with deferrals 2026-10-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
