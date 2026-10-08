@@ -237,6 +237,32 @@ guard refuses the chained form below there as too complex to verify
   revert it. A config edit of yours blocks them the same way: make it
   last, and stage it in the chain that commits it (pre-commit 4.6.2,
   2026-10-06).
+- **`[WARNING] Unstaged files detected.` on your commit is pre-commit
+  taking their edits off disk.** It saves every unstaged change in the
+  tree, theirs included, as a patch, runs `git checkout -- .`, runs the
+  hooks, and applies the patch back, so for the hooks' seconds their
+  files read as `HEAD`. A write of theirs in that window fails the commit
+  as `files were modified by this hook` under whichever hook was running,
+  though the hook passed; one that makes the patch conflict is discarded
+  by a second `git checkout -- .`, under `Stashed changes conflicted with
+  hook auto-fixes`, which names nothing of theirs. With a peer busy in
+  the tree, commit from a throwaway worktree, whose index, HEAD and files
+  are yours alone, and fast-forward the shared tree, where no hook runs.
+  Stage the path first: `--ff-only` refuses an unstaged file as `Your
+  local changes to the following files would be overwritten by merge`,
+  even one already identical, and refuses once a peer's commit has moved
+  `main`: branch again from the new `main` in the worktree and commit
+  again. The work itself never leaves the main checkout (pre-commit
+  4.6.2 `staged_files_only.py`; the spurious failure, the clean restore
+  and both refusals measured 2026-10-08, git 2.55.0.windows.3; the
+  rollback read, not run).
+
+  ```bash
+  git worktree add -b <branch> <scratch>/wt HEAD && cp <path> <scratch>/wt/<path>
+  git -C <scratch>/wt add <path> && git -C <scratch>/wt diff --cached   # your hunk alone; commit there
+  git diff --quiet <branch> -- <path> && git add <path> && git merge --ff-only <branch>
+  git worktree remove <scratch>/wt && git branch -d <branch>
+  ```
 - **Record what you left.** Commit only what is yours, and name the
   deferred piece in the commit message so `git log` carries it rather
   than this conversation.
