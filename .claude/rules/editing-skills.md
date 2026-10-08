@@ -13,9 +13,9 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
 ## Name and listing budget
 
 - Name a behavioural skill as the verb you invoke (`commit`, `learn`); give
-  a platform skill its group's prefix, `fabric-`, `pbir-`/`pbid-`/`pbip-`
-  or `msix-`: `PLATFORM_PREFIXES` in `scripts/lint-skill-overrides.py` is
-  the list. Names are one flat namespace across both trees
+  a platform skill its group's prefix: `PLATFORM_PREFIXES` in
+  `scripts/lint-skill-overrides.py` is the list. Names are one flat
+  namespace across both trees
   (`pre-commit-hooks.md`). The harness reserves `anthropic-skills`, and
   every `anthropic-skills:<name>`, for skills synced from claude.ai, so no
   skill here takes that name (2026-10-06).

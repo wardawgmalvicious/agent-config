@@ -39,7 +39,7 @@ uv run --with pyyaml scripts/skill-status.py --stamp <skill> --phase activation,
 uv run scripts/handoff-status.py      # every repo's open briefs and inbox notes; reads only
 for t in tests/scripts/*/test-*.sh; do echo "$t: $(bash "$t" | tail -n 1)"; done  # every negative-case suite
 scripts/bootstrap-pre-commit          # a clone: install pre-commit and wire all three hook stages
-ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|msix)-'  # after any deploy: must print nothing
+ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'  # after any deploy: must print nothing
 ```
 
 ```powershell

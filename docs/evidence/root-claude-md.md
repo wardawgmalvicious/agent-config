@@ -434,6 +434,18 @@ flagged. The pattern needs one prefix per pruned group, not every
 prefix: `pbip-` and `powerbi-` share the `powerbi` group with `pbir-`
 and `pbid-`, so they need no entry of their own.
 
+**2026-10-08.** The prune check's pattern spells every prefix in
+`PLATFORM_PREFIXES` (`scripts/lint-skill-overrides.py`), `pbip-` and
+`powerbi-` included, rather than one per pruned group. The 2026-10-01
+reasoning holds only while each `pbip-` and `powerbi-` skill shares
+`skills/powerbi/` with a `pbir-` skill: a whole-group re-link still
+shows, but a regrouping, or one of those skills linked alone, would leave
+it in user scope with the old pattern printing nothing. The six-prefix
+grep printed nothing that day. A prompt audit raised it
+(`docs/audits/2026-10-08/prompt-audit/`, findings 1 and 2), and
+`.claude/rules/editing-skills.md` stopped spelling the prefixes in the
+same change, so the tuple is their one list.
+
 ## How this repo is structured
 
 Files here are synced into tool config directories; where an edit
