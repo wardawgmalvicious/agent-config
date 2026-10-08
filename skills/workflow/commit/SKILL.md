@@ -22,16 +22,18 @@ happen only when explicitly requested, never as follow-through.
 3. Read the diffs (`git diff`, `git diff --stat`, plus untracked
    files) well enough to explain *why* each change exists, not just
    what it touches. Never commit content you haven't looked at.
-4. **On `main`? Check whether this repo lands changes by pull request**
-   — its `CONTRIBUTING.md` or agent instructions, a pull-request rule
-   on `main` (`land` step 7 has the two reads), or `(#<n>)` and
-   `Merge pull request` subjects in the log above; a fast-forward
-   landing leaves none. If it does, branch before the first commit and
-   say so: `land` refuses to start from `main`, and
-   `~/.claude/CLAUDE.md` § "Branch naming" has the convention. A repo
-   whose convention is to commit straight to `main` answers *no*, and
-   then you commit where you stand. In a shared tree `git switch -c`
-   moves HEAD for everyone — see
+4. **On `main`? Branch when the work is more than one commit, or an
+   intermediate state would break while deployed** — the trigger and
+   the name are `~/.claude/CLAUDE.md` § "Branch naming"'s — and from
+   the first commit when it is bound for `land`, which refuses to
+   start from `main`. Work in a repo that lands by pull request is
+   bound for `land`: a pull-request rule on `main` (`land` step 7 has
+   the two reads), or `(#<n>)` and `Merge pull request` subjects in the
+   log above; a fast-forward landing leaves none. A repo's own
+   committed convention wins, in its `CONTRIBUTING.md` or agent
+   instructions: one that commits straight to `main` answers *no*, and
+   then you commit where you stand. Say which way you went. In a
+   shared tree `git switch -c` moves HEAD for everyone — see
    [below](#when-another-session-shares-this-tree).
 
 **An empty `git status --short` is the whole answer.** Report that there
