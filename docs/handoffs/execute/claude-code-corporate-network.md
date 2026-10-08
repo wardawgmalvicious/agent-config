@@ -59,7 +59,7 @@ it graded"):
   OAuth token for `CLAUDE_CODE_OAUTH_TOKEN`, billed to the claude.ai
   plan, not per token. Claude Code never refreshes it, so the sign-in
   hosts stop mattering and only `api.anthropic.com` is left, which let 6
-  of 7 of Claude Code's model requests through on 2026-10-05. It carries
+  of 7 of the `/login` session's requests through on 2026-10-05. It carries
   model requests only: no Remote Control and no claude.ai connectors. It
   ranks above the `/login` credential, so one set at User scope applies
   on every network. Minting it takes the `/login` browser flow, so it is
@@ -97,9 +97,10 @@ Nothing until IT answers, or the tell above is seen.
 - IT keeps the block: the user picks between the Claude target alone, the
   token and a gateway. The token is a note to machine-config's inbox; a
   gateway is a project of its own. **Assuming the block holds, a note
-  scoping the gateway was drafted to machine-config's inbox on
-  2026-10-07** (`2026-10-07-claude-code-gateway.md`), as the search for a
-  solution; this brief stays deferred until IT answers.
+  scoping the gateway went to machine-config's inbox on 2026-10-07**, as
+  the search for a solution, and was triaged there that day into its
+  `docs/handoffs/claude-code-gateway.md` (open, P3, needs user); this
+  brief stays deferred until IT answers.
 - The WebFetch tell is seen: `skipWebFetchPreflight` goes into
   `claude/settings.json` on the user's yes, deployed with
   `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.

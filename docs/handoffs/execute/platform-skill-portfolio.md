@@ -227,9 +227,27 @@ test sets, and every client repo relinked.
 - `semantic-model-ai-instructions-storage.md` targets a skill that
   `ai-instructions-into-fabric-tmdl.md` folds.
 - The new-skill briefs, `fabric-cosmos-db-skill.md`,
-  `fabric-user-data-functions-skill.md`, `item-type-skill-fabric-plan.md`
-  and `translytical-task-flow-skill.md`: whether a new platform skill is
-  authored while the portfolio shrinks is part of this decision.
+  `fabric-user-data-functions-skill.md`, `item-type-skill-fabric-plan.md`,
+  `translytical-task-flow-skill.md` and `copilot-chat-power-bi-skill.md`:
+  whether a new platform skill is authored while the portfolio shrinks
+  is part of this decision.
+
+## Held for this decision
+
+A `/triage` of 2026-10-08 left two edits here, from a client note of
+2026-10-07:
+
+- **Part 1**: `fabric-data-agent` names the service-principal tenant
+  setting by its old title, *Service principals can use Fabric APIs*, at
+  `SKILL.md:45` and `references/authentication.md:15`. The admin portal
+  now titles it *Service principals can call Fabric public APIs*, as the
+  other skills say since that triage, while Learn's own data agent page
+  keeps the old one. Correct both if the skill stays.
+- **Part 2**: a trigger for what authorizes a service principal, tenant
+  settings and workspace roles rather than API permissions, in
+  `fabric-auth`'s `description`, 639 characters on 2026-10-08. The
+  guidance landed under its 401 heading; the trigger would grow an
+  always-listed entry.
 
 ## Re-measure before acting
 
