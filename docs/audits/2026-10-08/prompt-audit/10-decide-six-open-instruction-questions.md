@@ -142,3 +142,16 @@ proposed no patch for any of them.
   and retested; decisions 5 and 6's edits to `claude/CLAUDE.md`, with
   their `docs/evidence/user-claude-md.md` entries and a `-Force`
   deploy; decision 7's read of the guide, then the user's call.
+- **Decision 7**: 2026-10-08 — `xhigh` on all three `fable` pins,
+  `learn` included, which the audit missed. The guide, as bundled with
+  2.1.292, gives Fable 5.1 `xhigh` "for the most capability-sensitive
+  workloads"; the reading is in `docs/evidence/root-claude-md.md`
+  § "Editing conventions", and `editing-skills.md`'s effort bullet and
+  the skill-handoff template's `effort:` comment changed with the pins.
+  Decisions 3 to 6 landed in the same session: `commit` step 4,
+  `test-skill` step 10 (two overlapping Constraints bullets merged to
+  hold the 500-line body cap), and `claude/CLAUDE.md:3` and `:199` with
+  their ledger entries, line 3 left unwrapped at the 200-line cap.
+- **Needs**: a fresh session — `/test-skill commit` and
+  `/test-skill test-skill`, the retests of decisions 3 and 4; the run
+  that discharges the last appends **Closed** here, as step 10 now says.
