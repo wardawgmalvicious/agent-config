@@ -286,14 +286,15 @@ run it on `main` after the landing (step 5);
 `docs/handoffs/execute/README.md` § "Every brief takes a worktree" has
 the measurements.
 
-**One check this skill cannot perform:** an edited `SKILL.md` does not reliably
-reload mid-session on Windows, so no brief that edits a skill can have its
-behaviour validated in the session that applied it. Lint and prose checks pass;
-behavioural confirmation is a fresh-session task. Say so rather than implying
-the skill was exercised, and name the task: `/test-skill <skill> @<brief>`,
-which takes the brief's *What to change* as the claim to separate from the
-baseline and appends its confirmation to this execution log rather than
-deleting the brief.
+**One check this skill cannot perform:** no brief that edits a skill can have
+its behaviour validated in the session that applied it. Skills hot-reload
+(`.claude/rules/editing-skills.md`), but that session's context can mask a
+co-load failure, and it already knows the answers it would check for. Lint
+and prose checks pass; behavioural confirmation is a fresh-session task. Say
+so rather than implying the skill was exercised, and name the task:
+`/test-skill <skill> @<brief>`, which takes the brief's *What to change* as
+the claim to separate from the baseline and appends its confirmation to this
+execution log rather than deleting the brief.
 
 ### 4.5 Stamp
 
@@ -382,8 +383,7 @@ applied-with-deferrals brief with no `**Closed**:` line, grouped by that line,
 and `lint-briefs` fails the commit on one without it. A deferred re-check
 gets one too, naming what performs it, such as the next audit of that source,
 and so does an adjacent finding, stamped `applied with deferrals`. Found
-2026-09-11, when two runs' follow-ups turned out to be in no queue; a
-hand-kept table held them until the view replaced it, 2026-09-27.
+2026-09-11, when two runs' follow-ups turned out to be in no queue.
 
 ## 5. Report and hand off
 
