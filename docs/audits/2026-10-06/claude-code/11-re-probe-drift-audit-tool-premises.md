@@ -114,3 +114,21 @@ observation was made in the same session while this brief was written.
   Glob and Grep calls and D-2's two WebFetch fetches, with the CLI
   version recorded; then § 1 and § 4b rewritten to the results (steps 1
   to 3), and the next drift audit as the behavioural check.
+- **Needs**: the next `/drift-audit` run, two adjacent findings — the
+  run is the behavioural check the constraint defers: that § 1's
+  slash-free `Glob` lists the registry, and, only on a run that falls
+  back to the WebFetch path, that § 4b's completeness check catches the
+  note and the tells. Both probes and steps 1 to 4 were done 2026-10-08
+  in a session of their own, from the main checkout as the user chose,
+  on CLI 2.1.292 (the VS Code extension); the probes are in the commit
+  message. D-1 confirmed the brief's hypothesis, for `Glob` and `Grep`
+  alike, and only under a `path` inside the working directory. D-2
+  found the raw path needs a preapproved host, `text/markdown` and under
+  100,000 characters, each one necessary, and targeted prompts returned
+  a `fabric` section whole once in three. The 2026-10-06 sighting of
+  small `code.claude.com` pages answered by the model did not reproduce:
+  one of 8,570 characters came back raw. The adjacent findings: § 1's
+  sizes for `claude-code` (~590 KB) and `skills-for-fabric` (~58 KB)
+  are stale, 954,183 and 67,836 bytes on 2026-10-08; and both sources'
+  registry entries reason from a "WebFetch summarization threshold" that
+  § 4b no longer holds, though their github-mcp-only conclusion stands.
