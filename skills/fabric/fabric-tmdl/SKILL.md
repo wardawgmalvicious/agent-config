@@ -170,6 +170,11 @@ model Model
 
 - `dataType: binary` columns are NOT supported in Direct Lake
 - Columns map directly via `sourceColumn` — no transforms
+- **A model new to a workspace answers no table until its first
+  refresh.** Learn says Direct Lake tables an XMLA tool creates start
+  unprocessed, and queries on them fail on OneLake; one that arrived by
+  Git sync did the same (observed 2026-10-07). Refresh it once; the
+  error text is in fabric-gotchas.
 - **Adding the same source table twice is not supported** in Power BI
   Desktop or web modeling — XMLA tools can, but **Edit tables** and
   **refresh** then error. So the role-playing fix above usually has to
