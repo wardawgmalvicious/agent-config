@@ -83,9 +83,12 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   is saved (2.1.280); `/effort` saves to the deployed copy, which the next
   `-Force` replaces whole (`deploy-scripts.md`). A setting holds at most
   `xhigh`, never `max` (settings reference, 2026-10-07).
-  `effort: max` sits on every behavioural skill but `commit` (`xhigh`); on
-  platform skills it stays commented, because they auto-trigger beside real
-  work and a pin would govern that turn. Derive the set with
+  `effort: max` sits on every behavioural skill but `commit` and the
+  `fable` pins, at `xhigh`: the migration guide gives Fable 5.1 `xhigh` for
+  "the most capability-sensitive workloads", and nothing measured shows
+  `max` beating it (2026-10-08). On platform skills `effort` stays
+  commented, because they auto-trigger beside real work and a pin would
+  govern that turn. Derive the set with
   `grep -rln "^effort: max" skills/ .claude/skills/`, never a count. The
   session level is live state, not the file: it can drift mid-session with
   nothing warning, and only the transcript shows the real value. Below

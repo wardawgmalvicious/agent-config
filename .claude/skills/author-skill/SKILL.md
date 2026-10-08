@@ -4,7 +4,7 @@ description: "Author a new skill for this repo end to end — take a topic, chec
 argument-hint: "[topic]"
 allowed-tools: Read Write Edit Glob Grep Bash WebFetch
 model: fable  # judgment-heavy; alias not dated ID — see .claude/rules/editing-skills.md
-effort: max
+effort: xhigh
 disable-model-invocation: false
 context: inline
 ---

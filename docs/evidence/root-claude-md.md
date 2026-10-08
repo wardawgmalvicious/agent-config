@@ -2057,6 +2057,22 @@ Opus 5.5's $4 and $20, and cache hits at $0.25 against $0.20, which is
 1.25 times. Opus 5 still lists at $5/$25, the price measured on
 2026-09-12, so the ratio moved with the session model, Opus 5.5.
 
+**2026-10-08.** The three `fable` pins, `author-skill`, `drift-audit` and
+`learn`, moved from `effort: max` to `xhigh` on the user's answer to the
+same audit's decision 7, which named only the first two. The Claude API
+skill's model-migration guide, as bundled with 2.1.292 and read that
+day, says of Fable 5.1: "Recommended defaults: `high` for most tasks,
+`xhigh` for the most capability-sensitive workloads, `medium`/`low` for
+routine work", and "Start with `high` (the default) and re-run your
+effort sweep"; its checklist keeps "`xhigh`/`max` only for
+capability-sensitive work", and it warns that "at higher effort on
+routine work, Claude Fable 5.1 can gather context and deliberate beyond
+what the task needs". `high` was turned down because it assumes a sweep
+and these skills have no eval to sweep, and `max` because no measurement
+showed headroom above `xhigh` at 2.5 times Opus 5.5's token price.
+`effort` applies on both paths, so a run reached by description, on the
+session model, also drops from `max` to the session's own `xhigh`.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

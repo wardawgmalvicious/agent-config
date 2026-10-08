@@ -1,7 +1,7 @@
 ---
 name: learn
 model: fable  # judgment-heavy; active because skills/meta/ never reaches Copilot
-effort: max
+effort: xhigh
 disable-model-invocation: false
 description: "Routes a session learning into the durable guidance that should have covered it — a SKILL.md and its references/, a path-scoped rule, a CLAUDE.md — rather than into auto-memory. Reconstructs which skills and rules were actually loaded instead of asking, checks existing coverage before writing, verifies the learning against official docs or a second reproduction, and proposes the edit as a diff at the heading where a reader would look. Never edits silently, never writes domain knowledge to memory, never appends a changelog section. Inside the repo that sources ~/.claude it edits the payload directly and hands off to /commit. In any other repo it edits nothing and writes a dated note to the local handoff inbox instead, because the guidance lives in a repo that session is not in. To create guidance that has no home yet, use author-skill."
 when_to_use: "Use when the user says 'learn!', 'capture this', 'update the skill', 'remember this for next time', or when a session surfaces a non-obvious pitfall, a doc-vs-reality gap, a wrong or stale claim in guidance that was in use, or a missing step that cost debugging time. Use it in any repo — outside the payload repo it captures the learning to the handoff inbox rather than dropping it, which is the case it exists for."

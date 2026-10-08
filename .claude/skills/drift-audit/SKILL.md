@@ -5,7 +5,7 @@ argument-hint: "[prior-sha-or-date] [--sources id,id]"
 arguments: prior_ref
 allowed-tools: WebFetch Read Grep Glob mcp__github-mcp__list_commits mcp__github-mcp__get_commit mcp__github-mcp__get_file_contents mcp__github-mcp__search_repositories mcp__microsoft-learn-mcp__microsoft_docs_fetch mcp__microsoft-learn-mcp__microsoft_docs_search
 model: fable  # judgment-heavy; alias not dated ID — see .claude/rules/editing-skills.md
-effort: max
+effort: xhigh
 disable-model-invocation: false
 ---
 
