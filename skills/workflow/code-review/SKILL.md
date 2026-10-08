@@ -97,7 +97,7 @@ Group findings by severity. Within a severity, order by file then line.
 
 Each finding follows this shape:
 
-```
+````text
 🔴 path/to/file.py:42 — <one-line issue summary>
 
 <one or two sentences: what's wrong and why it matters>
@@ -106,7 +106,7 @@ Fix:
 ```python
 # concrete replacement code, not prose
 ```
-```
+````
 
 Always include a code snippet for the fix when one fits in a few lines. Prose-only suggestions are acceptable for architectural concerns where a snippet would be misleading.
 
