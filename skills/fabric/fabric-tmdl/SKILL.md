@@ -20,6 +20,10 @@ disable-model-invocation: false
 - Descriptions use `///` placed ABOVE the object — do NOT use the `description` property
 - `//` comments are **NOT supported** in TMDL
 - Do NOT add `lineageTag` on new objects — it is auto-generated
+  - Not at sync or refresh: the first portal commit after an edit in the
+    service adds one to every table, column, measure and expression at
+    once, and `annotation PBI_ProTooling` to `model.tmdl` (observed once,
+    2026-10-07). Review that commit as the tags plus the edit, not drift.
 - Multi-line DAX must be enclosed in triple backticks (` ``` `)
 - Place **measures before columns** in table definitions
 - `formatString` is required on every measure
