@@ -37,8 +37,7 @@ This skill writes **one field**. Stop and say so if:
 
 - The target is a **resume, a CV, a cover letter, or a LinkedIn post**.
   Different length, different register, different conventions, and none
-  of them were drilled. A resume skill may exist later and will read
-  `references/repo-evidence.md`; it does not exist now.
+  of them were drilled.
 - The target is **not a git repo**. The evidence method is git history
   plus committed docs. Without both there is nothing to extract from,
   and inventing the content is the failure this skill exists to prevent.

@@ -218,9 +218,7 @@ version is the session's, and only its transcript names it**: each entry
 of `~/.claude/projects/<cwd slug>/<session id>.jsonl` (both names are in
 the scratchpad path) carries `"version":`. `claude --version` is the
 `PATH` binary, which a VS Code session (`"entrypoint":"claude-vscode"`)
-does not run, and a build can change at a resume: 2.1.283, then 2.1.285
-after a six-hour gap, while `PATH` said 2.1.282, the number three files
-then cited (2026-10-01).
+does not run, and a build can change at a resume (2026-10-01).
 
 ## Step 6 — Edit mode: propose the edit
 
@@ -287,7 +285,7 @@ message runs in its receiver as a turn, in the middle of whatever that
 session was started for, and work for another repo is what the inbox
 carries. The note waits until the user asks a session in the target repo
 to bring it in, so Step 8's report is the only thing that says it exists
-(2026-09-30; the doorbell this replaced rang from 2026-09-16).
+(2026-09-30).
 
 Shape:
 

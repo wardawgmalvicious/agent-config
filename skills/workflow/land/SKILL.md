@@ -323,8 +323,7 @@ PR merge — is the write step 6 gates, whoever performs it.
 ## 8. Verify
 
 Through the same tool step 2 confirmed — **both routes verify, and the
-`gh` one is not optional.** A PR opened with `gh` and then verified with
-nothing is the half of this skill that used to be missing.
+`gh` one is not optional.**
 
 | Check | `github-mcp` | `gh` |
 | --- | --- | --- |
