@@ -1,0 +1,935 @@
+diff --git a/.claude/rules/editing-skills.md b/.claude/rules/editing-skills.md
+index 05100a3..891bddf 100644
+--- a/.claude/rules/editing-skills.md
++++ b/.claude/rules/editing-skills.md
+@@ -13,9 +13,9 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
+ ## Name and listing budget
+ 
+ - Name a behavioural skill as the verb you invoke (`commit`, `learn`); give
+-  a platform skill its group's prefix, `fabric-`, `pbir-`/`pbid-`/`pbip-`
+-  or `msix-`: `PLATFORM_PREFIXES` in `scripts/lint-skill-overrides.py` is
+-  the list. Names are one flat namespace across both trees
++  a platform skill its group's prefix, which `PLATFORM_PREFIXES` in
++  `scripts/lint-skill-overrides.py` lists, `powerbi-` among them.
++  Names are one flat namespace across both trees
+   (`pre-commit-hooks.md`). The harness reserves `anthropic-skills`, and
+   every `anthropic-skills:<name>`, for skills synced from claude.ai, so no
+   skill here takes that name (2026-10-06).
+@@ -36,10 +36,9 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
+   (2026-08-31, 2.1.251), and so does an in-place `description` edit
+   (2026-09-02, 2.1.252). That proves the listing refreshes, not that a
+   reworded trigger then fires.
+-- A `skills/workflow/` skill reaches Copilot only as a copy, and the copy
+-  is no longer refreshed: the Copilot payload is being retired, so run no
+-  `copy-copilot.ps1` after editing one (2026-09-30,
+-  `docs/handoffs/execute/copilot-payload-retirement.md`).
++- A `skills/workflow/` skill reaches Copilot only as a copy, frozen while
++  the Copilot payload is retired: run no `copy-copilot.ps1` after editing
++  one (2026-09-30, `docs/handoffs/execute/copilot-payload-retirement.md`).
+ 
+ ## Invocation and spend fields
+ 
+@@ -60,7 +59,7 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
+ - Where `model:` is active the pin is live, since those skills are reached
+   by typing their names. Pin `fable` only where judgment is irreducible —
+   wording a `description`, not executing a numbered brief — because it costs
+-  twice the Opus tier (2026-09-12). List the pins with
++  2.5 times Opus 5.5 per token (2026-10-08). List the pins with
+   `grep -rn "^model:" .claude/skills skills`.
+ - Pin the alias, not the dated ID, which freezes on one release once the
+   next ships. The CLI carries its own model table, so a stale CLI resolves
+@@ -77,7 +76,7 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
+   one. `effort` applies on both paths, at either scope.
+ - The session default is saved per model, under `modelSettings` in
+   `claude/settings.json`: `claude-opus-5-5` at `xhigh`. A top-level
+-  `effortLevel` in user settings no longer counts for Opus 5.5 or later,
++  `effortLevel` in user settings does not apply to Opus 5.5 or later,
+   which start at their own default, `medium` for Opus 5.5, until a level
+   is saved (2.1.280); `/effort` saves to the deployed copy, which the next
+   `-Force` replaces whole (`deploy-scripts.md`). A setting holds at most
+diff --git a/.claude/skills/author-skill/SKILL.md b/.claude/skills/author-skill/SKILL.md
+index d897137..485d1d8 100644
+--- a/.claude/skills/author-skill/SKILL.md
++++ b/.claude/skills/author-skill/SKILL.md
+@@ -75,7 +75,7 @@ as deliberate rather than as something nobody noticed.
+ 
+ If the user wants a *subagent* rather than a skill, this is the wrong
+ skill: the artifact lives in `claude/agents/` and uses
+-`templates/subagent-handoff.md`. Stop and say so.
++`docs/handoffs/templates/subagent-handoff.md`. Stop and say so.
+ 
+ ## 2. Check for existing coverage
+ 
+@@ -286,9 +286,7 @@ filling the template, not content, and a brief that keeps them reads as
+ half-finished. Exactly two blocks are reproduced verbatim: the guidance
+ note directly under the title, and Claude Code's post-draft checklist.
+ `docs/handoffs/examples/author-skill.example.md` is the reference
+-— two guidance blocks in the finished brief, not one per heading. The
+-other two examples predate this convention and strip both; follow the
+-`author-skill` one.
++— two guidance blocks in the finished brief, not one per heading.
+ 
+ Fill `Last verified` with today's date.
+ 
+@@ -412,15 +410,18 @@ reworded (2026-10-01). Report the score, the shared tokens and the pair's
+ place in the bare `overlap` listing, since `--skill` ranks only `<name>`'s
+ own pairs; it is a question for the user, not a gate.
+ 
+-## 8. Register it in skills/README.md
++## 8. Register it in its catalogue
+ 
+-Add the entry to the section the namespace implies — Behavioral,
+-Microsoft Fabric platform, or Power BI Desktop / Reports. Update the
+-count in the section heading where one is present.
++Add the entry to `skills/README.md` for a payload skill, in the section
++its group implies — Behavioral, Meta, Social, Microsoft Fabric platform,
++Power BI Desktop / Reports or Windows apps — or to
++`.claude/skills/README.md` for a project-scope one. Update the count in
++the section heading where one is present.
+ 
+ Match the house style there: what the skill covers, and — where the name
+ is not self-evident — **why it is named that**. The `drift-audit` and
+-`drift-handoff` entries are the model for the second half. An entry that
++`drift-handoff` entries in `.claude/skills/README.md` are the model for
++the second half. An entry that
+ only restates the description earns nothing the description does not
+ already do.
+ 
+@@ -457,15 +458,19 @@ a step here instead of a habit.
+ 
+ - The brief written at step 5 **stays queued**. Nothing is validated
+   until the fresh-session test has run.
+-- For any other brief whose skill or subagent now exists, **propose**
++- A skill brief beside a skill that exists **stays queued** too: it
++  means `/test-skill` has not run, and `/test-skill` deletes it
++  (`docs/handoffs/CLAUDE.md`); `skill-status.py --stale` lists those.
++- For any other brief whose subagent or work now exists, **propose**
+   deletion or promotion and name which. Propose rather than act: you
+   can see that an artifact exists, but not whether the user considers
+   the work landed. Deletion itself is safe — briefs are committed when
+   written, so the deleting commit and its content stay recoverable.
+ 
+ Hand off to **`/commit`, then `/test-skill`**, and do neither here. For
+-a skill under `skills/`, `/test-skill` step 7 cannot run in a worktree —
+-a deployed group's junction serves the main checkout's copy, and
++a skill in a deployed group — `workflow`, `social` or `meta` —
++`/test-skill` step 7 cannot run in a worktree: the group's junction
++serves the main checkout's copy, and
+ `link-claude.ps1` refuses a worktree — so land it as
+ `docs/handoffs/CLAUDE.md` says, deploy, then test on `main`. A
+ project-scope skill can be tested in its worktree, its stamp still
+diff --git a/.claude/skills/drift-audit/SKILL.md b/.claude/skills/drift-audit/SKILL.md
+index ad827f2..1f7bcd3 100644
+--- a/.claude/skills/drift-audit/SKILL.md
++++ b/.claude/skills/drift-audit/SKILL.md
+@@ -21,7 +21,7 @@ The audit input is a **registry**, not a fixed pair of pages. At the start of ev
+ 
+ Each entry carries an `id` (what `--sources` matches), its GitHub repo / branch / path (plus `files`, when that path is a directory) or plain `url`, a `shape` (`table` / `prose` / `changelog`) that drives extraction, `sections` for the WebFetch fallback, a `drill` block (host, mechanism, anchor-strip patterns) for Phase 3, and the `artifacts` classes it can produce findings against. The registry's Shape contracts section defines what "an entry" means per shape; its Adding a source checklist is the procedure for widening the audit.
+ 
+-Don't restate the set of sources anywhere, as a list or as a count — the directory owns it, and the list this line carried until 2026-10-06 went stale once by omitting `fabric-iq-ontology` for five days after it was registered on 2026-09-02. The sources are public and fetchable anonymously with two exceptions. `claude-code` (~590 KB) and `skills-for-fabric` (~58 KB) are files with no `sections` list, so in practice only the `github-mcp` path can read them. And `powerbi`'s upstream repo was taken down — 404 at the API, web and raw endpoints as of 2026-09-07 — so that source fetches by the strategy written into its own registry entry rather than from a `repo` field.
++Don't restate the set of sources anywhere, as a list or as a count — the directory owns it, and a copied list goes stale the day a source is registered. The sources are public and fetchable anonymously with two exceptions. `claude-code` (~590 KB) and `skills-for-fabric` (~58 KB) are files with no `sections` list, so in practice only the `github-mcp` path can read them. And `powerbi`'s upstream repo was taken down — 404 at the API, web and raw endpoints as of 2026-09-07 — so that source fetches by the strategy written into its own registry entry rather than from a `repo` field.
+ 
+ ## 2. Argument parsing
+ 
+@@ -75,7 +75,7 @@ Used when `github-mcp` is unavailable. Keeps the skill working for anyone cherry
+ - Raw markdown at any ref: `https://raw.githubusercontent.com/<repo>/<sha-or-branch>/<path>` — one URL per name in `files` when `path` is a directory
+ - Commits list: `https://api.github.com/repos/<repo>/commits?path=<path>&per_page=<n>` with optional `&sha=<ref>` or `&since=<ISO-date>`
+ 
+-GitHub anonymous API limit is 60 requests/hour and this path is unauthenticated. **Price the selected set before running it, and price it in calls rather than sources.** A single-file source costs ~3 (commits list, raw at prior ref, raw at HEAD) plus one re-fetch per `sections` entry when the completeness check below trips; a **directory** `path` costs `1 + 2 x |files|` instead. Source count is therefore a bad proxy — one directory source with a long `files` list outweighs three single-file ones, and this line previously read "the four registered sources fit; a registry past roughly six does not," which was wrong on both the count and the driver.
++GitHub anonymous API limit is 60 requests/hour and this path is unauthenticated. **Price the selected set before running it, and price it in calls rather than sources.** A single-file source costs ~3 (commits list, raw at prior ref, raw at HEAD) plus one re-fetch per `sections` entry when the completeness check below trips; a **directory** `path` costs `1 + 2 x |files|` instead. Source count is therefore a bad proxy — one directory source with a long `files` list outweighs three single-file ones.
+ 
+ Worked once, at 2026-09-08, against the registered set: `fabric` up to 14 (3 + its 11 named sections and workload subsections), `vscode-agent` 9 (4 files), `fabric-iq-ontology` 13 (6 files), `powerbi` ~0 GitHub calls — its entry override degrades to the Learn page, not to raw URLs — and `claude-code` 0, not attempted. That is ~36 of 60 worst case, so the set fits with less headroom than a per-source budget suggests. Re-derive it rather than trusting that figure. Once a run's projected calls approach the limit, the `github-mcp` path stops being optional.
+ 
+@@ -83,7 +83,7 @@ A source the registry marks github-mcp-only — `claude-code` today — is not a
+ 
+ **Resolving the diff base — one rule, and it governs both fetch paths.** If the user supplied a SHA whose repo matches this source, use that SHA directly. If a SHA from another source's repo, fall back to the date resolution. For a date, the base is **the last commit that touched the source's `path` before the floor** — `list_commits` with that `path`, `until: <floor-date>T00:00:00Z`, `perPage: 1`, `fields: ["sha"]`.
+ 
+-**Not "the parent of the oldest in-window commit"**, which is what this step said until 2026-09-07 and is wrong on any repo that merges release branches. The oldest in-window commit is typically the monthly release *merge*, so its first parent is a same-day main-branch commit that never touched the audited file and is dated *inside* the window. Measured on `powerbi` that day: the old rule resolved `f1f53694` (2026-08-20, touching `service-get-started.md` and `power-bi-visualization-card.md` — not `whats-new.md`), where the correct rule resolves `443eb78f` (2026-07-22, the July release merge, which is genuinely the file's previous version).
++**Not "the parent of the oldest in-window commit"**, which is wrong on any repo that merges release branches. The oldest in-window commit is typically the monthly release *merge*, so its first parent is a same-day main-branch commit that never touched the audited file and is dated *inside* the window. Measured on `powerbi` on 2026-09-07: that rule resolved `f1f53694` (2026-08-20, touching `service-get-started.md` and `power-bi-visualization-card.md` — not `whats-new.md`), where the correct rule resolves `443eb78f` (2026-07-22, the July release merge, which is genuinely the file's previous version).
+ 
+ It survived undetected because it produced an identical diff — nothing else touched that file in between, so the two bases are byte-identical for `path`. That is luck, not correctness. Had any in-window commit touched the audited file *before* the release merge, its change would sit in the **base** and vanish from the diff: a silent under-report with no error path and no symptom in the output. Resolve the base by path, always.
+ 
+@@ -112,10 +112,10 @@ Hold the diff in working memory; do not write it to disk.
+ 
+ For each diff entry, decide its bucket. Scan only the artifact classes the source's registry `artifacts` field lists:
+ 
+-- **Skill match** — `Glob ~/.claude/skills/*/SKILL.md` for directory-name keyword hits; `Grep` skill descriptions and bodies for feature-name and syntax keywords.
++- **Skill match** — `Glob` this repo's `skills/*/*/SKILL.md` and `.claude/skills/*/SKILL.md` for directory-name keyword hits; `Grep` skill descriptions and bodies for feature-name and syntax keywords. Not `~/.claude/skills`: the platform groups are pruned from user scope, so no Fabric or Power BI skill is there.
+ - **Rule match** — `Grep ~/.claude/rules/coding-*.md` for per-language overlap (a new T-SQL keyword lands on `coding-tsql.md`, a new DAX function on `coding-dax.md`, etc.).
+ - **CLAUDE.md match** — `Read ~/.claude/CLAUDE.md`; check whether a current instruction line is invalidated or extended by the entry.
+-- **MCP match** — `Read ~/.claude/mcp/.mcp.global.template.json` **and** `~/.claude/mcp/.mcp.project.template.json` for the current server inventory across both global and per-project scopes; identify whether the entry adds, removes, or changes a server. Placing a finding is a two-step test. First, does it work from Claude Code at all? The Fabric-hosted `api.fabric.microsoft.com/v1/mcp/*` endpoints do not connect through Claude Code's **automatic** OAuth flow (DCR), but a `headersHelper` command supplying an `az` bearer does reach them — **every endpoint probed as of 2026-09-14 (CLI 2.1.268) connects**: bare `dataPlane/sqlEndpoint` and `dataPlane/kqlEndpoint`, `core`, `powerbi`, a workspace/item-bound `kqlEndpoint`, and the workspace-bound Activator reflex URL. So the hosted endpoints are **not** categorically out of Claude Code's reach — place each one by measurement, and treat "hosted" as saying nothing about reachability. The single measured failure is the workspace/item-bound `dataPlane/sqlEndpoint`, which returns `MCP endpoint not found` in the one tenant probed while its bound `kqlEndpoint` sibling connects; the second documented route, `--client-id`/`--client-secret`, is still unprobed. An unprobed endpoint that Learn documents goes in the project template, marked **Unprobed** in `claude/mcp/README.md` (2026-10-02); one found only in upstream config stays out. Note that a helper producing no credential prints the DCR error itself, so that error is not evidence the route is unsupported — see `claude/mcp/README.md`. Second, if it does work: is it bound to a workload (needs a workspace ID, database, connection string, or a running desktop app) or not? Workload-bound goes in the project template; cross-workload — docs, source control, cloud control plane — goes in the global one. Transport is not the test; a stdio server can be workload-bound and an http server can be universal.
++- **MCP match** — `Read claude/mcp/.mcp.global.template.json` **and** `claude/mcp/.mcp.project.template.json` for the current server inventory across both global and per-project scopes; identify whether the entry adds, removes, or changes a server. Placing a finding is a two-step test. First, does it work from Claude Code at all? The Fabric-hosted `api.fabric.microsoft.com/v1/mcp/*` endpoints do not connect through Claude Code's **automatic** OAuth flow (DCR), but a `headersHelper` command supplying an `az` bearer does reach them — **every endpoint probed as of 2026-09-14 (CLI 2.1.268) connects**: bare `dataPlane/sqlEndpoint` and `dataPlane/kqlEndpoint`, `core`, `powerbi`, a workspace/item-bound `kqlEndpoint`, and the workspace-bound Activator reflex URL. So the hosted endpoints are **not** categorically out of Claude Code's reach — place each one by measurement, and treat "hosted" as saying nothing about reachability. The single measured failure is the workspace/item-bound `dataPlane/sqlEndpoint`, which returns `MCP endpoint not found` in the one tenant probed while its bound `kqlEndpoint` sibling connects; the second documented route, `--client-id`/`--client-secret`, is still unprobed. An unprobed endpoint that Learn documents goes in the project template, marked **Unprobed** in `claude/mcp/README.md` (2026-10-02); one found only in upstream config stays out. Note that a helper producing no credential prints the DCR error itself, so that error is not evidence the route is unsupported — see `claude/mcp/README.md`. Second, if it does work: is it bound to a workload (needs a workspace ID, database, connection string, or a running desktop app) or not? Workload-bound goes in the project template; cross-workload — docs, source control, cloud control plane — goes in the global one. Transport is not the test; a stdio server can be workload-bound and an http server can be universal.
+ - **Harness match** — `Read ~/.claude/settings.json` for the hook event wiring, permissions, and env keys currently in use; `Glob ~/.claude/hooks/*` and `Grep` them for event names and hook JSON fields; `Grep` skill / subagent / rule frontmatter for the fields the entry touches (`allowed-tools`, `paths`, `model`, `argument-hint`). A renamed hook event or a moved `~/.claude` path breaks the deployed payload silently — there is no error path, so this scan is the only detection. Findings here land on the repo files the source's `artifacts` names, including `scripts/link-claude.ps1` when a deployed location moves.
+ 
+ Classify each diff entry into exactly one bucket:
+@@ -171,7 +171,7 @@ Emit one markdown report to the conversation, sections in this exact order. If a
+ 
+ - **<server or CLI name>** — <what's new>
+   - Reference: <URL or "endpoint TBD — verify">
+-  - Proposed action: <add to ~/.claude/mcp/.mcp.global.template.json | ~/.claude/mcp/.mcp.project.template.json | CLAUDE.md note | flag>
++  - Proposed action: <add to claude/mcp/.mcp.global.template.json | claude/mcp/.mcp.project.template.json | CLAUDE.md note | flag>
+ 
+ ## No-op
+ 
+diff --git a/.claude/skills/drift-update/SKILL.md b/.claude/skills/drift-update/SKILL.md
+index 24f6d6c..d58fb40 100644
+--- a/.claude/skills/drift-update/SKILL.md
++++ b/.claude/skills/drift-update/SKILL.md
+@@ -286,10 +286,10 @@ run it on `main` after the landing (step 5);
+ `docs/handoffs/execute/README.md` § "Every brief takes a worktree" has
+ the measurements.
+ 
+-**One check this skill cannot perform:** an edited `SKILL.md` does not reliably
+-reload mid-session on Windows, so no brief that edits a skill can have its
+-behaviour validated in the session that applied it. Lint and prose checks pass;
+-behavioural confirmation is a fresh-session task. Say so rather than implying
++**One check this skill cannot perform:** the session that applied a skill edit is
++the wrong place to test it — skills hot-reload, but accumulated context can mask
++a co-load failure, and the session already knows the answers. Lint and prose
++checks pass; behavioural confirmation is a fresh-session task. Say so rather than implying
+ the skill was exercised, and name the task: `/test-skill <skill> @<brief>`,
+ which takes the brief's *What to change* as the claim to separate from the
+ baseline and appends its confirmation to this execution log rather than
+@@ -381,9 +381,7 @@ in its log is seen only by what reads the log for it.
+ applied-with-deferrals brief with no `**Closed**:` line, grouped by that line,
+ and `lint-briefs` fails the commit on one without it. A deferred re-check
+ gets one too, naming what performs it, such as the next audit of that source,
+-and so does an adjacent finding, stamped `applied with deferrals`. Found
+-2026-09-11, when two runs' follow-ups turned out to be in no queue; a
+-hand-kept table held them until the view replaced it, 2026-09-27.
++and so does an adjacent finding, stamped `applied with deferrals`.
+ 
+ ## 5. Report and hand off
+ 
+diff --git a/.claude/skills/test-skill/SKILL.md b/.claude/skills/test-skill/SKILL.md
+index 4ea8d1b..a0178d4 100644
+--- a/.claude/skills/test-skill/SKILL.md
++++ b/.claude/skills/test-skill/SKILL.md
+@@ -23,8 +23,8 @@ It also runs on a skill that shipped long ago and has since been
+ edited. That case has **no brief** and needs none; step 1 says where
+ its inputs come from instead.
+ 
+-Repo-relative paths are relative to the agent-config repo
+-(`C:\Repos\Personal\agent-config`), not the session's cwd.
++Repo-relative paths are relative to the repo root — the worktree's,
++when the session runs in one.
+ 
+ ## What this validates, and what it does not
+ 
+@@ -195,7 +195,7 @@ session, has it Read every fixture, asserts the transcript, and tears
+ down in a `finally`.
+ 
+ **One session covers the whole set** — activation is a per-session
+-cumulative delta, so 56 fixtures cost one session rather than 56. That
++cumulative delta, so a set's fixtures cost one session, not one each. That
+ is what makes this affordable enough to actually run.
+ 
+ **Skip this step when the activation stamp is already current.** The
+diff --git a/CLAUDE.md b/CLAUDE.md
+index d0e52f8..0354314 100644
+--- a/CLAUDE.md
++++ b/CLAUDE.md
+@@ -39,15 +39,15 @@ uv run --with pyyaml scripts/skill-status.py --stamp <skill> --phase activation,
+ uv run scripts/handoff-status.py      # every repo's open briefs and inbox notes; reads only
+ for t in tests/scripts/*/test-*.sh; do echo "$t: $(bash "$t" | tail -n 1)"; done  # every negative-case suite
+ scripts/bootstrap-pre-commit          # a clone: install pre-commit and wire all three hook stages
+-ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|msix)-'  # after any deploy: must print nothing
++ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'  # after any deploy: must print nothing
+ ```
+ 
+ ```powershell
+ ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force  # default; -Force adds claude/CLAUDE.md, settings.json
+ ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta         # same, when neither of those changed
+ ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -GlobalMcp  # prune ~/.claude.json's MCP servers; after Docker Desktop
+-./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric,powerbi  # committable, for a client repo
+-./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow  # Copilot's user scope: never social; meta refused
++./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric,powerbi  # a client repo; frozen, refresh no copy (copilot-payload.md)
++./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow  # Copilot's user scope, frozen too: never social; meta refused
+ ./scripts/repo-settings.ps1           # GitHub settings vs .github/repo-settings.json; -Export, -Apply
+ ```
+ 
+diff --git a/claude/CLAUDE.md b/claude/CLAUDE.md
+index bd94b15..31d532b 100644
+--- a/claude/CLAUDE.md
++++ b/claude/CLAUDE.md
+@@ -176,7 +176,7 @@ notes. Origin decides, so your subagent doing a peer's change launders it.
+ routed, even once landed, never on a peer's word. Then one `rm` on the
+ literal path; if denied, hand the user `! rm <that path>`, not a retry.
+ 
+-### GitHub Copilot no longer inherits this payload
++### What GitHub Copilot reads of this payload
+ 
+ Copilot reads `~/.copilot/*` and a repo's `.github/*`, never `~/.claude`,
+ except `CLAUDE.md` where `chat.useClaudeMdFile` is on. That is the Copilot
+diff --git a/claude/agents/security-reviewer.md b/claude/agents/security-reviewer.md
+index fbe4273..2c04108 100644
+--- a/claude/agents/security-reviewer.md
++++ b/claude/agents/security-reviewer.md
+@@ -13,7 +13,7 @@ You are a security-scan specialist for Microsoft Fabric, Azure, and Power BI cod
+ 
+ Tool scoping: Read, Grep, Glob, and Bash are your scan tools. Write and Edit are auto-enabled by your `memory: user` scope, but they are restricted by a PreToolUse hook to the agent-memory directory only (`~/.claude/agent-memory/security-reviewer/`). Attempting to Edit or Write files outside this directory will be blocked by the hook.
+ 
+-This agent inherits the parent session's permission mode: the supported pin is the `permissionMode` frontmatter field, which it does not set, and the Task tool's `mode` parameter that used to pin it independently is deprecated and ignored. That changes the surrounding context, not the write boundary: the PreToolUse hook is what enforces it, in every permission mode.
++This agent sets no `permissionMode` in its frontmatter, so it inherits the parent session's permission mode. That changes the surrounding context, not the write boundary: the PreToolUse hook enforces it in every permission mode.
+ 
+ You do not modify code. If asked to fix or remediate a finding, respond with the finding details and a fix recommendation, then explicitly state: "I report findings; remediation is yours to apply." Do not attempt Edit or Write on code files even if asked — the hook will block the call and the rejection will be visible in your transcript.
+ 
+diff --git a/claude/rules/README.md b/claude/rules/README.md
+index 3caca9d..daab79c 100644
+--- a/claude/rules/README.md
++++ b/claude/rules/README.md
+@@ -163,8 +163,9 @@ conformance checking.
+   `CLAUDE.md`, a `paths:` rule, a nested file, a skill, a hook, a README
+   — and how each misses in silence. Carries when Claude Code loads each
+   file (a nested one on the session's own Read, Write or Edit, never on
+-  Grep or a subagent's Read), that a `CLAUDE.md` anywhere on the path
+-  silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
++  Grep, and on a subagent's Read into that subagent only), that a
++  `CLAUDE.md` anywhere on the path silences every `AGENTS.md`, the five
++  things a bare `AGENTS.md` loses,
+   and the `@AGENTS.md` import form that loses none, with the two
+   conditions a client Fabric repo found for it. Built from cold probes
+   on 2.1.282 and the memory docs, 2026-09-25. Since 2026-09-27 it also
+diff --git a/claude/rules/coding-bash.md b/claude/rules/coding-bash.md
+index c48de2f..2fecac2 100644
+--- a/claude/rules/coding-bash.md
++++ b/claude/rules/coding-bash.md
+@@ -207,11 +207,9 @@ FILE_PATH_UNIX=$(cygpath -u "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
+   when stdout is a terminal (`[[ -t 1 ]]`), or send them to stderr.
+   Claude Code builds a session's Bash snapshot by sourcing the profile
+   and capturing `PATH` from the shell's output, so whatever the profile
+-  prints to stdout lands inside `PATH` for every later tool call. This
+-  machine's startup banner, ANSI escapes and all, sat at the head of
+-  the snapshot's `export PATH=` line until machine-config fixed it on
+-  2026-09-22 (`c9a2ed4`, banner only to a terminal); a snapshot taken
+-  the next morning held a plain `export PATH='/c/...`.
++  prints to stdout lands inside `PATH` for every later tool call: a
++  banner shows up, ANSI escapes and all, at the head of the snapshot's
++  `export PATH=` line (2026-09-22).
+ 
+ ## Quoting and tests
+ 
+@@ -308,10 +306,10 @@ fi
+ **Run `timeout`; never probe for it.** `command -v timeout` proves the
+ file is on `PATH`, not that it runs: under Defender's ASR rule "Block use
+ of copied or impersonated system tools", a per-user Git install's
+-`timeout.exe` exits **126** (measured 2026-09-17), and the probe this
+-example once carried handed every jq call to a wrapper that never
+-started, so a guard hook allowed every commit and push with output
+-identical to a clean pass. 126 and 127, could not execute and not found,
++`timeout.exe` exits **126** (measured 2026-09-17). Gated on that probe,
++every jq call goes to a wrapper that never starts, and a guard hook
++allows every commit and push with output identical to a clean pass.
++126 and 127, could not execute and not found,
+ are codes jq's own errors never use, so either retries bare `jq`, and a
+ healthy call spawns what it did before. To test the fallback, shadow
+ `timeout` with a file whose shebang names no interpreter (exit 126): a
+diff --git a/claude/rules/coding-ci-workflows.md b/claude/rules/coding-ci-workflows.md
+index c1219fc..5b9c537 100644
+--- a/claude/rules/coding-ci-workflows.md
++++ b/claude/rules/coding-ci-workflows.md
+@@ -64,9 +64,9 @@ behind a flag say so.
+   which gets no secrets from a fork, and never build or run a pull
+   request's code where a secret is in reach.
+ - **In a public repository with no Actions event policy,
+-  `pull_request_target` is blocked by a default policy**, in evaluate
+-  mode now and enforced from 2026-11-02. The docs do not say what a
+-  blocked run shows.
++  `pull_request_target` is blocked by a default policy**: evaluate mode
++  before 2026-11-02, enforced from then (docs.github.com, 2026-09-27).
++  The docs do not say what a blocked run shows.
+ - **An event made with `GITHUB_TOKEN` starts no workflow run**, except
+   `workflow_dispatch` and `repository_dispatch`. A workflow that pushes
+   a commit or opens a pull request with it triggers nothing downstream,
+diff --git a/claude/rules/coding-dax.md b/claude/rules/coding-dax.md
+index c4b7667..dbf683a 100644
+--- a/claude/rules/coding-dax.md
++++ b/claude/rules/coding-dax.md
+@@ -21,9 +21,8 @@ supersedes this one.
+ - **Functions**: UPPERCASE — `CALCULATE`, `SUMX`, `FILTER`, `VAR`,
+   `RETURN`, `IF`, `SWITCH`. By convention; DAX is case-insensitive but
+   consistency matters for readability.
+-- **Table names**: match the model identifier (PascalCase per TMDL
+-  rule), wrapped in single quotes when referenced:
+-  `'Transaction Line'`.
++- **Table names**: the table's model name, as its TMDL `table` line
++  declares it, in single quotes when referenced: `'Transaction Line'`.
+ - **Column references**: always table-qualified — `'Customer'[CustomerId]`.
+   Never bare `[CustomerId]` for columns; that's measure syntax.
+ - **Measure references**: `[Total Sales]` — square brackets, no table
+diff --git a/claude/rules/coding-expressions.md b/claude/rules/coding-expressions.md
+index 3ab5896..3bc06be 100644
+--- a/claude/rules/coding-expressions.md
++++ b/claude/rules/coding-expressions.md
+@@ -6,13 +6,15 @@ paths:
+ 
+ # Fabric Pipeline Expression Coding Conventions
+ 
+-Applies to expressions in Fabric data pipelines (`pipeline-content.json`).
++Applies to expressions in Fabric data pipelines (`pipeline-content.json`)
++and ADF / Synapse pipelines (`pipeline/*.json`).
+ 
+ The rules below apply to any Workflow Definition Language (WDL)
+ context — same language family, same function library, same idioms:
+ 
+ - Fabric pipeline expressions (auto-loads via `paths:` above)
+-- ADF / Synapse pipeline expressions (manually reference; no auto-load)
++- ADF / Synapse pipeline expressions (auto-loads on `pipeline/*.json`,
++  where their Git integration writes pipelines)
+ - Logic Apps / Power Automate expressions (manually reference)
+ 
+ **Out of scope**: Power Fx (Power Apps canvas formulas, Dataverse
+diff --git a/claude/rules/coding-kql.md b/claude/rules/coding-kql.md
+index b025db1..378901d 100644
+--- a/claude/rules/coding-kql.md
++++ b/claude/rules/coding-kql.md
+@@ -114,8 +114,9 @@ SigninLogs
+ ## Joins
+ 
+ - Specify `kind` explicitly: `kind=inner`, `kind=leftouter`,
+-  `kind=fullouter`, `kind=leftanti`, `kind=rightsemi`. Default
+-  changed historically; explicit is safe.
++  `kind=fullouter`, `kind=leftanti`, `kind=rightsemi`. The default,
++  `innerunique`, keeps one arbitrary left-side row per key before
++  matching, so an unqualified join drops rows silently.
+ - Filter both sides before joining.
+ - Smaller table on the **left** of `join` (KQL broadcasts the left
+   side). Opposite of T-SQL muscle memory.
+diff --git a/claude/rules/coding-powershell.md b/claude/rules/coding-powershell.md
+index 7a93318..4a7a8db 100644
+--- a/claude/rules/coding-powershell.md
++++ b/claude/rules/coding-powershell.md
+@@ -179,8 +179,8 @@ change the user cannot see is worse than a complete report with three
+ 
+ ## Strict mode
+ 
+-Scripts here run `Set-StrictMode -Version Latest`, which turns two
+-quiet lookups into throws:
++A script that runs `Set-StrictMode -Version Latest` turns two quiet
++lookups into throws:
+ 
+ - **An absent hashtable key throws** instead of returning `$null` —
+   guard optional keys with `.ContainsKey()` before reading.
+diff --git a/claude/rules/coding-python.md b/claude/rules/coding-python.md
+index 3759d26..0e0b645 100644
+--- a/claude/rules/coding-python.md
++++ b/claude/rules/coding-python.md
+@@ -173,9 +173,8 @@ result_df = (
+ 
+ ### Lazy evaluation awareness
+ 
+-- DataFrame operations are lazy. `.count()`, `.collect()`, `.show()`,
+-  `.write` trigger execution. Don't call them inside loops unless that's
+-  the actual intent.
++- Don't call `.count()`, `.collect()`, `.show()` or `.write` inside a
++  loop unless that's the actual intent.
+ - `.collect()` pulls all rows to the driver — guard with
+   `.limit(n)` or aggregate first. Never `.collect()` an unaggregated
+   dataset of unknown size.
+@@ -183,15 +182,13 @@ result_df = (
+ ### Caching
+ 
+ - Cache only when the same DataFrame is reused 2+ times in a job.
+-- `df.cache()` is `MEMORY_AND_DISK` by default, fine for most cases.
+ - Always `.unpersist()` when done if the dataset is large and the job
+   continues. Otherwise let job termination clean up.
+ 
+ ### Repartition vs coalesce
+ 
+-- `repartition(n)` — full shuffle, increases or decreases partitions.
+-- `coalesce(n)` — no shuffle, only decreases. Prefer for write-time
+-  partition control.
++- `coalesce(n)`, not `repartition(n)`, for write-time partition
++  control: it only decreases, without a shuffle.
+ 
+ ### UDFs
+ 
+@@ -203,18 +200,20 @@ disables Catalyst optimization.
+ 
+ - One concept per cell. Don't pack a whole pipeline into one cell.
+ - Markdown cell at the top with: purpose, inputs, outputs, owner.
+-- Notebook parameters declared at the top via `dbutils.widgets` (Databricks)
+-  or `notebookutils.runtime.context` parameters (Fabric). Convert to
+-  notebook-convention names inside:
++- Notebook parameters go at the top: in Fabric, the cell toggled as the
++  parameters cell; in Databricks, `dbutils.widgets`. A Fabric pipeline
++  run injects its values in a new cell after that one, under the names
++  the pipeline passes, so read a PascalCase one back into the notebook's
++  name:
+ 
+ ```python
+-# Notebook-parameter cell (Fabric)
++# Parameters cell (Fabric)
+ source_schema = "raw"           # noqa
+ target_schema = "silver"        # noqa
+ load_date = "2026-04-25"        # noqa
+ 
+-# Convert if pipeline passed PascalCase
+-source_schema = source_schema or SourceSchema  # if pipeline passes PascalCase
++# Next cell: a pipeline passing PascalCase names defines those instead
++source_schema = globals().get("SourceSchema", source_schema)
+ ```
+ 
+ ## Anti-patterns
+diff --git a/claude/rules/coding-sparksql.md b/claude/rules/coding-sparksql.md
+index 07f7707..f3e0d23 100644
+--- a/claude/rules/coding-sparksql.md
++++ b/claude/rules/coding-sparksql.md
+@@ -144,8 +144,11 @@ SELECT a.id FROM a INNER JOIN b ON a.key <=> b.key;
+ ## Spark SQL vs T-SQL gotchas
+ 
+ - No `TOP n` — use `LIMIT n`.
+-- No procedural SQL — no variables (`DECLARE`), no `IF`/`WHILE`,
+-  no stored procs. Wrap procedural logic in PySpark.
++- Procedural SQL depends on the runtime: Fabric Runtime 1.3 (Spark 3.5)
++  has no variables, `IF`/`WHILE` or stored procs, so wrap that logic in
++  PySpark there; Runtime 2.0 (Spark 4.1) adds session variables, and
++  Databricks adds `DECLARE VARIABLE` and SQL scripting (Learn,
++  2026-10-08).
+ - `DATEADD`/`DATEDIFF` argument order differs. Use `DATE_ADD()`,
+   `DATE_SUB()`, `DATEDIFF()` (Spark) and verify against docs.
+ - `STRING` not `NVARCHAR`. `BIGINT` not `INT`.
+diff --git a/claude/rules/coding-tmdl.md b/claude/rules/coding-tmdl.md
+index b09b1df..13be2a7 100644
+--- a/claude/rules/coding-tmdl.md
++++ b/claude/rules/coding-tmdl.md
+@@ -15,8 +15,8 @@ rule (2026-10-06).
+ If a project-scope `.claude/rules/coding-tmdl.md` exists, that file
+ supersedes this one.
+ 
+-> **Verification note**: TMDL is newer; some style conventions below
+-> are community-driven (SQLBI, MS Fabric community) rather than from a
++> **Verification note**: some style conventions below are
++> community-driven (SQLBI, MS Fabric community) rather than from a
+ > canonical Microsoft style guide. Treat as opinionated defaults.
+ 
+ ## Copying syntax from Learn
+@@ -30,58 +30,19 @@ so a block can look half right. The page's HTML keeps the bytes:
+ `curl -s` it and read the `lang-tmdl` `<pre><code>` block, unescaping
+ `&lt;`, `&gt;`, `&amp;` and `&quot;` (two Learn pages, 2026-10-07).
+ 
+-## Naming and aliasing
++## Naming
+ 
+-Pattern: **PascalCase identifier, aliased display name with spaces.**
+-
+-Applies to:
+-
+-- **Tables**: `TransactionLine` ↔ `"Transaction Line"`
+-- **Columns**: `OrderTotal` ↔ `"Order Total"`
+-- **Measures**: `TotalSalesYtd` ↔ `"Total Sales YTD"`
+-- **Hierarchies**: `Geography` ↔ `"Geography"` (single-word OK)
+-- **Hierarchy levels**: `CountryCode` ↔ `"Country"` (display can drop
+-  `Code` suffix if context is clear)
+-- **Roles**: `RegionalManager` ↔ `"Regional Manager"`
+-- **Perspectives**: `FinanceCore` ↔ `"Finance — Core"`
+-- **Calculation groups / items**: same pattern.
+-
+-```tmdl
+-# Good
+-table TransactionLine
+-    lineageTag: <guid>
+-
+-    column TransactionDate
+-        displayName: "Transaction Date"
+-        dataType: dateTime
+-        formatString: "yyyy-mm-dd"
+-        summarizeBy: none
+-
+-    column OrderTotal
+-        displayName: "Order Total"
+-        dataType: decimal
+-        formatString: "$#,##0.00;-$#,##0.00"
+-        summarizeBy: sum
+-
+-    measure TotalSales = SUM('Transaction Line'[Order Total])
+-        displayName: "Total Sales"
+-        formatString: "$#,##0.00"
+-
+-# Bad (no display alias, snake_case identifier)
+-table transaction_line
+-    column transaction_date
+-    column order_total
+-```
+-
+-## Why both forms
+-
+-- **Identifier (PascalCase)**: stable reference for DAX, M, lineage,
+-  and version-control diffs. No spaces means no escaping in DAX.
+-- **Display (with spaces)**: end-user-facing. Spaces and proper case
+-  read naturally in visuals.
+-
+-DAX always references display names: `'Transaction Line'[Order Total]`.
+-You write the identifier in TMDL but DAX consumes the display.
++An object's name is what reports, DAX and perspectives show: TMDL has
++no display-name property, since each TMDL property is a TOM property,
++and a caption that differs from the name exists only as a culture's
++translation (Learn, 2026-10-08). Name tables, columns, measures,
++hierarchies, roles, perspectives and calculation items for the reader,
++with spaces, and single-quote a name holding a space, `.`, `=`, `:` or
++`'` (doubled inside): `table 'Transaction Line'`,
++`column 'Order Total'`, `measure 'Total Sales'`. DAX uses the same
++names: `'Transaction Line'[Order Total]`, `[Total Sales]`.
++`sourceColumn` keeps the source's spelling, so a rename never touches
++Power Query.
+ 
+ ## Measure organization
+ 
+@@ -91,20 +52,19 @@ You write the identifier in TMDL but DAX consumes the display.
+ - **Display folders**: group related measures within the table.
+   `displayFolder: "YTD\\Sales"` — backslash creates nested folders.
+ 
++A measure table organized by subject, one tab per level:
++
+ ```tmdl
+-# Good — measures organized by subject
+ table '_Sales Measures'
+-    isHidden: true
++	isHidden: true
+ 
+-    measure TotalSales = SUM('Transaction Line'[Order Total])
+-        displayName: "Total Sales"
+-        displayFolder: "Core"
+-        formatString: "$#,##0.00"
++	measure 'Total Sales' = SUM('Transaction Line'[Order Total])
++		displayFolder: "Core"
++		formatString: "$#,##0.00"
+ 
+-    measure TotalSalesYtd = TOTALYTD([Total Sales], 'Date'[Date])
+-        displayName: "Total Sales YTD"
+-        displayFolder: "YTD"
+-        formatString: "$#,##0.00"
++	measure 'Total Sales YTD' = TOTALYTD([Total Sales], 'Date'[Date])
++		displayFolder: "YTD"
++		formatString: "$#,##0.00"
+ ```
+ 
+ ## Format strings
+@@ -139,22 +99,21 @@ table '_Sales Measures'
+ 
+ ## Descriptions
+ 
+-Use the `description` property on tables, columns, and measures. Shows
+-in tooltips inside Power BI Desktop and Tabular Editor. Critical for
+-self-service consumers.
++Describe tables, columns and measures with a `///` line directly above
++the object's declaration. It shows in tooltips in Power BI Desktop and
++Tabular Editor, which self-service consumers rely on.
+ 
+ ```tmdl
+-measure TotalSales = SUM('Transaction Line'[Order Total])
+-    displayName: "Total Sales"
+-    description: "Sum of order totals across all transactions. Excludes refunds. Source: bronze.transaction_line."
+-    formatString: "$#,##0.00"
++/// Sum of order totals across all transactions. Excludes refunds. Source: bronze.transaction_line.
++measure 'Total Sales' = SUM('Transaction Line'[Order Total])
++	formatString: "$#,##0.00"
+ ```
+ 
+ ## Calculation groups
+ 
+ - One calculation group per axis of analysis (`Time Intelligence`,
+-  `Currency`, `Scenario`). Power BI supports multiple per model
+-  (recent feature) — use sparingly; precedence rules get complex.
++  `Currency`, `Scenario`). Power BI supports more than one per model;
++  use that sparingly, because precedence rules get complex.
+ - Calculation item ordinals: explicit, evenly spaced
+   (`ordinal: 10`, `20`, `30`) so insertions are easy.
+ 
+diff --git a/claude/rules/coding-tsql.md b/claude/rules/coding-tsql.md
+index 0695ae3..95f3184 100644
+--- a/claude/rules/coding-tsql.md
++++ b/claude/rules/coding-tsql.md
+@@ -53,8 +53,10 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
+   the whole DacFx build. Symptom and why it hides: `fabric-gotchas`.
+ - **Identifiers** (tables, columns, schemas, parameters, variables,
+   indexes, constraints, procs, functions): PascalCase.
+-- **Aliases**: PascalCase, descriptive, not single letters except for
+-  the most local scope (single-statement queries with no ambiguity).
++- **Column aliases**: PascalCase (`AS TotalSpend`). **Table aliases**:
++  lowercase words naming the role (`cust`, `ord`, `line`), not single
++  letters except for the most local scope (single-statement queries
++  with no ambiguity).
+ 
+ ## Identifier quoting
+ 
+diff --git a/claude/rules/fabric-git-serialization.md b/claude/rules/fabric-git-serialization.md
+index 993dcc1..ef9263f 100644
+--- a/claude/rules/fabric-git-serialization.md
++++ b/claude/rules/fabric-git-serialization.md
+@@ -163,7 +163,8 @@ authoring mistake.
+ 
+ Check early in any Fabric repo: `git config core.autocrlf` and whether
+ `.gitattributes` exists. If translation is on and unpinned, add one
+-scoped to the workspace folders holding item definitions:
++scoped to the workspace folders holding item definitions, one line per
++folder (these names are one estate's; use the repo's own):
+ 
+ ```gitattributes
+ Engineering/** -text
+diff --git a/claude/rules/git-identity-scoping.md b/claude/rules/git-identity-scoping.md
+index 79ee122..db8c1b4 100644
+--- a/claude/rules/git-identity-scoping.md
++++ b/claude/rules/git-identity-scoping.md
+@@ -108,11 +108,12 @@ see or review. Setting it per repo, in a file everyone clones, is.
+ - **The GitHub API actor.** `gh` and an MCP GitHub server authenticate
+   from their own tokens and can resolve to a *different* account than the
+   `includeIf` author on the commits, with nothing warning that a PR
+-  landed under the wrong identity. This file reaches `gh` only where
+-  something wraps it to read `user.name` and select a matching token;
+-  this machine's shell profiles do, so the `includeIf` identity picks
+-  the `gh` account in a shell that sourced a profile and has no effect
+-  in one that did not — a `-NoProfile` `pwsh` acts as the keyring's
+-  active account instead. Nothing reaches the MCP server. Confirm
+-  separately with `gh api user -q .login`, run in the shell that will
+-  act, before opening or merging anything.
++  landed under the wrong identity. This file reaches `gh` only through a
++  wrapper that reads `user.name` and selects a matching token; this
++  machine has three (a profile function, `~/scripts/gh.ps1`,
++  `~/scripts/gh`), so a bare `gh` in either tool shell acts as the
++  `includeIf` identity. The keyring's active account answers instead for
++  a native program's `gh.exe`, a `gh.exe` earlier on `PATH`, and an unset
++  or unknown `user.name` (2026-09-23). Nothing reaches the MCP server.
++  Confirm separately with `gh api user -q .login`, run in the shell that
++  will act, before opening or merging anything.
+diff --git a/docs/evidence/user-claude-md.md b/docs/evidence/user-claude-md.md
+index 44bec68..f0a7c82 100644
+--- a/docs/evidence/user-claude-md.md
++++ b/docs/evidence/user-claude-md.md
+@@ -993,7 +993,7 @@ path, which the user asked on 2026-09-23 to keep out of the file.
+ `claude/rules/coding-bash.md` cited this ledger twice as "the evidence
+ file it names", and now names it by path.
+ 
+-### GitHub Copilot no longer inherits this payload
++### What GitHub Copilot reads of this payload
+ 
+ Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
+ root is `false`, so Copilot inherits none of `~/.claude`'s skills,
+diff --git a/skills/meta/learn/SKILL.md b/skills/meta/learn/SKILL.md
+index 05f403d..1d7075e 100644
+--- a/skills/meta/learn/SKILL.md
++++ b/skills/meta/learn/SKILL.md
+@@ -93,8 +93,8 @@ Do **not** ask the user which skill was used. Reconstruct it:
+    Fabric REST) point at the skill that owns them even if it wasn't
+    explicitly invoked. Map by the skill's `description`.
+ 5. If nothing was loaded but a skill *should* have triggered, that is
+-   itself a learning: the fix is the skill's `description` (trigger
+-   phrases), not its body.
++   itself a learning: the fix is the skill's trigger text — `description`,
++   and `when_to_use` where it has one — not its body.
+ 
+ **Record a skill by its `name:`, not by the path you saw it at.** A
+ deployed skill sits at `~/.claude/skills/<name>/`, flat — the payload's
+@@ -119,7 +119,7 @@ note mode you name the destination; you do not open it for writing.
+ | Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
+ | How agent instruction files load, or which home a kind of guidance takes in any repo — a nested `CLAUDE.md`, an `AGENTS.md`, the `@AGENTS.md` import form | `claude/rules/agent-instructions-scoping.md`. A repo's own placement decision stays in that repo (Step 0) |
+ | Environment or machine-wide constraint for every session | `claude/CLAUDE.md` takes the rule, its tell (the error text, or the silence) and one date; the evidence — how it was measured, what was believed before — goes to `docs/evidence/user-claude-md.md` under the same heading. A copy, not live until the deploy script runs; see Step 8 |
+-| Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars) |
++| Skill didn't trigger when it should have | the skill's frontmatter: `description` (≤ 1024 chars), and `when_to_use` (≤ 512) where its trigger phrases live |
+ | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
+ 
+ **Both `CLAUDE.md` files are capped in pre-commit** by
+@@ -237,14 +237,14 @@ Keep the addition as short as a reader needs: typically 1–6 lines in
+ voice and formatting. If a `description` is edited, state the new
+ length.
+ 
+-**Check `description` headroom before proposing a trigger phrase.** Many
+-skills sit within a few characters of the 1,024-char cap, so a new
+-phrase usually has to displace an existing one rather than extend the
+-line. Measure the current length first — the frontmatter linter only
+-reports the overflow after the edit is written. If the budget is tight,
+-name what to cut; if nothing can go, say so and leave the description
+-alone rather than silently dropping a trigger that already earns its
+-place.
++**Check headroom before proposing a trigger phrase.** `description` is
++capped at 1,024 characters and `when_to_use` at 512, and many skills sit
++within a few characters of one or the other, so a new phrase usually
++has to displace an existing one rather than extend the line. Measure
++the current length first — the frontmatter linter only reports the
++overflow after the edit is written. If the budget is tight, name what
++to cut; if nothing can go, say so and leave the field alone rather than
++silently dropping a trigger that already earns its place.
+ 
+ Wait for approval. Apply only what is approved, using `Edit` so the
+ rest of the file is untouched. Then run the repo's frontmatter lint:
+@@ -287,7 +287,7 @@ message runs in its receiver as a turn, in the middle of whatever that
+ session was started for, and work for another repo is what the inbox
+ carries. The note waits until the user asks a session in the target repo
+ to bring it in, so Step 8's report is the only thing that says it exists
+-(2026-09-30; the doorbell this replaced rang from 2026-09-16).
++(2026-09-30).
+ 
+ Shape:
+ 
+@@ -297,10 +297,9 @@ Shape:
+ **Origin:** <what kind of repo or estate, generalized>. <Month Year>.
+ **For:** `/triage` in a session inside the payload repo.
+ 
+-**Sources, cited by kind.** <Whether anything below carries a workspace,
+-tenant, account or host name — so the landing session knows what needs
+-scrubbing, or that nothing does. Cite client evidence by kind, never by
+-name.>
++**Scrubbing:** <which parts below are raw — a workspace, tenant, account
++or host name — and which are genericized, or that nothing needs
++scrubbing. Cite client evidence by kind, never by name.>
+ 
+ **Coverage:** <What Step 4 found, and which tree it was searched
+ against, so it is not redone. Or: could not be checked, and why.>
+diff --git a/skills/social/linkedin-highlights/SKILL.md b/skills/social/linkedin-highlights/SKILL.md
+index f8a8b49..fdb3389 100644
+--- a/skills/social/linkedin-highlights/SKILL.md
++++ b/skills/social/linkedin-highlights/SKILL.md
+@@ -250,6 +250,7 @@ while IFS= read -r line || [ -n "$line" ]; do
+     case "${line,,}" in exempt:*) continue ;; esac   # see below
+     printf '%s\n' "$line" >> "$TERMS"
+ done < "$LIST"
++printf '%s active terms loaded\n' "$(wc -l < "$TERMS")"
+ grep -inF -f "$TERMS" <draft-file>; rm -f "$TERMS"
+ ```
+ 
+@@ -261,8 +262,8 @@ is the one thing on this machine that must not be reproduced anywhere.
+ 
+ **Sanity-check the parse before trusting a clean result.** A zero-hit
+ scrub and a broken terms file look identical. Report how many active
+-terms were loaded (`wc -l < "$TERMS"`); zero means the parse failed, not
+-that the draft is clean.
++terms were loaded (the snippet prints it before the `rm`); zero means
++the parse failed, not that the draft is clean.
+ 
+ **Deliberately ignore the list's `exempt:` lines.** This is the most
+ important sentence in the skill. `exempt: <path-prefix>` makes
+@@ -350,7 +351,7 @@ both shells, so `wc -m` falls back to counting bytes and every `•` and
+ 
+ ```bash
+ LC_ALL=C.UTF-8 wc -m < <draft-file>          # returns 5
+-uv run python -c "import sys;print(len(open(sys.argv[1],encoding='utf-8').read()))" <draft-file>
++uv run --no-project python -c "import sys;print(len(open(sys.argv[1],encoding='utf-8').read()))" <draft-file>
+ ```
+ 
+ Over-counting is the benign direction, but it makes you cut text that
+diff --git a/skills/workflow/commit/SKILL.md b/skills/workflow/commit/SKILL.md
+index faf3c41..0bcbb66 100644
+--- a/skills/workflow/commit/SKILL.md
++++ b/skills/workflow/commit/SKILL.md
+@@ -163,9 +163,8 @@ guard refuses the chained form below there as too complex to verify
+   repo name**: a peer sitting in a subdirectory of this tree is both the
+   likeliest contender and invisible to a prefix match (measured
+   2026-09-17). A peer is the only source for what is in its working tree
+-  and not in `HEAD` — "are you editing `<path>` right now?" is the
+-  question this section could not answer before. Ask before cutting a
+-  patch, not after a collision. What they say about *committed* state is
++  and not in `HEAD`, so ask it — "are you editing `<path>` right
++  now?" — before cutting a patch, not after a collision. What they say about *committed* state is
+   as old as their session, so check that yourself. **Skip a session
+   that was never prompted**, for which
+   `bash ~/.claude/skills/land/scripts/never-prompted.sh <name>` exits 0:
+@@ -246,8 +245,8 @@ Staging one hunk out of a file they are also writing:
+ 
+ Before the first commit in a repo containing `*.{ItemType}` folders:
+ check `git config core.autocrlf` and whether `.gitattributes` pins the
+-item folders (per `rules/fabric-git-serialization.md`). Whitespace-only
+-diffs (EOF newline, CR-stripping) in portal-owned files are
++item folders (per `~/.claude/rules/fabric-git-serialization.md`).
++Whitespace-only diffs (EOF newline, CR-stripping) in portal-owned files are
+ translation artifacts — do not commit them as "cleanup"; flag them and
+ fix the `.gitattributes` instead.
+ 
+diff --git a/skills/workflow/land/SKILL.md b/skills/workflow/land/SKILL.md
+index aee579b..de3cba8 100644
+--- a/skills/workflow/land/SKILL.md
++++ b/skills/workflow/land/SKILL.md
+@@ -323,8 +323,7 @@ PR merge — is the write step 6 gates, whoever performs it.
+ ## 8. Verify
+ 
+ Through the same tool step 2 confirmed — **both routes verify, and the
+-`gh` one is not optional.** A PR opened with `gh` and then verified with
+-nothing is the half of this skill that used to be missing.
++`gh` one is not optional.**
+ 
+ | Check | `github-mcp` | `gh` |
+ | --- | --- | --- |
+diff --git a/skills/workflow/recreate-repo/SKILL.md b/skills/workflow/recreate-repo/SKILL.md
+index 99bec3c..a64523d 100644
+--- a/skills/workflow/recreate-repo/SKILL.md
++++ b/skills/workflow/recreate-repo/SKILL.md
+@@ -75,7 +75,7 @@ git rev-parse --show-toplevel                           # which repo this sessio
+ ## 2. Snapshot the settings while they exist
+ 
+ ```powershell
+-& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Check -Repo <owner>/<name>   # exit 0: a current snapshot is committed, skip -Export
++& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Check -Repo <owner>/<name>   # exit 0: the snapshot on disk matches the live repo, skip -Export
+ & C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Export -Repo <owner>/<name>
+ ```
+ 
+diff --git a/tests/skills/code-review/expected_findings.md b/tests/skills/code-review/expected_findings.md
+index 86b6d46..fab562f 100644
+--- a/tests/skills/code-review/expected_findings.md
++++ b/tests/skills/code-review/expected_findings.md
+@@ -240,21 +240,18 @@ null safety ✓ dependency conditions ✓.
+ 
+ ## Fixture.SemanticModel/definition/tables/tmdl_fixture.tmdl
+ 
+-TMDL identifier-with-display-alias pattern + format-string discipline
+-fixture.
++TMDL reader-facing naming + format-string discipline fixture.
+ 
+ 🔴 Critical:
+ 
+-- `tmdl_fixture.tmdl:1` — Table identifier `transaction_line` is
+-  snake_case. Should be `TransactionLine` with `displayName:
+-  "Transaction Line"` alias. (Naming per coding-tmdl.md)
++- `tmdl_fixture.tmdl:1` — Table `transaction_line` is snake_case.
++  Should be `'Transaction Line'`. (Naming per coding-tmdl.md)
+ - `tmdl_fixture.tmdl:4` — Column `transaction_date` is snake_case.
+-  Should be `TransactionDate` with `displayName: "Transaction Date"`.
+-  (Naming)
++  Should be `'Transaction Date'`. (Naming)
+ - `tmdl_fixture.tmdl:16` — Measure `totalSales` is camelCase. Should
+-  be `TotalSales` with `displayName: "Total Sales"`. (Naming)
++  be `'Total Sales'`. (Naming)
+ - `tmdl_fixture.tmdl:18` — Measure `margin` is lowercase. Should be
+-  `Margin` with `displayName: "Margin"`. (Naming)
++  `Margin`. (Naming)
+ 
+ 🟡 Warning:
+ 
+@@ -268,10 +265,8 @@ fixture.
+ - `tmdl_fixture.tmdl:12-14` — `CustomerId` missing `isHidden: true` if
+   surrogate key not meant for direct user consumption. (Style —
+   context-dependent)
+-- `tmdl_fixture.tmdl:16,18` — Both measures missing `displayName`
+-  aliases. (Naming)
+-- `tmdl_fixture.tmdl:16,18` — Both measures missing `description`.
+-  (Per coding-tmdl.md)
++- `tmdl_fixture.tmdl:16,18` — Both measures missing a `///`
++  description. (Per coding-tmdl.md)
+ 
+ 🟢 Suggestion:
+ 
+@@ -280,8 +275,8 @@ fixture.
+ - `tmdl_fixture.tmdl:1` — Measures inline in fact table instead of
+   dedicated `_Measures` table. (Style per coding-tmdl.md)
+ 
+-Coverage: TMDL rule co-load ✓ identifier-with-display-alias ✓ format
+-string discipline ✓ summarizeBy on IDs ✓.
++Coverage: TMDL rule co-load ✓ reader-facing naming ✓ format string
++discipline ✓ summarizeBy on IDs ✓.
+ 
+ ---
+ 
+@@ -311,15 +306,6 @@ decomposition fixture.
+ - `dax_fixture.dax:1` — Single-line measure for non-trivial logic;
+   should be multi-line with function args on separate lines. (Style)
+ 
+-🟢 Suggestion:
+-
+-- `dax_fixture.dax:1,3,5,11` — Measure names use spaces (`Total
+-  Sales`, `Margin Pct`, `Sales YoY %`, `Customer Tier`). DAX measure
+-  names with spaces are legal; in TMDL context, identifier should be
+-  PascalCase with display alias. Skill should flag if reviewing in
+-  TMDL context, accept if reviewing standalone DAX. (Style —
+-  context-dependent)
+-
+ Coverage: DAX rule co-load ✓ function casing ✓ table-qualified column
+ refs ✓ DIVIDE over `/` ✓ VAR/RETURN decomposition ✓ IF→SWITCH ✓.
+ 
