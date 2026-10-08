@@ -132,3 +132,9 @@ observation was made in the same session while this brief was written.
   are stale, 954,183 and 67,836 bytes on 2026-10-08; and both sources'
   registry entries reason from a "WebFetch summarization threshold" that
   § 4b no longer holds, though their github-mcp-only conclusion stands.
+- **Needs**: the next `/drift-audit` run — the behavioural check alone,
+  as the line above says. Its two adjacent findings were fixed
+  2026-10-08 at the user's word, in the commit that adds this line:
+  § 1 drops the two sizes and leaves each to its registry entry, and
+  both entries now reason from WebFetch's 100,000-character read and
+  § 4b's model rather than a size threshold.

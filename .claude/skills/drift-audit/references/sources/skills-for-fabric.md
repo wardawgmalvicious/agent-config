@@ -4,9 +4,12 @@
 - `branch`: `main`
 - `path`: `CHANGELOG.md`
 - `shape`: `changelog`
-- `sections`: none — the file was 58 KB on 2026-09-10, past the WebFetch
-  summarization threshold, so this source is github-mcp-only in practice,
-  as `claude-code` is.
+- `sections`: none — the file was 67,836 bytes on 2026-10-08, inside the
+  100,000 characters WebFetch reads per call, but WebFetch hands a
+  `raw.githubusercontent.com` page to its summarizing model whatever its
+  size (SKILL.md § 4b), and with no `sections` there is no targeted
+  re-fetch to fall back on. So this source is github-mcp-only in
+  practice, as `claude-code` is.
 - `filter`: keep a bullet only if it
   1. introduces a skill name that no earlier version section mentions —
      a vendor-or-author candidate, bucket (b). **An `### Added` heading is

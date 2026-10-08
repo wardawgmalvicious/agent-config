@@ -4,9 +4,10 @@
 - `branch`: `main`
 - `path`: `CHANGELOG.md`
 - `shape`: `changelog`
-- `sections`: none — the file is 945 KB (2026-10-06), far past the WebFetch
-  summarization threshold, and there is no heading set worth re-fetching
-  by name. This source is **github-mcp-only** in practice.
+- `sections`: none — the file is 945 KB (2026-10-06), far past the
+  100,000 characters WebFetch reads per call (SKILL.md § 4b), and there
+  is no heading set worth re-fetching by name. This source is
+  **github-mcp-only** in practice.
 - `filter`: keep a bullet only if it names the config surface this repo
   owns — a `settings.json` key, a hook event or hook JSON field, skill /
   subagent / rule frontmatter, a `~/.claude/` path, a `permissions` rule,
