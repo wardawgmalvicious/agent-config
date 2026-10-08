@@ -102,7 +102,10 @@ last section.
   an open brief, landed as a small approved edit, or briefed into
   [docs/handoffs/execute/](../../docs/handoffs/execute/). Writes nothing
   until the user approves one table, and deletes a note only on the
-  user's yes. It is the receiving half `/learn`'s note mode never had:
+  user's yes. Since 2026-10-07 it also sweeps an old drift audit's open
+  follow-ups into the queue, closing each in the ledger with a
+  `**Closed**:` line and deleting nothing. It is the receiving half
+  `/learn`'s note mode never had:
   until 2026-09-30 that skill addressed its notes to `/learn` here, and
   no step of it, or of `/author-skill`, took one in; they name `/triage`
   now. Of the 45 sessions here that made 20

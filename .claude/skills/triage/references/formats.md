@@ -68,6 +68,11 @@ correction to the note is stated as one.>
   note's session, inferred, or never tested. A note that marks its own
   inferences has done the useful part, and a brief that flattens them
   loses it.
+- **A brief made from audit follow-ups** says so in its **Written**
+  line: from how many, each linked at its `completed/` path. It needs
+  no Scrubbing section, since the ledger is public already, and copies
+  none of a follow-up's evidence
+  ([audit-follow-ups.md](audit-follow-ups.md) § 4).
 
 ## The decline ledger
 
