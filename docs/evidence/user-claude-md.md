@@ -20,6 +20,23 @@ Everything below the headers was moved verbatim out of
 carries the dates it was measured on and states the rules as they stood
 that day.
 
+## Preamble
+
+**2026-10-08.** The second sentence read: "If unsure whether a relevant
+skill is loaded, err toward answering conservatively and asking for
+clarification rather than fabricating specifics." It was the file's
+oldest line, already there when `1a25ac8` moved the file into `claude/`
+on 2026-08-28, before the platform skills left user scope. The
+2026-10-08 prompt audit read it as a warning written for older models,
+at low confidence (`docs/audits/2026-10-08/prompt-audit/`, decision 5),
+and the user chose to rewrite it as what to do when no skill is loaded.
+Outside a repo that links them, none is, so the old sentence gave a
+session no action but to hedge or ask. `microsoft-learn-mcp` is the one
+user-scope MCP server (§ "User-scope MCP servers are bound to
+nothing"), so every session can check a specific against Learn, and the
+line now says to. The line stays unwrapped: the file sat at the
+200-line cap, and wrapping it would have cost five lines.
+
 ## Local environment
 
 Windows 11. Two shells, each spawned fresh per tool call: PowerShell 7.6

@@ -1,6 +1,6 @@
 # Global Instructions
 
-When the user asks about Power BI / Fabric / TMDL topics, prefer skill content over training-data answers when both exist. If unsure whether a relevant skill is loaded, err toward answering conservatively and asking for clarification rather than fabricating specifics.
+When the user asks about Power BI / Fabric / TMDL topics, prefer skill content over training-data answers when both exist. **With no skill for the topic loaded or listed, check a name, limit or feature status against Microsoft Learn** (`microsoft-learn-mcp`) before stating it; where Learn has nothing, say so rather than recall one, since a recalled specific reads as sure as a checked one and may be a release behind (2026-10-08).
 
 ## Local environment
 
