@@ -93,8 +93,8 @@ Do **not** ask the user which skill was used. Reconstruct it:
    Fabric REST) point at the skill that owns them even if it wasn't
    explicitly invoked. Map by the skill's `description`.
 5. If nothing was loaded but a skill *should* have triggered, that is
-   itself a learning: the fix is the skill's `description` (trigger
-   phrases), not its body.
+   itself a learning: the fix is the skill's trigger text — `description`,
+   and `when_to_use` where it has one — not its body.
 
 **Record a skill by its `name:`, not by the path you saw it at.** A
 deployed skill sits at `~/.claude/skills/<name>/`, flat — the payload's
@@ -119,7 +119,7 @@ note mode you name the destination; you do not open it for writing.
 | Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
 | How agent instruction files load, or which home a kind of guidance takes in any repo — a nested `CLAUDE.md`, an `AGENTS.md`, the `@AGENTS.md` import form | `claude/rules/agent-instructions-scoping.md`. A repo's own placement decision stays in that repo (Step 0) |
 | Environment or machine-wide constraint for every session | `claude/CLAUDE.md` takes the rule, its tell (the error text, or the silence) and one date; the evidence — how it was measured, what was believed before — goes to `docs/evidence/user-claude-md.md` under the same heading. A copy, not live until the deploy script runs; see Step 8 |
-| Skill didn't trigger when it should have | the skill's frontmatter `description` (≤ 1024 chars) |
+| Skill didn't trigger when it should have | the skill's frontmatter: `description` (≤ 1024 chars), and `when_to_use` (≤ 512) where its trigger phrases live |
 | Fact about the **user** or their workflow preference | auto-memory (`~/.claude/projects/.../memory/`) — never domain knowledge |
 
 **Both `CLAUDE.md` files are capped in pre-commit** by
@@ -235,14 +235,14 @@ Keep the addition as short as a reader needs: typically 1–6 lines in
 voice and formatting. If a `description` is edited, state the new
 length.
 
-**Check `description` headroom before proposing a trigger phrase.** Many
-skills sit within a few characters of the 1,024-char cap, so a new
-phrase usually has to displace an existing one rather than extend the
-line. Measure the current length first — the frontmatter linter only
-reports the overflow after the edit is written. If the budget is tight,
-name what to cut; if nothing can go, say so and leave the description
-alone rather than silently dropping a trigger that already earns its
-place.
+**Check headroom before proposing a trigger phrase.** `description` is
+capped at 1,024 characters and `when_to_use` at 512, and many skills sit
+within a few characters of one or the other, so a new phrase usually
+has to displace an existing one rather than extend the line. Measure
+the current length first — the frontmatter linter only reports the
+overflow after the edit is written. If the budget is tight, name what
+to cut; if nothing can go, say so and leave the field alone rather than
+silently dropping a trigger that already earns its place.
 
 Wait for approval. Apply only what is approved, using `Edit` so the
 rest of the file is untouched. Then run the repo's frontmatter lint:
@@ -295,10 +295,9 @@ Shape:
 **Origin:** <what kind of repo or estate, generalized>. <Month Year>.
 **For:** `/triage` in a session inside the payload repo.
 
-**Sources, cited by kind.** <Whether anything below carries a workspace,
-tenant, account or host name — so the landing session knows what needs
-scrubbing, or that nothing does. Cite client evidence by kind, never by
-name.>
+**Scrubbing:** <Which content below is raw — a workspace, tenant,
+account or host name — and which is genericized, or that nothing is
+raw, so the landing session knows what to scrub.>
 
 **Coverage:** <What Step 4 found, and which tree it was searched
 against, so it is not redone. Or: could not be checked, and why.>
