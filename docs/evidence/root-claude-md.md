@@ -1519,6 +1519,32 @@ exited 0, and staging the config let the commit through. In a shared
 tree the error's own fix is the hazard: it stages a peer's half-made
 edit into another session's commit.
 
+**2026-10-08.** The step is pre-commit's stash, which 2026-09-12 above
+left "likely". `staged_files_only.py` (4.6.2) diffs the index against
+the tree, writes the diff to `~/.cache/pre-commit/patch<time>-<pid>`,
+runs `git -c submodule.recurse=0 checkout -- .`, yields to the hooks and
+applies the patch back in a `finally`; an apply that fails runs the
+checkout again, discarding whatever the tree gained while the hooks ran,
+and re-applies, under `Stashed changes conflicted with hook
+auto-fixes... Rolling back fixes...`. Separately, `commands/run.py`
+takes `git diff` before and after each hook and fails the hook on any
+difference, `files were modified by this hook`. A commit of
+`claude/settings.json` here, with the `triage` session mid-edit, found
+one unstaged file of theirs at the survey and eleven afterwards:
+pre-commit stashed the one, `identity-guard`, the last hook, was failed
+for files it never touched, since their writes landed while it ran — run
+alone on the same index it exited 0 — and the restore applied cleanly,
+so nothing of theirs was lost. The commit then went through a
+throwaway worktree in the scratchpad and a fast-forward from the main
+checkout, as `17acda19` had on 2026-09-30; a peer's commit to `main` in
+between left the first branch behind it, and a second, cut from the new
+`main`, landed `0778339`. In a scratch repo, `git merge --ff-only`
+refused a fast-forward over an unstaged file identical to the target's,
+`Your local changes to the following files would be overwritten by
+merge`, exit 1, and took it once staged (git 2.55.0.windows.3).
+`/commit` § "When another session shares this tree" carries the route;
+the work stayed in the main checkout, as 2026-09-30 above settled.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +
