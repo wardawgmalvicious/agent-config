@@ -94,8 +94,9 @@ question.
 
 ## Messages
 
-- Subject: `<type>: <imperative summary>` — types in this order of
-  likelihood: `docs`, `feat`, `refactor`, `fix`, `chore`, `test`.
+- Subject: `<type>(<scope>): <imperative summary>`, with the scope where
+  the log uses one — types in this order of likelihood: `docs`, `feat`,
+  `refactor`, `fix`, `chore`, `test`.
   Lowercase after the colon, no trailing period.
 - Body: explain **motivation and non-obvious decisions** — why the
   change exists, what prompted it, provenance ("derived from X, now
@@ -157,15 +158,16 @@ to suspect and commits with the plain commands. The `EnterWorktree`
 guard refuses the chained form below there as too complex to verify
 (2026-10-06, 2.1.289), and a worktree needs none of it.
 
-- **Ask them.** `ListAgents` names every live session
-  `<cwd-basename>-<hash>` — its working directory, not its repo — and
+- **Ask them.** `ListAgents` names every live session by its
+  `/rename` or `--name` name, else `<cwd-basename>-<hash>` — its
+  working directory, not its repo — and
   `SendMessage` reaches one. **Read every row rather than filtering by
   repo name**: a peer sitting in a subdirectory of this tree is both the
   likeliest contender and invisible to a prefix match (measured
   2026-09-17). A peer is the only source for what is in its working tree
-  and not in `HEAD` — "are you editing `<path>` right now?" is the
-  question this section could not answer before. Ask before cutting a
-  patch, not after a collision. What they say about *committed* state is
+  and not in `HEAD`, so ask it — "are you editing `<path>` right now?" —
+  before cutting a patch, not after a collision. What they say about
+  *committed* state is
   as old as their session, so check that yourself. **Skip a session
   that was never prompted**, for which
   `bash ~/.claude/skills/land/scripts/never-prompted.sh <name>` exits 0:
