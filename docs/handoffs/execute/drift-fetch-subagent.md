@@ -56,8 +56,9 @@ rules out.
 ## Corrections — measured 2026-09-08
 
 1. **The A/B baseline already exists, and the two runs disagree.**
-   [`docs/audits/2026-09-07/powerbi/`](../../audits/2026-09-07/powerbi/)
-   holds two inline runs on floor 2026-08-01 — the exact window the Notes
+   `docs/audits/2026-09-07/powerbi/`, retired 2026-10-08 and read back
+   with `git show 7dd627e:docs/audits/2026-09-07/powerbi/<file>`, holds
+   two inline runs on floor 2026-08-01 — the exact window the Notes
    propose. Use **`00b-audit-report-rerun.md`**, not `00`: they resolve
    different prior refs (`443eb78f` vs `f1f53694`) because the by-path
    base-resolution fix landed between them, and `00` therefore encodes

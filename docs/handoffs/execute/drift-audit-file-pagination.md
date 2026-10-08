@@ -10,7 +10,8 @@ written: 2026-10-07
 
 - **Written**: 2026-10-07, by a `/triage` sweep, from one audit
   follow-up:
-  [2026-09-10 skills-for-fabric 06](../../audits/2026-09-10/skills-for-fabric/completed/06-repair-skills-for-fabric-registry-entry.md),
+  2026-09-10 skills-for-fabric 06, in a run retired 2026-10-08
+  (`git show 7dd627e:docs/audits/2026-09-10/skills-for-fabric/completed/06-repair-skills-for-fabric-registry-entry.md`),
   whose D-1 knock-on was left as a separate decision. Re-measured at
   `4b6e108`: still undecided, with a second source now behind it.
 - **Kind**: a decision of the user's, then a sentence or two in
@@ -37,7 +38,7 @@ to a two-ref file diff. It never names the paginated read.
 - The 2026-09-07 `powerbi` rerun met the trap it defeats: `369371ac`, a
   squashed monthly release merge of 624 additions and 298 deletions,
   under the five-commit line, sent it to step 5's two-ref diff instead
-  (`docs/audits/2026-09-07/powerbi/00b-audit-report-rerun.md`).
+  (`git show 7dd627e:docs/audits/2026-09-07/powerbi/00b-audit-report-rerun.md`).
   `references/sources/powerbi.md` records the same trap.
 
 ## If yes

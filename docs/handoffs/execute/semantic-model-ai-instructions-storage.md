@@ -10,7 +10,8 @@ written: 2026-10-07
 
 - **Written**: 2026-10-07, by a `/triage` sweep, from one audit
   follow-up:
-  [2026-09-10 skills-for-fabric 05](../../audits/2026-09-10/skills-for-fabric/completed/05-add-lsdl-refresh-to-ai-instructions.md),
+  2026-09-10 skills-for-fabric 05, in a run retired 2026-10-08
+  (`git show 7dd627e:docs/audits/2026-09-10/skills-for-fabric/completed/05-add-lsdl-refresh-to-ai-instructions.md`),
   whose collision it carries. Re-measured at `4b6e108`: still open, and
   no source found since says where.
 - **Kind**: an investigation, then at most one corrected line, which

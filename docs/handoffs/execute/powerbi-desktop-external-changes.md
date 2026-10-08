@@ -10,7 +10,8 @@ written: 2026-10-07
 
 - **Written**: 2026-10-07, by a `/triage` sweep, from one audit
   follow-up:
-  [2026-09-07 powerbi 06](../../audits/2026-09-07/powerbi/completed/06-verify-pbip-autodetect-vs-reload-bridge.md),
+  2026-09-07 powerbi 06, in a run retired 2026-10-08
+  (`git show 7dd627e:docs/audits/2026-09-07/powerbi/completed/06-verify-pbip-autodetect-vs-reload-bridge.md`),
   an investigation that could not start without Desktop. Re-measured at
   `4b6e108`: Learn now documents most of what it set out to find.
 - **Kind**: an edit to two `powerbi` skills from Learn, which a session

@@ -9,13 +9,14 @@ written: 2026-10-07
 # Handoff: encode the August 2026 formatting settings in the PBIR skills
 
 - **Written**: 2026-10-07, by a `/triage` sweep, from four audit
-  follow-ups of the 2026-09-07 `powerbi` run:
-  [04](../../audits/2026-09-07/powerbi/completed/04-catalog-new-visual-formatting-properties.md),
-  [10](../../audits/2026-09-07/powerbi/completed/10-supply-drilled-evidence-for-matrix-properties.md),
-  [13](../../audits/2026-09-07/powerbi/completed/13-propagate-new-formatting-to-authoring-skills.md),
-  and the deferred JSON half of
-  [09](../../audits/2026-09-07/powerbi/completed/09-add-url-sourced-custom-icons.md),
-  which a plain `applied` stamp kept out of every view. Re-measured at
+  follow-ups of the 2026-09-07 `powerbi` run, retired 2026-10-08: 04,
+  10 and 13, and the deferred JSON half of 09, which a plain `applied`
+  stamp kept out of every view. Each reads back with
+  `git show 7dd627e:docs/audits/2026-09-07/powerbi/completed/<file>`,
+  the files being `04-catalog-new-visual-formatting-properties.md`,
+  `10-supply-drilled-evidence-for-matrix-properties.md`,
+  `13-propagate-new-formatting-to-authoring-skills.md` and
+  `09-add-url-sourced-custom-icons.md`. Re-measured at
   `4b6e108`: `pbir`'s schema now names part of what all four waited on
   a Desktop round-trip for.
 - **Kind**: an edit to four skills, from the schema where it names a

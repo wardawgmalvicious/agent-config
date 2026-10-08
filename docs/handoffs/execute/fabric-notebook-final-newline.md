@@ -10,7 +10,8 @@ written: 2026-10-07
 
 - **Written**: 2026-10-07, by a `/triage` sweep, from one audit
   follow-up:
-  [2026-09-10 skills-for-fabric 04](../../audits/2026-09-10/skills-for-fabric/completed/04-measure-notebook-serialization-before-editing.md),
+  2026-09-10 skills-for-fabric 04, in a run retired 2026-10-08
+  (`git show 7dd627e:docs/audits/2026-09-10/skills-for-fabric/completed/04-measure-notebook-serialization-before-editing.md`),
   whose 2026-09-11 decision queued the measurement for a repo the user
   chooses. Re-measured at `4b6e108`: nothing has measured it since.
 - **Kind**: a measurement in another repo, then a decision of the

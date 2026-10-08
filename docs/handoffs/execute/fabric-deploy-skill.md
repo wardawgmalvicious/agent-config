@@ -110,7 +110,7 @@ The router stays short; the references hold the depth.
   characters today: 990 and 1,023 of description, 455 of
   `when_to_use`. Upstream skills-for-fabric 0.3.14 cut its
   descriptions by about 40% "with no loss of routing accuracy"
-  (`docs/audits/2026-09-10/skills-for-fabric/completed/08-decide-catalog-budget-and-reference-lints.md`).
+  (`git show 7dd627e:docs/audits/2026-09-10/skills-for-fabric/completed/08-decide-catalog-budget-and-reference-lints.md`).
 - `when_to_use`: the symptoms in today's `fabric-deployment-pipelines`
   one, within 512.
 - No `paths:`. A deploy request arrives as words before any file is
