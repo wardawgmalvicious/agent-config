@@ -179,3 +179,18 @@ one costs nothing to honour. It needs no cost-and-wait round; it is
 simply one of the exceptions step 9 already names. Say in the report
 that the branch was kept and why, or the next run reads the leftover ref
 as a bug.
+
+## A Fabric workspace bound to the branch
+
+**It is no reason to keep the branch.** A workspace synced to it, as
+Fabric's "branch out" makes, is re-pointed after the deletion: **Switch
+branch** in its Source control pane connects it to `main` without a
+disconnect, overriding its items with `main`'s and deleting any `main`
+lacks, which just after the merge is none. A switch is refused while
+the workspace holds uncommitted work; **Checkout new branch** then
+connects a new branch and keeps the workspace as it is. Both take
+workspace Admin unless the workspace lets Contributors change branch.
+Name the follow-up in the report. The user found the deletion harmless
+from experience (2026-10-07), and Learn's *Development process using
+branch workspace* gives the switch (read 2026-10-08); what a workspace
+shows while its branch is gone was never measured.
