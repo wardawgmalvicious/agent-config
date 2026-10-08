@@ -265,3 +265,6 @@ that height can only come from a real render (the brief's Knock-on).
   waiting for one Desktop session, which is what the Sequencing note intends.
 - **Needs**: desktop — D-1 and the JSON encodings, in brief `04`'s Desktop
   session. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/pbir-august-formatting-properties.md`: D-1, and
+  D-2's JSON encodings and sizing row.

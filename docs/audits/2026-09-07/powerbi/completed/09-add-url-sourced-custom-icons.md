@@ -187,3 +187,7 @@ missed. Nothing here contradicts brief `03`.
 - **Deviations**: the upstream subsection was drilled directly rather than taken
   from the brief's quotes. It supplied the format list (BMP, JPG, JPEG, GIF,
   PNG, SVG) and the exact UI path, neither of which the brief carried.
+- **Closed**: 2026-10-07 — its deferred `visual.json` encoding for the
+  Field-value icon source carried by /triage to
+  `docs/handoffs/execute/pbir-august-formatting-properties.md`. The
+  plain `applied` stamp had kept it out of every view.

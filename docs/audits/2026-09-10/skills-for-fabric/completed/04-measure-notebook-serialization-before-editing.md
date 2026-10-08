@@ -188,3 +188,6 @@ edit.
   six checks run in; the client Fabric repo on this machine is one. Step
   3's `grep -c $'\r'` miscounts: `~/.claude/CLAUDE.md` § "Counting
   carriage returns" has the substitute. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/fabric-notebook-final-newline.md`: the six
+  measurements and the decision after them.

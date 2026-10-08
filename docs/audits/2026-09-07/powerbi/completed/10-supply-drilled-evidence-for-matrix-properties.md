@@ -203,3 +203,6 @@ from a precaution into a measured fact for that item.
 - **Deviations**: none.
 - **Needs**: desktop — brief `04`'s Desktop session, inside which this
   brief executes. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/pbir-august-formatting-properties.md`, inside
+  brief `04`'s work as this brief asked.

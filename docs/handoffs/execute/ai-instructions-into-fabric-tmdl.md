@@ -40,10 +40,12 @@ all three firing on a culture file.
   blob "is not stored in TMDL", while the glob assumes the culture
   file's `linguisticMetadata`, which is where Learn's "save to the
   LSDL" would put it (`fabric-tmdl/references/REFERENCE.md:292-298`).
-  `docs/audits/2026-09-10/skills-for-fabric/05-add-lsdl-refresh-to-ai-instructions.md`
-  has held that open since 2026-09-11, needing a model export with AI
-  instructions set, and its 2026-09-12 behavioural run had the skill
-  give both answers in one session.
+  [semantic-model-ai-instructions-storage.md](semantic-model-ai-instructions-storage.md)
+  holds that open, needing a model export with AI instructions set. It
+  waited in 2026-09-10 `skills-for-fabric` audit brief 05 from
+  2026-09-11 until a `/triage` sweep carried it there on 2026-10-07,
+  and that brief's 2026-09-12 behavioural run had the skill give both
+  answers in one session.
 - **It was never reached in client work**: no activation and no
   invocation in the client Fabric repos' sessions, 2026-09-24 to
   2026-10-06.
@@ -60,7 +62,8 @@ all three firing on a culture file.
 - Strip the moved file's frontmatter. Drop its "See also", which
   points at "your internal tooling repo" and so at nothing, and
   re-point its link to `references/REFERENCE.md`. Change nothing else,
-  line 263 included: settling it is brief 05's work.
+  line 263 included: settling it is
+  `semantic-model-ai-instructions-storage.md`'s work.
 - `fabric-tmdl`'s `description`, 490 characters, gains trigger words
   only: "AI instructions" and "Prep data for AI". Its body gains one
   pointer: to write the model's AI instructions, or edit a culture
@@ -89,10 +92,9 @@ Change each of these in the commit that folds:
   `.claude/skills/drift-audit/references/sources.md:674` and `:689` on
   2026-10-06. `drift-registry-per-source.md` splits that file, so find
   the rows wherever they then live.
-- Brief 05 stays open: append a `**Needs**:` line naming the moved
-  file, with the same need, since the last line counts
-  (`docs/handoffs/execute/README.md` § "Audit briefs are a second
-  queue"). The rest of `docs/audits/` stays as written.
+- `semantic-model-ai-instructions-storage.md` names the old skill's
+  line 263: re-point it to the moved file. `docs/audits/` stays as
+  written.
 - `.claude/skills/test-skill/SKILL.md:98` and `:208` cite this skill as
   dated history: leave them.
 
@@ -123,15 +125,16 @@ the relink prunes the dangling junction.
 - Brief 20 edits `fabric-tmdl`'s `paths:` (D-1) and this skill's Q&A
   retirement dates (D-2 row 10). Read its execution log, then re-read
   both skills: line numbers above will have moved.
-- If brief 05 has been settled by then, the moved file says so: carry
-  its result, not the question.
+- If `semantic-model-ai-instructions-storage.md` has landed by then,
+  the moved file says so: carry its result, not the question.
 - `fabric-deploy-skill.md` edits the same shared files
   (`skillOverrides`, `skills/README.md`, `.tested.json`, the registry).
   If both run at once, the second to land rebases over the first.
 
 ## Not checked
 
-Where the AI instructions really serialize: brief 05 owns that.
+Where the AI instructions really serialize:
+`semantic-model-ai-instructions-storage.md` owns that.
 
 ## Scrubbing
 

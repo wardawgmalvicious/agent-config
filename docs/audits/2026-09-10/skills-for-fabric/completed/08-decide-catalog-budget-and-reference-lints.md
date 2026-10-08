@@ -154,3 +154,6 @@ measure is still per deployable group combination or the worst case.
 - **Needs**: none — the listing-budget check. The 2026-09-11 decision
   above left its open questions to the task itself, the budget coming
   from Claude Code's docs. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/skill-listing-budget.md`: the listing-budget
+  half, its budget now documented by Claude Code.

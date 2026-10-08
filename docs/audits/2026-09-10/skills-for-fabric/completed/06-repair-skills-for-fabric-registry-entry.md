@@ -296,3 +296,6 @@ bookkeeping on the run's own result.
 - **Needs**: user — whether `SKILL.md` § 4a generalizes `get_commit` file
   pagination, D-1's knock-on. No queue row carried it before this line.
   Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/drift-audit-file-pagination.md`: D-1's
+  knock-on, put to the user.

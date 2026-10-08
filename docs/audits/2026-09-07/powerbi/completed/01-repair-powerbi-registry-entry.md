@@ -288,3 +288,7 @@ sketch that this brief's step 3 is meant to harden.
   reproduce the three commits named above, cold. The source-list gap is
   closed: `drift-audit`'s § 1 names `fabric-iq-ontology`. Recorded
   2026-09-27.
+- **Closed**: 2026-10-07 — covered, by /triage: the 2026-09-07 rerun,
+  `00b-audit-report-rerun.md`, took this entry's fork route to the
+  window's 3 commits and head `0e80b00b`, and the route's next cold
+  re-run is owed by `2026-10-06/powerbi/01`, which re-anchored step 2.

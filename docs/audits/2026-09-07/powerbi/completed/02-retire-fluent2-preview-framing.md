@@ -272,3 +272,7 @@ findings here do not depend on the fork being trustworthy.
   targets was touched.
 - **Needs**: desktop — the 1280×720 initial-page carve-out, re-verified
   against a new report. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — landed by /triage: `pbir-themes` § Base Themes
+  and `pbir-pages` § Common Page Sizes mark the 1280x720 initial page
+  unverified since GA, as Learn still states no such exception; a new
+  report's `page.json` would settle it.

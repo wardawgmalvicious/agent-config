@@ -161,3 +161,7 @@ the reason it stops short of a recommendation.
   caveat was written.
 - **Needs**: desktop, the `powerbi-desktop` bridge CLI — Desktop running
   with a PBIP open and bridged. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/powerbi-desktop-external-changes.md`: what Learn
+  now documents of the change prompt and the bridge, and the Desktop
+  check left.

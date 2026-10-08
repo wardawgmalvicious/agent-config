@@ -158,3 +158,6 @@ audit.
   directs; the export evidence named above is still what settles it.
 - **Needs**: a model export with AI instructions set — the evidence that
   settles the collision. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/semantic-model-ai-instructions-storage.md`:
+  where the instructions serialize, and so what line 263 should say.

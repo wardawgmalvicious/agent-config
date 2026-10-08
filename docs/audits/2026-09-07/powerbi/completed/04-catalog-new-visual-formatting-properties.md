@@ -197,3 +197,6 @@ the Constraint section exists to enforce.
 - **Needs**: desktop — one PBIP round-trip, shared with brief `10`, `13`'s
   D-1 and `09`'s JSON half; or a `pbir` release whose bundled schema
   postdates 2026-08-25. Recorded 2026-09-27.
+- **Closed**: 2026-10-07 — carried by /triage to
+  `docs/handoffs/execute/pbir-august-formatting-properties.md`: the six
+  settings, beside what `pbir` 0.9.29's schema now names of them.
