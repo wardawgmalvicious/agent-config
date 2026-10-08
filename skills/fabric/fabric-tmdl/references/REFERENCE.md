@@ -437,6 +437,18 @@ After conversion:
 
 `TmdlSerializer` requires a recent `Microsoft.AnalysisServices.retail.amd64` (or newer `Microsoft.AnalysisServices`) NuGet package. If the type is missing, upgrade.
 
+Without NuGet, the `SqlServer` PowerShell module carries it: 22.4.5.1
+ships TOM 19.96 as `coreclr\Microsoft.AnalysisServices.Tabular.dll`. In
+pwsh 7, `Add-Type -Path` that file, then
+`[Microsoft.AnalysisServices.Tabular.TmdlSerializer]::DeserializeDatabaseFromFolder('<…>\definition')`
+loads a hand-authored folder offline, before a Git sync can stop on it:
+a bad line fails `TMDL Format Error`, an unresolved reference
+`TmdlDeserializationWithReferenceErrorsException`, and no DAX is
+evaluated. The DLL's file version reads `17.0.21.18`, which looks too
+old; its assembly version,
+`[Reflection.AssemblyName]::GetAssemblyName('<dll>').Version`, is
+`19.96.1.0` (measured 2026-10-08).
+
 ---
 
 

@@ -28,6 +28,10 @@ disable-model-invocation: false
 - Place **measures before columns** in table definitions
 - `formatString` is required on every measure
 - Never set `dataType` on measures — it is inferred from DAX
+- Check a hand-authored `definition/` offline before a sync with TOM's
+  `TmdlSerializer` from the `SqlServer` module: syntax and references,
+  not DAX ([references/REFERENCE.md](references/REFERENCE.md) — *BIM ↔
+  TMDL Conversion*)
 
 ### Naming Conventions
 
