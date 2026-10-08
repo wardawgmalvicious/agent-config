@@ -75,7 +75,7 @@ git rev-parse --show-toplevel                           # which repo this sessio
 ## 2. Snapshot the settings while they exist
 
 ```powershell
-& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Check -Repo <owner>/<name>   # exit 0: a current snapshot is committed, skip -Export
+& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Check -Repo <owner>/<name>   # exit 0: the snapshot on disk matches the live repo, skip -Export
 & C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Export -Repo <owner>/<name>
 ```
 
