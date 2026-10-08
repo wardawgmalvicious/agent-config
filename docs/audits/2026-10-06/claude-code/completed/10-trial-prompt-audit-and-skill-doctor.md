@@ -99,3 +99,28 @@ Found by the 2026-10-06 `claude-code` run in its changelog diff, with
   and what each cost against `lint-claude-md.py`, the pre-commit hooks,
   the drift audits and `skill-telemetry.py`; then put the adoption
   question to the user, any finding going through its file's own route.
+- **Closed**: 2026-10-08 — the user ran both commands that day, each in
+  its own session here, applying nothing, and both reports were checked
+  against their session transcripts. `/skill-doctor` made no model call
+  and took under 3 s. It priced the 14 skills synced from claude.ai at
+  about 2.6k listing tokens a turn, none ever used, and this repo's 14
+  at about 5.1k. Its uses column is `skillUsage`, identical to
+  `skill-telemetry.py coverage`'s. It adds per-skill listing cost,
+  seven-day token attribution and the synced skills, which
+  `skill-telemetry.py` cannot see; it leaves out Claude Code's own 16
+  skills, which plain `/doctor` counts, and like every log it misses a
+  conditional activation. `skill-status.py` does not overlap it.
+  `/doctor prompt-audit` took 48 minutes and 196 model calls across its
+  main thread and six background subagents (five Opus 5.5, one Sonnet
+  5.5): 40.4M tokens, of them 38.3M cache reads, 1.77M cache writes and
+  344k output. It found 46 problems with a 56-hunk patch, 8 decisions
+  and 22 low notes. Eight findings checked against the files all held
+  as quoted, though finding 22's conflict may not. Bar finding 16, none
+  is a kind `lint-claude-md.py`, the pre-commit hooks or a drift audit
+  checks for. The user decided neither joins § "Validating a change",
+  so root `CLAUDE.md` is unchanged: `/skill-doctor` stays the
+  listing-budget measure in
+  `docs/handoffs/execute/platform-skill-portfolio.md`, and
+  `/doctor prompt-audit` runs now and then as an audit recorded in this
+  ledger (`docs/audits/README.md` § "Prompt-audit runs"). Its first
+  run's findings are briefed in `docs/audits/2026-10-08/prompt-audit/`.

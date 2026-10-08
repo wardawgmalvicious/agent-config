@@ -29,6 +29,21 @@ in git is what a second machine picks up, and it is the only state in
 which the briefs are provably readable cold. A pass's worktree branches
 from that commit too (`/drift-update` step 2).
 
+## Prompt-audit runs
+
+A `/doctor prompt-audit` run is recorded here too, as
+`docs/audits/<date>/prompt-audit/`: its report verbatim as
+`00-audit-report.md`, its proposed patch as `prompt-audit.patch`, and
+briefs in `/drift-handoff`'s format, written by hand, since
+`/drift-handoff` reads only a `/drift-audit` report. A prompt audit
+reads the whole payload, not a diff, so its window has no floor, and
+`/drift-update` executes its briefs like any other run's. Run one after
+a heavy stretch of payload edits, not per change: it finds what no hook
+or drift audit checks for, at a cost the first run's record gives.
+Decided by the user on 2026-10-08, closing
+[brief 10](2026-10-06/claude-code/completed/10-trial-prompt-audit-and-skill-doctor.md)
+of the 2026-10-06 `claude-code` run, whose log has that cost.
+
 ## Why this is tracked
 
 It was gitignored until 2026-09-07, on the stated rationale that audit
