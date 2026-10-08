@@ -23,8 +23,8 @@ It also runs on a skill that shipped long ago and has since been
 edited. That case has **no brief** and needs none; step 1 says where
 its inputs come from instead.
 
-Repo-relative paths are relative to the agent-config repo
-(`C:\Repos\Personal\agent-config`), not the session's cwd.
+Repo-relative paths are relative to the root of the checkout the session
+runs in, a worktree's when it runs in one, not to the shell's cwd.
 
 ## What this validates, and what it does not
 
@@ -195,7 +195,7 @@ session, has it Read every fixture, asserts the transcript, and tears
 down in a `finally`.
 
 **One session covers the whole set** — activation is a per-session
-cumulative delta, so 56 fixtures cost one session rather than 56. That
+cumulative delta, so a set's fixtures cost one session, not one each. That
 is what makes this affordable enough to actually run.
 
 **Skip this step when the activation stamp is already current.** The
