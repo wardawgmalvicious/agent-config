@@ -30,6 +30,10 @@ so a block can look half right. The page's HTML keeps the bytes:
 `curl -s` it and read the `lang-tmdl` `<pre><code>` block, unescaping
 `&lt;`, `&gt;`, `&amp;` and `&quot;` (two Learn pages, 2026-10-07).
 
+TMDL indents with one tab per level by default, and indentation that
+breaks its rules is a parsing error (TMDL overview, read 2026-10-08).
+This file's examples are space-indented for display: write tabs.
+
 ## Naming and aliasing
 
 Pattern: **PascalCase identifier, aliased display name with spaces.**
@@ -153,8 +157,8 @@ measure TotalSales = SUM('Transaction Line'[Order Total])
 ## Calculation groups
 
 - One calculation group per axis of analysis (`Time Intelligence`,
-  `Currency`, `Scenario`). Power BI supports multiple per model
-  (recent feature) — use sparingly; precedence rules get complex.
+  `Currency`, `Scenario`). A model can hold several; keep them few,
+  because precedence between them gets complex.
 - Calculation item ordinals: explicit, evenly spaced
   (`ordinal: 10`, `20`, `30`) so insertions are easy.
 

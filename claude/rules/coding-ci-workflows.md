@@ -64,9 +64,9 @@ behind a flag say so.
   which gets no secrets from a fork, and never build or run a pull
   request's code where a secret is in reach.
 - **In a public repository with no Actions event policy,
-  `pull_request_target` is blocked by a default policy**, in evaluate
-  mode now and enforced from 2026-11-02. The docs do not say what a
-  blocked run shows.
+  `pull_request_target` is blocked by a default policy**, enforced from
+  2026-11-02 and in evaluate mode before then. The docs do not say what
+  a blocked run shows.
 - **An event made with `GITHUB_TOKEN` starts no workflow run**, except
   `workflow_dispatch` and `repository_dispatch`. A workflow that pushes
   a commit or opens a pull request with it triggers nothing downstream,

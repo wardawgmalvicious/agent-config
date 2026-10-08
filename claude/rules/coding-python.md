@@ -203,18 +203,22 @@ disables Catalyst optimization.
 
 - One concept per cell. Don't pack a whole pipeline into one cell.
 - Markdown cell at the top with: purpose, inputs, outputs, owner.
-- Notebook parameters declared at the top via `dbutils.widgets` (Databricks)
-  or `notebookutils.runtime.context` parameters (Fabric). Convert to
-  notebook-convention names inside:
+- Notebook parameters are declared at the top: `dbutils.widgets` on
+  Databricks; on Fabric, the cell toggled as the parameter cell. A
+  pipeline overrides its variables by exact name, in a cell it inserts
+  after that one, so name them as the pipeline passes them and convert
+  to notebook-convention names in the next cell:
 
 ```python
-# Notebook-parameter cell (Fabric)
-source_schema = "raw"           # noqa
-target_schema = "silver"        # noqa
-load_date = "2026-04-25"        # noqa
+# Parameter cell (Fabric): defaults the pipeline overrides by name
+SourceSchema = "raw"            # noqa
+TargetSchema = "silver"         # noqa
+LoadDate = "2026-04-25"         # noqa
 
-# Convert if pipeline passed PascalCase
-source_schema = source_schema or SourceSchema  # if pipeline passes PascalCase
+# Next cell: convert to notebook-convention names
+source_schema = SourceSchema
+target_schema = TargetSchema
+load_date = LoadDate
 ```
 
 ## Anti-patterns

@@ -11,15 +11,15 @@
   },
   "translated": {
     "coding-bicep": "201e9caf755992900dd4e72ef3e928e673ad973359b047815bc3c641eaef5991",
-    "coding-ci-workflows": "7d12ffc1bd643446c5694451746474f3e3789ded7bc8fe4e6f25c26cff33d689",
+    "coding-ci-workflows": "c58edad3c089ee5bc429f1af51c2b4e3340d438db3cb0649f47d5ad124bf04af",
     "coding-csharp": "e5be9ed50ceabbaae3363d6d78f530f9b947217c7607192e9a79cd07eded4650",
     "coding-dax": "166d38d4e018e7cbf06f234336e38034ae44a895597064aadf0243c7902d871a",
     "coding-expressions": "6ce255530034a3fcb98caefdada47431be427db6643639d9cef495de13cbc1fb",
     "coding-kql": "19fb84bc316bc792a93ca5108fc0c4ae9e07802480a159f983f58e060115c533",
     "coding-m": "311667f2c7692e373a2d8abb64459cbd46d41d3db25a6df8e09497eddc813a5a",
-    "coding-python": "55deb0d60986c79092348e23063de7e860629535f530fd16841a78486f0b0d35",
-    "coding-sparksql": "19e0925a29d7a0581cb7f86b8dc63db83833f7adf63274104ff1355c543a0171",
-    "coding-tmdl": "1fb43182503f61a598b9f5eb6c0858d59f79c2ac717f3fd87757a2632aefe6d9",
+    "coding-python": "0dba43a04224a7617fb051c3fca118a21924f6e3f4fbcc269de9d480a79f8039",
+    "coding-sparksql": "760e335d28d03e3d88292b23ac6c254a1db3913e4d2b16cfcae9e462d97c55de",
+    "coding-tmdl": "334b1a1f70b154da57f247e2320da45e764fff7f36345d6ede0bea1085e44168",
     "coding-tsql": "b1e7b90b90fba9e54035fdbfe368f46cc2cf17a991c1e11dfd12932372d14440",
     "coding-xaml": "e4acf727da88c21037428cfd644213d574310a7e9131b89817c08d285e962d2c"
   }

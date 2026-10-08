@@ -18,8 +18,8 @@ file supersedes this one.
 ## Precedence over `coding-tsql.md` — read the kernel first
 
 `coding-tsql.md` globs a bare `**/*.sql`, so it co-loads on every file
-this rule matches. The two contradict — brackets vs backticks, `ISNULL`
-vs `COALESCE`, three-part `dbo.` naming vs catalog/schema paths — so one
+this rule matches. The two contradict — brackets vs backticks, and
+three-part `dbo.` naming vs catalog/schema paths — so one
 of them has to win, and on `notebook-content.sql` **the file name does
 not tell you which.** Fabric emits that exact name for two different
 dialects; the discriminator is the `META` header, not the extension:
@@ -63,8 +63,8 @@ glob is for.
 SELECT cust.CustomerId
 FROM lakehouse.silver.Customer AS cust;
 
--- Required quoting (snake_case source column)
-SELECT line.`order_date`
+-- Required quoting (source column with a space)
+SELECT line.`Order Date`
 FROM lakehouse.bronze.order_line AS line;
 
 -- Bad (T-SQL brackets, doesn't parse)
