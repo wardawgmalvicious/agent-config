@@ -14,7 +14,8 @@ written: 2026-10-07
 - **Kind**: an edit to three fixtures in D-1, and in D-2 a change to
   the retest procedure that the user chose on 2026-10-07: every retest
   runs on an empty memory, since the reviewer's own holds the answers
-  too. A retest is blind only once both land.
+  too. A retest is blind only once both land. D-3, folded in on
+  2026-10-08, edits the agent itself, so the same retest checks it.
 
 ## D-1 — each fixture names its own finding
 
@@ -102,12 +103,38 @@ retest exercises the read-and-apply half of memory hygiene.
   to record them, dated, in that last section, which the reviewer is
   not meant to read.
 
+## D-3 — a prompt audit's six edits to the agent
+
+A prompt audit run in a client Fabric repo session on 2026-10-08
+audited this agent against Sonnet 5.5 and proposed six edits, none
+applied. They change the prompt under test, so they land before the
+retest and the retest checks them with D-1 and D-2.
+
+- **S6 closes a real gap in the key shapes.** `sk-[A-Za-z0-9]{20,}`
+  cannot match an `sk-proj-` or `sk-ant-` key, because the hyphen after
+  the prefix breaks the class, and `ghp_[A-Za-z0-9]{36}` covers classic
+  personal tokens only. The audit's replacements:
+  `sk-[A-Za-z0-9_-]{20,}`, `gh[pousr]_[A-Za-z0-9]{36,}` and
+  `github_pat_[A-Za-z0-9_]{22,}`. Read here on 2026-10-08; the new
+  patterns are unrun.
+- **S1 and S2 move the `permissionMode` paragraph** into a frontmatter
+  comment: the agent inherits the parent session's mode, and the
+  PreToolUse hook holds the write boundary in every mode. The paragraph
+  landed on 2026-10-07 (`4c232a3`), so keep its two facts.
+- **S3** drops "(critical)" from the "Tool scoping" heading and the
+  paragraph's repeated "Tool scoping:" lead.
+- **S4** shortens the refusal to "the hook blocks those calls", and
+  drops that the rejection shows in the transcript.
+- **S5** replaces the warning that skipping `MEMORY.md` "defeats the
+  cross-project learning purpose" with the reason the memory exists.
+
 ## Where it lands
 
 D-1: line 1 of `config.py`, `queries.py` and `notes.md` in
 `tests/agents/security-reviewer/fixtures/`. D-2: the five README
-sections and the `expected_findings.md` section its **Fix** names. The
-agent itself, `claude/agents/security-reviewer.md`, does not change.
+sections and the `expected_findings.md` section its **Fix** names.
+D-3: `claude/agents/security-reviewer.md`, a copy, live after
+`./scripts/link-claude.ps1 -SkillGroups workflow,social,meta`.
 
 ## Verification
 

@@ -427,10 +427,12 @@ deployed state, but the hook and the files it reads leave in one commit.
 - **`claude/CLAUDE.md` § "GitHub Copilot no longer inherits this
   payload"** is rewritten around what reads the payload now: Claude Code
   and VS Code's Claude target read `~/.claude`, and no other target
-  does. Keep its pointer to `vscode-scoping.md`. If the heading changes,
-  the ledger's changes in the same commit, since a ledger's headings
-  mirror its file's. It also takes the corporate network's rule, with
-  its tell and its date: there Claude Code fails on its sign-in, `read
+  does. Keep its pointer to `vscode-scoping.md`. Retitle it without "no
+  longer", which a prompt audit in a client repo read as migration
+  wording on 2026-10-08, for instance as "GitHub Copilot does not inherit
+  this payload"; the ledger's heading changes in the same commit, since
+  a ledger's headings mirror its file's. It also takes the corporate
+  network's rule, with its tell and its date: there Claude Code fails on its sign-in, `read
   ECONNRESET` as the TLS handshake begins, and a request that gets
   through is answered `401 OAuth access token has expired`, while the
   Claude target on a Copilot model answers (§ "The corporate network,
@@ -591,7 +593,13 @@ note carries:
   decide: the Copilot and Codex targets read them, and so do
   github.com's Copilot agent and, where it runs, Copilot code review,
   which reads `.github/instructions` too. `AGENTS.md` there names the
-  pointer shape.
+  pointer shape. A prompt audit run there on 2026-10-08 found it telling
+  Copilot that it reads the repo's `CLAUDE.md`, and pointing it at
+  `~/.claude/`: against `agent-instructions-scoping.md`, where
+  `chat.useClaudeMdFile` stays `false`, `vscode-scoping.md`, which
+  frames inheriting `~/.claude` as a defect, and `claude/CLAUDE.md`'s
+  "never `~/.claude`". The retirement decides which side moves; the note
+  to that repo carries it if ours stands.
 - What it loses: a worktree or a fresh clone of that repo has no
   platform skills under any target, since `.claude/skills` there is
   git-ignored junctions, where `.github/skills` was tracked.
