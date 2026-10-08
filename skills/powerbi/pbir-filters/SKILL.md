@@ -154,15 +154,22 @@ Current period start:
 "Right": {"DateSpan": {"Expression": {"Now": {}}, "TimeUnit": 2}}
 ```
 
-3 months ago from start of current month:
+Start of the month 3 months ago, `DateAdd` inside `DateSpan`, the
+nesting upstream's template uses (`powerbi-report-authoring`
+`references/filters.md`):
 
 ```json
-"Right": {"DateAdd": {
-  "Expression": {"DateSpan": {"Expression": {"Now": {}}, "TimeUnit": 2}},
-  "TimeUnit": 2,
-  "Amount": -3
+"Right": {"DateSpan": {
+  "Expression": {"DateAdd": {"Expression": {"Now": {}}, "Amount": -3, "TimeUnit": 2}},
+  "TimeUnit": 2
 }}
 ```
+
+The other nesting, `DateAdd` around `DateSpan`, passes `pbir validate`
+and can still fail in the service: as a visual filter's `Between` bound
+it rendered *Error fetching data for this visual* until nested as above
+(pbir 0.9.29, Direct Lake model, 2026-10-07; once, in an edit that also
+changed a projection's `displayName`).
 
 `RelativeTime` uses the same shape with TimeUnit `5`/`6`/`7`.
 
@@ -290,7 +297,8 @@ pbir model "Report.Report" -q "EVALUATE DISTINCT('Date'[Calendar Year (ie 2021)]
 | Filter values not selected | Values not double-wrapped | Each value is its own array: `[[{v1}], [{v2}]]` |
 | Deploy error on report filter pane styling | Styling in `report.json` outspacePane | Move to theme `visualStyles["*"]["*"].outspacePane` |
 | Inverted filter still shows selected values | Missing `isInvertedSelectionMode: true` | Set it alongside the `Not`→`In` Where |
-| `RelativeDate` rolling window off by one | Missing `DateAdd` offset | Wrap `DateSpan` in `DateAdd` with negative `Amount` |
+| `RelativeDate` rolling window off by one | Missing `DateAdd` offset | Put a `DateAdd` with negative `Amount` inside the `DateSpan` — see *RelativeDate* |
+| *Error fetching data for this visual* on a `RelativeDate` bound that passes `pbir validate` | `DateAdd` wrapped around `DateSpan` — schema-valid, not engine-valid | Nest `DateAdd` inside `DateSpan` — see *RelativeDate* |
 | String literal with apostrophe fails | Unescaped single quote | Double it: `"'O''Brien'"` |
 | Integer filter value rejected | Used `D` suffix | Integers use `L` |
 | DateTime filter rejected | Missing trailing `'` | `"datetime'YYYY-MM-DDTHH:MM:SS.0000000'"` |
