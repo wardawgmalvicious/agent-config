@@ -64,3 +64,38 @@ Findings 17, 18 and 24 and decision 2, all medium confidence, from
 `/doctor prompt-audit` run in this repo on 2026-10-08. The report
 itself routes finding 18 and decision 2 to the retirement brief; the
 user took the same route for finding 17 that day.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `docs/handoffs/execute/copilot-payload-retirement.md`
+- **Verification**: the staleness gate found every quoted location at
+  `26f8582`: root `CLAUDE.md:49-50`, `claude/CLAUDE.md:179` and the
+  ledger's `:996`, `security-reviewer.md:16` with "used to pin", and
+  `vscode-scoping.md:60-62` against `claude/CLAUDE.md:181-182`. Both
+  target briefs, re-read at HEAD, last changed in `566973a`. Finding 18
+  was already there: the retirement brief's `claude/CLAUDE.md` bullet
+  retitles the heading without "no longer" and moves the ledger's in
+  the same commit. So was finding 24: the blind-retest brief's D-3
+  moves the paragraph into a comment that keeps its two facts, neither
+  of them the deprecated `mode` parameter, so "used to pin it" does not
+  survive. Findings 17 and decision 2 were folded. Step 1 — **passed**:
+  each item once, finding 17 and decision 2 by name, finding 18 as the
+  retitle, finding 24 as D-3's S1 and S2 bullet; finding 18 first
+  counted 0, since "no" and "longer" wrap across two lines there, and 1
+  on "Retitle it without". Step 2 — **passed**:
+  `handoff-status.py . --check --no-inbox`, exit 0, no frontmatter
+  finding and none open without a `**Needs**:` line. Step 3
+  (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: none
+- **Deviations**: decision 2 sits in the `claude/CLAUDE.md` bullet of
+  § "In this repo", where that section's rewrite lands, not beside the
+  client `AGENTS.md` item: that item sets the rule and the global file
+  on one side, so it does not settle their disagreement, and the
+  rewrite does. Its ledger evidence is cited as "a profile", not
+  another one, since the ledger does not say whether the 2026-09-24
+  profile is the 2026-09-11 one. Finding 17 extends the root
+  `CLAUDE.md` bullet, which already removes both lines, with the
+  interim and the frozen fallback.

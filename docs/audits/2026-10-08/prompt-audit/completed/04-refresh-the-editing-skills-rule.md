@@ -65,3 +65,32 @@ moved.
 Findings 19 to 21, medium confidence, from `/doctor prompt-audit` run
 in this repo on 2026-10-08. The session that wrote this brief read all
 three passages the same day.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `.claude/rules/editing-skills.md`,
+  `docs/evidence/root-claude-md.md`
+- **Verification**: the staleness gate found all three quotes at
+  `26f8582`, lines 40, 63 and 80, below brief 01's edit to the same
+  file. Step 1 — **passed**: the pricing page,
+  `https://platform.claude.com/docs/en/about-claude/pricing`, read
+  2026-10-08, lists Fable 5.1 at $10/$50 per MTok and Opus 5.5 at
+  $4/$20, 2.5 times on both, so page and report agree; cache hits are
+  $0.25 against $0.20. The rewritten sentence carries that date. Step 2
+  — **passed**: no "no longer" left in the file, exit 1. Step 3 —
+  **done**: a `**2026-10-08.**` entry at the end of
+  `## Editing conventions`, where this rule's evidence sits, quoting the
+  page and the settings reference, re-read the same day for finding 20.
+  `lint-frontmatter.py` on the rule, exit 0. Step 4
+  (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: none
+- **Deviations**: finding 21's sentence names the cache-hit ratio too,
+  1.25 times, which the patch's "2.5 times Opus 5.5 per token" leaves
+  out: the page prices cache hits at 0.025x base input on Fable 5.1 and
+  0.05x on Opus 5.5, so "per token" alone overstates a cache-heavy
+  session. Finding 20 names the `modelSettings` entry as what Opus 5.5
+  and later take, by the settings reference's words, where the patch
+  only negated.

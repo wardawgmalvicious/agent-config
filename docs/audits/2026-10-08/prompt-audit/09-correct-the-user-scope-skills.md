@@ -84,3 +84,54 @@ concurrent sessions").
 Finding 8 (high) and findings 34 to 41 (medium) from
 `/doctor prompt-audit` run in this repo on 2026-10-08. `learn` pins
 Fable 5.1 and was audited against it.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `skills/meta/learn/SKILL.md`,
+  `skills/social/linkedin-highlights/SKILL.md`,
+  `skills/workflow/recreate-repo/SKILL.md`,
+  `skills/workflow/commit/SKILL.md`
+- **Verification**: the staleness gate at `26f8582` found the history
+  of findings 35, 40 and 41 gone (`2c69880`, `49310b4`), each standing,
+  and the quotes of 8, 34, 36, 37, 38 and 39 held; 39's sits at
+  `commit:285`, 249 at `c268691`, the file having gained three commits
+  that day. Step 1 — **passed**: the snippet, extracted from the file
+  with only the draft path filled in, run on a throwaway list of two
+  terms among a comment, a blank, a whitespace-only and an `exempt:`
+  line, printed "2 active terms loaded" and the one hit, exit 0;
+  pointed at a missing list, "no readable denylist at …" on stderr,
+  exit 1, and no count. The Bash tool's worktree guard refused the run
+  in every form, as too complex to show it runs no git, so it ran
+  through Git Bash from the PowerShell tool, writing only in the
+  scratchpad. Step 2 — **passed**: beside a `pyproject.toml`,
+  `uv run --no-project python -c "print(1)"` left the folder as it was,
+  where the same run without the flag created `.venv` and `uv.lock`.
+  Step 3 — **passed**: nothing printed, exit 1. Step 4 — **passed**:
+  `lint-frontmatter.py` on the four files, exit 0. Step 5 — ran:
+  `skill-status.py --stale` names `learn`, `commit` and `recreate-repo`
+  `retest-behaviour` and `linkedin-highlights` `untested`; deferred.
+  Step 6 (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: step 5's four retests. Each skill sits in a deployed
+  group, whose probe reads the main checkout's copy, so after the
+  landing, each in a fresh session: `/test-skill learn`,
+  `/test-skill linkedin-highlights`, `/test-skill commit` and
+  `/test-skill recreate-repo`, then
+  `skill-status.py --stamp <skill> --phase behaviour`.
+- **Deviations**: finding 36's snippet also checks the list before
+  reading it, beyond the patch: without that line a missing list
+  printed the shell's error and then "0 active terms loaded", which
+  step 1 forbids. Finding 34 follows the inbox README's contract,
+  "which content is raw and which is genericized", and drops the
+  patch's "Cite client evidence by kind, never by name", which
+  contradicts this skill's own Step 7, "record what you observed
+  plainly, including names". Finding 8's headroom claim was measured:
+  of 61 skills, 17 descriptions sit within 24 characters of 1,024, and
+  3 of the 23 `when_to_use` fields within 22 of 512. The constraint's
+  one-write rule is held by the worktree: no save here is live until
+  the landing, which brings every file at once.
+- **Needs**: the landing, a fresh session — `/test-skill` on `learn`,
+  `linkedin-highlights`, `commit` and `recreate-repo`, step 5's
+  retests.

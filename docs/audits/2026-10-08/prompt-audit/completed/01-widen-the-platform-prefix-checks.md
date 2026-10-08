@@ -73,3 +73,29 @@ Findings 1 and 2, both high confidence, from `/doctor prompt-audit` run
 in this repo on 2026-10-08. The session that wrote this brief checked
 both quotes, the prefix tuple and the three skills against the files
 the same day.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `CLAUDE.md`, `.claude/rules/editing-skills.md`,
+  `docs/evidence/root-claude-md.md`
+- **Verification**: the staleness gate found both quotes at `26f8582`:
+  `CLAUDE.md:42`, and `editing-skills.md:15-18`, a line above the
+  brief's span. `skills/powerbi/` still holds the three `pbip-` and
+  `powerbi-` skills beside the `pbir-` ones. Step 1 — **passed**: the
+  six-prefix grep printed nothing, exit 1. Step 2 — **passed**: the
+  tuple at `lint-skill-overrides.py:74` is the grep's six prefixes, in
+  its order. Step 3 — **passed**: `lint-claude-md.py`, root at 200 of
+  200. Step 4 — **done**: a `**2026-10-08.**` entry at the end of
+  `## Commands`, the heading line 356 sits in. `lint-frontmatter.py` on
+  the rule, exit 0. Step 5 (`pre-commit run --all-files`) runs once at
+  the end of the run.
+- **Deferred**: none
+- **Deviations**: the patch's rule hunk kept "`powerbi-` among them";
+  the brief says to stop enumerating, so the sentence names the tuple
+  only. The ledger's own `**2026-10-01.**` entry, which the brief does
+  not cite, had chosen one prefix per pruned group on purpose; the new
+  entry says why the six-prefix form supersedes it, by the brief's
+  reasoning, and leaves that entry as written.

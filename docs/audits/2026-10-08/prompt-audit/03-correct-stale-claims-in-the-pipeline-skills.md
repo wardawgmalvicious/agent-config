@@ -73,3 +73,49 @@ any current claim rests on.
 Findings 11 to 15 (high) and 42 to 46 less 45 (medium) from
 `/doctor prompt-audit` run in this repo on 2026-10-08. `author-skill`
 pins Fable 5.1 and was audited against it.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `.claude/skills/author-skill/SKILL.md`,
+  `.claude/skills/drift-update/SKILL.md`,
+  `.claude/skills/test-skill/SKILL.md`
+- **Verification**: the staleness gate found all nine quotes at
+  `26f8582`, each at the line the table gives. Step 1 — **passed**: the
+  template is there. Step 2 — **passed**: nothing printed, exit 1. Step
+  3 — **passed**: no line left, exit 1. Step 4 — **failed, then
+  passed**: `author-skill`'s body came to 501 lines against
+  `lint-frontmatter.py`'s 500, the file having sat at exactly 500, on
+  this run's own three-line bullet for finding 12; set in two lines it
+  is back at 500, and all three files lint clean, exit 0. Step 5 — ran:
+  `skill-status.py --stale` names `author-skill` `untested` and
+  `drift-update` and `test-skill` `retest-behaviour`; the retests are
+  deferred. Step 6 (`pre-commit run --all-files`) runs once at the end
+  of the run.
+- **Deferred**: step 5's three behaviour retests, which the session
+  that edited the bodies cannot give, each in a fresh session against
+  this brief: `/test-skill author-skill`, `/test-skill drift-update`
+  and `/test-skill test-skill`, each then stamped with
+  `skill-status.py --stamp <skill> --phase behaviour`.
+- **Deviations**: finding 46 keeps "Found 2026-09-11, when two runs'
+  follow-ups turned out to be in no queue", the failure and date the
+  `**Needs**:` rule rests on, as the constraint requires; only the
+  hand-kept table's history went, where the patch cut both. Finding 42
+  names no sections, where the patch listed six: "the section its group
+  implies" stays true when a group is added, and a copied list of them
+  is what went stale. Its heading became "Register it in its
+  catalogue"; nothing linked to the old one. Finding 43's next sentence
+  now says a platform or project-scope skill can be tested in its
+  worktree, since `test-skill` step 7 stops only for the three deployed
+  groups; the paragraph's tail rewrapped at the same line count.
+  Finding 12's bullet points at `docs/handoffs/CLAUDE.md` for why and at
+  `test-skill` step 10 for the deletion, and the next bullet now reads
+  "subagent or other work". Finding 11's new reason follows
+  `author-skill` step 9's and points at `editing-skills.md` for the
+  hot-reload fact. Finding 44's rewrite keeps the original's warning
+  against the shell's cwd.
+- **Needs**: a fresh session — `/test-skill author-skill`,
+  `/test-skill drift-update` and `/test-skill test-skill`, the
+  behaviour retests step 5 names.

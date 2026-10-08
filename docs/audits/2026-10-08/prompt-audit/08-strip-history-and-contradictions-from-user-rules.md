@@ -75,3 +75,37 @@ Finding 7 (high) and findings 22, 23, 27, 28 and 32 (medium) from
 `/doctor prompt-audit` run in this repo on 2026-10-08. The session that
 wrote this brief read finding 22's two passages the same day, which is
 where the constraint above comes from.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `claude/rules/README.md`
+- **Verification**: the staleness gate at `26f8582` found the triage's
+  text for five findings, each old quote gone: 7 at
+  `git-identity-scoping.md:111-118` (`b5d6269`); 23 as
+  `<workspace-folder>/** -text` at `fabric-git-serialization.md:169`,
+  and 27 and 28 in `coding-bash.md` (`8510852`); 32's "in evaluate mode
+  before then" at `coding-ci-workflows.md:68` (`d60be04`). None is
+  wrong, so each stands. Finding 22's quote held at `README.md:165-166`,
+  wrapped across the two lines. Step 1 — **passed**: the passage names
+  the same three wrappers, and the same three cases the keyring
+  answers, as `claude/CLAUDE.md:109-113`, and keeps the
+  `gh api user -q .login` step. Step 2 — **passed**: nothing printed,
+  exit 1. Step 3 — **passed**: `lint-frontmatter.py` on `README.md`,
+  exit 0. Step 4 — not needed: `coding-ci-workflows.md` did not change
+  in this run. Step 6 (`pre-commit run --all-files`) runs once at the
+  end of the run.
+- **Deferred**: step 5: `link-claude.ps1` refuses a worktree, so from
+  the main checkout after the landing,
+  `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta` deploys
+  the README.
+- **Deviations**: finding 22 took the one clarifying clause the
+  constraint allows: `agent-instructions-scoping.md:49-50` says "a
+  subagent's Read loads it into the subagent only", and the README now
+  says so, where "never on Grep or a subagent's Read" was true of the
+  session and read as false of the subagent. The clause leaves one
+  short line rather than rewrapping the entry below it.
+- **Needs**: the landing — `link-claude.ps1` deploys the `README.md`
+  edit.

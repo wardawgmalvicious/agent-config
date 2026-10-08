@@ -83,3 +83,42 @@ Findings 9 and 10 (high) and 45 (medium) from `/doctor prompt-audit`
 run in this repo on 2026-10-08, audited against Fable 5.1, the model
 `drift-audit` pins. The session that wrote this brief checked line
 115's text the same day; the other lines are as the report quotes them.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — applied with deferrals
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: `.claude/skills/drift-audit/SKILL.md`
+- **Verification**: the staleness gate found every quote at `26f8582`:
+  lines 115, 118 and 174, and the history at 24, 78 and 86. Line 24
+  had changed since `c268691`, its two sizes moved into the registry
+  entries, with the quoted history intact. Step 1 — **failed as
+  written, on a pattern artifact the user accepted** (Deviations): it
+  printed 2, as `fabric-tmdl-api`, in the tree since 2026-08-31, holds
+  the substring; `grep -c '/fabric-tmdl/'` prints 1, so the new glob
+  reaches the pruned skill. Step 2 — **passed**: nothing printed, exit
+  1. Step 3 — **passed**: `lint-frontmatter.py`, exit 0. Step 4 — ran:
+  `skill-status.py --stale` names `drift-audit` `untested`, with no
+  behaviour stamp ever; the retest is deferred. Step 5
+  (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: step 4's behaviour retest, which the session that edited
+  the body cannot give: `/test-skill drift-audit @docs/audits/2026-10-08/prompt-audit/02-point-drift-audit-at-the-repo-skill-trees.md`
+  in a fresh session, then `skill-status.py --stamp drift-audit --phase
+  behaviour`. Step 6, the self-referential check, falls to the next
+  `/drift-audit` of `fabric` or `powerbi`: a change to an existing
+  platform skill should map as a skill match, not a new-skill candidate.
+- **Deviations**: step 1 was put to the user, who accepted it as a
+  pattern artifact. Line 24 keeps its failure and date: the patch's "a
+  copied list goes stale the day a source is registered" drops both,
+  which this brief's constraint and `declined.md`'s 2026-10-08 entry
+  refuse, so only "the list this line carried until 2026-10-06" went.
+  Line 86's date moved into "Measured on `powerbi` on 2026-09-07", since
+  "that day" lost its referent, and "the old rule" became "that rule".
+  Line 78's surviving sentence, "Source count is therefore a bad proxy",
+  is the one the file holds true: the `1 + 2 x |files|` price before it
+  is its ground. Line 115 says why not `~/.claude/skills`, as the
+  patch's hunk does.
+- **Needs**: a fresh session, the next fabric or powerbi drift audit —
+  `/test-skill drift-audit`, the behaviour retest step 4 names; then
+  step 6's skill-match reading.

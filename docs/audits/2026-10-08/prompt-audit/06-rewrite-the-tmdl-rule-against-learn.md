@@ -139,3 +139,31 @@ Findings 3, 4 and 5 (high) and 30 (medium), and decision 8 (low), from
 this the first of its three most serious problems. The session that
 wrote this brief checked the rule's text and the `fabric-tmdl` lines
 the same day, not Learn.
+
+## Execution log
+
+- **Executed**: 2026-10-08 — escalated
+- **Session**: fresh (no audit or handoff run in this session; the whole
+  pass, in its own worktree)
+- **Files changed**: none
+- **Verification**: none of the brief's steps ran. Its sequencing note
+  binds it to `docs/handoffs/execute/rule-naming-conflicts.md`, "in one
+  pass, after its decision", and that brief is `open` with
+  `needs: [user]` at `26f8582` and on `main` at `4ee3a7a`: the naming
+  decision is unmade and its `displayName:` deserialization probe unrun.
+  The quotes, re-measured at `26f8582` for that pass: the alias pattern
+  at line 39, 35 at `c268691`, below `d60be04`'s tab paragraph, now at
+  35; six `displayName:` lines; `description:` at 153; "TMDL is newer"
+  at 18; the inactive-relationship line at 141; `# Good` and `# Bad` at
+  54, 74 and 99; "(recent feature)" gone; `coding-dax.md:24-26` as
+  quoted.
+- **Deferred**: the whole brief, to the joint pass: findings 3, 4, 5
+  and 30, decision 8 and the indentation choice, then steps 1 to 7.
+  Decision 8 was not put to the user here: whether a relationship can
+  carry a `///` description is a Learn question the pass answers first,
+  under this brief's own "Learn first" constraint.
+- **Deviations**: none
+- **Needs**: user — the naming decision in
+  `docs/handoffs/execute/rule-naming-conflicts.md`; then that brief and
+  this one in one pass, in its worktree, which puts decision 8 to the
+  user once Learn says where a relationship's reason can go.
