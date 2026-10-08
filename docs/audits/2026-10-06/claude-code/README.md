@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 13 — applied 1 · applied with deferrals 2 · closed 8 · escalated 2
+Briefs: 13 — applied 1 · applied with deferrals 2 · closed 9 · escalated 1
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -21,4 +21,4 @@ Briefs: 13 — applied 1 · applied with deferrals 2 · closed 8 · escalated 2
 | [10 trial prompt-audit and skill-doctor](completed/10-trial-prompt-audit-and-skill-doctor.md) | 12 | trial run of two new harness commands, then a decision on whether either joins this… | escalated 2026-10-07 · closed 2026-10-08 |
 | [11 re-probe the drift-audit tool premises](11-re-probe-drift-audit-tool-premises.md) | 13 | probe of two tool behaviours `drift-audit`'s own text relies on, then a self-referential… | escalated 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [12 fold claude-code evidence into two handoff briefs](completed/12-fold-claude-code-evidence-into-handoff-briefs.md) | 14 and 15 | dated evidence added to two open handoff briefs | applied 2026-10-07 |
-| [13 decide the verify skill convention](13-decide-the-verify-skill-convention.md) | 16 | decision on adopting a `verify` skill, after a check of how the harness's pre-commit… | escalated 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [13 decide the verify skill convention](completed/13-decide-the-verify-skill-convention.md) | 16 | decision on adopting a `verify` skill, after a check of how the harness's pre-commit… | escalated 2026-10-07 · closed 2026-10-08 |

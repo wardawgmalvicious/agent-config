@@ -86,3 +86,22 @@ is the audit session's own.
   commit's transcript here, recorded with the record it came from; then
   the a/b/c question to the user, an `/author-skill` or `commit` task
   following from the answer.
+- **Closed**: 2026-10-08 — step 1's check ran, and the user chose c),
+  neither. On 2.1.293 the bundled `simplify` does not switch the
+  instruction on. Two cold Haiku probes in scratch git repos, run with
+  `--tools Bash,Read,Skill`, quoted their own prompts: with a project
+  `verify` skill, Bash's "# Git" section gained "Always run `/verify`
+  right before the `commit` command (never for docs or tests)."; with
+  only `simplify` listed it held no such line, nor did the closing
+  session's own. Transcript `9beb7869-d312-4746-8e2f-0a2340f36e0b`, the
+  pass that escalated this brief (2.1.289 to 2.1.292), lists `simplify`
+  at line 12 and makes 16 commits from line 1257 with no `simplify` run
+  and no text naming it; no session here has invoked `simplify` or
+  `verify` through the Skill tool. So b) is moot. a) was declined: a
+  `verify` running `pre-commit run --all-files` adds no check the commit
+  hooks and CI do not already run, would run before every commit of a
+  `/commit` split, and its docs-or-tests exception skips most commits
+  here. No file changed but this log. Adjacent: 2.1.289's full command
+  list carries a bundled `/verify` that "bootstraps this repo's project
+  verify skill if none exists yet", so typing it here would turn the
+  instruction on.
