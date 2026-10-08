@@ -50,6 +50,13 @@ a rule or a nested file, and the README keeps the rest.
   subagent only.
 - **After `/compact`** root is re-read at once, while nested files and
   `paths:` rules return only at the next matching Read, Write or Edit.
+- **A new `agents` directory is not watched.** A subagent file is live
+  within seconds where `~/.claude/agents/` or `.claude/agents/` existed
+  at launch, but the first file in a new one needs a restart (sub-agents
+  docs, read 2026-10-08); until then the Agent tool answers
+  `Agent type '<name>' not found`, as it did for two user turns on
+  2.1.291 (2026-10-07). Meanwhile run it from the repo root as a child
+  process, `claude -p "<task>" --agent <name>`.
 - **A `.claude/rules/` file with no `paths:` loads at launch**, like root.
   A user-scope rule and a same-named project rule both load; neither
   overrides the other unless its text says so.
