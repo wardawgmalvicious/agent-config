@@ -450,8 +450,11 @@ Append a `**Behavioural confirmation**:` bullet to the brief's execution
 log naming the date, the probe design, which claim separated from the
 baseline, and that the stamp was written; if the brief deferred a
 collision or open question, say whether the run made it visible and
-leave it deferred. Commit shape: `test(<skill>): …` over the brief and
-the manifest.
+leave it deferred. If the run discharges everything the last `**Needs**:`
+line names, append `- **Closed**: <date> — <how>` and run
+`uv run scripts/audit-status.py --dir <dir>`, which moves the brief to
+`completed/`: re-point links to it. If only part, add a fresh `**Needs**:`.
+Commit shape: `test(<skill>): …` over the brief, manifest and index.
 
 **An untracked brief is recorded first, then retired.** `/author-skill`
 may not have committed it, and deleting it on the spot keeps the
@@ -501,8 +504,6 @@ directory is not the variable — are in
   probe copy is enough, and user scope serves every live session.
 - **Fixtures are inputs, not outputs.** Do not edit a fixture to make a
   test pass; change the contract table or the glob, and say which.
-- **Phase A is skipped, not faked**, for an unconditional skill.
+- **Phase A is skipped, not faked**, for an unconditional skill. This one
+  has no `paths:` glob, so `/test-skill test-skill` runs Phase B only.
 - **No commit**, no push. Hand off to `/commit`.
-- **This skill has no Phase A of its own** — it has no `paths:` glob, so
-  there is nothing to fixture. `/test-skill test-skill` runs Phase B
-  only, and that is correct rather than a gap.
