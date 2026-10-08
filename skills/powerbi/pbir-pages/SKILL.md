@@ -57,7 +57,7 @@ Schema: `https://developer.microsoft.com/json-schemas/fabric/item/report/definit
 | Letter portrait | 816 x 1056 |
 | Tooltip | 320 x 240 |
 
-The Fluent 2 base theme is GA and is the default for new reports in Desktop and the service; it bumps the new-page default to 1920x1080. Initial page in a report stays 1280x720; existing reports and existing pages don't auto-resize when switching base themes. The **Theme** pane (View ribbon) also surfaces aspect-ratio presets for common page sizes. See `pbir-themes` for base-theme switching.
+The Fluent 2 base theme is GA and is the default for new reports in Desktop and the service; it bumps the new-page default to 1920x1080. That a new report's initial page stays 1280x720 dates from the preview and is unverified since GA (2026-10-07); existing reports and existing pages don't auto-resize when switching base themes. The **Theme** pane (**Design** ribbon → **Customize theme**) also surfaces aspect-ratio presets for common page sizes. See `pbir-themes` for base-theme switching.
 
 ### pages.json
 

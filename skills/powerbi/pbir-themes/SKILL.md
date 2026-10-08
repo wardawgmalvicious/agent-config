@@ -37,11 +37,11 @@ Custom themes layer on top of a base theme. Three are shipped:
 
 | Base theme | Status | Notes |
 |---|---|---|
-| `Fluent 2` | **GA** — default for new reports, Desktop *and* service | Modern Fluent 2 styling. New pages default to **1920x1080** (initial page stays 1280x720). Adds chart / button / slicer / small-multiples style presets. |
+| `Fluent 2` | **GA** — default for new reports, Desktop *and* service | Modern Fluent 2 styling. New pages default to **1920x1080**; that a new report's initial page stays 1280x720 dates from the preview and is unverified since GA (2026-10-07). Adds chart / button / slicer / small-multiples style presets. |
 | `Classic 2026` | Previous default base theme | Incremental refresh of `CY24SU10`-era defaults. |
 | `Classic 2018` | Legacy compatibility | Original base theme; reports created before 2026. |
 
-Switch via **View** ribbon → toggle on the **Theme** pane → **Theme settings** → **Base theme** dropdown. The Theme pane replaced the Customize-theme dialog at GA; it is sectioned as **Theme settings** (import / export / remove), **Colors** (palette, data, structural, sentiment, divergent), **Text**, **Visual properties** (background, border, header icons, tooltip, shadow, padding), **Page** (canvas settings, background, wallpaper), **Filter pane**, and **Filter cards** — the same surface a custom theme JSON encodes. An "Update to the latest base theme" banner with an **Update theme** button appears when a newer base ships; the **Reset to default** tile in the Themes dropdown removes the custom theme without touching per-visual formatting.
+Switch via **Design** ribbon → **Customize theme**, which opens the **Theme** pane → **Theme settings** → **Base theme** dropdown (Learn, 2026-10-07; on 2026-09-07 Learn gave a **View** ribbon toggle). The Theme pane replaced the Customize-theme dialog at GA; it is sectioned as **Theme settings** (import / export / remove), **Colors** (palette, data, structural, sentiment, divergent), **Text**, **Visual properties** (background, border, header icons, tooltip, shadow, padding), **Page** (canvas settings, background, wallpaper), **Filter pane**, and **Filter cards** — the same surface a custom theme JSON encodes. An "Update to the latest base theme" banner with an **Update theme** button appears when a newer base ships; the **Reset to default** tile in the Themes dropdown removes the custom theme without touching per-visual formatting.
 
 Announced GA in the August 2026 update; page confirmed GA on 2026-09-07. No Desktop build number was verified.
 
