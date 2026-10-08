@@ -75,7 +75,7 @@ as deliberate rather than as something nobody noticed.
 
 If the user wants a *subagent* rather than a skill, this is the wrong
 skill: the artifact lives in `claude/agents/` and uses
-`templates/subagent-handoff.md`. Stop and say so.
+`docs/handoffs/templates/subagent-handoff.md`. Stop and say so.
 
 ## 2. Check for existing coverage
 
@@ -286,9 +286,7 @@ filling the template, not content, and a brief that keeps them reads as
 half-finished. Exactly two blocks are reproduced verbatim: the guidance
 note directly under the title, and Claude Code's post-draft checklist.
 `docs/handoffs/examples/author-skill.example.md` is the reference
-— two guidance blocks in the finished brief, not one per heading. The
-other two examples predate this convention and strip both; follow the
-`author-skill` one.
+— two guidance blocks in the finished brief, not one per heading.
 
 Fill `Last verified` with today's date.
 
@@ -412,17 +410,17 @@ reworded (2026-10-01). Report the score, the shared tokens and the pair's
 place in the bare `overlap` listing, since `--skill` ranks only `<name>`'s
 own pairs; it is a question for the user, not a gate.
 
-## 8. Register it in skills/README.md
+## 8. Register it in its catalogue
 
-Add the entry to the section the namespace implies — Behavioral,
-Microsoft Fabric platform, or Power BI Desktop / Reports. Update the
-count in the section heading where one is present.
+Add the entry to `skills/README.md` for a payload skill, in the section
+its group implies, or to `.claude/skills/README.md` for a project-scope
+one. Update the count in the section heading where one is present.
 
 Match the house style there: what the skill covers, and — where the name
 is not self-evident — **why it is named that**. The `drift-audit` and
-`drift-handoff` entries are the model for the second half. An entry that
-only restates the description earns nothing the description does not
-already do.
+`drift-handoff` entries in `.claude/skills/README.md` are the model for
+the second half. An entry that only restates the description earns
+nothing the description does not already do.
 
 This is the one place this skill edits a file it did not create. Keep
 the diff to the single added entry and the count.
@@ -457,21 +455,23 @@ a step here instead of a habit.
 
 - The brief written at step 5 **stays queued**. Nothing is validated
   until the fresh-session test has run.
-- For any other brief whose skill or subagent now exists, **propose**
+- A skill brief beside a skill that now exists **stays queued** too:
+  `docs/handoffs/CLAUDE.md` says why; `/test-skill` step 10 deletes it.
+- For any other brief whose subagent or other work now exists, **propose**
   deletion or promotion and name which. Propose rather than act: you
   can see that an artifact exists, but not whether the user considers
   the work landed. Deletion itself is safe — briefs are committed when
   written, so the deleting commit and its content stay recoverable.
 
 Hand off to **`/commit`, then `/test-skill`**, and do neither here. For
-a skill under `skills/`, `/test-skill` step 7 cannot run in a worktree —
-a deployed group's junction serves the main checkout's copy, and
-`link-claude.ps1` refuses a worktree — so land it as
-`docs/handoffs/CLAUDE.md` says, deploy, then test on `main`. A
-project-scope skill can be tested in its worktree, its stamp still
-waiting for `main` (`/test-skill` step 10). The test reads the brief
-from disk, so it need not follow at once, and a cold run is the better
-one (2026-10-01).
+a skill in a deployed group, `workflow`, `social` or `meta`,
+`/test-skill` step 7 cannot run in a worktree — the group's junction
+serves the main checkout's copy, and `link-claude.ps1` refuses a
+worktree — so land it as `docs/handoffs/CLAUDE.md` says, deploy, then
+test on `main`. A platform or project-scope skill can be tested in its
+worktree, its stamp still waiting for `main` (`/test-skill` step 10).
+The test reads the brief from disk, so it need not follow at once, and
+a cold run is the better one (2026-10-01).
 
 **In a brief's worktree, the hand-off opens with this session leaving
 it**, by `ExitWorktree` with `keep` when the user asks: the landing runs
