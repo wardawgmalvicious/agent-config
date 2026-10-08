@@ -20,6 +20,17 @@ A single text blob (up to 10,000 characters) attached directly to the semantic m
 
 It applies **wherever the model is consumed by Copilot** — Power BI reports, Q&A visuals, the Copilot pane, and any downstream surface that uses this model. Not just a single surface. Microsoft 365 Copilot Chat now answers from the model too: "Data answering from Power BI content in Microsoft 365 Copilot Chat is a generally available (GA) feature of Microsoft Fabric." Learn says Prep-data-for-AI features reach "everywhere that Copilot in Power BI is available" but not whether that includes Copilot Chat, so don't promise these instructions apply there (2026-10-06).
 
+Who reaches the model through Copilot is a model setting of its own, on
+by default: *Allow any person with only read permissions to use AI (for
+example, Copilot, Microsoft's MCP tools) on this model and its related
+reports*. It covers the report pane, standalone Copilot and apps, M365
+Copilot Chat and Cowork, data agents and Microsoft's remote MCP tools.
+Turned off, an experience spanning several models also drops the model
+and its reports from search for every user, and a model built on
+another doesn't inherit it
+([Use Copilot with semantic models](https://learn.microsoft.com/power-bi/create-reports/copilot-semantic-models),
+read 2026-10-08).
+
 ---
 
 ## When you use this vs. Data Agent instructions
@@ -252,6 +263,13 @@ Hard limit. Plan for it.
 - **Visual modifications and theming are out of scope.** Instructions don't affect report visuals.
 - **Cannot disable or deprioritize other Copilot features.** Instructions influence how existing capabilities respond; they don't turn capabilities on or off.
 - **Changes arriving by Git or a deployment pipeline need a service refresh.** AI instructions and AI data schemas save to the model's linguistic schema (LSDL). An LSDL change that arrives through Git sync or a deployment pipeline takes effect only after the model is refreshed in the Power BI service, and DirectQuery and Direct Lake models sync it only once a day ([Prep data for AI](https://learn.microsoft.com/power-bi/create-reports/copilot-prepare-data-ai), Considerations and limitations; confirmed 2026-09-11). Until that refresh, a shipped instructions change looks as if it silently failed.
+- **Verified answers never travel with the model.** They are stored in
+  it, yet Git integration, REST APIs and deployment pipelines don't
+  support them, so each stage needs its own, made by hand, and Copilot
+  returns none while Fabric IQ is on. Hidden fields and visuals with
+  report measures break them
+  ([Verified answers](https://learn.microsoft.com/power-bi/create-reports/copilot-prepare-data-ai-verified-answers),
+  Considerations and limitations, read 2026-10-08).
 
 ---
 
