@@ -282,8 +282,8 @@ Staging one hunk out of a file they are also writing:
 
 Before the first commit in a repo containing `*.{ItemType}` folders:
 check `git config core.autocrlf` and whether `.gitattributes` pins the
-item folders (per `rules/fabric-git-serialization.md`). Whitespace-only
-diffs (EOF newline, CR-stripping) in portal-owned files are
+item folders (per `~/.claude/rules/fabric-git-serialization.md`).
+Whitespace-only diffs (EOF newline, CR-stripping) in portal-owned files are
 translation artifacts — do not commit them as "cleanup"; flag them and
 fix the `.gitattributes` instead.
 
