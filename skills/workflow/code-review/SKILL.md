@@ -19,14 +19,14 @@ Pick the first that applies:
 
 1. **User specified a target** (file path, function name, branch/ref, "the changes I just made") — use that.
 2. **In a git repo with uncommitted changes** — run `git status` then `git diff` (and `git diff --staged`) to scope the review to working-tree changes.
-3. **In a git repo, clean tree, on a feature branch** — diff against the merge base: `git diff $(git merge-base HEAD main)...HEAD` (substitute `master` if that's the default).
+3. **In a git repo, clean tree, on a feature branch** — diff against the merge base: `git diff main...HEAD` (substitute `master` if that's the default).
 4. **None of the above** — ask the user what to review. Do not guess.
 
 For repo-wide audits the user explicitly requests, narrow by language or directory rather than scanning everything.
 
 ## 2. Review checklist
 
-Apply in priority order. Stop at the first category if a finding blocks meaningful review further down (e.g. unrunnable code → don't bother with style).
+Apply in priority order and report every finding with its severity. Cut a later category short only where an earlier finding makes it moot (unrunnable code makes style moot), and say so when you do.
 
 ### Correctness
 
