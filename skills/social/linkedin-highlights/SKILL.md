@@ -240,6 +240,7 @@ hook does:
 
 ```bash
 LIST="${IDENTITY_DENYLIST:-$HOME/.config/identity-denylist.txt}"
+[ -r "$LIST" ] || { echo "no readable denylist at $LIST" >&2; exit 1; }
 TERMS=$(mktemp)
 while IFS= read -r line || [ -n "$line" ]; do
     line=${line//$'\r'/}                            # CRLF-tolerant
@@ -249,6 +250,7 @@ while IFS= read -r line || [ -n "$line" ]; do
     case "${line,,}" in exempt:*) continue ;; esac   # see below
     printf '%s\n' "$line" >> "$TERMS"
 done < "$LIST"
+printf '%s active terms loaded\n' "$(wc -l < "$TERMS")"
 grep -inF -f "$TERMS" <draft-file>; rm -f "$TERMS"
 ```
 
@@ -260,8 +262,10 @@ is the one thing on this machine that must not be reproduced anywhere.
 
 **Sanity-check the parse before trusting a clean result.** A zero-hit
 scrub and a broken terms file look identical. Report how many active
-terms were loaded (`wc -l < "$TERMS"`); zero means the parse failed, not
-that the draft is clean.
+terms were loaded, the count the snippet prints before its `rm`: shells
+are fresh per call, so a later `wc -l < "$TERMS"` reads no file. Zero
+means the parse failed, not that the draft is clean, and a missing list
+stops the snippet with an error before any count.
 
 **Deliberately ignore the list's `exempt:` lines.** This is the most
 important sentence in the skill. `exempt: <path-prefix>` makes
@@ -349,7 +353,7 @@ both shells, so `wc -m` falls back to counting bytes and every `•` and
 
 ```bash
 LC_ALL=C.UTF-8 wc -m < <draft-file>          # returns 5
-uv run python -c "import sys;print(len(open(sys.argv[1],encoding='utf-8').read()))" <draft-file>
+uv run --no-project python -c "import sys;print(len(open(sys.argv[1],encoding='utf-8').read()))" <draft-file>
 ```
 
 Over-counting is the benign direction, but it makes you cut text that
