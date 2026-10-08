@@ -112,13 +112,53 @@ For contrast, `commit` was invoked 194 times in the same two weeks.
 rare-but-critical skill is doing its job", and two weeks is short. The
 lifetime column is the longer view.
 
-## Pending: the client repo's own numbers
+## The client repo's numbers
 
-The user is running `/doctor` and `/skill-doctor` in the client Fabric
-repo (2026-10-08), and its sessions are to send: the listing's size
-against its cap, which descriptions drop, its biggest contributors,
-`/skill-doctor`'s unused or rarely used skills, and the groups that
-repo links. Fold them in here, cited by kind, before Part 1 is decided.
+Sent 2026-10-08, at the user's direction, by two sessions in a client
+Fabric repo, from `/doctor` and `/skill-doctor`; cited here by kind.
+
+- **The listing is over its cap there.** `/doctor` put it at about 9.9k
+  estimated tokens: the 16 always-listed platform skills about 3.7k,
+  user-scope skills 2.1k, the 14 skills synced from claude.ai 2.4k, and
+  Claude Code's own 1.6k. Shown by name only, with no description: all
+  14 synced skills, `init`, `security-review` and `pbid-tom-live`. That
+  fits the documented drop of the least-used, though why
+  `pbid-tom-live` went and the other never-used skills did not is not
+  explained.
+- **`/skill-doctor` adds recency**, which the lifetime column lacks. Of
+  the 16 always-listed, only `fabric-gotchas` and
+  `pbir-report-workflow` (last used a day before), `fabric-cicd` (7
+  days) and `fabric-cli` (12) show use in the last fortnight;
+  `pbir-report-workflow` drew 33.7m tokens and `fabric-gotchas` 12.6m
+  over seven days. The last uses of `fabric-catalog-governance`,
+  `fabric-mlv`, `fabric-deployment-pipelines` and
+  `fabric-semantic-model-audit` fall within a day of their authoring or
+  test stamps, so those counts are most likely tests. Never used:
+  `fabric-ai-functions`, `fabric-rest-api`, `pbid-tom-live` and
+  `powerbi-report-authoring`, whose two CLIs are not installed there.
+- **Four are already off in that repo.** Its `/doctor` session set
+  `skillOverrides` to `"off"` in the repo's own gitignored
+  `.claude/settings.local.json` for `fabric-ai-functions`,
+  `pbid-tom-live`, `powerbi-report-authoring` and
+  `powerbi-report-design`, and kept `fabric-rest-api`. That holds in
+  that repo alone; archiving here removes a skill everywhere.
+- **The synced skills have a switch in Claude Code**:
+  `syncClaudeAiSkills: false` stops it loading them, in user or local
+  settings, and a repository cannot set it (settings reference, read
+  2026-10-07). The relay said only claude.ai could turn them off; the
+  reference says otherwise. The user kept both syncs on on 2026-10-07
+  (2026-10-06 `claude-code` brief 03, D-2). That all 14 have no lifetime
+  use is new evidence; revisiting it, per repo or machine-wide, is the
+  user's call.
+- **`skillOverrides` takes four values**: `"on"`, `"name-only"`,
+  `"user-invocable-only"`, where Claude does not see the skill but
+  `/name` still works, and `"off"` (settings reference). The third fits
+  a skill only ever typed by name.
+- **Probe sessions inflate every count here.** 23 of the 50 most recent
+  transcripts were probe sessions in this repo's scratchpad, so the
+  session and invocation counts above include probes and test runs.
+
+Not sent: which groups that repo links, which Part 3 needs.
 
 ## Part 1: archive
 
