@@ -66,6 +66,16 @@ echo "$TOKEN" | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
 
 Compare the `aud` claim against the table above. Other useful claims: `exp` (Unix expiry), `oid` (principal object ID), `tid` (tenant ID).
 
+**Right audience, still 401 or 403, as a service principal?** Fabric
+and Power BI authorize one themselves, by tenant settings scoped to a
+security group that holds it (*Service principals can call Fabric public
+APIs*, plus any the API adds) and by a workspace role or item
+permission. API permissions on its app registration play no part, and
+Learn advises adding none: "They're never used and can cause errors
+that are hard to troubleshoot"
+([Embed with a service principal](https://learn.microsoft.com/power-bi/developer/embedded/embed-service-principal),
+read 2026-10-08).
+
 ## TDS connection essentials (Warehouse / SQL Database)
 
 When connecting via `sqlcmd`, ODBC drivers, or any TDS client:

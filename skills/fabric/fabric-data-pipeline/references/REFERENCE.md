@@ -144,7 +144,9 @@ Accepts `externalReferences`, `linkedService` and `connectionSettings`.
 | `operationType` | String | no |
 | `inputs` | `LogicAppsActivityInput` | no |
 
-`externalReferences` is **required** — a Power BI connection.
+`externalReferences` is **required** — a Power BI connection. One that
+signs in as a service principal is authorized by tenant settings and a
+workspace role, not by API permissions (fabric-auth).
 
 `objects` scopes the refresh to named tables or partitions instead of
 the whole model, and takes an expression, so the set can be computed

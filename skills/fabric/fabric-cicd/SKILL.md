@@ -128,7 +128,7 @@ class FabricNotebookCredential(TokenCredential):
         return AccessToken(notebookutils.credentials.getToken("pbi"), int(time.time()) + 3600)
 ```
 
-The identity needs Contributor+ on the target workspace (Admin for `enable_hard_delete`). SPNs additionally need the tenant setting *Service principals can use Fabric APIs* — same prerequisites as any Fabric REST automation (see fabric-auth skill).
+The identity needs Contributor+ on the target workspace (Admin for `enable_hard_delete`). SPNs additionally need the tenant setting *Service principals can call Fabric public APIs*, as the admin portal titles it (older Learn pages: *can use Fabric APIs*) — same prerequisites as any Fabric REST automation (see fabric-auth skill).
 
 ## parameter.yml
 

@@ -86,7 +86,10 @@ Scopes are **per operation**, and they govern **delegated (user) access
 only**. A service principal or managed identity on client credentials
 requests `https://api.fabric.microsoft.com/.default` and is authorized
 by Fabric rather than Entra — the tenant setting *Service principals can
-use Fabric APIs*, pipeline Admin, and the workspace roles above. Skip API
+call Fabric public APIs* (older Learn pages: *can use Fabric APIs*), plus
+*Service principals can create workspaces, connections, and deployment
+pipelines* to create a pipeline, pipeline Admin, and the workspace roles
+above (fabric-auth, *Decoding a token to debug 401s*). Skip API
 permissions on that app registration entirely, as the docs say outright;
 there is no `Pipeline.Deploy` to grant an SPN, and delegated scopes on
 the registration do nothing for its token.
