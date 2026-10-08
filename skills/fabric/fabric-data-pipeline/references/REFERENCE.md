@@ -154,6 +154,16 @@ upstream:
 "objects": { "value": "@activity('FilterChangedTables').output.Value", "type": "Expression" }
 ```
 
+With no `objects`, the whole model refreshes: two runs against a Direct
+Lake model, one without `type` and one `Full`, each refreshed every
+table as `Full` (2026-10-07), as Learn's enhanced refresh says, "If no
+objects are specified, the entire model refreshes". A list naming a
+table the model lacks fails the whole refresh within a second, its real
+tables too: `The specified table '<T>' not found in the target model.`
+(once, 2026-10-07; Learn is silent). Intersect a computed list with the
+model's tables, or omit it, since framing makes a whole Direct Lake
+refresh cheap.
+
 `commitMode: "Transactional"` makes the refresh all-or-nothing.
 `retryCount` here is the *refresh's* retry, distinct from
 `policy.retry`, which retries the activity.
