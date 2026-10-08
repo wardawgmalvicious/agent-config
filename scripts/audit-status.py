@@ -4,6 +4,7 @@
     uv run scripts/audit-status.py                     # regenerate every index
     uv run scripts/audit-status.py --dir docs/audits/2026-09-12/skills-for-fabric
     uv run scripts/audit-status.py --check             # stale or missing? pre-commit
+    uv run scripts/audit-status.py --retirable         # finished runs a later run supersedes
 
 Each docs/audits/<date>/<source>/ directory gets one generated README.md:
 a table with a row per brief giving the actions it covers, its Kind, and
@@ -56,9 +57,20 @@ brief at the top, so the file tree alone shows which briefs still need a
 session. Regenerating moves a brief found on the wrong side, either way,
 and --check fails on one, so the folder can no more drift from the logs
 than the table can. A log too malformed to parse stays at the top, beside
-its `unparsed` row. Nothing is deleted: the directory is still the whole
-ledger entry. Added 2026-10-06, so that which briefs are open shows in the
-file tree and not only in the index.
+its `unparsed` row. Nothing here deletes: the directory stays the whole
+ledger entry until it is retired, below. Added 2026-10-06, so that which
+briefs are open shows in the file tree and not only in the index.
+
+Which runs may be retired is derived the same way, and the deleting is
+done elsewhere. A run whose every brief is finished, by the rule above,
+is retirable once a later run of the same source exists: --retirable
+lists each beside the run that supersedes it, /drift-handoff and /triage
+offer the user a `git rm -r` of it, and git history is its archive from
+then on. The newest run of a source is never listed, finished or not,
+because the next audit of that source starts from it: the 2026-10-06
+powerbi run took its floor from the 2026-09-07 directory. A run with a
+brief never run, or one too malformed to parse, is not finished. Added
+2026-10-08, when the user stopped keeping finished runs whole.
 
 Parsing is deliberately strict about shape and loose about words: a
 brief with an `## Execution log` but no `**Executed**:` line, or one whose
@@ -281,6 +293,24 @@ def follow_ups(audits: Path = AUDITS) -> list[FollowUp]:
     return found
 
 
+def retirable(audits: Path = AUDITS) -> list[tuple[Path, Path]]:
+    """(run, the later run of its source) for every finished, superseded run.
+
+    handoff-status.py prints these beside the follow-up queue. Nothing here
+    deletes: a run is retired by a `git rm -r` the user says yes to.
+    """
+    runs: dict[str, list[Path]] = {}
+    for src_dir in audit_dirs(audits):  # by date, then source
+        runs.setdefault(src_dir.name, []).append(src_dir)
+    found = []
+    for history in runs.values():
+        for older, newer in zip(history, history[1:]):
+            logs = (execution_log(read_text(b).split("\n")) for b in briefs_in(older))
+            if all(finished(log) for log in logs):
+                found.append((older, newer))
+    return sorted(found)
+
+
 def misplaced(src_dir: Path) -> list[tuple[Path, Path]]:
     """(where it is, where its log puts it) for every brief on the wrong side."""
     moves = []
@@ -342,7 +372,14 @@ def main() -> int:
     ap.add_argument("--dir", action="append", type=Path, help="one audit directory; repeatable")
     ap.add_argument("--check", action="store_true",
                     help="fail if any README.md is missing or stale, or a brief sits on the wrong side")
+    ap.add_argument("--retirable", action="store_true",
+                    help="list each finished run a later run of its source supersedes; reads only")
     args = ap.parse_args()
+
+    if args.retirable:
+        for run, newer in retirable():
+            print(f"retirable: {rel(run)}/  superseded by {newer.parent.name}")
+        return 0
 
     dirs = [d.resolve() for d in args.dir] if args.dir else audit_dirs()
     if not dirs:

@@ -56,6 +56,9 @@ A brief states its own state in frontmatter, or an index states it:
             groups it as frontmatter's needs does, `none` reading as ready.
             The rule and the log parser are audit-status.py's, loaded from
             beside this file, so the directory index and this view agree.
+            A run whose briefs are all finished, once a later run of its
+            source exists, is listed as retirable by the same script's rule:
+            an offer /drift-handoff and /triage make, never a finding.
 
 A brief is any .md under docs/handoffs/ other than a README.md or an
 instruction file, a CLAUDE.md or AGENTS.md, other than anything under
@@ -208,6 +211,7 @@ class RepoReport:
     touched: dict[str, str] = field(default_factory=dict)
     notes: list[pathlib.Path] = field(default_factory=list)
     audits: list = field(default_factory=list)  # audit_status.FollowUp
+    retirable: list = field(default_factory=list)  # (run, later run), audit_status
 
     @property
     def stated_paths(self) -> set[pathlib.Path]:
@@ -236,7 +240,7 @@ class RepoReport:
 
     @property
     def empty(self) -> bool:
-        return not (self.rows or self.briefs or self.notes or self.audits)
+        return not (self.rows or self.briefs or self.notes or self.audits or self.retirable)
 
 
 def find_repos(roots: list[pathlib.Path]) -> list[pathlib.Path]:
@@ -531,6 +535,7 @@ def scan(repo: pathlib.Path, inbox_root: pathlib.Path | None) -> RepoReport:
         if report.stated:
             report.worktrees = worktree_claims(repo, {b.path.stem for b in report.stated})
     report.audits = audit_status.follow_ups(repo / AUDITS)
+    report.retirable = audit_status.retirable(repo / AUDITS)
     inbox = inbox_root / report.name if inbox_root else None
     if inbox and inbox.is_dir():
         report.notes = sorted(n for n in inbox.iterdir()
@@ -601,7 +606,7 @@ def print_report(report: RepoReport, today: dt.date) -> None:
                 print(f"      P{brief.get('priority') or '?'}  {brief.path.name:<46}  "
                       f"written {brief.get('written') or '?':<10}  "
                       f"touched {touched(brief.path)}{detail(brief, report)}")
-    if report.audits:
+    if report.audits or report.retirable:
         print_audits(report)
     for row in report.dangling:
         print(f"  ! dangling   {rel(row.index)} links {row.target.name}, "
@@ -622,7 +627,7 @@ def print_report(report: RepoReport, today: dt.date) -> None:
 
 
 def print_audits(report: RepoReport) -> None:
-    """The audit follow-up queue: open briefs by need, then unrun directories."""
+    """The audit follow-up queue: open briefs by need, unrun directories, retirable runs."""
     root = report.repo / AUDITS
     print(f"  audit follow-ups: {AUDITS}/  (each brief's execution log)")
     placed = [a for a in report.open_audits if a.needs is not None]
@@ -642,6 +647,10 @@ def print_audits(report: RepoReport) -> None:
         print("    not executed: /drift-update")
     for directory, count in pending.items():
         print(f"      {directory.relative_to(root).as_posix()}/  {count} brief(s)")
+    if report.retirable:
+        print("    retirable: finished, and a later run of the source exists")
+    for run, newer in report.retirable:
+        print(f"      {run.relative_to(root).as_posix()}/  superseded by {newer.parent.name}")
 
 
 def inbox_findings(names: set[str],
@@ -695,12 +704,13 @@ def main() -> int:
     problems = sum(len(r.problems) for r in reports)
     audits = sum(len(r.open_audits) for r in reports)
     unplaced = sum(len(r.unplaced_audits) for r in reports)
+    retire = sum(len(r.retirable) for r in reports)
     notes = sum(len(r.notes) for r in reports)
     active = sum(not r.empty for r in reports)
     print(f"{len(repos)} repos swept, {active} with handoff work: "
           f"{open_rows} indexed brief(s), {stated} with frontmatter, {unindexed} unindexed, "
           f"{dangling} dangling row(s), {problems} frontmatter finding(s), "
-          f"{audits} audit follow-up(s), {unplaced} without Needs, "
+          f"{audits} audit follow-up(s), {unplaced} without Needs, {retire} retirable run(s), "
           f"{notes} inbox note(s), {len(loose)} loose, {len(orphans)} orphan director(ies)")
 
     findings = unindexed + dangling + problems + unplaced + len(loose) + len(orphans)

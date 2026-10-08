@@ -175,6 +175,32 @@ expect_path "the copy at the top is kept" "$src/02-applied.md" present
 expect_path "the copy under completed/ is kept" "$src/completed/02-applied.md" present
 expect_exit "--check fails while both exist" 1 --check
 
+# 5. --retirable lists a finished run once a later run of its source
+#    exists, and reads only. The newest run of a source is never listed,
+#    finished or not, nor is a run with an open brief or one never run.
+done1="$fix/docs/audits/2026-09-01/done"
+done2="$fix/docs/audits/2026-09-08/done"
+pend1="$fix/docs/audits/2026-09-01/pend"
+pend2="$fix/docs/audits/2026-09-08/pend"
+later="$fix/docs/audits/2026-09-08/src"
+mkdir -p "$done1/completed" "$done2/completed" "$pend1" "$pend2" "$later"
+for d in "$done1" "$done2" "$pend1" "$pend2" "$later"; do
+    echo "# report" > "$d/00-audit-report.md"
+done
+brief "$done1" completed/01-applied.md "**Executed**: 2026-09-02 — applied"
+brief "$done1" completed/02-closed.md "**Executed**: 2026-09-02 — escalated" \
+    "**Closed**: 2026-09-03 — answered"
+brief "$done2" completed/01-applied.md "**Executed**: 2026-09-09 — applied"
+brief "$pend1" 01-unrun.md
+expect_exit "--retirable lists and exits clean" 0 --retirable
+expect_line "a finished run a later run supersedes is retirable" \
+    "retirable: docs/audits/2026-09-01/done/  superseded by 2026-09-08"
+expect_no_line "the newest run of a source is not" "2026-09-08/done"
+expect_no_line "a superseded run with an open brief is not" "2026-09-01/src"
+expect_no_line "a superseded run with a brief never run is not" "2026-09-01/pend"
+expect_no_line "a run no later run supersedes is not" "2026-09-01/other"
+expect_path "--retirable deletes nothing" "$done1/completed/01-applied.md" present
+
 echo
 echo "$pass passed, $fail failed"
 [ "$fail" = 0 ]

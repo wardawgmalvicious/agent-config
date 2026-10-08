@@ -183,6 +183,13 @@ echo "# 07-unrun" > "$audits/07-unrun.md"
 mkdir -p "$audits/completed"
 stamp completed/08-filed "**Executed**: 2026-09-02 — applied"
 stamp completed/09-misfiled "**Executed**: 2026-09-02 — escalated" "**Needs**: user — still open"
+# An earlier run of the same source, every brief finished: the later run
+# supersedes it, so it is listed as retirable, and that is no finding.
+older="$fix/docs/audits/2026-08-01/src"
+mkdir -p "$older/completed"
+echo "# report" > "$older/00-audit-report.md"
+{ echo "# 01-old"; echo; echo "## Execution log"; echo; echo "- **Executed**: 2026-08-02 — applied"; } \
+    > "$older/completed/01-old.md"
 
 # 1. Every finding planted above fires, and --check fails on them.
 expect_exit "planted findings fail --check" 1
@@ -250,6 +257,9 @@ expect_no_line "a brief filed under completed/ is not open" "08-filed"
 expect_line "an open brief is listed wherever it sits" \
     "2026-09-01/src/completed/09-misfiled.md  needs user"
 expect_line "an unrun brief counts under its directory" "2026-09-01/src/  1 brief(s)"
+expect_line "a finished run a later run supersedes is retirable" \
+    "2026-08-01/src/  superseded by 2026-09-01"
+expect_no_line "the newest run of a source is not retirable" "2026-09-01/src/  superseded"
 
 # 5. --no-inbox leaves the inbox alone, so one repo can be checked by itself.
 PYTHONIOENCODING=utf-8 uv run python "$repo/scripts/handoff-status.py" \
@@ -282,6 +292,8 @@ fm item "status: open" "priority: 3" "needs: [desktop]" "written: 2026-09-26"
 fm declined "status: open" "priority: 3" "written: 2026-09-28"
 stamp 02-bare "**Executed**: 2026-09-02 — escalated" "**Needs**: tenant"
 expect_exit "resolved fixture passes --check" 0
+expect_line "with a retirable run still listed, as no finding" \
+    "2026-08-01/src/  superseded by 2026-09-01"
 
 echo
 echo "$pass passed, $fail failed"
