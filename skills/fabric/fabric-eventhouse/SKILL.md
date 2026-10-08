@@ -44,6 +44,11 @@ Worked `az rest` invocation and the REST item-definition envelope:
 ## Schema Evolution
 
 - **`.create-merge table`** is the safe / idempotent form — adds missing columns, never drops existing. Prefer over `.create table` for repeatable deployments.
+  A deployment pipeline appears to apply a KQL database's schema the
+  same way: two stages reached only by pipelines held every column added
+  in the repo and every one since dropped from it, the same set in both
+  (inferred from their end state, 2026-10-07; Learn's deployment pages
+  don't say). Run drops live in each stage.
 - `.alter-merge table T (NewCol: string)` — add column.
 - **`.alter table T (Col1:type, Col2:type, …)`** restates the whole column
   list and is the only command that **reorders**: the table keeps exactly
