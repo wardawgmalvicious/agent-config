@@ -196,5 +196,5 @@ user scope (`~/.claude/rules/claude-config-scoping.md`).
 
 Per-language rules are `~/.claude/rules/coding-<lang>.md`, loaded by
 `paths:` glob and overridden by a repo's own `.claude/rules/` copy;
-userPreferences has the summary. Fabric Git-sync serialization:
-`~/.claude/rules/fabric-git-serialization.md`.
+`~/.claude/rules/README.md` § "What's here" lists them. Fabric Git-sync
+serialization: `~/.claude/rules/fabric-git-serialization.md`.

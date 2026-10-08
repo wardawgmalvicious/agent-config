@@ -1105,3 +1105,16 @@ reconciling `~/.claude.json`, and a removed server staying connected
 until restart — moved to `claude/rules/claude-config-scoping.md` on
 2026-09-23, in 2c40f06, which also corrected that rule's scope test to
 match the paragraph above.
+
+## Coding conventions
+
+**2026-10-08.** The section ended its first sentence with
+"userPreferences has the summary", shortened on 2026-09-23 in `ed8434d`
+from "See userPreferences for the cross-language summary." The
+2026-10-08 prompt audit found no userPreferences block in its session,
+at low confidence (`docs/audits/2026-10-08/prompt-audit/`, decision 6),
+and the user confirmed that no session this file serves receives one;
+the session that made this edit, in the VS Code extension on 2.1.292,
+had none either. So the pointer now names the one list that exists,
+`~/.claude/rules/README.md` § "What's here", which deploys with the
+rules and links each one.
