@@ -423,7 +423,13 @@ deployed state, but the hook and the files it reads leave in one commit.
   lines: the `copilot/` clause of the `<tool>/` paragraph, both
   `copy-copilot.ps1` commands, the `copilot/instructions/` table row,
   the sentence opening "Copilot takes only", and each reference to
-  `copilot-payload.md`.
+  `copilot-payload.md`. Until then both commands read as routine to
+  every session here: the freeze sits in
+  `.claude/rules/copilot-payload.md:60-64`, which loads only on a Read
+  under `copilot/`, while root loads at launch (a prompt audit of this
+  repo, 2026-10-08, finding 17). So the removal takes both lines out,
+  or, should the payload be kept frozen, marks them frozen in their
+  comments.
 - **`claude/CLAUDE.md` § "GitHub Copilot no longer inherits this
   payload"** is rewritten around what reads the payload now: Claude Code
   and VS Code's Claude target read `~/.claude`, and no other target
@@ -450,6 +456,14 @@ deployed state, but the hook and the files it reads leave in one commit.
   The 2026-09-30 Copilot panel listed the repo's root one all the
   same, by a route not traced (§ "What each target lists"). Its
   `:184-185`, "unprobed here", is settled by § "How it graded".
+  Its "never `~/.claude`" also disagrees with the rule it points to:
+  `claude/rules/vscode-scoping.md:60-62`, as read 2026-10-08, has a
+  profile carrying none of the `chat.*Locations` switches leave Copilot
+  inheriting the whole payload (2026-09-11), and this section's ledger
+  entry of 2026-09-24 (`docs/evidence/user-claude-md.md:1029-1034`)
+  found a profile reading it. The rewrite settles which holds,
+  profile by profile (a prompt audit of this repo, 2026-10-08,
+  decision 2).
 - **Three statements from `6545f2e` are corrected, not cut.** They were
   written that morning, before the panels were seen.
   `claude/rules/agent-instructions-scoping.md` calls the other
