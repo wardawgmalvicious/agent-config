@@ -14,7 +14,7 @@ disable-model-invocation: false
 
 Page-level JSON for reports in PBIR format. Each page lives in `definition/pages/<PageName>/page.json`. Page order and the active page are tracked in `definition/pages/pages.json`.
 
-Schema: `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json`
+Schema: `https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/<version>/schema.json`. Copy the version from another `page.json` in the same report; the examples below use 2.0.0.
 
 ### Top-Level Properties
 
