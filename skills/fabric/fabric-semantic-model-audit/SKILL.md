@@ -29,7 +29,7 @@ grep -rh "mode:" definition/tables/*.tmdl | sort | uniq -c
 
 `import`, `directLake`, `directQuery` or `dual`. Mixed modes mean a
 **composite model**, which in turn means source groups — and cross
-source group relationships are *limited* (§5). Direct Lake has two
+source group relationships are *limited* (§4). Direct Lake has two
 forms, **on OneLake** and **on SQL analytics endpoint**, and they differ
 on nearly every limitation that matters to remediation; the connection
 expression in `expressions.tmdl` tells you which.
@@ -45,7 +45,7 @@ and you should say which tier a finding came from.
 
 | Tier | Needs | What it gets you |
 | --- | --- | --- |
-| **TMDL on disk** — `definition/**` | nothing | Shape, relationships, declared cardinality, measure text, storage mode. Works offline and in CI. Most of §4 and §5 come from here. |
+| **TMDL on disk** — `definition/**` | nothing | Shape, relationships, declared cardinality, measure text, storage mode. Works offline and in CI. Most of §3 and §4 come from here. |
 | **Live metadata** — `INFO.VIEW.*` via executeQueries | model admin + Build; tenant setting | The model *after* binding: real storage mode, calculated columns, measure `[State]`. |
 | **Fabric notebook** — `sempy.fabric` | Fabric capacity, workspace contributor, **ReadWrite** on the model | Best Practice Analyzer (60+ rules, five categories) and Model Memory Analyzer. The only path to column-level memory and cardinality *for a Direct Lake model*. |
 
@@ -292,7 +292,7 @@ skill still loads where no MCP server is configured at all.
 
 Two things stay true when you point at it. **Reporting the finding is
 still this skill's job; running the rename is not** — that is a write
-against the model, so it needs a separate ask (§8). And carry the source's
+against the model, so it needs a separate ask. And carry the source's
 own caveat rather than just the recommendation: **review and validate the
 renames before saving**, because a rename can break DAX expressions,
 relationships and other dependent objects. A bulk rename applied
@@ -310,8 +310,7 @@ remediation is unavailable in this storage mode is not a finding yet.
 
 - **`INFO.VIEW.*` blanks `[Expression]` for users without write
   permission.** A measures listing with empty formulas means read-only
-  access, **not** an empty model. This is the single most likely way
-  this skill produces a confidently wrong answer.
+  access, **not** an empty model.
 - **BPA and the memory analyzer need ReadWrite on the model** — they go
   through TOM, which is *stricter* than the `INFO.VIEW` read path and a
   different failure mode. `list_tables` / `read_table` go over XMLA and
