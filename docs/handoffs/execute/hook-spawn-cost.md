@@ -19,10 +19,13 @@ written: 2026-10-08
 ## The cost
 
 Five command hooks run synchronously on hot paths, each costing at
-least one Git Bash spawn of about 0.4 s (`claude/CLAUDE.md`, measured
-2026-10-07). A silent success leaves no timing in a transcript, so the
-doctor's figures are spawn arithmetic over the 50 most recent sessions,
-2026-10-06 22:43Z to 2026-10-08 03:46Z, 23 of them probes:
+least one Git Bash spawn: about 60 ms on a healthy machine, and about
+0.5 s while `bash.exe` is in a degraded state that recurs until a
+reboot (`claude/CLAUDE.md`, 2026-10-09, from a machine-config session's
+inbox note; the 0.4 s measured on 2026-10-07 was that state). A silent
+success leaves no timing in a transcript, so the doctor's figures are
+spawn arithmetic at 0.4 s over the 50 most recent sessions, 2026-10-06
+22:43Z to 2026-10-08 03:46Z, 23 of them probes:
 
 | Hook | Event, matcher | Runs | Floor |
 | --- | --- | --- | --- |
@@ -31,6 +34,10 @@ doctor's figures are spawn arithmetic over the 50 most recent sessions,
 | `name-session.sh` | UserPromptSubmit | every prompt | 0.4 s each |
 | `log-instructions-loaded.sh` | InstructionsLoaded | every load | 0.4 s each |
 | `log-skill-invocations.sh` | PostToolUse, `Skill` | 42 | about 17 s |
+
+Those floors are the degraded state's. At a healthy 60 ms each is about
+a seventh: `identity-guard.sh` about 4 minutes, the memory-scope hook
+under one.
 
 `offer-handoff.sh`, on SessionStart `compact`, ran 12 times: 1.3 s
 median, 3.6 s worst. Re-measured 2026-10-08: `claude/settings.json`
@@ -103,7 +110,10 @@ Whether both are still wanted there is a design call.
 
 `claude/settings.json` and `claude/hooks/`, on the user's yes, then
 `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
-`.claude/rules/hooks-and-agents.md` loads on those files.
+`.claude/rules/hooks-and-agents.md` loads on those files, so it also
+takes what this brief decides as guidance, with the "keep hooks
+spawn-lean" that `claude/CLAUDE.md` dropped on 2026-10-09 to stay
+within its line cap.
 
 ## Not checked
 
@@ -122,3 +132,7 @@ personal repo.
 grep -n -E '"matcher"|"command"|"async"|"if"' claude/settings.json   # five hot-path hooks, shell form, one async, no if, on 2026-10-08
 sed -n '138p' claude/hooks/identity-guard.sh                         # the fast path
 ```
+
+Run `bash-doctor.ps1` from the PowerShell tool before timing anything:
+a timing taken while it exits 1 measures the degraded state (exit 0 on
+2026-10-09).

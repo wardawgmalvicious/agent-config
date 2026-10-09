@@ -373,6 +373,13 @@ untested; it was unset at User scope on 2026-10-06, and the app does
 parse `paths:` in a repo's `.claude/rules/`. Whether VS Code's Copilot
 target, on the same runtime, loads the same is inferred, not tested.
 
+The user's call of 2026-10-08, that Copilot may read `~/.claude` and
+they would rather it did
+([copilot-harness-switches.md](copilot-harness-switches.md)), bears on
+this: it prefers Claude's files to a payload of Copilot's own. Whether
+it settles the app, which reads nothing under `~/.claude`, is still the
+user's to say.
+
 ## Before the turn: the upkeep has stopped
 
 **The decision ends the upkeep on either path**, since a retired payload
@@ -432,9 +439,13 @@ deployed state, but the hook and the files it reads leave in one commit.
   comments.
 - **`claude/CLAUDE.md` § "GitHub Copilot no longer inherits this
   payload"** is rewritten around what reads the payload now: Claude Code
-  and VS Code's Claude target read `~/.claude`, and no other target
-  does. Keep its pointer to `vscode-scoping.md`. Retitle it without "no
-  longer", which a prompt audit in a client repo read as migration
+  and VS Code's Claude target read `~/.claude`, and so does the Local
+  target on VS Code's default locations, which every profile here keeps
+  since the user's call of 2026-10-08
+  ([copilot-harness-switches.md](copilot-harness-switches.md)), while
+  the Copilot target does not. Keep its pointer to `vscode-scoping.md`.
+  Retitle it without "no longer", which a prompt audit in a client repo
+  read as migration
   wording on 2026-10-08, for instance as "GitHub Copilot does not inherit
   this payload"; the ledger's heading changes in the same commit, since
   a ledger's headings mirror its file's. It also takes the corporate
@@ -461,9 +472,9 @@ deployed state, but the hook and the files it reads leave in one commit.
   profile carrying none of the `chat.*Locations` switches leave Copilot
   inheriting the whole payload (2026-09-11), and this section's ledger
   entry of 2026-09-24 (`docs/evidence/user-claude-md.md:1029-1034`)
-  found a profile reading it. The rewrite settles which holds,
-  profile by profile (a prompt audit of this repo, 2026-10-08,
-  decision 2).
+  found a profile reading it. The user's call of 2026-10-08 settles it:
+  every profile now reads it, its hooks aside, on VS Code's defaults (a
+  prompt audit of this repo, 2026-10-08, decision 2).
 - **Three statements from `6545f2e` are corrected, not cut.** They were
   written that morning, before the panels were seen.
   `claude/rules/agent-instructions-scoping.md` calls the other
@@ -612,8 +623,9 @@ note carries:
   `~/.claude/`: against `agent-instructions-scoping.md`, where
   `chat.useClaudeMdFile` stays `false`, `vscode-scoping.md`, which
   frames inheriting `~/.claude` as a defect, and `claude/CLAUDE.md`'s
-  "never `~/.claude`". The retirement decides which side moves; the note
-  to that repo carries it if ours stands.
+  "never `~/.claude`". Ours moves, by the user's call of 2026-10-08
+  ([copilot-harness-switches.md](copilot-harness-switches.md)), so the
+  note to that repo carries nothing on it.
 - What it loses: a worktree or a fresh clone of that repo has no
   platform skills under any target, since `.claude/skills` there is
   git-ignored junctions, where `.github/skills` was tracked.
@@ -631,12 +643,12 @@ note carries:
 - **[copilot-harness-switches.md](copilot-harness-switches.md)** is cut
   down, not deleted. The panels answer its questions 1 and 6 for what
   the Copilot target lists, and the files it was to edit are rewritten
-  or deleted here. What is left is whether a Copilot- or Local-target
-  session, started by habit, still takes anything from `~/.claude`: the
-  Copilot panel counted 2 hook sources that no one opened, and
-  machine-config's switches govern the Local harness alone. If the user
-  does not care what those targets read, it is deleted with that no
-  recorded.
+  or deleted here. What was left, whether a Copilot- or Local-target
+  session started by habit still takes anything from `~/.claude`, the
+  user answered on 2026-10-08: the Local target reading it is wanted,
+  and machine-config's keep-out switches are gone. What remains there is
+  the edits that answer makes to two rules, the six agents' call, and
+  whether an experiment can move new chats off the Local harness.
 - **Both name this brief in `blocked-by`.** Drop it there as this one
   is deleted, and re-point what links to any of the three:
 
@@ -646,12 +658,13 @@ note carries:
 
 ## What stays
 
-- `claude/rules/vscode-scoping.md` and machine-config's profile
-  switches: they keep the Local harness out of `~/.claude`, and a new
-  chat in the Chat view still started there on 2026-09-26. A client repo
-  turned its own Local agent the other way on 2026-10-02; whether that
-  is the new default is the question of
-  [copilot-harness-switches.md](copilot-harness-switches.md).
+- `claude/rules/vscode-scoping.md`, whose scoping facts hold whatever
+  the harness reads. machine-config's profile switches that kept the
+  Local harness out of `~/.claude` went on 2026-10-08: the user made a
+  client repo's turn of 2026-10-02, its Local agent reading Claude's
+  files, the default
+  ([copilot-harness-switches.md](copilot-harness-switches.md)). A new
+  chat in the Chat view still started in Local on 2026-09-26.
 - The harness table in `claude/rules/agent-instructions-scoping.md`,
   corrected: facts about VS Code, true whatever this repo ships.
 - What `identity-guard`, `push-gate.sh` and their READMEs say of a
@@ -693,7 +706,9 @@ pin is ignored the same way, or fails, is unseen.
 
 ## What it costs, and the way back
 
-- **The Copilot, Local and Codex targets get none of the payload.**
+- **The Copilot and Codex targets get none of the payload**, and the
+  Local target only what it reads from `~/.claude` and `.claude/` on
+  VS Code's default locations, as the user wants (2026-10-08).
   Accepted: the user picks the Claude target. Nor is the Copilot target
   a fallback for a server that needs authentication: "Copilot sessions
   can currently access only local MCP servers that don't require

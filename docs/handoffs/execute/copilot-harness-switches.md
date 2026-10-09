@@ -17,7 +17,7 @@ written: 2026-09-26
   wants the new VS Code settings model worked out first. Since
   2026-10-06 it also holds two calls of the user's (§ "A client repo
   pointed its Local agent at Claude's files", § "Six agents in the
-  Default profile").
+  Default profile"); the user answered the first on 2026-10-08.
 
 ## The claim in question
 
@@ -121,6 +121,27 @@ Re-read on 1.139.1 (commit `04c0d99f4f`, installed 2026-09-25) on
   [nested-instruction-files.md](nested-instruction-files.md) rests on
   Local-only settings too. The sixteen were not all mapped to settings.
 
+Re-read on 1.141.0 (`2a59476c9b`) on 2026-10-08 by a machine-config
+session, from `workbench.desktop.main.js` and `nls.messages.json`, and
+its new setting re-read in the bundle here on 2026-10-09:
+
+- **The harness settings are unchanged since 1.139.1.**
+  `chat.defaultToCopilotHarness` and `chat.editor.preferCopilotHarness`
+  default `false`, experimental, with `experiment: {mode: "startup"}`;
+  the second carries the `ChatEditorPreferCopilotHarness` policy from
+  1.134.
+- **New: `chat.editor.localAgent.enabled`**, default `true`,
+  experimental, `experiment: {mode: "startup"}`, whose description, as
+  that session read it, is "When enabled, shows the VS Code local chat
+  harness in the chat picker." An experiment turning it off would hide
+  the Local harness, the only one these location settings govern.
+- The built-in location arrays still hold `.claude/agents`,
+  `~/.claude/agents`, `.claude/skills`, `~/.claude/skills`,
+  `.claude/rules`, `~/.claude/rules` and the three Claude hook files.
+  `chat.useClaudeMdFile` defaults `true`, `chat.useClaudeHooks` `false`,
+  and `chat.includeReferencedInstructions` `false`, its description
+  unchanged ("only used by the Local agent harness").
+
 ## What it puts in question here
 
 Outside `docs/handoffs/`, 42 mentions in 13 files on 2026-09-26:
@@ -216,6 +237,16 @@ The ones that state the model rather than cite it:
    Local would have started. It "does not migrate existing sessions or
    change explicit or remembered Claude and Codex selections", so a
    Claude pick holds.
+
+   Moot for machine-config, by its session of 2026-10-08, since the
+   keep-out switches it existed to hold are gone (§ "What
+   machine-config already did"). Not moot here, corrected on
+   2026-10-09: on the new default the Local harness is the one that
+   reads `~/.claude`, and the Copilot harness reads none of it
+   (question 1), so an experiment that starts new chats on the Copilot
+   harness, or hides Local through `chat.editor.localAgent.enabled`,
+   takes the payload from those sessions. Whether an explicit `true`
+   for that setting holds is the same question.
 6. Does the SDK harness read `AGENTS.md` and `CLAUDE.md`, and follow an
    instructions file's links, and under what settings? The answer
    decides whether the import form's two Copilot conditions outlive the
@@ -238,9 +269,24 @@ rules links by Markdown. That contradicts
 `chat.useClaudeMdFile` stays `false`, and `claude/CLAUDE.md` § "GitHub
 Copilot no longer inherits this payload", and it runs against the
 premise of machine-config's `-Audit`, though that checks profiles, not a
-workspace's settings. **Whether it is that repo's exception or the new
-default is the user's call.** A new default changes those two files
-here, and machine-config through its inbox.
+workspace's settings. **It is the new default, by the user's call of
+2026-10-08**, which a machine-config session relayed and the user
+confirmed at `/triage` on 2026-10-09: Copilot may read `~/.claude` and
+`.claude`, and the user would rather it did. The skills were never
+shared with other developers, the user builds none for others and stays
+on Claude Code, and on the days they use GitHub Copilot at work it reads
+Claude's files too. machine-config acted on it that day (§ "What
+machine-config already did"). Here it changes three files:
+`claude/rules/agent-instructions-scoping.md`, where
+`chat.useClaudeMdFile` stays `false`; `claude/CLAUDE.md`'s "never
+`~/.claude`", which
+[copilot-payload-retirement.md](copilot-payload-retirement.md)
+rewrites; and `claude/rules/vscode-scoping.md`, whose § "Drift" still
+says `-Audit` reports a profile leaving a Claude location or switch on,
+which it stopped doing, and whose gotchas on per-profile switches and
+unlisted locations, still true, are framed as hazards to switching
+inheritance off. Its `chat.includeReferencedInstructions` gotcha holds
+as written.
 
 Unverified there: whether the Local agent follows `CLAUDE.md`'s
 `@AGENTS.md`, which would load `AGENTS.md` twice with
@@ -274,10 +320,28 @@ Landed there 2026-09-24:
   bundle, and a comment there records the harness limit.
 - `cf6c683` holds the stored profiles to the same list at commit time.
 
-Neither harness setting nor `chat.includeReferencedInstructions` is on
-that list (2026-09-26). A change to the list, or a check on the harness
-settings, goes to `~/handoff-inbox/machine-config/`: the check lives
-there.
+Reversed there 2026-10-08, on the user's call above, in four commits on
+its `main`:
+
+- `9ba2d78` dropped `ClaudeLocations`, `ClaudeSwitches`,
+  `Find-ClaudeInheritance`, the `-Audit` check and its tests.
+- `47ecb84` captured the Fabric profile, which the user had already
+  switched by hand: Claude's locations on, Copilot's `.github/` and
+  `~/.copilot/` off.
+- `05ef113` dropped the Config and Azure profiles' `false` entries, so
+  VS Code's defaults apply.
+- `c28b714` removed the Fabric profile's
+  `chat.includeReferencedInstructions`, which defaults `false`.
+
+Hooks stay off on purpose: each profile keeps its Claude hook locations
+`false` or sets `chat.useHooks` `false`, and `chat.useClaudeHooks`
+defaults off. Reading the guidance is wanted; running Claude Code's
+hook scripts under another harness was never tested. The live Default
+profile already listed every Claude location `true` and
+`chat.includeReferencedInstructions` `false` (read 2026-10-08).
+
+The list went with the check. A check on the harness settings, if one
+is wanted, goes to `~/handoff-inbox/machine-config/`.
 
 ## Reproducing
 

@@ -247,7 +247,8 @@ test sets, and every client repo relinked.
 
 `/triage` left these here on 2026-10-08: two edits from a client note of
 2026-10-07, and two from the 2026-10-06 `fabric` audit's follow-ups,
-each citing its audit brief.
+each citing its audit brief. On 2026-10-09 it added a pointer to an
+inbox note that waits on Part 1.
 
 - **Part 1**: `fabric-data-agent` names the service-principal tenant
   setting by its old title, *Service principals can use Fabric APIs*, at
@@ -273,6 +274,13 @@ each citing its audit brief.
   read are in the Constraint of
   [brief 03](../../audits/2026-10-06/fabric/03-rewrite-graph-gql-support-and-query-api.md),
   which stays open on its own re-check.
+- **Part 1, in the inbox**: the platform half of a prompt audit run in
+  a client Fabric repo on 2026-10-08 waits there as
+  `2026-10-08-prompt-audit-platform.md`, with the whole audit as
+  `2026-10-08-prompt-audit.patch`, on the user's word that day
+  (`566973a`). Its hunks touch 31 platform skills, 11 of the 15
+  candidates among them (counted 2026-10-09). Once Part 1 is decided,
+  `/triage` takes it, dropping the hunks of whatever is archived.
 - **Part 2**: a trigger for what authorizes a service principal, tenant
   settings and workspace roles rather than API permissions, in
   `fabric-auth`'s `description`, 639 characters on 2026-10-08. The
