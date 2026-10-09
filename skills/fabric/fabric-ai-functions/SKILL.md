@@ -19,7 +19,7 @@ Skip them when you need **low-level control** over a single prompt/response, cus
 ## Prerequisites
 
 - **Paid capacity** — F2 or higher, or any P edition. Not available on trial/Free.
-- **Fabric Runtime 1.3+** — earlier runtimes can't run AI Functions. The `+` is upstream's own wording and it does cover **Runtime 2.0** (GA Aug 2026 — Spark 4.1, Delta Lake 4.2, Python 3.13), which becomes the default for new workspaces and environment items around **late September 2026**. One catch comes with it: **pandas** AI Functions on Runtime 2.0 need a temporary compatibility patch, because 2.0 ships `nest_asyncio2` rather than `nest_asyncio`.
+- **Fabric Runtime 1.3+** — earlier runtimes can't run AI Functions. The `+` is upstream's own wording and it does cover **Runtime 2.0** (GA Aug 2026 — Spark 4.1, Delta Lake 4.2, Python 3.13), planned as the default for new workspaces and environment items from **late September 2026**, though Learn's runtime page still named 1.3 the default on 2026-10-09. One catch comes with it: **pandas** AI Functions on Runtime 2.0 need a temporary compatibility patch, because 2.0 ships `nest_asyncio2` rather than `nest_asyncio`.
 
   ```python
   # Runtime 2.0 only — temporary, per upstream; PySpark AI Functions need nothing.
@@ -56,7 +56,7 @@ Choose **PySpark for large-scale** datasets (work distributes across workers); p
 | pandas on the **PySpark** runtime | nothing for most usage |
 | PySpark on the **PySpark** runtime | nothing |
 
-As of GA, the **`openai` package is no longer a required dependency** — install `openai>=1.99.5` *only* if you need SDK-native client behavior or Pydantic `response_format` examples. Keep it out of the install to stay lightweight.
+The **`openai` package is not a required dependency** — install `openai>=1.99.5` *only* if you need SDK-native client behavior or Pydantic `response_format` examples. Keep it out of the install to stay lightweight.
 
 ## The nine functions
 
@@ -105,7 +105,7 @@ output = (df
 
 ## Configuration
 
-Defaults: model **`gpt-5-mini`**, **`reasoning_effort="low"`**, `temperature` unset (GPT-5-series accepts only the model default — setting it is ignored), embeddings via `text-embedding-ada-002`, concurrency **200**. This changed at GA — pandas/PySpark Python functions previously defaulted to the GPT-4 series.
+Defaults: model **`gpt-5-mini`**, **`reasoning_effort="low"`**, `temperature` unset (GPT-5-series accepts only the model default — setting it is ignored), embeddings via `text-embedding-ada-002`, concurrency **200**.
 
 The config **objects differ by engine** — don't copy pandas config into a PySpark notebook:
 
@@ -139,7 +139,7 @@ The **GPT-4.1 series is being retired.** If you pinned pipelines:
 | `gpt-4.1` | `gpt-5.1` |
 | `gpt-4.1-mini` | `gpt-5-mini` (the new default) |
 
-For higher-quality/complex transformations, opt into `gpt-5.1` and/or raise `reasoning_effort`. AI Functions in Warehouse/SQL and Dataflow Gen2 receive the same model upgrade by end of June 2026.
+For higher-quality/complex transformations, opt into `gpt-5.1` and/or raise `reasoning_effort`. AI Functions in Warehouse/SQL and Dataflow Gen2 were scheduled to receive the same model upgrade by end of June 2026.
 
 ### Custom Azure OpenAI / Foundry endpoints
 
@@ -166,7 +166,7 @@ Most functions accept file paths (images, PDFs, text) instead of literal text: `
 
 ## Billing
 
-AI Functions bill against the **Copilot and AI** meter on your capacity — **separate from the Spark meter** that covers the notebook/cluster compute. A PySpark `ai.classify` over millions of rows therefore shows up as two line items: notebook compute (Spark meter) + model token usage (AI Functions on the Copilot-&-AI meter). From 2026-03-17 the Capacity Metrics app reports **AI Functions** and **AI Services** as separate operations (reporting change only; rates unchanged). See `fabric-warehouse-monitoring` for the metrics app.
+AI Functions bill against the **Copilot and AI** meter on your capacity — **separate from the Spark meter** that covers the notebook/cluster compute. A PySpark `ai.classify` over millions of rows therefore shows up as two line items: notebook compute (Spark meter) + model token usage (AI Functions on the Copilot-&-AI meter). The Capacity Metrics app reports **AI Functions** and **AI Services** as separate operations (since 2026-03-17). See `fabric-warehouse-monitoring` for the metrics app.
 
 ## Gotchas
 
