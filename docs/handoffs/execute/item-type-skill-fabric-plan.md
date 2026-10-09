@@ -1,8 +1,9 @@
 ---
-status: open
+status: deferred
 priority: 2
 needs: []
 blocked-by: []
+reopen-when: a client repo other than the Git-sync sandbox holds a Plan item
 written: 2026-09-02
 ---
 
@@ -12,7 +13,15 @@ written: 2026-09-02
   `learn.microsoft.com/fabric/iq/plan/` links that prompted
   the [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md) work and
   finding they were about something else entirely.
-- **Kind**: coverage decision, now answered: `/author-skill` next.
+- **Kind**: coverage decision, answered yes on 2026-09-30. Since
+  2026-10-09 the expected home is a reference under `fabric-iq` rather
+  than a skill of its own: Learn lists Planning among the IQ workload's
+  items, and [iq-skills-into-fabric-iq.md](iq-skills-into-fabric-iq.md)
+  builds that skill. Confirm the shape with the user on reopening.
+- **2026-10-09**: [platform-skill-portfolio.md](platform-skill-portfolio.md)
+  holds new platform skills back until client work holds their items.
+  The only Plan item on this machine sits in the sandbox repo
+  (2026-10-08).
 - **Step 0**: answered *no* on 2026-09-03 and *yes* on 2026-09-30, when a
   Plan item appeared in a client sample repo on this machine, this
   brief's reopen trigger. The recommendation below was unchanged *on the

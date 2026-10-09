@@ -202,20 +202,31 @@ After:
 ## What the result decides
 
 If 1 holds and 2 shows the saving, the second wave is next, each
-candidate re-measured first:
+candidate re-measured first. The user set its shape on 2026-10-09, in
+[platform-skill-portfolio.md](platform-skill-portfolio.md):
 
 - `fabric-auth`, `fabric-cli` and `fabric-gotchas` into
   `fabric-rest-api`, a surviving name, so fewer renames; the gotchas
-  become a symptom → owner index.
-- `fabric-ai-functions` and `fabric-mlv` as references under
-  `fabric-spark`.
-- `pbir-cli` into `pbir-report-workflow`.
-- Keep or drop the two vendored `powerbi-report-*` skills.
+  become a symptom → owner index. No brief carries this one yet. It
+  takes the trigger the portfolio brief held for `fabric-auth`: what
+  authorizes a service principal, tenant settings and workspace roles
+  rather than API permissions. That guidance landed under `fabric-auth`'s
+  401 heading, while its description, 639 characters on 2026-10-08, did
+  not grow.
+- [notebook-skills-into-fabric-spark.md](notebook-skills-into-fabric-spark.md):
+  `fabric-ai-functions`, `fabric-mlv`, `fabric-spark-monitoring` and
+  `fabric-error-handling` into `fabric-spark`, always listed.
+- [pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md):
+  `pbir-cli`, the six file-level PBIR skills and `powerbi-report-design`,
+  no longer vendored, into `pbir-report-workflow`.
+- `powerbi-report-authoring` goes, archived by the portfolio brief's
+  Part 1.
 
 None of it reopens Workstream C, declined 2026-09-01 and recorded in
 both `tests/skills/*-triggers/expected_activations.md`, which covered
 glob-scoped pairs only. If 1 fails, with the router routing worse than
-the pair, record why here and stop.
+the pair, record why here, stop, and put the two router briefs back to
+the user, who decided them before this result.
 
 ## Re-measure before acting
 

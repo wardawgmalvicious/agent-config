@@ -1,8 +1,9 @@
 ---
-status: open
+status: deferred
 priority: 3
 needs: [user]
-blocked-by: [platform-skill-portfolio.md]
+blocked-by: []
+reopen-when: iq-skills-into-fabric-iq.md has landed, giving the route a home as a fabric-iq reference, its client need being on record since 2026-10-07
 written: 2026-10-08
 ---
 
@@ -13,8 +14,8 @@ written: 2026-10-08
   model questions from Microsoft 365 Copilot Chat. Re-measured against
   the payload at `fb9e38f`: no skill, brief or audit candidate covers
   the route.
-- **Kind**: a decision, the user's, then an `/author-skill` run or an
-  edit. Nothing is drafted.
+- **Kind**: a decision, the user's, then an edit to a reference.
+  Nothing is drafted.
 
 ## The route
 
@@ -55,13 +56,18 @@ observed.
 
 ## The decision
 
-Whether this route gets a skill of its own, through `/author-skill`, or
-a reference beside the AI-instructions guidance, which
-`ai-instructions-into-fabric-tmdl.md` moves to
-`fabric-tmdl/references/ai-instructions.md`.
-`platform-skill-portfolio.md` decides first whether any new platform
-skill is authored while the portfolio shrinks, and `fabric-data-agent`,
-the other home for a Copilot surface, is one of its archive candidates.
+On 2026-10-09 [platform-skill-portfolio.md](platform-skill-portfolio.md)
+ruled out a new platform skill while the portfolio shrinks, and folded
+the four Fabric IQ skills, `fabric-data-agent` among them, into one
+`fabric-iq` ([iq-skills-into-fabric-iq.md](iq-skills-into-fabric-iq.md)).
+Learn's "Get started with Fabric IQ" lists Fabric IQ in Microsoft 365
+Copilot Chat as an integration of the IQ workload (read 2026-10-09).
+
+What is left is which reference holds the route: one under `fabric-iq`,
+beside the data agent's Agent Store route, or one beside the
+AI-instructions guidance, which `ai-instructions-into-fabric-tmdl.md`
+moves to `fabric-tmdl/references/ai-instructions.md`, beside the model's
+Copilot access setting.
 
 ## Not checked
 

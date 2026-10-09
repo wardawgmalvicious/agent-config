@@ -14,9 +14,11 @@ written: 2026-10-07
   (`git show 7dd627e:docs/audits/2026-09-07/powerbi/completed/06-verify-pbip-autodetect-vs-reload-bridge.md`),
   an investigation that could not start without Desktop. Re-measured at
   `4b6e108`: Learn now documents most of what it set out to find.
-- **Kind**: an edit to two `powerbi` skills from Learn, which a session
-  can make alone, and one check left for a Desktop session. Nothing is
-  drafted.
+- **Kind**: an edit to `pbip-project-structure` from Learn, which a
+  session can make alone. Nothing is drafted. Its other half, and the
+  Desktop check that half needed, lapsed on 2026-10-09 when
+  [platform-skill-portfolio.md](platform-skill-portfolio.md) chose to
+  archive `powerbi-report-authoring`.
 
 ## What Learn says now
 
@@ -44,39 +46,33 @@ and "What is the Power BI Desktop Bridge?"
 
 ## What it touches here
 
-- `skills/powerbi/powerbi-report-authoring/references/powerbi-desktop.md`
-  runs the loop, `powerbi-desktop reload --pid`, and its theme-cache
-  workaround (lines 106–108 on 2026-10-07) renames a theme file and
-  updates its registration in `report.json`. Learn's list names that
-  file. Whether the limit binds the bridge's `file.reload/v1` or only
-  the banner, Learn does not say; "close and reopen Desktop", the
-  workaround's other half, is safe either way.
 - `skills/powerbi/pbip-project-structure/SKILL.md:215`, § Gotchas, says
   to take the apply prompt. It shows only with the preview on.
-- 06's own question, whether the prompt blocks or races a scripted
-  reload, is narrower now: the prompt is opt-in, and Learn calls it a
-  banner. How it behaves under automation is still empirical.
+- **Lapsed**: `powerbi-report-authoring`'s
+  `references/powerbi-desktop.md` ran the scripted loop,
+  `powerbi-desktop reload --pid`, and its theme-cache workaround (lines
+  106–108 on 2026-10-07) edits `report.json`, which Learn's list names.
+  06's own question, whether the banner blocks or races a scripted
+  reload, bore on that loop alone. With the skill archived, nothing here
+  scripts a reload; if it is ever re-vendored from upstream, check its
+  workaround against the four-file limit then.
 
 ## Where it lands
 
-The two files above, each owing a retest (`skill-status.py --stale`).
-06's constraint holds: no caveat on behaviour Learn does not state.
+`pbip-project-structure/SKILL.md`, owing a retest
+(`skill-status.py --stale`). 06's constraint holds: no caveat on
+behaviour Learn does not state.
 
 ## Not checked
 
-- **The Desktop check**: Desktop running with a PBIP open, the preview
-  on, the bridge CLI installed
-  (`npm install -g @microsoft/powerbi-desktop-bridge-cli@latest`, as
-  `powerbi-desktop.md:32` gives it; not installed here on 2026-10-07).
-  Then edit a PBIR file, leave the banner up, run `reload`, and record
-  the build. 06's decision tree says what each outcome changes.
-- The Desktop build now installed; 2.157.1354.0 was recorded on
-  2026-09-08.
+Whether the four-file limit binds the `pbir` CLI's own writes to
+`report.json` while Desktop holds the PBIP open with the preview on. If
+it does, `pbir-report-workflow`'s references owe the caveat, once
+[pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)
+has landed.
 
 ## Re-measure before acting
 
 ```bash
-grep -n "report.json" skills/powerbi/powerbi-report-authoring/references/powerbi-desktop.md   # line 108 on 2026-10-07
-grep -n -i "prompt" skills/powerbi/pbip-project-structure/SKILL.md                              # line 215
-npm ls -g --depth=0 | grep -i powerbi                                                           # nothing on 2026-10-07
+grep -n -i "prompt" skills/powerbi/pbip-project-structure/SKILL.md   # line 215 on 2026-10-07
 ```

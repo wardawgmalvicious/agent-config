@@ -1,8 +1,9 @@
 ---
-status: open
+status: deferred
 priority: 2
 needs: []
 blocked-by: []
+reopen-when: a client repo other than the Git-sync sandbox holds a CosmosDBDatabase item
 written: 2026-10-01
 ---
 
@@ -19,6 +20,10 @@ written: 2026-10-01
 - **Kind**: an edit, by `/author-skill`:
   `skills/fabric/fabric-cosmos-db/`, `paths: "**/*.CosmosDBDatabase/**"`.
   Nothing is drafted.
+- **2026-10-09**: [platform-skill-portfolio.md](platform-skill-portfolio.md)
+  holds new platform skills back until client work holds their items.
+  The only Cosmos DB item on this machine sits in the sandbox repo
+  (2026-10-08).
 
 Labels: **documented** is Learn (`learn.microsoft.com/fabric/database/
 cosmos-db/` unless another root is given) or the fabric-cicd docs, read

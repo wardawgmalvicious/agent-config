@@ -2,11 +2,11 @@
 status: open
 priority: 2
 needs: []
-blocked-by: [platform-skill-portfolio.md]
+blocked-by: [pbir-skills-into-pbir-report-workflow.md]
 written: 2026-10-07
 ---
 
-# Handoff: encode the August 2026 formatting settings in the PBIR skills
+# Handoff: encode the August 2026 formatting settings in the PBIR guidance
 
 - **Written**: 2026-10-07, by a `/triage` sweep, from four audit
   follow-ups of the 2026-09-07 `powerbi` run, retired 2026-10-08: 04,
@@ -19,10 +19,15 @@ written: 2026-10-07
   `09-add-url-sourced-custom-icons.md`. Re-measured at
   `4b6e108`: `pbir`'s schema now names part of what all four waited on
   a Desktop round-trip for.
-- **Kind**: an edit to four skills, from the schema where it names a
-  property and from a PBIP export where it does not. Nothing is
-  drafted. The follow-ups hold the evidence, the UI paths and the
-  constraint; this brief holds what is still open.
+- **Kind**: an edit to `pbir-report-workflow`'s references, from the
+  schema where it names a property and from a PBIP export where it does
+  not. Nothing is drafted. The follow-ups hold the evidence, the UI
+  paths and the constraint; this brief holds what is still open.
+- **Re-aimed**: 2026-10-09. It targeted four skills, each with one
+  lifetime invocation or none, so it waited on
+  [platform-skill-portfolio.md](platform-skill-portfolio.md). Three of
+  them fold into `pbir-report-workflow` and the fourth is archived, so
+  it waits for the fold.
 
 ## What the schema names now
 
@@ -42,9 +47,10 @@ none of the first three rows.
 | Space between series | 13 D-1 | `columnChart.layout.stackedGapSize`, "Space between series"; `clusteredColumnChart.layout.clusteredGapSize` |
 | Overlap series | 10 E-4 | `clusteredColumnChart.layout.clusteredGapOverlaps` is the likely one, unconfirmed |
 
-`cartesian.md` already shows `clusteredGapSize` and `stackedGapSize`
-under `layout`, so 13's D-1 is now a label mapping there, not a new
-property.
+`powerbi-report-authoring`'s `cartesian.md` showed `clusteredGapSize`
+and `stackedGapSize` under `layout` on 2026-10-07, so 13's D-1 is a
+label mapping, not a new property. That skill is archived, so the
+mapping goes where the properties do.
 
 ## What still needs an export
 
@@ -65,15 +71,19 @@ Fetch or upgrade before deciding any of these needs Desktop.
 
 ## Where it lands
 
-- `skills/powerbi/pbir-visual-json/`, `SKILL.md` or
-  `references/REFERENCE.md`: every property above.
-- `skills/powerbi/powerbi-report-authoring/references/cartesian.md` and
-  `slicers.md`: the axis names and the slicer encodings.
-- `skills/powerbi/powerbi-report-design/assets/base.json`: only if an
-  asset change is justified; 13's constraint prefers omission.
-- `skills/powerbi/pbir-conditional-formatting/`: the Field-value icon.
+In `skills/powerbi/pbir-report-workflow/references/`, once
+[pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)
+has folded the PBIR skills there:
 
-Each skill touched owes a retest, which `skill-status.py --stale`
+- `visual-json.md`, from `pbir-visual-json`: every property above, and
+  the axis names and slicer encodings that were to go to
+  `powerbi-report-authoring`'s `cartesian.md` and `slicers.md`, the
+  skill `platform-skill-portfolio.md` Part 1 archives.
+- `design/assets/base.json`, from `powerbi-report-design`: only if an
+  asset change is justified; 13's constraint prefers omission.
+- `conditional-formatting.md`: the Field-value icon.
+
+`pbir-report-workflow` owes a retest, which `skill-status.py --stale`
 names. The follow-ups' constraint still binds: a property name comes
 from the schema or an export, never from a UI label, and one that
 cannot be observed is left out.

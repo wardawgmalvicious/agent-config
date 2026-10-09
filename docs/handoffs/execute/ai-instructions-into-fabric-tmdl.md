@@ -6,28 +6,39 @@ blocked-by: []
 written: 2026-10-06
 ---
 
-# Handoff: fold fabric-semantic-model-ai-instructions into fabric-tmdl
+# Handoff: fold fabric-semantic-model-ai-instructions and fabric-tmdl-api into fabric-tmdl
 
 - **Written**: 2026-10-06, by the session that wrote
   `fabric-deploy-skill.md`, from the user's observation that this skill
   reads as a reference document rather than a skill. Measured against
   the payload at `3c69353`.
-- **Kind**: a move, done by hand, then `/test-skill fabric-tmdl`. The
-  skill's body becomes `fabric-tmdl/references/ai-instructions.md`, and
-  the skill goes. No content changes: nothing is drilled, and the
-  storage question below stays open.
+- **Widened**: 2026-10-09, by the user's decision in
+  [platform-skill-portfolio.md](platform-skill-portfolio.md):
+  `fabric-tmdl-api` folds here too, so `fabric-tmdl` takes one test run
+  for both. Measured at `9535085`.
+- **Kind**: two moves, done by hand, then `/test-skill fabric-tmdl`. The
+  skills' bodies become `fabric-tmdl/references/ai-instructions.md` and
+  `fabric-tmdl/references/definition-api.md`, and both skills go. No
+  content changes: nothing is drilled, and the storage question below
+  stays open.
 - **Independent of the deploy pilot**: this tests no router, only that
   a reference-shaped skill can live under the skill that owns its
   moment.
 
 ## Why
 
-It owns no trigger. Its glob,
-`**/*.SemanticModel/definition/cultures/*.tmdl`, sits inside both
-`fabric-tmdl`'s (`**/*.tmdl`, `**/*.SemanticModel/**`) and
-`fabric-tmdl-api`'s (`**/*.SemanticModel/**`), so it never activates
-alone: `tests/skills/pbip-triggers/expected_activations.md:31` records
-all three firing on a culture file.
+Neither skill owns a trigger. The AI-instructions skill's glob,
+`**/*.SemanticModel/definition/cultures/*.tmdl`, sits inside
+`**/*.SemanticModel/**`, which `fabric-tmdl` and `fabric-tmdl-api` both
+carry (2026-10-09), so it never activates alone:
+`tests/skills/pbip-triggers/expected_activations.md:31` records all
+three firing on a culture file.
+
+- **`fabric-tmdl-api` rides `fabric-tmdl`'s glob exactly**, so every
+  semantic-model Read lists both: 658 characters on top of 490. That
+  happened in 4 client sessions, 2026-09-24 to 2026-10-08, and it was
+  never invoked, nor read in client work outside one audit's sweep of
+  35 skills. Ten other skills name it.
 
 - **Workstream C's "leave alone" rested on a wrong premise.** C3, in
   the retired `skill-context-cost.md` (2026-08-31), called the two
@@ -49,8 +60,9 @@ all three firing on a culture file.
 - **It was never reached in client work**: no activation and no
   invocation in the client Fabric repos' sessions, 2026-09-24 to
   2026-10-06.
-- Folding drops one listing entry, 677 description characters, from
-  every culture-file activation.
+- Folding both drops two listing entries from a semantic-model
+  activation: 677 description characters for the AI-instructions skill,
+  on a culture file, and 658 for `fabric-tmdl-api`, on any model file.
 
 ## Shape
 
@@ -58,19 +70,24 @@ all three firing on a culture file.
 | --- | --- |
 | `fabric-semantic-model-ai-instructions/SKILL.md` | `fabric-tmdl/references/ai-instructions.md`, by `git mv` |
 | `fabric-semantic-model-ai-instructions/references/REFERENCE.md` | appended to that file as its link list, then removed |
+| `fabric-tmdl-api/SKILL.md` | `fabric-tmdl/references/definition-api.md`, by `git mv` |
+| `fabric-tmdl-api/references/REFERENCE.md`, a Learn link bundle | appended to `definition-api.md`, then removed |
 
-- Strip the moved file's frontmatter. Drop its "See also", which
-  points at "your internal tooling repo" and so at nothing, and
-  re-point its link to `references/REFERENCE.md`. Change nothing else,
-  line 263 included: settling it is
+- Strip each moved file's frontmatter. Drop the AI-instructions file's
+  "See also", which points at "your internal tooling repo" and so at
+  nothing, and re-point its link to `references/REFERENCE.md`. Change
+  nothing else, its line 263 included: settling it is
   `semantic-model-ai-instructions-storage.md`'s work.
 - `fabric-tmdl`'s `description`, 490 characters, gains trigger words
-  only: "AI instructions" and "Prep data for AI". Its body gains one
-  pointer: to write the model's AI instructions, or edit a culture
-  file's `linguisticMetadata`, read `references/ai-instructions.md`
-  first.
-- Whatever brief 20 D-1 does to `fabric-tmdl`'s `paths:`, the culture
-  files must stay inside it. Check before editing.
+  only: "AI instructions", "Prep data for AI", and "Definition API",
+  `getDefinition`, `updateDefinition`. Its body gains two pointers: to
+  write the model's AI instructions, or edit a culture file's
+  `linguisticMetadata`, read `references/ai-instructions.md` first; to
+  create, read or update a model's definition through the Fabric API,
+  read `references/definition-api.md` first.
+- Brief 20's D-1 left `fabric-tmdl`'s `paths:` at
+  `**/*.SemanticModel/**` (2026-10-09), which holds the culture files.
+  Keep it so.
 
 ## The rename trap
 
@@ -97,14 +114,23 @@ Change each of these in the commit that folds:
   written.
 - `.claude/skills/test-skill/SKILL.md:98` and `:208` cite this skill as
   dated history: leave them.
+- **For `fabric-tmdl-api`**, counted 2026-10-09: its `skillOverrides`
+  entry; its place in the `pbip-triggers` model-file rows; its
+  `skills/README.md` bullet; it has no `.tested.json` stamp. Ten skills
+  name it in prose: re-point each to `fabric-tmdl`, wherever its own
+  fold has moved it. The registry's skills-for-fabric rows naming it
+  re-point too. `tests/skills/code-review/README.md:52` lists it among
+  what the TMDL fixture pulls: drop it. The 2026-09-12 measurement at
+  `.claude/skills/test-skill/references/reading-a-failure.md:38` is
+  dated history: leave it.
 
 ```bash
-grep -rn 'semantic-model-ai-instructions' --exclude-dir=audits --exclude-dir=.git .
+grep -rnE 'semantic-model-ai-instructions|fabric-tmdl-api' --exclude-dir=audits --exclude-dir=.git .
 ```
 
 **Client repos**: relink each repo holding the `fabric` group with
 exactly the groups it already holds, as `fabric-deploy-skill.md` says;
-the relink prunes the dangling junction.
+the relink prunes the two dangling junctions.
 
 ## Verify
 
@@ -118,18 +144,26 @@ the relink prunes the dangling junction.
    skill carried: the 10,000-character cap, and the service refresh a
    Git or deployment-pipeline change needs, once a day for DirectQuery
    and Direct Lake, which the 2026-09-12 run confirmed.
-3. `pre-commit run --all-files`.
+3. A second case, after a model file is Read: update the model's
+   definition through the Fabric API. Passes when `fabric-tmdl` reads
+   `references/definition-api.md`, and the answer keeps that
+   `updateDefinition` sends every part, and which API serves
+   definitions and which serves refresh.
+4. `pre-commit run --all-files`.
 
 ## Re-measure before acting
 
-- Brief 20 edits `fabric-tmdl`'s `paths:` (D-1) and this skill's Q&A
-  retirement dates (D-2 row 10). Read its execution log, then re-read
-  both skills: line numbers above will have moved.
+- Brief 20 edited `fabric-tmdl`'s `paths:` (D-1) and this skill's Q&A
+  retirement dates (D-2 row 10), executed 2026-10-06. Re-read all three
+  skills: line numbers above will have moved.
 - If `semantic-model-ai-instructions-storage.md` has landed by then,
   the moved file says so: carry its result, not the question.
-- `fabric-deploy-skill.md` edits the same shared files
+- Whether `/triage` has applied the client prompt audit's hunks to any
+  of the three, as `platform-skill-portfolio.md` says it may.
+- `fabric-deploy-skill.md` and the other fold briefs that
+  `platform-skill-portfolio.md` lists edit the same shared files
   (`skillOverrides`, `skills/README.md`, `.tested.json`, the registry).
-  If both run at once, the second to land rebases over the first.
+  If two run at once, the second to land rebases over the first.
 
 ## Not checked
 

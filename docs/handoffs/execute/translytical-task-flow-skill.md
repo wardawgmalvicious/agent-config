@@ -3,7 +3,7 @@ status: deferred
 priority: 3
 needs: []
 blocked-by: []
-reopen-when: the sandbox report probe has captured a data function button's PBIR, with slicer, field and measure bindings
+reopen-when: a client repo other than the Git-sync sandbox holds a UserDataFunction a report calls, and the sandbox probe has captured the button's PBIR, with slicer, field and measure bindings
 written: 2026-10-01
 ---
 
@@ -16,6 +16,12 @@ written: 2026-10-01
 - **Kind**: a decision, then `/author-skill`. Deferred until the probe
   below has run, since the button's serialization is the part nothing
   here has seen.
+- **2026-10-09**: [platform-skill-portfolio.md](platform-skill-portfolio.md)
+  holds new platform skills back until client work holds their items,
+  and folds the PBIR skills into `pbir-report-workflow`
+  ([pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)).
+  On reopening, weigh a reference there for the report side before a
+  skill of its own.
 
 ## Why a second skill
 

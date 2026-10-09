@@ -1,314 +1,235 @@
 ---
 status: open
 priority: 1
-needs: [user]
+needs: []
 blocked-by: []
 written: 2026-10-08
 ---
 
-# Handoff: decide which platform skills stay, merge or go, and how a client repo picks them
+# Handoff: archive four platform skills, then split the groups by persona
 
 - **Written**: 2026-10-08, on the user's decision to slim the platform
   skills: retire what goes unused, consolidate, and split the `fabric`
-  group into personas. It folds in `skill-listing-budget.md`, written
-  2026-10-07 by a `/triage` sweep from the listing-budget half of
-  2026-09-10 `skills-for-fabric` brief 08
-  (`git show 7dd627e:docs/audits/2026-09-10/skills-for-fabric/completed/08-decide-catalog-budget-and-reference-lints.md`).
-  Measured at `bde833c`.
-- **Kind**: a decision of the user's, in three parts, each then an edit
-  for a later session. Nothing is drafted.
-- **Priority 1**: the listing overflow it addresses is live in client
-  repos, measured below.
+  group into personas. It folded in `skill-listing-budget.md`, from the
+  listing-budget half of 2026-09-10 `skills-for-fabric` brief 08.
+- **Decided**: 2026-10-09, by the user, part by part, as below. What
+  they decided on, the usage table and a client repo's `/doctor` and
+  `/skill-doctor` numbers, reads back with
+  `git show 0d8efb7:docs/handoffs/execute/platform-skill-portfolio.md`;
+  the commit that rewrote this brief has the reasoning.
+- **Kind**: two edits left here, each its own commit in this brief's
+  worktree: Part 1 archives four skills, then Part 3 moves the rest into
+  persona groups. Part 2 went to briefs of its own.
+- **Priority 1**: Part 1 closes the listing overflow still live in the
+  sandbox repo (§ Evidence).
 
-## Why: two costs
+## Evidence, re-measured 2026-10-08
 
-**Listing space, live.** In the transcripts of the two client Fabric
-repos, 2026-09-24 to 2026-10-06, the rendered skill listing sat at
-29,925–29,998 characters in 27 of 31 sessions, and what overflowed was
-listed by name only; platform entries took up to 16,631 characters of
-it (`fabric-deploy-skill.md` § "Why", measured 2026-10-06). The
-2026-10-07 sweep missed that measurement and called the overflow
-unmeasured: corrected here. Claude Code documents the cap (skills page
-§ "Skill descriptions are cut short", and the settings reference, read
-2026-10-07):
+- **The rendered listing**, read from each client repo's newest
+  sessions: the initial `skill_listing` attachment, its `content`
+  length, and its entries with no description. The main client repo
+  stood at 27,560 characters with every description kept, since
+  `0778339` hid the synced claude.ai skills and that repo set four
+  platform skills `"off"` in its own `.claude/settings.local.json`. The
+  sandbox repo stood at 29,678, with `powerbi-report-authoring` cut to
+  its name. Sessions that overflowed measured 29,883 to 29,998.
+  `skill-telemetry.py listing` prints only each project's maximum,
+  29,998 for both, so it cannot show the change.
+- **Use**: none of the four skills Part 1 archives was invoked in its
+  lifetime (`~/.claude.json` `skillUsage`), or read in client work
+  outside one sweep of 35 skills by a client prompt audit (client
+  transcripts, 2026-09-24 to 2026-10-08).
+- **Items**: both client repos link all 46 platform skills, `fabric`
+  and `powerbi`. By folder suffix, the main repo holds Notebook (14),
+  KQLDatabase (2), DataPipeline (2), Warehouse, VariableLibrary,
+  SemanticModel, Report, Lakehouse, KQLDashboard, Eventhouse and
+  DeploymentPlan; the sandbox repo holds UserDataFunction (2),
+  SQLDatabase (2), Warehouse, SemanticModel, Report, Plan, Lakehouse,
+  EventSchemaSet, DataPipeline and CosmosDBDatabase. Neither holds a
+  CopyJob, MirroredDatabase or Fabric IQ item.
+- **A correction**: this brief's listing measure used to count a folded
+  `>-` description as 2 characters, giving `powerbi` 11,130 where a YAML
+  parse gives 12,528. § Re-measure uses the parse.
 
-- `skillListingBudgetFraction`, default `0.01`, "reserves 1% of the
-  context window" for the listing;
-- past it, Claude Code "keeps every skill's name but drops the
-  descriptions of the least-used skills, so Claude can still invoke
-  those skills but is less likely to choose one on its own";
-- `/doctor` reports the listing's cost and biggest contributors, and the
-  Skills row of `/context` its size after the cap (2.1.196 on);
-- the remedies: raise the fraction, set `"name-only"` in
-  `skillOverrides`, or cut the text; `skillListingMaxDescChars`,
-  default 1536, caps each entry whatever the budget.
+## Part 1: archive four skills
 
-Only an always-listed skill, one without `paths:`, costs listing space
-in every session: 16 of the platform skills.
+| Skill | Listed | Why it goes |
+| --- | --- | --- |
+| `fabric-copy-job` | by glob | no CopyJob item in either client repo |
+| `fabric-mirroring` | by glob | no MirroredDatabase item in either |
+| `pbid-tom-live` | always, 904 characters | never used; the main repo had turned it off |
+| `powerbi-report-authoring` | always, 727 | vendored, on two CLIs the client repo lacks; the PBIR family covers its ground |
 
-**Upkeep.** Every skill is something `/drift-audit` maps Fabric's
-changes onto: the 2026-10-06 `fabric` run wrote 21 briefs. On
-2026-10-07 two of the edits a sweep landed went to `pbir-themes` and
-`pbir-pages`, which have never been invoked.
-
-## Usage
-
-`uv run --with pyyaml python scripts/skill-telemetry.py coverage`, run
-2026-10-07 over the 275 sessions on disk (2026-09-24 to 2026-10-07),
-and `~/.claude.json` `skillUsage`, a lifetime count that `/test-skill`
-runs inflate. Invoked counts slash commands and Skill-tool dispatches.
-
-| Skill | Always listed | Invoked, two weeks | Lifetime |
-| --- | --- | --- | --- |
-| `fabric-activator` | | 0 | 2 |
-| `fabric-ai-functions` | yes | 0 | 0 |
-| `fabric-auth` | yes | 0 | 5 |
-| `fabric-catalog-governance` | yes | 0 | 8 |
-| `fabric-cicd` | yes | 2 | 3 |
-| `fabric-cli` | yes | 0 | 6 |
-| `fabric-copy-job` | | 0 | 0 |
-| `fabric-data-agent` | | 0 | 0 |
-| `fabric-data-pipeline` | | 1 | 3 |
-| `fabric-database` | | 0 | 2 |
-| `fabric-dataflow` | | 0 | 2 |
-| `fabric-deployment-pipelines` | yes | 0 | 5 |
-| `fabric-error-handling` | | 0 | 1 |
-| `fabric-event-schema-set` | | 2 | 3 |
-| `fabric-eventhouse` | | 0 | 1 |
-| `fabric-eventstream` | | 0 | 6 |
-| `fabric-gotchas` | yes | 3 | 6 |
-| `fabric-graph` | | 0 | 0 |
-| `fabric-mirroring` | | 0 | 0 |
-| `fabric-mlv` | yes | 0 | 6 |
-| `fabric-ontology` | | 0 | 1 |
-| `fabric-operations-agent` | | 0 | 1 |
-| `fabric-realtime-dashboard` | | 0 | 0 |
-| `fabric-rest-api` | yes | 0 | 0 |
-| `fabric-security` | yes | 0 | 1 |
-| `fabric-semantic-model-ai-instructions` | | 1 | 2 |
-| `fabric-semantic-model-audit` | yes | 0 | 6 |
-| `fabric-spark` | | 0 | 1 |
-| `fabric-spark-monitoring` | | 0 | 0 |
-| `fabric-tmdl` | | 0 | 1 |
-| `fabric-tmdl-api` | | 0 | 0 |
-| `fabric-variable-library` | | 0 | 1 |
-| `fabric-warehouse` | | 0 | 2 |
-| `fabric-warehouse-monitoring` | | 0 | 1 |
-| `pbid-tom-live` | yes | 0 | 0 |
-| `pbip-project-structure` | | 0 | 2 |
-| `pbir-bookmarks` | | 0 | 0 |
-| `pbir-cli` | yes | 0 | 2 |
-| `pbir-conditional-formatting` | | 0 | 0 |
-| `pbir-filters` | | 0 | 6 |
-| `pbir-pages` | | 0 | 0 |
-| `pbir-report-workflow` | yes | 3 | 2 |
-| `pbir-themes` | | 0 | 0 |
-| `pbir-visual-json` | | 0 | 1 |
-| `powerbi-report-authoring` | yes | 0 | 0 |
-| `powerbi-report-design` | yes | 0 | 1 |
-
-For contrast, `commit` was invoked 194 times in the same two weeks.
-**Zero is a question, not a verdict**: the script's own rule is that "a
-rare-but-critical skill is doing its job", and two weeks is short. The
-lifetime column is the longer view.
-
-## The client repo's numbers
-
-Sent 2026-10-08, at the user's direction, by two sessions in a client
-Fabric repo, from `/doctor` and `/skill-doctor`; cited here by kind.
-
-- **The listing is over its cap there.** `/doctor` put it at about 9.9k
-  estimated tokens: the 16 always-listed platform skills about 3.7k,
-  user-scope skills 2.1k, the 14 skills synced from claude.ai 2.4k, and
-  Claude Code's own 1.6k. Shown by name only, with no description: all
-  14 synced skills, `init`, `security-review` and `pbid-tom-live`. That
-  fits the documented drop of the least-used, though why
-  `pbid-tom-live` went and the other never-used skills did not is not
-  explained.
-- **`/skill-doctor` adds recency**, which the lifetime column lacks. Of
-  the 16 always-listed, only `fabric-gotchas` and
-  `pbir-report-workflow` (last used a day before), `fabric-cicd` (7
-  days) and `fabric-cli` (12) show use in the last fortnight;
-  `pbir-report-workflow` drew 33.7m tokens and `fabric-gotchas` 12.6m
-  over seven days. The last uses of `fabric-catalog-governance`,
-  `fabric-mlv`, `fabric-deployment-pipelines` and
-  `fabric-semantic-model-audit` fall within a day of their authoring or
-  test stamps, so those counts are most likely tests. Never used:
-  `fabric-ai-functions`, `fabric-rest-api`, `pbid-tom-live` and
-  `powerbi-report-authoring`, whose two CLIs are not installed there.
-- **Four are already off in that repo.** Its `/doctor` session set
-  `skillOverrides` to `"off"` in the repo's own gitignored
-  `.claude/settings.local.json` for `fabric-ai-functions`,
-  `pbid-tom-live`, `powerbi-report-authoring` and
-  `powerbi-report-design`, and kept `fabric-rest-api`. That holds in
-  that repo alone; archiving here removes a skill everywhere.
-- **The synced skills are hidden in Claude Code since 2026-10-08**, by
-  user-scope `skillOverrides` in `claude/settings.json` (`0778339`,
-  deployed), so in every repo. Of the 13 synced to this machine, those
-  that cannot work here or repeat a local skill are `"off"`, the four
-  office skills `"user-invocable-only"`, and `deep-research` stays
-  listed; the file says which is which, the commit why. Both syncs stay
-  on, as the user left them on 2026-10-07 (2026-10-06 `claude-code`
-  brief 03, D-2): `syncClaudeAiSkills: false`, read from user or local
-  settings and never a repository's, drops all 13, and turning one off
-  on claude.ai, the only route the relay knew, drops it there too, where
-  `personal-init` and `project-init` are meant to run. Cold probes on
-  2.1.293: an override reaches a synced skill by its short name or its
-  `anthropic-skills:` name, and two scopes' blocks merge rather than
-  replace. What the client repo's listing holds since is unmeasured.
-- **`skillOverrides` takes four values**: `"on"`, `"name-only"`,
-  `"user-invocable-only"`, where Claude does not see the skill but
-  `/name` still works, and `"off"` (settings reference). The third fits
-  a skill only ever typed by name.
-- **Probe sessions inflate every count here.** 23 of the 50 most recent
-  transcripts were probe sessions in this repo's scratchpad, so the
-  session and invocation counts above include probes and test runs.
-
-Not sent: which groups that repo links, which Part 3 needs.
-
-## Part 1: archive
-
-The candidates are the 15 skills never invoked in their lifetime:
-`fabric-ai-functions`, `fabric-copy-job`, `fabric-data-agent`,
-`fabric-graph`, `fabric-mirroring`, `fabric-realtime-dashboard`,
-`fabric-rest-api`, `fabric-spark-monitoring`, `fabric-tmdl-api`,
-`pbid-tom-live`, `pbir-bookmarks`, `pbir-conditional-formatting`,
-`pbir-pages`, `pbir-themes` and `powerbi-report-authoring`. Each takes
-the user's yes or no; the rest of the table can join on the same terms.
+`fabric-rest-api` and `fabric-realtime-dashboard` stay, the first as
+the hub 23 skills route to and the second because the main repo holds
+a KQL dashboard. The other candidates fold, under Part 2.
 
 - **Archiving is `git rm -r skills/<group>/<name>`**, git history the
-  archive, as for briefs and retired audit runs; a skill comes back with
-  `git checkout <sha>^ -- skills/<group>/<name>`. Recording each in
-  `skills/README.md`, with the commit that last held it, is the user's
-  call.
-- **The rename trap applies** to each, in the commit that archives it:
-  `.claude/settings.json` `skillOverrides`, the
-  `tests/skills/*-triggers/expected_activations.md` rows, the
-  `tests/skills/.tested.json` stamp, `skills/README.md`, other skills'
-  routing mentions, `.claude/skills/drift-audit/references/sources/`
-  counterpart rows, and each client repo's junctions, relinked with the
-  groups it holds. `fabric-deploy-skill.md` § "The rename trap" is the
-  worked list.
-- **`powerbi-report-authoring` and `powerbi-report-design` are
-  vendored** from upstream `skills-for-fabric`, so dropping either also
-  drops its vendoring check in that source's registry entry.
+  archive, as for briefs and retired audit runs.
+- **Record each in `skills/README.md`**, as the user chose: one line
+  saying what it covered and how to restore it,
+  `git checkout <sha> -- skills/<group>/<name>`, where `<sha>` is a
+  commit on `main` that holds it, such as the worktree's base. A branch
+  commit's SHA dies at the landing's rebase. `powerbi-report-authoring`
+  can instead be re-vendored from upstream, which brings a current copy.
+- **The rename trap**, in the archive commit, counted 2026-10-09 with
+  `docs/audits/` left as written:
+  - `.claude/settings.json` `skillOverrides`: the four entries go;
+    `lint-skill-overrides` fails until then.
+  - `tests/skills/fabric-triggers/expected_activations.md`: the
+    `fabric-copy-job` and `fabric-mirroring` rows, then
+    `./scripts/test-activation.ps1 -Set fabric -StaticOnly`.
+  - `tests/skills/.tested.json`: those two skills' stamps.
+  - Other skills' mentions, re-pointed or dropped: `fabric-dataflow`
+    names `fabric-copy-job` and `fabric-mirroring`, which name each
+    other; `fabric-semantic-model-audit` and `pbip-project-structure`
+    name `pbid-tom-live`; `pbir-conditional-formatting`, `pbir-filters`
+    and `powerbi-report-design` name `powerbi-report-authoring`. A name
+    backticked in a description fails `scripts/skill-overlap.py routing`.
+  - The drift registry: `powerbi-report-authoring`'s vendoring check in
+    `.claude/skills/drift-audit/references/sources/skills-for-fabric.md`,
+    and any counterpart row naming the four.
+  - Open briefs naming them; `fabric-cosmos-db-skill.md` cites
+    `fabric-mirroring`'s native-item line.
+  - Dated history stays: `scripts/skill-overlap.py:300-302` and the
+    `fabric-mirroring` story in
+    `docs/handoffs/examples/author-skill.example.md`.
+    `docs/handoffs/templates/skill-handoff.md:60` cites
+    `powerbi-report-authoring` as the `metadata:` precedent: name
+    another.
 
-## Part 2: consolidate what is always listed
+  ```bash
+  grep -rnE 'fabric-copy-job|fabric-mirroring|pbid-tom-live|powerbi-report-authoring' --exclude-dir=audits --exclude-dir=.git .
+  ```
 
-`fabric-deploy-skill.md` is the pilot, merging `fabric-cicd` and
-`fabric-deployment-pipelines` into one router, and its "What the result
-decides" lists the second wave; `ai-instructions-into-fabric-tmdl.md`
-folds another. Part 1 goes first: whatever it archives leaves the
-second wave.
+- **Client repos**: relink each with exactly the groups it holds, both
+  `fabric,powerbi` on 2026-10-08, which prunes the dangling junctions;
+  `fabric-deploy-skill.md` § "The rename trap" has the commands. The
+  main repo's `"off"` entries for `pbid-tom-live` and
+  `powerbi-report-authoring` then name nothing, which is harmless and
+  that repo's to tidy.
+
+## Part 2: four folds, each its own brief
+
+| Brief | Into | Folds | Waits for |
+| --- | --- | --- | --- |
+| [notebook-skills-into-fabric-spark.md](notebook-skills-into-fabric-spark.md) | `fabric-spark`, then always listed | `fabric-spark-monitoring`, `fabric-error-handling`, `fabric-mlv`, `fabric-ai-functions` | the pilot |
+| [pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md) | `pbir-report-workflow` | `pbir-cli`, the six file-level PBIR skills, `powerbi-report-design` de-vendored | the pilot |
+| [iq-skills-into-fabric-iq.md](iq-skills-into-fabric-iq.md) | a new `fabric-iq` | `fabric-data-agent`, `fabric-graph`, `fabric-ontology`, `fabric-operations-agent` | nothing |
+| [ai-instructions-into-fabric-tmdl.md](ai-instructions-into-fabric-tmdl.md) | `fabric-tmdl` | `fabric-semantic-model-ai-instructions` and now `fabric-tmdl-api` | nothing |
+
+The pilot is [fabric-deploy-skill.md](fabric-deploy-skill.md), which
+tests the router shape once before the two routers copy it. The
+`fabric-auth` trigger this brief held went to that pilot's second wave,
+where `fabric-auth` merges into `fabric-rest-api`, and the three edits
+it held for `fabric-data-agent` and `fabric-graph` went to the
+`fabric-iq` fold, since those skills stay as references.
 
 ## Part 3: personas as groups
 
-A persona, in this repo's mechanics, is a skill group. A client repo
-links only the groups it names (`link-claude.ps1 -SkillGroups`), so
-splitting `fabric`'s 34 skills lets each repo list only its work's. A
-draft, for the user to reshape, after Part 1:
+The user adopted the draft on 2026-10-09, reshaped here only by Parts 1
+and 2: a skill that a fold will remove goes to its router's group, so
+`fabric-error-handling` joins `fabric-engineering`, not `fabric-core`,
+and `fabric-ai` holds the four skills that become `fabric-iq`.
 
-| Group | Skills |
+| Group | Skills, 42 after Part 1 |
 | --- | --- |
-| `fabric-core`, any Fabric repo | `fabric-auth`, `fabric-cli`, `fabric-rest-api`, `fabric-gotchas`, `fabric-error-handling`, `fabric-security`, `fabric-variable-library`, `fabric-catalog-governance`, `fabric-cicd`, `fabric-deployment-pipelines` |
-| `fabric-engineering` | `fabric-spark`, `fabric-spark-monitoring`, `fabric-data-pipeline`, `fabric-dataflow`, `fabric-copy-job`, `fabric-mirroring`, `fabric-mlv`, `fabric-ai-functions`, `fabric-warehouse`, `fabric-warehouse-monitoring`, `fabric-database` |
+| `fabric-core`, any Fabric repo | `fabric-auth`, `fabric-cli`, `fabric-rest-api`, `fabric-gotchas`, `fabric-security`, `fabric-variable-library`, `fabric-catalog-governance`, `fabric-cicd`, `fabric-deployment-pipelines` |
+| `fabric-engineering` | `fabric-spark`, `fabric-spark-monitoring`, `fabric-error-handling`, `fabric-mlv`, `fabric-ai-functions`, `fabric-data-pipeline`, `fabric-dataflow`, `fabric-warehouse`, `fabric-warehouse-monitoring`, `fabric-database` |
 | `fabric-realtime` | `fabric-eventhouse`, `fabric-eventstream`, `fabric-activator`, `fabric-realtime-dashboard`, `fabric-event-schema-set` |
-| `fabric-ai` | `fabric-data-agent`, `fabric-ontology`, `fabric-graph`, `fabric-operations-agent` |
-| `powerbi`, gaining the semantic-model skills | today's 12, plus `fabric-tmdl`, `fabric-tmdl-api`, `fabric-semantic-model-audit`, `fabric-semantic-model-ai-instructions` |
+| `fabric-ai` | `fabric-data-agent`, `fabric-graph`, `fabric-ontology`, `fabric-operations-agent` |
+| `powerbi` | `pbir-report-workflow`, `pbir-cli`, `pbir-visual-json`, `pbir-filters`, `pbir-pages`, `pbir-themes`, `pbir-bookmarks`, `pbir-conditional-formatting`, `pbip-project-structure`, `powerbi-report-design`, `fabric-tmdl`, `fabric-tmdl-api`, `fabric-semantic-model-audit`, `fabric-semantic-model-ai-instructions` |
 
-The user's work is engineering and Power BI, so a repo would link
-`fabric-core` with `fabric-engineering`, `powerbi`, or both, and the
-real-time and AI groups only where that work is. Skill names keep their
-prefixes; only folders move. What a split owes: `git mv` per skill,
-`PLATFORM_GROUPS` in `scripts/lint-skill-overrides.py`, the group lists
-in `skills/README.md` and root `CLAUDE.md` § "Commands", the activation
-test sets, and every client repo relinked.
+- **Skill names keep their prefixes**; only folders move.
+- **Which groups a client repo links is the user's call**, per repo.
+  By the items above, each holds engineering, real-time and Power BI
+  work and no Fabric IQ item; the user's own work is engineering and
+  Power BI.
+- **When**: after Part 1, as its own commit in the same worktree, so
+  the client repos relink once with their new groups. A fold brief run
+  later finds its skills under the new folders.
+- **What the split owes**, counted 2026-10-09:
+  - a `git mv` per skill, 42;
+  - `PLATFORM_GROUPS` in `scripts/lint-skill-overrides.py:64`;
+  - `PROBE_GROUPS` and the set map in `scripts/activation-expect.py`
+    (lines 52 and 60), and the deploy at
+    `scripts/test-activation.ps1:144`, each naming `fabric` and
+    `powerbi`;
+  - the examples at `scripts/link-claude.ps1:182` and in
+    `scripts/copy-copilot.ps1`, the latter retiring with the Copilot
+    payload;
+  - the group lists in `skills/README.md` and root `CLAUDE.md`
+    § "Commands";
+  - 19 files outside `skills/` naming a path under `skills/fabric/`,
+    and 8 under `skills/powerbi/`;
+  - every client repo relinked with its new groups.
 
-## Briefs this decision governs
+  No link between skills breaks: the nine relative links that leave a
+  skill's `references/` folder all point back into the same skill.
 
-- `pbir-august-formatting-properties.md`, blocked by this brief: each
-  of its four target skills has one lifetime invocation or none.
-- `powerbi-desktop-external-changes.md` edits a reference of
-  `powerbi-report-authoring`, a Part 1 candidate.
-- `semantic-model-ai-instructions-storage.md` targets a skill that
-  `ai-instructions-into-fabric-tmdl.md` folds.
-- The new-skill briefs, `fabric-cosmos-db-skill.md`,
-  `fabric-user-data-functions-skill.md`, `item-type-skill-fabric-plan.md`,
-  `translytical-task-flow-skill.md` and `copilot-chat-power-bi-skill.md`:
-  whether a new platform skill is authored while the portfolio shrinks
-  is part of this decision.
-- Three new skills that no brief carries, accepted for `/author-skill`
-  on 2026-10-06, before this decision: Business Events, the dbt job and
-  Fabric Maps. Their evidence is in the 2026-10-06 `fabric` audit's
-  [brief 19](../../audits/2026-10-06/fabric/completed/19-decide-new-skill-candidates.md),
-  and whether to author them is the new-skill briefs' question.
+## New platform skills wait for client work
 
-## Held for this decision
+The user decided on 2026-10-09 that no new platform skill is authored
+while the portfolio shrinks, until client work uses its item. The
+Git-sync sandbox repo, which holds most of these items as a test bed,
+does not count. Deferred on that trigger:
 
-`/triage` left these here on 2026-10-08: two edits from a client note of
-2026-10-07, and two from the 2026-10-06 `fabric` audit's follow-ups,
-each citing its audit brief. On 2026-10-09 it added a pointer to an
-inbox note that waits on Part 1.
+- [fabric-cosmos-db-skill.md](fabric-cosmos-db-skill.md),
+  [fabric-user-data-functions-skill.md](fabric-user-data-functions-skill.md)
+  and [item-type-skill-fabric-plan.md](item-type-skill-fabric-plan.md),
+  the last expected to land as a `fabric-iq` reference;
+- [translytical-task-flow-skill.md](translytical-task-flow-skill.md),
+  on top of its own probe;
+- [fabric-new-skill-candidates.md](fabric-new-skill-candidates.md):
+  Business Events, the dbt job and Fabric Maps, accepted on 2026-10-06
+  and carried by no brief until then.
 
-- **Part 1**: `fabric-data-agent` names the service-principal tenant
-  setting by its old title, *Service principals can use Fabric APIs*, at
-  `SKILL.md:45` and `references/authentication.md:15`. The admin portal
-  now titles it *Service principals can call Fabric public APIs*, as the
-  other skills say since that triage, while Learn's own data agent page
-  keeps the old one. Correct both if the skill stays.
-- **Part 1**: `fabric-data-agent`'s ontology paragraph (`SKILL.md:21`)
-  says nothing of the outage that Learn's data-agent ontology page still
-  warned of on 2026-10-08: a data agent may fail to add an ontology in
-  the new experience (known issue 1987). Add it, dated, if the skill
-  stays and the page still warns
-  ([brief 07](../../audits/2026-10-06/fabric/completed/07-update-data-agent-consumption-surfaces.md)).
-- **Part 1**: `fabric-graph` still carries four claims that its audit
-  brief put out of scope as unverified, to be raised separately, which
-  nobody did: the source formats, the create and update timeout, and the
-  per-workspace cap and unsupported return types, at
-  `references/REFERENCE.md:408-418` on 2026-10-08, and the graph-type
-  DDL example in `SKILL.md`. Re-measured on 2026-10-08, the timeout
-  claim fails: Learn's graph performance page says "The 20-minute Query
-  API timeout doesn't apply to refresh jobs." Verify the rest, and
-  correct what fails, if the skill stays. The claims and what the audit
-  read are in the Constraint of
-  [brief 03](../../audits/2026-10-06/fabric/03-rewrite-graph-gql-support-and-query-api.md),
-  which stays open on its own re-check.
-- **Part 1, in the inbox**: the platform half of a prompt audit run in
-  a client Fabric repo on 2026-10-08 waits there as
-  `2026-10-08-prompt-audit-platform.md`, with the whole audit as
-  `2026-10-08-prompt-audit.patch`, on the user's word that day
-  (`566973a`). Its hunks touch 31 platform skills, 11 of the 15
-  candidates among them (counted 2026-10-09). Once Part 1 is decided,
-  `/triage` takes it, dropping the hunks of whatever is archived.
-- **Part 2**: a trigger for what authorizes a service principal, tenant
-  settings and workspace roles rather than API permissions, in
-  `fabric-auth`'s `description`, 639 characters on 2026-10-08. The
-  guidance landed under its 401 heading; the trigger would grow an
-  always-listed entry.
+[copilot-chat-power-bi-skill.md](copilot-chat-power-bi-skill.md) waits
+for the `fabric-iq` fold instead. Its route has no item, and its client
+need is already on record, from 2026-10-07.
+
+## The inbox note that waited on Part 1
+
+The platform half of a prompt audit run in a client Fabric repo on
+2026-10-08 waits in the inbox as `2026-10-08-prompt-audit-platform.md`,
+with the whole audit as `2026-10-08-prompt-audit.patch`, on the user's
+word that day (`566973a`). Its hunks touch 31 platform skills, 11 of
+the 15 former candidates among them (counted 2026-10-09). Part 1 is
+decided, so `/triage` can take it when the user says: drop the hunks
+of the four skills archived, and apply a folding skill's hunks to its
+file as it stands, which the fold then moves.
 
 ## Re-measure before acting
 
+From the main checkout, before entering the worktree, whose guard
+refuses a `find` naming `.git`:
+
 ```bash
-uv run --with pyyaml python scripts/skill-telemetry.py coverage   # 275 sessions, 2026-09-24 to 2026-10-07, on 2026-10-07
+uv run --with pyyaml python scripts/skill-telemetry.py coverage   # 306 sessions on 2026-10-08; the four: none invoked, none in skillUsage
+for d in /c/Repos/*/*/.claude/skills; do case "$d" in */Personal/*) continue;; esac; r="${d%/.claude/skills}"; ls "$d" | wc -l; find "$r" -path "$r/.git" -prune -o -type d -name '*.*' -print | sed -n 's/.*\.\([A-Z][A-Za-z]*\)$/\1/p' | sort | uniq -c | tr '\n' ' '; echo; done   # junction count, then item types by suffix: no item named
 ```
 
-The listing text per group, `description` plus `when_to_use`, each
-entry capped at 1,536 characters; on 2026-10-07 it printed `fabric` 34
-skills 32,741, `powerbi` 12 skills 11,130, `workflow` 6 skills 5,984,
-`windows` 1,385, `meta` 1,263, `social` 1,155, and `.claude/skills` 6
-skills 6,488:
+The listing text per group, `description` plus `when_to_use` by YAML
+parse, each entry capped at 1,536 characters. On 2026-10-08 it printed
+`fabric` 34 skills 32,771, `powerbi` 12 12,528, `workflow` 6 5,984,
+`windows` 1 1,385, `meta` 1 1,263, `social` 1 1,155, and
+`.claude/skills` 6 6,505:
 
 ```bash
-python3.13 - <<'EOF'
-import re, glob, collections, pathlib
+uv run --no-project --with pyyaml python - <<'EOF'
+import collections, glob, yaml
 tot, cnt = collections.Counter(), collections.Counter()
 for p in glob.glob('skills/*/*/SKILL.md') + glob.glob('.claude/skills/*/SKILL.md'):
-    t = open(p, encoding='utf-8').read()
-    n = sum(len((re.search(rf'^{k}: "(.*)"\s*$', t, re.M) or re.search(rf'^{k}: (.*)$', t, re.M) or [None, ''])[1]) for k in ('description', 'when_to_use'))
-    parts = pathlib.Path(p).parts
-    g = parts[1] if parts[0] == 'skills' else '.claude/skills'
+    p = p.replace(chr(92), '/')
+    meta = yaml.safe_load(open(p, encoding='utf-8').read().split('---', 2)[1])
+    n = sum(len(str(meta.get(k) or '')) for k in ('description', 'when_to_use'))
+    g = p.split('/')[1] if p.startswith('skills/') else '.claude/skills'
     tot[g] += min(n, 1536); cnt[g] += 1
 for g in sorted(tot): print(g, cnt[g], tot[g])
 EOF
 ```
+
+## Scrubbing
+
+Client repos are named by kind, and their items by type alone; no
+workspace, item or tenant is named.
