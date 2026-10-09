@@ -235,9 +235,9 @@ deletion is disclosed here rather than prompted for afterwards — one
 decision taken before the work, not a third gate on an action this
 recoverable. Ask in the same breath whether anything outside git is
 bound to the branch — a preview environment, a deploy target pinned to
-the ref; a Fabric workspace synced to it is no bar (step 9). Step 9's
-other exceptions are all git-internal and cannot see one.
-**Then wait.**
+the ref; a synced Fabric workspace is no bar (step 9), whose other
+exceptions are git-internal and cannot see one. Ask it with the go-ahead
+in one `AskUserQuestion` call where the session has it. **Then wait.**
 
 Everything past this point writes to `main`. Do not continue on your own
 initiative, even when the merge looks routine, and even when the local
