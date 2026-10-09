@@ -28,7 +28,7 @@ az account get-access-token --resource https://database.windows.net        # SQL
 az account get-access-token --resource https://analysis.windows.net/powerbi/api  # Power BI
 ```
 
-**Critical**: OneLake ONLY accepts `https://storage.azure.com/.default` — using `https://datalake.azure.net/` will fail.
+OneLake accepts only `https://storage.azure.com/.default`; a token for `https://datalake.azure.net/` fails.
 
 ## `az login` flow variants
 

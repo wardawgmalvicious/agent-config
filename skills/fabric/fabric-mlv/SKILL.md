@@ -297,7 +297,7 @@ Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. La
 | Run shows as `Canceled` in Monitor hub but `Skipped` in lineage | Monitor hub maps Skipped → Canceled | Trust the lineage view's status |
 | Data quality report fails to generate | Workspace/lakehouse name has spaces or special characters | Rename, or generate the report against a clean-named lakehouse |
 | Data quality report missing rows | DirectQuery 1M-row cap on non-premium | Use premium capacity, or recreate the report after pruning history |
-| Cross-lakehouse MLV chain doesn't refresh | **Supported now** (it wasn't originally) — but only via **Extended lineage**; a plain schedule stops at the current lakehouse | Turn on Extended lineage; `ReadAll` to see an upstream lakehouse, `ReadWrite` to include it |
+| Cross-lakehouse MLV chain doesn't refresh | A cross-lakehouse chain refreshes only through **Extended lineage**; a plain schedule stops at the current lakehouse | Turn on Extended lineage; `ReadAll` to see an upstream lakehouse, `ReadWrite` to include it |
 | Cross-lakehouse refresh won't start at all | A faulted node in the lineage graph — an upstream dependency you can't access | Grant `ReadAll`/`Read` on it, or drop that lakehouse from the schedule's scope |
 | Scheduled refresh appears not to have run | Another refresh was in progress; Fabric **skips** the later run rather than queueing it | Space schedules beyond the longest run, or consolidate into one schedule |
 | Long-running refresh dies around the day mark | Hard **24-hour** cap on a run, standard or cross-lakehouse | Split the lineage across schedules, or fix what makes the run take a day |

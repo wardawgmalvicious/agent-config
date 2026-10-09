@@ -10,7 +10,7 @@ disable-model-invocation: false
 
 ## TMDL Authoring Rules
 
-### Syntax Rules (MUST follow)
+### Syntax Rules
 
 - **TMDL uses tab indentation** — every nesting level is exactly one tab (`\t`), NOT spaces. Spaces cause validation errors.
   - PowerShell: use `` `t ``
