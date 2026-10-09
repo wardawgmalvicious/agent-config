@@ -106,7 +106,10 @@ question.
   diff. Wrap near 72 columns. Trivial single-file changes may skip
   the body.
 - Multi-line messages: from PowerShell, a single-quoted here-string
-  (`@'` ... `'@`, closing delimiter at column 0); from Bash, prefer
+  (`@'` ... `'@`, closing delimiter at column 0) handed to `-m`, never
+  to `-F -`, which reads stdin and leaves git the here-string as a
+  pathspec: `error: pathspec '<subject>…' did not match any file(s)
+  known to git`, exit 1, nothing committed (2026-10-09). From Bash, prefer
   `git commit -F -` fed by a quoted heredoc over `-m`, which sidesteps
   the quoting entirely. **Crossing the two exits 0** — a PowerShell
   here-string handed to `-m` in the Bash tool commits `@` as the
