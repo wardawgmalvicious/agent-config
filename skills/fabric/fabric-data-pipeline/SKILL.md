@@ -245,9 +245,11 @@ Parameterisation and `parameter.yml` are `fabric-cicd`'s. These three
 are pipeline-shaped and bite after promotion:
 
 - **A promoted pipeline that invokes a dataflow still points at the
-  source workspace's dataflow.** Dataflows are unsupported in deployment
-  pipelines, and the reference is not rebound. Verify after every
-  promotion.
+  source workspace's dataflow.** The reference is not rebound:
+  deployment pipelines list Dataflow Gen2 as supported but do not
+  autobind it. Learn's pipeline CI/CD page still gives the older
+  reason, that dataflows are unsupported (2026-10-09). Verify after
+  every promotion.
 - **Teams and Outlook activities need a manual sign-in per activity** in
   each target workspace — OAuth connections do not deploy.
 - **Workspace variables are unsupported by CI/CD.**
