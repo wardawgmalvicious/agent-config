@@ -335,8 +335,10 @@ versions at the statement level via the `OPTION` clause. Format is
 
 ```sql
 -- Query a table as of a past point in time (UTC)
-SELECT *
-FROM dbo.DimCustomer
+SELECT
+      cust.CustomerId
+    , cust.CustomerName
+FROM dbo.DimCustomer AS cust
 OPTION (FOR TIMESTAMP AS OF '2026-06-18T19:55:13.853');
 ```
 

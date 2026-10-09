@@ -29,7 +29,8 @@ Target is bash 4.4+ (Git Bash on Windows ships 5.x). If a project-scope
 
 - `#!/usr/bin/env bash` — resolves via PATH rather than assuming
   `/bin/bash`.
-- 4-space indent. LF line endings (this repo pins `eol=lf`).
+- 4-space indent. LF line endings; check that the repo's `.gitattributes`
+  pins them (`*.sh text eol=lf`) rather than assuming it does.
 - Lint with `shellcheck`; format with `shfmt`.
 - **Functions**: `lower_snake_case` — `env_value`, `ensure_az_login`.
 - **Globals and constants**: `UPPER_SNAKE_CASE` — `SCRIPT_DIR`, `CONN`.
@@ -288,17 +289,17 @@ denied", indistinguishable from a permissions problem — and a stranded
 
 ```bash
 jq_input() {
-  local rc=0
-  printf '%s\n' "$INPUT" | timeout 5 jq "$@" 2>/dev/null || rc=$?
-  [[ $rc -eq 126 || $rc -eq 127 ]] || return "$rc"
-  printf '%s\n' "$INPUT" | jq "$@" 2>/dev/null
+    local rc=0
+    printf '%s\n' "$INPUT" | timeout 5 jq "$@" 2>/dev/null || rc=$?
+    [[ $rc -eq 126 || $rc -eq 127 ]] || return "$rc"
+    printf '%s\n' "$INPUT" | jq "$@" 2>/dev/null
 }
 
 if command -v jq >/dev/null 2>&1 \
     && OUT=$(jq_input -c '...'); then
-  printf '%s\n' "$OUT" >> "$LOG"
+    printf '%s\n' "$OUT" >> "$LOG"
 else
-  # fallback that still records something
+    # fallback that still records something
 fi
 ```
 

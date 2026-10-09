@@ -183,7 +183,7 @@ in
 
 ```m
 // Good
-PrasedAmount = try Number.FromText([AmountText]) otherwise null
+ParsedAmount = try Number.FromText([AmountText]) otherwise null
 
 // Bad
 SafeOperation = try DangerousStep otherwise null  // hides the actual problem
