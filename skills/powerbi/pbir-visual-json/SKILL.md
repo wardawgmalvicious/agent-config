@@ -1,6 +1,6 @@
 ---
 name: pbir-visual-json
-description: Use when editing visual.json inside a Power BI PBIR report's visuals/ folder. Covers top-level structure (name, position, visual vs visualGroup mutually exclusive, filterConfig sibling NOT child of visual, root-level isHidden for bookmark toggles), expression literal suffixes — string 'text', double 14D, integer 14L, decimal 2.4M, hex '#FF0000', datetime literal, null — with exceptions (transparency uses L inside dropShadow, labelPrecision L, labelDisplayUnits D, triple-quoted font fallback chains), field reference patterns (Column, Measure, Aggregation, HierarchyLevel, SparklineData), visual-type to query-role map (card, tableEx, pivotTable, slicer, lineChart, barChart, kpi, scatterChart), objects vs visualContainerObjects split, sortDefinition, slicer default values via objects.general.properties.filter, visual groups, table column widths.
+description: Use when editing visual.json inside a Power BI PBIR report's visuals/ folder. Covers top-level structure (name, position, visual vs visualGroup mutually exclusive, filterConfig sibling NOT child of visual, root-level isHidden as the saved visibility, not what a bookmark toggles), expression literal suffixes — string 'text', double 14D, integer 14L, decimal 2.4M, hex '#FF0000', datetime literal, null — with exceptions (transparency uses L inside dropShadow, labelPrecision L, labelDisplayUnits D, triple-quoted font fallback chains), field reference patterns (Column, Measure, Aggregation, HierarchyLevel, SparklineData), visual-type to query-role map (card, tableEx, pivotTable, slicer, lineChart, barChart, kpi, scatterChart), objects vs visualContainerObjects split, sortDefinition, slicer default values via objects.general.properties.filter, visual groups, table column widths.
 when_to_use: Invoke when the user edits visual.json, sets a visual property, debugs silently-ignored container props, or writes SQExpr literals. This skill owns visual.json structure and literal encoding, and co-fires with two neighbours on the same file — use pbir-conditional-formatting for colour, gradient, data bar and icon rules, and pbir-filters for the filterConfig.filters body. Report-wide defaults are not here — they live in the theme file.
 paths:
   - "**/visuals/**/visual.json"
@@ -17,14 +17,14 @@ Path: `Report.Report/definition/pages/{PageName}/visuals/{VisualName}/visual.jso
 
 | Property | Type | Required | Notes |
 |---|---|---|---|
-| `$schema` | string | yes | `.../visualContainer/2.7.0/schema.json` |
+| `$schema` | string | yes | `.../visualContainer/<version>/schema.json`; copy the version from another visual.json in the same report |
 | `name` | string | yes | Stable visual ID — referenced by bookmarks, interactions |
 | `position` | object | yes | `x`, `y`, `z`, `width`, `height`, `tabOrder` |
 | `visual` | object | one of | Regular visual — mutually exclusive with `visualGroup` |
 | `visualGroup` | object | one of | Group container |
 | `parentGroupName` | string | no | Set on children of a `visualGroup` |
 | `filterConfig` | object | no | Visual-scoped filters — sibling of `visual`, NOT nested |
-| `isHidden` | boolean | no | Root-level. Visual still processes data; common for bookmark toggles |
+| `isHidden` | boolean | no | Root-level. The saved visibility; the visual still processes data. A bookmark toggles its own `display.mode` instead (`pbir-bookmarks`) |
 
 ### position
 
@@ -192,9 +192,9 @@ Optional sibling file at `visuals/{VisualName}/mobile.json`. Mirrors `visual.jso
 | Sparkline formatting ignored | `selector.metadata` doesn't match projection `queryRef` | Copy exact `SparklineData(...)` queryRef into selector |
 | `visual` and `visualGroup` both present | Mutually exclusive | Pick one per visual.json |
 
-### April 2026 visual changes
+### Card, slicer and narrative visuals (verified April 2026)
 
-| Visual | Change | Authoring impact |
+| Visual | Behaviour | Authoring impact |
 |---|---|---|
 | `cardVisual` / `slicer` (button-slicer / list-slicer modes) | Multicard layout exposes a **Fixed size** toggle (exact pixel dimensions). Mutually exclusive with **Fit to space** (renamed from `Autogrid`). | Property names not yet documented as a JSON-schema keys — verify in a saved visual.json before authoring. Existing reports with `Autogrid` formatting will surface under `Fit to space` in the Format pane. |
 | `cardVisual` | Theme JSON keys `paddingUniform` (default 12) and `backgroundTransparency` documented under `cardVisual` style preset. Category headers participate in Edit interactions; Multi-category layout `Autogrid` capped at 4 rows (toggle off for more). | When clearing legacy padding, write `"paddingUniform": 0`. Theme schema URL is `reportThemeSchema-2.149.json`. |
