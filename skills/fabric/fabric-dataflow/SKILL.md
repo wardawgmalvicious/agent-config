@@ -1,7 +1,7 @@
 ---
 name: fabric-dataflow
 description: "Use for the Fabric Dataflow Gen2 item (`Dataflow`): the `.Dataflow` folder's three definition parts — `mashup.pq` carrying `section Section1` and its `[StagingDefinition]` attribute, `queryMetadata.json` whose `formatVersion` accepts only `202502`, and `<name>.mdf` Mapping Data Flow transforms. Covers the typed `/dataflows` REST namespace and its permission split — List needs only viewer, but `getDefinition` needs read AND write; the execute job (`/jobs/execute/instances`, `Dataflow.Execute.All`, user identity only) and its `executeOption`, which defaults to `SkipApplyChanges` so a run silently skips unpublished edits; just-in-time publish and the February 2026 rule that a failed publish now fails the refresh; public parameters via `discover-dataflow-parameters`; variable libraries and relative references for CI/CD; and Gen1 upgrade — Save As versus the irreversible in-place Upgrade Wizard, the 50-query cap, and the legacy `PowerBI.Dataflows` connector that stops reading an upgraded dataflow."
-when_to_use: "Fires on any file under `*.Dataflow/`, so `mashup.pq`, `queryMetadata.json` and `.platform` all match; `coding-m` and `fabric-git-serialization` co-load on the first two, and M style conventions are `coding-m`'s. The definition, REST surface, CI/CD patterns and upgrade routes, not the editor click-path. `fabric-rest-api`, `fabric-cli`, `fabric-cicd` and `fabric-variable-library` are reachable by name; for a pipeline's Dataflow activity open the `.DataPipeline` folder instead."
+when_to_use: "Fires on any file under `*.Dataflow/`, so `mashup.pq`, `queryMetadata.json` and `.platform` all match; `coding-m` and `fabric-git-serialization` co-load on the first two, and M style conventions are `coding-m`'s. The definition, REST surface, CI/CD patterns and upgrade routes, not the editor click-path. `fabric-rest-api`, `fabric-cli` and `fabric-cicd` are reachable by name; `fabric-variable-library` loads from a `.VariableLibrary` folder, a pipeline's Dataflow activity from a `.DataPipeline` one."
 paths:
   - "**/*.Dataflow/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -243,7 +243,10 @@ Five documented limitations, and the first decides architectures:
 1. **A data destination cannot be authored through the definition API.**
    Add it in the portal. A dataflow defined purely through the API can
    stage and transform but never persists to a destination.
-2. **Service principal authentication is not supported.**
+2. **Service principal authentication is not supported**, says the
+   public-APIs article, while the API reference behind §5's table marks
+   every operation but Execute as service-principal capable. Test a
+   service principal before relying on it for a definition call.
 3. **`Get Item` and `List Item Access Details`** do not return correct
    information when filtered on the dataflow item type.
 4. **An untyped call returns the CI/CD item.**
