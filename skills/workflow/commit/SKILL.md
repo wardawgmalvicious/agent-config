@@ -97,9 +97,9 @@ question.
 ## Messages
 
 - Subject: `<type>(<scope>): <imperative summary>`, with the scope where
-  the log uses one — types in this order of likelihood: `docs`, `feat`,
-  `refactor`, `fix`, `chore`, `test`.
-  Lowercase after the colon, no trailing period.
+  the log uses one. `<type>` is one of the conventional-commit types
+  `~/.claude/CLAUDE.md` § "Branch naming" lists, `perf`, `build` and `ci`
+  among them. Lowercase after the colon, no trailing period.
 - Body: explain **motivation and non-obvious decisions** — why the
   change exists, what prompted it, provenance ("derived from X, now
   deleted"), and any ordering or scoping rationale. Never restate the
