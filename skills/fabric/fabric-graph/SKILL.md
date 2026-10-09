@@ -130,4 +130,4 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 - **fabric-rest-api** — runtime item ID vs `.platform` logicalId, LRO 202 pattern, pagination
 - **fabric-auth** — `api.fabric.microsoft.com` token audience for the query API
 - **fabric-data-agent** — graph as a Data Agent source for NL2GQL (preview)
-- **fabric-cli** — `fab` path syntax `Workspace.Workspace/Item.GraphModel`, export/import
+- **fabric-cli** — not for this item: `fab` has no `GraphModel` type and cannot create or address one (see the top of this skill)
