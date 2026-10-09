@@ -21,7 +21,7 @@ Config-as-code for parameterizing notebooks and pipelines per environment. Store
 | `valueSets/<name>.json` | Per-environment overrides | Only when using Value Sets |
 | `.platform` | Item metadata JSON | No (handled by Git/REST layer) |
 
-**Critical**: VariableLibrary does **NOT** support the `format` field in definition requests. Omit it entirely — including `"format": null` may cause errors. (See fabric-rest-api skill for the definition envelope.)
+VariableLibrary does not support the `format` field in definition requests: omit the key entirely, since even `"format": null` may cause errors. (See fabric-rest-api skill for the definition envelope.)
 
 ## Supported variable types
 
@@ -257,7 +257,7 @@ where no glob can see it. Tried and reverted 2026-09-01.
 
 | Issue | Resolution |
 |---|---|
-| `.get("lib", "var")` fails at runtime | Use `getLibrary("lib").var` — always dot notation |
+| `.get("lib", "var")` fails at runtime | Use `getLibrary("lib").var`, or `get()` with one reference path, `"$(/**/lib/var)"` |
 | `bool("false")` → `True` | Compare as string: `flag.lower() == "true"` |
 | Definition rejected — `format` field | Omit `format` entirely — VariableLibrary does not support it |
 | Pipeline variable wrong type | Map correctly: Boolean→Bool, Integer→Int, DateTime/Guid→String, Item/ConnectionReference→**Object**. `Number` has no pipeline type — switch the variable to Integer or String |
