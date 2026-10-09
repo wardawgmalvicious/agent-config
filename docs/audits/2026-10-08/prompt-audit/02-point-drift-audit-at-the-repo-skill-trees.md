@@ -122,3 +122,33 @@ run in this repo on 2026-10-08, audited against Fable 5.1, the model
 - **Needs**: a fresh session, the next fabric or powerbi drift audit —
   `/test-skill drift-audit`, the behaviour retest step 4 names; then
   step 6's skill-match reading.
+- **Behavioural confirmation**: 2026-10-08, `/test-skill` in a fresh
+  session against `c148836`, the body `ea4a5d3` left, at `effort: max`.
+  Phase A skipped: no `paths:` glob. Four `-p` arms from the repo root
+  on one walkthrough query: two hypothetical `fabric` rows, TMDL
+  scripting in the web editor and an MCP endpoint bound to one workspace
+  and lakehouse, plus a request to edit the TMDL skill in the same turn.
+  All ran `--effort max` and `--strict-mcp-config`, refused inbound
+  messages, and set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`. A
+  `--safe-mode` baseline and a model-invoked arm ran `--tools Skill` on
+  Opus 5.5, a `--tools CronList` ablation on Opus too, and a
+  `/drift-audit` slash arm on `claude-fable-5-1` throughout. The
+  baseline's `init` listed 58 commands without `drift-audit`, the
+  payload's 76; the model-invoked arm called `Skill drift-audit`.
+  **Separated**: row 2. Both arms with the body read the repo's two
+  templates and filed it (c), `add to
+  claude/mcp/.mcp.project.template.json`, marked Unprobed; the baseline
+  filed a new-skill candidate naming no file, the ablation "none in
+  this repo". Both refused the edit with § 3's text, where the baseline
+  offered to make it. **Narrow**: line 115. Both body arms globbed
+  `skills/*/*/SKILL.md` and `.claude/skills/*/SKILL.md`, but the
+  ablation reached the first from root `CLAUDE.md` alone and the
+  baseline globbed the whole repo; no arm without the old body searched
+  `~/.claude/skills`, so the fix removes an error the skill introduced.
+  No pre-edit `-old` arm ran: the old paths are read off `ea4a5d3`.
+  $4.39 for the four arms and a window check. Stamped `behaviour` at
+  `c148836`. `e214012`'s `effort: xhigh` for the Fable pins, edited in
+  after the arms ended, is untested here, and the stamp cannot see it:
+  `skill-status.py` hashes no `effort:`.
+- **Needs**: the next `/drift-audit` of `fabric` or `powerbi`, for step
+  6's skill-match reading on a real diff; the retest is done.
