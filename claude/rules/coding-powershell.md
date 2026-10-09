@@ -337,6 +337,11 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
 - Pester 5.9.1 and 6.1.0 both reject a top-level `BeforeEach` ("Each
   test setup is not supported in root", 2026-10-09) — it goes inside
   `Describe`.
+- A `$null` element of `-ForEach` reaches the test as an empty
+  hashtable on Pester 5, and as `$null` on 6. On 5 the case never tests
+  `$null`: it passes or fails on what the body does with a hashtable,
+  and `<_>` names it `System.Collections.Hashtable`. Give `$null` its
+  own `It` (5.9.1 and 6.1.0, 2026-10-09).
 - Don't shadow automatic variables in test state: `$script:Home`
   collides with the read-only `$HOME`. Pick another name.
 - Mirror the script's strict mode in the root `BeforeAll` — see Strict
