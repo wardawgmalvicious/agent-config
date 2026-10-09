@@ -2091,6 +2091,18 @@ as a machine-config session found on 2026-10-08:
 session's inbox note, which asked for the 2026-09-12 entry above to be
 edited in place; it stays as written, as every entry does.
 
+**2026-10-09.** The installer's URL, taken above from that session's
+reading, was read here the same day from the scripts themselves,
+downloaded and not run. `https://claude.ai/install.ps1`, which
+machine-config's `setup.ps1` runs, sets `DOWNLOAD_BASE_URL` to
+`https://downloads.claude.ai/claude-code-releases` and fetches
+`$DOWNLOAD_BASE_URL/latest`, and `install.sh` does the same. Each takes
+`stable`, `latest` or a version, default `latest`, but always fetches
+`latest` first for the newest installer, then installs the target.
+`stable` answered 2.1.286 against `latest`'s 2.1.295, so the check holds
+while `autoUpdatesChannel` is `latest`; a machine on `stable` compares
+against `/stable`.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
