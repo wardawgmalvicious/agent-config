@@ -123,6 +123,41 @@ answered yes, `AZURE_CONFIG_DIR` was set by the profile and `gh` was a
 function, as the login form above describes. Four sessions cannot show
 the snapshot form gone, so the rule keeps both.
 
+**2026-10-09.** The ~0.4 s was a degraded state of one file, not what a
+Git Bash spawn costs here, by a machine-config session's diagnosis of
+2026-10-07 to 2026-10-09, sent through the inbox. Degraded,
+`C:\Program Files\Git\usr\bin\bash.exe` took 806 ms to start and exit
+under `--norc --noprofile -c exit` against 52 ms for `usr\bin\sh.exe`,
+a byte-identical file, and 2,196 ms against 137 ms for two forks, while
+a copy of `bash.exe` in a temp folder, still so named, started in about
+45 ms: the cost was tied to the path. Each fork spent about 94 ms of
+kernel CPU in the parent against 10–19 ms in the copy, with the same 22
+modules loaded. Ruled out there: Image File Execution Options, Fault
+Tolerant Heap, AppCompat layers and the PCA store, alternate data
+streams, CodeIntegrity and AppLocker events, nsswitch account lookups
+and the number of running instances. Microsoft Defender AV and Defender
+for Endpoint were the only security products running; whether either
+caused it needs admin to settle. After a reboot on 2026-10-09 the same
+120 spawns took 7.5 s from the Bash tool (63 ms each) and 5.2 s from
+pwsh (43 ms), against 417 and 79 ms on 2026-10-07, and an interactive
+login Git Bash 1.9 s against 10–17 s. So the 2026-09-04 and 2026-10-07
+figures were both taken degraded, and the state had come back at least
+twice. The 2026-10-07 entry placed the cost in Git Bash's fork rightly,
+but a healthy fork costs about 1.5 times a pwsh spawn, not 5.
+Re-measured here the same day, 2.7 hours after boot: 7.3 s from the
+Bash tool (61 ms each), 5.85 s from pwsh (49 ms), and `bash-doctor.ps1`
+exit 0, `bash.exe` 40 ms against `sh.exe` 54 ms. That script,
+machine-config's `9a7dca8`, sat on its branch `perf/shell-startup`, not
+in its `main`, and was deployed to `~/scripts` that day. It times the
+two by the median of 7 starts after a warm-up, fails when `bash.exe` is
+at least 3 times and 150 ms slower, warns when `sh.exe` is slow too, and
+clears `BASH_ENV`, which a non-interactive bash sources even under
+`--norc` and which faked a 13-times failure on a healthy machine. From
+the Bash tool it runs as `pwsh -NoProfile -File ~/scripts/bash-doctor.ps1`.
+The 200-line cap held the rule to three lines: pwsh's figure, the
+arithmetic and "keep hooks spawn-lean" left it, the last for
+`docs/handoffs/execute/hook-spawn-cost.md`.
+
 ### Python
 
 There is no system Python — but the names still resolve, so the failure

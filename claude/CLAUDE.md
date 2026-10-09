@@ -12,9 +12,9 @@ it. **So assume no profile-set variable in either shell, and no profile
 function in a child process.** `C:\Repos\Personal\machine-config` is the
 source of truth for what is installed and how it is configured.
 
-**A Git Bash spawn costs ~0.4 s** (pwsh's ~0.08 s, 2026-10-07): per-line
-forks look hung, killed at 120 s with stray `write error` lines. Do the
-arithmetic, background them with a ten-minute cap, keep hooks spawn-lean.
+**A Git Bash spawn costs ~60 ms, ~0.5 s once `bash.exe` degrades**, until a
+reboot; `bash-doctor.ps1` then exits 1 (2026-10-09). Forks look hung, killed
+at 120 s with stray `write error` lines: background them, ten-minute cap.
 
 **Many traps below share one shape: exit 0, plausible output, wrong.** Check
 the bytes: a round trip through a translating layer proves nothing.
