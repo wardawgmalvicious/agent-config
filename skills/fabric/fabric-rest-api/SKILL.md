@@ -171,10 +171,10 @@ commit the workspace is synced to, `remoteCommitHash`, the branch head, and
 `changes[]`, each carrying `workspaceChange`, `remoteChange` and
 `conflictType`. Heads that differ, with no `remoteChange` on any entry,
 are the normal state after a push that changes no item folder, and the
-workspace still commits (observed 2026-10-01). The stranded state behind
-fabric-gotchas' `Git_HeadNotSynced` row looked the same, but its head was
-a merge commit, the likelier cause (inferred, observed once), and the
-Source control pane offered no button to take it.
+workspace still commits (observed 2026-10-01). A workspace stranded on
+`Git_HeadNotSynced` shows differing heads too: fabric-gotchas' row for
+that error holds its likelier cause, how sure that is, and the missing
+button.
 
 [Update From Git](https://learn.microsoft.com/rest/api/fabric/core/git/update-from-git),
 `POST …/git/updateFromGit`, updates only the items the incoming commits
