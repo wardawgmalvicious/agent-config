@@ -208,7 +208,7 @@ fab deploy --config config.yml --target_env test \
   -P '[{"param1":"value1"}]' -f
 ```
 
-The config file resolves source folders, target workspace IDs/names, and per-env GUID replacements through fabric-cicd's parameter model — same `$workspace.$id` and `$items.<Type>.<name>.id` tokens documented in the Azure DevOps tutorial. Authenticates via the active `fab auth` session (interactive or SPN).
+The config file resolves source folders, target workspace IDs/names, and per-env GUID replacements through fabric-cicd's parameter model — same `$workspace.$id` and `$items.<Type>.<name>.$id` tokens as the Azure DevOps tutorial's token table (its Key Takeaways line drops the second `$`, 2026-10-09). Authenticates via the active `fab auth` session (interactive or SPN).
 
 **When to use `fab deploy` vs Power BI deployment pipelines:** `fab deploy` is **source-of-truth-is-Git** (workspace = artifact of the deploy). Power BI deployment pipelines is **source-of-truth-is-workspace** (dev workspace promotes to test/prod workspaces via the service-side pipeline). They are distinct surfaces — don't mix.
 
@@ -267,11 +267,11 @@ output/
     definition/
 ```
 
-**Critical:** `fab export` does **not** create intermediate directories. Always `mkdir -p <out>` first, or it fails with `InvalidPath`. **Never** include `.platform` when making definition API calls directly — it is Git integration metadata. See the fabric-tmdl-api skill.
+`fab export` does not create intermediate directories: run `mkdir -p <out>` first, or it fails with `InvalidPath`. **Never** include `.platform` when making definition API calls directly — it is Git integration metadata. See the fabric-tmdl-api skill.
 
-Non-exportable types: `.Dashboard`, `.SQLEndpoint`. (`.Lakehouse` is now exportable as of v1.6.) Check with `fab desc .<ItemType>`.
+Non-exportable types: `.Dashboard`, `.SQLEndpoint` (`.Lakehouse` exports from v1.6). Check with `fab desc .<ItemType>`.
 
-**VariableLibrary (v1.6+):** Variable Libraries now have full CLI coverage via the standard verbs — `mkdir`, `get`, `set`, `rm`, `ls`, `export`, `import`, `cp`, `mv` — backed by the Variable Library REST APIs. Before v1.6 only the portal could manage them.
+**VariableLibrary (v1.6+):** full CLI coverage via the standard verbs — `mkdir`, `get`, `set`, `rm`, `ls`, `export`, `import`, `cp`, `mv` — backed by the Variable Library REST APIs.
 
 ## DuckDB on OneLake
 
@@ -362,7 +362,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 | Activity events empty | Missing quotes around dates | Dates must be quoted ISO 8601 inside URL |
 | Workspace path with apostrophe "fails" | Over-escaping | Wrap in double quotes; no backslashes needed |
 | Export strips sensitivity label | `-f` force flag | Informational, not an error; label is dropped intentionally |
-| Cannot export `.Lakehouse` / `.Dashboard` / `.SQLEndpoint` | Not definition-exportable | Use `fab cp` for lakehouse files; others have no export |
+| Cannot export `.Dashboard` / `.SQLEndpoint`, or `.Lakehouse` before v1.6 | Not definition-exportable | The first two have no export; before v1.6, `fab cp` for lakehouse files |
 | `.platform` breaks REST definition calls | Git metadata, not a part | Strip before any direct API payload |
 | DAX quote chaos | Bash + JSON double escaping | Write JSON to a temp file via heredoc |
 | Session burning CUs after `nb exec` | Forgotten Livy session | Wrap session cleanup in `finally`; idle sessions cost compute until 20-min timeout |
