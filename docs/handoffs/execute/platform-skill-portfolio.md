@@ -6,7 +6,7 @@ blocked-by: []
 written: 2026-10-08
 ---
 
-# Handoff: archive four platform skills, then split the groups by persona
+# Handoff: archive four platform skills
 
 - **Written**: 2026-10-08, on the user's decision to slim the platform
   skills: retire what goes unused, consolidate, and split the `fabric`
@@ -17,9 +17,10 @@ written: 2026-10-08
   `/skill-doctor` numbers, reads back with
   `git show 0d8efb7:docs/handoffs/execute/platform-skill-portfolio.md`;
   the commit that rewrote this brief has the reasoning.
-- **Kind**: two edits left here, each its own commit in this brief's
-  worktree: Part 1 archives four skills, then Part 3 moves the rest into
-  persona groups. Part 2 went to briefs of its own.
+- **Kind**: one edit left here, in this brief's worktree: Part 1
+  archives four skills. Part 2 went to briefs of its own, and Part 3 to
+  [platform-persona-groups.md](platform-persona-groups.md), which runs
+  last.
 - **Priority 1**: Part 1 closes the listing overflow still live in the
   sandbox repo (§ Evidence).
 
@@ -40,13 +41,9 @@ written: 2026-10-08
   outside one sweep of 35 skills by a client prompt audit (client
   transcripts, 2026-09-24 to 2026-10-08).
 - **Items**: both client repos link all 46 platform skills, `fabric`
-  and `powerbi`. By folder suffix, the main repo holds Notebook (14),
-  KQLDatabase (2), DataPipeline (2), Warehouse, VariableLibrary,
-  SemanticModel, Report, Lakehouse, KQLDashboard, Eventhouse and
-  DeploymentPlan; the sandbox repo holds UserDataFunction (2),
-  SQLDatabase (2), Warehouse, SemanticModel, Report, Plan, Lakehouse,
-  EventSchemaSet, DataPipeline and CosmosDBDatabase. Neither holds a
-  CopyJob, MirroredDatabase or Fabric IQ item.
+  and `powerbi`, and neither holds a CopyJob or MirroredDatabase item.
+  [platform-persona-groups.md](platform-persona-groups.md) lists what
+  each does hold.
 - **A correction**: this brief's listing measure used to count a folded
   `>-` description as 2 characters, giving `powerbi` 11,130 where a YAML
   parse gives 12,528. § Re-measure uses the parse.
@@ -125,47 +122,13 @@ where `fabric-auth` merges into `fabric-rest-api`, and the three edits
 it held for `fabric-data-agent` and `fabric-graph` went to the
 `fabric-iq` fold, since those skills stay as references.
 
-## Part 3: personas as groups
+## Part 3: moved to its own brief
 
-The user adopted the draft on 2026-10-09, reshaped here only by Parts 1
-and 2: a skill that a fold will remove goes to its router's group, so
-`fabric-error-handling` joins `fabric-engineering`, not `fabric-core`,
-and `fabric-ai` holds the four skills that become `fabric-iq`.
-
-| Group | Skills, 42 after Part 1 |
-| --- | --- |
-| `fabric-core`, any Fabric repo | `fabric-auth`, `fabric-cli`, `fabric-rest-api`, `fabric-gotchas`, `fabric-security`, `fabric-variable-library`, `fabric-catalog-governance`, `fabric-cicd`, `fabric-deployment-pipelines` |
-| `fabric-engineering` | `fabric-spark`, `fabric-spark-monitoring`, `fabric-error-handling`, `fabric-mlv`, `fabric-ai-functions`, `fabric-data-pipeline`, `fabric-dataflow`, `fabric-warehouse`, `fabric-warehouse-monitoring`, `fabric-database` |
-| `fabric-realtime` | `fabric-eventhouse`, `fabric-eventstream`, `fabric-activator`, `fabric-realtime-dashboard`, `fabric-event-schema-set` |
-| `fabric-ai` | `fabric-data-agent`, `fabric-graph`, `fabric-ontology`, `fabric-operations-agent` |
-| `powerbi` | `pbir-report-workflow`, `pbir-cli`, `pbir-visual-json`, `pbir-filters`, `pbir-pages`, `pbir-themes`, `pbir-bookmarks`, `pbir-conditional-formatting`, `pbip-project-structure`, `powerbi-report-design`, `fabric-tmdl`, `fabric-tmdl-api`, `fabric-semantic-model-audit`, `fabric-semantic-model-ai-instructions` |
-
-- **Skill names keep their prefixes**; only folders move.
-- **Which groups a client repo links is the user's call**, per repo.
-  By the items above, each holds engineering, real-time and Power BI
-  work and no Fabric IQ item; the user's own work is engineering and
-  Power BI.
-- **When**: after Part 1, as its own commit in the same worktree, so
-  the client repos relink once with their new groups. A fold brief run
-  later finds its skills under the new folders.
-- **What the split owes**, counted 2026-10-09:
-  - a `git mv` per skill, 42;
-  - `PLATFORM_GROUPS` in `scripts/lint-skill-overrides.py:64`;
-  - `PROBE_GROUPS` and the set map in `scripts/activation-expect.py`
-    (lines 52 and 60), and the deploy at
-    `scripts/test-activation.ps1:144`, each naming `fabric` and
-    `powerbi`;
-  - the examples at `scripts/link-claude.ps1:182` and in
-    `scripts/copy-copilot.ps1`, the latter retiring with the Copilot
-    payload;
-  - the group lists in `skills/README.md` and root `CLAUDE.md`
-    § "Commands";
-  - 19 files outside `skills/` naming a path under `skills/fabric/`,
-    and 8 under `skills/powerbi/`;
-  - every client repo relinked with its new groups.
-
-  No link between skills breaks: the nine relative links that leave a
-  skill's `references/` folder all point back into the same skill.
+The persona split, adopted on 2026-10-09, is
+[platform-persona-groups.md](platform-persona-groups.md), blocked by
+this brief and by every fold, so that it runs last: then it moves about
+24 skills rather than 42, and the folds run with the paths they were
+written for.
 
 ## New platform skills wait for client work
 

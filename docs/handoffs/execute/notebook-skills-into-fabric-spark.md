@@ -154,8 +154,6 @@ then names nothing, which is harmless and that repo's to tidy.
 - Whether `/triage` has applied the client prompt audit's hunks to any
   of the five, as `platform-skill-portfolio.md` says it may; re-read
   them before moving.
-- If `platform-skill-portfolio.md` Part 3 has landed, the five sit
-  under `skills/fabric-engineering/`.
 
 ## Not checked
 

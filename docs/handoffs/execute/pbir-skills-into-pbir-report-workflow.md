@@ -176,8 +176,6 @@ harmless and that repo's to tidy.
 - Whether `/triage` has applied the client prompt audit's hunks to any
   of the nine, or `pbir-august-formatting-properties.md` has landed in
   them; re-read before moving.
-- If `platform-skill-portfolio.md` Part 3 has landed, all nine still sit
-  under `skills/powerbi/`.
 
 ## Not checked
 

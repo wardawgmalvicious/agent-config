@@ -166,9 +166,9 @@ grep -rnE 'fabric-data-agent|fabric-graph|fabric-ontology|fabric-operations-agen
 ```
 
 **Client repos**: relink each with exactly the groups it holds; the
-relink prunes four dangling junctions and adds `fabric-iq`. If
-`platform-skill-portfolio.md` Part 3 has landed, `fabric-iq` sits in
-the `fabric-ai` group, which neither client repo links.
+relink prunes four dangling junctions and adds `fabric-iq`.
+[platform-persona-groups.md](platform-persona-groups.md), which runs
+after this, later moves `fabric-iq` into a `fabric-ai` group of its own.
 
 ## Verify
 
