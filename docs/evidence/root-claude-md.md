@@ -2073,6 +2073,24 @@ showed headroom above `xhigh` at 2.5 times Opus 5.5's token price.
 `effort` applies on both paths, so a run reached by description, on the
 session model, also drops from `max` to the session's own `xhigh`.
 
+**2026-10-09.** The stale-CLI check in `editing-skills.md` named
+`winget list --id Anthropic.ClaudeCode`, which now answers nothing.
+machine-config retired the winget package on 2026-10-08 (`e5fa0fd`) and
+installs Claude Code with the native installer into `~/.local/bin`,
+which updates itself; the winget copy had sat shadowed at 2.1.268 for
+26 days while the native one reached 2.1.293. Re-measured here that
+day: `winget list --id Anthropic.ClaudeCode --exact` printed "No
+installed package found matching input criteria." with exit
+`0x8A150014`, whose low byte, 20, is what the PowerShell tool reports;
+`where.exe claude` gave `~\.local\bin\claude.exe` at 2.1.293; and
+`claude/settings.json` sets `autoUpdatesChannel` to `latest`. The check
+now reads that channel at the URL the official installer script reads,
+as a machine-config session found on 2026-10-08:
+`https://downloads.claude.ai/claude-code-releases/latest` answered
+2.1.295, two releases ahead of the self-updating install. From that
+session's inbox note, which asked for the 2026-09-12 entry above to be
+edited in place; it stays as written, as every entry does.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

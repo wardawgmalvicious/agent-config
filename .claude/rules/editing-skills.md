@@ -65,9 +65,10 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   `grep -rn "^model:" .claude/skills skills`.
 - Pin the alias, not the dated ID, which freezes on one release once the
   next ships. The CLI carries its own model table, so a stale CLI resolves
-  an alias to an older release silently: compare `claude --version` with
-  `winget list --id Anthropic.ClaudeCode` before trusting a model-routing
-  reading (2026-09-12).
+  an alias to an older release silently (2026-09-12): compare
+  `claude --version` with the `latest` release channel,
+  `irm https://downloads.claude.ai/claude-code-releases/latest` in pwsh,
+  before trusting a model-routing reading (2026-10-09).
 - `model:` lasts one turn, and only when the skill is slash-invoked: one
   reached by its description runs on the session model, while the session
   is told it runs on the pin, so only `message.model` in the transcript
