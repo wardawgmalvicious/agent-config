@@ -1,6 +1,6 @@
 ---
 name: pbir-report-workflow
-description: Use when scaffolding or building a new Power BI report end-to-end from a published semantic model using the pbir CLI. Covers the 10-step workflow — KPI / filter / granularity requirements, model field discovery via pbir model, pbir new report scaffold, renaming the default Page 1 instead of adding a new one, 3-30-300 visual hierarchy for three viewing distances (glance / scan / investigate), layout math with margin/gap constants (always inspect the scaffolded page first), row-by-row visual placement with explicit coordinates, explicit sort after bind, report vs page filters, extension-measure conditional formatting with theme tokens like good/bad, time-granularity inference from the active date filter, pbir validate + publish, then service-side visual verification — render the published report to PNG via the Power BI exportToFile REST API and review the images (no Power BI Desktop needed). Invoke when user says 'build a report', 'scaffold a dashboard', or 'lay out a KPI page'.
+description: Use when scaffolding or building a new Power BI report end-to-end from a published semantic model using the pbir CLI. Covers the workflow — KPI / filter / granularity requirements, model field discovery via pbir model, pbir new report scaffold, renaming the default Page 1 instead of adding a new one, 3-30-300 visual hierarchy for three viewing distances (glance / scan / investigate), layout math with margin/gap constants (always inspect the scaffolded page first), row-by-row visual placement with explicit coordinates, explicit sort after bind, report vs page filters, extension-measure conditional formatting with theme tokens like good/bad, time-granularity inference from the active date filter, pbir validate + publish, then service-side visual verification — render the published report to PNG via the Power BI exportToFile REST API and review the images (no Power BI Desktop needed). Invoke when user says 'build a report', 'scaffold a dashboard', or 'lay out a KPI page'.
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -12,28 +12,19 @@ End-to-end workflow for building Power BI reports from a published semantic mode
 
 ### Workflow Steps
 
-1. Gather requirements (KPIs, filters, granularity, audience)
-2. Discover model fields and data types
-3. Create project folder + scaffold report
-4. Rename default page (do not add a new one)
-5. **Measure the scaffold** (existing visuals, theme, canvas size) before computing layout
-6. Plan layout arithmetic from the measured scaffold
-7. Add visuals row-by-row with explicit coordinates
-8. Bind fields and set sort direction explicitly
-9. Add report-level and page-level filters
-10. Apply bespoke formatting only when theme is insufficient
-11. Validate, then publish
+The `Step` sections below are the workflow, in order. Step 3 measures
+the scaffold before any layout is computed.
 
 ### Rules
 
-- Visuals must NOT overlap
+- Keep visuals from overlapping
 - Favor theme changes over per-visual overrides
 - Favor extension measures (`_Fmt`) with theme tokens (`good`/`bad`) for conditional formatting
 - Always create reports inside a named project folder
 - Run `pbir validate` after every mutation
 - Use PascalCase for project / report / page / visual names
-- Edit PBIR JSON directly via Claude Code or `pbir set` — do NOT use Tabular Editor
-- Do NOT add `PBI_*` annotations manually
+- Edit PBIR JSON directly or with `pbir set`, not with Tabular Editor
+- Add no `PBI_*` annotations by hand
 
 ### Step 1 — Requirements & Model Discovery
 
@@ -44,7 +35,8 @@ pbir model "Sales.Report" -d -t Sales                                    # Filte
 pbir model "Sales.Report" -q "EVALUATE VALUES('Date'[Year])"             # Query for filter values
 ```
 
-Ask the user (via `AskUserQuestion`) to confirm:
+Ask the user (via `AskUserQuestion`) to confirm whichever of these the
+request leaves open:
 
 - Which KPIs to surface (measures + targets)
 - Trend granularity (daily / weekly / monthly / quarterly)
@@ -97,7 +89,7 @@ pbir cat "Sales.Report/theme"                                            # Activ
 
 From the output, record:
 
-1. Canvas `width` / `height` from `page.json` (often `1280 x 720` but templates may override).
+1. Canvas `width` / `height` from `page.json`, which the base theme and the template set (Common Page Sizes, below).
 2. Every existing visual's `position.x`, `position.y`, `position.width`, `position.height`. For bulk reads use `jq '.position' <path>/visual.json` across the `visuals/` folder.
 3. The tallest `y + height` among existing visuals — the first safe `y` for a new row you add.
 4. Active base and custom theme names — so you don't accidentally re-apply a default over meaningful styling.
@@ -298,7 +290,8 @@ Notes:
 
 | Type | Width x Height | Use Case |
 |---|---|---|
-| Default (16:9) | 1280 x 720 | Screen dashboards |
+| Default 16:9, Fluent 2 base theme (new reports) | 1920 x 1080 | Screen dashboards |
+| Default 16:9, Classic 2018 / Classic 2026 base themes | 1280 x 720 | Screen dashboards |
 | Large (16:9) | 1920 x 1080 | High-density executive dashboards |
 | Letter portrait | 816 x 1056 | Print/PDF reports |
 | Tooltip | 320 x 240 | Hover tooltip pages |
