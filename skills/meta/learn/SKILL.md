@@ -148,15 +148,19 @@ In **note mode**, grep the payload checkout read-only at the path
 to the deployed tree:
 
 ```bash
-grep -rn -i "<key term>" ~/.claude/skills/ ~/.claude/rules/ ~/.claude/CLAUDE.md
+grep -Rn -i "<key term>" ~/.claude/skills/ ~/.claude/rules/ ~/.claude/CLAUDE.md
 ```
 
 **A hit in `~/.claude` proves coverage; a miss proves nothing.**
 Deployment prunes — a skill group left off the deploy command is absent
 from `~/.claude/skills` while being present in the payload — so the
 destination skill for a Fabric or Power BI learning is routinely not
-there at all. Record which tree you searched, and never report "not
-covered" off the deployed tree alone.
+there at all. And every `~/.claude/skills/<name>` is a junction, which
+`grep -r` and the Grep tool do not enter from a parent: for one term,
+`-r` found 0 lines where `-R`, or a search from inside the skill, found
+1 (GNU grep 3.0, 2026-10-09). Keep the `-R`, and give the Grep tool the
+payload path or one skill's folder. Record which tree you searched, and
+never report "not covered" off the deployed tree alone.
 
 **Grep one distinctive token, not a phrase.** Prose here is hard-wrapped
 at 76 columns, so a multi-word term is routinely split across lines and
