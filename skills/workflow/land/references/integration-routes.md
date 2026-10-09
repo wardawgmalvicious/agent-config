@@ -209,6 +209,11 @@ git fetch origin main:main      # moves the local main REF; HEAD untouched
 git merge-base --is-ancestor <branch> main
 ```
 
+From a linked worktree the `EnterWorktree` guard refuses that first line
+as too complex to verify, so the pin moves into the refspec:
+[linked-worktree.md](linked-worktree.md#step-7-main-is-checked-out-elsewhere)
+has the two commands.
+
 **Read the requirement first; never push to find out.** Until
 2026-09-23 this said the reverse — push first, fall through to the PR
 merge on a rejection — because the server-side `--merge` adds a merge

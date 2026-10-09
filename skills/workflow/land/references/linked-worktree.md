@@ -45,7 +45,24 @@ default route stops at its switch (git 2.55.0, 2026-09-27, again
 
 **From the worktree, take the write that needs no checkout**: the
 refspec push where `main` requires no pull request, the PR merge where
-it requires one. The push goes through from a worktree. It leaves the
+it requires one. **Pin the push by its SHA, as two plain commands**: the
+`EnterWorktree` guard refuses the route's `[[ … ]] && git push` as too
+complex to verify that it stays inside the worktree, as it does
+`commit`'s chain (2.1.294, 2026-10-08).
+
+```bash
+git rev-parse <branch>                    # must print <sha>; stop if not
+git push origin <sha>:refs/heads/main     # pushes exactly <sha>
+```
+
+What was checked is what goes, even if the branch moves after the read;
+a push to a branch still takes only a fast-forward (git-push § "PUSH
+RULES"), and the pre-push hooks still run. Spell the destination in
+full: git expands a short one only when it "unambiguously refers to a
+ref" on the remote, or from the source ref's namespace, which a SHA
+lacks (git-push, read 2026-10-09).
+
+The push goes through from a worktree. It leaves the
 main checkout's `main` behind `origin/main`, and a commit made there
 before it catches up diverges, so step 8's report names the fix, to run
 in the main checkout:
