@@ -83,7 +83,8 @@ v0.3.13, commit `b8d541c`, MIT-licensed, per its "Local vendoring note".
 
 ### The router
 
-`pbir-report-workflow`'s ten-step workflow stays the body, and gains:
+`pbir-report-workflow`'s workflow, its `Step` sections (twelve on
+2026-10-09), stays the body, and gains:
 
 1. **Before a hand edit of report JSON**, one table, the file to the
    reference: `visual.json` to `visual-json.md`, and to
@@ -156,7 +157,7 @@ harmless and that repo's to tidy.
 
    | Case | Prompt, in short | Passes when |
    | --- | --- | --- |
-   | Scaffold | build a report on a published model | the ten steps, through the `pbir` CLI |
+   | Scaffold | build a report on a published model | the workflow's steps, through the `pbir` CLI |
    | Hand edit | make a page fit to width by editing its `page.json` | reads `references/pages.md` first; `displayOption` as a string |
    | Filter | add a relative date filter to a visual by hand | reads `references/filters.md` |
    | Design | restyle a report to a brand palette, or critique its charts | reads `references/design/design.md` |

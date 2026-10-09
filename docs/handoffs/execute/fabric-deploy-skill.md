@@ -76,8 +76,15 @@ which the router replaces, and re-point the relative links inside it.
    fabric-cicd library, `fab deploy`, which wraps it (`fabric-cli` §
    "Workspace Deployment"), or Git integration's update from Git
    (`fabric-rest-api` § "Git Integration APIs"). The workspace as the
-   source of truth: deployment pipelines. Never both on the same
-   workspaces; link Learn's decision guide.
+   source of truth: deployment pipelines. Never deploy into one
+   workspace by both routes; Git on the first stage with pipelines
+   onward is Learn's option 3 ("Git only through dev", read
+   2026-10-09), not a mix. Three live lines read as forbidding it,
+   though a client repo works that way (a client prompt audit,
+   2026-10-08): `fabric-cicd/SKILL.md:27` and
+   `fabric-deployment-pipelines/SKILL.md:29-30` go with the sections
+   this router replaces, and `fabric-cli/SKILL.md:213`, which stays,
+   is corrected in the same pass. Link Learn's decision guide.
 2. **Preflight, every route.** Identity: the service-principal tenant
    setting and workspace roles, plus the second permission system and
    the deploy-only scope that deployment pipelines add. What can move:

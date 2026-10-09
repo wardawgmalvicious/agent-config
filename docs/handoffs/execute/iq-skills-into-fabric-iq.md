@@ -121,7 +121,12 @@ them, as a commit before the fold, so the move shows no content change.
    correct what fails. The claims and what the audit read are in the
    Constraint of
    [brief 03](../../audits/2026-10-06/fabric/03-rewrite-graph-gql-support-and-query-api.md),
-   which stays open on its own re-check.
+   which stays open on its own re-check. The DDL example's lead-in
+   (`SKILL.md:42` on 2026-10-09) goes with it: it warns that a model
+   will invent syntax unless the example is copied exactly. A client
+   prompt audit of 2026-10-08 proposed calling the example exact, the
+   very claim this edit checks, so word the lead-in to what the check
+   finds.
 
 ## The rename trap
 
