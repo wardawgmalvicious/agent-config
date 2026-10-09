@@ -56,7 +56,7 @@ observed.
 
 ## The decision
 
-On 2026-10-09 [platform-skill-portfolio.md](platform-skill-portfolio.md)
+On 2026-10-09 the user's portfolio decision, `7240d9e`,
 ruled out a new platform skill while the portfolio shrinks, and folded
 the four Fabric IQ skills, `fabric-data-agent` among them, into one
 `fabric-iq` ([iq-skills-into-fabric-iq.md](iq-skills-into-fabric-iq.md)).

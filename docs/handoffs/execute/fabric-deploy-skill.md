@@ -209,8 +209,8 @@ After:
 ## What the result decides
 
 If 1 holds and 2 shows the saving, the second wave is next, each
-candidate re-measured first. The user set its shape on 2026-10-09, in
-[platform-skill-portfolio.md](platform-skill-portfolio.md):
+candidate re-measured first. The user set its shape on 2026-10-09
+(`7240d9e`):
 
 - `fabric-auth`, `fabric-cli` and `fabric-gotchas` into
   `fabric-rest-api`, a surviving name, so fewer renames; the gotchas
@@ -226,8 +226,8 @@ candidate re-measured first. The user set its shape on 2026-10-09, in
 - [pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md):
   `pbir-cli`, the six file-level PBIR skills and `powerbi-report-design`,
   no longer vendored, into `pbir-report-workflow`.
-- `powerbi-report-authoring` goes, archived by the portfolio brief's
-  Part 1.
+- `powerbi-report-authoring` went first, archived on 2026-10-09 by the
+  portfolio brief's Part 1.
 
 None of it reopens Workstream C, declined 2026-09-01 and recorded in
 both `tests/skills/*-triggers/expected_activations.md`, which covered

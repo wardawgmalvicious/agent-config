@@ -130,7 +130,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (34)
+## Microsoft Fabric platform (32)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -168,9 +168,6 @@ construction. Split out of `workflow` 2026-09-11.
   than `fabric-pipeline` because "pipeline" already means deployment and
   release pipelines in `fabric-cicd`'s territory. Expression syntax stays
   in the `coding-expressions` rule, which co-loads on the same file.
-- [fabric-copy-job/](fabric/fabric-copy-job/) — Copy job item: full vs
-  incremental modes, watermark vs CDC incremental, JSON definition,
-  REST + on-demand runs, Activator invocation.
 - [fabric-dataflow/](fabric/fabric-dataflow/) — the Dataflow Gen2 item as
   Git and REST see it: the `.Dataflow` folder's `mashup.pq` and
   `queryMetadata.json`, the typed `/dataflows` namespace, the three CI/CD
@@ -184,13 +181,6 @@ construction. Split out of `workflow` 2026-09-11.
   `ClusterId` half **no documented endpoint returns** — which is why
   authoring a bound dataflow purely over REST is not a supported path.
   M style stays in the `coding-m` rule, which co-loads on `mashup.pq`.
-- [fabric-mirroring/](fabric/fabric-mirroring/) — Mirroring: the three kinds
-  (database replication, metadata-over-shortcuts, open mirroring's landing
-  zone), which kind each source uses, the `MirroredDatabase` REST surface,
-  and the limits. Named for the capability rather than the item because
-  metadata mirroring creates a mirrored *catalog*, not a mirrored database.
-  The boundary against `fabric-copy-job` — both are pitched as "no
-  pipeline" — is drawn in its description.
 - [fabric-warehouse/](fabric/fabric-warehouse/) — Fabric Warehouse T-SQL,
   unsupported types, MERGE constraints, COPY INTO auth.
 - [fabric-database/](fabric/fabric-database/) — Fabric SQL database.
@@ -294,12 +284,8 @@ construction. Split out of `workflow` 2026-09-11.
   PowerBIEntityNotFound, snapshot conflicts, plus a MUST/PREFER/AVOID
   best-practices summary.
 
-## Power BI Desktop / Reports (12)
+## Power BI Desktop / Reports (10)
 
-- [pbid-tom-live/](powerbi/pbid-tom-live/) — script an open Power BI Desktop
-  model via its localhost `msmdsrv` Analysis Services proxy: TOM for
-  metadata, ADOMD.NET for DAX, VertiPaq DMVs, EVALUATEANDLOG, Server
-  Timings, DAXLib UDF packages.
 - [pbip-project-structure/](powerbi/pbip-project-structure/) — PBIP folder
   layout.
 - [pbir-cli/](powerbi/pbir-cli/) — `pbir` CLI for inspecting and editing
@@ -310,12 +296,6 @@ construction. Split out of `workflow` 2026-09-11.
   discovery, scaffold, 3-30-300 visual hierarchy, layout math, sort,
   filters, conditional formatting, validation, publish, then
   service-side visual verification via the `exportToFile` PNG API.
-- [powerbi-report-authoring/](powerbi/powerbi-report-authoring/) — **vendored**
-  from [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
-  (v0.3.13, MIT): PBIR mechanics with the `powerbi-report-author`
-  CLI (offline validate, visual-role/formatting catalogs), ~50-row
-  anti-pattern table, deep per-visual-type references. Desktop Bridge
-  sections present but skipped locally — see its vendoring note.
 - [powerbi-report-design/](powerbi/powerbi-report-design/) — **vendored**
   from microsoft/skills-for-fabric (v0.3.13, MIT): report design
   system — tone catalog, 5 page archetypes, chart selection, visual
@@ -350,3 +330,26 @@ until a repo links it.
   glob: a packaging request can arrive as words ("publish a new
   version") before any manifest is read, and a glob would hide the
   skill in the only repos that link it.
+
+## Archived
+
+Skills retired from the payload on 2026-10-09, git history the archive,
+as for spent briefs. Each line says what one covered and how to restore
+it from a commit on `main` that holds it. A restored skill also needs its
+`skillOverrides` entry back, and a Fabric one its two rows in
+`tests/skills/fabric-triggers/expected_activations.md`, which
+`lint-skill-overrides` and the static check each ask for.
+
+- `fabric-copy-job` — the Copy job item: full and incremental copy,
+  watermark and CDC, its JSON definition and REST runs.
+  `git checkout 79eddb3 -- skills/fabric/fabric-copy-job`
+- `fabric-mirroring` — Mirroring's three kinds, the `MirroredDatabase`
+  REST surface and its limits.
+  `git checkout 79eddb3 -- skills/fabric/fabric-mirroring`
+- `pbid-tom-live` — scripting a model open in Power BI Desktop over its
+  local Analysis Services instance: TOM, ADOMD.NET, the VertiPaq DMVs.
+  `git checkout 79eddb3 -- skills/powerbi/pbid-tom-live`
+- `powerbi-report-authoring` — vendored from microsoft/skills-for-fabric
+  v0.3.13: PBIR mechanics through the `powerbi-report-author` CLI.
+  `git checkout 79eddb3 -- skills/powerbi/powerbi-report-authoring`, or
+  re-vendor a current copy from upstream.

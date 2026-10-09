@@ -25,7 +25,7 @@ written: 2026-10-07
   paths and the constraint; this brief holds what is still open.
 - **Re-aimed**: 2026-10-09. It targeted four skills, each with one
   lifetime invocation or none, so it waited on
-  [platform-skill-portfolio.md](platform-skill-portfolio.md). Three of
+  the user's portfolio decision (`7240d9e`). Three of
   them fold into `pbir-report-workflow` and the fourth is archived, so
   it waits for the fold.
 
@@ -78,7 +78,7 @@ has folded the PBIR skills there:
 - `visual-json.md`, from `pbir-visual-json`: every property above, and
   the axis names and slicer encodings that were to go to
   `powerbi-report-authoring`'s `cartesian.md` and `slicers.md`, the
-  skill `platform-skill-portfolio.md` Part 1 archives.
+  skill archived on 2026-10-09.
 - `design/assets/base.json`, from `powerbi-report-design`: only if an
   asset change is justified; 13's constraint prefers omission.
 - `conditional-formatting.md`: the Field-value icon.

@@ -105,10 +105,14 @@ HAND_ALLOWLIST = {
 # `overlap` exists to flag -- so the override stays and the gate must not
 # fail on it. Editing the vendored description text is not an alternative:
 # the note says to re-apply only that section on re-sync, so a description
-# edit is silently lost the next time upstream is pulled.
+# edit is silently lost the next time upstream is pulled. The pair's
+# authoring half joined these on 2026-10-09, archived as never invoked: the
+# design half's description still hands its contract to it, and its Local
+# vendoring note routes that hand-off to pbir-report-workflow.
 ACCEPTED = {
     "powerbi-report-planning": "not vendored on purpose (1fa3061); see Local vendoring note",
     "powerbi-report-management": "not vendored on purpose (1fa3061); see Local vendoring note",
+    "powerbi-report-authoring": "archived on purpose (2026-10-09); see Local vendoring note",
 }
 
 

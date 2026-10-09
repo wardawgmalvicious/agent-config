@@ -2,16 +2,16 @@
 status: open
 priority: 3
 needs: []
-blocked-by: [platform-skill-portfolio.md, fabric-deploy-skill.md, notebook-skills-into-fabric-spark.md, pbir-skills-into-pbir-report-workflow.md, ai-instructions-into-fabric-tmdl.md, iq-skills-into-fabric-iq.md]
+blocked-by: [fabric-deploy-skill.md, notebook-skills-into-fabric-spark.md, pbir-skills-into-pbir-report-workflow.md, ai-instructions-into-fabric-tmdl.md, iq-skills-into-fabric-iq.md]
 written: 2026-10-09
 ---
 
 # Handoff: split the platform skill groups by persona
 
 - **Written**: 2026-10-09, as Part 3 of
-  [platform-skill-portfolio.md](platform-skill-portfolio.md), moved here
+  the platform skill portfolio brief (`38ab77b`), moved here
   on the user's word the same day, so that it runs last and that brief
-  can land with its Part 1. The user adopted the persona draft on
+  could land with its Part 1. The user adopted the persona draft on
   2026-10-09. Measured at `122910a`.
 - **Kind**: a restructure, done by hand: a `git mv` per skill into new
   group folders, the scripts and lists that name the groups, and every

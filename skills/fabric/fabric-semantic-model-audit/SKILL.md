@@ -1,6 +1,6 @@
 ---
 name: fabric-semantic-model-audit
-description: "Audit an existing Power BI or Fabric semantic model and report on its shape, relationship health, memory cost and downstream readiness — a review of a finished model, not authoring guidance. Use when asked to audit, review, assess or health-check a semantic model, to judge whether one is a real star schema, to explain why a model is slow or bloated, or to investigate inactive relationships, snowflake chains, role-playing dimensions, bidirectional filters, ambiguous filter paths, limited vs. regular relationships, or high-cardinality columns. Covers the three evidence tiers — TMDL on disk with no capacity, `INFO.VIEW.*` over executeQueries, and Best Practice Analyzer / Model Memory Analyzer via `sempy.fabric` in a Fabric notebook — and the storage-mode split that makes import-mode relationship guidance wrong for Direct Lake. For authoring TMDL use fabric-tmdl; for reviewing a diff use code-review; for scripting an open Desktop model use pbid-tom-live."
+description: "Audit an existing Power BI or Fabric semantic model and report on its shape, relationship health, memory cost and downstream readiness — a review of a finished model, not authoring guidance. Use when asked to audit, review, assess or health-check a semantic model, to judge whether one is a real star schema, to explain why a model is slow or bloated, or to investigate inactive relationships, snowflake chains, role-playing dimensions, bidirectional filters, ambiguous filter paths, limited vs. regular relationships, or high-cardinality columns. Covers the three evidence tiers — TMDL on disk with no capacity, `INFO.VIEW.*` over executeQueries, and Best Practice Analyzer / Model Memory Analyzer via `sempy.fabric` in a Fabric notebook — and the storage-mode split that makes import-mode relationship guidance wrong for Direct Lake. For authoring TMDL use fabric-tmdl; for reviewing a diff use code-review."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: max   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -60,9 +60,8 @@ never a dependency: this skill loads at user scope in repos that have no
 `scripts/data/`.
 
 **For a local import model open in Power BI Desktop**, the VertiPaq DMVs
-reach column-level memory with no capacity at all — that is
-`pbid-tom-live`'s surface, not this one. It does not work for Direct Lake
-models or thin reports.
+reach column-level memory with no capacity at all — a surface this skill
+does not script. It does not work for Direct Lake models or thin reports.
 
 ## 3. The shape dimension
 
@@ -226,8 +225,8 @@ that defeat incremental framing. Name these and point at the lakehouse;
 they are not model edits.
 
 **Column-level memory and cardinality** need `model_memory_analyzer()`
-in a Fabric notebook (or the VertiPaq DMVs via `pbid-tom-live`, import
-models only). Nothing in the offline tier reaches them — do not estimate.
+in a Fabric notebook (or the VertiPaq DMVs on an import model open in
+Desktop). Nothing in the offline tier reaches them — do not estimate.
 
 ## 6. Direct Lake constrains the remediations
 

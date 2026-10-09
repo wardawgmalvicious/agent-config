@@ -17,7 +17,7 @@ written: 2026-10-07
 - **Kind**: an edit to `pbip-project-structure` from Learn, which a
   session can make alone. Nothing is drafted. Its other half, and the
   Desktop check that half needed, lapsed on 2026-10-09 when
-  [platform-skill-portfolio.md](platform-skill-portfolio.md) chose to
+  the user chose (`7240d9e`) to
   archive `powerbi-report-authoring`.
 
 ## What Learn says now

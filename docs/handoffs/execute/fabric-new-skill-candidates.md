@@ -10,7 +10,7 @@ written: 2026-10-09
 # Handoff: three Fabric skill candidates wait for client work
 
 - **Written**: 2026-10-09, to carry what
-  [platform-skill-portfolio.md](platform-skill-portfolio.md) held: three
+  the platform skill portfolio brief held (`7240d9e`): three
   new skills the user accepted for `/author-skill` on 2026-10-06, before
   deciding on 2026-10-08 to slim the platform skills. On 2026-10-09 they
   ruled out new platform skills while the portfolio shrinks, unless

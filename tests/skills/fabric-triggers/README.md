@@ -87,8 +87,10 @@ tests/skills/fabric-triggers/fixtures/
 └── control/notes.md                (matches nothing — negative control)
 ```
 
-`Lakehouse` and `KQLQueryset` have **no skill in the payload**. They are
-here as negative controls and to make that coverage gap visible — see
+`Lakehouse` and `KQLQueryset` have **no skill in the payload**, and since
+2026-10-09, when their skills were archived, `MirroredDatabase` and
+`CopyJob` have none either. They are here as negative controls and to
+make that coverage gap visible — see
 [expected_activations.md](expected_activations.md). `DataPipeline` was a
 third until 2026-09-02, when `fabric-data-pipeline` landed and its three
 files stopped being a gap.
@@ -113,7 +115,7 @@ take this file's word:
 | `SampleSQL.SQLDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace`, `ProdataSQL/DWA` @ `Workspaces/DWA` | `<name>.SQLDatabase` and the `dbo/Tables/*.sql` layout in [SQL database source control](https://learn.microsoft.com/fabric/database/sql/source-control) |
 | `SampleSparkNB.Notebook/` | `edkreuk/FMD_FRAMEWORK` @ `ebe97d4` | the `sqldatawarehouse` counterpart in `LanreAdetola/wwi_fabric_dw` @ `493bea1`, which fixes the `-- META` header as the only dialect discriminator |
 | `SampleCJ.CopyJob/` | `microsoft/fabric-cicd` @ `sample/workspace` | 89 public exports carry `"type": "CopyJob"` inside a `.platform`; the two-part `.platform` + `copyjob-content.json` shape is the whole item |
-| `SampleMD.MirroredDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace` | 30 public exports carry `"type": "MirroredDatabase"` inside a `.platform`; `mirroring.json` is the single definition part the skill's description already names |
+| `SampleMD.MirroredDatabase/` | `microsoft/fabric-cicd` @ `sample/workspace` | 30 public exports carry `"type": "MirroredDatabase"` inside a `.platform`; `mirroring.json` is the one required part in the REST [Mirrored database definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/mirrored-database-definition) reference |
 | `SampleDF.Dataflow/` | `microsoft/fabric-cicd` @ `534efeb`, `sample/workspace/Hello Dataflow.Dataflow/` | 200 public exports carry `"type": "Dataflow"` inside a `.platform` and 220 carry a `queryMetadata.json`; the three-file `{.platform, mashup.pq, queryMetadata.json}` set is the whole item, and `formatVersion: "202502"` matches the [Dataflow definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/dataflow-definition) reference |
 
 The three `metadata.type` values were checked directly rather than assumed.

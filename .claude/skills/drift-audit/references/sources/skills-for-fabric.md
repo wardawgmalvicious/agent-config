@@ -15,8 +15,8 @@
      a vendor-or-author candidate, bucket (b). **An `### Added` heading is
      not that test**: `databricks-migration` carries three `0.3.14` bullets
      under Added and has existed since `0.3.0`;
-  2. names a skill vendored here, or one a vendored skill routes to —
-     `powerbi-report-authoring`, `powerbi-report-design`,
+  2. names the skill vendored here, `powerbi-report-design`, or one it
+     routes to — `powerbi-report-authoring`, archived here on 2026-10-09,
      `powerbi-report-planning`, `powerbi-report-management`;
   3. names an upstream skill with a counterpart here (table below) **and**
      states a behavioural fact — a limit, a request shape, an error and its
@@ -30,9 +30,8 @@
 - `drill.host`: `learn.microsoft.com`
 - `drill.via`: `microsoft-learn-mcp`
 - `drill.strip`: none — the bullets carry no links.
-- `artifacts`: `skills/powerbi/powerbi-report-authoring/`,
-  `skills/powerbi/powerbi-report-design/`, the counterpart skills in the
-  table below, `claude/rules/fabric-git-serialization.md`
+- `artifacts`: `skills/powerbi/powerbi-report-design/`, the counterpart
+  skills in the table below, `claude/rules/fabric-git-serialization.md`
 
 **A skill catalog rather than a docs page, so its claims are drilled, not
 trusted.** Every other source here is documentation, where a claim is
@@ -55,8 +54,9 @@ is running a stranger's prompt.
 
 ## Vendored files — check path history, not the changelog
 
-The two `powerbi-report-*` skills are vendored verbatim at `v0.3.13`
-(`b8d541c`); each carries a *Local vendoring note* recording that. The
+`powerbi-report-design` is vendored verbatim at `v0.3.13` (`b8d541c`),
+and its *Local vendoring note* records that; `powerbi-report-authoring`,
+vendored beside it, was archived on 2026-10-09. The
 CHANGELOG is **not a complete record of file changes**, measured
 2026-09-10 in both directions:
 
@@ -72,10 +72,10 @@ CHANGELOG is **not a complete record of file changes**, measured
 - `0.3.14` says every skill description was rewritten. Neither vendored
   skill's path history shows a `0.3.14` commit.
 
-So for the vendored pair, run `list_commits` with `path:
-skills/<name>` and `since:` the vendored merge's time — `b8d541c`,
-2026-08-20T13:22:57Z, not the release heading's date — once per skill,
-and treat any commit as a re-sync candidate whatever the changelog says.
+So for the vendored skill, run `list_commits` with `path:
+skills/powerbi-report-design` and `since:` the vendored merge's time —
+`b8d541c`, 2026-08-20T13:22:57Z, not the release heading's date — and
+treat any commit as a re-sync candidate whatever the changelog says.
 At registration both returned nothing after `v0.3.12`: the vendored
 copies were current through `v0.3.15`.
 
@@ -83,7 +83,7 @@ copies were current through `v0.3.15`.
 returns the same `[]`, the trap `powerbi` documents for forks. Confirm it
 with tree SHAs: list `skills` at the vendored merge commit and at HEAD
 with `get_file_contents`, `fields: ["name","sha"]`; equal tree SHAs prove
-the content unchanged. One call per ref also covers the two routed-to
+the content unchanged. One call per ref also covers the three routed-to
 skills clause 2 names. Measured 2026-09-10, identical at `b8d541c` and
 `65902bae`:
 

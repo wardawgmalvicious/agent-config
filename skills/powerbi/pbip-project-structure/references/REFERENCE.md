@@ -61,4 +61,3 @@ The 3 highest-leverage entry points (PBIP overview, model authoring, Fabric Git 
 - All `pbir-*` skills — JSON shapes inside `Report.Report/definition/`
 - `fabric-tmdl` — TMDL authoring rules inside `SemanticModel/definition/`
 - `fabric-tmdl-api` — Fabric REST envelope for `getDefinition` / `updateDefinition`
-- `pbid-tom-live` — when you need to script the live model in Desktop instead of editing files

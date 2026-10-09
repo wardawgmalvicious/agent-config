@@ -8,8 +8,7 @@ written: 2026-10-09
 
 # Handoff: fold the four Fabric IQ skills into one fabric-iq skill
 
-- **Written**: 2026-10-09, on the user's decision in
-  [platform-skill-portfolio.md](platform-skill-portfolio.md) to fold
+- **Written**: 2026-10-09, on the user's decision (`7240d9e`) to fold
   these skills now rather than archive them, data agents being likely to
   return to client work. Measured at `9535085`.
 - **Kind**: a restructure, done by hand, then `/test-skill fabric-iq`. A

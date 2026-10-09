@@ -16,11 +16,12 @@ written: 2026-10-01
   only mirrored Azure Cosmos DB, the Eventstream CDC source,
   supported-item lists and the MCP README. Three of the note's small
   edits landed beside this brief: fabric-cicd's three Cosmos rules,
-  fabric-auth's audience row and fabric-mirroring's native-item line.
+  fabric-auth's audience row and fabric-mirroring's native-item line,
+  archived with that skill on 2026-10-09.
 - **Kind**: an edit, by `/author-skill`:
   `skills/fabric/fabric-cosmos-db/`, `paths: "**/*.CosmosDBDatabase/**"`.
   Nothing is drafted.
-- **2026-10-09**: [platform-skill-portfolio.md](platform-skill-portfolio.md)
+- **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items.
   The only Cosmos DB item on this machine sits in the sandbox repo
   (2026-10-08).
@@ -55,8 +56,8 @@ pipelines both list "Cosmos database" as preview (documented).
 | Vector `float16` (Azure's `vector-search` lists it) | Not supported: `float32`, `int8`, `uint8`. The portal offers `float16`, and saving it fails "Workload Error Code Unknown" (observed) |
 
 Not the same item: **Mirrored Azure Cosmos DB** copies an Azure account
-and needs 7- or 30-day continuous backup there; `fabric-mirroring` owns
-it.
+and needs 7- or 30-day continuous backup there; it was `fabric-mirroring`'s
+until that skill was archived on 2026-10-09, and stays out of this one.
 
 ## The definition
 
@@ -230,6 +231,7 @@ Microsoft's public sample data.
 ## Re-measure before acting
 
 - `grep -rli cosmos skills/`: on 2026-10-01, the files above plus
-  fabric-cicd, fabric-auth and fabric-mirroring's new line.
+  fabric-cicd, fabric-auth and fabric-mirroring's new line, the last
+  archived on 2026-10-09.
 - Learn's Cosmos DB in Fabric `faq` and `limitations` before encoding
   the deltas table, which preview churn can move.

@@ -23,7 +23,7 @@ written: 2026-10-01
   Nothing is drafted. The report side of translytical task flows is a
   second skill, [translytical-task-flow-skill.md](translytical-task-flow-skill.md).
 - **Audit 2026-10-06**: What's New added "Warehouse User Data Function integration (Preview)" ([report](../../audits/2026-10-06/fabric/00-audit-report.md)).
-- **2026-10-09**: [platform-skill-portfolio.md](platform-skill-portfolio.md)
+- **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items.
   The only User Data Functions items on this machine, two, sit in the
   sandbox repo (2026-10-08).

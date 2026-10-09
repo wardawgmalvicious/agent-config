@@ -16,7 +16,7 @@ written: 2026-10-01
 - **Kind**: a decision, then `/author-skill`. Deferred until the probe
   below has run, since the button's serialization is the part nothing
   here has seen.
-- **2026-10-09**: [platform-skill-portfolio.md](platform-skill-portfolio.md)
+- **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items,
   and folds the PBIR skills into `pbir-report-workflow`
   ([pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)).

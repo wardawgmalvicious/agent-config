@@ -60,13 +60,6 @@
         "references": "805f80b73f3992a6"
       }
     },
-    "fabric-copy-job": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "c19b3201b989ba48"
-      }
-    },
     "fabric-data-agent": {
       "activation": {
         "date": "2026-09-12",
@@ -158,13 +151,6 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "a89979bf51a7edd4"
-      }
-    },
-    "fabric-mirroring": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "7250b8455d9643a0"
       }
     },
     "fabric-mlv": {

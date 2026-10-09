@@ -284,7 +284,8 @@ each viewer's Entra identity, so:
   folder holding the image. Access to the report does not grant it.
 - **Publish to web and anonymous embed cannot use OneLake URLs at all** — they
   have no identity to authenticate with. Use an anonymously accessible web URL
-  for reports headed there. See `powerbi-report-authoring/references/image.md`
+  for reports headed there. See
+  [Use OneLake image and map files in Power BI reports](https://learn.microsoft.com/power-bi/visuals/power-bi-onelake-files)
   for the full OneLake image-source model.
 
 > The `visual.json` encoding for the **Field value** icon source is deliberately

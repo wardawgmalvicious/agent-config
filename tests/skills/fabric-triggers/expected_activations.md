@@ -77,10 +77,10 @@ an apparent one.
 | `…/Files/Config/published/stage_config.json` | `fabric-data-agent` | 3,071 |
 | `…/published/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
 | `…/published/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
-| `SampleMD.MirroredDatabase/.platform` | `fabric-mirroring` | 4,659 |
-| `SampleMD.MirroredDatabase/mirroring.json` | `fabric-mirroring` | 4,659 |
-| `SampleCJ.CopyJob/.platform` | `fabric-copy-job` | 2,776 |
-| `SampleCJ.CopyJob/copyjob-content.json` | `fabric-copy-job` | 2,776 |
+| `SampleMD.MirroredDatabase/.platform` | *(none)* | 0 |
+| `SampleMD.MirroredDatabase/mirroring.json` | *(none)* | 0 |
+| `SampleCJ.CopyJob/.platform` | *(none)* | 0 |
+| `SampleCJ.CopyJob/copyjob-content.json` | *(none)* | 0 |
 | `SamplePL.DataPipeline/.platform` | `fabric-data-pipeline` | 3,141 |
 | `SamplePL.DataPipeline/pipeline-content.json` | `fabric-data-pipeline` | 3,141 |
 | `SamplePL.DataPipeline/.schedules` | `fabric-data-pipeline` | 3,141 |
@@ -106,8 +106,8 @@ an apparent one.
 | `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
 | `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
 
-Together with `../pbip-triggers/`, all **30** conditional skills in the
-payload are now covered — 10 there, 20 here.
+Together with `../pbip-triggers/`, all **28** conditional skills in the
+payload are now covered — 10 there, 18 here.
 
 ## Assertions that carry weight
 
@@ -419,9 +419,11 @@ and a total gap are different problems.
 
 ## Fabric item types with no skill at all
 
-One fixture below is a real Fabric item type that the payload has no
-skill for: `KQLQueryset`. That is the *current* truth rather than a
-target, and it is common in the reference repo.
+Four fixtures below are real Fabric item types that the payload has no
+skill for: `Lakehouse` and `KQLQueryset`, each decided below, and
+`MirroredDatabase` and `CopyJob`, whose skills were archived on
+2026-10-09. That is the *current* truth rather than a target, and
+`KQLQueryset` is common in the reference repo.
 
 `DataPipeline` was the other, and is **no longer** one: `fabric-data-pipeline`
 landed 2026-09-02, taking the "yes" its brief recommended — that brief is
@@ -447,9 +449,16 @@ queryset-to-dashboard promotion, or cross-environment `dataSources`
 rebinding — and even then that content belongs in `fabric-cicd` or
 `fabric-eventhouse` before it justifies a new skill.
 
-`KQLQueryset` and `Lakehouse` are kept as fixtures regardless, because they
-are the natural negative controls — a glob that starts matching them is
-over-broad.
+`MirroredDatabase` and `CopyJob` are **archived: no skill**, 2026-10-09.
+`fabric-mirroring` and `fabric-copy-job` globbed them until then, and
+went when the platform skills were cut back, since no client repo held
+either item; `skills/README.md` § "Archived" has the restore line. Their
+four rows above read *(none)* from that date, and a restored skill turns
+them back, which the static check asks for.
+
+`KQLQueryset`, `Lakehouse`, `MirroredDatabase` and `CopyJob` are kept as
+fixtures regardless, because they are the natural negative controls — a
+glob that starts matching them is over-broad.
 
 ## Known gaps
 
@@ -460,8 +469,9 @@ over-broad.
   among them because no export confirmed a fixture. Add the fixture *with*
   the glob, in the same commit. `MirroredDatabase`, `CopyJob` and `Reflex`
   were on this list and have each left it that way — the first two with
-  `fabric-mirroring` and `fabric-copy-job`, and `Reflex` with
-  `fabric-activator` on 2026-09-12.
+  `fabric-mirroring` and `fabric-copy-job`, archived on 2026-10-09 while
+  their fixtures stayed, and `Reflex` with `fabric-activator` on
+  2026-09-12.
 - **`fabric-git-serialization`'s item-type list is only partly verified.**
   Carried forward from `rule-glob-gaps.md` when that brief was deleted:
   three names (`GraphModel`, `UserDataFunction`, `ApacheAirflowJob`) were

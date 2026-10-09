@@ -25,7 +25,6 @@
         "fabric-catalog-governance": "name-only",
         "fabric-cicd": "name-only",
         "fabric-cli": "name-only",
-        "fabric-copy-job": "name-only",
         "fabric-data-agent": "name-only",
         "fabric-data-pipeline": "name-only",
         "fabric-database": "name-only",
@@ -37,7 +36,6 @@
         "fabric-eventstream": "name-only",
         "fabric-gotchas": "name-only",
         "fabric-graph": "name-only",
-        "fabric-mirroring": "name-only",
         "fabric-mlv": "name-only",
         "fabric-ontology": "name-only",
         "fabric-operations-agent": "name-only",
@@ -54,7 +52,6 @@
         "fabric-warehouse": "name-only",
         "fabric-warehouse-monitoring": "name-only",
         "msix-packaging": "name-only",
-        "pbid-tom-live": "name-only",
         "pbip-project-structure": "name-only",
         "pbir-bookmarks": "name-only",
         "pbir-cli": "name-only",
@@ -64,7 +61,6 @@
         "pbir-report-workflow": "name-only",
         "pbir-themes": "name-only",
         "pbir-visual-json": "name-only",
-        "powerbi-report-authoring": "name-only",
         "powerbi-report-design": "name-only"
     }
 }

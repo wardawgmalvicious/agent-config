@@ -155,8 +155,8 @@ Current period start:
 ```
 
 Start of the month 3 months ago, `DateAdd` inside `DateSpan`, the
-nesting upstream's template uses (`powerbi-report-authoring`
-`references/filters.md`):
+nesting upstream's template uses (microsoft/skills-for-fabric,
+`skills/powerbi-report-authoring/references/filters.md`):
 
 ```json
 "Right": {"DateSpan": {

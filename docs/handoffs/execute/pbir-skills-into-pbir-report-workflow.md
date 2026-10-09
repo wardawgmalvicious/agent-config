@@ -8,8 +8,7 @@ written: 2026-10-09
 
 # Handoff: fold the PBIR skills and powerbi-report-design into pbir-report-workflow
 
-- **Written**: 2026-10-09, on the user's decision in
-  [platform-skill-portfolio.md](platform-skill-portfolio.md). Measured
+- **Written**: 2026-10-09, on the user's decision (`7240d9e`). Measured
   at `9535085`.
 - **Kind**: a restructure, done by hand, then
   `/test-skill pbir-report-workflow`. Eight skills become its
@@ -70,16 +69,22 @@ v0.3.13, commit `b8d541c`, MIT-licensed, per its "Local vendoring note".
 - Keep `LICENSE.upstream` beside the moved files and the attribution
   line, since MIT asks that the notice travel with the copy. Drop the
   note's re-sync instruction: upstream fixes now arrive only by hand.
-- Its text hands off to `powerbi-report-authoring`, which
-  `platform-skill-portfolio.md` Part 1 archives. Re-point each hand-off
-  to the router's own build steps; that is the only wording change.
+- Its text hands off to `powerbi-report-authoring`, archived on
+  2026-10-09. Until this fold, a line in its Local vendoring note sends
+  those hand-offs to `pbir-report-workflow`, and an `ACCEPTED` entry in
+  `scripts/skill-overlap.py` lets its description name the archived
+  skill. Re-point each hand-off to the router's own build steps; that is
+  the only wording change. With the frontmatter gone, no description
+  names `powerbi-report-authoring`, `-planning` or `-management`, so
+  their three `ACCEPTED` entries go too.
 - In `.claude/skills/drift-audit/references/sources/skills-for-fabric.md`,
   "Vendored files — check path history, not the changelog" (lines
-  56-93 on 2026-10-09), the `artifacts` list (line 33) and the bucket
-  rule naming the vendored skills (lines 18-19) lose
-  `powerbi-report-design`. Part 1 removes `powerbi-report-authoring`
-  from the same places, so whichever lands second removes the section,
-  nothing then being vendored.
+  55-95 on 2026-10-09), the `artifacts` list (line 33) and the bucket
+  rule naming the vendored skill (lines 18-20) lose
+  `powerbi-report-design`. Part 1 took `powerbi-report-authoring` out of
+  the first two on 2026-10-09 and kept it in the bucket rule as a skill
+  the vendored one routes to, so this fold removes the section, nothing
+  then being vendored.
 
 ### The router
 
@@ -127,12 +132,14 @@ the commit that folds:
   `fabric-rest-api` and `pbip-project-structure` name `pbir-cli`,
   `pbip-project-structure` names `pbir-pages`, and `fabric-gotchas`
   names `pbir-filters`: re-point each to `pbir-report-workflow`.
-  `powerbi-report-authoring` names two of them, if Part 1 has not yet
-  archived it. Every other mention sits among the nine and becomes a
+  Every other mention sits among the nine and becomes a
   reference link. A name backticked in a description fails
   `scripts/skill-overlap.py routing`.
 - `.claude/skills/author-skill/SKILL.md:330` quotes a description that
   names `pbir-themes`, as history: leave it.
+- `docs/handoffs/templates/skill-handoff.md:60` cites
+  `powerbi-report-design` as the `metadata:` precedent, the last skill
+  carrying that key since Part 1: drop the precedent or name another.
 - Open briefs naming the eight:
   [pbir-august-formatting-properties.md](pbir-august-formatting-properties.md)
   waits for this one and already names the moved files. `docs/audits/`

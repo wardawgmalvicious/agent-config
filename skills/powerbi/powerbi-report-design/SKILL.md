@@ -254,6 +254,8 @@ Local deviations from the upstream routing:
 
 - `powerbi-report-planning` is **not installed** — use `pbir-report-workflow`
   for requirements gathering and build sequencing.
-- The Design Brief YAML this skill emits is consumed by
-  `powerbi-report-authoring` (vendored alongside) or applied directly via
-  `pbir-cli` during the `pbir-report-workflow` layout steps.
+- `powerbi-report-authoring` is **not installed** either: vendored
+  alongside this skill, it was archived on 2026-10-09, never invoked
+  here. Every hand-off this skill and its references make to it goes to
+  `pbir-report-workflow`, whose layout steps apply the Design Brief YAML
+  through `pbir-cli`, and theme registration to `pbir-themes`.

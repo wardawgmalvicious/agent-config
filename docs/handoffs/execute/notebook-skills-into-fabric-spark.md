@@ -8,8 +8,7 @@ written: 2026-10-09
 
 # Handoff: fold four notebook skills into fabric-spark, always listed
 
-- **Written**: 2026-10-09, on the user's decision in
-  [platform-skill-portfolio.md](platform-skill-portfolio.md): one
+- **Written**: 2026-10-09, on the user's decision (`7240d9e`): one
   notebook skill, keeping the name `fabric-spark`, always listed.
   Measured at `9535085`.
 - **Kind**: a restructure, done by hand, then `/test-skill fabric-spark`.
@@ -152,8 +151,8 @@ then names nothing, which is harmless and that repo's to tidy.
 - `uv run --with pyyaml python scripts/skill-telemetry.py coverage`
   rows for the five skills, and the grep above.
 - Whether `/triage` has applied the client prompt audit's hunks to any
-  of the five, as `platform-skill-portfolio.md` says it may; re-read
-  them before moving.
+  of the five: its 2026-10-09 run, `6af0b27`, took the platform half;
+  re-read them before moving.
 
 ## Not checked
 

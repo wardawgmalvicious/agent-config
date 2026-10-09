@@ -440,6 +440,4 @@ connections through **Manage Connections → Edit Connection**.
 - **fabric-cicd skill** — deploying a dataflow between workspaces
 - **fabric-variable-library skill** — the library this reads from
 - **fabric-cli skill** — `fab` filesystem commands over the item
-- **fabric-copy-job** / **fabric-mirroring skills** — ingestion without
-  Power Query
 - **fabric-gotchas skill** — cross-product error index
