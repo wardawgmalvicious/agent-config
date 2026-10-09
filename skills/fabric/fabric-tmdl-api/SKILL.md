@@ -15,7 +15,7 @@ disable-model-invocation: false
 - **Never include `.platform`** in `updateDefinition` payloads — it is Git integration metadata and causes errors. Bulk Import is the exception: its parts carry each item's `.platform`
 - **Base64-encode all TMDL content** in definition payloads
 - **`getDefinition` is a POST** (not GET) — requires `--body '{}'`
-- **Poll LRO to completion** — `createItemWithDefinition`, `getDefinition`, and `updateDefinition` return 202
+- **Poll LRO to completion** — `createItemWithDefinition`, `getDefinition` and `updateDefinition` can each answer `202` instead of `200` (a create, `201`); branch on the status code, as fabric-rest-api says
 
 ## Required TMDL Parts
 
@@ -26,15 +26,15 @@ disable-model-invocation: false
 | `definition/model.tmdl` | Model properties + `ref` declarations for tables/roles/etc. |
 | `definition/tables/<TableName>.tmdl` | Per-table: measures, columns, partitions |
 
-**Critical**: `database.tmdl` MUST start with `database` object declaration, not bare properties. Bare `compatibilityLevel:` causes `InvalidLineType: Property!` errors.
+`database.tmdl` starts with the `database` object declaration, not bare properties: a bare `compatibilityLevel:` fails with `InvalidLineType: Property!`.
 
 ## model.tmdl Required Properties
 
 ```tmdl
 model Model
- culture: en-US
- defaultPowerBIDataSourceVersion: powerBI_V3
- discourageImplicitMeasures
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
 ```
 
 `defaultPowerBIDataSourceVersion: powerBI_V3` is required for Import-mode models. Without it: `Import from JSON supported for V3 models only`.
@@ -46,21 +46,21 @@ model Model
 
   ```tmdl
   expression DL_Lakehouse =
-      let
-          Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/<WorkspaceId>/<LakehouseId>", [HierarchicalNavigation=true])
-      in
-          Source
+  		let
+  			Source = AzureStorage.DataLake("https://onelake.dfs.fabric.microsoft.com/<WorkspaceId>/<LakehouseId>", [HierarchicalNavigation=true])
+  		in
+  			Source
   ```
 
 - Each table partition references the expression:
 
   ```tmdl
   partition Sales = entity
-      mode: directLake
-      source
-          entityName: Sales
-          schemaName: dbo
-          expressionSource: DL_Lakehouse
+  	mode: directLake
+  	source
+  		entityName: Sales
+  		schemaName: dbo
+  		expressionSource: DL_Lakehouse
   ```
 
 - `dataType: binary` columns are NOT supported in Direct Lake
