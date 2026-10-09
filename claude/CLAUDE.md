@@ -82,7 +82,7 @@ On `PATH` in both shells: `git`, `gh`, `az`, `node`/`npm`, `docker`, `wsl`,
 `dab`, `TabularEditor.exe`, `fzf`, `lazygit`, `hurl`, `es` (Everything),
 `~/scripts`. **Not installed — don't use or offer them:** `rg`, `fd` (use
 Grep and Glob). PowerShell modules: `Az`, `MicrosoftPowerBIMgmt`,
-`SqlServer`, `Microsoft.Graph`, `ImportExcel`, `powershell-yaml`,
+`SqlServer`,
 `PSScriptAnalyzer`, `Microsoft.PowerShell.SecretManagement`/`SecretStore`,
 `PSFzf`, `Pester` (read `~/.claude/rules/coding-powershell.md` first; its
 version trap reads as a syntax error). **`bash` from PowerShell is WSL**

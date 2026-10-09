@@ -587,6 +587,20 @@ running; it was, and the stopped case was not tried. The list says
 shell shows. To fit both names in the 200-line cap, the not-installed
 list gave up its date; the entry above carries it.
 
+**2026-10-09.** `Microsoft.Graph`, `ImportExcel` and `powershell-yaml`
+left the PowerShell module list, on the user's choice at a `/triage` of
+that day between dropping them here and declaring them in
+machine-config. `Get-Module -ListAvailable` found none of the three in
+pwsh 7.6 here, nor `Microsoft.Graph.Authentication`, while it found the
+other seven listed: `Az` 16.0.0, `MicrosoftPowerBIMgmt` 1.3.84,
+`SqlServer` 22.4.5.1, `PSScriptAnalyzer` 1.25.0, `PSFzf` 2.7.12,
+`Pester` 6.1.0, and `Microsoft.PowerShell.SecretManagement` 1.1.2 with
+`SecretStore` 1.0.6. A machine-config session's prompt audit found the
+same that day, and that its `config.psd1` declares none of the three;
+only its `package-lists/pwsh-modules.csv`, an export, names them. They
+had been listed since `1195532` (2026-09-01). If they are wanted,
+machine-config declares and installs them, and they return here.
+
 ### Azure CLI state is per tenant, and pinned by folder
 
 The profiles no longer run `az account clear`. It routed nothing — it
