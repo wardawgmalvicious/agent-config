@@ -172,7 +172,7 @@ Field or term clashes inside the model that a natural-language question can't re
 ## What does NOT belong here
 
 - **Per-column synonyms and aliases** — these belong in TMDL as synonyms on the column. Duplicating them in the blob wastes characters and creates drift.
-- **Column and measure descriptions** — these belong in the TMDL description property on the column or measure.
+- **Column and measure descriptions** — these belong on the column or measure itself, as `///` lines above it in TMDL (`fabric-tmdl`).
 - **Format strings** (currency, percent, text-format IDs) — these belong on the column or measure format property.
 - **Response formatting, tone, or persona instructions** — Microsoft explicitly states AI instructions are not intended for persona-specific or non-data output modifications.
 - **Conversational or multi-turn flows** (e.g., "if the user asks X, first ask Y") — the semantic model has no agent-like conversation loop.
@@ -290,7 +290,7 @@ Hard limit. Plan for it.
 - **Example queries / few-shot** — not available on the semantic model; dedicated feature on the data agent (but not on semantic-model data sources within the agent).
 - **Response formatting and conversational behavior** — explicitly out of scope for the semantic model; configurable on the data agent.
 - **Character limit** — semantic model is capped at 10,000; data agent has no single documented hard cap.
-- **Consumption surface** — semantic model instructions apply everywhere Copilot uses the model (reports, Q&A, Copilot chat, downstream consumers); data agent instructions apply only within the agent chat.
+- **Consumption surface** — semantic model instructions apply everywhere Copilot uses the model (reports, Q&A, the Copilot pane, downstream consumers; Microsoft 365 Copilot Chat unconfirmed, as above); data agent instructions apply only within the agent chat.
 - **Visibility to end users** — neither is visible to end users in the UI.
 
 ---
@@ -307,7 +307,3 @@ Hard limit. Plan for it.
 ## See also
 
 - For a starting-point AI-instructions example, see your internal tooling repo.
-
----
-
-Last updated: 2026-04-20
