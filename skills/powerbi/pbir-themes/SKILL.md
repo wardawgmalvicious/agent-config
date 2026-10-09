@@ -64,7 +64,7 @@ The published theme JSON schema referenced by visualStyles tracks the latest bas
 2. Visual type `visualStyles["lineChart"]["*"]` — overrides wildcard for that type
 3. Visual instance — `objects` / `visualContainerObjects` in `visual.json` (see `pbir-visual-json` for the `objects` vs `visualContainerObjects` split in schema 2.4.0+)
 
-Fonts resolve differently since the Fluent 2 GA: **font overrides were removed from the base theme**, so `textClasses` now applies consistently across all visuals instead of being shadowed per-visual by the base. A custom theme that previously needed per-visual `visualStyles` font entries to beat the base may now be over-specified.
+The Fluent 2 base theme carries **no per-visual font overrides**, so `textClasses` applies consistently across all visuals. A custom theme written against an older base may hold per-visual `visualStyles` font entries that existed only to beat that base's overrides; under Fluent 2 they are redundant.
 
 ### visualStyles Structure
 
@@ -152,7 +152,7 @@ Location: `visualStyles["*"]["*"].outspacePane`. **Theme owns every styling prop
 | `transparency` | integer | 0-100 (bare) |
 | `border` | boolean | Show vertical separator |
 | `borderColor` | color | Separator color |
-| `fontFamily` | string | Triple-quoted fallback chain |
+| `fontFamily` | string | Fallback chain, each font name with spaces single-quoted: `"'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"` |
 | `foregroundColor` | color | Text, icons, buttons |
 | `titleSize` | integer | Points |
 | `headerSize` | integer | Points |
@@ -240,7 +240,7 @@ Stale `objects` / `visualContainerObjects` in visual.json override theme default
 | Filter pane styling causes deploy error | Styling placed in `report.json` outspacePane | Only `visible`/`expanded` allowed in report.json — move styling to theme |
 | Theme changes invisible after apply | Stale `visualContainerObjects` in visuals | Run `pbir visuals clear-formatting --keep-cf -f` |
 | `ColorId` out of range | Palette has fewer entries than referenced | Check `dataColors[]` length |
-| Font fallback chain broken | Not triple-quoted | `"'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"` |
+| Font fallback chain broken | A font name with spaces not single-quoted, or visual.json's triple-quoted literal copied into a theme | `"'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif"` |
 | Inheritance not applying | Put properties at wrong state key | Default state is `"*"`, not `"default"` |
 | Third-level `"*"` catch-all confusing | Real themes sometimes nest another `"*"` for generic props | Treat as fallback; normal paths still work |
 | `textClasses` not inheriting | Used `fontSize` as string | Must be bare integer |
