@@ -34,6 +34,12 @@ directory keeps working (a client repo, 2026-09-27). Steps 2 to 6 then
 run from the worktree unchanged, and step 6 names the tree step 7 writes
 from.
 
+A worktree created on its branch needs no rename:
+`git worktree add .claude/worktrees/<dir> -b <type>/<kebab-slug> main`,
+then `EnterWorktree` with `path` set to that directory, which its
+description offers for "one you just created with `git worktree add`"
+(2.1.294, 2026-10-08). The directory and the branch may be named apart.
+
 ## Step 7: `main` is checked out elsewhere
 
 The main checkout holds `main`, and git will not move a branch another
