@@ -575,6 +575,18 @@ answers `rg`: Claude Code's shell snapshot defines it as a function that
 runs Claude Code's own executable, so it exists in that shell alone, not
 in pwsh or a child process, and the rule's Grep stands.
 
+**2026-10-09.** `hurl` and `es` joined the "On PATH" list the same day,
+on the user's word that these tools were installed for Claude to use.
+Each was run here first: `es` answered a filename query from
+Everything's index at once, and `hurl --test` ran an assertion against
+the Claude Code release endpoint and passed. `es` is Everything's
+command-line client, which voidtools documents as needing Everything
+running; it was, and the stopped case was not tried. The list says
+"(Everything)" because the bare name could be read as another tool.
+`starship` stays off it: it draws an interactive prompt, which no tool
+shell shows. To fit both names in the 200-line cap, the not-installed
+list gave up its date; the entry above carries it.
+
 ### Azure CLI state is per tenant, and pinned by folder
 
 The profiles no longer run `az account clear`. It routed nothing — it

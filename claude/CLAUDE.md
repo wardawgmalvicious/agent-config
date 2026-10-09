@@ -79,9 +79,9 @@ stdin, with `jq -b`, per `~/.claude/rules/coding-bash.md`.
 On `PATH` in both shells: `git`, `gh`, `az`, `node`/`npm`, `docker`, `wsl`,
 `jq`, `yq`, `mlr`, `duckdb`, `bat`, `delta`, `difft`, `hyperfine`, `xh`,
 `sops`/`age`, `gitleaks`, `shellcheck`, `shfmt`, `sqlcmd`, `sqlpackage`,
-`dab`, `TabularEditor.exe`, `fzf`, `lazygit`, `~/scripts`. **Not
-installed — don't use or offer them:** `rg`, `fd` (use Grep and Glob,
-2026-10-09). PowerShell modules: `Az`, `MicrosoftPowerBIMgmt`,
+`dab`, `TabularEditor.exe`, `fzf`, `lazygit`, `hurl`, `es` (Everything),
+`~/scripts`. **Not installed — don't use or offer them:** `rg`, `fd` (use
+Grep and Glob). PowerShell modules: `Az`, `MicrosoftPowerBIMgmt`,
 `SqlServer`, `Microsoft.Graph`, `ImportExcel`, `powershell-yaml`,
 `PSScriptAnalyzer`, `Microsoft.PowerShell.SecretManagement`/`SecretStore`,
 `PSFzf`, `Pester` (read `~/.claude/rules/coding-powershell.md` first; its
