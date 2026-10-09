@@ -189,10 +189,16 @@ lookups into throws:
   `$x = @(if ($cond) { $items } else { @() })`.
 
 Both bugs pass any test that does not itself run strict —
-`$null.Count` is silently `0` without strict mode — so Pester suites
-must set `Set-StrictMode -Version Latest` in `BeforeEach` to test the
-semantics the script actually has. (Both hit live in machine-config,
-Sep 2026; pinned by tests there.)
+`$null.Count` is silently `0` without strict mode — so a Pester file
+sets `Set-StrictMode -Version Latest` once, as the first line of its
+root `BeforeAll` and ahead of the dot-source, to test the semantics
+the script actually has. (Both hit live in machine-config, Sep 2026;
+pinned by tests there.) That line reaches the script's own top level
+and every block's `BeforeAll`, `BeforeEach`, `It` and `AfterEach`, and
+leaks into neither the next test file nor the calling session. A
+`BeforeEach` per `Describe` reaches neither the script's top level nor
+the block's `BeforeAll`, and in a block without one both bugs above
+pass (Pester 5.9.1 and 6.1.0, 2026-10-09).
 
 ## JSON
 
@@ -328,12 +334,13 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
   bundles v3.4.0 alongside the installed v6; if v3 loads first, every
   `Should` fails with syntax errors that look nothing like a version
   problem.
-- Pester 6 rejects a top-level `BeforeEach` ("Each test setup is not
-  supported in root") — it goes inside `Describe`.
+- Pester 5.9.1 and 6.1.0 both reject a top-level `BeforeEach` ("Each
+  test setup is not supported in root", 2026-10-09) — it goes inside
+  `Describe`.
 - Don't shadow automatic variables in test state: `$script:Home`
   collides with the read-only `$HOME`. Pick another name.
-- Mirror the script's strict mode in `BeforeEach` — see Strict mode
-  above.
+- Mirror the script's strict mode in the root `BeforeAll` — see Strict
+  mode above.
 
 ## Anti-patterns
 
