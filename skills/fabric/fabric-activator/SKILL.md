@@ -319,8 +319,9 @@ you get an error on commit or deploy. Support is stated as planned, not
 present. This is the first thing to check when an otherwise healthy
 workspace fails to sync one item — the failure is a property of the
 Activator's *contents*, not of the repo, so nothing about the Git
-configuration will explain it. Deployment pipelines and Git integration
-themselves are `fabric-cicd`'s.
+configuration will explain it. Deployment pipelines themselves are
+`fabric-deployment-pipelines`' subject, and the Git integration APIs are
+`fabric-rest-api`'s.
 
 One more ownership trap that survives a sync: a Power BI ingestion's
 metric is owned by whoever created it, and only that user can query it.
@@ -376,9 +377,11 @@ Every code, grouped by stage, with cause and fix, is in
 
 ## See also
 
-- `fabric-rest-api` — LRO polling, `continuationToken` pagination
+- `fabric-rest-api` — LRO polling, `continuationToken` pagination, the
+  Git integration APIs
 - `fabric-auth` — token audiences for Fabric REST
-- `fabric-cicd` — deployment pipelines, Git integration
+- `fabric-cicd` — code-first deploys from a Git checkout
+- `fabric-deployment-pipelines` — service-side deployment pipelines
 - `fabric-cli` — `fab` and `fab api` passthrough
 - `claude/rules/fabric-git-serialization.md` — co-loads on these paths
 - Open the `.Eventstream` or `.Eventhouse` item's definition to reach the

@@ -316,7 +316,10 @@ Full YAML: [example/release_pipeline](https://microsoft.github.io/fabric-cicd/la
 
 ## See also
 
-- fabric-cli skill — `fab deploy` wrapper over this library; service-side deployment-pipeline REST via `fab api -A powerbi`
+- fabric-cli skill — `fab deploy` wrapper over this library
+- fabric-deployment-pipelines skill — service-side deployment pipelines:
+  Fabric Core `deploymentPipelines/...`, or Power BI `pipelines/...`
+  through `fab api -A powerbi`
 - fabric-auth skill — token audiences, SPN setup, 401 debugging
 - fabric-rest-api skill — the underlying item-definition / LRO API patterns
 - fabric-variable-library skill — value-set selection semantics this library keys off `environment`
