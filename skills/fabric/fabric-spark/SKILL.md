@@ -31,11 +31,11 @@ Two different things that are often confused:
 
 ## Lakehouse Setup
 
-- **`enableSchemas` is set at lakehouse creation time only** — cannot be retrofitted. Without it the lakehouse only has the default `dbo` schema and you must recreate to gain named schemas. Set via `creationPayload: { "enableSchemas": true }` on `POST /workspaces/{ws}/items` (see fabric-rest-api skill).
+- **`enableSchemas` is set at lakehouse creation time only** — cannot be retrofitted. Without it the lakehouse only has the default `dbo` schema and you must recreate to gain named schemas. Set via `creationPayload: { "enableSchemas": true }` on `POST /workspaces/{ws}/items`.
 - Schemas use lowercase names by convention (`bronze`/`silver`/`gold` for medallion). `DROP SCHEMA <name> CASCADE` removes the schema with all its tables.
 - **Cross-lakehouse Spark SQL** uses 3-part names: `lakehouse.schema.table` for same-workspace, `workspace.lakehouse.schema.table` for cross-workspace. Verify access permissions on each lakehouse.
 - Lakehouse delete cascades irreversibly: SQL Endpoint deleted, all OneLake data permanently removed, shortcuts pointing in become inaccessible, dependent notebooks fail at runtime.
-- **Shortcuts as definition payload**: when authoring a Lakehouse via REST, `shortcuts.metadata.json` is an array of `{name, path, target}` objects. Supported `target.type` values: `OneLake`, `AdlsGen2`, `AmazonS3`, `GoogleCloudStorage`, `S3Compatible`, `Dataverse`. Each target type has its own connection properties (see fabric-rest-api skill).
+- **Shortcuts as definition payload**: when authoring a Lakehouse via REST, `shortcuts.metadata.json` is an array of `{name, path, target}` objects. Supported `target.type` values: `OneLake`, `AdlsGen2`, `AmazonS3`, `GoogleCloudStorage`, `S3Compatible`, `Dataverse`. Each target type has its own connection properties.
 
 ## Lakehouse Table Maintenance (impacts SQL Endpoint performance)
 
