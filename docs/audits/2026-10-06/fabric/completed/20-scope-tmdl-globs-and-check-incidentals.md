@@ -226,3 +226,8 @@ in the report's "Incidental" list.
   deployed copy matches the repo (`cmp`, 2026-10-07). The Operations
   agent region line records both pages: the limitations page excludes
   East US, the region-availability page East US and South Central US.
+- **Closed**: 2026-10-08 — carried by /triage to
+  docs/handoffs/execute/tmdl-glob-real-path.md: the fabric set's
+  real-path run, which assertion 10 has not had. The pbip half is
+  covered by `skill-status.py --stale`, which lists `fabric-tmdl` as
+  `retest-activation`, owing the `/test-skill fabric-tmdl` that runs it.

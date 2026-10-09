@@ -150,3 +150,8 @@ recommending fold-ins rather than new candidates.
   line.
 - **Needs**: `/author-skill` — three new skills, for Business Events,
   the dbt job item and Fabric Maps, each from this brief's evidence.
+- **Closed**: 2026-10-08 — carried by /triage to
+  docs/handoffs/execute/platform-skill-portfolio.md: the three accepted
+  candidates, Business Events, the dbt job and Fabric Maps, none
+  authored by then, whose authoring that decision now governs with the
+  queue's other new-skill briefs.

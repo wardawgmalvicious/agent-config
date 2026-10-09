@@ -261,3 +261,8 @@ change is the run's own output.
   and the `powerbi` registry entry, asking about E-2 and E-3 first, then
   re-run `/drift-audit --sources fabric --since 2026-09-01` to recover
   the 22 transient rows.
+- **Closed**: 2026-10-08 — carried by /triage to
+  docs/handoffs/execute/drift-audit-on-disk-diffing.md: decisions 1 to
+  4's edits to `drift-audit` and the `powerbi` entry, E-2 and E-3 for
+  the user first, and the re-run that recovers the 22 transient rows.
+  Decision 4 was half applied by then, in `346b0c1` and `b7015b0`.

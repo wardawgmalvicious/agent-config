@@ -227,3 +227,10 @@ does not exist yet.
   the staleness gate. Its brief 10 does not list the data-agent outage
   warning the Deferred line gives it; that is now on `fabric/07`'s
   last Needs line.
+- **Closed**: 2026-10-08 — landed by /triage:
+  `skills/fabric/fabric-ontology/SKILL.md` § `description`, which now
+  names the TMDL parts first and the JSON layout as the old
+  experience's, retiring 2027-01-31. The one retest it shares with the
+  `fabric-iq-ontology` pass, `/test-skill fabric-ontology`, is covered
+  by `skill-status.py --stale`, which lists the skill as
+  `untested-behaviour`.

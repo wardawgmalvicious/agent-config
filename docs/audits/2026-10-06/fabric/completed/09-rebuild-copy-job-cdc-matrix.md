@@ -158,3 +158,7 @@ why the status items are flags and not flips.
   only" claims for Oracle and BigQuery contradicted it.
 - **Needs**: a fresh session — `/test-skill fabric-copy-job`, the
   routing retest the `description` edit owes.
+- **Closed**: 2026-10-08 — covered, by /triage:
+  `skill-status.py --stale` lists `fabric-copy-job` as
+  `untested-behaviour`, which owes the `/test-skill` run this log
+  names; root `CLAUDE.md` keeps no other untested list.

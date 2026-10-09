@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 2
-needs: [fabric audit brief 20 of 2026-10-06 executed]
+needs: []
 blocked-by: []
 written: 2026-10-06
 ---

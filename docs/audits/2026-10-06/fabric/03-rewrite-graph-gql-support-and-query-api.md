@@ -219,3 +219,11 @@ these rows, which is brief 18's subject.
   `/test-skill fabric-graph`, the routing retest the `description` edit
   owes. That edit landed 2026-10-06: the `description` now gives
   `executeQuery?beta=true`.
+- **Needs**: the next fabric drift audit — whether Learn documents
+  incremental graph updates, which settles item 5; its manage-data page
+  still read "every save refreshes your graph data" on 2026-10-08. The
+  rest left this log that day, by /triage: the routing retest is
+  `skill-status.py --stale`'s, which lists `fabric-graph` as
+  `untested-behaviour`, and the four claims the Constraint put out of
+  scope went to docs/handoffs/execute/platform-skill-portfolio.md, held
+  for its Part 1.

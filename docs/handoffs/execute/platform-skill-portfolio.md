@@ -237,11 +237,17 @@ test sets, and every client repo relinked.
   `translytical-task-flow-skill.md` and `copilot-chat-power-bi-skill.md`:
   whether a new platform skill is authored while the portfolio shrinks
   is part of this decision.
+- Three new skills that no brief carries, accepted for `/author-skill`
+  on 2026-10-06, before this decision: Business Events, the dbt job and
+  Fabric Maps. Their evidence is in the 2026-10-06 `fabric` audit's
+  [brief 19](../../audits/2026-10-06/fabric/completed/19-decide-new-skill-candidates.md),
+  and whether to author them is the new-skill briefs' question.
 
 ## Held for this decision
 
-A `/triage` of 2026-10-08 left two edits here, from a client note of
-2026-10-07:
+`/triage` left these here on 2026-10-08: two edits from a client note of
+2026-10-07, and two from the 2026-10-06 `fabric` audit's follow-ups,
+each citing its audit brief.
 
 - **Part 1**: `fabric-data-agent` names the service-principal tenant
   setting by its old title, *Service principals can use Fabric APIs*, at
@@ -249,6 +255,24 @@ A `/triage` of 2026-10-08 left two edits here, from a client note of
   now titles it *Service principals can call Fabric public APIs*, as the
   other skills say since that triage, while Learn's own data agent page
   keeps the old one. Correct both if the skill stays.
+- **Part 1**: `fabric-data-agent`'s ontology paragraph (`SKILL.md:21`)
+  says nothing of the outage that Learn's data-agent ontology page still
+  warned of on 2026-10-08: a data agent may fail to add an ontology in
+  the new experience (known issue 1987). Add it, dated, if the skill
+  stays and the page still warns
+  ([brief 07](../../audits/2026-10-06/fabric/completed/07-update-data-agent-consumption-surfaces.md)).
+- **Part 1**: `fabric-graph` still carries four claims that its audit
+  brief put out of scope as unverified, to be raised separately, which
+  nobody did: the source formats, the create and update timeout, and the
+  per-workspace cap and unsupported return types, at
+  `references/REFERENCE.md:408-418` on 2026-10-08, and the graph-type
+  DDL example in `SKILL.md`. Re-measured on 2026-10-08, the timeout
+  claim fails: Learn's graph performance page says "The 20-minute Query
+  API timeout doesn't apply to refresh jobs." Verify the rest, and
+  correct what fails, if the skill stays. The claims and what the audit
+  read are in the Constraint of
+  [brief 03](../../audits/2026-10-06/fabric/03-rewrite-graph-gql-support-and-query-api.md),
+  which stays open on its own re-check.
 - **Part 2**: a trigger for what authorizes a service principal, tenant
   settings and workspace roles rather than API permissions, in
   `fabric-auth`'s `description`, 639 characters on 2026-10-08. The

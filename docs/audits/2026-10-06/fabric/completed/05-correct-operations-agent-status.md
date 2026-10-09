@@ -120,3 +120,7 @@ does not depend on the agent's Learn reading alone.
   lines, but step 1 required it and the brief's Kind allows it.
 - **Needs**: a fresh session — `/test-skill fabric-operations-agent`,
   the retest the `description` edit owes.
+- **Closed**: 2026-10-08 — covered, by /triage:
+  `skill-status.py --stale` lists `fabric-operations-agent` as
+  `untested-behaviour`, which owes the `/test-skill` run this log
+  names; root `CLAUDE.md` keeps no other untested list.

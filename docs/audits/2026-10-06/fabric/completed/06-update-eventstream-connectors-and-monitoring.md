@@ -204,3 +204,9 @@ and Learn is the source the skill transcribes.
   with Eventstream logging on, to confirm `ItemId` against `ArtifactId`
   and rewrite the three samples; then `/test-skill fabric-eventstream`
   for the routing retest.
+- **Closed**: 2026-10-08 — carried by /triage to
+  docs/handoffs/execute/eventstream-monitoring-columns.md: the live
+  check of `ItemId` against `ArtifactId`, and the three samples it
+  settles. The routing retest is covered by `skill-status.py --stale`,
+  which lists `fabric-eventstream` as `retest-routing`; the gotcha and
+  the `description` landed in `e01b5a2`.

@@ -226,3 +226,9 @@ the MCP-tasks text on Learn. The remaining quotes are the agent's.
   pass has landed its brief 10, which edits that paragraph. The
   Deferred line above gives the warning to brief 10, which does not
   list it.
+- **Closed**: 2026-10-08 — carried by /triage to
+  docs/handoffs/execute/platform-skill-portfolio.md: the outage
+  warning, which Learn still carried on 2026-10-08 and
+  `fabric-iq-ontology` brief 10 did not add, held there for Part 1. The
+  routing retest is covered by `skill-status.py --stale`, which lists
+  `fabric-data-agent` as `untested-behaviour`.

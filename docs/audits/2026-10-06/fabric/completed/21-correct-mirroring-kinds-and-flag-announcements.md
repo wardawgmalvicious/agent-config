@@ -263,3 +263,7 @@ that re-read alone.
   which now repeats the main page's tables.
 - **Needs**: a fresh session — `/test-skill fabric-mirroring`, the
   routing retest the `description` edit owes.
+- **Closed**: 2026-10-08 — covered, by /triage:
+  `skill-status.py --stale` lists `fabric-mirroring` as
+  `untested-behaviour`, which owes the `/test-skill` run this log
+  names; the adjacent views wording landed in `2abcb45`.
