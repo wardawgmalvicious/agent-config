@@ -79,7 +79,7 @@ DDM is a **viewing restriction, not encryption**. Workspace Admin / Member / Con
 
 ## OneLake Security (GA May 2026)
 
-Lake-level RBAC enforced **across all Fabric engines**, distinct from the SQL GRANT surface. Deny-by-default: a user in no data access role sees no data in the item.
+Lake-level RBAC, enforced by the engines that **Engine enforcement** below lists (the SQL analytics endpoint only in user's-identity mode), distinct from the SQL GRANT surface. Deny-by-default: a user in no data access role sees no data in the item.
 
 - **Data access roles**: each role = a permission (`Read` or `ReadWrite`) + a scope (tables/folders/schemas) + Entra members. Only GRANT-type roles exist. Tables can carry row- and/or column-level security inside a role. Created/managed by Write+Reshare users (Admin/Member) via the item's OneLake security UX.
 - **Supported items**: Lakehouse (`Read`, `ReadWrite`), Azure Databricks Mirrored Catalog (`Read`), Mirrored Databases (`Read`), Mirrored Catalogs (`Read`).
