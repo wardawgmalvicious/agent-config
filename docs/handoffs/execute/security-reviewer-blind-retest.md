@@ -103,7 +103,7 @@ retest exercises the read-and-apply half of memory hygiene.
   to record them, dated, in that last section, which the reviewer is
   not meant to read.
 
-## D-3 — a prompt audit's six edits to the agent
+## D-3 — two prompt audits' seven edits to the agent
 
 A prompt audit run in a client Fabric repo session on 2026-10-08
 audited this agent against Sonnet 5.5 and proposed six edits, none
@@ -127,6 +127,17 @@ retest and the retest checks them with D-1 and D-2.
   drops that the rejection shows in the transcript.
 - **S5** replaces the warning that skipping `MEMORY.md` "defeats the
   cross-project learning purpose" with the reason the memory exists.
+- **A seventh, from a second audit**, run from a machine-config session
+  on 2026-10-09: "Before scan" has the agent Read `MEMORY.md` before any
+  other call, and "After scan" has it curate past 200 lines, while its
+  `memory: user` already puts the first 200 lines or 25 KB of
+  `MEMORY.md` in its system prompt, with instructions to curate past
+  that (sub-agents docs, read here 2026-10-09). The Read costs a tool
+  call on every scan. The edit: steps 1 and 2 become one saying the
+  memory is in the prompt already, the first-run branch stays, and the
+  curation clause goes. Unrun. Under D-2's set-aside the retest takes
+  the first-run branch either way, so it checks only that the reviewer
+  still seeds the memory.
 
 ## Where it lands
 

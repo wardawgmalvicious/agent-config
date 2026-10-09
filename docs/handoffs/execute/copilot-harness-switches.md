@@ -286,7 +286,10 @@ says `-Audit` reports a profile leaving a Claude location or switch on,
 which it stopped doing, and whose gotchas on per-profile switches and
 unlisted locations, still true, are framed as hazards to switching
 inheritance off. Its `chat.includeReferencedInstructions` gotcha holds
-as written.
+as written. That `-Audit` stopped is re-read: on 2026-10-09
+machine-config's `scripts/vscode-profiles.ps1`, on its `main`, matched
+no `claude`, `copilot` or `chat.` (a machine-config session's note, and
+a `grep -c -i` here the same day).
 
 Unverified there: whether the Local agent follows `CLAUDE.md`'s
 `@AGENTS.md`, which would load `AGENTS.md` twice with

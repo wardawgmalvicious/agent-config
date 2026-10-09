@@ -77,3 +77,29 @@ new evidence gets a verdict, or a new entry.
   is right in a session that cannot run it.
 - **Would change it**: `learn` telling a session in another repo to run
   one of them itself.
+
+## 2026-10-09 — Trimming the procedure from recreate-repo's, commit's and land's descriptions
+
+- **From**: a note of 2026-10-09, by a prompt-audit session in the
+  personal machine-config repo, which proposed no edit.
+- **Why not**: each description is within `lint-frontmatter.py`'s
+  caps, and the `workflow` group's listing text was 5,984 characters on
+  2026-10-08, beside an overflow in the platform groups that
+  `platform-skill-portfolio.md` Part 1 closes. The steps a description
+  names are what tell a session the skill applies before it acts, as
+  `recreate-repo`'s "before the delete" does, and a reworded trigger
+  owes an activation retest.
+- **Would change it**: a client listing still over its cap after Part
+  1, or a transcript where a session followed a description's steps
+  without invoking the skill.
+
+## 2026-10-09 — Cutting code-review's checklist as standard review knowledge
+
+- **From**: the same note, offered for a `/test-skill` comparison rather
+  than as an edit.
+- **Why not**: the checklist is body text, paid only when `code-review`
+  runs and never in the listing, and no run has measured what it adds
+  over a bare model.
+- **Would change it**: the `/test-skill code-review` run that the K2
+  and K3 entry above already waits on, if its baseline arm catches what
+  the checklist lists.
