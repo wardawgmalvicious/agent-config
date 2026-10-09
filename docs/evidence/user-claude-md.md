@@ -555,6 +555,26 @@ is not there). Both paths must be absolute and the source needs the
 `file:///C:/...` triple-slash form. Recipe and failure modes:
 `agent-config/docs/social/README.md`.
 
+**2026-10-09.** Two corrections from a machine-config session's inbox
+note of that day, each re-measured here from both tool shells. `zoxide`
+is gone, uninstalled with its PATH entry, its profile init and its
+`setup.ps1` entry (machine-config `ce38177`, on its branch
+`perf/shell-startup` and not in its `main` that day), and resolves in
+neither shell. It never served a session: neither tool shell runs its
+init, since the bash profile skips interactive tooling under
+`CLAUDECODE` and the PowerShell tool runs `-NoProfile`, and that
+session's search of every transcript on the machine found no call to
+it. `starship`, `hurl` and `es` are installed and run, so they left the
+"Not installed" list: `starship` 1.26.0 under
+`C:\Program Files\starship\bin\`, `hurl` 8.0.1 under
+`C:\Program Files\hurl\`, and `es` 1.4.1.1032 through
+`~\AppData\Local\Microsoft\WinGet\Links\`. Whether `hurl` or `es` joins
+the "On PATH" list is the user's call, not taken here. `fd` resolves
+nowhere. `rg` has no binary either, but in the Bash tool `command -v rg`
+answers `rg`: Claude Code's shell snapshot defines it as a function that
+runs Claude Code's own executable, so it exists in that shell alone, not
+in pwsh or a child process, and the rule's Grep stands.
+
 ### Azure CLI state is per tenant, and pinned by folder
 
 The profiles no longer run `az account clear`. It routed nothing — it
