@@ -74,16 +74,16 @@ them. Say so plainly when the overlap comes up, so the duplication reads
 as deliberate rather than as something nobody noticed.
 
 **A Fabric or Power BI skill for an item no client work uses → a
-deferred brief.** The user's hold of 2026-10-09 (`7240d9e`): no new
-platform skill while the portfolio shrinks, until client work uses its
-item, the Git-sync sandbox repo not counting. Look for its folders:
+deferred brief**, by the user's hold of 2026-10-09 (`7240d9e`), lifted
+once `platform-persona-groups.md`, the platform cutback's last brief, has
+landed. The Git-sync sandbox repo's items do not count. Look for one:
 
 ```bash
 find /c/Repos -path /c/Repos/Personal -prune -o -name .git -prune -o -type d -name '*.<ItemType>' -print
 ```
 
 If none prints, or only the sandbox's, stop at a deferred brief whose
-`reopen-when` names the item, and say so; only the user lifts the hold.
+`reopen-when` names the item, and say so; only the user waives it early.
 
 If the user wants a *subagent* rather than a skill, this is the wrong
 skill: the artifact lives in `claude/agents/` and uses

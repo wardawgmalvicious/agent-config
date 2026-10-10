@@ -79,7 +79,11 @@ Counted 2026-10-09, before the folds; re-count when this runs.
   under `skills/powerbi/`;
 - every client repo relinked with its new groups, which prunes the
   junctions the move leaves dangling, as `fabric-deploy-skill.md`
-  § "The rename trap" says of a relink.
+  § "The rename trap" says of a relink;
+- the hold on new platform skills, which lifts as this lands, on the
+  user's word of 2026-10-09: delete it from `/author-skill` step 1, and
+  ask the user whether each brief deferred on client work reopens:
+  `grep -l '^reopen-when:.*Git-sync sandbox' docs/handoffs/execute/*.md`.
 
 No link between skills breaks: the nine relative links that left a
 skill's `references/` folder on 2026-10-09 all point back into the same
