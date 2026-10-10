@@ -4,7 +4,7 @@ name: commit
 effort: xhigh
 disable-model-invocation: false
 description: "Splits working-tree changes into logical, self-consistent commits (ordering so nothing dangles, stepping files that straddle commits through intermediate states), writes conventional-commit messages (feat/fix/docs/refactor/chore) with motivation in the body, stages explicit paths only, uses git mv for renames, never pushes/amends/skips hooks unless explicitly asked, and ends by reporting the resulting hashes against a clean tree. Includes pre-commit checks for Fabric Git-synced repos (core.autocrlf, .gitattributes, whitespace-only portal diffs). In a working tree another session is editing at the same time, gates the commit on the branch and on the index exactly as read, so nothing of theirs is swept in and nothing lands on a branch a peer switched to."
-when_to_use: "Use when asked to commit changes — /commit, 'commit this', 'make the commits', 'commit these split logically' — and when the commit has to be made in a tree another session is working in: 'another session is live in this tree', 'commit mine without touching theirs'."
+when_to_use: "Use when asked to commit changes — /commit, 'commit this', 'make the commits', 'commit these split logically' — and when the commit has to be made in a tree another session is working in: 'another session is live in this tree', 'commit mine without touching theirs'. Also use it unasked, on the user's standing word, once a unit of work is finished while another live session shares the working tree, where uncommitted work can vanish."
 ---
 
 # Commit workflow
@@ -162,6 +162,20 @@ under `.git/worktrees/<name>/`, so a session alone in one has nothing
 to suspect and commits with the plain commands. The `EnterWorktree`
 guard refuses the chained form below there as too complex to verify
 (2026-10-06, 2.1.289), and a worktree needs none of it.
+
+**Commit each finished unit unasked while a peer shares the tree**: the
+user's standing word since 2026-10-09. Held for their review, it can
+vanish under a peer's stash, checkout or pre-commit run before they
+look, and nothing reports it; a commit they did not want costs a revert.
+A peer is any live `ListAgents` row that may sit in this tree: a
+`<cwd-basename>-<hash>` naming it or a folder in it, or a named row you
+cannot place elsewhere, idle or never prompted alike, since the user can
+prompt it at any moment. Finished means the hooks pass and nothing in it
+dangles; work in progress stays out, and the report says it is at risk.
+Only the user's word in this conversation holds a finished unit back.
+Run the whole procedure, but on `main` where step 4 would branch, ask
+instead, since `git switch -c` moves the peer's HEAD too. Open the report
+with the commit and why it was made unasked.
 
 - **Ask them.** `ListAgents` names every live session by its
   `/rename` or `--name` name, else `<cwd-basename>-<hash>` — its
