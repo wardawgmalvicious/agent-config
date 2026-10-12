@@ -386,11 +386,24 @@ Symptom → most likely cause, which is the direction you actually need:
 | **Service principal** can't use the ontology MCP | Known issue; currently unavailable. |
 | A **parent entity** query returns no instances of its inheriting entities | Known issue; currently unavailable. |
 | Data agent's **first queries fail** | Initialization. Wait a few minutes and retry. |
-| Data agent **aggregates wrongly** | Known issue. Add `Support group by in GQL` to the agent instructions. |
+| Data agent **aggregates wrongly** | The query it generated, in its run steps. It writes SQL, KQL or DAX, so not Learn's GQL instruction (below). |
 | Data agent answers **vague** | Ontology not added as a knowledge source, or entity/relationship names not meaningful. |
 
 Note the last three are data-agent-side;
 [data-agent.md](data-agent/data-agent.md) owns the rest of that surface.
+
+The aggregation row departs from Learn's page on purpose. The page still
+prescribes adding `Support group by in GQL` to the agent instructions for
+a known aggregation issue, and so does
+[Create a data agent grounded in an ontology](https://learn.microsoft.com/fabric/iq/ontology/how-to-create-data-agent);
+the page's own link for that step now opens the ontology agent tutorial
+(all read 2026-10-12). The data agent's own
+[ontology page](https://learn.microsoft.com/fabric/data-science/data-agent-ontology-sources)
+says the agent generates a source-native SQL, KQL or DAX query and runs
+it against the bound source; its debugging steps start from that query,
+in the run steps. [ontology.md](ontology.md) calls the GQL instruction
+moot on that evidence. If the run steps ever show a GQL query, that page's account
+no longer holds, and Learn's instruction is the documented fix.
 
 For known issues beyond these, see
 [Microsoft Fabric known issues](https://support.fabric.microsoft.com/known-issues/)
