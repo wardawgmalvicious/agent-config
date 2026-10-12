@@ -438,14 +438,14 @@ A node can carry **multiple labels** (e.g. `["Customer","Employee"]`).
 | Limit | Value |
 | --- | --- |
 | Graph models per workspace | **no cap documented** (read 2026-10-12) |
-| Graph size (GA SKU) | ~**2 billion** elements (nodes + edges); contact product team for larger |
+| Graph size | ~**2 billion** elements (nodes + edges); effective capacity varies with graph structure and property payload size; contact **Microsoft Support** beyond it (read 2026-10-12) |
 | Data sources | **OneLake and mirrored databases** (read 2026-10-12) |
 | Variable-length pattern hops | up to **8** in the **Explore** UI's path builder; GQL in the code editor doesn't share the limit |
 | Query timeout | **20 minutes** |
 | Graph load or refresh time | **no fixed timeout**: a large graph can take several hours; open a support request if one runs past **24 hours**. The 20-minute limit is the Query API's alone (limitations and graph performance pages, read 2026-10-12) |
-| Response size | **truncated above 64 MB**; aggregation unstable past 128 MB |
-| String property max length | **65,535** chars (data past 64 KiB unreachable to deserializer) |
-| `List<T>` property max elements | **65,535** |
+| Response size | **truncated above 64 MB**; intermediate results capped at **128 MB** (read 2026-10-12) |
+| `STRING` max size | **65,534 bytes**, not characters (runtime value types, uint16 on-disk length); the property-type table gives 65,535 bytes (read 2026-10-12) |
+| `LIST` and `PATH` max length | **65,534** elements (uint16 on-disk length) (read 2026-10-12) |
 | Export / Power BI direct connect | **not supported** |
 | Returning `ANY` / `RECORD` types | **supported**: `RECORD` is listed as a supported runtime value type, and the Query API documents `ANY` result columns, each cell a full `{gqlType, value}` (§5) (read 2026-10-12) |
 | Identifiers | can't start with underscore |
@@ -463,6 +463,7 @@ A node can carry **multiple labels** (e.g. `["Customer","Employee"]`).
 - GQL graph types — https://learn.microsoft.com/fabric/graph/gql-graph-types
 - GQL schema example — https://learn.microsoft.com/fabric/graph/gql-schema-example
 - GQL conformance — https://learn.microsoft.com/fabric/graph/gql-conformance
+- Current limitations — https://learn.microsoft.com/fabric/graph/limitations
 - GQL Query API reference — https://learn.microsoft.com/fabric/graph/gql-query-api
 - GQL status codes — https://learn.microsoft.com/fabric/graph/gql-reference-status-codes
 - Quickstart (create first graph) — https://learn.microsoft.com/fabric/graph/quickstart
