@@ -1,0 +1,5 @@
+find_replace:
+  - find_value: "3f9a1c2e-5b7d-4e6f-8a9b-0c1d2e3f4a5b"   # dev lakehouse GUID as committed
+    replace_value:
+      _ALL_: "$items.Lakehouse.Sales_LH.$id"
+    item_type: "Notebook"

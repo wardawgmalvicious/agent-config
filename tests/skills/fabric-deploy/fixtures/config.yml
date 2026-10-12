@@ -1,0 +1,14 @@
+core:
+  workspace_id:
+    dev: "8b6e2c7a-4c1f-4e3e-9a7b-2f1d3c5e7a90"
+    test: "5d2a9f14-7b3c-4e8a-b1f6-0c9e2d4a6b13"
+    prod: "e7c41b58-2a6d-4f9e-8c3b-1d5f7a9b2c64"
+  repository_directory: "./workspace"
+  item_types_in_scope: [Notebook, DataPipeline, Lakehouse, SemanticModel, Report]
+  parameter: "parameter.yml"
+
+publish:
+  skip:
+    dev: false
+    test: false
+    prod: false
