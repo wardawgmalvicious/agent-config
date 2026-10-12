@@ -161,6 +161,15 @@ PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
 
 **`definition.pbir` `byConnection` for single-item calls**: the single-item create and update-definition endpoints accept only `byConnection` semantic-model references in PBIR. The `byPath` form (used locally with the `pbir` CLI) is not accepted there — switch to `byConnection` before deploying one report. Learn's **Bulk Import** example, by contrast, sends a report whose `definition.pbir` holds `"byPath": { "path": "../../MyDataset.SemanticModel" }` beside that model in the same request; that path is a documentation example, unmeasured here.
 
+**`getDefinition` is not the Git serialization.** Where Git holds a
+logicalId or a relative path, a live definition can hold a runtime id or
+a connection: a report's `datasetReference` is `byConnection` live and
+`byPath` in Git, `.platform`'s `logicalId` is all zeros live, and a KQL
+database's `parentEventhouseItemId` is the eventhouse's runtime id live
+and its logicalId in Git (each seen once, 2026-10-12; a dashboard's data
+source differs the same way, per `fabric-realtime-dashboard`). Normalize
+those before diffing a live item against its folder.
+
 ## Git Integration APIs
 
 A Git-connected workspace is synced to one commit while its branch may be
