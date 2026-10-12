@@ -612,3 +612,19 @@ include the turns before it: $2.115 where the first process had read
 $1.738, so the resume itself spent $0.377. Every `modelUsage` token
 count was the two runs' sum, while `num_turns` was the resume's alone,
 9 after 22 (2026-10-12, 2.1.293). Subtract the cost, never add it.
+
+**A manual-only skill, `disable-model-invocation: true`, is reached
+only by its slash arm.** Measured 2026-10-12 on `run-briefs`, the first:
+
+- The model-invoked arm becomes a refusal check. Asked by name, a
+  Sonnet arm called `Skill` anyway, and the tool answered "Skill
+  run-briefs cannot be used with Skill tool due to
+  disable-model-invocation … Do not replicate this skill's workflow by
+  other means"; the model told the user to type it. That text is the
+  witness, and `init.slash_commands` still lists the skill.
+- The baseline cannot type it, so it gets the request in words. For a
+  skill that acts, make that a walkthrough under `--tools CronList`: a
+  baseline allowed to act would run the work it describes.
+- A skill that checks for live sessions sees the testing session. The
+  coordinator's landing stopped for this session, as the brief's plan
+  expected, and landed once a resume by id relayed the user's word.
