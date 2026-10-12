@@ -228,3 +228,16 @@ overview and include quotes come from the same diff.
   last Needs line folds the TMDL layout into the `description`, the one
   `/test-skill fabric-ontology` retest every `description` edit here
   shares.
+- **Behavioural confirmation**: 2026-10-12, `/test-skill fabric-iq`,
+  which carried this pass's shared retest once
+  `iq-skills-into-fabric-iq.md` folded `fabric-ontology` into
+  `fabric-iq`'s `references/ontology.md`, the router's `description`
+  replacing the one these edits changed. Payload and `--safe-mode` arms
+  in a probe outside the repo, Opus 5.5 at `xhigh`, against `cad180a`
+  (`tests/skills/fabric-iq/README.md`). The `ontology` case separated:
+  the payload gave one static binding, static before time series in the
+  old experience, and secondary sources joined to the primary on a
+  shared column in the new, while the baseline held the old rules
+  unaided and said "Bindings don't do joins". Stamp written.
+- **Closed**: 2026-10-12 — the shared retest passed, run by
+  `iq-skills-into-fabric-iq.md`, which landed at `cad180a`.

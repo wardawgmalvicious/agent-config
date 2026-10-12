@@ -1,9 +1,8 @@
 ---
-status: deferred
+status: open
 priority: 3
 needs: [user]
 blocked-by: []
-reopen-when: iq-skills-into-fabric-iq.md has landed, giving the route a home as a fabric-iq reference, its client need being on record since 2026-10-07
 written: 2026-10-08
 ---
 
@@ -59,7 +58,8 @@ observed.
 On 2026-10-09 the user's portfolio decision, `7240d9e`,
 ruled out a new platform skill while the portfolio shrinks, and folded
 the four Fabric IQ skills, `fabric-data-agent` among them, into one
-`fabric-iq` ([iq-skills-into-fabric-iq.md](iq-skills-into-fabric-iq.md)).
+`fabric-iq`, which landed on 2026-10-12
+([result](../../../tests/skills/fabric-iq/README.md)).
 Learn's "Get started with Fabric IQ" lists Fabric IQ in Microsoft 365
 Copilot Chat as an integration of the IQ workload (read 2026-10-09).
 

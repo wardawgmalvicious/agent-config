@@ -16,8 +16,9 @@ written: 2026-09-02
 - **Kind**: coverage decision, answered yes on 2026-09-30. Since
   2026-10-09 the expected home is a reference under `fabric-iq` rather
   than a skill of its own: Learn lists Planning among the IQ workload's
-  items, and [iq-skills-into-fabric-iq.md](iq-skills-into-fabric-iq.md)
-  builds that skill. Confirm the shape with the user on reopening.
+  items, and that skill,
+  [`fabric-iq`](../../../skills/fabric/fabric-iq/SKILL.md), landed on
+  2026-10-12. Confirm the shape with the user on reopening.
 - **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items.
   The only Plan item on this machine sits in the sandbox repo

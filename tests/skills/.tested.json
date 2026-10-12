@@ -139,6 +139,20 @@
         "references": "1a6338310de40ee9"
       }
     },
+    "fabric-iq": {
+      "activation": {
+        "date": "2026-10-12",
+        "commit": "cad180a",
+        "paths": "f76583a968c3e337"
+      },
+      "behaviour": {
+        "date": "2026-10-12",
+        "commit": "cad180a",
+        "routing": "3ebc54ab271fed16",
+        "body": "91483c4d79444fe4",
+        "references": "16442224b23b3b1b"
+      }
+    },
     "fabric-mlv": {
       "behaviour": {
         "date": "2026-09-12",

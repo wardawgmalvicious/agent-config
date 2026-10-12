@@ -168,3 +168,16 @@ pages at pinned SHAs in the audit session.
   last Needs line folds the TMDL layout into the `description`, the one
   `/test-skill fabric-ontology` retest every `description` edit here
   shares.
+- **Behavioural confirmation**: 2026-10-12, `/test-skill fabric-iq`,
+  which carried this pass's shared retest once
+  `iq-skills-into-fabric-iq.md` folded `fabric-ontology` into
+  `fabric-iq`'s `references/ontology.md`, the router's `description`
+  replacing the one these edits changed. Payload and `--safe-mode` arms
+  in a probe outside the repo, Opus 5.5 at `xhigh`, against `cad180a`
+  (`tests/skills/fabric-iq/README.md`). The `consume` case separated:
+  the payload named the built-in ontology agent first of seven
+  consumers and gave the `ontologyEndpoint` MCP path, while the
+  baseline said the ontology has "no query endpoint of its own". Stamp
+  written.
+- **Closed**: 2026-10-12 — the shared retest passed, run by
+  `iq-skills-into-fabric-iq.md`, which landed at `cad180a`.

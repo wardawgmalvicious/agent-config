@@ -81,7 +81,8 @@ Read the `init` record for `tools` (2 on every arm) and
 ## Result, 2026-10-12
 
 The router held on all seven cases. One run per arm, on 2.1.293, Opus
-5.5 at `xhigh`, against `ccf0270`:
+5.5 at `xhigh`, against the fold commit: `cad180a` on `main`, which the
+arms read as `ccf0270` before its rebase, with the same `skills/fabric/`:
 
 | Case | Router | Baseline |
 | --- | --- | --- |

@@ -156,3 +156,15 @@ it moved.
   last Needs line folds the TMDL layout into the `description`, the one
   `/test-skill fabric-ontology` retest every `description` edit here
   shares.
+- **Behavioural confirmation**: 2026-10-12, `/test-skill fabric-iq`,
+  which carried this pass's shared retest once
+  `iq-skills-into-fabric-iq.md` folded `fabric-ontology` into
+  `fabric-iq`'s `references/ontology.md`, the router's `description`
+  replacing the one these edits changed. Payload and `--safe-mode` arms
+  in a probe outside the repo, Opus 5.5 at `xhigh`, against `cad180a`
+  (`tests/skills/fabric-iq/README.md`). The `onelake` case separated:
+  the payload read `ontology.md` and said binding still works, the
+  exclusion withdrawn in September 2026, while the baseline gave the
+  withdrawn rule ("Probably not"). Stamp written.
+- **Closed**: 2026-10-12 — the shared retest passed, run by
+  `iq-skills-into-fabric-iq.md`, which landed at `cad180a`.
