@@ -83,7 +83,7 @@ carried it for every Git-supported item and for no `SQLEndpoint` or
 Many mutating calls return `202 Accepted` with `Location` and `x-ms-operation-id` headers.
 
 - Poll: `GET /v1/operations/{operationId}` → `status: Running|Succeeded|Failed`
-- Get result: `GET /v1/operations/{operationId}/result` (after Succeeded)
+- Get result: `GET /v1/operations/{operationId}/result` (after Succeeded), only where the operation has one. Learn: "Not all long running operations have a result", and a completed operation's `Location` points at its result where there is one. `commitToGit` and `updateFromGit` answer `400` `OperationHasNoResult` there (2026-10-12): success, with no body.
 - Honor `Retry-After` header. Use exponential backoff if absent.
 
 **Item creation is 201-OR-202, not "always sync" or "always LRO"** — the same endpoint can return either depending on current provisioning load. Always branch on status code; never assume sync. A function that only inspects the body on 2xx will silently return before the item is queryable whenever Fabric picks the LRO path, racing any immediately-downstream call that expects the new item to exist.
