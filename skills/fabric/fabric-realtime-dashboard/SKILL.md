@@ -20,10 +20,12 @@ Facts verified against a live dashboard (schema_version 81, Aug 2026) and
 
 Item folder: `<Name>.KQLDashboard/` with `.platform` + `RealTimeDashboard.json`
 (portal may name it `RealTimeDashboard-N.json`). Top-level keys:
-`schema_version`, `flavor` (`"RTDashboard_Regular"`), `autoRefresh`, `tiles`,
-`baseQueries`, `parameters`, `dataSources`, `pages`, `queries`, `embeddedApps`
-(+ portal-managed `$schema`/`id`/`eTag`/`title`, which a Git-created shell may
-omit — leave them however the portal wrote them).
+`schema_version`, `flavor` (`"RTDashboard_Regular"`), `autoRefresh`,
+`changeDetection` (see *Auto refresh*), `tiles`, `baseQueries`, `parameters`,
+`dataSources`, `pages`, `queries`, `embeddedApps` (+ portal-managed
+`$schema`/`id`/`eTag`/`title`, which a Git-created shell may omit — leave them
+however the portal wrote them). The live schema's top-level `properties` is
+the whole list; v81's also allows `pagesNavWidth` (2026-10-12).
 
 All KQL text lives in `queries[]`; everything else points at it:
 
@@ -131,6 +133,15 @@ stay numeric — put the unit in the tile title and column name
 `"autoRefresh": {"enabled": true, "defaultInterval": "5m", "minInterval": "30s"}`
 — intervals from the enum `1s|10s|30s|1m|5m|15m|30m|1h|2h|1d`. `minInterval`
 caps what viewers may select.
+
+**Live refresh is a second object, `changeDetection`**, which the portal writes
+between `autoRefresh` and `tiles`:
+`{"kind": "liveUpdates", "minRefreshRate": "30s", "fallbackRefreshRate": "5m"}`,
+or `{"kind": "manualUpdates"}`. By the v81 schema's descriptions the two rates
+are Learn's **Refresh rate limit** and **Fallback refresh interval**, the latter
+for visuals that cannot detect ingestion, each with its own enum. Learn turns
+Live refresh on for new dashboards, so a generated file without the object
+shows as drift at the next portal commit (2026-10-12).
 
 ## Live JSON Schema
 
