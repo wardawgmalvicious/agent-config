@@ -161,3 +161,14 @@ new evidence gets a verdict, or a new entry.
 - **Would change it**: the fold's `/test-skill pbir-report-workflow`
   design case showing the reference over-asks, skips its review, or
   defaults where it should ask.
+
+## 2026-10-12 — Sweeping other repos' prompts for the UserInteractive half-guard
+
+- **From**: a note of 2026-10-12, by a session in the personal
+  machine-config repo, which left the sweep to the user.
+- **Why not**: no other repo has a call site. `Read-Host` appears in the
+  `.ps1` and `.psm1` files under `C:\Repos` in machine-config alone,
+  three files, which that session swept, and so does
+  `[Environment]::UserInteractive` (grep, 2026-10-12).
+- **Would change it**: a `Read-Host`, `Get-Credential` or `pause` call
+  site in another repo's PowerShell.
