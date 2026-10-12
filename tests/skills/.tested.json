@@ -181,6 +181,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "5b66c4a51bea08b1"
+      },
+      "behaviour": {
+        "date": "2026-10-12",
+        "commit": "1edf503",
+        "routing": "a7d5fe595381bad3",
+        "body": "4678ab2d9b5ea326",
+        "references": "0a68ba43a429d244"
       }
     },
     "fabric-tmdl": {

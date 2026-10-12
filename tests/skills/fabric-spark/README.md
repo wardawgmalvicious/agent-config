@@ -65,8 +65,9 @@ skill; then the `Skill` and `Read` calls, and the first `result`.
 ## Result, 2026-10-12
 
 The router held on all five cases. One run per arm, on 2.1.293, Opus
-5.5 at `xhigh`, against `7938150`, the fold's second commit, in the
-brief's worktree:
+5.5 at `xhigh`, against the fold's second commit: `1edf503` on `main`,
+which the arms read as `7938150` in the brief's worktree before its
+rebase, with the same `skills/fabric/`:
 
 | Case | Router | Baseline |
 | --- | --- | --- |

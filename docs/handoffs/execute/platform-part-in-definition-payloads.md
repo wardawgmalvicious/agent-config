@@ -31,7 +31,7 @@ The payload disagrees with itself:
   definition call (`SKILL.md:270` on 2026-10-09), and its
   troubleshooting row says `.platform` breaks REST definition calls,
   being "Git metadata, not a part" (`:366`). Learn calls it a part, and
-  `fabric-rest-api` (`SKILL.md:139-141`), `fabric-spark` (`:104-105`)
+  `fabric-rest-api` (`SKILL.md:139-141`), `fabric-spark` (`:112-113`)
   and `fabric-activator` (`:163-165`) say an update without the flag
   ignores it.
 - `fabric-tmdl-api` says never to include it in a semantic model's
