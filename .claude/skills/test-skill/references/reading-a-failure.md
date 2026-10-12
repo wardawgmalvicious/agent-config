@@ -594,3 +594,14 @@ a peer's message from running as a second turn. Passed on all 18 arms
 of a run on 2026-10-06 (2.1.291) with a normal `init` and no error;
 whether it refused anything is unmeasured, since a refused message
 leaves no trace in the arm, and none showed a second turn.
+
+**A skill that waits on its own background task ends a turn too, and
+there the last `result` is the answer.** Measured 2026-10-12 on 2.1.293
+in `run-briefs`' denial pilot: the coordinator launched its worker with
+`run_in_background` and wrote that it would wait, and that turn closed
+on a `result` holding only that line. The worker's exit came back as a
+`task_notification` record, a second `init` followed, and the second
+`result` held the gate and the report. A peer's turn sits between
+`command_lifecycle` records instead (above), so read what precedes the
+second `init` before grading either. The real pilot's coordinator
+blocked on `Wait-Process` and emitted a single `result`.
