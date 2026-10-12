@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "RevenueTrend",
+  "position": { "x": 24, "y": 96, "z": 0, "height": 300, "width": 600, "tabOrder": 0 },
+  "visual": {
+    "visualType": "lineChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Date" } }, "Property": "Month" } }, "queryRef": "Date.Month", "nativeQueryRef": "Month", "active": true }
+          ]
+        },
+        "Y": {
+          "projections": [
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "Total Sales" } }, "queryRef": "Sales.Total Sales", "nativeQueryRef": "Total Sales" }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

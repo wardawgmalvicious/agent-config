@@ -1,0 +1,19 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "name": "OrderDetail",
+  "position": { "x": 24, "y": 412, "z": 2000, "height": 284, "width": 1232, "tabOrder": 2 },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            { "field": { "Column": { "Expression": { "SourceRef": { "Entity": "Product" } }, "Property": "Product Name" } }, "queryRef": "Product.Product Name", "nativeQueryRef": "Product Name" },
+            { "field": { "Aggregation": { "Expression": { "Column": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "order_line_id" } }, "Function": 5 } }, "queryRef": "Count(Sales.order_line_id)", "nativeQueryRef": "Count of order_line_id" },
+            { "field": { "Measure": { "Expression": { "SourceRef": { "Entity": "Sales" } }, "Property": "Total Sales" } }, "queryRef": "Sales.Total Sales", "nativeQueryRef": "Total Sales" }
+          ]
+        }
+      }
+    }
+  }
+}
