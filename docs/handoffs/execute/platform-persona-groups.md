@@ -2,7 +2,7 @@
 status: open
 priority: 3
 needs: []
-blocked-by: [ai-instructions-into-fabric-tmdl.md]
+blocked-by: []
 written: 2026-10-09
 ---
 

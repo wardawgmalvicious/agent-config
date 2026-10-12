@@ -2,7 +2,7 @@
 status: open
 priority: 3
 needs: []
-blocked-by: [ai-instructions-into-fabric-tmdl.md]
+blocked-by: []
 written: 2026-10-12
 ---
 
@@ -13,8 +13,8 @@ written: 2026-10-12
   The user chose a pointer in each of two existing skills, briefed
   together.
 - **Kind**: an edit to two platform skills, each pointer drafted below.
-  `fabric-tmdl`'s half waits for its fold; `fabric-eventhouse`'s does
-  not, but ships with it.
+  `fabric-tmdl`'s half waited for its fold, which landed on 2026-10-12;
+  `fabric-eventhouse`'s did not, but ships with it.
 
 ## Decided: the scripts stay templates, and no new skill
 
@@ -65,8 +65,8 @@ databases, which Git stores under the Eventhouse's `.children/`
 
 ## fabric-tmdl: dax.sh
 
-Once `ai-instructions-into-fabric-tmdl.md` has landed, add a bullet to
-§ "Measure & DAX Rules" (line 53 on 2026-10-12, before the fold):
+Add a bullet to § "Measure & DAX Rules" (line 60 on 2026-10-12, after
+the fold):
 
 ```markdown
 - **If a `scripts/data/dax.sh` wrapper is deployed in the repo** (an
