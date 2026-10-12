@@ -131,7 +131,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (31)
+## Microsoft Fabric platform (28)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -204,8 +204,6 @@ construction. Split out of `workflow` 2026-09-11.
   Dashboard (KQLDashboard) JSON authoring: baseQueries wiring,
   load-time validation rules, 24-column grid, visual options,
   display-edge formatting in KQL.
-- [fabric-graph/](fabric/fabric-graph/) — GraphModel item: GQL queries and
-  graph-type DDL over OneLake Delta tables, executeQuery REST API.
 - [fabric-mlv/](fabric/fabric-mlv/) — Materialized Lake Views: `CREATE
   MATERIALIZED LAKE VIEW` Spark SQL + the preview `@fmlv` PySpark
   decorator. Refresh modes, CDF prerequisite, lineage scheduling.
@@ -250,20 +248,15 @@ construction. Split out of `workflow` 2026-09-11.
   procedure, since `drift-audit` already holds the bare verb slot.
   Unconditional on purpose — a `paths:` glob would co-load an audit
   procedure on every one-line measure edit.
-- [fabric-data-agent/](fabric/fabric-data-agent/) — Fabric Copilot data agent.
-- [fabric-operations-agent/](fabric/fabric-operations-agent/) — the
-  OperationsAgent item's `Configurations.json`: definition schema, which
-  references survive a deployment, `shouldRun` as a deployed capacity
-  meter, and the portal's serializer artifacts. Named for the item, not
-  "rti-agent", because Git integration files it under Data Factory and
-  three separate front doors write the same item. Distinct from
-  fabric-data-agent — autonomous and write-capable, not conversational
-  and read-only.
-- [fabric-ontology/](fabric/fabric-ontology/) — the Ontology item (Fabric
-  IQ, preview): its Git definition layout, generating one from a semantic
-  model and the storage-mode support matrix, the data-binding rules, the
-  `Decimal`-returns-null trap, and consuming it — including as an MCP
-  server. Grounds both agent skills above; defers GQL to fabric-graph.
+- [fabric-iq/](fabric/fabric-iq/) — the Fabric IQ items: ontology, graph
+  model, data agent and operations agent. It picks the item by the job or
+  the folder suffix and carries what crosses them, an ontology grounding
+  both agents and generating a graph among it, while its `references/`
+  hold each item in depth. Named for the workload Learn groups them
+  under, and keeps all four items' globs. Folded from `fabric-ontology`,
+  `fabric-graph`, `fabric-data-agent` and `fabric-operations-agent` on
+  2026-10-12; Learn's IQ workload also holds semantic models, which are
+  `fabric-tmdl`'s, and Plan, which has no skill.
 - [fabric-ai-functions/](fabric/fabric-ai-functions/) — `ai.*` LLM functions
   on pandas/PySpark DataFrames in notebooks: import paths, config
   objects, custom endpoints, billing meters.

@@ -152,8 +152,8 @@ Plan item at all.
 `.platform` reads `"metadata": {"type": "Plan"}`, and its folder is
 `{displayName}.Plan/`, the `{display name}.{type}` form that the
 [Plan definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/plan-definition)
-page and wave 12's ontology precedent both give. The glob, in
-`fabric-ontology`'s form:
+page and wave 12's ontology precedent both give. The glob, in the form
+`fabric-iq` gives each of its items:
 
 ```yaml
 paths:
@@ -515,8 +515,9 @@ Lighter than the other two briefs, but not nil:
   2026-09-30, fixed by hand that evening). Since 2026-10-01 it also names
   the symptom, the fact's total on every date member with no error. Half
   A cites both.
-- **`fabric-ontology`**'s `when_to_use` ends "the item is not the Fabric
-  IQ Plan item": point that clause at this skill once it exists.
+- **`fabric-iq`**'s opening says Plan has no reference there, the clause
+  `fabric-ontology`'s `when_to_use` carried until the 2026-10-12 fold:
+  change it once Plan has one.
 
 ## Validation, if it proceeds
 

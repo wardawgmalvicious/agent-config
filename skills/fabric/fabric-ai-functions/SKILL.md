@@ -14,7 +14,7 @@ One-line, LLM-powered transformations applied to whole pandas or PySpark DataFra
 
 Use AI Functions to enrich, classify, extract, summarize, translate, or embed **tabular data at scale** — thousands to millions of rows — with minimal code, letting Fabric manage concurrency (200 rows in parallel by default) and the built-in endpoint. This is the fastest path to apply an LLM across a column.
 
-Skip them when you need **low-level control** over a single prompt/response, custom orchestration, function-calling loops, or a conversational agent — use the [Azure OpenAI Python SDK](https://learn.microsoft.com/fabric/data-science/ai-services/how-to-use-openai-python-sdk) or [SynapseML](https://learn.microsoft.com/fabric/data-science/ai-services/how-to-use-openai-synapse-ml) instead. For a governed natural-language-to-data experience over your semantic models/lakehouses, that's a Data Agent (`fabric-data-agent`), not AI Functions.
+Skip them when you need **low-level control** over a single prompt/response, custom orchestration, function-calling loops, or a conversational agent — use the [Azure OpenAI Python SDK](https://learn.microsoft.com/fabric/data-science/ai-services/how-to-use-openai-python-sdk) or [SynapseML](https://learn.microsoft.com/fabric/data-science/ai-services/how-to-use-openai-synapse-ml) instead. For a governed natural-language-to-data experience over your semantic models/lakehouses, that's a Data Agent (`fabric-iq`), not AI Functions.
 
 ## Prerequisites
 
@@ -200,7 +200,7 @@ Same capability, different engines — not covered in depth here:
 ## See also
 
 - `fabric-spark` — the broader PySpark-in-Fabric surface; AI Functions are one consumer of it
-- `fabric-data-agent` — governed NL-to-data over semantic models/lakehouses (different tool, different job)
+- `fabric-iq` — Data Agents: governed NL-to-data over semantic models/lakehouses (different tool, different job)
 - `fabric-warehouse` — the T-SQL `ai_*` scalar functions
 - `fabric-warehouse-monitoring` — Capacity Metrics app links in its references bundle
 - `coding-python` rule — conventions for the pandas/PySpark you'll write around these calls

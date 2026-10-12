@@ -1,6 +1,6 @@
 # Fabric Data Agent: the four configuration layers in full
 
-Split out of the parent `fabric-data-agent` SKILL.md, which carries the
+Split out of [data-agent.md](../data-agent.md), which carries the
 summary table and the hard limits. This file holds Microsoft's recommended
 structure for each layer plus worked examples. A second, end-to-end example
 covering all four layers for one agent is in

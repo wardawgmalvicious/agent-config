@@ -1,6 +1,6 @@
 # Fabric Data Agent: Creator Agent ("Build agent with AI") — preview
 
-Split out of the parent `fabric-data-agent` SKILL.md. Read when authoring the
+Split out of [data-agent.md](../data-agent.md). Read when authoring the
 four configuration layers conversationally rather than by hand.
 
 The **Creator Agent** is a specialized AI assistant that helps you author and refine the [four configuration layers](configuration-layers.md) instead of hand-writing them. Open it from the data agent ribbon via **Build agent with AI**; the same ribbon's **Test data agent** switches to the standard test mode. Use it to explore a connected source, discuss the questions you want answered, review recommended config changes, **Accept** them (changes apply immediately), then switch to Test mode to validate.

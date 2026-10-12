@@ -101,7 +101,8 @@ Change each of these in the commit that folds:
 - `tests/skills/.tested.json:191`: drop the stamp. The description
   edit makes `fabric-tmdl` stale too (`skill-status.py --stale`).
 - `skills/README.md:251`: drop the bullet.
-- Prose routing to the skill: `fabric-data-agent/SKILL.md:31` and
+- Prose routing to the skill:
+  `fabric-iq/references/data-agent/data-agent.md:21` and
   `fabric-semantic-model-audit/SKILL.md:258` point at `fabric-tmdl`'s
   reference instead.
 - The drift-audit registry's skills-for-fabric rows,

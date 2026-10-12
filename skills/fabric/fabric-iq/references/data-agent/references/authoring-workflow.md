@@ -1,6 +1,6 @@
 # Fabric Data Agent: authoring workflow and best practices
 
-Split out of the parent `fabric-data-agent` SKILL.md, which keeps the pitfalls
+Split out of [data-agent.md](../data-agent.md), which keeps the pitfalls
 table. This file is the positive-form guidance: how to run the authoring loop
 and operate an agent once it is live.
 

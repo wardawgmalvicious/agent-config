@@ -176,7 +176,7 @@ flat `.tmdl` parts beside `.platform`, `database.tmdl` among them. No
 export exists on this machine, so the layout and the `.Ontology` suffix
 are the page's and `SampleOnt`'s, not observed. It pins the `**/*.tmdl`
 narrowing of that date: an ontology's `.tmdl` part must load
-`fabric-ontology` and no semantic-model guidance (assertion 10 in
+`fabric-iq` and no semantic-model guidance (assertion 10 in
 [expected_activations.md](expected_activations.md)).
 
 Three others were built this way until 2026-08-31: their folder names

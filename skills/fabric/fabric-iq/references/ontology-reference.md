@@ -1,6 +1,6 @@
 # Fabric Ontology (preview) — reference
 
-Detail split out of [SKILL.md](../SKILL.md). Everything here was verified
+Detail split out of [ontology.md](ontology.md). Everything here was verified
 against the Microsoft Learn docs on **2026-09-02** unless a section gives
 a later date. The workload is in preview; re-check anything load-bearing.
 
@@ -84,7 +84,8 @@ exists to show them in a file.
 
 ### Old experience (legacy): JSON parts
 
-Retires **2027-01-31**; SKILL.md says who still meets it. Source:
+Retires **2027-01-31**; [ontology.md](ontology.md) says who still meets
+it. Source:
 [Ontology (old) definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/ontology-old-definition).
 The tables below were verified on 2026-09-02, when the definition page
 above still described this layout, and re-checked against the
@@ -131,7 +132,7 @@ an optional `semanticEnrichment` of `{ description, customAttributes }`.
 
 **There is no `Decimal` in that enum**, unlike the new experience's
 `dataType` above. That is the schema-level statement of the null-values
-trap in SKILL.md.
+trap in [ontology.md](ontology.md).
 
 The **portal** caps custom property names at **1–26 characters**
 (alphanumerics, hyphens, underscores; must start and end alphanumeric)
@@ -232,12 +233,13 @@ Source: [Agent integration options](https://learn.microsoft.com/fabric/iq/ontolo
 | **Copilot Studio** agent | Low-code conversational agent | Business-friendly agents, workflow automation | Makers |
 | **Custom agents via ontology MCP server** | Any MCP-compatible client | Connecting external/custom AI systems over MCP | Developers |
 
-For the first two, configuration belongs to `fabric-operations-agent` and
-`fabric-data-agent` — this skill covers the ontology side only. In
-particular `fabric-operations-agent` already records that an ontology
-data source there must be in the **same workspace** as the agent and does
-not support `AND` conditions, which is narrower than ontology's own
-limits.
+For the first two, configuration belongs to
+[operations-agent.md](operations-agent.md) and
+[data-agent.md](data-agent/data-agent.md) — this file covers the ontology
+side only. In particular [operations-agent.md](operations-agent.md)
+already records that an ontology data source there must be in the
+**same workspace** as the agent and does not support `AND` conditions,
+which is narrower than ontology's own limits.
 
 One consumer is not an agent: a **Real-Time Dashboard** takes an
 ontology as a data source (preview) — *Add data source* → *Ontology*,
@@ -356,9 +358,9 @@ What you must then do **by hand, every time**:
 5. Review the whole ontology for completeness, metrics included.
 
 **Old experience (legacy, retires 2027-01-31):** beyond the storage-mode
-matrix in SKILL.md, generation inherits the ordinary Power BI service
-constraints — semantic model size limits and XMLA endpoint limitations
-apply. Only the old-experience page says so.
+matrix in [ontology.md](ontology.md), generation inherits the ordinary
+Power BI service constraints — semantic model size limits and XMLA
+endpoint limitations apply. Only the old-experience page says so.
 
 ## 6. Troubleshooting map
 
@@ -387,8 +389,8 @@ Symptom → most likely cause, which is the direction you actually need:
 | Data agent **aggregates wrongly** | Known issue. Add `Support group by in GQL` to the agent instructions. |
 | Data agent answers **vague** | Ontology not added as a knowledge source, or entity/relationship names not meaningful. |
 
-Note the last three are data-agent-side; `fabric-data-agent` owns the rest
-of that surface.
+Note the last three are data-agent-side;
+[data-agent.md](data-agent/data-agent.md) owns the rest of that surface.
 
 For known issues beyond these, see
 [Microsoft Fabric known issues](https://support.fabric.microsoft.com/known-issues/)
@@ -440,7 +442,8 @@ set, checked the same day.
 `how-to-use-resource-links`, `how-to-use-rules` and
 `how-to-view-entity-type-details`.
 
-Drill `how-to-use-ontology-agent` first: SKILL.md leans on the agent for
-multi-model generation, refresh and authoring, without its own page.
+Drill `how-to-use-ontology-agent` first: [ontology.md](ontology.md)
+leans on the agent for multi-model generation, refresh and authoring,
+without its own page.
 Then `how-to-use-rules` and `how-to-use-metrics`: §1 says how rules and
 metrics serialize, and nothing here says how they behave.

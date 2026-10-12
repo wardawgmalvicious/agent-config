@@ -29,7 +29,7 @@ path has not run since.
   runs that set's real path, which asserts rules beside skills.
 - **The fabric half is.** Assertion 10 of
   `tests/skills/fabric-triggers/expected_activations.md`, that
-  `SampleOntTmdl.Ontology/database.tmdl` activates `fabric-ontology`
+  `SampleOntTmdl.Ontology/database.tmdl` activates `fabric-iq`
   and nothing else, is in the fabric set, and no stamp owes that set a
   run, since none of its skills' globs moved.
 

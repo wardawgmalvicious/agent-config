@@ -93,8 +93,8 @@ git grep -nP '\b(agent|machine|claude)-config\b' -- \
   skills/fabric skills/powerbi skills/workflow skills/social
 ```
 
-- The note's other two, in `fabric-data-agent`, are a Learn URL whose
-  slug, `data-agent-configurations`, contains the string. **`FORBIDDEN`
+- The note's other two, in `fabric-iq`'s data agent files, are a Learn
+  URL whose slug, `data-agent-configurations`, contains the string. **`FORBIDDEN`
   matches substrings, so run over skills as it stands it fails that URL
   twice.** A check for skills needs a word boundary.
 - The client repo already carries two of the six, committed by earlier

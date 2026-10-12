@@ -1,6 +1,6 @@
 # Fabric Data Agent: authentication modes
 
-Split out of the parent `fabric-data-agent` SKILL.md. Read when wiring a
+Split out of [data-agent.md](../data-agent.md). Read when wiring a
 caller to an agent — the scope and the identity model differ per surface, and
 mixing them is the usual cause of a 401.
 

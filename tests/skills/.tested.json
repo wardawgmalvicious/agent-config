@@ -60,13 +60,6 @@
         "references": "805f80b73f3992a6"
       }
     },
-    "fabric-data-agent": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "ef33e47a8cb818bb"
-      }
-    },
     "fabric-data-pipeline": {
       "activation": {
         "date": "2026-09-12",
@@ -146,13 +139,6 @@
         "references": "1a6338310de40ee9"
       }
     },
-    "fabric-graph": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "a89979bf51a7edd4"
-      }
-    },
     "fabric-mlv": {
       "behaviour": {
         "date": "2026-09-12",
@@ -160,20 +146,6 @@
         "routing": "3040260ca3e79a2c",
         "body": "ddd8b0b49c405385",
         "references": "dfaa30fd268d644a"
-      }
-    },
-    "fabric-ontology": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "036dc694616dd7a6"
-      }
-    },
-    "fabric-operations-agent": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "e7b1036c77193ed9"
       }
     },
     "fabric-realtime-dashboard": {

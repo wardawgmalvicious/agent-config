@@ -1,11 +1,11 @@
 # KQL graph operators
 
 Graph analysis **inside the KQL engine** — distinct from the standalone Fabric
-GraphModel item (GQL / ISO-39075), which is the `fabric-graph` skill.
+GraphModel item (GQL / ISO-39075), which the `fabric-iq` skill covers.
 
 ## Graph semantics
 
-KQL can do graph analysis **inside the KQL engine** — this is a different thing from the standalone **Fabric GraphModel** item (a separate workload using GQL / ISO-39075; see the **fabric-graph** skill). Same word "graph", different engine: here a graph is built from KQL tabular data (or a stored snapshot) and queried with KQL graph operators, not GQL.
+KQL can do graph analysis **inside the KQL engine** — this is a different thing from the standalone **Fabric GraphModel** item (a separate workload using GQL / ISO-39075; see the **fabric-iq** skill). Same word "graph", different engine: here a graph is built from KQL tabular data (or a stored snapshot) and queried with KQL graph operators, not GQL.
 
 **Transient graph** — built in-memory per query with `make-graph`, then matched. `make-graph` must be followed by a graph operator.
 

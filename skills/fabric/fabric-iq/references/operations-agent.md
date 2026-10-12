@@ -1,14 +1,3 @@
----
-name: fabric-operations-agent
-description: "Use for the Microsoft Fabric Operations Agent item — `<Name>.OperationsAgent/` + `Configurations.json` — the autonomous LLM agent that queries one Eventhouse/KQL database or Ontology every 5 minutes, messages Teams, and can run a pipeline or notebook under its creator's delegated identity. Covers the draft-07 definition schema (`configuration`/`playbook`/`shouldRun` all required, `dataSource.type` KustoDatabase|Ontology, `action.kind` FabricJobAction|PowerAutomateAction with `connection` required iff the first, Recipient|TeamsChannel `messageDestination`, `identity.sponsor`), the ALM traps (Git integration lists it under Data Factory not RTI; `shouldRun: true` deploys a running 0.46 CU-hour/hour meter; `dataSources` accepts a `$(/ws/lib/var)` reference the variable-library docs omit; `jobArtifactId` is the target's byte-reversed `logicalId`), serializer artifacts (absent `playbook`, duplicate `kind` key, parameter values in `description`), state vs transition conditions, and `fab` reach."
-when_to_use: "Fires on any file under `*.OperationsAgent/`. Not the same item as a Data Agent (fabric-data-agent): that one is read-only, user-initiated, conversational, up to 5 sources; this one is autonomous, single-source, unattended, and takes write actions. Data Factory's 'operations agent for pipelines' is a template that generates this same item, not a second type. For authoring the KQL database it monitors see fabric-eventhouse; for deterministic non-LLM alerting, that is Activator."
-paths:
-  - "**/*.OperationsAgent/**"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Fabric Operations Agent: the definition file and its ALM consequences
 
 Everything below was verified **2026-09-02** unless dated later. The
@@ -18,7 +7,7 @@ its support for workspace outbound access protection are still
 **preview** (each re-checked 2026-10-06) — re-check dated claims before
 relying on them.
 
-This skill is about the *file*. The portal click-path is documented and
+This reference is about the *file*. The portal click-path is documented and
 not repeated here; what is not documented is what `Configurations.json`
 means once it is committed.
 
@@ -38,7 +27,7 @@ overview](https://learn.microsoft.com/rest/api/fabric/articles/item-management/d
 enumerates ~30 types under *Definition Details for Supported Item Types*
 and Operations Agent is not among them. That is not evidence of "no item
 definition" — the schema above is live and returns 200. Same pattern as
-`fabric-realtime-dashboard` and `fabric-graph`: a hand-editable
+`fabric-realtime-dashboard` and [graph.md](graph.md): a hand-editable
 definition whose contract lives at a schema URL rather than in the API
 reference.
 
@@ -258,7 +247,7 @@ on any of them. *Observed 2026-09-02.*
 
 ## 7. Which agent item do I want
 
-| | Operations Agent | Data Agent (`fabric-data-agent`) |
+| | Operations Agent | Data Agent ([data-agent.md](data-agent/data-agent.md)) |
 | --- | --- | --- |
 | Initiation | autonomous, every 5 minutes | user-initiated, conversational |
 | Sources | **exactly one** | up to 5 |
@@ -282,7 +271,7 @@ review.
 `fabric_cli/commands/find/type_supported.yaml`, but the name is **absent
 from the `ItemType` enum** in `fabric_cli/core/fab_types.py`. So
 `fab find` can locate one and `fab` cannot create or address it — the
-same split `fabric-graph` documents for `GraphModel`.
+same split [graph.md](graph.md) documents for `GraphModel`.
 
 ## 9. Constraints
 
@@ -321,4 +310,5 @@ same split `fabric-graph` documents for `GraphModel`.
 Behavioural detail — the eight state/transition conditions, instruction
 authoring shape, the full billing table, availability and region
 exclusions, Investigator insights, and the three action-configuration
-paths — is in [references/REFERENCE.md](references/REFERENCE.md).
+paths — is in
+[operations-agent-reference.md](operations-agent-reference.md).

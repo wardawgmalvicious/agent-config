@@ -1,6 +1,6 @@
 # Fabric Data Agent: GA status, preview surface, retirements
 
-Split out of the parent `fabric-data-agent` SKILL.md. Read when you need to
+Split out of [data-agent.md](../data-agent.md). Read when you need to
 know whether a specific capability is production-ready, or when an older
 integration has stopped working.
 

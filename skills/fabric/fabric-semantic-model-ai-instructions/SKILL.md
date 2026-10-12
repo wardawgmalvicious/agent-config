@@ -38,7 +38,7 @@ read 2026-10-08).
 - **Semantic Model AI Instructions** — guidance attached to one semantic model. No multi-source routing, no conversational flow. Applies to every Copilot interaction with this model.
 - **Data Agent** — a separate conversational interface with multi-source routing, few-shot example queries, and conversational response formatting.
 
-See the fabric-data-agent skill for data agent specifics.
+See the fabric-iq skill's data agent reference for data agent specifics.
 
 ---
 

@@ -221,7 +221,7 @@ Phrase findings in these terms — each has a defined remediation.
 - [Semantic Model Data Agent Checklist](https://github.com/microsoft/fabric-toolbox/blob/main/samples/data_agent_checklist_notebooks/Semantic%20Model%20Data%20Agent%20Checklist.md)
   (`microsoft/fabric-toolbox`) — its *Semantic Model Optimization*
   section is folded into §1; the rest is data agent configuration and
-  belongs to `fabric-data-agent`.
+  belongs to `fabric-iq`.
 
 ### Deliberately not drilled
 

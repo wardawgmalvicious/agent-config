@@ -15,10 +15,10 @@
   `old-experience/concepts-generate.md`,
   `old-experience/resources-capacity-usage.md` and
   `old-experience/how-to-add-semantic-enrichment.md` — the pages
-  `fabric-ontology` cites, plus the two includes holding its type table
-  and refresh wording (2026-10-07). The rest of the doc set is
-  deliberately out of the fetch set; §8 of that skill's
-  `references/REFERENCE.md` lists it as undrilled. Names under
+  `fabric-iq`'s ontology reference cites, plus the two includes holding
+  its type table and refresh wording (2026-10-07). The rest of the doc
+  set is deliberately out of the fetch set; §8 of that skill's
+  `references/ontology-reference.md` lists it as undrilled. Names under
   `includes/` and `old-experience/` are not in the listing of `path`
   that `SKILL.md` § 4a step 4 narrows by blob SHA, so list those two
   subdirectories too. On the raw path the 17 names cost `1 + 2 x 17` =
@@ -34,9 +34,8 @@
   and the troubleshooting page still links `concepts-generate.md#…`
   anchors on a page that moved. A page link loses little, since each
   page is fetched whole. Chosen 2026-10-07.
-- `artifacts`: `skills/fabric/fabric-ontology/`,
-  `skills/fabric/fabric-data-agent/`,
-  `skills/fabric/fabric-operations-agent/`,
+- `artifacts`: `skills/fabric/fabric-iq/`, which holds the ontology and
+  both agents since 2026-10-12,
   `claude/rules/fabric-git-serialization.md`, `claude/mcp/` — the
   project template's `ontology-remote-mcp` entry serves the endpoint
   this source watches (added 2026-10-07)
@@ -45,8 +44,9 @@
 single skill.** The `fabric` What's New source will announce that
 ontology reaches GA; it will not announce that the property-type table
 gained a row, that the one-static-binding-per-entity-type limit moved, or
-that the MCP endpoint path changed. Those are exactly the claims
-`fabric-ontology` encodes, and they live only in the spec pages.
+that the MCP endpoint path changed. Those are exactly the claims the
+ontology skill encodes, `fabric-iq`'s `references/ontology.md` since
+2026-10-12, and they live only in the spec pages.
 
 Registered 2026-09-02, when that skill was authored. Two properties make
 it worth the slot and neither generalizes: the workload is **preview**, so
@@ -70,9 +70,9 @@ precisely why the docs are this skill's only ground truth.
 rebuilt it for a *new experience*, the default for new items, whose
 definition is TMDL; the *old experience*, whose definition is JSON, kept
 its pages under `old-experience/` and retires on **2027-01-31**.
-`fabric-ontology` keeps both, marking old-experience facts in place
-(brief 01 of the 2026-10-06 pass), so `files` tracks the old-experience
-pages it cites until that date. Drop them then.
+`fabric-iq`'s ontology reference keeps both, marking old-experience
+facts in place (brief 01 of the 2026-10-06 pass), so `files` tracks the
+old-experience pages it cites until that date. Drop them then.
 
 **Retirement is narrower than it looks, and the trap is that it fires on
 the good news.** As originally written the condition read as

@@ -1,6 +1,6 @@
 # Worked example: Retail Data Agent
 
-A complete configuration for one Fabric Data Agent over a retail/commerce data estate — POS lakehouse (`SalesLakehouse`), finance warehouse (`FinanceWarehouse`), and a customer semantic model (`CustomerModel`). Replace names and domain-specific terms with your own; the structure (agent-level blob → per-source description → per-source instructions → example query) is the reusable part. For the rationale behind each layer and what belongs where, see the parent `fabric-data-agent` skill.
+A complete configuration for one Fabric Data Agent over a retail/commerce data estate — POS lakehouse (`SalesLakehouse`), finance warehouse (`FinanceWarehouse`), and a customer semantic model (`CustomerModel`). Replace names and domain-specific terms with your own; the structure (agent-level blob → per-source description → per-source instructions → example query) is the reusable part. For the rationale behind each layer and what belongs where, see [data-agent.md](../data-agent.md).
 
 ---
 

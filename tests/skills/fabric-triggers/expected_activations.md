@@ -62,21 +62,21 @@ an apparent one.
 | `SampleSQL.SQLDatabase/.gitignore` | *(none)* | 0 |
 | `SampleSQL.SQLDatabase/SampleSQL.sqlproj` | *(none)* | 0 |
 | `SampleSQL.SQLDatabase/dbo/Tables/Customer.sql` | `fabric-database` | 608 |
-| `SampleGraph.GraphModel/.platform` | `fabric-graph` | 2,662 |
-| `SampleGraph.GraphModel/dataSources.json` | `fabric-graph` | 2,662 |
-| `SampleGraph.GraphModel/graphDefinition.json` | `fabric-graph` | 2,662 |
-| `SampleGraph.GraphModel/graphSettings.json` | `fabric-graph` | 2,662 |
-| `SampleGraph.GraphModel/graphType.json` | `fabric-graph` | 2,662 |
-| `SampleGraph.GraphModel/stylingConfiguration.json` | `fabric-graph` | 2,662 |
-| `SampleAgent.DataAgent/.platform` | `fabric-data-agent` | 3,071 |
-| `SampleAgent.DataAgent/Files/Config/data_agent.json` | `fabric-data-agent` | 3,071 |
-| `SampleAgent.DataAgent/Files/Config/publish_info.json` | `fabric-data-agent` | 3,071 |
-| `…/Files/Config/draft/stage_config.json` | `fabric-data-agent` | 3,071 |
-| `…/draft/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
-| `…/draft/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
-| `…/Files/Config/published/stage_config.json` | `fabric-data-agent` | 3,071 |
-| `…/published/sql-database-SampleSQL/datasource.json` | `fabric-data-agent` | 3,071 |
-| `…/published/sql-database-SampleSQL/fewshots.json` | `fabric-data-agent` | 3,071 |
+| `SampleGraph.GraphModel/.platform` | `fabric-iq` | 1,058 |
+| `SampleGraph.GraphModel/dataSources.json` | `fabric-iq` | 1,058 |
+| `SampleGraph.GraphModel/graphDefinition.json` | `fabric-iq` | 1,058 |
+| `SampleGraph.GraphModel/graphSettings.json` | `fabric-iq` | 1,058 |
+| `SampleGraph.GraphModel/graphType.json` | `fabric-iq` | 1,058 |
+| `SampleGraph.GraphModel/stylingConfiguration.json` | `fabric-iq` | 1,058 |
+| `SampleAgent.DataAgent/.platform` | `fabric-iq` | 1,058 |
+| `SampleAgent.DataAgent/Files/Config/data_agent.json` | `fabric-iq` | 1,058 |
+| `SampleAgent.DataAgent/Files/Config/publish_info.json` | `fabric-iq` | 1,058 |
+| `…/Files/Config/draft/stage_config.json` | `fabric-iq` | 1,058 |
+| `…/draft/sql-database-SampleSQL/datasource.json` | `fabric-iq` | 1,058 |
+| `…/draft/sql-database-SampleSQL/fewshots.json` | `fabric-iq` | 1,058 |
+| `…/Files/Config/published/stage_config.json` | `fabric-iq` | 1,058 |
+| `…/published/sql-database-SampleSQL/datasource.json` | `fabric-iq` | 1,058 |
+| `…/published/sql-database-SampleSQL/fewshots.json` | `fabric-iq` | 1,058 |
 | `SampleMD.MirroredDatabase/.platform` | *(none)* | 0 |
 | `SampleMD.MirroredDatabase/mirroring.json` | *(none)* | 0 |
 | `SampleCJ.CopyJob/.platform` | *(none)* | 0 |
@@ -93,21 +93,23 @@ an apparent one.
 | `SampleLH.Lakehouse/shortcuts.metadata.json` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/.platform` | *(none)* | 0 |
 | `SampleQS.KQLQueryset/RealTimeQueryset.json` | *(none)* | 0 |
-| `SampleOA.OperationsAgent/.platform` | `fabric-operations-agent` | 3,919 |
-| `SampleOA.OperationsAgent/Configurations.json` | `fabric-operations-agent` | 3,919 |
-| `SampleOnt.Ontology/.platform` | `fabric-ontology` | 2,746 |
-| `SampleOnt.Ontology/definition.json` | `fabric-ontology` | 2,746 |
-| `SampleOnt.Ontology/EntityTypes/8813598896083/definition.json` | `fabric-ontology` | 2,746 |
-| `…/DataBindings/66253a71-c26f-4c9d-877f-3af5632a4be2.json` | `fabric-ontology` | 2,746 |
-| `SampleOnt.Ontology/RelationshipTypes/3110733855942077719/definition.json` | `fabric-ontology` | 2,746 |
-| `SampleOntTmdl.Ontology/.platform` | `fabric-ontology` | 2,746 |
-| `SampleOntTmdl.Ontology/database.tmdl` | `fabric-ontology` | 2,746 |
+| `SampleOA.OperationsAgent/.platform` | `fabric-iq` | 1,058 |
+| `SampleOA.OperationsAgent/Configurations.json` | `fabric-iq` | 1,058 |
+| `SampleOnt.Ontology/.platform` | `fabric-iq` | 1,058 |
+| `SampleOnt.Ontology/definition.json` | `fabric-iq` | 1,058 |
+| `SampleOnt.Ontology/EntityTypes/8813598896083/definition.json` | `fabric-iq` | 1,058 |
+| `…/DataBindings/66253a71-c26f-4c9d-877f-3af5632a4be2.json` | `fabric-iq` | 1,058 |
+| `SampleOnt.Ontology/RelationshipTypes/3110733855942077719/definition.json` | `fabric-iq` | 1,058 |
+| `SampleOntTmdl.Ontology/.platform` | `fabric-iq` | 1,058 |
+| `SampleOntTmdl.Ontology/database.tmdl` | `fabric-iq` | 1,058 |
 | `SampleRX.Reflex/.platform` | `fabric-activator` | 5,205 |
 | `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
 | `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
 
-Together with `../pbip-triggers/`, all **28** conditional skills in the
-payload are now covered — 10 there, 18 here.
+Together with `../pbip-triggers/`, all **25** conditional skills in the
+payload are now covered — 10 there, 15 here. `fabric-iq` covers four
+item types, one router with each item's glob, since the four IQ skills
+folded into it on 2026-10-12.
 
 ## Assertions that carry weight
 
@@ -329,7 +331,7 @@ all before. The real-path run cannot witness that arm, because the rule
 is already active from the first `.platform` the probe reads; the static
 rules pass is the check.
 
-**10. An ontology's `.tmdl` part activates `fabric-ontology` and nothing
+**10. An ontology's `.tmdl` part activates `fabric-iq` and nothing
 else.** The new ontology experience serializes as flat `.tmdl` parts,
 which the bare `**/*.tmdl` that `fabric-tmdl`, `coding-tmdl` and
 `coding-dax` carried until 2026-10-06 would have matched. Since then

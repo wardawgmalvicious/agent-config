@@ -2,7 +2,7 @@
 
 Curated set of Microsoft Learn pages relevant to creating, configuring, consuming, and governing Fabric Data Agents. Load on demand when you need authoritative reference for a specific layer (configuration, consumption pattern, governance setting, or troubleshooting).
 
-The three highest-leverage entry points (concept, configurations, tenant settings) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
+The three highest-leverage entry points (concept, configurations, tenant settings) are also linked in [data-agent.md](../data-agent.md)'s `## Reference` section for in-context use; this file holds the comprehensive set.
 
 **GA status (March 2026):** the core Data Agent surface (authoring, publishing, sharing, diagnostics, deployment-pipeline-based CI/CD) is generally available. The pages marked `(preview)` below cover companion features that remain in preview at GA — primarily the Fabric Data Agent Python SDK, Microsoft Copilot Studio integration, Azure AI Foundry / Azure AI Agent Service integration, and service-principal (SPN) authentication for the published query endpoint. Keep production rollouts on the GA surface; gate preview SDK, external-orchestrator, and SPN-auth paths behind an explicit decision.
 
@@ -13,7 +13,7 @@ The three highest-leverage entry points (concept, configurations, tenant setting
 ## Create and configure
 
 - [Create a Fabric data agent](https://learn.microsoft.com/fabric/data-science/how-to-create-data-agent) — UI walkthrough for creating an agent, attaching data sources, end-to-end flow. Includes the security/governance section (Purview policies, semantic-model permission rules, cross-tenant data via OneLake shares).
-- [Data agent configurations](https://learn.microsoft.com/fabric/data-science/data-agent-configurations) — the four configuration layers (agent instructions, data source instructions, descriptions, example queries) covered in detail. Microsoft's reference for the structured authoring model this skill describes.
+- [Data agent configurations](https://learn.microsoft.com/fabric/data-science/data-agent-configurations) — the four configuration layers (agent instructions, data source instructions, descriptions, example queries) covered in detail. Microsoft's reference for the structured authoring model [data-agent.md](../data-agent.md) describes.
 
 ## Consumption — programmatic and external
 

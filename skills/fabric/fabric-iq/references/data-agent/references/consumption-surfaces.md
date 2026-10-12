@@ -1,6 +1,6 @@
 # Fabric Data Agent: consumption surfaces in full
 
-Split out of the parent `fabric-data-agent` SKILL.md, which carries the
+Split out of [data-agent.md](../data-agent.md), which carries the
 summary table. This file holds the prerequisites, endpoint anatomy, and
 compliance caveats per surface.
 

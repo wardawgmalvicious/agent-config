@@ -1,13 +1,3 @@
----
-name: fabric-graph
-description: "Use for Microsoft Fabric Graph (the GraphModel item, GA June 2026) — a labeled property graph modeled over OneLake Delta tables and queried with GQL (ISO/IEC 39075), distinct from openCypher/Cypher and from the KQL graph operators in Eventhouse. Covers the GraphModel REST path and GQL Query API (`POST /v1/workspaces/{ws}/GraphModels/{id}/executeQuery?beta=true` — app errors return HTTP 200 with GQL status codes), GQL query syntax and graph-type DDL (`(:Label => {prop :: TYPE NOT NULL})`, `CONSTRAINT ... REQUIRE (n.id) IS KEY`, `=>` inheritance, `ABSTRACT`, `+=`, `<:` refs), the item-definition JSON (dataSources / graphDefinition nodeTables+edgeTables / graphType / stylingConfiguration), save-triggers-ingest refresh, and gotchas (GQL is read-only — no DML, load via data management; no schema evolution — reingest; edges have exactly one label; no DROP GRAPH in GQL; NL2GQL still preview). Use whenever a user mentions Fabric graph models, GQL, property graphs over OneLake, or GraphModel items."
-paths:
-  - "**/*.GraphModel/**"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Microsoft Fabric Graph (GraphModel item)
 
 Graph in Fabric models a **labeled property graph** directly over **OneLake Delta tables** — no ETL, no data duplication. You define node/edge types and map them to columns; on save, Fabric ingests the tables and builds a read-optimized queryable graph. Query it with **GQL** (the ISO/IEC 39075 standard) via UI, REST, or NL2GQL.
@@ -68,7 +58,7 @@ ABSTRACT (:Place => { id :: UINT64 NOT NULL, name :: STRING }),
 (:Comment)-[:replyOf]->(<:Message)
 ```
 
-Full social-network schema example + the GQL standard-conformance table (what's supported vs not) → [references/REFERENCE.md](references/REFERENCE.md).
+Full social-network schema example + the GQL standard-conformance table (what's supported vs not) → [graph-reference.md](graph-reference.md).
 
 ## GQL Query API (REST)
 
@@ -89,7 +79,7 @@ az rest --method post \
 - **Responses over 64 MB are truncated**: the rows that fit come back, with a `01000` status in `additionalStatuses` (canonical `01M11`) and no `nextPage` for the rest. Narrow the query and rerun it.
 - Result is a discriminated union on `result.kind` (`TABLE` with `columns`+`data`, or `NOTHING`). Values carry `gqlType`; large `INT64`/`UINT64` outside JS safe range and float `Inf`/`-Inf`/`NaN` arrive as **strings**.
 
-Request/response schema, value-encoding table, and status-code families → [references/REFERENCE.md](references/REFERENCE.md).
+Request/response schema, value-encoding table, and status-code families → [graph-reference.md](graph-reference.md).
 
 ## Graph Model item-definition JSON (automation / CI-CD)
 
@@ -102,7 +92,7 @@ For `createItemWithDefinition` / `getDefinition` / `updateDefinition` (see fabri
 | `graphType` | `nodeTypes` (`alias`, `labels[]`, `primaryKeyProperties[]`, `properties[]`) + `edgeTypes` (`alias`, `labels[]`, `sourceNodeType.alias`, `destinationNodeType.alias`, `properties[]`) |
 | `stylingConfiguration` | `modelLayout`: node `positions`, `styles` (size), `pan`, `zoomLevel` — visual only |
 
-Note the indirection: the **graphType** declares abstract `alias`es (`Customer_nodeType`) and labels; the **graphDefinition** binds each alias to a `dataSourceName` and maps `sourceColumn → propertyName`. A composite key is expressed as multiple `primaryKeyProperties` and matching `destinationNodeKeyColumns`. Full JSON examples for all four parts → [references/REFERENCE.md](references/REFERENCE.md).
+Note the indirection: the **graphType** declares abstract `alias`es (`Customer_nodeType`) and labels; the **graphDefinition** binds each alias to a `dataSourceName` and maps `sourceColumn → propertyName`. A composite key is expressed as multiple `primaryKeyProperties` and matching `destinationNodeKeyColumns`. Full JSON examples for all four parts → [graph-reference.md](graph-reference.md).
 
 ## Data load & refresh
 
@@ -113,7 +103,7 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 
 - **Storage floor 100 GB** provisioned (billed at OneLake Cache rate); compute billed by CPU uptime at **10 CU-seconds per second**, rounded up to the minute. Uses your existing Fabric capacity — no separate SKU.
 - **Hard limits:** the GA SKU processes roughly **2 billion graph elements** (nodes + edges — contact the product team for larger); the **Explore** UI's path builder stops variable-length patterns at **8 hops**, a limit GQL in the code editor doesn't share; queries **time out at 20 minutes** and responses are **truncated above 64 MB** (aggregation gets unstable past 128 MB). String property max 65,535 chars; `List<T>` property max 65,535 elements. Learn gives no per-workspace cap on graph models (2026-10-12). See [limitations](https://learn.microsoft.com/fabric/graph/limitations).
-- **NL2GQL** (natural-language → GQL via Fabric Data Agent, see fabric-data-agent) is **preview**. **openCypher** support is preview and is the KQL-graph path, not this item.
+- **NL2GQL** (natural-language → GQL via Fabric Data Agent, see [data-agent.md](data-agent/data-agent.md)) is **preview**. **openCypher** support is preview and is the KQL-graph path, not this item.
 - **Set operations: `UNION` only.** `UNION ALL` and `UNION DISTINCT` are supported, including inside `NEXT` stages; `INTERSECT`, `EXCEPT` and `OTHERWISE` aren't yet. Full conformance-gap list → [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - Governed by OneLake security + workspace RBAC (see fabric-security).
 
@@ -121,7 +111,7 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 
 - MS Learn: [Graph overview](https://learn.microsoft.com/fabric/graph/overview) · [How graph works](https://learn.microsoft.com/fabric/graph/how-graph-works) · [GQL language guide](https://learn.microsoft.com/fabric/graph/gql-language-guide) · [GQL schema example](https://learn.microsoft.com/fabric/graph/gql-schema-example) · [GQL conformance](https://learn.microsoft.com/fabric/graph/gql-conformance)
 - MS Learn: [GQL Query API reference](https://learn.microsoft.com/fabric/graph/gql-query-api) · [Graph Model definition (REST)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/graph-model-definition) · [Manage and refresh data](https://learn.microsoft.com/fabric/graph/manage-data)
-- Consolidated link bundle, full schema/JSON/value-encoding tables: [references/REFERENCE.md](references/REFERENCE.md)
+- Consolidated link bundle, full schema/JSON/value-encoding tables: [graph-reference.md](graph-reference.md)
 
 ## See also
 
@@ -129,5 +119,5 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 - **fabric-tmdl-api** — definition envelope, LRO polling, base64, "include all parts" rule (applies to GraphModel definitions too)
 - **fabric-rest-api** — runtime item ID vs `.platform` logicalId, LRO 202 pattern, pagination
 - **fabric-auth** — `api.fabric.microsoft.com` token audience for the query API
-- **fabric-data-agent** — graph as a Data Agent source for NL2GQL (preview)
-- **fabric-cli** — not for this item: `fab` has no `GraphModel` type and cannot create or address one (see the top of this skill)
+- [data-agent.md](data-agent/data-agent.md) — graph as a Data Agent source for NL2GQL (preview)
+- **fabric-cli** — not for this item: `fab` has no `GraphModel` type and cannot create or address one (see the top of this file)

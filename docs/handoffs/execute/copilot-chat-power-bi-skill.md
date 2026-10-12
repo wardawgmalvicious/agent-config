@@ -21,8 +21,8 @@ written: 2026-10-08
 
 Answering from Power BI content in Microsoft 365 Copilot Chat is GA, as
 `fabric-semantic-model-ai-instructions` already quotes from Learn (read
-2026-10-06), and it answers through Fabric IQ. `fabric-data-agent`
-covers only the Agent Store route, for data agents. The model side
+2026-10-06), and it answers through Fabric IQ. `fabric-iq`'s data agent
+reference covers only the Agent Store route, for data agents. The model side
 landed beside that quote on 2026-10-08: the model's Copilot access
 setting, whose surfaces include "M365 Copilot Chat and Cowork".
 

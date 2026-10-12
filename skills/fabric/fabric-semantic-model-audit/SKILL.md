@@ -92,7 +92,7 @@ Both directions are documented, and confusing them is the classic error.
   write correctly… Unpivot wide tables into normalized structures."*
   Ontology generation compounds it — entity types derive from tables and
   relationship types from relationships, so one wide table generates one
-  entity type with no relationships (see `fabric-ontology`).
+  entity type with no relationships (see `fabric-iq`).
 
 ### What an audit must not flag
 
@@ -270,10 +270,9 @@ One pass per consumer, each deferring to the skill that owns it.
   Import and Direct Lake models, until Q&A retires (February 2027 on the
   Q&A pages, December 2026 on that one) and a promised replacement
   setting takes over (Learn, 2026-10-06). Defer
-  agent configuration to `fabric-data-agent`.
+  agent configuration to `fabric-iq`.
 - **Ontology** — carry only the model-shape consequences; the generation
-  constraint matrix belongs to `fabric-ontology`. Cite it, don't restate
-  it.
+  constraint matrix belongs to `fabric-iq`. Cite it, don't restate it.
 - **Microsoft 365 Copilot** — Fabric IQ answers Copilot Chat questions
   from Power BI reports and their semantic models (GA, September 2026),
   under the asking user's RLS and OLS and the content's sensitivity

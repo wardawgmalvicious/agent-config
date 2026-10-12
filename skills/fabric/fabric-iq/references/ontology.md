@@ -1,14 +1,3 @@
----
-name: fabric-ontology
-description: "Use for the Microsoft Fabric Ontology item (preview, Fabric IQ workload) — `<Name>.Ontology/` in a Git-synced repo, `.platform` type `Ontology`. Covers the definition layout (new-experience TMDL: `database.tmdl`, `entities/{namespace}#{name}.tmdl`, `entityRelationships.tmdl`, `namespaces/`, `rules/`; old-experience JSON, retiring 2027-01-31: `definition.json`, `EntityTypes/{id}/DataBindings/`, `RelationshipTypes/`), generating an ontology from semantic models, and the old experience's Import / Direct Lake / DirectQuery matrix whose Direct Lake bindings fail silently when the lakehouse workspace has inbound public access disabled, the data-binding rules (one static binding per entity type but many time-series ones, secondary sources joined on a common column, optional string/integer keys, managed tables only, no delta column mapping), the `Decimal`-returns-null trap and its `Double` remedy, semantic enrichment, and consuming an ontology through its built-in agent, other agents or its MCP endpoint."
-when_to_use: "Fires on any file under `*.Ontology/`. Owns the ontology item itself — its definition files, generation, data binding, enrichment. Defers graph mechanics and GQL to fabric-graph (ontology is built on that item), agent configuration to fabric-data-agent and fabric-operations-agent (ontology is one source among theirs), and semantic-model authoring to fabric-tmdl. Preview workload: claims here are dated, and the item is not the Fabric IQ Plan item."
-paths:
-  - "**/*.Ontology/**"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Fabric Ontology (preview): the item, its definition, and its bindings
 
 An **ontology** is Fabric IQ's shared business vocabulary: *entity types*
@@ -32,9 +21,10 @@ separate `GraphModel` item — and is **optional and opt-in**: every
 ontology has a schema graph, but its instance data is materialized only
 when you opt in through **Manage graph** (`how-to-use-ontology-graph`,
 checked 2026-10-07). GQL, graph-type DDL and `executeQuery` belong to
-`fabric-graph`; this skill only carries the graph constraints that bite
-at **ontology** time. Agent configuration belongs to `fabric-data-agent`
-(conversational, ≤5 sources) and `fabric-operations-agent` (autonomous,
+[graph.md](graph.md); this file only carries the graph constraints that
+bite at **ontology** time. Agent configuration belongs to
+[data-agent.md](data-agent/data-agent.md) (conversational, ≤5 sources)
+and [operations-agent.md](operations-agent.md) (autonomous,
 single-source) — ontology is one *source* for each of those.
 
 **Old experience (legacy, retires 2027-01-31):** the graph is built
@@ -139,7 +129,7 @@ portal is stricter than the API here and caps custom property names at
 
 Part-by-part schemas for both formats, including every field of an
 old-experience data binding and the Eventhouse variant, are in
-[references/REFERENCE.md](references/REFERENCE.md).
+[ontology-reference.md](ontology-reference.md).
 
 ## Generating an ontology from a semantic model
 
@@ -249,7 +239,7 @@ The remedy is documented and specific: **recreate the property as
 because *manual* binding accepts a lakehouse `decimal` column as a source
 for a `double` property — the type map is wider than the generator's
 output. Full source-to-property type table in
-[references/REFERENCE.md](references/REFERENCE.md); the one other trap in
+[ontology-reference.md](ontology-reference.md); the one other trap in
 it is that lakehouse `decimal(p, s)` maps to **string**, not double.
 
 ## Binding data: the ordering and cardinality rules
@@ -310,7 +300,7 @@ checked 2026-10-07).
 
 ## Consuming an ontology
 
-Six agent paths, detailed in [references/REFERENCE.md](references/REFERENCE.md):
+Six agent paths, detailed in [ontology-reference.md](ontology-reference.md):
 the built-in **ontology agent**, a chat that authors as well as consumes,
 Fabric **operations agent** (monitoring + actions), Fabric **data agent**
 (conversational Q&A), **Foundry IQ** agent, **Copilot Studio** agent, and

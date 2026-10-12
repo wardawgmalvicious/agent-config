@@ -164,7 +164,7 @@ and 4 directory listings, plus 1 call per upstream `SKILL.md` read.)
 | `sqldw-cli` | `fabric-warehouse`, `fabric-warehouse-monitoring` |
 | `sqldb-cli` | `fabric-database` |
 | `variable-library-cli` | `fabric-variable-library` |
-| `fabriciq`, `fabriciq-ontology-cli` | `fabric-ontology` |
+| `fabriciq`, `fabriciq-ontology-cli` | `fabric-iq` |
 | `semantic-model-authoring` | `fabric-tmdl`, `fabric-tmdl-api`; `fabric-semantic-model-ai-instructions` for Prep data for AI |
 | `mlv-operations-cli` (retired upstream) | `fabric-mlv` |
 | `deployment-pipelines-authoring-cli` | `fabric-deploy` |
