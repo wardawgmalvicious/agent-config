@@ -31,7 +31,7 @@ The 3 highest-leverage entry points (item management overview, long-running oper
 - [Manage and execute notebooks with REST APIs](https://learn.microsoft.com/fabric/data-engineering/notebook-public-api) — Notebook item CRUD, Run on Demand, definition update, SPN auth. Start here for notebook automation.
 - [Pipeline REST API capabilities](https://learn.microsoft.com/fabric/data-factory/pipeline-rest-api-capabilities) — DataPipeline item CRUD, `jobType=Pipeline` runs, getting job instance state.
 - [Spark Job Definition REST API tutorial](https://learn.microsoft.com/fabric/data-engineering/spark-job-definition-api) — end-to-end create / upload main file via OneLake / update with file URLs. Two-API dance (Fabric REST + OneLake DFS).
-- [SemanticModel definition (REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/semantic-model-definition) — TMDL vs TMSL exclusivity, `definition.pbism`, `definition/` folder layout. Pair with `fabric-tmdl-api` skill.
+- [SemanticModel definition (REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/semantic-model-definition) — TMDL vs TMSL exclusivity, `definition.pbism`, `definition/` folder layout. Pair with the `fabric-tmdl` skill's `references/definition-api.md`.
 - [Create a SQL database with the REST API](https://learn.microsoft.com/fabric/database/sql/deploy-rest-api) — PowerShell 5.1 and 7.4 worked examples for SQL Database CRUD via Items API.
 
 ## Capacity, workspace, and admin

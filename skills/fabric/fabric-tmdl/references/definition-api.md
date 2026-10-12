@@ -1,13 +1,3 @@
----
-name: fabric-tmdl-api
-description: "Use for the Fabric Semantic Model Definition API — createItemWithDefinition / getDefinition / updateDefinition. Covers the two-audience rule (Fabric API for definitions, Power BI API for refresh/data sources/permissions), why updateDefinition MUST include ALL parts (modified and unmodified) or they're deleted, why you NEVER include .platform in definition payloads, base64 encoding requirement, LRO polling, required TMDL parts (definition.pbism, database.tmdl, model.tmdl, tables/*.tmdl), the `database` declaration requirement in database.tmdl, and Direct Lake partition configuration (EntityPartitionSource, named expression with AzureStorage.DataLake)."
-paths:
-  - "**/*.SemanticModel/**"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Semantic Model Definition API rules
 
 - **Two audiences**: Fabric API (`api.fabric.microsoft.com`) for CRUD on definitions; Power BI API (`analysis.windows.net/powerbi/api`) for refresh, data sources, permissions
@@ -65,14 +55,14 @@ model Model
 
 - `dataType: binary` columns are NOT supported in Direct Lake
 - Columns map directly via `sourceColumn` — no transforms
-- **Calculated columns / tables (April 2026 preview)**: Direct Lake on **OneLake** now supports unmaterialized calculated columns (and calculated tables that reference them). Direct Lake on **SQL** still does not. User-context-aware DAX (`USERCULTURE`, `USERPRINCIPALNAME`, `CUSTOMDATA`, etc.) requires `expressionContext: userContext` on the column. Authorable in **Power BI Desktop and web modeling**, without changing storage mode. See fabric-tmdl REFERENCE for the storage-mode × Expression-Context support matrix.
+- **Calculated columns / tables (April 2026 preview)**: Direct Lake on **OneLake** now supports unmaterialized calculated columns (and calculated tables that reference them). Direct Lake on **SQL** still does not. User-context-aware DAX (`USERCULTURE`, `USERPRINCIPALNAME`, `CUSTOMDATA`, etc.) requires `expressionContext: userContext` on the column. Authorable in **Power BI Desktop and web modeling**, without changing storage mode. See [REFERENCE.md](REFERENCE.md) for the storage-mode × Expression-Context support matrix.
 
 ## Reference
 
 - Microsoft Learn: [Item definition overview (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/item-definition-overview)
 - Microsoft Learn: [SemanticModel definition envelope](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/semantic-model-definition)
 - Microsoft Learn: [Develop Direct Lake semantic models (TMDL partition mode)](https://learn.microsoft.com/fabric/fundamentals/direct-lake-develop)
-- Comprehensive MS Learn link bundle (definition envelope / REST CRUD / TMDL language / required parts / Direct Lake configuration / refresh APIs): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (definition envelope / REST CRUD / TMDL language / required parts / Direct Lake configuration / refresh APIs): [definition-api-links.md](definition-api-links.md)
 
 ## See also
 

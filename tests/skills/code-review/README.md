@@ -48,8 +48,8 @@ The expressions rule covers all WDL contexts (Fabric pipelines,
 ADF/Synapse, Logic Apps, Power Automate), not just Fabric. Since
 2026-10-06 `coding-tmdl.md` and `coding-dax.md` match `.tmdl` only
 inside a `*.SemanticModel` folder, so the TMDL fixture lives in one; it
-also pulls `fabric-git-serialization`, `fabric-tmdl` and
-`fabric-tmdl-api`, which glob that folder. If the
+also pulls `fabric-git-serialization` and `fabric-tmdl`, which glob
+that folder. If the
 T-SQL rule uses a discriminated glob (e.g. `**/warehouse/**/*.sql`),
 move `tsql_fixture.sql` under a matching subdirectory accordingly.
 

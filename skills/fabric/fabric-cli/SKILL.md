@@ -267,7 +267,7 @@ output/
     definition/
 ```
 
-`fab export` does not create intermediate directories: run `mkdir -p <out>` first, or it fails with `InvalidPath`. **Never** include `.platform` when making definition API calls directly — it is Git integration metadata. See the fabric-tmdl-api skill.
+`fab export` does not create intermediate directories: run `mkdir -p <out>` first, or it fails with `InvalidPath`. **Never** include `.platform` when making definition API calls directly — it is Git integration metadata. See the fabric-tmdl skill's `references/definition-api.md`.
 
 Non-exportable types: `.Dashboard`, `.SQLEndpoint` (`.Lakehouse` exports from v1.6). Check with `fab desc .<ItemType>`.
 
@@ -381,5 +381,5 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 
 - fabric-deploy skill — picking the route and planning a deploy; its `references/fabric-cicd.md` covers the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
 - fabric-rest-api skill — direct REST patterns behind `fab api`
-- fabric-tmdl-api skill — definition payloads for semantic models
+- fabric-tmdl skill — its `references/definition-api.md` covers definition payloads for semantic models
 - fabric-auth skill — token audiences when acquiring tokens outside `az login`

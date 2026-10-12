@@ -247,12 +247,8 @@ construction. Split out of `workflow` 2026-09-11.
   routes the three fixes that have no write API at all — endorsement, DLP
   policies, item ownership — to the person who can make them. Search is
   `fabric-cli`'s; access and the label field are `fabric-security`'s.
-- [fabric-tmdl/](fabric/fabric-tmdl/) — TMDL semantic-model authoring.
-- [fabric-tmdl-api/](fabric/fabric-tmdl-api/) — Semantic Model Definition API
-  (createItemWithDefinition, getDefinition, updateDefinition); the
-  two-audience rule, definition envelope, Direct Lake partitions.
-- [fabric-semantic-model-ai-instructions/](fabric/fabric-semantic-model-ai-instructions/)
-  — Copilot semantic model AI-instructions authoring.
+- [fabric-tmdl/](fabric/fabric-tmdl/) — TMDL semantic-model authoring,
+  with the Definition API and a model's AI instructions as references.
 - [fabric-semantic-model-audit/](fabric/fabric-semantic-model-audit/) —
   reviewing a *finished* model rather than authoring one: star-schema
   shape and the two opposite meanings of "flatten", relationship health,

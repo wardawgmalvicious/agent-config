@@ -21,9 +21,11 @@ written: 2026-10-07
 
 ## What is open
 
-`skills/fabric/fabric-semantic-model-ai-instructions/SKILL.md:263` says
-the AI-instructions blob "is not stored in TMDL". The skill's own glob,
-`**/*.SemanticModel/definition/cultures/*.tmdl`, and Learn's "AI
+`skills/fabric/fabric-tmdl/references/ai-instructions.md:271` says the
+AI-instructions blob "is not stored in TMDL": it was
+`fabric-semantic-model-ai-instructions/SKILL.md:263` until that skill
+folded into `fabric-tmdl` on 2026-10-12. The skill's glob until the
+fold, `**/*.SemanticModel/definition/cultures/*.tmdl`, and Learn's "AI
 instructions and AI data schemas save to the LSDL" point at a culture
 file's `linguisticMetadata` (`fabric-tmdl/references/REFERENCE.md`).
 The follow-up's 2026-09-12 behavioural run had the skill give both
@@ -64,7 +66,7 @@ unknown; the commit above used the culture file.
 
 ## What is left
 
-1. Correct line 263, as its own change for the user. Drafted:
+1. Correct that line, as its own change for the user. Drafted:
 
    > - Version control it with the model: a service edit's next portal
    >   commit wrote it into `definition/cultures/<culture>.tmdl`, as the
@@ -83,11 +85,9 @@ unknown; the commit above used the culture file.
 
 ## Where it lands
 
-Line 263, or wherever `ai-instructions-into-fabric-tmdl.md` has moved
-it: that brief moves the skill's body into
-`fabric-tmdl/references/ai-instructions.md` unchanged and leaves this
-question here. Whichever lands second re-reads the other. A skill edit
-owes a retest (`skill-status.py --stale`).
+`fabric-tmdl/references/ai-instructions.md`, where the 2026-10-12 fold
+moved the old skill's body unchanged, leaving this question here. A
+skill edit owes a retest (`skill-status.py --stale`).
 
 ## Scrubbing
 
@@ -97,6 +97,6 @@ out, and the client repo is cited by kind.
 ## Re-measure before acting
 
 ```bash
-grep -rn "not stored in TMDL" skills/fabric/   # fabric-semantic-model-ai-instructions/SKILL.md:263 on 2026-10-07 and 2026-10-08
+grep -rn "not stored in TMDL" skills/fabric/   # fabric-semantic-model-ai-instructions/SKILL.md:263 on 2026-10-07 and 2026-10-08; fabric-tmdl/references/ai-instructions.md:271 on 2026-10-12
 grep -rn "CustomInstructions" skills/          # nothing on 2026-10-08
 ```

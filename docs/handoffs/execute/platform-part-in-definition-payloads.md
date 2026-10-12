@@ -34,9 +34,11 @@ The payload disagrees with itself:
   `fabric-rest-api` (`SKILL.md:139-141`), `fabric-spark` (`:112-113`)
   and `fabric-activator` (`:163-165`) say an update without the flag
   ignores it.
-- `fabric-tmdl-api` says never to include it in a semantic model's
-  `updateDefinition`, since it "causes errors" (`SKILL.md:15`, and its
-  description). The claim dates from the skill's first commit,
+- `fabric-tmdl`'s `references/definition-api.md` says never to include
+  it in a semantic model's `updateDefinition`, since it "causes errors"
+  (line 5; `fabric-tmdl-api`'s `SKILL.md:15`, and its description, until
+  that skill folded into `fabric-tmdl` on 2026-10-12). The claim dates
+  from the skill's first commit,
   `419ac5e` (2026-05-05), and cites nothing.
 - `fabric-dataflow` § 6 holds both as true, each for its own item type,
   and says not to reconcile them (`9153d3d`, 2026-09-12). Learn's
@@ -52,21 +54,20 @@ status, any error text, and whether the name changed.
 ## Decision after probing
 
 - **Both calls succeed and the second renames the model**:
-  `fabric-tmdl-api`'s "never" becomes "only with
+  `definition-api.md`'s "never" becomes "only with
   `?updateMetadata=true`, to change the name or description",
   `fabric-cli`'s two lines say the same for every item type, and
   `fabric-dataflow` § 6 drops the divergence it records.
-- **The semantic model rejects the part**: `fabric-tmdl-api` keeps its
+- **The semantic model rejects the part**: `definition-api.md` keeps its
   rule, with the error text, and `fabric-cli`'s two lines narrow to
   semantic models, since other item types take the part.
 
 ## Where it lands
 
 `skills/fabric/fabric-cli/SKILL.md`, two lines; `fabric-dataflow` § 6;
-and `fabric-tmdl-api`'s line 15 and description, which
-[ai-instructions-into-fabric-tmdl.md](ai-instructions-into-fabric-tmdl.md)
-moves into `fabric-tmdl/references/definition-api.md`, so edit them
-wherever they are by then. A body edit owes a retest:
+and `fabric-tmdl/references/definition-api.md`'s `.platform` line,
+`fabric-tmdl-api`'s line 15 until the 2026-10-12 fold, which dropped
+that skill's description. A body edit owes a retest:
 `uv run --with pyyaml scripts/skill-status.py --stale` says so.
 
 ## Not checked
@@ -82,5 +83,5 @@ tenant is named.
 ## Re-measure before acting
 
 ```bash
-grep -rn 'updateMetadata\|\.platform`' skills/fabric/fabric-cli/SKILL.md skills/fabric/fabric-tmdl-api/SKILL.md skills/fabric/fabric-dataflow/SKILL.md skills/fabric/fabric-rest-api/SKILL.md skills/fabric/fabric-spark/SKILL.md
+grep -rn 'updateMetadata\|\.platform`' skills/fabric/fabric-cli/SKILL.md skills/fabric/fabric-tmdl/references/definition-api.md skills/fabric/fabric-dataflow/SKILL.md skills/fabric/fabric-rest-api/SKILL.md skills/fabric/fabric-spark/SKILL.md
 ```

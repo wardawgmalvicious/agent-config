@@ -505,7 +505,7 @@ The 3 highest-leverage entry points (TMDL overview, TMDL view in Desktop, PBIP s
 
 - [Power BI Desktop project semantic model folder](https://learn.microsoft.com/power-bi/developer/projects/projects-dataset) — PBIP layout: when to enable TMDL Preview, `definition/` folder structure, `definition.pbism` versions, external editing flow, TMDL errors on open.
 - [Power BI Desktop project overview](https://learn.microsoft.com/power-bi/developer/projects/projects-overview) — broader PBIP project layout (semantic model + report folders), supported write operations outside Desktop.
-- [SemanticModel definition (Fabric REST item)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/semantic-model-definition) — definition envelope used by `createItemWithDefinition` / `getDefinition` / `updateDefinition`. TMDL vs TMSL is mutually exclusive at the item level. Pair with the `fabric-tmdl-api` skill.
+- [SemanticModel definition (Fabric REST item)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/semantic-model-definition) — definition envelope used by `createItemWithDefinition` / `getDefinition` / `updateDefinition`. TMDL vs TMSL is mutually exclusive at the item level. Pair with [definition-api.md](definition-api.md).
 
 ### Calculation groups
 

@@ -303,7 +303,7 @@ Client handling: expect large ints / floats / specials as strings; JSON `null` =
 Definition parts (all `Required: true`): `dataSources`, `graphDefinition`, `graphType`,
 `stylingConfiguration`. Use with Fabric core `createItemWithDefinition` / `getDefinition` /
 `updateDefinition` (base64-encode parts; `updateDefinition` must include ALL parts — see
-fabric-tmdl-api).
+fabric-tmdl's `references/definition-api.md`).
 
 ### 6a. dataSources
 

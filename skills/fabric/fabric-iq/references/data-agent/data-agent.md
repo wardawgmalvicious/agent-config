@@ -18,7 +18,7 @@ Supported data sources: **Lakehouse, Warehouse, KQL Database (Eventhouse), Power
 - **Data Agent** — conversational chat surface. Multi-turn interactions, multi-source routing, query orchestration, response formatting. End users interact with this directly.
 - **Semantic Model AI Instructions** — guidance attached to a single semantic model. Applies wherever Copilot consumes that model (reports, Q&A, Copilot pane).
 
-The two coexist. A data agent can use a semantic model as one of its sources, in which case both sets of instructions are in play. See the `fabric-semantic-model-ai-instructions` skill, and [references/authoring-workflow.md](references/authoring-workflow.md) for the point-by-point contrast.
+The two coexist. A data agent can use a semantic model as one of its sources, in which case both sets of instructions are in play. See the `fabric-tmdl` skill's `references/ai-instructions.md`, and [references/authoring-workflow.md](references/authoring-workflow.md) for the point-by-point contrast.
 
 ## Authenticating a caller
 

@@ -1,13 +1,3 @@
----
-name: fabric-semantic-model-ai-instructions
-description: "Use when configuring AI instructions on a Power BI semantic model — the 10,000-character blob attached via `Prep data for AI` → `Add AI instructions` in Desktop or the service. Applies everywhere Copilot uses the model (reports, Q&A, Copilot pane). Covers what belongs in the blob (business context, terminology, date rules, default tables/measures, relationship navigation, hard rules, disambiguation) vs. what does NOT (per-column synonyms, descriptions, format strings, persona/tone, Q&A pairs). Includes prompt-engineering patterns, the 8,000-char target to leave iteration headroom, limitations (no deterministic enforcement, not visible to users, no per-persona scoping)."
-paths:
-  - "**/*.SemanticModel/definition/cultures/*.tmdl"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Configuring Power BI Semantic Model AI Instructions
 
 A practical, reusable guide for configuring AI instructions on a semantic model. Use this template across projects — the example domain (retail / sales) is illustrative; replace it with your own without changing the structure.
@@ -300,10 +290,4 @@ Hard limit. Plan for it.
 - Microsoft Learn: [Prepare your data for AI: AI instructions](https://learn.microsoft.com/en-us/power-bi/create-reports/copilot-prepare-data-ai-instructions)
 - Microsoft Learn: [Prep data for AI overview](https://learn.microsoft.com/en-us/power-bi/create-reports/copilot-prepare-data-ai)
 - Microsoft Learn: [Verified answers](https://learn.microsoft.com/en-us/power-bi/create-reports/copilot-prepare-data-ai-verified-answers)
-- Comprehensive MS Learn link bundle (overview / instructions / verified answers / Q&A linguistic schema / tutorials): [references/REFERENCE.md](references/REFERENCE.md)
-
----
-
-## See also
-
-- For a starting-point AI-instructions example, see your internal tooling repo.
+- Comprehensive MS Learn link bundle (overview / instructions / verified answers / Q&A linguistic schema / tutorials): [ai-instructions-links.md](ai-instructions-links.md)

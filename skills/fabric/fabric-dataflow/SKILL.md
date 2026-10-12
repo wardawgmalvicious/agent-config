@@ -162,9 +162,10 @@ the type is not specified, the API returns the CI/CD flavour.
 
 The house-wide rule applies: **`updateDefinition` replaces the entire
 definition, so send every part you want to keep.** Omitted parts are
-dropped. See the **fabric-tmdl-api skill**, which owns this rule.
+dropped. See the **fabric-tmdl skill**'s `references/definition-api.md`,
+which owns this rule.
 
-**Then the divergence worth the space.** `fabric-tmdl-api` says never
+**Then the divergence worth the space.** That reference says never
 include `.platform` in a semantic-model definition payload. For a
 Dataflow the documented sample does the opposite: it sends `.platform`
 alongside the other parts, with `?updateMetadata=True`. Both statements
@@ -436,7 +437,8 @@ connections through **Manage Connections → Edit Connection**.
   globs this folder
 - **fabric-rest-api skill** — LRO polling, `?updateMetadata`,
   pagination, rate limits
-- **fabric-tmdl-api skill** — the "include ALL parts" rule this item shares
+- **fabric-tmdl skill**, `references/definition-api.md` — the "include
+  ALL parts" rule this item shares
 - **fabric-deploy skill** — deploying a dataflow between workspaces
 - **fabric-variable-library skill** — the library this reads from
 - **fabric-cli skill** — `fab` filesystem commands over the item

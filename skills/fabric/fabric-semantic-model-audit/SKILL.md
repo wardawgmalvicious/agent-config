@@ -11,8 +11,9 @@ disable-model-invocation: false
 A **review procedure over a finished model** — stand back from it and
 report on what it is, not on the line you are typing. Everything else in
 the payload that touches a semantic model is authoring guidance:
-`fabric-tmdl` and `coding-tmdl.md` own conventions, `fabric-tmdl-api`
-owns deployment, `code-review` reviews a diff. This owns the corpus.
+`fabric-tmdl` and `coding-tmdl.md` own conventions, `fabric-tmdl`'s
+`references/definition-api.md` owns deployment, `code-review` reviews a
+diff. This owns the corpus.
 
 The output is a set of **findings**, not a rewrite. Do not edit the model
 unless asked separately.
@@ -254,7 +255,7 @@ One pass per consumer, each deferring to the skill that owns it.
 - **Reports** — the classic case: hidden helper measures, implicit
   measures, missing `formatString`, no descriptions.
 - **AI instructions blob** — a different artifact from the model. Defer
-  to `fabric-semantic-model-ai-instructions`.
+  to `fabric-tmdl`'s `references/ai-instructions.md`.
 - **Data agent** — the model-shape half only: non-descriptive names
   (`TR_AMT`, `DIM_GEO_01`), duplicate or overlapping measures, helper
   measures that should be excluded, implicit measures, ambiguous date

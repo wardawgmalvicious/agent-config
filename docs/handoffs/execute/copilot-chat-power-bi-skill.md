@@ -19,7 +19,7 @@ written: 2026-10-08
 ## The route
 
 Answering from Power BI content in Microsoft 365 Copilot Chat is GA, as
-`fabric-semantic-model-ai-instructions` already quotes from Learn (read
+`fabric-tmdl/references/ai-instructions.md` already quotes from Learn (read
 2026-10-06), and it answers through Fabric IQ. `fabric-iq`'s data agent
 reference covers only the Agent Store route, for data agents. The model side
 landed beside that quote on 2026-10-08: the model's Copilot access
@@ -49,9 +49,9 @@ search indexes a report's name, description, page names, chart titles
 and field names, and no models.
 
 Verified answers return nothing while Fabric IQ is on (Learn, read
-2026-10-08, landed in `fabric-semantic-model-ai-instructions`). That
-Copilot Chat therefore returns none is the note's inference, not
-observed.
+2026-10-08, landed in what is now
+`fabric-tmdl/references/ai-instructions.md`). That Copilot Chat
+therefore returns none is the note's inference, not observed.
 
 ## The decision
 
@@ -65,9 +65,8 @@ Copilot Chat as an integration of the IQ workload (read 2026-10-09).
 
 What is left is which reference holds the route: one under `fabric-iq`,
 beside the data agent's Agent Store route, or one beside the
-AI-instructions guidance, which `ai-instructions-into-fabric-tmdl.md`
-moves to `fabric-tmdl/references/ai-instructions.md`, beside the model's
-Copilot access setting.
+AI-instructions guidance in `fabric-tmdl/references/ai-instructions.md`,
+beside the model's Copilot access setting.
 
 ## Not checked
 

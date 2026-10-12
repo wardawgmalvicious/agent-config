@@ -1,12 +1,19 @@
 ---
 name: fabric-tmdl
-description: TMDL (Tabular Model Definition Language) authoring rules for Fabric and Power BI semantic models. Use when editing .tmdl files, adding measures or columns to a semantic model, defining relationships or calculation groups, working in a PBIP definition/ folder, configuring Direct Lake partitions, or debugging TMDL validation errors. Covers syntax (tabs not spaces, /// descriptions, single-quoting names), DAX measure patterns, row-level security roles, calendar groups, and common gotchas.
+description: TMDL (Tabular Model Definition Language) authoring rules for Fabric and Power BI semantic models. Use when editing .tmdl files, adding measures or columns to a semantic model, defining relationships or calculation groups, working in a PBIP definition/ folder, configuring Direct Lake partitions, writing a model's AI instructions (Prep data for AI), calling the semantic model Definition API (getDefinition, updateDefinition), or debugging TMDL validation errors. Covers syntax (tabs not spaces, /// descriptions, single-quoting names), DAX measure patterns, row-level security roles, calendar groups, and common gotchas.
 paths:
   - "**/*.SemanticModel/**"
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---
+
+Two jobs have a reference of their own: read it before answering one.
+
+| The job | Read first |
+| --- | --- |
+| Write the model's AI instructions, or edit a culture file's `linguisticMetadata` | [ai-instructions.md](references/ai-instructions.md) |
+| Create, read or update the model's definition through the Fabric API | [definition-api.md](references/definition-api.md) |
 
 ## TMDL Authoring Rules
 

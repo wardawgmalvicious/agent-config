@@ -120,7 +120,7 @@ and 4 directory listings, plus 1 call per upstream `SKILL.md` read.)
 | `sqldb-cli` | `fabric-database` |
 | `variable-library-cli` | `fabric-variable-library` |
 | `fabriciq`, `fabriciq-ontology-cli` | `fabric-iq` |
-| `semantic-model-authoring` | `fabric-tmdl`, `fabric-tmdl-api`; `fabric-semantic-model-ai-instructions` for Prep data for AI |
+| `semantic-model-authoring` | `fabric-tmdl` (`references/definition-api.md`); `references/ai-instructions.md` for Prep data for AI |
 | `mlv-operations-cli` (retired upstream) | `fabric-spark` (`references/mlv.md`) |
 | `deployment-pipelines-authoring-cli` | `fabric-deploy` |
 | `git-integration-operations-cli` | `fabric-deploy` (partial), `fabric-git-serialization` rule |
@@ -142,8 +142,9 @@ see a retired name, so the first run found two gaps and they were added
 `skills/`, its MLV work routed to `spark-cli` by `0.3.14`, yet its
 `0.3.11` bullet still mapped to `fabric-mlv`; and
 `semantic-model-authoring`'s Prep data for AI work maps to
-`fabric-semantic-model-ai-instructions`. **A retired upstream name can
-still have a live local counterpart** — check a bullet naming a skill
+`fabric-semantic-model-ai-instructions`, now `fabric-tmdl`'s
+`references/ai-instructions.md`. **A retired upstream name can still
+have a live local counterpart** — check a bullet naming a skill
 absent from HEAD against this table before dropping it. Upstream's `-cli`
 suffix suggests CLI procedures where ours are mostly reference and gotcha
 content, so a counterpart is a place to look rather than a duplicate. An

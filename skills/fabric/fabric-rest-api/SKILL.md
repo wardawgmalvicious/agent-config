@@ -141,7 +141,7 @@ PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
 - For content-only updates (typical), omit the flag.
 - Notebook-specific alternative: `POST /v1/workspaces/{wsId}/notebooks/{id}/updateDefinition` — same body shape.
 - `getDefinition` is a POST with empty body (`'{}'`) — bare POST returns HTTP 411 Length Required. Result is fetched via the LRO's `{Location}/result` URL (note the `/result` suffix).
-- Per-item-type specifics live in `fabric-tmdl-api` (semantic models), `fabric-spark` (notebooks, SparkJobDefinition, Environment, Lakehouse shortcuts), `fabric-eventhouse` (Eventhouse, KQLDatabase), `fabric-variable-library` (VariableLibrary), and `pbir-report-workflow` (Report).
+- Per-item-type specifics live in `fabric-tmdl` (semantic models, in its `references/definition-api.md`), `fabric-spark` (notebooks, SparkJobDefinition, Environment, Lakehouse shortcuts), `fabric-eventhouse` (Eventhouse, KQLDatabase), `fabric-variable-library` (VariableLibrary), and `pbir-report-workflow` (Report).
 
 ### Support matrix
 

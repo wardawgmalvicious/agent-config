@@ -99,7 +99,7 @@ Request/response schema, value-encoding table, and status-code families → [gra
 
 ## Graph Model item-definition JSON (automation / CI-CD)
 
-For `createItemWithDefinition` / `getDefinition` / `updateDefinition` (see fabric-tmdl-api for the envelope, LRO, base64, all-parts rules), a `GraphModel` definition has **four required parts**:
+For `createItemWithDefinition` / `getDefinition` / `updateDefinition` (see fabric-tmdl's `references/definition-api.md` for the envelope, LRO, base64, all-parts rules), a `GraphModel` definition has **four required parts**:
 
 | Part | What it holds |
 |---|---|
@@ -132,7 +132,7 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 ## See also
 
 - **fabric-eventhouse** — the *other* graph story: KQL `make-graph` / `graph-match` / openCypher in Eventhouse. Different engine; do not conflate.
-- **fabric-tmdl-api** — definition envelope, LRO polling, base64, "include all parts" rule (applies to GraphModel definitions too)
+- **fabric-tmdl**, `references/definition-api.md` — definition envelope, LRO polling, base64, "include all parts" rule (applies to GraphModel definitions too)
 - **fabric-rest-api** — runtime item ID vs `.platform` logicalId, LRO 202 pattern, pagination
 - **fabric-auth** — `api.fabric.microsoft.com` token audience for the query API
 - [data-agent.md](data-agent/data-agent.md) — graph as a Data Agent source for NL2GQL (preview)

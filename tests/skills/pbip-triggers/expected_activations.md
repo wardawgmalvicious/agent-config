@@ -4,7 +4,8 @@ Skill lists measured against the payload at commit `975b87f` and refreshed
 2026-09-01, using the static glob check in [README.md](README.md). Refreshed
 2026-10-12, when the six `pbir-*` file skills folded into
 `pbir-report-workflow`, which has no `paths:`, and the `Tokens` column was
-recomputed.
+recomputed; and again that day, when `fabric-tmdl-api` and
+`fabric-semantic-model-ai-instructions` folded into `fabric-tmdl`.
 
 **The `Tokens` column is a ceiling, not a toll.** A `paths:` match injects
 each skill's **listing entry** — a name, plus its description where
@@ -28,10 +29,10 @@ this table previously read as though a match loaded the bodies.)
 | `…/pages/Page1/bookmarks/Bookmark1.bookmark.json` | *(none)* | 0 |
 | **`…/pages/Page1/visuals/Visual1/visual.json`** | *(none)* | **0** |
 | `SampleReport.Report/StaticResources/RegisteredResources/theme.json` | *(none)* | 0 |
-| `SampleModel.SemanticModel/.platform` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 7,617 |
-| `SampleModel.SemanticModel/definition.pbism` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 7,617 |
-| `SampleModel.SemanticModel/definition/model.tmdl` | `fabric-tmdl`, `fabric-tmdl-api` | 4,669 |
-| `SampleModel.SemanticModel/definition/cultures/en-US.tmdl` | `fabric-semantic-model-ai-instructions`, `fabric-tmdl`, `fabric-tmdl-api` | 9,041 |
+| `SampleModel.SemanticModel/.platform` | `fabric-tmdl`, `pbip-project-structure` | 6,621 |
+| `SampleModel.SemanticModel/definition.pbism` | `fabric-tmdl`, `pbip-project-structure` | 6,621 |
+| `SampleModel.SemanticModel/definition/model.tmdl` | `fabric-tmdl` | 3,673 |
+| `SampleModel.SemanticModel/definition/cultures/en-US.tmdl` | `fabric-tmdl` | 3,673 |
 
 ## Assertions that carry weight
 
@@ -73,16 +74,17 @@ CLI, by Bash, which activates nothing: in a session of 72 `pbir`
 commands no report file passed through `Read`, `Write` or `Edit`, so no
 glob fired.
 
-**5. Every `.SemanticModel` file carries `fabric-tmdl-api` as well as
-`fabric-tmdl`.** Added 2026-09-01 by Workstream E, which took the skill
-out of the session listing (244 tokens) in exchange for firing here. The
-pair is complementary and was checked before the glob went in:
-`fabric-tmdl` governs *authoring* TMDL, `fabric-tmdl-api` governs
-*shipping* it — `updateDefinition` deleting any part you omit, never
-sending `.platform`, base64 + LRO. The second is load-bearing exactly
-while editing the parts the first one writes. `**/*.SemanticModel/**` and
-not the sibling's `**/*.tmdl`, because the API operates on the whole item
-definition including `definition.pbism`, which is not TMDL.
+**5. No `.SemanticModel` file activates a semantic-model skill but
+`fabric-tmdl`.** `fabric-tmdl-api` and
+`fabric-semantic-model-ai-instructions` folded into it on 2026-10-12, as
+`references/definition-api.md` and `references/ai-instructions.md`,
+because neither glob ever fired alone. The API skill had carried
+`**/*.SemanticModel/**`, `fabric-tmdl`'s own glob, since Workstream E
+took it out of the session listing on 2026-09-01; the AI-instructions
+glob, `**/*.SemanticModel/definition/cultures/*.tmdl`, sits inside it.
+`fabric-tmdl`'s body names the reference to read before each of the two
+jobs. A second semantic-model skill on any of these four rows means one
+of them is back as a skill.
 
 ## Known gaps
 
