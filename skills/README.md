@@ -75,6 +75,19 @@ internal cross-references stay intact.
   rewrite plus force-push is not the remedy, what the recreate cannot
   reach — the forks of a public repo — and why the 90-day restore is
   never used.
+- [run-briefs/](workflow/run-briefs/) — run one handoff brief and
+  whatever blocks it, one at a time, each in a fresh headless
+  `claude -p` session that enters a worktree named after its brief; gate
+  each run on its JSON result and its branch, land it as the repo's own
+  instructions say, and go on, stopping at the first failure with the
+  `claude --resume` that finishes that worker by hand. Exists because the
+  user ran briefs by hand, one session each in a recommended order, and
+  the queue's own rules — re-measure first, a worktree per brief, land
+  from the main checkout — are what a coordinator has to get right every
+  time. Typed only, the repo's one `disable-model-invocation: true`,
+  since a run spends usage and lands branches. Named for the verb typed,
+  plural because a run is a chain; not `execute-briefs`, since one queue
+  has no `execute/` directory and `/drift-update` owns that verb.
 
 ## Meta
 
