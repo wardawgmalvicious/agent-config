@@ -248,6 +248,36 @@ kill timer (pwsh 7.6.6, .NET 10.0.12):
 The guard, and what each form does where, went to
 `claude/rules/coding-powershell.md` § "Windows and system operations".
 
+**2026-10-12.** The stdout bullet is rewritten: it named the wrong
+character, and its premise moved. It read "an em dash raises
+`UnicodeEncodeError` mid-print. Set `PYTHONIOENCODING=utf-8` or write a
+UTF-8 file", and the stdout paragraph above calls em dashes and curly
+quotes enough, but cp1252 holds both. With stdout redirected,
+`print(chr(0x2014))` wrote `97 0d 0a` and the four curly quotes `91` to
+`94`, each exiting 0, while `→` (U+2192) raised `UnicodeEncodeError`,
+exit 1. That day machine-config wrote `PYTHONUTF8=1` to
+`HKCU\Environment`, turning on UTF-8 mode for every Python started after
+it: `sys.flags.utf8_mode, sys.stdout.encoding` read `1 utf-8`. A process
+keeps the environment it started with, so a session from before VS Code
+was fully quit and relaunched reads `0 cp1252`, as the one that re-ran
+these did. `-I` ignores every `PYTHON*` variable and reads `0 cp1252`
+again; `-I -X utf8` reads `1 utf-8`. The two tool shells also differ
+without the variable: the PowerShell tool's process carries
+`PYTHONIOENCODING=utf-8:surrogateescape`, in neither the User nor the
+Machine registry, on code page 65001, so Python's stdout was UTF-8 there
+and cp1252 in the Bash tool, and output that looks right in one proves
+nothing about the other. `-I` drops that variable too. Measured by a
+machine-config session and re-run here, Python 3.13.14. Under the
+variable a bare `open()` of a cp1252 file raises `UnicodeDecodeError`,
+which went to `claude/rules/coding-python.md`.
+
+`markitdown` 0.1.8 (extras `docx`, `pptx`, `xlsx`), a global uv tool
+from machine-config's `package-lists/uv-tools.txt`, shows the quiet form
+of the same trap: without the variable its stdout in the Bash tool wrote
+`é` and `—` as cp1252 bytes and `?` for each of `→ Ω ✓ 你 好`, exit 0.
+Its `-o` writes UTF-8 with CRLF line ends. Measured 2026-10-12 by the
+same session, and re-run here on an HTML file.
+
 ### Shell traps
 
 Six sections of their own until 2026-09-23, now one bullet each in

@@ -29,8 +29,8 @@ the bytes: a round trip through a translating layer proves nothing.
   timeout or prints ~50k `WinError 6` tracebacks; pipe or heredoc. Prompts
   (`git rebase -i`, `fab` without `-f`, masked `Read-Host`) block too, so
   pass the non-interactive flag; `Read-Host` then throws, yet may exit 0.
-- **stdout is cp1252** (2026-09-13): an em dash raises `UnicodeEncodeError`
-  mid-print. Set `PYTHONIOENCODING=utf-8` or write a UTF-8 file.
+- **stdout is cp1252 unless Python got `PYTHONUTF8=1`** (User scope since
+  2026-10-12; with `-I`, add `-X utf8`): a `→` raises `UnicodeEncodeError`.
 - **`write_text()` writes CRLF, and `read_text()` hides it**: use
   `newline=""` or bytes, and count CRs as § "Shell traps" does.
   The tell is a whole-file diffstat on a small edit (2026-09-15).
