@@ -405,17 +405,17 @@ A node can carry **multiple labels** (e.g. `["Customer","Employee"]`).
 
 | Limit | Value |
 | --- | --- |
-| Graph models per workspace | **10** |
+| Graph models per workspace | **no cap documented** (read 2026-10-12) |
 | Graph size (GA SKU) | ~**2 billion** elements (nodes + edges); contact product team for larger |
-| Data sources | OneLake **Parquet and CSV only** (Power BI semantic-model sources under development) |
-| Variable-length pattern hops | up to **8** |
+| Data sources | **OneLake and mirrored databases** (read 2026-10-12) |
+| Variable-length pattern hops | up to **8** in the **Explore** UI's path builder; GQL in the code editor doesn't share the limit |
 | Query timeout | **20 minutes** |
-| Graph create/update timeout | **20 minutes** (may occur up to ~once/week; re-initiate) |
+| Graph load or refresh time | **no fixed timeout**: a large graph can take several hours; open a support request if one runs past **24 hours**. The 20-minute limit is the Query API's alone (limitations and graph performance pages, read 2026-10-12) |
 | Response size | **truncated above 64 MB**; aggregation unstable past 128 MB |
 | String property max length | **65,535** chars (data past 64 KiB unreachable to deserializer) |
 | `List<T>` property max elements | **65,535** |
 | Export / Power BI direct connect | **not supported** |
-| Returning `ANY` / `RECORD` types | not supported — `TO_JSON_STRING` workaround |
+| Returning `ANY` / `RECORD` types | **supported**: `RECORD` is listed as a supported runtime value type, and the Query API documents `ANY` result columns, each cell a full `{gqlType, value}` (§5) (read 2026-10-12) |
 | Identifiers | can't start with underscore |
 
 ---

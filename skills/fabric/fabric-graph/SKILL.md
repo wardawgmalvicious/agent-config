@@ -39,7 +39,7 @@ LIMIT 5
 
 ### Graph-type DDL (defining the schema in GQL)
 
-The graph **type** (schema) uses a compact DDL that is unlike anything in training-data Cypher. Get this exact, or a model will invent invalid syntax:
+The graph **type** (schema) uses a compact DDL that is unlike anything in training-data Cypher. It is reference syntax, not something to run: "Graph doesn't currently accept GQL graph-type declarations directly" ([language guide](https://learn.microsoft.com/fabric/graph/gql-language-guide), read 2026-10-12), though the conformance page's `GC04` row still calls `CREATE GRAPH` with a closed graph type supported. A model's schema is set in the model editor, or in the JSON `graphType` part under § "Graph Model item-definition JSON". To read Learn's schema pages, this example matches their syntax ([graph types](https://learn.microsoft.com/fabric/graph/gql-graph-types), [schema example](https://learn.microsoft.com/fabric/graph/gql-schema-example)), so copy it rather than recall it:
 
 ```gql
 -- node type with typed properties; :: is the type operator
@@ -112,7 +112,7 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 ## Other gotchas / limits
 
 - **Storage floor 100 GB** provisioned (billed at OneLake Cache rate); compute billed by CPU uptime at **10 CU-seconds per second**, rounded up to the minute. Uses your existing Fabric capacity — no separate SKU.
-- **Hard limits:** max **10 graph models per workspace**; the GA SKU processes roughly **2 billion graph elements** (nodes + edges — contact the product team for larger); the **Explore** UI's path builder stops variable-length patterns at **8 hops**, a limit GQL in the code editor doesn't share; queries **time out at 20 minutes** and responses are **truncated above 64 MB** (aggregation gets unstable past 128 MB). String property max 65,535 chars; `List<T>` property max 65,535 elements. See [limitations](https://learn.microsoft.com/fabric/graph/limitations).
+- **Hard limits:** the GA SKU processes roughly **2 billion graph elements** (nodes + edges — contact the product team for larger); the **Explore** UI's path builder stops variable-length patterns at **8 hops**, a limit GQL in the code editor doesn't share; queries **time out at 20 minutes** and responses are **truncated above 64 MB** (aggregation gets unstable past 128 MB). String property max 65,535 chars; `List<T>` property max 65,535 elements. Learn gives no per-workspace cap on graph models (2026-10-12). See [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - **NL2GQL** (natural-language → GQL via Fabric Data Agent, see fabric-data-agent) is **preview**. **openCypher** support is preview and is the KQL-graph path, not this item.
 - **Set operations: `UNION` only.** `UNION ALL` and `UNION DISTINCT` are supported, including inside `NEXT` stages; `INTERSECT`, `EXCEPT` and `OTHERWISE` aren't yet. Full conformance-gap list → [limitations](https://learn.microsoft.com/fabric/graph/limitations).
 - Governed by OneLake security + workspace RBAC (see fabric-security).
