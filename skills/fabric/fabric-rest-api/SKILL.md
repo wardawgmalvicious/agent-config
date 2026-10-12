@@ -203,7 +203,8 @@ refuses, and never overwrites. Add either field on purpose, after reading
   finished in under a second; its `Location` named a regional cluster
   host, not `api.fabric.microsoft.com`, and polling
   `/v1/operations/{x-ms-operation-id}` on the base URL worked. Polling
-  that `Location` itself was not tried.
+  that `Location` itself works too, with the same bearer, and `/result`
+  appended to it fetches the result (four operations, 2026-10-12).
 
 [Commit To Git](https://learn.microsoft.com/rest/api/fabric/core/git/commit-to-git),
 `POST …/git/commitToGit` (scope `Workspace.GitCommit.All`), commits by
@@ -215,6 +216,28 @@ slashes, no wildcards, an empty list meaning every file. Pass
 long-running like the two calls above. Committing only some of an item's
 files can leave its definition incomplete (Learn, 2026-10-06).
 
+**Re-read `git/status` after Update From Git, and commit `Selective`.**
+One update of six items left two reading `workspaceChange: Modified`
+that nobody had edited: a KQL database whose `DatabaseSchema.kql` held
+the branch's lines in another order, and a report whose `.platform`
+`description` the update had not applied (2026-10-12, cause unknown). A
+`mode: All` commit would have written both back over the branch.
+
+**A branch move is a reconnect.** Connect refuses a connected workspace
+(`WorkspaceAlreadyConnectedToGit`) and does not sync. So push a branch
+cut at `git/status`'s `workspaceHead`; keep `myGitCredentials`'
+`connectionId` and the old `gitProviderDetails`; call `git/disconnect`,
+a POST with no body, then `git/connect` with those, the new `branchName`
+and `myGitCredentials` (required for GitHub), then
+`git/initializeConnection` with `PreferWorkspace`. On one GitHub run that
+kept uncommitted work uncommitted and answered
+`requiredAction: CommitToGit` (2026-10-12): commit `Selective`, as above.
+Connect and Disconnect take workspace Admin, and nothing is connected
+between them: script the rollback first. Connect also sets
+`connectionSettings.additionalRolesAuthorizedToChangeBranch` to `None`,
+admins only, unless the body passes it, and Get Connection does not
+return it: pass it on every connect where non-admins switch branch.
+
 **`git/status` types items outside its documented enum.** One call
 (2026-09-30, one tenant) typed a semantic model, a Plan and a SQL
 database as `dataset`, `Planning` and `SQLDbNative`, where Learn's
@@ -222,11 +245,15 @@ database as `dataset`, `Planning` and `SQLDbNative`, where Learn's
 the three (re-read 2026-10-01). Two calls on 2026-10-01 added a User
 Data Functions item as `FunctionSet` and a report as `report`
 (`UserDataFunction`, `Report` on Learn), and repeated `dataset` and
-`SQLDbNative`. A script filtering `changes[]` on documented type names
+`SQLDbNative`. Four on 2026-10-12 added a KQL database, a notebook and a
+variable library as `KustoDatabase`, `SynapseNotebook` and `Variables`
+(`KQLDatabase`, `Notebook`, `VariableLibrary`). A script filtering
+`changes[]` on documented type names
 skips those items without a word, case-insensitively too. Match on
 `itemMetadata.itemIdentifier` instead: `logicalId` where present, else
 `objectId`. Learn requires one of the two, and its example of an item
-added in the workspace carries only `objectId`.
+added in the workspace carries only `objectId`; one such item on
+2026-10-12 carried both, and a `Selective` commit took both.
 
 ## Job Execution
 
