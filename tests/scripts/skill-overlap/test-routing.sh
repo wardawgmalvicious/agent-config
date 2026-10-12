@@ -81,15 +81,7 @@ make_payload "$d"
 make_skill "$d" fabric-alpha "Alpha." "See \`fabric-missing-thing\` for background."
 check "prose mentions a missing skill" 0 "$d"
 
-# 4. A recorded override in a description does not fail, even though the name
-#    resolves to nothing. powerbi-report-planning was left unvendored on
-#    purpose in 1fa3061.
-d="$tmproot/accepted"
-make_payload "$d"
-make_skill "$d" fabric-alpha "Plan it with \`powerbi-report-planning\` first."
-check "description names an accepted override" 0 "$d"
-
-# 5. An allowlisted non-skill name does not fail. The rule arm is used here
+# 4. An allowlisted non-skill name does not fail. The rule arm is used here
 #    because a rule file is the cheapest derived source to build.
 d="$tmproot/allowlisted"
 make_payload "$d"

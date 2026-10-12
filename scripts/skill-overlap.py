@@ -97,25 +97,6 @@ HAND_ALLOWLIST = {
     "fabric-toolbox": "GitHub repo",
 }
 
-# A missing skill that is missing ON PURPOSE. The pair was vendored from
-# upstream in 1fa3061 (2026-08-25) with the note "The largely-overlapping
-# planning and management skills were not vendored", and each skill's own
-# Local vendoring note routes to pbir-report-workflow instead. Vendoring
-# them now would put two descriptions on one request, which is precisely what
-# `overlap` exists to flag -- so the override stays and the gate must not
-# fail on it. Editing the vendored description text is not an alternative:
-# the note says to re-apply only that section on re-sync, so a description
-# edit is silently lost the next time upstream is pulled. The pair's
-# authoring half joined these on 2026-10-09, archived as never invoked: the
-# design half's description still hands its contract to it, and its Local
-# vendoring note routes that hand-off to pbir-report-workflow.
-ACCEPTED = {
-    "powerbi-report-planning": "not vendored on purpose (1fa3061); see Local vendoring note",
-    "powerbi-report-management": "not vendored on purpose (1fa3061); see Local vendoring note",
-    "powerbi-report-authoring": "archived on purpose (2026-10-09); see Local vendoring note",
-}
-
-
 def _rel(p: pathlib.Path) -> str:
     return p.relative_to(REPO).as_posix()
 
@@ -206,7 +187,7 @@ def cmd_routing(args) -> int:
     def classify(name):
         if name in known or name in allowed:
             return None
-        return "accepted" if name in ACCEPTED else "unknown"
+        return "unknown"
 
     # Hits in the SURFACE TRIGGERS ARE MATCHED AGAINST. These are the ones
     # that can fail a commit.
@@ -255,14 +236,6 @@ def cmd_routing(args) -> int:
         print("FAIL -- a description routes to a skill that is not installed:")
         for h in failures:
             print(f"  {h['file']} ({h['field']}) -> `{h['name']}`")
-        print()
-
-    accepted = [h for h in surface if h["kind"] == "accepted"]
-    if accepted:
-        print("Accepted overrides in descriptions (not failures):")
-        for h in accepted:
-            print(f"  {h['skill']} ({h['field']}) -> `{h['name']}`")
-            print(f"      {ACCEPTED[h['name']]}")
         print()
 
     if body:

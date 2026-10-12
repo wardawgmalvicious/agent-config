@@ -31,7 +31,6 @@ suite is built the same way.
 | Resolvable route | a description naming an installed skill | exit 0 |
 | **Dangling route** | a description naming a missing skill | **exit 1** |
 | Prose mention | the same missing name in the body, not the description | exit 0 |
-| Accepted override | a description naming `powerbi-report-planning` | exit 0 |
 | Derived allowlist | a description naming a file in `claude/rules/` | exit 0 |
 
 The third row is the one that is easy to get backwards. A body may
@@ -39,7 +38,7 @@ legitimately discuss a skill that was deliberately not installed, so a prose
 hit is reported and never gates; only the surface triggers are matched
 against can fail.
 
-The fifth row exercises the derived half of the allowlist through its
+The fourth row exercises the derived half of the allowlist through its
 cheapest arm — a rule file. The MCP-server and drift-audit-source arms are
 the same mechanism and are not separately fixtured.
 
