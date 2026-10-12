@@ -24,9 +24,11 @@ streaming-policy prerequisite.
 ) with (format="parquet")
 ```
 
-**Streaming ingestion** must be enabled per-table first:
+**Streaming ingestion** needs a policy on the table or its database, and a
+new Fabric database may carry one already (`SKILL.md` § *Ingestion*):
 
 ```kql
+.show database MyDB policy streamingingestion
 .alter table Events policy streamingingestion enable
 ```
 

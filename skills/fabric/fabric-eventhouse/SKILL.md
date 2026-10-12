@@ -95,8 +95,15 @@ availability off, change, toggle back on. Full matrix:
 | `.set-or-replace T <\|` | Replace table contents from a query |
 | `.ingest into table T (h'abfss://...;impersonate')` | Blob / ADLS / OneLake files — **the `;impersonate` suffix is required** |
 
-**Streaming ingestion is per-table and must be enabled first**:
-`.alter table Events policy streamingingestion enable`.
+**Streaming ingestion needs a policy on the table or its database: read
+it before enabling one.** A database policy covers every table, and a
+table's own overrides it (Learn). Fabric set one, `IsEnabled: true`, in
+the second after it created a database by REST, and a sibling read the
+same (journal and policy reads, 2026-10-12; other creation routes
+unchecked). So `.show database D policy streamingingestion`, then the
+table's for one that refuses, and
+`.alter table Events policy streamingingestion enable` only where neither
+is on.
 
 **Pair every DDL change on a streaming-ingested table with a cache
 clear.** Nodes cache each table's streaming-ingestion schema. The
@@ -131,7 +138,7 @@ Full command syntax and CSV/JSON mapping definitions:
 | **Caching** | Hot (SSD) vs cold tier window | `.alter table T policy caching hot = 30d` |
 | **Partitioning** | Hash key for extent pruning | Hash on column with `XxHash64`, `MaxPartitionCount` |
 | **Merge** | Background extent merge thresholds | `RowCountUpperBoundForMerge`, `MaxExtentsToMerge` |
-| **Streaming ingestion** | Enable streaming endpoint | `.alter table T policy streamingingestion enable` |
+| **Streaming ingestion** | Enable streaming endpoint | Table or database; a new Fabric database may carry it. `.show database D policy streamingingestion` first |
 
 Database-level policies (`.alter database MyDB policy ...`) act as defaults; table-level overrides them. Check effective policy with `.show table T policy retention`.
 
@@ -268,7 +275,7 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 | OneLake / ADLS ingest auth fails | Missing `;impersonate` on URI | Append `;impersonate` to the storage URI |
 | Materialized view stuck at 0% | No new source data or backfill pending | `.show materialized-view MV statistics` |
 | `.drop column` fails | Column referenced by materialized view or function | Drop dependents first |
-| Streaming ingestion errors | Streaming policy not enabled | `.alter table T policy streamingingestion enable` |
+| Streaming ingestion errors | No streaming policy on the table or its database, or a table-level `false` over the database's | Read both policies, then `.alter table T policy streamingingestion enable` |
 | External table returns no data | Path / format / schema mismatch | Verify `abfss://` path, `dataformat=`, and column types match source |
 | Retention deleting data too soon | Table-level policy overrides DB default | `.show table T policy retention` |
 | `dcount()` returns approximate value | HyperLogLog by design | `dcount(col, 4)` for higher accuracy (costly), or `T \| distinct col \| count` for exact |
