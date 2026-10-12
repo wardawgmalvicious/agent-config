@@ -16,7 +16,7 @@ J="$S/<stem>.json"
 jq -b -r '[.subtype, .is_error, (.permission_denials | length), .num_turns, .total_cost_usd, .session_id] | @tsv' "$J"
 jq -b -r '.result' "$J"                                                          # the worker's reply, STATUS/COMMITS/OWED/NOTES at its end
 jq -b -c '.permission_denials[] | {tool_name, command: .tool_input.command}' "$J" # empty when nothing was denied
-jq -b -r '.errors[]?, .startup_failure_reason?' "$J"                              # error variant only
+jq -b -r '.errors[]?, (.startup_failure_reason // empty)' "$J"                    # error variant only; prints nothing on success
 ```
 
 **The success variant** carries `type: result`, `subtype: success`,
