@@ -97,7 +97,8 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   exist for (2026-09-01), and no setting reaches `max`.
 - `disable-model-invocation: true` drops the description from the listing in
   every session on the machine and blocks subagent preloading and scheduled
-  firing. It is `false` everywhere here.
+  firing. It is `false` everywhere here but `run-briefs`, which spends
+  usage and lands branches, so it runs only when typed (2026-10-12).
 - `ultracode` is not an effort level but a toggle in `/effort` that leaves
   the level unchanged (2.1.284), so `max` is the highest pin.
 - `allowed-tools` pre-approves a call for the invoking turn by matching

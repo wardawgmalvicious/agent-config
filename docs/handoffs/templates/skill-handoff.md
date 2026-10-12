@@ -45,7 +45,7 @@ description: {{one-sentence trigger description}}  # repo linter requires it (up
 when_to_use: {{when-to-use guidance}}  # optional; appended to description in the skill listing; gated separately at 512, the Claude-Code-only remainder of the 1,536 truncation point. NOT one of the spec's six fields — a skill using it hard-fails the claude.ai upload path
 argument-hint: {{[arg-hint]}}  # optional; autocomplete display hint shown in / menu, e.g. [issue-number]
 arguments: {{arg1 arg2}}  # optional; space-separated string or YAML list; enables $name substitution in skill body
-disable-model-invocation: {{false}}  # ALWAYS PRESENT; true = manual-only (/commit-style): the description leaves context entirely; also blocks subagent preloading and scheduled-task prompts. Repo policy: false everywhere
+disable-model-invocation: {{false}}  # ALWAYS PRESENT; true = manual-only (/commit-style): the description leaves context entirely; also blocks subagent preloading and scheduled-task prompts. Repo policy: false everywhere but a skill that spends usage or lands branches, `run-briefs` (2026-10-12)
 user-invocable: {{true}}  # optional; false hides from / menu for background-knowledge skills; description stays in context
 allowed-tools: {{Bash(git add *) Bash(git commit *) Read Grep}}  # optional; permission pre-approval for the invoking turn only (clears on the next user message); does NOT restrict other tools; space/comma string or YAML list; write each Bash specifier in space form — `Bash(git diff *)`, never `Bash(git diff*)`, which word-boundaries differently
 disallowed-tools: {{AskUserQuestion}}  # optional; removes tools from the pool while the skill is active; clears on the next user message
