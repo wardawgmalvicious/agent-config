@@ -337,6 +337,12 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
 - Pester 5.9.1 and 6.1.0 both reject a top-level `BeforeEach` ("Each
   test setup is not supported in root", 2026-10-09) — it goes inside
   `Describe`.
+- One each of `BeforeAll`, `BeforeEach`, `AfterEach` and `AfterAll`
+  per block. Given more than one, Pester 5.9.1 runs only the last and
+  drops the rest without a word: a strict-mode line in a dropped
+  `BeforeAll` never runs, and the suite passes without it. 6.1.0 fails
+  the file instead ("BeforeAll is already defined in this block"). All
+  four measured in a `Describe`, `BeforeAll` at the root too (2026-10-12).
 - A `$null` element of `-ForEach` reaches the test as an empty
   hashtable on Pester 5, and as `$null` on 6. On 5 the case never tests
   `$null`: it passes or fails on what the body does with a hashtable,
