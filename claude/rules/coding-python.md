@@ -229,3 +229,11 @@ load_date = LoadDate
 - Looping over a Spark DataFrame with `.collect()` then iterating —
   defeats the point of distributed compute.
 - `print()` for diagnostics in production code; use `logging`.
+- A bare `open()` or `read_text()` on a file you did not write. Its
+  encoding follows the environment, and this machine's User scope has
+  set `PYTHONUTF8=1` since 2026-10-12, so a legacy cp1252 file that read
+  cleanly before raises `UnicodeDecodeError`. Pass `encoding=`.
+- `subprocess.run(..., input=s, text=True)` into a child that stores its
+  stdin, on Windows: text mode writes each `\n` as CRLF, as `write_text()`
+  does, so the child stores the CRs. Pass `input=s.encode("utf-8")` and
+  decode its output yourself (reproduced 2026-10-12, Python 3.13.14).
