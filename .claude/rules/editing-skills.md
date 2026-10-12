@@ -109,3 +109,22 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   the expanded, quoted path was refused (2026-10-06, 2.1.291). So the
   body spells the command as the rule does, and a model that expands `~`
   loses the grant.
+
+## Bundled scripts
+
+- A script goes in its skill's `scripts/` when a deployed skill runs it
+  outside this repo; one serving this repo's upkeep stays in `scripts/`.
+  Either way its negative cases are `tests/scripts/<script>/`.
+- `SKILL.md` names it `${CLAUDE_SKILL_DIR}/scripts/<file>`, which Claude
+  Code also substitutes in an `allowed-tools` Bash rule. Through a
+  junction it expands to the junction's path, not its target, with
+  forward slashes (2.1.293, 2026-10-12), so it suits either shell. A
+  `references/` file is Read unsubstituted, so it spells
+  `~/.claude/skills/<name>/scripts/<file>`. Older skills spell that in
+  `SKILL.md` too, which works; `find-session`'s `allowed-tools` rule
+  moves only with a `dontAsk` re-run of the arms above.
+- A bundled script takes the repo it acts on from an argument or the
+  working directory, never its own folder: through the junction, git run
+  there finds this checkout, and paths built on `$PSScriptRoot` land in
+  the skill folder, exit 0 (2026-10-12). `coding-bash.md`'s
+  `SCRIPT_DIR/../..` is for a script that lives in the repo it serves.

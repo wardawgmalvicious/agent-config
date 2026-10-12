@@ -2115,6 +2115,27 @@ machine-config's `setup.ps1` runs, sets `DOWNLOAD_BASE_URL` to
 while `autoUpdatesChannel` is `latest`; a machine on `stable` compares
 against `/stable`.
 
+**2026-10-12.** `editing-skills.md` gained "Bundled scripts" when
+`repo-settings.ps1` moved into the `recreate-repo` skill. Three skills
+already bundled one, each called by its `~/.claude/skills/<name>/`
+path, and `scripts/` held no other script a deployed skill runs outside
+this repo: `learn` runs this repo's tooling in edit mode only.
+`${CLAUDE_SKILL_DIR}` was probed that day on 2.1.293 with two throwaway
+project-scope skills in the session scratchpad, one reached through a
+junction as `link-claude.ps1` makes them, each told to echo the
+variable. Both transcripts held it expanded to the path the skill was
+found by, `…/.claude/skills/viajunction` for the junction rather than
+its target, with forward slashes, and the echo matched. The skills page
+(`code.claude.com/docs/en/skills`, read that day) says it is substituted
+in the skill's markdown content and in `allowed-tools` Bash rules, so a
+`references/` file, read with the Read tool, is taken as unsubstituted.
+`git -C ~/.claude/skills/recreate-repo rev-parse --show-toplevel`
+answered this repo's root, so a script deriving its repo from its own
+folder finds the payload checkout through the junction: the
+`repo-settings.ps1` suite, run against the version that did, failed 17
+of 74, one an `-Export` of another repo written beside the script, exit
+0.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
