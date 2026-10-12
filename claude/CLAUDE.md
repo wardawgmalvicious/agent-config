@@ -23,8 +23,8 @@ the bytes: a round trip through a translating layer proves nothing.
 
 - `python`/`python3` are Store stubs exiting **49** with arguments, and
   `pip` is absent. `python3.13` suits a throwaway one-liner; use `uv` for
-  the rest. Global uv tools: `fab` (package `ms-fabric-cli`), `pbir`
-  (`pbir-cli`), `ruff`, `sqlfluff`, `pre-commit`, `git-filter-repo`.
+  the rest. Global uv tools: `fab` (`ms-fabric-cli`), `pbir` (`pbir-cli`),
+  `ruff`, `sqlfluff`, `pre-commit`, `git-filter-repo`, `markitdown`.
 - **Never `uv run python -` with nothing on stdin**: PyREPL blocks to the
   timeout or prints ~50k `WinError 6` tracebacks; pipe or heredoc. Prompts
   (`git rebase -i`, `fab` without `-f`, masked `Read-Host`) block too, so
