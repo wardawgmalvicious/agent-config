@@ -446,6 +446,18 @@ grep printed nothing that day. A prompt audit raised it
 `.claude/rules/editing-skills.md` stopped spelling the prefixes in the
 same change, so the tuple is their one list.
 
+**2026-10-12.** `repo-settings.ps1` moved from `scripts/` into
+`skills/workflow/recreate-repo/scripts/`, so root's line names that
+path. The skill is its one caller outside this repo, and a skill's
+folder reaches every repo, as `scripts/` never did. The script now takes
+its repo from the working directory's clone and defaults the snapshot
+into that clone, so a bare run here still checks this repo against
+`.github/repo-settings.json`: run that day from this repo's root,
+through the junction, it answered `31 setting(s) already match`, exit 0.
+Every other repo's snapshot now lives in a clone of that repo, on the
+user's answer to the pilot that moved the script, which reversed the
+2026-09-27 decision to keep them all here (`0af9fa4`).
+
 ## How this repo is structured
 
 Files here are synced into tool config directories; where an edit

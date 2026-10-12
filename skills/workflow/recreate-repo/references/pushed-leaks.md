@@ -60,7 +60,7 @@ repository history."
 The pull request refs that pinned the leaked commits are the
 repository's, and go with it: that is the mechanism the recreate relies
 on. Issues, releases and the wiki are the repository's too, and no
-snapshot restores them; `scripts/repo-settings.ps1` records settings.
+snapshot restores them; the skill's `repo-settings.ps1` records settings.
 
 ## Which account `gh` acts as
 
@@ -84,25 +84,34 @@ gh acts as '<login>', not the repo owner '<owner>'. Refusing to snapshot a repo 
 
 `gh repo delete` and `gh repo create` make no such check.
 
-## The script, by full path
+## The script, from the skill's folder
 
-Measured 2026-10-01 from `C:\Repos\Personal\machine-config`, through the
-call operator:
+`SKILL.md` names it `${CLAUDE_SKILL_DIR}/scripts/repo-settings.ps1`,
+which Claude Code expands before the model reads the skill. Probed
+2026-10-12 on Claude Code 2.1.293 with two throwaway project-scope
+skills, one reached through a junction as `link-claude.ps1` deploys this
+one, and read from each session's transcript rather than the model's
+echo: each expanded to the path the skill was found by, junction and
+all, never the junction's target, with forward slashes. So the command
+runs in either shell and names no checkout.
+
+Measured 2026-10-12 through `~/.claude/skills/recreate-repo/scripts/`,
+from a clone holding its own snapshot, with no argument:
 
 ```text
-=== Repo <owner>/<name> -- mode Check -- C:\Repos\Personal\agent-config\.github\repo-settings\<name>.json
+=== Repo <owner>/<name> -- mode Check -- <clone>\.github\repo-settings.json
   [ok]    31 setting(s) already match
 exit=0
 ```
 
-`$repoRoot` hangs off `$PSScriptRoot`, so `-Path` defaults into
-agent-config whatever the working directory, and the script runs
-`git -C <agent-config> remote get-url origin` before any `gh` call. From
-a worktree session that is git outside the worktree, and the Bash
-tool's guard refused `pwsh -NoProfile -File <the script>` before it ran
-(Claude Code 2.1.283, 2026-10-01): "this command runs pwsh in a plain
-command; what it reads or is handed as shell text cannot be shown not to
-run git". So the skill has a worktree session leave first.
+The working directory, not the script's location, picks the repo and
+the snapshot's default home, and a snapshot of any other repo needs
+`-Path`. `tests/scripts/repo-settings/test-pairing.sh` holds the cases.
+Run against the version that lived in the payload repo's `scripts/`, the
+suite failed 17 of 74 (2026-10-12): that version derived both defaults
+from its own folder, so moved here it would name the payload repo, which
+git finds through the junction, and an `-Export` of another repo wrote a
+snapshot beside the script, exit 0.
 
 Visibility is left out of the snapshot by design — "a file edit must not
 be able to publish or hide a repo" — and the social preview has a read
@@ -185,6 +194,13 @@ the bit in the index on a machine whose filesystem does not.
 ## Unverified
 
 - `-Apply` against a repository with no commits.
+- `${CLAUDE_SKILL_DIR}` at user scope, where this skill deploys: probed
+  at project scope only (2026-10-12).
+- Whether the Bash tool's worktree guard still refuses
+  `pwsh -NoProfile -File` on the script. It refused the version that ran
+  git in the payload checkout, outside the worktree (Claude Code 2.1.283,
+  2026-10-01); the script now runs git only in the working directory's
+  clone. `SKILL.md` gives the PowerShell tool's `&` first.
 - Whether a repository's name is reusable at once after its deletion,
   and whether a new repository under that name blocks the 90-day
   restore. Both recreates so far took the same name back.

@@ -1,22 +1,34 @@
 <#
 .SYNOPSIS
     Export, check or apply a personal repo's GitHub settings against a
-    snapshot committed here: this repo's in .github/repo-settings.json, any
-    other's in .github/repo-settings/<name>.json.
+    snapshot in a clone of that repo, at .github/repo-settings.json.
 
 .DESCRIPTION
     GitHub keeps a repo's settings on the server and nowhere else, so they
     do not travel with a clone and do not survive a delete-and-recreate.
     That happened on 2026-09-10: the repo was recreated to purge leaked
     names from history, every toggle reset to GitHub's defaults, and no
-    record of the old values existed to restore from. This file is that
-    record, and this script is how it is read and restored.
+    record of the old values existed to restore from. The snapshot file is
+    that record, and this script is how it is read and restored.
 
-    EVERY PERSONAL REPO'S SNAPSHOT LIVES HERE. On 2026-09-23 another repo
-    was recreated for the same reason and this script was not reached for:
-    nothing in that repo knew it existed. So it runs cross-repo (decided
-    2026-09-27): -Repo names the repo and -Path defaults from it. The order
-    a recreate takes is in scripts/README.md, "Recreating a repo".
+    IT SHIPS INSIDE THE recreate-repo SKILL, whose SKILL.md, one folder up,
+    is the order a recreate takes. On 2026-09-23 another repo was recreated
+    for the same reason and this script was not reached for: nothing in
+    that repo knew it existed. A skill's description reaches every session
+    on the machine, and the skill's folder brings the script along.
+
+    A REPO'S SNAPSHOT LIVES IN A CLONE OF THAT REPO. -Repo defaults to the
+    origin of the clone the working directory is in, and -Path to that
+    clone's .github/repo-settings.json, but only while -Repo is the clone's
+    own repo: any other repo's snapshot needs -Path, so none lands in the
+    tree of a repo it does not describe, a client's above all. The working
+    directory decides, never this file's location. Deployed, the skill
+    folder is a junction under ~/.claude/skills, and git run from it
+    answers the checkout behind the junction, so defaults built on
+    $PSScriptRoot would name that checkout's repo while writing into the
+    skill folder (measured 2026-10-12). Until that day every snapshot
+    lived beside this script, in the repo that sources ~/.claude, so a
+    recreate run from any other repo wrote into that one.
 
     Three modes, one per switch. -Check is the default and is read-only.
       -Export  read the live repo and overwrite the JSON file with it
@@ -28,11 +40,12 @@
     A SNAPSHOT NAMES ITS REPO, in its _repo key, and every mode refuses a
     file naming another repo than -Repo, -Export over one included, before
     the first gh call. Read from the source on 2026-09-30, the two defaults
-    were independent, so naming one left the other on this repo: a crossed
-    -Export overwrote this repo's snapshot with another repo's settings,
-    and a crossed -Apply patched the other repo with this one's, its owner
-    check passing because one account owned both. A file that names no
-    repo, or is not JSON, is refused too and never overwritten.
+    were independent, so naming one left the other on the script's own
+    repo: a crossed -Export overwrote that repo's snapshot with another
+    repo's settings, and a crossed -Apply patched the other repo with that
+    one's, its owner check passing because one account owned both. A file
+    that names no repo, or is not JSON, is refused too and never
+    overwritten.
 
     CURATED, NOT A DUMP. The file holds settable values only. The raw
     `gh api repos/...` answer also carries ids, counters, timestamps and
@@ -49,12 +62,11 @@
         uploaded. So -Check, and -Apply's re-check, print a SKIP line when
         none is, naming the manual upload. It never counts as drift:
         -Apply could never clear it, and a repo may rightly have no card.
-        This repo's is in docs/social/README.md.
       - Classic branch protection. Rulesets are the current mechanism and
-        are exported and checked; this repo has none. Applying rulesets is
-        not implemented -- -Apply reports a ruleset difference as SKIP
-        rather than guessing at a create/update it has never been tested
-        against.
+        are exported and checked; no repo this has run against has any.
+        Applying rulesets is not implemented -- -Apply reports a ruleset
+        difference as SKIP rather than guessing at a create/update it has
+        never been tested against.
       - Secrets and variables. Their values are not readable by design.
 
     `gh repo edit` REACHES ONLY PART OF THIS, so do not simplify the
@@ -72,9 +84,9 @@
     null allow_squash_merge aborts every mode. -Export and -Apply also
     refuse unless `gh` acts as the repo's owner: on this machine gh is
     folder-scoped and can resolve to a different account than the one
-    that owns the repo (see ~/.claude/CLAUDE.md). For -Export the same
-    check keeps out an organization's repo, whose owner is a name that
-    never goes in a file here.
+    that owns the repo (see ~/.claude/CLAUDE.md). The same check keeps out
+    an organization's repo, which is its owners' to snapshot and restore,
+    never one member's.
 
 .PARAMETER Export
     Overwrite the JSON file with the live settings.
@@ -86,17 +98,18 @@
     Change the live repo to match the file, then re-check.
 
 .PARAMETER Repo
-    owner/name. Defaults to this repo's origin remote.
+    owner/name. Defaults to the origin remote of the clone the working
+    directory is in.
 
 .PARAMETER Path
-    The snapshot file. Defaults from -Repo: .github/repo-settings.json for
-    this repo, .github/repo-settings/<name>.json for any other.
+    The snapshot file. Defaults to .github/repo-settings.json in the clone
+    the working directory is in, and only while -Repo is that clone's own
+    repo; any other repo's snapshot needs it.
 
 .EXAMPLE
-    ./scripts/repo-settings.ps1            # check
-    ./scripts/repo-settings.ps1 -Export    # snapshot after changing a setting in the UI
-    ./scripts/repo-settings.ps1 -Apply     # restore, e.g. after a recreate
-    ./scripts/repo-settings.ps1 -Export -Repo <owner>/<name>   # another repo's, to .github/repo-settings/<name>.json
+    & <skill>/scripts/repo-settings.ps1            # check, from a clone of the repo
+    & <skill>/scripts/repo-settings.ps1 -Export    # snapshot after changing a setting in the UI
+    & <skill>/scripts/repo-settings.ps1 -Apply -Path <snapshot>   # restore after a recreate, from the snapshot taken before it
 #>
 [CmdletBinding(DefaultParameterSetName = 'Check')]
 param(
@@ -109,8 +122,6 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-
-$repoRoot = Split-Path $PSScriptRoot -Parent
 
 # The repository-level keys worth recording: every one is settable through
 # PATCH /repos/{owner}/{repo}. Order here is the order written to the file.
@@ -126,7 +137,7 @@ $script:RepositoryKeys = @(
 # Server-owned ruleset fields, stripped so a ruleset compares on content.
 $script:RulesetNoise = @('id', 'node_id', 'source', 'source_type', 'created_at',
     'updated_at', '_links', 'current_user_can_bypass')
-$script:Comment = 'Managed by scripts/repo-settings.ps1 (-Export / -Check / -Apply). ' +
+$script:Comment = 'Managed by repo-settings.ps1, from the recreate-repo skill (-Export / -Check / -Apply). ' +
     'Visibility and the social preview image are deliberately not here; see the script header.'
 # Keys that document the file rather than set anything: never compared.
 $script:MetaKeys = @('_comment', '_repo')
@@ -264,7 +275,7 @@ function Get-LiveSetting {
 # it is reported here and never compared.
 function Write-SocialPreview {
     [CmdletBinding()]
-    param([Parameter(Mandatory)][string]$Repo, [switch]$IsThisRepo)
+    param([Parameter(Mandatory)][string]$Repo)
     $owner, $name = $Repo.Split('/')
     $query = 'query($owner: String!, $name: String!) ' +
         '{ repository(owner: $owner, name: $name) { usesCustomOpenGraphImage } }'
@@ -273,9 +284,8 @@ function Write-SocialPreview {
     if ($r.ExitCode -ne 0) { throw "gh api graphql failed: $($r.Text)" }
     $repository = ($r.Text | ConvertFrom-Json -AsHashtable)['data']['repository']
     if ($repository['usesCustomOpenGraphImage']) { return }
-    $card = if ($IsThisRepo) { "; this repo's card is in docs/social/README.md" } else { '' }
     Skip ('social preview: none uploaded, and no API can upload one -- by hand, ' +
-        "Settings > General > Social preview$card")
+        'Settings > General > Social preview')
 }
 #endregion
 
@@ -371,17 +381,26 @@ function Read-Snapshot {
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     throw 'gh not found on PATH. hint: winget install GitHub.cli'
 }
-$originRepo = Get-OriginRepo -Root $repoRoot
+# The clone the working directory is in, never this file's: see the header.
+$workingDir = (Get-Location -PSProvider FileSystem).ProviderPath
+$cloneRoot = git -C $workingDir rev-parse --show-toplevel 2>$null
+if ($LASTEXITCODE -ne 0) { $cloneRoot = $null }
+$originRepo = if ($cloneRoot) { Get-OriginRepo -Root $cloneRoot } else { $null }
 if (-not $Repo) {
-    if (-not $originRepo) { throw "No GitHub origin remote in $repoRoot; pass -Repo owner/name." }
+    if (-not $originRepo) {
+        throw "No GitHub origin remote for $workingDir; pass -Repo owner/name and -Path."
+    }
     $Repo = $originRepo
 }
 if ($Repo -notmatch '^[A-Za-z0-9_-]+/[A-Za-z0-9_.-]+$') { throw "-Repo takes owner/name, not '$Repo'." }
-# GitHub's names are case-insensitive, and so is -eq.
-$isThisRepo = [bool]$originRepo -and $Repo -eq $originRepo
 if (-not $Path) {
-    $leaf = if ($isThisRepo) { 'repo-settings.json' } else { "repo-settings/$($Repo.Split('/')[1]).json" }
-    $Path = Join-Path $repoRoot ".github/$leaf"
+    # GitHub's names are case-insensitive, and so is -eq.
+    if (-not $originRepo -or $Repo -ne $originRepo) {
+        $whereItRuns = if ($originRepo) { "is a clone of $originRepo" } else { 'is in no clone with a GitHub origin' }
+        throw "$Repo's snapshot has no default home in $workingDir, which $whereItRuns. " +
+            "Run from a clone of $Repo, or pass -Path."
+    }
+    $Path = Join-Path $cloneRoot '.github/repo-settings.json'
 }
 # Resolved once, so the file checked here is the file -Export writes: .NET
 # resolves a relative path against the process directory, not $PWD.
@@ -390,15 +409,20 @@ Step "Repo $Repo -- mode $($PSCmdlet.ParameterSetName) -- $Path"
 
 $snapshot = Read-Snapshot -Path $Path
 if ($null -eq $snapshot) {
-    if (-not $Export) { throw "No settings file at $Path. Run -Export first." }
+    # After a recreate the live repo holds GitHub's defaults, and exporting
+    # them would bury the snapshot that still says what it should hold.
+    if (-not $Export) {
+        throw "No settings file at $Path. -Export writes one from the live repo; after a " +
+            'recreate, pass -Path the snapshot taken before the delete instead.'
+    }
 } elseif ($snapshot['_repo'] -ne $Repo) {
     throw "$Path is the snapshot of $($snapshot['_repo']), not $Repo, so it is neither read nor " +
-        "overwritten. Pass -Repo $($snapshot['_repo']) to use it, or leave -Path out for $Repo's own."
+        "overwritten. Pass -Repo $($snapshot['_repo']) to use it, or leave -Path out in a clone of $Repo."
 }
 #endregion
 
-# Only a repo's owner writes its settings, or keeps a snapshot of it here: an
-# organization's repo would put the organization's name in a file.
+# Only a repo's owner writes its settings or snapshots them: gh can act as
+# another account here, and an organization's repo is its owners'.
 if ($Export -or $Apply) {
     $owner = $Repo.Split('/')[0]
     $login = gh api user -q .login
@@ -423,7 +447,7 @@ $result = Compare-Setting -Live $live -Wanted $wanted
 
 if (-not $Apply) {
     Write-Drift -Result $result
-    Write-SocialPreview -Repo $Repo -IsThisRepo:$isThisRepo
+    Write-SocialPreview -Repo $Repo
     exit ([int]($result.Drift.Count -gt 0))
 }
 
@@ -431,7 +455,7 @@ if (-not $Apply) {
 $drift = $result.Drift
 if ($drift.Count -eq 0) {
     Ok 'nothing to apply'
-    Write-SocialPreview -Repo $Repo -IsThisRepo:$isThisRepo
+    Write-SocialPreview -Repo $Repo
     exit 0
 }
 Write-Drift -Result $result
@@ -493,7 +517,7 @@ if ($drift.Contains('rulesets')) {
 Step 'Re-checking'
 $after = Compare-Setting -Live (Get-LiveSetting -Repo $Repo) -Wanted $wanted
 Write-Drift -Result $after
-Write-SocialPreview -Repo $Repo -IsThisRepo:$isThisRepo
+Write-SocialPreview -Repo $Repo
 if ($script:Failures.Count -or $after.Drift.Count) {
     Write-Host "`n$($script:Failures.Count) failure(s), $($after.Drift.Count) setting(s) still drifting." -ForegroundColor Red
     exit 1

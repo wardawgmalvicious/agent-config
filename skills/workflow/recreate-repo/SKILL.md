@@ -50,11 +50,7 @@ git rev-parse --show-toplevel                           # which repo this sessio
   and act as whatever `gh` resolves to, so the probe is yours. A mismatch
   is a stop: report it.
 - **An organization's repo is a stop.** It is its owners' to recreate,
-  and its snapshot would put the organization's name in a public repo
-  (same section).
-- **In a client repo the script's path stays local**: in the command and
-  the conversation, never in a file, a commit, a pull request or a branch
-  name (same section, 2026-09-30).
+  and the script's owner check refuses it.
 - **A public repo's `forkCount` above 0 means the leak outlives it.**
   "Deleting a public repository will not delete any forks of the
   repository" — a private repo's forks go with it — and the fork owners
@@ -74,33 +70,26 @@ git rev-parse --show-toplevel                           # which repo this sessio
 
 ## 2. Snapshot the settings while they exist
 
+From a clone of the repo:
+
 ```powershell
-& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Check -Repo <owner>/<name>   # exit 0: the snapshot on disk matches the live repo, skip -Export
-& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Export -Repo <owner>/<name>
+& ${CLAUDE_SKILL_DIR}/scripts/repo-settings.ps1 -Check    # exit 0: the snapshot on disk matches the live repo, skip -Export
+& ${CLAUDE_SKILL_DIR}/scripts/repo-settings.ps1 -Export
 ```
 
-From Bash, run the same path through `pwsh -NoProfile -File`. The script
-resolves its own location, so it runs from any directory: measured
-2026-10-01 from another personal repo, `31 setting(s) already match`,
-exit 0. **Not from a worktree session**: the script runs git in
-agent-config's checkout and writes there, outside the worktree, and the
-Bash tool's guard refused it (2.1.283, 2026-10-01). Ask to leave the
-worktree first.
+The script ships in this skill's folder; from Bash, run the same path
+through `pwsh -NoProfile -File`. `-Repo` defaults to the clone's origin.
 
-- **It writes into agent-config, not into the repo you are in**:
-  `.github/repo-settings/<name>.json` there, or `.github/repo-settings.json`
-  for agent-config's own.
+- **It writes into the clone it runs from**: `.github/repo-settings.json`,
+  untracked. Leave it there and note the full path the script prints:
+  steps 5 and 6 pass it as `-Path`, from the fresh clone too.
+- **Anywhere else it refuses** unless `-Repo` and `-Path` are both given:
+  a snapshot defaults only into a clone of the repo it describes, never
+  into another repo's tree, a client's above all.
 - It refuses a login that is not the owner — `gh acts as '<login>', not
   the repo owner '<owner>'. Refusing to snapshot a repo it does not own.`
   — a file paired with another repo, and merge settings that come back
   null, which means `gh` is not reading them as an admin.
-- **Outside agent-config the file is left uncommitted and announced.**
-  Write `~/handoff-inbox/agent-config/<yyyy-mm-dd>-<topic>.md`, opening
-  with Origin, For and Scrubbing as the inbox's `README.md` says, naming
-  the file and whether the repo is private. agent-config is public, so a
-  snapshot there publishes the repo's name, description, topics and
-  security toggles, and a private repo's is committed only on the user's
-  word. Inside agent-config, the snapshot goes to `/commit` with the rest.
 - `-Check` prints a `[SKIP]` line when no social preview is uploaded.
   Note it: step 6 ends with that upload.
 
@@ -167,9 +156,14 @@ git remote add origin https://github.com/<owner>/<name>.git
 ```
 
 ```powershell
-& C:/Repos/Personal/agent-config/scripts/repo-settings.ps1 -Apply -Repo <owner>/<name>
+& ${CLAUDE_SKILL_DIR}/scripts/repo-settings.ps1 -Apply -Path <the snapshot step 2 wrote>
 ```
 
+- Run it from the fresh clone once `origin` is back, or from the clone
+  step 2 ran in: both origins name the new repo. `-Path` is what keeps
+  it on the snapshot taken before the delete.
+- **Never `-Export` now.** The new repo holds GitHub's defaults, and an
+  export over the snapshot would erase the one record of what it held.
 - `gh repo create` takes `--description` and `--homepage` and no topics
   (gh 2.101.0); `-Apply` restores the topics and everything else the
   snapshot holds — merge toggles, security settings, Actions
@@ -212,14 +206,14 @@ denylist, and a name step 1 added is caught here.
 
 After the push:
 
-- `-Check -Repo <owner>/<name>` once more: exit 0, with the `[SKIP]` for
+- `-Check -Path <the snapshot>` once more: exit 0, with the `[SKIP]` for
   the social preview, which no API sets — upload it by hand at
-  **Settings → General → Social preview → Edit → Upload an image**
-  (`C:/Repos/Personal/agent-config/docs/social/README.md`). `-Check`
-  never counts it as drift.
-- Report: the snapshot's path and whether it is committed, the inbox
-  note if one was written, the forks still carrying the leak, and that
-  the deleted repo is not to be restored.
+  **Settings → General → Social preview → Edit → Upload an image**.
+  `-Check` never counts it as drift.
+- Report: the snapshot's path, untracked in the clone step 2 ran in and
+  the owner's to commit should the new repo keep its settings as code,
+  the forks still carrying the leak, and that the deleted repo is not to
+  be restored.
 
 ## Constraints
 
@@ -233,10 +227,9 @@ After the push:
 - **Never `gh repo create --source . --push`, and never a force-push as
   the remedy.** The first publishes before the hooks exist; the second is
   the rewrite in place this skill replaces.
-- **The script's path, and agent-config's name, stay out of a client
-  repo's files, commits, pull requests and branch names.**
-- **A private repo's snapshot is committed in agent-config only on the
-  user's word.**
+- **A snapshot stays in a clone of the repo it describes**, or outside
+  every repo, never in another repo's tree: the script's default keeps
+  it there, and a `-Path` you pass must too.
 - **Not this skill's:** a leak not yet pushed, which a local rewrite
   removes before any push, `commit`'s identity scan being the
   prevention; a branch to land or prune (`land`, `prune-branches`); the

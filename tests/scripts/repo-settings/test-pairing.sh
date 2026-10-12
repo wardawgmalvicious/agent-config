@@ -1,35 +1,47 @@
 #!/usr/bin/env bash
 # Exercise repo-settings.ps1's pairing of -Repo with a snapshot, offline.
 #
-# Every personal repo's snapshot is a file in this repo, so -Repo naming one
-# repo while -Path holds another's is easy to type, and the script once obeyed
-# it: a crossed -Export overwrote the wrong file, and a crossed -Apply patched
-# the wrong repo. Each case plants a pair and checks what ran.
+# -Path can name any repo's snapshot, so -Repo naming one repo while -Path
+# holds another's is easy to type, and the script once obeyed it: a crossed
+# -Export overwrote the wrong file, and a crossed -Apply patched the wrong
+# repo. Each case plants a pair and checks what ran. Left out, -Path defaults
+# into the clone the script runs in, for that clone's own repo only, so every
+# case runs in a throwaway clone, delta, unless it sets cwd.
 #
 # gh is gh-stub.ps1, copied into a temp bin/ put first on PATH. It answers
 # from canned files and logs every call, so a refusal is shown to come before
 # the first gh call, and no case reaches GitHub; case 0 stops the run unless
 # the stub is what answers. The fixtures' owner, fixture_owner, could own
 # nothing there anyway: a GitHub login takes an underscore only inside a
-# managed enterprise. Nothing is written inside any repo.
+# managed enterprise. Nothing is written outside a temp directory removed on
+# exit.
 #
 #     bash tests/scripts/repo-settings/test-pairing.sh [script.ps1]
 #
 # The argument runs the cases against another copy of the script, which is
-# how the version before the pairing guard was shown to fail them. A run
-# takes about two minutes, nearly all of it one pwsh start per case.
+# how the version before the pairing guard was shown to fail them, and the
+# version before the script moved into the recreate-repo skill failed 17 of
+# 74 (2026-10-12). A run took 36 seconds that day, nearly all of it one pwsh
+# start per case.
 #
 set -u
 
 here=$(cd "$(dirname "$0")" && pwd)
 repo=$(cd "$here/../../.." && pwd)
-script=${1:-$repo/scripts/repo-settings.ps1}
+script=${1:-$repo/skills/workflow/recreate-repo/scripts/repo-settings.ps1}
 tmproot=$(mktemp -d)
 trap 'rm -rf "$tmproot"' EXIT
 bin="$tmproot/bin"
 out="$tmproot/out.txt"
 mkdir -p "$bin/api"
 cp "$here/gh-stub.ps1" "$bin/gh.ps1"
+
+# delta stands in for the clone a session runs from: a git repo with no
+# commits, whose origin names fixture_owner/delta.
+delta="$tmproot/delta"
+git init -q "$delta"
+git -C "$delta" remote add origin https://github.com/fixture_owner/delta.git
+cwd=$delta
 
 pass=0
 fail=0
@@ -40,10 +52,11 @@ native() {
     if command -v cygpath > /dev/null; then cygpath -w "$1"; else echo "$1"; fi
 }
 
-# run [argument...] -- sets $status; the output is in $out, the calls in calls.log
+# run [argument...] -- in $cwd; sets $status; the output is in $out, the calls
+# in calls.log
 run() {
     rm -f "$bin/calls.log"
-    PATH="$bin:$PATH" pwsh -NoProfile -NonInteractive -File "$(native "$script")" "$@" \
+    (cd "$cwd" && PATH="$bin:$PATH" pwsh -NoProfile -NonInteractive -File "$(native "$script")" "$@") \
         > "$out" 2>&1
     status=$?
 }
@@ -160,11 +173,12 @@ for mode in -Check -Apply -Export; do
     expect_calls "and calls no gh" ""
     expect_same "and leaves the file alone" "$tmproot/alpha.json" "$tmproot/alpha.saved"
 done
-# -Path alone leaves -Repo on this repo, which crosses the same way.
+# -Path alone leaves -Repo on the clone's origin, which crosses the same way.
 cp "$tmproot/alpha.saved" "$tmproot/alpha.json"
 run -Check -Path "$(native "$tmproot/alpha.json")"
 expect_exit "-Path alone, holding another repo's snapshot, is refused" 1
-expect_line "and names whose snapshot it is" "is the snapshot of fixture_owner/alpha, not "
+expect_line "and names whose snapshot it is" \
+    "is the snapshot of fixture_owner/alpha, not fixture_owner/delta"
 expect_calls "and calls no gh" ""
 
 # 2. A file that names no repo pairs with nothing: refused in every mode, and
@@ -210,15 +224,43 @@ expect_exit "-Export over its own snapshot succeeds" 0
 run -Check -Repo FIXTURE_OWNER/Beta -Path "$(native "$fresh")"
 expect_exit "a name pairs case-insensitively" 0
 
-# 5. -Path defaults from -Repo: another repo's file is under
-#    .github/repo-settings/. Read only here, so nothing is written in the repo.
-run -Check -Repo fixture_owner/gamma
+# 5. Left out, -Path is the clone's own .github/repo-settings.json, and only
+#    for the clone's own repo: any other repo's snapshot needs -Path, so none
+#    lands in the tree of a repo it does not describe.
+run -Check
 expect_exit "-Check with no snapshot fails" 1
-expect_line "-Path defaults from -Repo" '.github\repo-settings\gamma.json'
+expect_line "-Path defaults into the clone" 'delta\.github\repo-settings.json'
+expect_line "and points a recreate at its snapshot" "after a recreate, pass -Path"
 expect_calls "before any gh call" ""
+run -Export -Repo fixture_owner/beta
+expect_exit "another repo's -Export without -Path is refused" 1
+expect_line "and says why" "fixture_owner/beta's snapshot has no default home in"
+expect_line "naming the clone's repo" "which is a clone of fixture_owner/delta"
+expect_calls "before any gh call" ""
+expect_no_file "and writes nothing in the clone" "$delta/.github"
 run -Check -Repo gamma
 expect_exit "-Repo without an owner is refused" 1
 expect_line "and says what it takes" "-Repo takes owner/name"
+
+# 5b. Outside any clone nothing has a default home: a bare run needs -Repo,
+#     and -Repo needs -Path. Skipped where the temp directory sits inside a
+#     repo, which would make it a clone.
+plain="$tmproot/plain"
+mkdir -p "$plain"
+if git -C "$plain" rev-parse --show-toplevel > /dev/null 2>&1; then
+    echo "skip  outside any clone: $plain is inside a git repo"
+else
+    cwd=$plain
+    run -Check
+    expect_exit "outside any clone, a bare run is refused" 1
+    expect_line "and asks for -Repo and -Path" "pass -Repo owner/name and -Path"
+    expect_calls "before any gh call" ""
+    run -Check -Repo fixture_owner/beta
+    expect_exit "outside any clone, -Repo without -Path is refused" 1
+    expect_line "and says why" "which is in no clone with a GitHub origin"
+    expect_calls "before any gh call" ""
+    cwd=$delta
+fi
 
 # 6. Only the owner's repos: -Export and -Apply refuse under another account,
 #    after asking who gh is and before reading or writing anything else.
@@ -257,15 +299,20 @@ expect_value "it wrote to -Repo alone" \
     "$(tr -d '\r' 2> /dev/null < "$bin/calls.log" | grep -v -e '^GET ' -e '^POST graphql$')" \
     "PATCH repos/fixture_owner/beta"
 
-# 9. This repo's bare run is unchanged: -Repo from origin, -Path its own file,
-#    and every setting matching when GitHub holds what the file says.
-origin=$(git -C "$repo" remote get-url origin | sed -E 's#^.*github\.com[:/]##; s#\.git$##')
-serve "$origin" "$repo/.github/repo-settings.json"
+# 9. A bare run in a clone checks the clone's repo against the clone's own
+#    snapshot, and passes when GitHub holds what the file says; -Repo naming
+#    the clone's repo, in any case, finds the same file.
+mkdir -p "$delta/.github"
+snapshot fixture_owner/delta delta "$delta/.github/repo-settings.json"
+serve fixture_owner/delta "$delta/.github/repo-settings.json"
 run
 expect_exit "a bare run succeeds" 0
-expect_line "it checks this repo" "Repo $origin -- mode Check"
-expect_line "against its own file" '.github\repo-settings.json'
+expect_line "it checks the clone's repo" "Repo fixture_owner/delta -- mode Check"
+expect_line "against the clone's own file" 'delta\.github\repo-settings.json'
 expect_line "every setting matches" "setting(s) already match"
+run -Check -Repo FIXTURE_OWNER/Delta
+expect_exit "-Repo naming the clone's repo in another case passes too" 0
+expect_line "against the same file" 'delta\.github\repo-settings.json'
 
 echo
 echo "$pass passed, $fail failed"

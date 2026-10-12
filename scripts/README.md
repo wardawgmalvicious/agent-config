@@ -265,25 +265,6 @@ Helper scripts for repo maintenance and observability.
   [.pre-commit-config.yaml](../.pre-commit-config.yaml); the header
   says why the override is not an environment variable and why the
   marker is not `CLAUDE_CODE_SSE_PORT`.
-- [repo-settings.ps1](repo-settings.ps1) — keep each personal repo's GitHub
-  settings in a snapshot here, this repo's in
-  [.github/repo-settings.json](../.github/repo-settings.json) and any
-  other's in `.github/repo-settings/<name>.json`, where `-Path` defaults
-  from `-Repo`:
-  `-Export` snapshots the live repo into it, `-Check` (the default) reports
-  drift and exits 1 on any, `-Apply` restores the file's values. Exists
-  because GitHub holds settings server-side only: the 2026-09-10
-  delete-and-recreate reset every toggle to its default, and there was no
-  record of the old values to restore from. **Export after changing a
-  setting in the UI**, or the file silently stops describing the repo.
-  Each snapshot names its repo, and every mode refuses a file naming
-  another before the first `gh` call; its negative cases are
-  [tests/scripts/repo-settings/test-pairing.sh](../tests/scripts/repo-settings/test-pairing.sh).
-  Visibility is deliberately outside it, and the social preview image,
-  which no API sets, is only reported. `-Export` and `-Apply` refuse
-  unless `gh` acts as the repo's owner. The order a recreate takes is
-  [below](#recreating-a-repo).
-
 - [skill-status.py](skill-status.py) — which skills have been tested, and
   what has changed in each since. Derived from the stamps `/test-skill`
   writes to `tests/skills/.tested.json`, each holding a hash of what that
@@ -399,7 +380,22 @@ since 2026-10-01, with the evidence behind each step in its
 `references/pushed-leaks.md`. It moved there from here because a session
 in another repo reads none of this file: on 2026-09-23 one recreated a
 repo without `repo-settings.ps1` for exactly that reason, and a skill's
-description reaches every session on the machine.
+description reaches every session on the machine. The script followed on
+2026-10-12, into the skill's `scripts/`, since a skill's folder reaches
+every repo too, and each repo's snapshot now lives in a clone of that
+repo.
+
+This repo keeps its own in
+[.github/repo-settings.json](../.github/repo-settings.json), reconciled
+from the root by
+`./skills/workflow/recreate-repo/scripts/repo-settings.ps1`: `-Check`,
+the default, reports drift and exits 1 on any, `-Export` snapshots the
+live repo, and `-Apply` restores the file's values. **Export after
+changing a setting in the UI**, or the file silently stops describing
+the repo. The script's negative cases are
+[tests/scripts/repo-settings/test-pairing.sh](../tests/scripts/repo-settings/test-pairing.sh),
+and the social card, which no API sets, is in
+[docs/social/README.md](../docs/social/README.md).
 
 ## Pre-commit
 

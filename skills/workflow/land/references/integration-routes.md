@@ -46,10 +46,9 @@ Read the merge settings rather than assuming them — and read
 `delete_branch_on_merge` in the same breath, which step 6's disclosure
 needs and which is no more uniform across repos than the other three.
 **Prefer a committed answer where the repo keeps one** — a repo that
-version-controls its own settings (agent-config keeps all four in
-`.github/repo-settings.json`, reconciled by `scripts/repo-settings.ps1
--Check`) gives you the value someone intended, for free. Otherwise ask
-GitHub:
+version-controls its own settings in `.github/repo-settings.json`, the
+file `recreate-repo`'s script writes, holds all four and gives you the
+value someone intended, for free. Otherwise ask GitHub:
 
 ```bash
 gh api repos/<owner>/<repo> \

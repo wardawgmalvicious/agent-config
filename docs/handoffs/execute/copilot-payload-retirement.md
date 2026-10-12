@@ -563,8 +563,9 @@ deployed state, but the hook and the files it reads leave in one commit.
   still holds the payload, so that
   `git show <sha>:scripts/copy-copilot.ps1` recovers it.
 - **`.github/repo-settings.json` lists a `github-copilot` topic.**
-  Dropping it, with `scripts/repo-settings.ps1 -Apply`, changes the
-  public repo's settings, so it takes the user's yes.
+  Dropping it, with
+  `skills/workflow/recreate-repo/scripts/repo-settings.ps1 -Apply`,
+  changes the public repo's settings, so it takes the user's yes.
 
 Find the rest by what the payload was called, since most of this repo's
 other mentions of Copilot are the Fabric and Power BI feature, and stay:
