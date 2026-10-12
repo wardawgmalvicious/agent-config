@@ -344,6 +344,9 @@ or recreate them.** Do not claim otherwise, and do not script around them.
   in the source stage, the rule becomes invalid and **deployment fails**.
 - Deleting an item deletes its rules irrecoverably, and so does
   unassigning the workspace.
+- A **Real-Time Dashboard** takes no rule, so its KQL source follows the
+  stage only if something rewrites it: `fabric-realtime-dashboard`
+  § *File anatomy*.
 
 Full limitation list:
 [deployment-pipelines-tables.md](deployment-pipelines-tables.md).
