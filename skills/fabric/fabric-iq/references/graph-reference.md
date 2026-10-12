@@ -138,16 +138,48 @@ RETURN person.firstName || ' ' || person.lastName AS person_name,
 -- multi-hop traversal + order/limit
 MATCH (p:Person {firstName: "Annemarie"})-[:knows]->(friend)-[:likes]->(c:Comment)
 RETURN c ORDER BY c.creationDate LIMIT 100
+
+-- shortest path, eligibility inline: only edges since 2020 can form the path
+MATCH p = ANY SHORTEST
+  (src:Person WHERE src.firstName = 'Alice')
+  -[connection:knows
+    WHERE connection.creationDate >= ZONED_DATETIME('2020-01-01T00:00:00Z')]->{1,4}
+  (dst:Person WHERE dst.firstName = 'Bob')
+RETURN p
+
+-- the same condition as a post-filter: it drops the picked shortest path and
+-- never tries a longer one; outside the quantified pattern, the edge variable
+-- is the list of the path's edges
+MATCH p = ANY SHORTEST
+  (src:Person WHERE src.firstName = 'Alice')
+  -[connections:knows]->{1,4}
+  (dst:Person WHERE dst.firstName = 'Bob')
+FILTER ALL(connection IN connections
+           WHERE connection.creationDate >= ZONED_DATETIME('2020-01-01T00:00:00Z'))
+RETURN p
 ```
+
+The two path queries are Learn's
+([graph patterns](https://learn.microsoft.com/fabric/graph/gql-graph-patterns#place-predicates-before-or-after-path-selection),
+read 2026-10-12). Path search prefixes, path modes and quantifiers are in
+[graph.md](graph.md), and their conformance rows below.
 
 ---
 
 ## 3. GQL standard conformance (supported vs not)
 
 Selected rows from MS Learn `gql-conformance`. Useful to avoid generating unsupported syntax.
+The `G0…` path rows were read 2026-10-12.
 
 | Feature ID | Feature | Supported | Notes |
 | --- | --- | --- | --- |
+| G002 | Different-edges match mode | Yes | `DIFFERENT EDGES` or `DIFFERENT RELATIONSHIPS`: edges unique across the whole graph pattern. |
+| G005 | Path search prefix in a path pattern | Yes | `ALL` (the default) and `ANY SHORTEST`. |
+| G010–G013 | Path modes `WALK`, `TRAIL`, `SIMPLE`, `ACYCLIC` | Yes | `WALK` is the default. |
+| G016 | Any path search (`ANY`) | **No** | |
+| G017 | All shortest path search (`ALL SHORTEST`) | **No** | |
+| G018 | Any shortest path search (`ANY SHORTEST`) | **Yes** | One shortest path per source-destination pair from each input row; ties aren't deterministic. |
+| G019/G020 | Counted shortest path and group search (`SHORTEST k`) | **No** | |
 | GB01 | Long identifiers | No | |
 | GB02 | `--` line comments | Yes | |
 | GB03 | `//` line comments, `/* */` block comments | Yes | |
@@ -427,6 +459,7 @@ A node can carry **multiple labels** (e.g. `["Customer","Employee"]`).
 - Graph data models (labeled property graph) — https://learn.microsoft.com/fabric/graph/graph-data-models
 - Design a graph schema — https://learn.microsoft.com/fabric/graph/design-graph-schema
 - GQL language guide — https://learn.microsoft.com/fabric/graph/gql-language-guide
+- GQL graph patterns (path search, path modes, quantifiers) — https://learn.microsoft.com/fabric/graph/gql-graph-patterns
 - GQL graph types — https://learn.microsoft.com/fabric/graph/gql-graph-types
 - GQL schema example — https://learn.microsoft.com/fabric/graph/gql-schema-example
 - GQL conformance — https://learn.microsoft.com/fabric/graph/gql-conformance

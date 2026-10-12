@@ -27,6 +27,22 @@ LIMIT 5
 - Undirected match `-[:knows]-` is allowed in patterns, but the graph itself has **no undirected edges** — every edge is directed and has **exactly one label**.
 - Comments: `--` line, `//` line, `/* */` block.
 
+### Variable-length and shortest paths
+
+A quantifier after an edge pattern repeats it, and `ANY SHORTEST` keeps one shortest path per source-destination pair from each input row; which of several tied paths comes back isn't deterministic ([graph patterns](https://learn.microsoft.com/fabric/graph/gql-graph-patterns), [pattern queries](https://learn.microsoft.com/fabric/graph/write-graph-pattern-queries), read 2026-10-12):
+
+```gql
+MATCH p = ANY SHORTEST
+  (src:Person WHERE src.firstName = 'Alice')-[:knows]->{1,4}
+  (dst:Person WHERE dst.firstName = 'Bob')
+RETURN p, path_length(p) AS hopCount
+```
+
+- **Path search prefix:** `ALL`, the default, or `ANY SHORTEST`. `ALL SHORTEST`, `ANY` and the counted `SHORTEST k` searches aren't supported, so don't carry them over from the standard.
+- **Path mode**, after the prefix, as in `ANY SHORTEST TRAIL`: `WALK`, the default, lets nodes and edges repeat; `TRAIL` repeats no edge; `SIMPLE` repeats no node, except that the last may be the first; `ACYCLIC` repeats no node at all. `MATCH DIFFERENT EDGES` keeps edges distinct across all of a `MATCH`'s comma-separated patterns.
+- **Quantifiers:** `{n}`, `{m,n}` and `{,n}` are bounded; `{m,}`, `*` and `+` aren't. An unbounded pattern needs `TRAIL`, `SIMPLE` or `ACYCLIC`, since Graph rejects an unbounded `ALL WALK`. An unbounded `ANY SHORTEST WALK` works only for reachability between two nodes over one anonymous quantified edge, and never materializes its path: `PATH_LENGTH(p)` and `p IS NULL` are its only uses. A lower bound of `0` also matches a node to itself.
+- **Where a predicate sits changes the answer.** An inline `WHERE`, inside a node or edge pattern, decides which paths are eligible before `ANY SHORTEST` picks one; a statement-level `WHERE` or a later `FILTER` drops the picked path afterwards and doesn't try a longer one. Some `ANY SHORTEST` shapes currently apply a statement-level `MATCH … WHERE` before selection, so write eligibility inline and post-filters as `FILTER` ([limitations](https://learn.microsoft.com/fabric/graph/limitations#path-predicate-placement)). Both forms side by side → [graph-reference.md](graph-reference.md) § 2.
+
 ### Graph-type DDL (defining the schema in GQL)
 
 The graph **type** (schema) uses a compact DDL that is unlike anything in training-data Cypher. It is reference syntax, not something to run: "Graph doesn't currently accept GQL graph-type declarations directly" ([language guide](https://learn.microsoft.com/fabric/graph/gql-language-guide), read 2026-10-12), though the conformance page's `GC04` row still calls `CREATE GRAPH` with a closed graph type supported. A model's schema is set in the model editor, or in the JSON `graphType` part under § "Graph Model item-definition JSON". To read Learn's schema pages, this example matches their syntax ([graph types](https://learn.microsoft.com/fabric/graph/gql-graph-types), [schema example](https://learn.microsoft.com/fabric/graph/gql-schema-example)), so copy it rather than recall it:
@@ -109,7 +125,7 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 
 ## Reference
 
-- MS Learn: [Graph overview](https://learn.microsoft.com/fabric/graph/overview) · [How graph works](https://learn.microsoft.com/fabric/graph/how-graph-works) · [GQL language guide](https://learn.microsoft.com/fabric/graph/gql-language-guide) · [GQL schema example](https://learn.microsoft.com/fabric/graph/gql-schema-example) · [GQL conformance](https://learn.microsoft.com/fabric/graph/gql-conformance)
+- MS Learn: [Graph overview](https://learn.microsoft.com/fabric/graph/overview) · [How graph works](https://learn.microsoft.com/fabric/graph/how-graph-works) · [GQL language guide](https://learn.microsoft.com/fabric/graph/gql-language-guide) · [GQL graph patterns](https://learn.microsoft.com/fabric/graph/gql-graph-patterns) · [GQL schema example](https://learn.microsoft.com/fabric/graph/gql-schema-example) · [GQL conformance](https://learn.microsoft.com/fabric/graph/gql-conformance)
 - MS Learn: [GQL Query API reference](https://learn.microsoft.com/fabric/graph/gql-query-api) · [Graph Model definition (REST)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/graph-model-definition) · [Manage and refresh data](https://learn.microsoft.com/fabric/graph/manage-data)
 - Consolidated link bundle, full schema/JSON/value-encoding tables: [graph-reference.md](graph-reference.md)
 
