@@ -15,9 +15,10 @@ written: 2026-10-01
   data. Re-measured against the payload at `4f473d2`: `cosmos` still hits
   only mirrored Azure Cosmos DB, the Eventstream CDC source,
   supported-item lists and the MCP README. Three of the note's small
-  edits landed beside this brief: fabric-cicd's three Cosmos rules,
-  fabric-auth's audience row and fabric-mirroring's native-item line,
-  archived with that skill on 2026-10-09.
+  edits landed beside this brief: fabric-cicd's three Cosmos rules, now
+  in `fabric-deploy`'s `references/fabric-cicd.md`, fabric-auth's
+  audience row and fabric-mirroring's native-item line, archived with
+  that skill on 2026-10-09.
 - **Kind**: an edit, by `/author-skill`:
   `skills/fabric/fabric-cosmos-db/`, `paths: "**/*.CosmosDBDatabase/**"`.
   Nothing is drafted.
@@ -231,7 +232,8 @@ Microsoft's public sample data.
 ## Re-measure before acting
 
 - `grep -rli cosmos skills/`: on 2026-10-01, the files above plus
-  fabric-cicd, fabric-auth and fabric-mirroring's new line, the last
-  archived on 2026-10-09.
+  fabric-cicd, fabric-auth and fabric-mirroring's new line; the last
+  was archived on 2026-10-09, and the first merged into `fabric-deploy`
+  on 2026-10-12.
 - Learn's Cosmos DB in Fabric `faq` and `limitations` before encoding
   the deltas table, which preview churn can move.

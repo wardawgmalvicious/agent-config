@@ -201,6 +201,7 @@ fixture set.
   declined: that skill documents the *Python library*, not the portal's
   Git-sync control surface, and it is cross-cutting enough that making it
   conditional would cost more reach than the 367 listing tokens it saves.
+  `fabric-deploy`, which absorbed it on 2026-10-12, has no glob either.
 - `shortcuts.metadata.json` was given a `fabric-variable-library` glob on
   2026-09-01 and **reverted the same day.** A shortcut target *can* bind
   to a variable through the `$(/**/Lib/Var)` form, and the reference
@@ -446,7 +447,7 @@ conventions, which already existed and were correct; only the glob failed
 to reach it. A skill would
 have duplicated a rule. Reconsider only if a genuine procedure appears —
 queryset-to-dashboard promotion, or cross-environment `dataSources`
-rebinding — and even then that content belongs in `fabric-cicd` or
+rebinding — and even then that content belongs in `fabric-deploy` or
 `fabric-eventhouse` before it justifies a new skill.
 
 `MirroredDatabase` and `CopyJob` are **archived: no skill**, 2026-10-09.

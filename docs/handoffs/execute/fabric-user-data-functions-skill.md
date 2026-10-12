@@ -15,8 +15,8 @@ written: 2026-10-01
   `UserDataFunction` still hits only the serialization rule's glob, a
   LinkedIn suffix list and two activation-test lines. Landed beside this
   brief: fabric-cicd's UDF caveat, fabric-deployment-pipelines' button
-  row, the serialization rule's UDF bytes, and fabric-rest-api's
-  `FunctionSet` type.
+  row, both now in `fabric-deploy`'s references, the serialization
+  rule's UDF bytes, and fabric-rest-api's `FunctionSet` type.
 - **Kind**: an edit, by `/author-skill`:
   `skills/fabric/fabric-user-data-functions/`,
   `paths: "**/*.UserDataFunction/**"`, the serialization rule's glob.
@@ -228,6 +228,7 @@ sandbox holds the item at all three stages, but its alias and
 
 - `grep -rn UserDataFunction skills/ claude/`: on 2026-10-01, the
   serialization rule (glob and bytes), fabric-cicd, fabric-rest-api,
-  fabric-deployment-pipelines and the LinkedIn reference.
+  fabric-deployment-pipelines and the LinkedIn reference; the two
+  deploy skills merged into `fabric-deploy` on 2026-10-12.
 - Learn's service-limits and programming-model pages, before encoding
   any limit.

@@ -1,8 +1,8 @@
 # Deployment pipelines — reference tables
 
-Long-form detail for the `fabric-deployment-pipelines` skill. Everything
-here was read from Microsoft Learn on **2026-09-12** unless dated
-otherwise; the item list and the preview flags move, so re-check
+Long-form detail for [deployment-pipelines.md](deployment-pipelines.md).
+Everything here was read from Microsoft Learn on **2026-09-12** unless
+dated otherwise; the item list and the preview flags move, so re-check
 [Supported items](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/intro-to-deployment-pipelines#supported-items)
 rather than trusting this copy for a go/no-go decision.
 
@@ -106,7 +106,8 @@ hold. Anything else and it is silently absent from the dropdown.
 1. You are an **admin** of the workspace.
 2. The workspace is not assigned to any other deployment pipeline.
 3. The workspace resides on a **Fabric capacity**.
-4. You hold at least contributor (see the skill body on the
+4. You hold at least contributor (see
+   [deployment-pipelines.md](deployment-pipelines.md) on the
    contributor-vs-member doc inconsistency) on the workspaces in
    **adjacent** stages.
 5. The workspace contains no Power BI **samples**.
@@ -243,7 +244,7 @@ interchangeable.
 | Orphaned-pipeline recovery | — | `Admin - Pipelines UpdateUserAsAdmin` |
 
 Every limitation of deployment pipelines applies to both APIs. The Power
-BI surface's request shapes were **not drilled** when this skill was
+BI surface's request shapes were **not drilled** when this reference was
 written — read its
 [reference](https://learn.microsoft.com/rest/api/power-bi/pipelines)
 before scripting one.
@@ -255,7 +256,7 @@ before scripting one.
 | Can't see the deployment pipelines button | Needs a Fabric license, workspace admin, and pipeline admin on the pipeline the workspace is assigned to |
 | Can't see the pipeline stage tag | Dev and Test tags are always visible; the **Production** tag needs pipeline access |
 | Lost connections after deployment | Pairing could not be re-established (for example an item was deleted). Unassign and reassign the same workspace in the target stage — losing that stage's history and rules |
-| Can't assign a workspace | Check the six preconditions above; a workspace failing any of them is simply absent from the list |
+| Can't assign a workspace | Check the seven preconditions above; a workspace failing any of them is simply absent from the list |
 | "Workspace member permissions needed" | You lack the role on an **adjacent** stage's workspace, not the one you are assigning |
 | Deployment fails on broken rules | A republished semantic model removed or renamed a parameter, or a data source rule lost its values. Fix or remove the rule, then redeploy |
 | Configured rules but nothing changed | Rules apply on the **next** deploy. Deploy the model from source to target |

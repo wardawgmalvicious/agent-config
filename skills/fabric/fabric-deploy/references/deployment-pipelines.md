@@ -1,12 +1,3 @@
----
-name: fabric-deployment-pipelines
-description: "Use for Fabric / Power BI service-side deployment pipelines — the workspace-is-source-of-truth ALM surface promoting content stage to stage (dev → test → prod) via the Core REST API `/v1/deploymentPipelines` or `fab api`. Covers pipeline/stage lifecycle (2–10 stages, permanent once created), workspace assign/unassign, Deploy Stage Content as an LRO (202 + `x-ms-operation-id`, 300-item cap), per-operation delegated scopes (`Pipeline.Read.All`/`Pipeline.ReadWrite.All`, `Workspace.ReadWrite.All` to assign, `Pipeline.Deploy` — its own scope — to deploy), the two-permission model of pipeline Admin plus a workspace role on both stages, item pairing and its folder tie-breaker, autobinding across pipelines, portal-only deployment rules, and the limits that bite: PBIR deploying despite Learn, backward deploys empty-target and full-only, Direct Lake not autobinding, unassign destroying history and rules. For Git-driven deploys use fabric-cicd or `fab deploy`; for Data Factory orchestration items, fabric-data-pipeline."
-when_to_use: "Use when promoting Fabric or Power BI content between deployment pipeline stages, creating a pipeline or assigning a workspace to a stage, automating a deploy from Azure DevOps or GitHub Actions, or debugging one — a 403 that is a missing pipeline role rather than a workspace role, a deploy that duplicated an item instead of overwriting it, a report that lost its semantic model, rules that didn't apply, or a greyed-out deploy-to-previous-stage button."
-disable-model-invocation: false
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
----
-
 # Fabric deployment pipelines (service-side)
 
 The **service-side** ALM surface: a pipeline of ordered stages, each
@@ -14,21 +5,6 @@ holding one workspace, promoting content from one stage to the next. The
 **workspace is the source of truth** — no local code, no repository.
 Driven from the portal, or from the Fabric Core REST API under
 `https://api.fabric.microsoft.com/v1/deploymentPipelines`.
-
-## Which surface am I on?
-
-Three different things deploy Fabric content. Pick first — getting this
-wrong invalidates everything after it.
-
-| Surface | Source of truth | Use when |
-|---|---|---|
-| **Deployment pipelines** (this skill) | The **workspace** | Promoting a dev workspace to test/prod inside the service; stage-to-stage, nothing on disk |
-| `fabric-cicd` (Python library) | **Git** | Scripted deploys from a repo checkout; `publish_all_items`, `parameter.yml` |
-| `fab deploy --config` | **Git** | One-command CLI wrapper over the same library |
-
-**Don't mix Git-driven deploys and service-side pipelines on the same
-workspaces.** Decision guide:
-[Choose the best Fabric CI/CD workflow](https://learn.microsoft.com/fabric/cicd/manage-deployment).
 
 ## Concepts
 
@@ -78,7 +54,7 @@ titles the same failure *"workspace member permissions needed"* and says
 contributor grant doesn't clear it.
 
 Full permissions and per-action tables:
-[references/REFERENCE.md](references/REFERENCE.md).
+[deployment-pipelines-tables.md](deployment-pipelines-tables.md).
 
 ## Delegated scopes
 
@@ -144,7 +120,7 @@ There are no native `fab` verbs for deployment pipelines — use `fab api`.
 **Mind the audience: the two surfaces are different APIs.**
 
 ```bash
-# Fabric Core surface (this skill) — DEFAULT audience, no -A flag
+# Fabric Core surface (this reference) — DEFAULT audience, no -A flag
 fab api "deploymentPipelines"
 fab api "deploymentPipelines/$PIPELINE_ID/stages"
 fab api "deploymentPipelines/$PIPELINE_ID/stages/$STAGE_ID/items"
@@ -189,7 +165,7 @@ pre- or post-deploy actions; it never changes which items deploy. Add
 add `Item.Execute.All` to the token (Learn, 2026-10-06). One plan per
 operation, attached on every call, with no default plan; a failed
 deployment is not rolled back; a plan can't switch a Variable Library's
-active value set; and the `fabric-cicd` library doesn't support plans.
+active value set.
 
 **Per-item options** go in the same `options`:
 `"itemOptionsBySourceItemId": [ { "sourceItemId": "<uuid>", "options":
@@ -276,10 +252,8 @@ Stages in matching positions bind even when named differently, and two
 stages sharing a name do not bind when their positions differ. Both
 pipelines must have **the same number of stages**.
 
-**Direct Lake semantic models do not autobind.** Deploy a Direct Lake
-model and its lakehouse together and the target model still points at the
-**source** stage's lakehouse. Every other model type binds to the paired
-item normally. Which rule rebinds it depends on the flavour:
+**Rebinding a Direct Lake semantic model** that a deploy left on the
+source stage's lakehouse takes a rule, and which depends on the flavour:
 
 - **Direct Lake on SQL** (analytics endpoint): a data source rule.
 - **Direct Lake on OneLake**: no data source rule is offered, and the
@@ -293,7 +267,7 @@ item normally. Which rule rebinds it depends on the flavour:
 **A parameter-controlled connection never autobinds**, even when the
 parameter holds a model or workspace ID. Rebind it by changing the value
 or with a parameter rule. Learn's pages disagree on Direct Lake rules; see
-[references/REFERENCE.md](references/REFERENCE.md).
+[deployment-pipelines-tables.md](deployment-pipelines-tables.md).
 
 ### Repairing a broken pairing
 
@@ -371,13 +345,13 @@ or recreate them.** Do not claim otherwise, and do not script around them.
 - Deleting an item deletes its rules irrecoverably, and so does
   unassigning the workspace.
 
-Full limitation list: [references/REFERENCE.md](references/REFERENCE.md).
+Full limitation list:
+[deployment-pipelines-tables.md](deployment-pipelines-tables.md).
 
 ## Limits and gotchas
 
 | Symptom / limit | Detail |
 |---|---|
-| **PBIR reports** listed as unsupported | Item 9 of the general limitations says so, yet a PBIR-stored report has deployed to Test and Prod and redeployed in production use, per the pipeline's own records (2026-08-25/26). Don't present it as a blocker, and don't stop the `pbir-*` workflow here; evidence in the reference |
 | Semantic models need Enhanced Metadata | Since **2026-02-12**, deployment pipelines retired support for semantic models not upgraded to Enhanced Metadata |
 | First deploy of a Power BI item fails | Another item in the target stage has the same name *and* type. Rename one |
 | Deployment fails on dependencies | Circular or self dependencies fail the whole deploy |
@@ -417,12 +391,12 @@ are unique tenant-wide.
   — deploy all, selective deploy, assign-and-deploy
 - Supported item types, full permissions tables, the complete rules
   limitation list, and the Fabric-vs-Power BI API differences:
-  [references/REFERENCE.md](references/REFERENCE.md)
+  [deployment-pipelines-tables.md](deployment-pipelines-tables.md)
 
 ## See also
 
-- fabric-cicd skill — the Git-driven counterpart: `publish_all_items`,
-  `parameter.yml`, feature flags
+- [fabric-cicd.md](fabric-cicd.md) — the Git-driven counterpart:
+  `publish_all_items`, `parameter.yml`, feature flags
 - fabric-cli skill — `fab api` mechanics, and `fab deploy` for the
   Git-driven path
 - fabric-rest-api skill — long-running-operation polling and the

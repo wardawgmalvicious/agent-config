@@ -60,7 +60,7 @@ Three routes out, all cheap to check first.
 the destination exists. `/learn` folds a session learning into a skill,
 rule, or `CLAUDE.md` that should already have covered it. This skill
 creates guidance that has no home yet. A learning that arrives as "the
-`fabric-cicd` skill was wrong about X" is `/learn` work even if the fix
+`fabric-deploy` skill was wrong about X" is `/learn` work even if the fix
 is large.
 
 **Generic skill-authoring help → `skill-creator` or

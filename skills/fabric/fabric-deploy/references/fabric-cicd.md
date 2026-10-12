@@ -1,11 +1,3 @@
----
-name: fabric-cicd
-description: "Use for the fabric-cicd Python library (`pip install fabric-cicd`, v1.3 Aug 2026, Python 3.9–3.13) — Microsoft's official code-first CI/CD library for Fabric workspaces: `FabricWorkspace`, `publish_all_items`, `unpublish_all_orphan_items`, `deploy_with_config` + config.yml, and `parameter.yml` (find_replace, key_value_replace, spark_pool, semantic_model_binding, $workspace/$items dynamic vars, $ENV:, _ALL_, regex, extend). Covers the explicit-TokenCredential requirement (v1.0 breaking change), feature flags (enable_lakehouse_unpublish, enable_bulk_publish, enable_shortcut_publish, enable_hard_delete, include/exclude), per-item-type caveats (Warehouse/SQL DB, Lakehouse, Variable Library), Azure DevOps / GitHub Actions + OIDC, Fabric notebook usage, and troubleshooting (change_log_level, FABRIC_CICD_FILE_LOGGING_ENABLED, configure_fabric_fqdn). Invoke when the user mentions fabric-cicd, FabricWorkspace, publish_all_items, parameter.yml, or code-first Fabric deployment from Git."
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # fabric-cicd (Python deployment library)
 
 Microsoft's official open-source Python library for **code-first CI/CD into Fabric workspaces**. It abstracts the Fabric REST item-definition APIs: point it at a Git checkout of a Fabric Git-synced workspace folder and it publishes every in-scope item into the target workspace.
@@ -13,45 +5,6 @@ Microsoft's official open-source Python library for **code-first CI/CD into Fabr
 **Version / install:** current is v1.3.x (August 2026). `pip install fabric-cicd` (or `uv add fabric-cicd`). Python 3.9–3.13. Docs: [microsoft.github.io/fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/) · repo: [github.com/microsoft/fabric-cicd](https://github.com/microsoft/fabric-cicd).
 
 **v1.0 (April 2026) was a breaking release**: `token_credential` became **required** — the `DefaultAzureCredential` fallback and implicit Fabric-notebook auth were removed. Any pre-1.0 sample that omits the credential no longer runs.
-
-## Which deployment surface am I on?
-
-| Surface | Source of truth | When |
-|---|---|---|
-| **fabric-cicd** (this skill) | Git | Python-scripted deploys in ADO / GitHub Actions / notebooks; finest control (feature flags, orphan cleanup, selective publish) |
-| `fab deploy --config config.yml` | Git | Same engine, CLI wrapper — one-command deploys; see fabric-cli skill |
-| Fabric deployment pipelines (service-side) | Workspace | Dev workspace promoted stage-to-stage in the portal / REST; no local code involved |
-
-`fabric-cicd` doesn't support **deployment plans** (preview); attach one through Update From Git, Deploy Stage Content or Bulk Import instead (Learn, 2026-10-06).
-
-`fab deploy` **wraps fabric-cicd** and consumes the same `config.yml` / `parameter.yml`. Don't mix Git-driven deploys and service-side deployment pipelines on the same workspaces. Decision guide: [Choose the best Fabric CI/CD workflow](https://learn.microsoft.com/fabric/cicd/manage-deployment).
-
-**Deployment pipelines don't rewrite OneLake image URLs.** A report whose visuals
-source images from OneLake carries the *workspace GUID* inside the URL itself:
-
-```http
-https://onelake.dfs.fabric.microsoft.com/<workspace-guid>/<item-guid>/Files/<path>/<file-name>
-```
-
-Promote that report dev → test → prod through a **service-side deployment
-pipeline** and it keeps loading its images from the **original** workspace.
-Nothing fails and nothing warns — the report renders, the images appear — until
-access to the source workspace is revoked or it is deleted, long after the
-promotion. Upstream's remedies are to parameterize the URLs or rewrite them
-after deployment.
-
-Two bounds on that caveat, both deliberate:
-
-- The "parameters" upstream names are **deployment-pipeline** parameters. Do
-  **not** assume this skill's `parameter.yml` `find_replace` is the binding —
-  it takes a `file_path` glob and so *could* reach a report definition, but
-  that it does for this case is unverified, and `parameter.yml` belongs to the
-  Git-driven path rather than to deployment pipelines.
-- The claim is scoped to deployment pipelines, which is all upstream states.
-  Whether Git integration, `fab deploy`, or fabric-cicd itself rewrite these
-  URLs is **undocumented** — that is not the same as established to be "no".
-
-Reference: https://learn.microsoft.com/power-bi/visuals/power-bi-onelake-files
 
 ## Deployment model
 
@@ -317,9 +270,9 @@ Full YAML: [example/release_pipeline](https://microsoft.github.io/fabric-cicd/la
 ## See also
 
 - fabric-cli skill — `fab deploy` wrapper over this library
-- fabric-deployment-pipelines skill — service-side deployment pipelines:
-  Fabric Core `deploymentPipelines/...`, or Power BI `pipelines/...`
-  through `fab api -A powerbi`
+- [deployment-pipelines.md](deployment-pipelines.md) — service-side
+  deployment pipelines: Fabric Core `deploymentPipelines/...`, or Power BI
+  `pipelines/...` through `fab api -A powerbi`
 - fabric-auth skill — token audiences, SPN setup, 401 debugging
 - fabric-rest-api skill — the underlying item-definition / LRO API patterns
 - fabric-variable-library skill — value-set selection semantics this library keys off `environment`

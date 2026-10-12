@@ -72,8 +72,8 @@ SCAN_ROOTS = ("skills", ".claude/skills", "claude/rules")
 
 # skills/README.md is the catalog index, and its bullets explain names this
 # repo considered and rejected -- `fabric-pipeline`, `fabric-reflex`,
-# `fabric-governance`, and the SINGULAR `fabric-deployment-pipeline` against
-# the plural skill that exists. One more arrives with every authoring run, so
+# `fabric-governance` -- and the ones a merge retired, `fabric-cicd` and
+# `fabric-deployment-pipelines`. One more arrives with every authoring run, so
 # listing them would be a hand-kept allowlist that grows forever. Excluded by
 # path instead: a README routes a human, not a request, so it is not a
 # routing surface. A stale link here is a broken link, and that is a

@@ -1,7 +1,7 @@
 ---
 name: fabric-activator
 description: "Use for Microsoft Fabric Activator — the `Reflex` item type (Reflex and Activator are the same item) that watches data and fires rules and alerts. Covers `ReflexEntities.json` as Git and REST see it: a flat JSON array of entities wired by `uniqueIdentifier`, with `definition.instance` an escaped JSON string and not a nested object; the `/reflexes` REST namespace and its permission split — List needs only a viewer role, but `getDefinition` needs read AND write; `displayName` not `name` on create; query sources (Power BI, KQL queryset, Real-Time Dashboard) versus streaming (Eventstream, Fabric events, Azure Blob events); actions and their silent parameter coercion (Copy job takes none, a bad number becomes 0); the preview remote MCP server; and the limits and costs that bite — 500 rules per item, 10,000 events/s stops a rule, stopping a rule does not stop its billed event listener, and a Blob-events source, Power BI source or User Data Function action makes a Git commit or a deployment fail."
-when_to_use: "Fires on any file under `*.Reflex/` or `*.Activator/`, so `ReflexEntities.json` and `.platform` both match and `fabric-git-serialization` co-loads. The definition, REST surface and gotchas — not the portal click-path. For an Eventstream's Activator destination, or the KQL database behind a `kqlSource-v1`, open that item's own definition file: those skills are glob-scoped elsewhere and unreachable by name from here. `fabric-rest-api`, `fabric-auth`, `fabric-cicd` and `fabric-cli` are reachable by name."
+when_to_use: "Fires on any file under `*.Reflex/` or `*.Activator/`, so `ReflexEntities.json` and `.platform` both match and `fabric-git-serialization` co-loads. The definition, REST surface and gotchas — not the portal click-path. For an Eventstream's Activator destination, or the KQL database behind a `kqlSource-v1`, open that item's own definition file: those skills are glob-scoped elsewhere and unreachable by name from here. `fabric-rest-api`, `fabric-auth`, `fabric-deploy` and `fabric-cli` are reachable by name."
 paths:
   - "**/*.Reflex/**"
   - "**/*.Activator/**"
@@ -320,7 +320,7 @@ present. This is the first thing to check when an otherwise healthy
 workspace fails to sync one item — the failure is a property of the
 Activator's *contents*, not of the repo, so nothing about the Git
 configuration will explain it. Deployment pipelines themselves are
-`fabric-deployment-pipelines`' subject, and the Git integration APIs are
+`fabric-deploy`'s subject, and the Git integration APIs are
 `fabric-rest-api`'s.
 
 One more ownership trap that survives a sync: a Power BI ingestion's
@@ -380,8 +380,8 @@ Every code, grouped by stage, with cause and fix, is in
 - `fabric-rest-api` — LRO polling, `continuationToken` pagination, the
   Git integration APIs
 - `fabric-auth` — token audiences for Fabric REST
-- `fabric-cicd` — code-first deploys from a Git checkout
-- `fabric-deployment-pipelines` — service-side deployment pipelines
+- `fabric-deploy` — deploys, from a Git checkout or through deployment
+  pipelines
 - `fabric-cli` — `fab` and `fab api` passthrough
 - `claude/rules/fabric-git-serialization.md` — co-loads on these paths
 - Open the `.Eventstream` or `.Eventhouse` item's definition to reach the

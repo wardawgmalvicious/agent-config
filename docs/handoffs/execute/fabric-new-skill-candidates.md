@@ -28,7 +28,7 @@ the item is in use.
 | Candidate | What's New, by 2026-10-02 | Covered now by |
 | --- | --- | --- |
 | Business Events | GA, September 2026; Activator as publisher still preview; schemas live in the Schema Registry | passing mentions in `fabric-activator` and `fabric-event-schema-set` |
-| dbt job | GA in Data Factory, September 2026 | a "dbt Job *(preview)*" row in `fabric-deployment-pipelines`' reference |
+| dbt job | GA in Data Factory, September 2026 | a "dbt Job *(preview)*" row in `fabric-deploy`'s `references/deployment-pipelines-tables.md` |
 | Fabric Maps | data-driven styling GA, August 2026; three preview rows, among them Maps in Real-Time Dashboards | an item-type name in the same reference |
 
 ## On reopening

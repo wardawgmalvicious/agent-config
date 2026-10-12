@@ -130,7 +130,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (32)
+## Microsoft Fabric platform (31)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -141,24 +141,14 @@ construction. Split out of `workflow` 2026-09-11.
 - [fabric-cli/](fabric/fabric-cli/) — `fab` CLI: filesystem-style access over
   Fabric + Power BI REST. Path syntax, navigation, item CRUD, ACLs,
   capacity/domain, jobs, `fab api` REST passthrough.
-- [fabric-cicd/](fabric/fabric-cicd/) — the fabric-cicd Python deployment
-  library: `FabricWorkspace` / `publish_all_items`, `parameter.yml`
-  substitution model, `config.yml` deploys, feature flags, ADO /
-  GitHub Actions wiring.
-- [fabric-deployment-pipelines/](fabric/fabric-deployment-pipelines/) — the
-  service-side stage-to-stage promotion surface, where the **workspace** is
-  the source of truth rather than Git: the `/v1/deploymentPipelines` REST
-  surface, the per-operation delegated scopes (`Pipeline.Deploy` is its
-  own, so `Pipeline.ReadWrite.All` alone gets a 403 on deploy), the two
-  independent permission systems behind most confusing 403s, item pairing
-  and its folder tie-breaker, autobinding keyed to stage *index*, and
-  portal-only deployment rules. Plural, and not `fabric-deployment-pipeline`,
-  to hold what distance it can from `fabric-data-pipeline` — a Data Factory
-  orchestration item and a different thing entirely; the description carries
-  the disambiguation the name cannot. Drilling it found one upstream claim
-  wrong and turned up the fact no other skill records: **deployment
-  pipelines do not support PBIR reports**, which is where the `pbir-*`
-  workflow stops.
+- [fabric-deploy/](fabric/fabric-deploy/) — deploying workspace content
+  from one stage to the next by whichever route fits: it picks the route,
+  checks the identity, plans and stops before a write, then verifies,
+  while its `references/` hold the fabric-cicd library and deployment
+  pipelines in depth. Named for the job, since a deploy request names the
+  job before any tool. Merged from `fabric-cicd` and
+  `fabric-deployment-pipelines` on 2026-10-12, the pilot for regrouping
+  platform skills around the job a user asks for.
 - [fabric-data-pipeline/](fabric/fabric-data-pipeline/) — DataPipeline item
   as Git serializes it: the `pipeline-content.json` envelope, activity
   anatomy and `policy`, the activity-type enum including the
@@ -166,7 +156,7 @@ construction. Split out of `workflow` 2026-09-11.
   `state` + `onInactiveMarkAs`, and the `.schedules` job-scheduler file
   nothing else in the payload reaches. Named for the item type rather
   than `fabric-pipeline` because "pipeline" already means deployment and
-  release pipelines in `fabric-cicd`'s territory. Expression syntax stays
+  release pipelines in `fabric-deploy`'s territory. Expression syntax stays
   in the `coding-expressions` rule, which co-loads on the same file.
 - [fabric-dataflow/](fabric/fabric-dataflow/) — the Dataflow Gen2 item as
   Git and REST see it: the `.Dataflow` folder's `mashup.pq` and

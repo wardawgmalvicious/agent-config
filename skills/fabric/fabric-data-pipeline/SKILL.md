@@ -16,7 +16,7 @@ agent edits when there is no portal to validate against.
 **Not here, deliberately:** expression syntax (`@concat`, `coalesce`,
 the ForEach variable race) belongs to the `coding-expressions` rule,
 which globs the same file and always co-loads. Connection rebinding
-across environments belongs to `fabric-cicd`. The `libraryVariables`
+across environments belongs to `fabric-deploy`. The `libraryVariables`
 block's own mechanics belong to `fabric-variable-library`. Copy activity
 source/sink/dataset internals are not covered at all.
 
@@ -79,7 +79,7 @@ serialize to Git is undocumented (Learn, 2026-10-06).
 
 `externalReferences.connection` is a single connection GUID. It is not
 source-controlled meaningfully across workspaces — parameterize it
-(`fabric-cicd`) or bind it to a Variable Library connection reference.
+(`fabric-deploy`) or bind it to a Variable Library connection reference.
 
 ## 4. Activity types
 
@@ -241,7 +241,7 @@ disabled.
 
 ## 8. CI/CD limitations specific to pipelines
 
-Parameterisation and `parameter.yml` are `fabric-cicd`'s. These three
+Parameterisation and `parameter.yml` are `fabric-deploy`'s. These three
 are pipeline-shaped and bite after promotion:
 
 - **A promoted pipeline that invokes a dataflow still points at the

@@ -237,7 +237,7 @@ two different APIs reach this feature: the Fabric Core surface
 (`deploymentPipelines/...`) is the default with no `-A` flag, the older
 Power BI surface (`pipelines/...`) needs `-A powerbi`, and crossing them
 is a 404 that reads like a missing feature. Request shapes, scopes, item
-pairing, rules and limits are the **fabric-deployment-pipelines** skill's.
+pairing, rules and limits are the **fabric-deploy** skill's.
 `fab deploy` is the Git-driven surface and a different thing entirely.
 
 ## Export / Import Formats
@@ -379,7 +379,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 
 ## See also
 
-- fabric-cicd skill — the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
+- fabric-deploy skill — picking the route and planning a deploy; its `references/fabric-cicd.md` covers the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
 - fabric-rest-api skill — direct REST patterns behind `fab api`
 - fabric-tmdl-api skill — definition payloads for semantic models
 - fabric-auth skill — token audiences when acquiring tokens outside `az login`

@@ -333,7 +333,7 @@ recovered.
 **Edit mode.** Report what changed and where, then hand off to `/commit`
 (do not commit yourself). Suggested subject shape:
 
-- `docs(fabric-cicd): note parameter.yml regex is case-sensitive`
+- `docs(fabric-deploy): note parameter.yml regex is case-sensitive`
 - `fix(fabric-gotchas): correct cause of 24556 snapshot conflict`
 - `feat(rules): add KQL materialize() guidance`
 
@@ -357,12 +357,12 @@ display names exactly.
 
 ```
 learning → owning skill → section
-folder name with space skipped silently → fabric-cicd → "Per-item-type caveats"
+folder name with space skipped silently → fabric-deploy → references/fabric-cicd.md "Item-type caveats"
 ```
 
 Proposal:
 
-> **skills/fabric/fabric-cicd/SKILL.md → ## Per-item-type caveats**
+> **skills/fabric/fabric-deploy/references/fabric-cicd.md → ## Item-type caveats (the ones that bite)**
 > ```diff
 > + - **Folder names must match the item display name exactly** — a
 > +   mismatch (including whitespace) is skipped with no error; check

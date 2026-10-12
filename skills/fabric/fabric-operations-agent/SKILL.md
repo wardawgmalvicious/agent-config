@@ -157,7 +157,7 @@ two different encodings.**
 - **`jobWorkspaceId` is a plain workspace ID.** Workspaces have no
   logicalId, so this is the one value in the file that genuinely does not
   travel between environments. Rebind it with `find_replace` in
-  `fabric-cicd`'s `parameter.yml`, or a deployment rule.
+  `parameter.yml`, or a deployment rule, both `fabric-deploy`'s.
 
 **The parameterisation asymmetry is a schema fact, not a portability
 one.** `configuration.dataSources` maps an alias to **either** a

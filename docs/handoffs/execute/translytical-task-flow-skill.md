@@ -41,7 +41,8 @@ This one takes the report side.
 - **The button pins its function** (documented, translytical overview,
   confirmed 2026-10-01): it stores a workspace, function set and data
   function, and stays pinned after a deploy or move. Landed in
-  `fabric-deployment-pipelines` § Limits on 2026-10-01.
+  `fabric-deployment-pipelines` § Limits on 2026-10-01, since moved to
+  `fabric-deploy`'s `references/deployment-pipelines.md`.
 - **Power BI lists only functions that return `str`**, shows the string,
   and shows "Something went wrong" on failure; Desktop can't trigger the
   action until published; a defaulted parameter may stay unmapped
