@@ -67,11 +67,21 @@ Authorization: Bearer <Entra token>
   arrival windows, 2026-09-14; not separately doc-confirmed.)
 - The response carries `ConsumedRecordsCount` — locate it **by column
   name, not position**; column order is not contractual.
-- **Mapping:** the docs list `mappingName` as *required* when
-  `streamFormat` is `JSON`, `MultiJSON` or `Avro`. In practice, where
-  every target column is `string`, MultiJSON auto-mapped by column name
-  with no mapping defined (same run as above). Treat the undocumented
-  path as convenient rather than guaranteed.
+- **Mapping:** the streaming REST page lists `mappingName` as *required*
+  when `streamFormat` is `JSON`, `MultiJSON` or `Avro`, but Learn's
+  *Ingestion mappings* documents ingesting with none: an **identity
+  mapping** from the table's schema, each column taking the field of the
+  same name, **case-sensitively**, typed by the table, and any mismatch
+  "might result in empty or incorrect data ingested" (read 2026-10-12).
+  All-`string` tables mapped this way (same run as above), and so did a
+  `dynamic` column, which took a nested object whole and typed:
+  `gettype()` read `dictionary`, nested paths and array indexes resolved,
+  a key holding `@` and `.` read with brackets (`col["@odata.etag"]`),
+  and non-ASCII survived (one run, 2026-10-12).
+- **A `200` says the rows landed, not every field:** a record missing a
+  field lands it null, or empty in a `string` column, and a field the
+  table lacks is dropped with no error and still counted in
+  `ConsumedRecordsCount` (same run). Read the rows back.
 
 ## Data mappings
 

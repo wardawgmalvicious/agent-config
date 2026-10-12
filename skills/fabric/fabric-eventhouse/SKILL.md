@@ -270,7 +270,7 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 | Issue | Cause | Fix |
 |---|---|---|
 | `Request is invalid and cannot be processed` (401) | Wrong token audience | Use `https://kusto.kusto.windows.net/.default` |
-| `dynamic` column shows as string | Stored as string, not dynamic | Wrap with `parse_json(col)` or `todynamic()` |
+| `dynamic` column shows as string | Stored as string: a `string`-typed column, or a value that never parsed. JSON text streamed into a `dynamic` column was parsed on ingestion (once, 2026-10-12); invalid JSON is untested | Check the column's type (`getschema`); wrap with `parse_json(col)` or `todynamic()` |
 | `Forbidden (403)` on management commands | Insufficient role | Need `admin` or `ingestor` database role |
 | OneLake / ADLS ingest auth fails | Missing `;impersonate` on URI | Append `;impersonate` to the storage URI |
 | Materialized view stuck at 0% | No new source data or backfill pending | `.show materialized-view MV statistics` |
