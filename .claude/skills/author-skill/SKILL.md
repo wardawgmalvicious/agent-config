@@ -212,10 +212,11 @@ for the same trigger surface is a real collision even though the
 directories never touch.
 
 Also settle the scope question at this point: **is this one skill or
-two?** A topic that splits cleanly into a reference half and a workflow
-half is often two skills (`pbir-cli` and `pbir-report-workflow` are the
-in-repo example). Decide with the user now; discovering it during
-drafting means rewriting the brief.
+two?** Reference and workflow halves of one topic are two skills only if
+each is asked for on its own; else the reference goes in the workflow's
+`references/`, as `pbir-cli` did into `pbir-report-workflow` on
+2026-10-12, report work having run through the workflow. Decide with
+the user now; discovering it during drafting means rewriting the brief.
 
 ## 4. Drill the sources
 

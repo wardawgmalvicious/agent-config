@@ -158,8 +158,8 @@ Callouts are conditional. A callout placement must name its
 
 Implementation may be a textbox, compact KPI/context tile, or Smart Narrative
 (`aiNarratives`). Choose Smart Narrative only when the summary needs to respond
-dynamically to filters and `powerbi-report-authoring` verifies the formatting/query
-mechanics for the target report version.
+dynamically to filters and `pbir-report-workflow`'s build steps verify the
+formatting/query mechanics for the target report version.
 
 Do **not** create a callout whose only value is the same absolute measure used
 by the adjacent bar/line/table. A plain `Total Sales` card next to a `Total

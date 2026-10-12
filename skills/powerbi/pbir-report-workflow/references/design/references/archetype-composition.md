@@ -1,7 +1,7 @@
 # Archetype Composition & Variant Rotation
 
 Use this file when a report has more than one page. Greenfield routing
-(per-page archetype + variant) lives in `SKILL.md` Step 2; this file
+(per-page archetype + variant) lives in `design.md` Step 2; this file
 covers the report-level composition patterns and the rule against
 mono-archetype reports.
 

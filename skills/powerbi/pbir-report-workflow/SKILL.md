@@ -1,6 +1,7 @@
 ---
 name: pbir-report-workflow
-description: Use when scaffolding or building a new Power BI report end-to-end from a published semantic model using the pbir CLI. Covers the workflow — KPI / filter / granularity requirements, model field discovery via pbir model, pbir new report scaffold, renaming the default Page 1 instead of adding a new one, 3-30-300 visual hierarchy for three viewing distances (glance / scan / investigate), layout math with margin/gap constants (always inspect the scaffolded page first), row-by-row visual placement with explicit coordinates, explicit sort after bind, report vs page filters, extension-measure conditional formatting with theme tokens like good/bad, time-granularity inference from the active date filter, pbir validate + publish, then service-side visual verification — render the published report to PNG via the Power BI exportToFile REST API and review the images (no Power BI Desktop needed). Invoke when user says 'build a report', 'scaffold a dashboard', or 'lay out a KPI page'.
+description: "Use for any work on a Power BI report in PBIR format, a `.Report` folder: building one on a published semantic model, laying out its pages and visuals, filters, bookmarks, themes and conditional formatting, by the `pbir` CLI (pbir-cli) or by hand-editing `visual.json`, `page.json`, `pages.json`, `report.json`, `reportExtensions.json` or a theme file, then validating, publishing and checking the rendered pages; and its design: tone, chart choice, colour, typography, layout, accessibility."
+when_to_use: "Use when asked to build, scaffold or lay out a Power BI report, dashboard or KPI page; to redesign, restyle or critique one, make it look professional, apply a brand, pick a chart type or write a design brief; to run any `pbir` command (`pbir new`, `add`, `set`, `get`, `ls`, `tree`, `rm`, `validate`, `publish`); or before any hand edit of a report's JSON, which this skill routes to the reference for that file."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -9,6 +10,32 @@ disable-model-invocation: false
 ## PBIR Report Workflow
 
 End-to-end workflow for building Power BI reports from a published semantic model using `pbir` CLI. Requires the model to already exist in a Fabric/Power BI workspace.
+
+### Read the reference first
+
+The steps below build a report through the `pbir` CLI. Anything they do
+not cover has a reference in `references/`, and nothing loads one for
+you: read it before acting.
+
+**Before a hand edit of report JSON**, read the file's reference:
+
+| Before editing | Read |
+| --- | --- |
+| `visual.json` | [visual-json.md](references/visual-json.md); for a colour rule, gradient, data bar or icon, [conditional-formatting.md](references/conditional-formatting.md) too |
+| `reportExtensions.json`, the extension measures | [conditional-formatting.md](references/conditional-formatting.md) |
+| `page.json` or `pages.json` | [pages.md](references/pages.md) |
+| a `filterConfig`, in `report.json`, `page.json` or `visual.json`, or the filter pane's visibility | [filters.md](references/filters.md) |
+| a theme file under `StaticResources/`, or `report.json`'s `themeCollection` | [themes.md](references/themes.md) |
+| `bookmarks.json` or a `*.bookmark.json` | [bookmarks.md](references/bookmarks.md) |
+
+**Before a `pbir` command the steps do not show**, find its verb in
+[pbir-cli.md](references/pbir-cli.md) and its flags in
+[pbir-cli-commands.md](references/pbir-cli-commands.md).
+
+**Before a design decision** (tone, chart choice, colour, typography,
+layout, accessibility) **or a redesign, restyle or critique**, read
+[design/design.md](references/design/design.md). Its Design Brief comes
+back to these steps to be built.
 
 ### Workflow Steps
 
@@ -329,6 +356,6 @@ measure 'Turnover 1YP' = CALCULATE([Turnover], DATEADD('Date'[Date], -1, YEAR))
 ### See also
 
 - `pbip-project-structure` — project file layout
-- `pbir-cli` — CLI command reference
-- `pbir-pages` — page JSON structure
+- [pbir-cli.md](references/pbir-cli.md) — CLI command reference
+- [pages.md](references/pages.md) — page JSON structure
 - `fabric-tmdl` — TMDL measure authoring

@@ -264,30 +264,26 @@ construction. Split out of `workflow` 2026-09-11.
   PowerBIEntityNotFound, snapshot conflicts, plus a MUST/PREFER/AVOID
   best-practices summary.
 
-## Power BI Desktop / Reports (10)
+## Power BI Desktop / Reports (2)
 
 - [pbip-project-structure/](powerbi/pbip-project-structure/) — PBIP folder
   layout.
-- [pbir-cli/](powerbi/pbir-cli/) — `pbir` CLI for inspecting and editing
-  PBIR reports (verb/noun groups: report, page, visual, filter,
-  bookmark, theme, dax, fields, schema, etc.).
-- [pbir-report-workflow/](powerbi/pbir-report-workflow/) — end-to-end
-  report build: KPI/filter/granularity requirements, model field
-  discovery, scaffold, 3-30-300 visual hierarchy, layout math, sort,
-  filters, conditional formatting, validation, publish, then
-  service-side visual verification via the `exportToFile` PNG API.
-- [powerbi-report-design/](powerbi/powerbi-report-design/) — **vendored**
-  from microsoft/skills-for-fabric (v0.3.13, MIT): report design
-  system — tone catalog, 5 page archetypes, chart selection, visual
-  cookbook, WCAG accessibility, anti-patterns, Design Brief YAML
-  contract, curated base theme JSON.
-- [pbir-pages/](powerbi/pbir-pages/) — pages.
-- [pbir-bookmarks/](powerbi/pbir-bookmarks/) — bookmarks.
-- [pbir-filters/](powerbi/pbir-filters/) — report and page filters.
-- [pbir-themes/](powerbi/pbir-themes/) — themes.
-- [pbir-conditional-formatting/](powerbi/pbir-conditional-formatting/) —
-  conditional formatting for visuals.
-- [pbir-visual-json/](powerbi/pbir-visual-json/) — visual JSON structure.
+- [pbir-report-workflow/](powerbi/pbir-report-workflow/) — Power BI
+  reports in PBIR: the end-to-end build through the `pbir` CLI, from
+  requirements and model field discovery through scaffold, 3-30-300
+  layout, sort, filters and conditional formatting to validate, publish
+  and a service-side PNG check. Its `references/` hold each report file's
+  JSON (visuals, pages, filters, themes, bookmarks, conditional
+  formatting), the `pbir` verb index and command reference, and a design
+  system adapted from microsoft/skills-for-fabric v0.3.13 (MIT): tone
+  catalog, page archetypes, chart selection, visual cookbook,
+  accessibility, the Design Brief contract and a base theme. It has no
+  `paths:`, so its body names the reference to read before a hand edit.
+  Folded from `pbir-cli`, `pbir-visual-json`, `pbir-filters`,
+  `pbir-pages`, `pbir-themes`, `pbir-bookmarks`,
+  `pbir-conditional-formatting` and `powerbi-report-design` on
+  2026-10-12, since client report work ran through the CLI, where the
+  file skills' globs never fired.
 
 ## Windows apps (1)
 

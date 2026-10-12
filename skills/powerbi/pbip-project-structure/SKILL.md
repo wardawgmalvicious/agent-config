@@ -228,7 +228,5 @@ Renaming a table, measure, or column requires updates in every location that ref
 
 ### See also
 
-- `pbir-cli` — pbir CLI command reference
-- `pbir-report-workflow` — report creation workflow
-- `pbir-pages` — page JSON structure
+- `pbir-report-workflow` — report creation workflow, with the pbir CLI reference and page JSON structure in its references
 - `fabric-tmdl` — TMDL authoring rules

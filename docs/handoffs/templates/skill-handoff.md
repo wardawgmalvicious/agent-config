@@ -57,7 +57,7 @@ agent: {{general-purpose}}  # optional; fork only; Explore / Plan / general-purp
 hooks: {{null}}  # optional; registered at invocation, persist for the rest of the session; `once` supported
 paths: {{src/**/*.ts}}  # optional; comma-separated string or YAML list; glob patterns for path-scoped auto-activation. It NARROWS activation rather than adding a route: the skill is withheld from the startup listing until a matching file is Read, so until then its description cannot match and /<name> answers Unknown command. Copilot ignores the key, so the skill is unconditional there. A wrong glob has no error path — the skill just never loads — so the linter rejects the silent narrowers: a backslash separator, a leading `/`, and a bare `*.ext` (which matches repo-root files only; `**/*.ext` matches those and nested ones)
 shell: {{bash}}  # optional; "bash" (default) or "powershell" for !`cmd` blocks; the PowerShell tool is on by default on Windows; elsewhere needs CLAUDE_CODE_USE_POWERSHELL_TOOL=1
-metadata: {{null}}  # optional; free-form YAML map for your own tooling; Claude Code ignores the contents (repo precedent: powerbi-report-design)
+metadata: {{null}}  # optional; free-form YAML map for your own tooling; Claude Code ignores the contents (no skill here carries it)
 ---
 ```
 

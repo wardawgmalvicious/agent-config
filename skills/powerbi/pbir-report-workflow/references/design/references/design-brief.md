@@ -1,7 +1,7 @@
 # Design Brief Contract
 
 The `Design Brief:` YAML block is the authoritative handoff from
-`powerbi-report-design` to `powerbi-report-authoring`. It specifies **what** to
+`design.md` to `pbir-report-workflow`'s build steps. It specifies **what** to
 build: page intent, design identity, semantic bindings, and a mechanical
 `layout_contract` that authoring can translate into pixel geometry. Authoring
 computes **how**: exact coordinates, PBIR JSON, theme registration, validation,
@@ -42,7 +42,7 @@ design-owned contract from a planner draft or prose-only wireframe.
 - **`tone` and `signature` are open vocabulary.** Catalog entries are defaults
   and calibration examples, not required enums. If a custom identity fits
   better, author it and make the downstream choices explicit enough for
-  `powerbi-report-authoring` to implement.
+  `pbir-report-workflow`'s build steps to implement.
 - **`color_map`** assigns one palette color per measure. Cards use it as accent;
   line charts as `defaultColor`; bar charts as gradient max. Treat it as an
   implementation contract: `measure_match` means exact color reuse for the same
@@ -279,8 +279,8 @@ Required rules:
   available value is the same absolute measure plotted next to it, remove the
   callout or repurpose the region for richer evidence. Use Smart Narrative
   (`aiNarratives`) only when the callout must be a filter-responsive
-  natural-language summary and `powerbi-report-authoring` has verified the
-  formatting/query mechanics for the target report version; otherwise prefer a
+  natural-language summary and `pbir-report-workflow`'s build steps have
+  verified the formatting/query mechanics for the target report version; otherwise prefer a
   textbox bound to an explicit narrative measure or a compact KPI/context tile.
 - Supporting chart regions are a floor of 3 columns x 3 rows; use 4+ columns or
   4+ rows for charts with dense labels, legends, or small multiples. Tables

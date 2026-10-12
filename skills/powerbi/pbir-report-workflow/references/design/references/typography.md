@@ -50,7 +50,8 @@ identity depends on typography, but the override must be explicit in the
 
 Power BI does not expose every CSS typography control. Treat requests like
 tabular-figure features, letter-spacing, and optical sizing as design intent;
-`powerbi-report-authoring` chooses the closest PBIR-authorable implementation.
+`pbir-report-workflow`'s build steps choose the closest PBIR-authorable
+implementation.
 
 ---
 

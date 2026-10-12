@@ -1,14 +1,3 @@
----
-name: pbir-visual-json
-description: Use when editing visual.json inside a Power BI PBIR report's visuals/ folder. Covers top-level structure (name, position, visual vs visualGroup mutually exclusive, filterConfig sibling NOT child of visual, root-level isHidden as the saved visibility, not what a bookmark toggles), expression literal suffixes — string 'text', double 14D, integer 14L, decimal 2.4M, hex '#FF0000', datetime literal, null — with exceptions (transparency uses L inside dropShadow, labelPrecision L, labelDisplayUnits D, triple-quoted font fallback chains), field reference patterns (Column, Measure, Aggregation, HierarchyLevel, SparklineData), visual-type to query-role map (card, tableEx, pivotTable, slicer, lineChart, barChart, kpi, scatterChart), objects vs visualContainerObjects split, sortDefinition, slicer default values via objects.general.properties.filter, visual groups, table column widths.
-when_to_use: Invoke when the user edits visual.json, sets a visual property, debugs silently-ignored container props, or writes SQExpr literals. This skill owns visual.json structure and literal encoding, and co-fires with two neighbours on the same file — use pbir-conditional-formatting for colour, gradient, data bar and icon rules, and pbir-filters for the filterConfig.filters body. Report-wide defaults are not here — they live in the theme file.
-paths:
-  - "**/visuals/**/visual.json"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 ## PBIR visual.json Reference
 
 Path: `Report.Report/definition/pages/{PageName}/visuals/{VisualName}/visual.json`
@@ -24,7 +13,7 @@ Path: `Report.Report/definition/pages/{PageName}/visuals/{VisualName}/visual.jso
 | `visualGroup` | object | one of | Group container |
 | `parentGroupName` | string | no | Set on children of a `visualGroup` |
 | `filterConfig` | object | no | Visual-scoped filters — sibling of `visual`, NOT nested |
-| `isHidden` | boolean | no | Root-level. The saved visibility; the visual still processes data. A bookmark toggles its own `display.mode` instead (`pbir-bookmarks`) |
+| `isHidden` | boolean | no | Root-level. The saved visibility; the visual still processes data. A bookmark toggles its own `display.mode` instead ([bookmarks.md](bookmarks.md)) |
 
 ### position
 
@@ -207,11 +196,58 @@ Optional sibling file at `visuals/{VisualName}/mobile.json`. Mirrors `visual.jso
 - Microsoft Learn: [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report)
 - Microsoft Learn: [Card visual — Fixed size, Fit to space, theme keys](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-card)
 - Microsoft Learn: [Smart narrative visual](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-smart-narrative)
-- Comprehensive MS Learn link bundle (visual catalog → visualType / per-visual articles / visualGroup / custom visuals / PBIR file format): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (visual catalog → visualType / per-visual articles / visualGroup / custom visuals / PBIR file format): § MS Learn link bundle, below
+
+### MS Learn link bundle
+
+Curated set of Microsoft Learn pages relevant to the per-visual JSON in PBIR — the canonical "what visualType X needs" reference (visual catalog), per-visual-type formatting docs, the visualGroup concept, and the PBIR file structure that holds `visual.json`.
+
+The 3 highest-leverage entry points (visualizations overview, build-a-report intro, PBIR project file layout) are also linked in § Reference above for in-context use; this section holds the comprehensive set.
+
+**Note on docs split:** The PBIR `visual.json` JSON internals (top-level `name`/`position`/`visual`/`visualGroup`/`filterConfig`, expression-literal suffix grammar with `D`/`L`/`M`/`'string'`/`datetime'...'`, `objects` vs `visualContainerObjects` split in schema 2.4.0+, `dataViewWildcard` selectors, `SourceRef.Source` vs `Entity` rule) are *not* documented narratively on MS Learn — the canonical machine-readable reference is at `developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/...`. The Power BI visual catalog and per-visual-type articles document what each `visualType` does and which roles it expects.
+
+#### Visual catalog (mapping `visualType` → user-facing concept)
+
+- [Visualizations overview in Power BI](https://learn.microsoft.com/power-bi/visuals/power-bi-visualizations-overview) — entry point to the per-visual articles. Read this when you don't know which `visualType` corresponds to a given chart.
+- [Visualization types in Power BI](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-types-for-reports-and-q-and-a) — full visual catalog (bar/column variants, line/area variants, pie/donut, scatter, gauge, KPI, card, table, matrix, slicer, R/Python, custom). Useful when you need to pick the right `visualType` for an authoring task.
+- [Cards (new card)](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-card) and the legacy [Card visualization](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-card) — `card` (legacy) vs `cardVisual` (new).
+- [Tables](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-tables) — `tableEx` semantics.
+- [Matrix](https://learn.microsoft.com/power-bi/visuals/desktop-matrix-visual) — `pivotTable` semantics: rows / columns / values roles.
+- [Slicers](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-slicers) and [Advanced slicer](https://learn.microsoft.com/power-bi/visuals/power-bi-advanced-slicer-visual) — `slicer` vs `advancedSlicerVisual`.
+- [Line charts](https://learn.microsoft.com/power-bi/visuals/power-bi-line-charts) — `lineChart` (Y/Y2/series).
+- [Combo charts](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-combo-chart) — `lineClusteredColumnComboChart` / `lineStackedColumnComboChart`.
+- [Bar and column charts](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-customize-title-background-and-legend) — variants for `barChart`/`columnChart` family.
+- [KPI visual](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-kpi) — `kpi` indicator/goal/trendLine roles.
+- [Buttons / shapes / images](https://learn.microsoft.com/power-bi/create-reports/desktop-buttons) — `actionButton` / `shape` / `image`.
+- [Group visuals](https://learn.microsoft.com/power-bi/create-reports/desktop-grouping-visuals) — `visualGroup` concept.
+
+#### Cross-visual interactions
+
+- [Change how visuals interact in a Power BI report](https://learn.microsoft.com/power-bi/create-reports/service-reports-visual-interactions) — `NoFilter` / `Filter` / `Highlight` (matches the `visualInteractions` array on `page.json`).
+
+#### Custom visuals (`PBI_CV_<GUID>` / `deneb<GUID>`)
+
+- [Power BI custom visuals overview](https://learn.microsoft.com/power-bi/developer/visuals/power-bi-custom-visuals) — what `PBI_CV_<GUID>` represents.
+- [Deneb / Vega-Lite custom visual](https://learn.microsoft.com/power-bi/visuals/power-bi-deneb-visual) — Deneb-specific visualType pattern.
+
+#### Conditional formatting touch points
+
+- [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting) — see [conditional-formatting.md](conditional-formatting.md) for full coverage.
+
+#### Field references (Column / Measure / Aggregation / HierarchyLevel)
+
+- [DAX measure vs calculated column](https://learn.microsoft.com/dax/calculated-columns-vs-measures) — the model concepts the JSON references.
+- [Hierarchy in Power BI semantic models](https://learn.microsoft.com/power-bi/transform-model/desktop-create-and-manage-relationships) — what `HierarchyLevel` references.
+
+#### PBIR file format (where visual.json lives)
+
+- [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report) — `definition/pages/<page>/visuals/<visual>/visual.json` location, folder rename rules.
+- [Report definition (Fabric REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/report-definition) — definition envelope and the canonical JSON-schema URL pattern.
 
 ### See also
 
-- `pbir-themes` — theme value conventions (bare vs wrapped literals)
-- `pbir-conditional-formatting` — CF patterns inside visual.json `objects`
-- `pbir-filters` — filter body shape and `SourceRef.Source` rule
-- `pbir-bookmarks` — bookmarks reference the visual's root-level `name`
+- [themes.md](themes.md) — theme value conventions (bare vs wrapped literals)
+- [conditional-formatting.md](conditional-formatting.md) — CF patterns inside visual.json `objects`
+- [filters.md](filters.md) — filter body shape and `SourceRef.Source` rule
+- [bookmarks.md](bookmarks.md) — bookmarks reference the visual's root-level `name`
+- [pages.md](pages.md) — `page.json` / `pages.json` and `visualInteractions` reference

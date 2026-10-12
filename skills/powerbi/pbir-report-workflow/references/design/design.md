@@ -1,27 +1,8 @@
----
-name: powerbi-report-design
-description: >-
-  Generate Power BI report visual design guidance before PBIR files are
-  written. Use when the user wants to: (1) choose tone, signature, page
-  archetypes, chart types, layout, color, typography, theme direction, or
-  accessibility approach, (2) redesign/restyle an existing report, apply a
-  brand, or critique chart/layout choices, (3) produce a design contract for
-  `powerbi-report-authoring`. For end-to-end requirements, approval, and build
-  sequencing, use `powerbi-report-planning`. Triggers: "design Power BI report",
-  "make dashboard look professional", "choose chart type", "apply brand to
-  report", "redesign report", "create design brief", "Power BI report design archetype".
-metadata:
-  version: 0.1.0
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Power BI Report Design Skill
 
 This skill provides design guidance for Power BI reports. It commits a design identity (tone + signature), routes user requests to the right archetype per page, and applies cross-cutting design principles (color, typography, iconography, layout, interactivity, accessibility).
 
-**Scope boundary** — This skill decides *what* a report should look like and *why*. It does **not** write PBIR files. After producing a design contract, hand off to `powerbi-report-authoring` for all file mechanics: page/visual creation, theme registration, expression encoding, formatting objects, and validation.
+**Scope boundary** — This skill decides *what* a report should look like and *why*. It does **not** write PBIR files. After producing a design contract, hand off to `pbir-report-workflow`'s build steps for all file mechanics: page/visual creation, theme registration, expression encoding, formatting objects, and validation.
 
 ## Must/Prefer/Avoid
 
@@ -29,7 +10,7 @@ This skill provides design guidance for Power BI reports. It commits a design id
 
 - Inspect the semantic model or available fields before making design decisions.
 - Produce concrete design choices: tone, signature, page archetype, chart rationale, layout direction, color, typography, and accessibility considerations.
-- Hand off file mechanics to `powerbi-report-authoring`; this skill does not edit PBIR.
+- Hand off file mechanics to `pbir-report-workflow`'s build steps; this skill does not edit PBIR.
 
 ### PREFER
 
@@ -123,14 +104,13 @@ wildcard `visualStyles["*"]["*"].padding` / background unless every affected
 visual type is checked and overridden. If the report already has a theme,
 preserve it unless the user asked for a theme swap or brand refresh. For full
 mechanics of theme registration — including how to choose the `$schema`
-version when adapting `assets/base.json` — use the `powerbi-report-authoring`
-skill.
+version when adapting `assets/base.json` — use [themes.md](../themes.md).
 
 ### Step 6 — Canonical Design Contract
 
 Emit a structured `Design Brief:` YAML block. This is the contract with
-`powerbi-report-authoring`. Populate every field with concrete values from Steps
-0-5 and include a mechanical `layout_contract` per page.
+`pbir-report-workflow`'s build steps. Populate every field with concrete
+values from Steps 0-5 and include a mechanical `layout_contract` per page.
 
 When this skill is used inside the planner workflow, embed this YAML block in
 `_brief/report-spec.md` under a "Canonical design contract" section. For the
@@ -196,7 +176,7 @@ in `references/brownfield.md`. Fix problems before handing off.
 
 If you can get an independent review (a separate reasoning pass or a colleague), do so — layout gaps, missing slicers, monochrome charts, raw field names, and tone-not-propagated failures are easiest to catch with fresh eyes.
 
-Once the contract passes the checklist, hand off to `powerbi-report-authoring` for implementation.
+Once the contract passes the checklist, hand off to `pbir-report-workflow`'s build steps for implementation.
 
 ## Gotchas
 
@@ -232,30 +212,37 @@ and the column is a renderable Date/DateTime field.
 
 **Percentage formatting** — Rates stored as decimals (e.g., 0.53) should display as "53%", not "0.53". Set the number format string to `"0%"` or `"0.0%"` on the relevant visual property.
 
-## Local vendoring note (not part of the upstream skill)
+## Provenance (not part of the upstream skill)
 
-Vendored verbatim from [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
+Upstream's `powerbi-report-design` skill, from
+[microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
 v0.3.13, commit `b8d541c`, MIT-licensed ([LICENSE.upstream](LICENSE.upstream)).
-When re-syncing, diff against upstream and re-apply this section only.
+Vendored verbatim on 2026-08-25, it became a reference of
+`pbir-report-workflow` on 2026-10-12, its `SKILL.md` renamed to this file,
+and stopped tracking upstream: a fix made there reaches it only by hand.
+Its text last matched upstream `main` on 2026-09-13, at v0.3.16.
 
-**Currency — checked 2026-09-13, not re-synced.** The pin above is still
-the exact commit these bytes came from: `SKILL.md` blob `316b1500`,
-`references/` tree `aa6f21e1` and `assets/` tree `9566a6c0` are identical
-at `b8d541c` and at `main`, so the text is current through v0.3.16
-(`f1802196`) by construction. That release's only change on this path is
-a generated `apm.yml` (538 B), and it is deliberately **not** vendored —
-Claude Code reads `SKILL.md`, never `apm.yml`, which exists to drive
-`apm install`, an acquisition route this repo does not use. Nothing here
-would lint it either: both `scripts/lint-frontmatter.py` and
-`scripts/lint-skill-scopes.py` select on `SKILL.md`. Expect it in a
-re-sync diff and skip it.
+The fold changed only these, so every other line is upstream's:
 
-Local deviations from the upstream routing:
+- **Its frontmatter**, gone with the skill. Its description handed off
+  to `powerbi-report-authoring` and `powerbi-report-planning`.
+- **Its hand-offs.** Upstream hands the design contract to
+  `powerbi-report-authoring`, vendored beside this skill and archived on
+  2026-10-09, never invoked. Each hand-off now names
+  `pbir-report-workflow`'s build steps, and theme registration
+  [themes.md](../themes.md). That skill's two CLIs went with it:
+  `pbir validate` stands in for `powerbi-report-author validate`, and the
+  build steps' service-side PNG export for `powerbi-desktop` screenshots
+  ([brownfield.md](references/brownfield.md)).
+- **Two pointers into the archived skill.** Its slicer sizing formula is
+  the base that `references/visual-cookbook.md` already states, so the
+  cookbook now points at its own sizing lines. Its dark mode checklist
+  has no counterpart here: the pointer now names
+  [themes.md](../themes.md), which holds the theme mechanics and no
+  checklist.
+- **Its self-references**: `SKILL.md` and "the root skill" now read
+  `design.md`.
 
-- `powerbi-report-planning` is **not installed** — use `pbir-report-workflow`
-  for requirements gathering and build sequencing.
-- `powerbi-report-authoring` is **not installed** either: vendored
-  alongside this skill, it was archived on 2026-10-09, never invoked
-  here. Every hand-off this skill and its references make to it goes to
-  `pbir-report-workflow`, whose layout steps apply the Design Brief YAML
-  through `pbir-cli`, and theme registration to `pbir-themes`.
+The planner workflow it names is upstream's `powerbi-report-planning`,
+never installed: requirements and build sequencing are
+`pbir-report-workflow`'s own steps.

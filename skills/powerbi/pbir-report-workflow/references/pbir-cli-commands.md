@@ -1,6 +1,6 @@
 # pbir CLI — Full Command Reference
 
-Per-command flag and argument detail. See `SKILL.md` for the verb index and discovery quickstart.
+Per-command flag and argument detail. See [pbir-cli.md](pbir-cli.md) for the verb index and discovery quickstart.
 
 ## Discovery
 

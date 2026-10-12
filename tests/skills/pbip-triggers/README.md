@@ -36,8 +36,8 @@ recorded activation. A match appends one JSON line to
 
 - `type` — `skill_listing`
 - `isInitial` — **`false`** (this is the whole assertion)
-- `names` — e.g. `["pbir-conditional-formatting", "pbir-filters", "pbir-visual-json"]`
-- `content` — the listing lines, e.g. `"- pbir-filters"`
+- `names` — e.g. `["fabric-tmdl", "fabric-tmdl-api", "pbip-project-structure"]`
+- `content` — the listing lines, e.g. `"- fabric-tmdl"`
 
 The `isInitial: true` record is the startup listing and is present in
 every session regardless of what was read, so filter it out.
@@ -87,7 +87,7 @@ tests/skills/pbip-triggers/
     └── control/notes.md         (matches nothing — negative control)
 ```
 
-Ten of the payload's conditional skills are covered here. The rest are
+Four of the payload's conditional skills are covered here. The rest are
 keyed to Fabric item types (`.Eventstream`, `.Warehouse`, `.Notebook`, …)
 and live in [`../fabric-triggers/`](../fabric-triggers/). Together the two
 sets cover every one; the totals are owned by
@@ -211,7 +211,10 @@ second; `report.json` after it emitted `pbir-filters` but *not* the
 `fabric-git-serialization` rule already loaded; and `page.json`, which
 matches both `pbir-filters` and `pbir-pages`, emitted only `pbir-pages`.
 The static check is the control — all of those files do match, so the
-silences are deduplication and not a failure to fire.
+silences are deduplication and not a failure to fire. Those `pbir-*`
+skills became `pbir-report-workflow`'s references on 2026-10-12, so the
+report files now activate nothing, and the `.SemanticModel` files are
+where this deduplication shows.
 
 Two consequences. **One session can cover a whole fixture set**, which is
 what makes this test cheap enough to run at all — ~2 sessions for both
@@ -277,8 +280,11 @@ proves nothing.
 
 The load-bearing case is the **A1 regression** (`8ce009c`):
 
-> `visual.json`, deep inside a `.Report/` folder, must activate exactly
-> three skills — and **`pbip-project-structure` must not be one of them.**
+> `visual.json`, deep inside a `.Report/` folder, must activate no skill —
+> and **`pbip-project-structure` least of all.**
+
+It activated three until 2026-10-12, when they folded into the
+unconditional `pbir-report-workflow`.
 
 `pbip-project-structure` used to carry `**/*.Report/**` and
 `**/*.SemanticModel/**`, matching 148 of 295 files in a client repo and
@@ -287,9 +293,9 @@ riding along on nearly every Power BI file touch. If it reappears on
 
 ## Cost note
 
-These files are inert until opened. Reading
-`visuals/Visual1/visual.json` activates three skills at once — the most in
-either fixture set, and the fixture working as designed. Activation itself
-is cheap: three listing entries. What makes this the repo's worst single
-file is the **ceiling** behind it, ~9,086 tokens of bodies if all three are
-then invoked. Don't leave it open while doing unrelated work.
+These files are inert until opened. Three of them activate three skills
+each: the model's `.platform`, `definition.pbism` and
+`cultures/en-US.tmdl`. Activation itself is cheap: three listing entries.
+The cost is the **ceiling** behind each, the bodies if all three are then
+invoked, highest for `en-US.tmdl` in the table. Don't leave one open while
+doing unrelated work.

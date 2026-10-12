@@ -2,7 +2,7 @@
 
 This section tells you exactly how to configure each visual type for a polished
 report. These are DESIGN instructions — for PBIR file mechanics, consult
-`powerbi-report-authoring`.
+`pbir-report-workflow`.
 
 ## Contents
 
@@ -34,7 +34,7 @@ The report theme should handle these defaults automatically:
 
 **Theme/per-visual boundary** — some visual treatments are part of the design
 but may require per-visual implementation rather than theme-only changes.
-Record these requirements in the brief; `powerbi-report-authoring` owns the exact
+Record these requirements in the brief; `pbir-report-workflow` owns the exact
 PBIR JSON mechanics.
 
 | Design requirement | Affects | Why call it out |
@@ -328,7 +328,7 @@ Never place slicers in the top-left corner — that's for the page title.
 The default choice — compact, searchable, handles any cardinality.
 
 **Sizing** (proportional to canvas):
-- Height: follow the slicer sizing guidance in `powerbi-report-authoring` exactly; default dropdown is
+- Height: follow this sizing exactly; default dropdown is
   `60 + top_padding + bottom_padding`, snapped to the 8px grid. Do not shrink
   to 48px or 8pt to make a tight layout work.
 - Width: ~12% of page width (about 230px on FHD, 160px on 1280×720). Use ~10%
@@ -365,7 +365,7 @@ Year/Period dropdown or tile.
   snapped to the 8px grid. Dates render side-by-side at this width.
 - Vertical rail: w=200; height is `84 + top_padding + bottom_padding` because
   dates stack vertically at this width.
-- Authoring must use the exact slicer sizing formula from `powerbi-report-authoring`
+- Authoring must use the exact slicer sizing formulas above
   after theme/VCO padding is known.
 
 **Styling variants**: same Fill and Light as Dropdown Slicer (see table above).

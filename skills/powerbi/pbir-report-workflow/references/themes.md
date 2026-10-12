@@ -1,16 +1,3 @@
----
-name: pbir-themes
-description: Use when authoring or editing a Power BI report theme JSON under Report.Report/StaticResources/SharedResources/BaseThemes/ or RegisteredResources/. Covers top-level theme properties (name, dataColors palette, semantic colors background/foreground/tableAccent, sentiment good/bad/neutral/minimum/maximum/center, textClasses title/label/callout/header, visualStyles), inheritance (wildcard, per-visualType, per-instance visual.json), state keys (default, hover, press, selected), theme JSON value conventions — BARE numbers never D/L suffixes, BARE hex without inner quotes, unlike visual.json — ThemeDataColor with ColorId + Percent tint, container vs chart object properties, textClasses, outspacePane styling (colors, text, backgrounds, input colors, width), filterCard targeting Available/Applied/GUID, wildcard + override patterns, clearing stale overrides via pbir visuals clear-formatting --keep-cf -f.
-when_to_use: Invoke when the user edits a theme file, tweaks CY24SU10, or fixes a theme-not-applied issue. This skill owns report-wide defaults and filter-pane styling. Theme JSON uses bare numbers and bare hex, unlike visual.json — so a per-visual override with D/L/M literal suffixes, or per-point colour driven by a measure, belongs in visual.json rather than here.
-paths:
-  - "**/StaticResources/**/*.json"
-  - "**/BaseThemes/*.json"
-  - "**/RegisteredResources/*.json"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 ## PBIR Theme Reference
 
 Themes define default formatting inherited by all visuals. Review the theme BEFORE editing individual visuals.
@@ -62,7 +49,7 @@ The published theme JSON schema referenced by visualStyles tracks the latest bas
 
 1. Wildcard `visualStyles["*"]["*"]` — all visuals
 2. Visual type `visualStyles["lineChart"]["*"]` — overrides wildcard for that type
-3. Visual instance — `objects` / `visualContainerObjects` in `visual.json` (see `pbir-visual-json` for the `objects` vs `visualContainerObjects` split in schema 2.4.0+)
+3. Visual instance — `objects` / `visualContainerObjects` in `visual.json` (see [visual-json.md](visual-json.md) for the `objects` vs `visualContainerObjects` split in schema 2.4.0+)
 
 The Fluent 2 base theme carries **no per-visual font overrides**, so `textClasses` applies consistently across all visuals. A custom theme written against an older base may hold per-visual `visualStyles` font entries that existed only to beat that base's overrides; under Fluent 2 they are redundant.
 
@@ -144,7 +131,7 @@ CY24SU10 defaults: `callout` 45 DIN, `title` 12 DIN, `header` 12 Segoe UI Semibo
 
 ### Filter Pane Styling — outspacePane (owned here)
 
-Location: `visualStyles["*"]["*"].outspacePane`. **Theme owns every styling property of the filter pane. Visibility / expansion state is separate — see `pbir-filters` for `report.json → objects.outspacePane`.**
+Location: `visualStyles["*"]["*"].outspacePane`. **Theme owns every styling property of the filter pane. Visibility / expansion state is separate — see [filters.md](filters.md) for `report.json → objects.outspacePane`.**
 
 | Property | Type | Notes |
 |---|---|---|
@@ -251,11 +238,47 @@ Stale `objects` / `visualContainerObjects` in visual.json override theme default
 - Microsoft Learn: [Create custom report themes (full JSON reference)](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom)
 - Microsoft Learn: [Set formatted text defaults (textClasses table)](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#set-formatted-text-defaults)
 - Microsoft Learn: [Visual defaults / base themes (Fluent 2, Classic 2026, Classic 2018)](https://learn.microsoft.com/power-bi/create-reports/power-bi-reports-visual-defaults)
-- Comprehensive MS Learn link bundle (theme JSON file format / textClasses / style presets / inheritance / filter pane styling): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (theme JSON file format / textClasses / style presets / inheritance / filter pane styling): § MS Learn link bundle, below
+
+### MS Learn link bundle
+
+Curated set of Microsoft Learn pages relevant to Power BI report themes — the JSON file format itself, the dataColors palette, sentiment colors, textClasses, visualStyles by visual type and state, the inheritance model, and how the file lives inside a PBIR project under `StaticResources/`.
+
+The 3 highest-leverage entry points (use report themes / create custom themes / report theme JSON file format) are also linked in § Reference above for in-context use; this section holds the comprehensive set.
+
+**Note on docs split:** The Power BI report theme JSON format is *one of the better-documented* PBIR-adjacent surfaces on MS Learn. The custom-themes article documents the file format directly; the parent skill adds the PBIR-specific bits (where the file lives in the project, how `visualStyles` overlays with `visual.json` `objects`/`visualContainerObjects`, the bare-numbers-no-D-suffix difference vs visual.json).
+
+#### Theme JSON file format (canonical)
+
+- [Use report themes in Power BI Desktop](https://learn.microsoft.com/power-bi/create-reports/desktop-report-themes) — apply / browse themes, the base-theme vs custom-theme inheritance the parent skill documents.
+- [Create custom report themes in Power BI Desktop](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom) — full theme JSON reference: dataColors, sentiment colors (good/bad/neutral/minimum/maximum/center), structural colors (background/foreground/tableAccent/firstLevelElements/secondLevelElements), textClasses (title/header/label/callout + size variants), visualStyles, style presets.
+- [Power BI Embedded — Apply Report Themes (Report Theme Object)](https://learn.microsoft.com/javascript/api/overview/powerbi/apply-report-themes) — the JS Embedded API surface that consumes the same theme JSON object; useful as a complete property reference.
+
+#### Style presets (CY24SU10+ style swatches)
+
+- [Create style presets in custom themes](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#create-style-presets-in-custom-themes) — preset-per-visual-type pattern; how the Style dropdown surfaces in the visual format pane after import.
+
+#### Text classes
+
+- [Set formatted text defaults](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#set-formatted-text-defaults) — the canonical text-class table (title / largeTitle / header / label / semiboldLabel / largeLabel / smallLabel / lightLabel / boldLabel / largeLightLabel / smallLightLabel / callout) with default font / size / color and which visual elements consume each. Critical when the parent skill's `textClasses` overrides need to match the right class.
+
+#### Inheritance and the visualStyles wildcard
+
+- [Use report themes — how the report uses themes](https://learn.microsoft.com/power-bi/create-reports/desktop-report-themes#understand-how-the-report-uses-themes) — base theme vs custom theme vs per-visual override. Maps to the parent skill's `visualStyles["*"]["*"]` → `visualStyles[type][state]` → per-visual `objects` chain.
+- [Customize report colors and mode showcase (Embedded sample)](https://learn.microsoft.com/javascript/api/overview/powerbi/showcase-themes) — Light/Dark mode patterns with theme objects.
+
+#### PBIR file format (where themes live)
+
+- [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report) — `StaticResources/SharedResources/BaseThemes/` (built-in) vs `StaticResources/RegisteredResources/` (custom), and how `report.json → themeCollection` references both.
+- [Report definition (Fabric REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/report-definition) — theme files round-trip via the `definition/` part.
+
+#### Filter pane styling (cross-skill — owned by theme)
+
+- [Customize the filter pane via theme](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#filter-pane-and-filter-card) — the theme keys (`outspacePane`, `filterCard`) where filter-pane colors/text/widths live (per the parent skill's split: `outspacePane` *visibility* on report.json, *styling* in theme).
 
 ### See also
 
-- `pbir-visual-json` — visual.json value conventions (`D`/`L`/`M` suffixes, inner-quoted hex)
-- `pbir-filters` — filter pane visibility (`visible`, `expanded`) on `report.json`
-- `pbir-conditional-formatting` — `ThemeDataColor` in CF expressions
-- `pbir-cli` — `pbir theme` subcommands
+- [visual-json.md](visual-json.md) — visual.json value conventions (`D`/`L`/`M` suffixes, inner-quoted hex)
+- [filters.md](filters.md) — filter pane visibility (`visible`, `expanded`) on `report.json`
+- [conditional-formatting.md](conditional-formatting.md) — `ThemeDataColor` in CF expressions
+- [pbir-cli.md](pbir-cli.md) — `pbir theme` subcommands

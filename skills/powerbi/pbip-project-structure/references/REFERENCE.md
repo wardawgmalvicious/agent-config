@@ -56,8 +56,6 @@ The 3 highest-leverage entry points (PBIP overview, model authoring, Fabric Git 
 
 ## See also (this repo)
 
-- `pbir-cli` — CLI that reads/writes the project
-- `pbir-report-workflow` — end-to-end report build using the project
-- All `pbir-*` skills — JSON shapes inside `Report.Report/definition/`
+- `pbir-report-workflow` — end-to-end report build using the project; its references hold the CLI that reads and writes the project, and the JSON shapes inside `Report.Report/definition/`
 - `fabric-tmdl` — TMDL authoring rules inside `SemanticModel/definition/`
 - `fabric-tmdl-api` — Fabric REST envelope for `getDefinition` / `updateDefinition`

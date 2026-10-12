@@ -2,7 +2,7 @@
 
 Read this when the user wants to redesign, restyle, theme-swap (light↔dark),
 modernize, or critique an existing Power BI report. The greenfield workflow
-in `SKILL.md` still applies — every Step (0 → 7) runs — but each Step runs
+in `design.md` still applies — every Step (0 → 7) runs — but each Step runs
 in **delta-against-current** mode rather than from a blank canvas.
 
 ## When this file applies
@@ -23,8 +23,8 @@ new), **ask** before proceeding.
 ## Entry workflow (6 steps)
 
 1. **Load the report** — confirm the existing PBIP path with the user.
-2. **Screenshot all pages** via `powerbi-desktop screenshot-all --pid <pid>`
-   — these become the "before" evidence.
+2. **Screenshot all pages** via `pbir-report-workflow`'s service-side PNG
+   export — these become the "before" evidence.
 3. **Diagnose** the existing report against:
    - `references/anti-patterns.md`
    - authoring anti-patterns
@@ -34,10 +34,10 @@ new), **ask** before proceeding.
    visuals, themes, and chrome that change. Include rationale for each
    delta. Bookmarks and `visualLink` refs are preserved unless the redesign
    explicitly retires them; flag any that target ids that change.
-5. **Hand off to `powerbi-report-authoring`** for the surgical edits. Authoring
-   runs `powerbi-report-author validate` after each batch to catch theme
-   mismatches (`PBIR_THEME_*`), formatting drift (`PBIR_FORMATTING_*`), and
-   layout regressions before reload — common brownfield-edit defects.
+5. **Hand off to `pbir-report-workflow`'s build steps** for the surgical
+   edits. They run `pbir validate` after each mutation, and the PNG export
+   shows theme mismatches, formatting drift, and layout regressions —
+   common brownfield-edit defects.
 6. **Final Audit** — screenshot AFTER. Verify the redesign delivered on the
    target tone without breaking what worked.
 
@@ -67,7 +67,7 @@ In addition to the standard `references/pre-flight-checklist.md`, verify:
       after. See `references/accessibility.md`.
 - [ ] **Bookmarks survive id changes** — if the redesign renames or
       replaces visuals, every bookmark that references the old id is
-      updated or explicitly retired. `powerbi-report-author validate`
+      updated or explicitly retired. `pbir validate`
       catches schema-level structural issues; manually verify bookmark
       `visualLink` targets against the new visual ids.
 - [ ] **Page background re-checked** — dark themes need a darker page
@@ -85,6 +85,6 @@ When the user asks for a pure theme swap with no other redesign:
    background).
 3. Identify theme changes that also require per-visual updates (for example
    gradient stops, card accent bars, state-aware buttons) and record them in
-   the redesign brief; `powerbi-report-authoring` handles the PBIR mechanics.
-4. For full mechanics see the dark mode authoring checklist in
-   `powerbi-report-authoring`.
+   the redesign brief; `pbir-report-workflow`'s build steps handle the PBIR
+   mechanics.
+4. For full mechanics see [themes.md](../../themes.md).

@@ -285,7 +285,7 @@ tone at all.
 
 If the prompt is otherwise specific enough to design, use domain as a
 recommendation signal for tone. If the overall prompt is vague (missing
-audience, purpose, page count, or filtering depth), follow the root skill's
+audience, purpose, page count, or filtering depth), follow `design.md`'s
 clarification workflow first and offer the domain-inferred tone as one option,
 not as permission to proceed silently.
 

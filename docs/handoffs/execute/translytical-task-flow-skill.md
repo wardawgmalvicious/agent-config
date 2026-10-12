@@ -98,5 +98,7 @@ excerpts; whether upstream's `powerbi-report-cli` is vendorable as is.
 
 - `grep -rni "translytical\|DataFunction" skills/`: nothing on
   2026-10-01 but the deployment-pipelines row and the UDF brief.
-- `list_commits` on upstream `skills/powerbi-report-cli` and the vendored
-  pair's paths, per the drift registry's vendored-files procedure.
+- `list_commits` on upstream `skills/powerbi-report-cli` and the once
+  vendored pair's paths, per the vendored-files procedure the drift
+  registry dropped on 2026-10-12:
+  `git show ff87db6:.claude/skills/drift-audit/references/sources/skills-for-fabric.md`.

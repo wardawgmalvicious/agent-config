@@ -46,7 +46,7 @@ Every Fabric item has **two** GUIDs, and they are NOT interchangeable. Using the
 | Identifier | Source | Resolved by | Use for |
 |---|---|---|---|
 | **Runtime item ID** | Fabric portal URL (`…/items/{guid}`); `GET /v1/workspaces/{wsId}/items` response `id` | The Fabric engine at execution time | Pipeline activity `notebookId` / `pipelineId`, Variable Library values consumed at runtime, REST `/items/{id}` calls, `notebookutils.runtime.context` lookups |
-| **logicalId** | `.platform` file → `config.logicalId`; `logicalId` on Get Item / List Items, null when none is assigned | Git integration / source-control tooling | `.platform` payloads, PBIP + pbir-cli + `fab import` source-control operations |
+| **logicalId** | `.platform` file → `config.logicalId`; `logicalId` on Get Item / List Items, null when none is assigned | Git integration / source-control tooling | `.platform` payloads, PBIP + the `pbir` CLI + `fab import` source-control operations |
 
 **The relationship is exact, not a resemblance: for a portal-created item, `logicalId` is the runtime item ID with its 16 bytes reversed.** Confirmed 2026-09-03 against `GET /v1/workspaces/{wsId}/items` over 19 workspaces — 21 of 21 resolvable reversals hit a real item with the same `displayName` and `type`, none hit a different item, and no raw `logicalId` was itself an item ID. Reversal is an involution, so it round-trips. This is also why a `logicalId` so often has a version nibble that is not `4`: a reversed v4 GUID does not look like a v4 GUID (79 reversals, zero failures, across two private repos and ~20 public ones spanning tenants).
 
@@ -141,7 +141,7 @@ PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
 - For content-only updates (typical), omit the flag.
 - Notebook-specific alternative: `POST /v1/workspaces/{wsId}/notebooks/{id}/updateDefinition` — same body shape.
 - `getDefinition` is a POST with empty body (`'{}'`) — bare POST returns HTTP 411 Length Required. Result is fetched via the LRO's `{Location}/result` URL (note the `/result` suffix).
-- Per-item-type specifics live in `fabric-tmdl-api` (semantic models), `fabric-spark` (notebooks, SparkJobDefinition, Environment, Lakehouse shortcuts), `fabric-eventhouse` (Eventhouse, KQLDatabase), `fabric-variable-library` (VariableLibrary), and pbir-cli/pbir-report-workflow (Report).
+- Per-item-type specifics live in `fabric-tmdl-api` (semantic models), `fabric-spark` (notebooks, SparkJobDefinition, Environment, Lakehouse shortcuts), `fabric-eventhouse` (Eventhouse, KQLDatabase), `fabric-variable-library` (VariableLibrary), and `pbir-report-workflow` (Report).
 
 ### Support matrix
 
@@ -159,7 +159,7 @@ PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
 | KQLDatabase | `JSON` | `DatabaseProperties.json` (+ optional `DatabaseSchema.kql`) |
 | Other (KQLDashboard, CopyJob, Dataflow, Eventstream, MirroredDatabase, GraphQLApi, etc.) | varies | see [MS schema index](https://github.com/microsoft/json-schemas/tree/main/fabric/item) |
 
-**`definition.pbir` `byConnection` for single-item calls**: the single-item create and update-definition endpoints accept only `byConnection` semantic-model references in PBIR. The `byPath` form (used locally with pbir-cli) is not accepted there — switch to `byConnection` before deploying one report. Learn's **Bulk Import** example, by contrast, sends a report whose `definition.pbir` holds `"byPath": { "path": "../../MyDataset.SemanticModel" }` beside that model in the same request; that path is a documentation example, unmeasured here.
+**`definition.pbir` `byConnection` for single-item calls**: the single-item create and update-definition endpoints accept only `byConnection` semantic-model references in PBIR. The `byPath` form (used locally with the `pbir` CLI) is not accepted there — switch to `byConnection` before deploying one report. Learn's **Bulk Import** example, by contrast, sends a report whose `definition.pbir` holds `"byPath": { "path": "../../MyDataset.SemanticModel" }` beside that model in the same request; that path is a documentation example, unmeasured here.
 
 ## Git Integration APIs
 

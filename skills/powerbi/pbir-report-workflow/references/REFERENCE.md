@@ -4,7 +4,7 @@ Curated set of Microsoft Learn pages relevant to building Power BI reports end-t
 
 The 3 highest-leverage entry points (Power BI reports overview, design-effective-reports guide, design for accessibility) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
 
-**Note on docs split:** The pbir CLI per-command reference lives in `pbir-cli/references/REFERENCE.md` (already maintained). The PBIR JSON shape per artifact lives in the `pbir-visual-json` / `pbir-pages` / `pbir-filters` / `pbir-bookmarks` / `pbir-themes` skills. This bundle covers the upstream MS Learn content for the *design and workflow* aspects.
+**Note on docs split:** The pbir CLI per-command reference lives in [pbir-cli-commands.md](pbir-cli-commands.md). The PBIR JSON shape per artifact lives in [visual-json.md](visual-json.md), [pages.md](pages.md), [filters.md](filters.md), [bookmarks.md](bookmarks.md) and [themes.md](themes.md), each with its own MS Learn bundle. This bundle covers the upstream MS Learn content for the *design and workflow* aspects.
 
 ## Report-design principles
 
@@ -36,7 +36,7 @@ The 3 highest-leverage entry points (Power BI reports overview, design-effective
 
 ## Conditional formatting + theme tokens
 
-- [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting) — see `pbir-conditional-formatting` for the PBIR-side implementation.
+- [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting) — see [conditional-formatting.md](conditional-formatting.md) for the PBIR-side implementation.
 - [Create custom report themes](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom) — `good`/`bad`/`neutral` sentiment colors that the workflow's extension-measure pattern returns.
 
 ## Publish to Fabric / Power BI workspace
@@ -52,10 +52,10 @@ The 3 highest-leverage entry points (Power BI reports overview, design-effective
 
 ## See also (this repo)
 
-- `pbir-cli` — full CLI command reference
-- `pbir-pages` — page JSON structure (canvas, tooltip, drillthrough)
-- `pbir-visual-json` — per-visual JSON shape
-- `pbir-filters` — filterConfig at all three scopes
-- `pbir-themes` — theme JSON file format
-- `pbir-conditional-formatting` — measure-driven CF + theme tokens
+- [pbir-cli-commands.md](pbir-cli-commands.md) — full CLI command reference
+- [pages.md](pages.md) — page JSON structure (canvas, tooltip, drillthrough)
+- [visual-json.md](visual-json.md) — per-visual JSON shape
+- [filters.md](filters.md) — filterConfig at all three scopes
+- [themes.md](themes.md) — theme JSON file format
+- [conditional-formatting.md](conditional-formatting.md) — measure-driven CF + theme tokens
 - `pbip-project-structure` — full project file layout

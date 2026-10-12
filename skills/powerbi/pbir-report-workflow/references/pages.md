@@ -1,15 +1,3 @@
----
-name: pbir-pages
-description: Use when authoring or editing page.json / pages.json inside a Power BI PBIR report's definition/pages/ folder. Covers top-level page properties (name hex GUID vs displayName, displayOption as STRING not integer, width/height, type Default vs Tooltip, visibility AlwaysVisible vs HiddenInViewMode, verticalAlignment/horizontalAlignment), pages.json pageOrder + activePageName, canvas background vs outspace wallpaper distinction, visualInteractions NoFilter/Filter/Highlight overrides, page-level filterConfig, tooltip pages (section references the NAME guid not displayName), drillthrough pages with Column-typed filter, page folder renaming rules (folder freely renamable; page.json filename and internal name stay fixed), literal value encoding (D/L suffixes).
-when_to_use: Invoke when the user edits a page, adds a tooltip or drillthrough page, configures cross-visual interactions, or changes page background. Co-fires with pbir-filters on page.json — use this skill for page properties, layout, pageOrder, visualInteractions and backgrounds, and pbir-filters for the filterConfig.filters body on the same file. For the visuals sitting on the page, the edit target is visual.json.
-paths:
-  - "**/pages/**/page.json"
-  - "**/pages/pages.json"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 ## PBIR Page JSON Reference
 
 Page-level JSON for reports in PBIR format. Each page lives in `definition/pages/<PageName>/page.json`. Page order and the active page are tracked in `definition/pages/pages.json`.
@@ -57,7 +45,7 @@ Schema: `https://developer.microsoft.com/json-schemas/fabric/item/report/definit
 | Letter portrait | 816 x 1056 |
 | Tooltip | 320 x 240 |
 
-The Fluent 2 base theme is GA and is the default for new reports in Desktop and the service; it bumps the new-page default to 1920x1080. That a new report's initial page stays 1280x720 dates from the preview and is unverified since GA (2026-10-07); existing reports and existing pages don't auto-resize when switching base themes. The **Theme** pane (**Design** ribbon → **Customize theme**) also surfaces aspect-ratio presets for common page sizes. See `pbir-themes` for base-theme switching.
+The Fluent 2 base theme is GA and is the default for new reports in Desktop and the service; it bumps the new-page default to 1920x1080. That a new report's initial page stays 1280x720 dates from the preview and is unverified since GA (2026-10-07); existing reports and existing pages don't auto-resize when switching base themes. The **Theme** pane (**Design** ribbon → **Customize theme**) also surfaces aspect-ratio presets for common page sizes. See [themes.md](themes.md) for base-theme switching.
 
 ### pages.json
 
@@ -112,8 +100,8 @@ The area behind and around the canvas.
 
 `outspacePane` is **report-level**, never page-level. Do not place it in `page.json`. Responsibility is split:
 
-- **Visibility and expansion state** (`visible`, `expanded`) live in `report.json → objects.outspacePane` — see `pbir-filters`.
-- **Styling** (colors, text, backgrounds, input colors, width) lives in the custom theme at `visualStyles["*"]["*"].outspacePane` — see `pbir-themes`.
+- **Visibility and expansion state** (`visible`, `expanded`) live in `report.json → objects.outspacePane` — see [filters.md](filters.md).
+- **Styling** (colors, text, backgrounds, input colors, width) lives in the custom theme at `visualStyles["*"]["*"].outspacePane` — see [themes.md](themes.md).
 
 ### Visual Interactions
 
@@ -277,12 +265,58 @@ All formatting property values are wrapped in expression literals:
 - Microsoft Learn: [Customize page sizes and dimensions in Power BI](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-page-size)
 - Microsoft Learn: [Create tooltips based on report pages](https://learn.microsoft.com/power-bi/create-reports/desktop-tooltips)
 - Microsoft Learn: [Use drillthrough in Power BI reports](https://learn.microsoft.com/power-bi/create-reports/desktop-drillthrough)
-- Comprehensive MS Learn link bundle (page sizes / canvas vs wallpaper / tooltip / drillthrough / visual interactions / PBIR file format): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (page sizes / canvas vs wallpaper / tooltip / drillthrough / visual interactions / PBIR file format): § MS Learn link bundle, below
+
+### MS Learn link bundle
+
+Curated set of Microsoft Learn pages relevant to Power BI report pages — page sizes, types (Default/Tooltip), visibility, the canvas vs wallpaper distinction, tooltip pages, drillthrough pages, and visual interactions. Plus the PBIR file structure where `page.json` and `pages.json` live.
+
+The 3 highest-leverage entry points (page customization, tooltip pages, drillthrough) are also linked in § Reference above for in-context use; this section holds the comprehensive set.
+
+**Note on docs split:** PBIR `page.json` JSON internals (string-typed `displayOption`, the `objects.background` vs `objects.outspace` distinction, `visualInteractions` shape, the page `name` GUID rule) are *not* documented narratively on MS Learn — the canonical machine-readable reference is at `developer.microsoft.com/json-schemas/fabric/item/report/definition/page/...`. The Power BI Desktop pages document what user choices the JSON encodes.
+
+#### User-facing concept (what the JSON encodes)
+
+- [Customize page sizes and dimensions in Power BI](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-page-size) — page sizes (16:9, Letter, Tooltip), `width`/`height` properties, the `displayOption` (FitToPage / FitToWidth / ActualSize) UX.
+- [Hide pages in Power BI](https://learn.microsoft.com/power-bi/create-reports/power-bi-hide-report-pages) — corresponds to `visibility: HiddenInViewMode`.
+
+#### Canvas background and wallpaper
+
+- [Customize the wallpaper in Power BI reports](https://learn.microsoft.com/power-bi/create-reports/desktop-wallpaper) — the user surface for the `outspace` object (wallpaper *behind* the canvas) and how it differs from `background` (canvas itself). Maps directly to the parent skill's hierarchy explanation.
+- [Format report page background](https://learn.microsoft.com/power-bi/create-reports/desktop-report-themes#format-report-page-background) — canvas-side `background` color/transparency.
+
+#### Tooltip pages
+
+- [Create tooltips based on report pages](https://learn.microsoft.com/power-bi/create-reports/desktop-tooltips) — `type: Tooltip`, `visibility: HiddenInViewMode`, the per-visual `visualTooltip` opt-in (`type: 'ReportPage'`, `section: '<page name GUID>'`). Confirms the parent skill's "section uses GUID, not displayName" gotcha.
+
+#### Drillthrough pages
+
+- [Use drillthrough in Power BI reports](https://learn.microsoft.com/power-bi/create-reports/desktop-drillthrough) — `Column`-typed filter in `filterConfig`, page hidden via `HiddenInViewMode`, optional back-button.
+- [Add drillthrough buttons](https://learn.microsoft.com/power-bi/create-reports/desktop-drillthrough#add-a-drillthrough-button) — buttons that navigate to a drillthrough page.
+- [Cross-report drillthrough](https://learn.microsoft.com/power-bi/create-reports/desktop-drillthrough#enable-cross-report-drillthrough) — drillthrough across reports.
+
+#### Visual interactions (`visualInteractions`)
+
+- [Change how visuals interact in a Power BI report](https://learn.microsoft.com/power-bi/create-reports/service-reports-visual-interactions) — the user UX for `NoFilter` / `Filter` / `Highlight`. The `source`/`target` reference visual `name` IDs (file-internal, not displayName).
+
+#### Page-level filters
+
+- [Filters in Power BI Desktop reports](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-add-filter) — page filterConfig is the same shape as report and visual filterConfig. See [filters.md](filters.md).
+
+#### Filter pane (cross-skill clarification — NOT page-level)
+
+- [Format filters in Power BI reports](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-filter) — clarifies `outspacePane` is **report-level** in PBIR, never page-level. Visibility/expansion in `report.json`; styling in theme.
+
+#### PBIR file format (where pages live)
+
+- [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report) — `definition/pages/<PageName>/page.json` + `definition/pages/pages.json` (pageOrder + activePageName).
+- [Report definition (Fabric REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/report-definition) — schema URL pattern documenting the full `developer.microsoft.com/json-schemas/fabric/item/report/...` namespace.
 
 ### See also
 
 - `pbip-project-structure` — project file layout
-- `pbir-cli` — `pbir pages` / `pbir visuals` commands
+- [pbir-cli.md](pbir-cli.md) — `pbir pages` / `pbir visuals` commands
 - `pbir-report-workflow` — layout math and workflow
-- `pbir-filters` — outspacePane visibility/expansion on report.json
-- `pbir-themes` — outspacePane theme styling
+- [filters.md](filters.md) — outspacePane visibility/expansion on report.json
+- [themes.md](themes.md) — outspacePane theme styling
+- [visual-json.md](visual-json.md) — visual `name` IDs referenced by `visualInteractions`

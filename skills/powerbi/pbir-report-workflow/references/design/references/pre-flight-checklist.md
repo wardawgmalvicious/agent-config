@@ -1,8 +1,8 @@
 # Pre-Flight Checklist
 
 Walk through this before handing off the report spec/design contract to
-`powerbi-report-authoring`. Fix any failures first — the authoring skill will
-faithfully implement what you give it, including its flaws.
+`pbir-report-workflow`'s build steps. Fix any failures first — the build
+steps will faithfully implement the contract, including its flaws.
 
 For brownfield mode, also walk
 [`brownfield.md`](brownfield.md) §
@@ -60,11 +60,12 @@ For brownfield mode, also walk
 
 - [ ] **Theme handoff is explicit** — if a custom theme is needed, the
       brief states the intended theme name, palette/text changes, and
-      asks `powerbi-report-authoring` to handle registration mechanics.
+      asks `pbir-report-workflow`'s build steps to handle registration
+      mechanics ([themes.md](../../themes.md)).
 - [ ] **Theme/per-visual boundary captured** — properties that may need
       per-visual treatment (border radius, padding, page background
       transparency, gradient stops, card accent bar) are called out in
-      the brief for `powerbi-report-authoring`.
+      the brief for `pbir-report-workflow`'s build steps.
 - [ ] **Generated-report theme safeguards preserved** — if creating/adapting a
       custom theme, preserve `assets/base.json` per-type safeguards: textbox
       zero padding/background/border, `cardVisual` zero padding/card spacing,

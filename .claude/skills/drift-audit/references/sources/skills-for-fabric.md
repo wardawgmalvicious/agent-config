@@ -15,13 +15,10 @@
      a vendor-or-author candidate, bucket (b). **An `### Added` heading is
      not that test**: `databricks-migration` carries three `0.3.14` bullets
      under Added and has existed since `0.3.0`;
-  2. names the skill vendored here, `powerbi-report-design`, or one it
-     routes to — `powerbi-report-authoring`, archived here on 2026-10-09,
-     `powerbi-report-planning`, `powerbi-report-management`;
-  3. names an upstream skill with a counterpart here (table below) **and**
+  2. names an upstream skill with a counterpart here (table below) **and**
      states a behavioural fact — a limit, a request shape, an error and its
      cause — rather than rewording a workflow; or
-  4. changes how the catalog itself routes — descriptions, the listing
+  3. changes how the catalog itself routes — descriptions, the listing
      budget, references between skills. That is bucket (c).
 
   Everything else is bucket (d). The migration skills (`synapse-`,
@@ -30,8 +27,8 @@
 - `drill.host`: `learn.microsoft.com`
 - `drill.via`: `microsoft-learn-mcp`
 - `drill.strip`: none — the bullets carry no links.
-- `artifacts`: `skills/powerbi/powerbi-report-design/`, the counterpart
-  skills in the table below, `claude/rules/fabric-git-serialization.md`
+- `artifacts`: the counterpart skills in the table below,
+  `claude/rules/fabric-git-serialization.md`
 
 **A skill catalog rather than a docs page, so its claims are drilled, not
 trusted.** Every other source here is documentation, where a claim is
@@ -51,48 +48,6 @@ Azure Service Fabric and passing mentions. **Don't register an
 aggregator or a community catalog here.** A third-party skill is
 instructions an agent executes with your permissions, so vendoring one
 is running a stranger's prompt.
-
-## Vendored files — check path history, not the changelog
-
-`powerbi-report-design` is vendored verbatim at `v0.3.13` (`b8d541c`),
-and its *Local vendoring note* records that; `powerbi-report-authoring`,
-vendored beside it, was archived on 2026-10-09. The
-CHANGELOG is **not a complete record of file changes**, measured
-2026-09-10 in both directions:
-
-- `list_commits` filtered to either vendored skill's directory returns the
-  `v0.3.3`, `v0.3.7` and `v0.3.12` release commits. The changelog names
-  those skills under `0.3.3` and `0.3.7` only — `v0.3.12` changed both
-  under a catalog-wide bullet that names no skill. Its only change to
-  either was stripping the "Update Check" blockquote from `SKILL.md`,
-  which `0.3.12` announces for every skill at once; `references/` and
-  `assets/` were untouched (verified 2026-09-11 by diffing each
-  `SKILL.md` at `65cb0bce` and `ab33f1da`). Clause 2 matches by name, so
-  a catalog-wide bullet slips past it either way.
-- `0.3.14` says every skill description was rewritten. Neither vendored
-  skill's path history shows a `0.3.14` commit.
-
-So for the vendored skill, run `list_commits` with `path:
-skills/powerbi-report-design` and `since:` the vendored merge's time —
-`b8d541c`, 2026-08-20T13:22:57Z, not the release heading's date — and
-treat any commit as a re-sync candidate whatever the changelog says.
-At registration both returned nothing after `v0.3.12`: the vendored
-copies were current through `v0.3.15`.
-
-**An empty list is not proof on its own.** A moved or deleted path
-returns the same `[]`, the trap `powerbi` documents for forks. Confirm it
-with tree SHAs: list `skills` at the vendored merge commit and at HEAD
-with `get_file_contents`, `fields: ["name","sha"]`; equal tree SHAs prove
-the content unchanged. One call per ref also covers the three routed-to
-skills clause 2 names. Measured 2026-09-10, identical at `b8d541c` and
-`65902bae`:
-
-| Upstream skill | Tree SHA |
-| --- | --- |
-| `powerbi-report-authoring` | `d160d140` |
-| `powerbi-report-design` | `b9fe475b` |
-| `powerbi-report-management` | `9b609076` |
-| `powerbi-report-planning` | `4f847fca` |
 
 ## Fetch — one `CHANGELOG.md` patch per commit, isolated by file pagination
 
@@ -172,6 +127,13 @@ and 4 directory listings, plus 1 call per upstream `SKILL.md` read.)
 | `onelake-catalog-govern-cli` | `fabric-catalog-governance` |
 | `activator-cli` | `fabric-activator` |
 | `dataflows-cli` | `fabric-dataflow` |
+| `powerbi-report-authoring`, `powerbi-report-design` | `pbir-report-workflow`, whose `references/design/` is adapted from the latter at `v0.3.13` |
+
+The `powerbi-report-*` row joined on 2026-10-12, when the last vendored
+skill, `powerbi-report-design`, folded into `pbir-report-workflow` and
+stopped being re-synced. A behavioural bullet on either upstream skill
+now surfaces under clause 2, and a fix reaches the adapted text only by
+hand.
 
 Matched by name on 2026-09-10, from the `skills/` listing and the
 changelog, **without reading either side's content**. The listing cannot

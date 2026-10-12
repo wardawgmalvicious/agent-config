@@ -268,48 +268,6 @@
         "paths": "f9256509871e120e"
       }
     },
-    "pbir-bookmarks": {
-      "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "44da2c86b418e2ca"
-      }
-    },
-    "pbir-conditional-formatting": {
-      "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "c36f96a205472b30"
-      }
-    },
-    "pbir-filters": {
-      "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "219ce7ed51a33139"
-      }
-    },
-    "pbir-pages": {
-      "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "6484187f7850e65a"
-      }
-    },
-    "pbir-themes": {
-      "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "3f4fd6f420e032db"
-      }
-    },
-    "pbir-visual-json": {
-      "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "3829a5fe257eab1a"
-      }
-    },
     "prune-branches": {
       "behaviour": {
         "date": "2026-09-30",

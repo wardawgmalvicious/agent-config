@@ -1,7 +1,10 @@
 # Expected activations
 
 Skill lists measured against the payload at commit `975b87f` and refreshed
-2026-09-01, using the static glob check in [README.md](README.md).
+2026-09-01, using the static glob check in [README.md](README.md). Refreshed
+2026-10-12, when the six `pbir-*` file skills folded into
+`pbir-report-workflow`, which has no `paths:`, and the `Tokens` column was
+recomputed.
 
 **The `Tokens` column is a ceiling, not a toll.** A `paths:` match injects
 each skill's **listing entry** — a name, plus its description where
@@ -14,28 +17,29 @@ this table previously read as though a match loaded the bodies.)
 | Fixture file | Activates | Tokens |
 | --- | --- | --- |
 | `control/notes.md` | *(none)* | 0 |
-| `SampleReport.pbip` | `pbip-project-structure` | 2,837 |
-| `SampleReport.Report/.platform` | `pbip-project-structure` | 2,837 |
-| `SampleReport.Report/definition.pbir` | `pbip-project-structure` | 2,837 |
-| `SampleReport.Report/definition/report.json` | `pbir-filters` | 3,301 |
-| `SampleReport.Report/definition/reportExtensions.json` | `pbir-conditional-formatting` | 2,696 |
-| `SampleReport.Report/definition/pages/pages.json` | `pbir-pages` | 2,991 |
-| `…/pages/Page1/page.json` | `pbir-filters`, `pbir-pages` | 6,292 |
-| `…/pages/Page1/bookmarks/bookmarks.json` | `pbir-bookmarks` | 2,097 |
-| `…/pages/Page1/bookmarks/Bookmark1.bookmark.json` | `pbir-bookmarks` | 2,097 |
-| **`…/pages/Page1/visuals/Visual1/visual.json`** | `pbir-conditional-formatting`, `pbir-filters`, `pbir-visual-json` | **9,086** |
-| `SampleReport.Report/StaticResources/RegisteredResources/theme.json` | `pbir-themes` | 2,913 |
-| `SampleModel.SemanticModel/.platform` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 6,642 |
-| `SampleModel.SemanticModel/definition.pbism` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 6,642 |
-| `SampleModel.SemanticModel/definition/model.tmdl` | `fabric-tmdl`, `fabric-tmdl-api` | 3,805 |
-| `SampleModel.SemanticModel/definition/cultures/en-US.tmdl` | `fabric-semantic-model-ai-instructions`, `fabric-tmdl`, `fabric-tmdl-api` | 7,506 |
+| `SampleReport.pbip` | `pbip-project-structure` | 2,948 |
+| `SampleReport.Report/.platform` | `pbip-project-structure` | 2,948 |
+| `SampleReport.Report/definition.pbir` | `pbip-project-structure` | 2,948 |
+| `SampleReport.Report/definition/report.json` | *(none)* | 0 |
+| `SampleReport.Report/definition/reportExtensions.json` | *(none)* | 0 |
+| `SampleReport.Report/definition/pages/pages.json` | *(none)* | 0 |
+| `…/pages/Page1/page.json` | *(none)* | 0 |
+| `…/pages/Page1/bookmarks/bookmarks.json` | *(none)* | 0 |
+| `…/pages/Page1/bookmarks/Bookmark1.bookmark.json` | *(none)* | 0 |
+| **`…/pages/Page1/visuals/Visual1/visual.json`** | *(none)* | **0** |
+| `SampleReport.Report/StaticResources/RegisteredResources/theme.json` | *(none)* | 0 |
+| `SampleModel.SemanticModel/.platform` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 7,617 |
+| `SampleModel.SemanticModel/definition.pbism` | `fabric-tmdl`, `fabric-tmdl-api`, `pbip-project-structure` | 7,617 |
+| `SampleModel.SemanticModel/definition/model.tmdl` | `fabric-tmdl`, `fabric-tmdl-api` | 4,669 |
+| `SampleModel.SemanticModel/definition/cultures/en-US.tmdl` | `fabric-semantic-model-ai-instructions`, `fabric-tmdl`, `fabric-tmdl-api` | 9,041 |
 
 ## Assertions that carry weight
 
 **1. `visual.json` must not activate `pbip-project-structure`.** This is
 the A1 regression test (`8ce009c`). Before that fix the same file pulled
-four skills and ~11,923 tokens. Three skills and 9,086 is correct; four
-means the over-broad `**/*.Report/**` glob is back.
+four skills and ~11,923 tokens. It pulled three until 2026-10-12 and none
+since, assertion 4 below; `pbip-project-structure` on it means the
+over-broad `**/*.Report/**` glob is back.
 
 **2. `.Report/.platform` activates `pbip-project-structure`, but a
 `.platform` in any *other* item type must not.** A1's second half
@@ -54,42 +58,20 @@ is correct. This set carries no rules table to record it in, unlike
 rules pass has never been run over these fixtures, so the only rule
 documented here is the one that made this assertion wrong.
 
-**4. `pbir-filters` and `pbir-visual-json` never appear alone on
-`visual.json`.** All three `pbir-*` visual skills co-fire there and cannot
-be separated by path. That was the standing case for merging them —
-Workstream C2 of the retired `skill-context-cost.md` — and **the merge was
-declined on 2026-09-01.** Do not reopen it on the co-firing alone: the
-co-firing is real, and it is not the argument.
+**4. No report file activates a skill.** The six `pbir-*` file skills
+folded into `pbir-report-workflow` on 2026-10-12 as its references, and
+the router has no `paths:`, so every row from `report.json` to
+`theme.json` activates nothing. A skill on any of them means a report glob
+is back. The router is listed at startup instead, and its body names the
+reference to read before each hand edit.
 
-Three things killed it, two of which postdate the brief:
-
-- **The prize is ~700 tokens, not ~9,000.** C2 was scored at the trio's
-  combined *body* — the 9,086 in the `Tokens` column above. An activation
-  injects the listing entry, so the real figure is three descriptions
-  (2,914 chars, ~1,079 tok) against ~379 for one merged entry.
-- **It saves nothing in this repo.** `skillOverrides` in
-  `.claude/settings.json` collapses all three to `name-only`, so an
-  activation here emits three *names*. The ~700 tokens exist only in client
-  repos, which carry no overrides.
-- **Merging is lossy now that `DESCRIPTION_MAX` is 1,024.** One merged
-  description replaces 2,914 chars of trigger text with 1,024 — a 65% cut
-  to the entire trigger mechanism, across three descriptions that barely
-  overlap (literal suffixes, filter types, CF selectors). And since
-  `pbir-filters` also globs `report.json` and `page.json`, the merged skill
-  would fire on **82** files rather than 73, carrying visual-authoring
-  guidance into page- and report-level files that have no visuals in them.
-
-A merge also renames, and the names are load-bearing in more places than
-the brief listed: `skillOverrides`, the per-skill junctions, client-repo
-relinks — *and* roughly a dozen prose cross-references from other skill
-bodies (`pbir-themes`, `pbir-pages`, `pbir-bookmarks`,
-`pbir-report-workflow`, `fabric-gotchas`). None of those error when stale.
-
-Reconsider only if `skillOverrides` is dropped here **and** the three
-descriptions turn out to be genuinely redundant rather than merely
-co-firing. The cheap alternative that keeps the trio intact is
-`when_to_use`, which is near-free on a conditional skill and whose best
-target is exactly this cluster.
+That fold rests on use, not on the co-firing this assertion used to hold.
+On 2026-09-01 a merge of the three skills that co-fire on `visual.json`
+was declined, as saving at most ~700 listing tokens and only in client
+repos. The fold came after client report work ran through the `pbir`
+CLI, by Bash, which activates nothing: in a session of 72 `pbir`
+commands no report file passed through `Read`, `Write` or `Edit`, so no
+glob fired.
 
 **5. Every `.SemanticModel` file carries `fabric-tmdl-api` as well as
 `fabric-tmdl`.** Added 2026-09-01 by Workstream E, which took the skill

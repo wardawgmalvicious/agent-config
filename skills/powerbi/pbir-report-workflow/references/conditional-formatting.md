@@ -1,15 +1,3 @@
----
-name: pbir-conditional-formatting
-description: Use when adding conditional formatting to a Power BI visual — per-point bar/column colors, diverging gradients, line segment colors, marker transparency, data bars, conditional icons. Three approaches — measure-based (extension measure dataType Text returning theme tokens good/bad/neutral/minColor/midColor/maxColor), FillRule linearGradient2/linearGradient3, rule-based Conditional.Cases. Plus dataViewWildcard selector with matchingOption 1 for per-point, required two-entry array pattern for dataPoint/lineStyles/error, extension measures attaching to EXISTING semantic-model entities via reportExtensions.json, Schema extension on report-level measures, line segment limits (single-series only, segmentGradient affects strokeColor only), marker color/shape/size NOT CF-able (use transparency), ComparisonKind codes 0-4, ScopedEval + AllRolesRef for global min/max.
-when_to_use: Invoke when the user colors bars by a measure, fixes same-color-on-all-points, adds a gradient, data bars, or conditional icons. Co-fires with neighbours on visual.json — use this skill only when the change is a colour, gradient, data bar or icon rule. For visual structure, positioning and SQExpr literal suffixes use pbir-visual-json; for filterConfig.filters bodies use pbir-filters. Palette and report-wide defaults are not here — they live in the theme file.
-paths:
-  - "**/visuals/**/visual.json"
-  - "**/definition/reportExtensions.json"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 ## PBIR Conditional Formatting Reference
 
 Three approaches: measure-based (flexible), `FillRule` gradients (no DAX), and rule-based `Conditional` (UI-generated).
@@ -315,9 +303,43 @@ each viewer's Entra identity, so:
 - Microsoft Learn: [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting)
 - Microsoft Learn: [Format by field value (color expression measures)](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-format-by-field#format-by-field-value)
 - Microsoft Learn: [Tips and tricks for color formatting](https://learn.microsoft.com/power-bi/create-reports/service-tips-and-tricks-for-color-formatting)
-- Comprehensive MS Learn link bundle (CF user concept / measure pattern / gradient scales / theme tokens / PBIR file format): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (CF user concept / measure pattern / gradient scales / theme tokens / PBIR file format): § MS Learn link bundle, below
+
+### MS Learn link bundle
+
+Curated set of Microsoft Learn pages relevant to conditional formatting in Power BI — Desktop UX, the field-value / rule / gradient mechanisms, the data-bar/icon overlays, and how the Desktop choices serialize into PBIR `visual.json` (per-point `dataPoint` two-entry array, `FillRule.linearGradient2/3`, extension-measure `Schema: extension`, `dataViewWildcard.matchingOption`).
+
+The 3 highest-leverage entry points (CF in tables/matrices, CF for fill colors via measure, FillRule color scales) are also linked in § Reference above for in-context use; this section holds the comprehensive set.
+
+**Note on docs split:** The PBIR JSON shape (`dataPoint` two-entry array, `dataViewWildcard`, `linearGradient2/3`, extension-measure expression) is *not* documented narratively on MS Learn — the canonical machine-readable reference is the `developer.microsoft.com/json-schemas/fabric/...` schema family. The Power BI Desktop / Service pages document what user choices the JSON encodes.
+
+#### Conditional formatting — user concept
+
+- [Apply conditional table formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting) — full reference for table/matrix CF: backgrounds, font color, data bars, icons (built-in sets *and* custom icons from a web or OneLake URL), web URLs. The Desktop UX corresponds to the `dataBars` / `icon` blocks the parent skill documents.
+- [Conditional formatting for chart visuals](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-format-visual-titles) — color-by-rule / color-by-field / gradient color scales for chart elements. Maps to the `dataPoint` two-entry-array + `dataViewWildcard.matchingOption: 1` pattern.
+- [Tips and tricks for color formatting in Power BI](https://learn.microsoft.com/power-bi/create-reports/service-tips-and-tricks-for-color-formatting) — color expressions, theme-driven colors, dynamic colors via measures.
+
+#### Color expression measures (the `Text` extension measure pattern)
+
+- [Use measures returning hex codes for conditional formatting](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-format-by-field#format-by-field-value) — the canonical "measure returns `'good'`/`'bad'`/`'#FF0000'`" pattern. Confirms `Text` data-type requirement that the parent skill calls out. Theme tokens `good`/`bad`/`neutral`/`minColor`/`midColor`/`maxColor` resolve to dataColors / sentiment colors from the report theme.
+- [DAX SWITCH function](https://learn.microsoft.com/dax/switch-function-dax) — typical building block for the color-bucket extension measure.
+
+#### Color scales / gradients (FillRule)
+
+- [Apply color formatting based on field value (gradient)](https://learn.microsoft.com/power-bi/create-reports/desktop-conditional-table-formatting#color-by-color-scale) — UI surface for two-color (linearGradient2) and three-color (linearGradient3) scales.
+
+#### Theme tokens used by `'good'`/`'bad'`/`'neutral'`
+
+- [Create custom report themes — sentiment colors](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#sentiment-colors) — `good` / `bad` / `neutral` / `minimum` / `maximum` / `center` semantic-color slots; what the strings the Text-typed extension measure returns resolve to.
+- See [themes.md](themes.md) for full theme structure.
+
+#### PBIR file format (where CF lives)
+
+- [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report) — `visual.json` and `reportExtensions.json` locations the parent skill modifies.
+- [Report definition (Fabric REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/report-definition) — CF lives inside the `definition/` part.
 
 ### See also
 
-- `pbir-visual-json` — selectors, expressions, literal suffixes
-- `pbir-themes` — `ThemeDataColor` and theme token resolution
+- [visual-json.md](visual-json.md) — selectors, expressions, literal suffixes
+- [themes.md](themes.md) — `ThemeDataColor` and theme token resolution
+- [filters.md](filters.md) — same SQExpr `Comparison` / `ComparisonKind` codes used by `Conditional.Cases`

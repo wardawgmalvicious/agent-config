@@ -45,14 +45,6 @@
         "fabric-warehouse-monitoring": "name-only",
         "msix-packaging": "name-only",
         "pbip-project-structure": "name-only",
-        "pbir-bookmarks": "name-only",
-        "pbir-cli": "name-only",
-        "pbir-conditional-formatting": "name-only",
-        "pbir-filters": "name-only",
-        "pbir-pages": "name-only",
-        "pbir-report-workflow": "name-only",
-        "pbir-themes": "name-only",
-        "pbir-visual-json": "name-only",
-        "powerbi-report-design": "name-only"
+        "pbir-report-workflow": "name-only"
     }
 }

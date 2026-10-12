@@ -178,7 +178,7 @@ threshold, or exception pattern.
 | **Color gradient** | Matrix cells, heatmaps | Min→mid→max color scale reveals patterns |
 | **Highlight + grey** | Any chart | One series in accent color, rest in `#BDBDBD` — draws the eye to the insight |
 
-For implementation mechanics, hand these choices to `powerbi-report-authoring`.
+For implementation mechanics, hand these choices to `pbir-report-workflow`'s build steps.
 
 ---
 

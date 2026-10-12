@@ -1,16 +1,3 @@
----
-name: pbir-filters
-description: Use when authoring filter bodies in a Power BI PBIR report at report.json, page.json, or visual.json filterConfig.filters. Covers scopes (Report, Page, Visual — visual filter is sibling of `visual` NOT nested), filter types (Categorical, Advanced, TopN, VisualTopN, RelativeDate, RelativeTime, Tuple), filter body shape (Version 2, From[] aliases, Where[] using SourceRef.Source NEVER Entity), Categorical In / inverted Not-In with isInvertedSelectionMode, empty-default forms, Advanced Comparison with ComparisonKind 0-4, Between inclusive ranges, RelativeDate DateSpan/DateAdd with TimeUnit codes, TopN VisualTopN, And/Or/Not, doubled single quotes for strings, integer L / double D / datetime literal suffixes, hide/lock/single-select, filter-pane visible+expanded at report level (styling lives in theme).
-when_to_use: Invoke when the user adds a filter, fixes a silently-ignored filter, builds a rolling-date window, or toggles filter-pane visibility. This skill co-fires with neighbours on the same files — use it only for filterConfig.filters bodies. On visual.json use pbir-visual-json for visual structure and SQExpr literals, pbir-conditional-formatting for colour rules; on page.json use pbir-pages for page properties, layout and interactions. Filter-pane styling is not here — it is set in the theme file.
-paths:
-  - "**/report.json"
-  - "**/pages/**/page.json"
-  - "**/visuals/**/visual.json"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 ## PBIR Filters Reference
 
 ### Filter Scopes
@@ -270,7 +257,7 @@ Never hide visual-level filters — confuses users. Only hide report/page filter
 
 ### Filter Pane Visibility — outspacePane on report.json (owned here)
 
-Only `visible` and `expanded` live at `report.json → objects.outspacePane`. **All styling (colors, text, backgrounds, input box, width) belongs in the theme — see `pbir-themes`.**
+Only `visible` and `expanded` live at `report.json → objects.outspacePane`. **All styling (colors, text, backgrounds, input box, width) belongs in the theme — see [themes.md](themes.md).**
 
 ```json
 "objects": {"outspacePane": [{"properties": {
@@ -311,10 +298,48 @@ pbir model "Report.Report" -q "EVALUATE DISTINCT('Date'[Calendar Year (ie 2021)]
 - Microsoft Learn: [Format filters in Power BI reports (filter pane)](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-filter)
 - Microsoft Learn: [Filter types overview](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-filter-types)
 - Microsoft Learn: [Slicers in Power BI](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-slicers)
-- Comprehensive MS Learn link bundle (filter scopes / types / pane visibility / drillthrough / theme styling / PBIR file format): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (filter scopes / types / pane visibility / drillthrough / theme styling / PBIR file format): § MS Learn link bundle, below
+
+### MS Learn link bundle
+
+Curated set of Microsoft Learn pages relevant to Power BI report filters — what each `type` means in the user-facing Filters pane, the filter-pane visibility/styling split between report.json and theme, and how filters serialize as PBIR `filterConfig` objects with the SQExpr `From[]` / `Where[]` shape.
+
+The 3 highest-leverage entry points (filter pane format, filter types, slicers concept) are also linked in § Reference above for in-context use; this section holds the comprehensive set.
+
+**Note on docs split:** PBIR `filterConfig` JSON internals (Version 2, From[]/Where[], `SourceRef.Source` alias rule, ComparisonKind codes, RelativeDate TimeUnit codes) are *not* documented narratively on MS Learn — the canonical machine-readable reference is the JSON schema family at `developer.microsoft.com/json-schemas/fabric/...`. The Power BI Desktop / Service pages document what user choices the JSON encodes.
+
+#### User-facing concept (what the JSON encodes)
+
+- [Format filters in Power BI reports (filter pane)](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-filter) — visibility, expand/collapse, lock/hide per filter, the report-level `outspacePane` properties the parent skill calls out.
+- [Filters in Power BI Desktop reports](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-add-filter) — the three scopes (Report / Page / Visual) that map to where `filterConfig` lives.
+- [Filter types overview](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-filter-types) — Basic (Categorical) / Advanced / Top N / Relative Date / Relative Time. Maps directly to the parent skill's `type` field table.
+- [Use the relative date slicer / filter](https://learn.microsoft.com/power-bi/visuals/desktop-slicer-filter-date-range) — RelativeDate semantics: time units, anchor date.
+
+#### Slicers (sibling concept — slicers are visuals, not filters)
+
+- [Slicers in Power BI](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-slicers) — clarifies the parent skill's "slicers are visuals bound to categorical data" note.
+- [Hierarchy slicers](https://learn.microsoft.com/power-bi/create-reports/power-bi-slicer-hierarchy-multiple-fields) — multi-field slicer; relevant when authoring slicer-as-visual.
+
+#### Filter pane visibility/expansion (`outspacePane` in report.json)
+
+- [Format filters in Power BI reports — filter pane settings](https://learn.microsoft.com/power-bi/create-reports/power-bi-report-filter#format-the-filters-pane-and-filter-cards) — UI surface for the `visible` / `expanded` properties. Styling lives in the theme — see [themes.md](themes.md).
+
+#### Drillthrough and cross-report drillthrough
+
+- [Use drillthrough](https://learn.microsoft.com/power-bi/create-reports/desktop-drillthrough) — drillthrough page filter binding (`Column`-typed filter in `filterConfig`).
+- [Cross-report drillthrough](https://learn.microsoft.com/power-bi/create-reports/desktop-drillthrough#enable-cross-report-drillthrough) — when filter state spans reports.
+
+#### Filter pane theming (cross-skill)
+
+- [Customize the filter pane appearance via theme](https://learn.microsoft.com/power-bi/create-reports/report-themes-create-custom#filter-pane-and-filter-card) — the theme keys (`outspacePane`, `filterCard`) where colors/text/widths belong. See [themes.md](themes.md).
+
+#### PBIR file format (where filters live)
+
+- [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report) — `report.json`, `pages/<page>/page.json`, `pages/<page>/visuals/<v>/visual.json` locations of `filterConfig`.
+- [Report definition (Fabric REST envelope)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/report-definition) — definition envelope. The `definition.pbir` file targets the semantic model that filter `Entity` references resolve against.
 
 ### See also
 
-- `pbir-visual-json` — visual.json `filterConfig` placement (sibling of `visual`)
-- `pbir-themes` — filter pane and filter card styling
-- `pbir-bookmarks` — `byExpr` filter snapshots (same SQExpr shape)
+- [visual-json.md](visual-json.md) — visual.json `filterConfig` placement (sibling of `visual`)
+- [themes.md](themes.md) — filter pane and filter card styling
+- [bookmarks.md](bookmarks.md) — `byExpr` filter snapshots (same SQExpr shape)

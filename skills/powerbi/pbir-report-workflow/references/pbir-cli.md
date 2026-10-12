@@ -1,11 +1,3 @@
----
-name: pbir-cli
-description: Use when running the pbir CLI (install via uv tool install pbir-cli) to inspect or edit local Power BI PBIR reports. Covers path syntax (Report.Report/Page.Page/Visual.Visual with required type suffixes, glob patterns, property dot-notation), verb noun groups — report / page / visual / filter / bookmark / theme / dax / fields / schema / profile / annotation / model — plus discovery verbs (ls / tree / find / cat / get / schema describe) that should run before any mutation, property get/set with glob bulk edits requiring -f, validation and publish flows, download/publish to Fabric workspaces, and batch runs. Detailed per-command flags and arguments live in references/REFERENCE.md. Invoke whenever the user mentions pbir <verb>, pbir-cli, pbir set/get/ls/add/new/rm/validate/publish, or any specific pbir subcommand.
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 ## pbir CLI — Verb Index
 
 Agent-first CLI for manipulating local Power BI reports in PBIR format. Install separately: `uv tool install pbir-cli`. Verify with `pbir --version`.
@@ -36,22 +28,22 @@ Report.Report/Page.Page/Visual.Visual
 
 | Group | Entry commands | Detail |
 |---|---|---|
-| Discovery | `pbir ls`, `pbir tree`, `pbir find`, `pbir cat`, `pbir get` | references/REFERENCE.md § Discovery |
-| Schema | `pbir schema types`, `pbir schema containers`, `pbir schema describe`, `pbir schema check`, `pbir schema upgrade` | references/REFERENCE.md § Schema |
-| Property get/set | `pbir set`, `pbir get`, `pbir visuals properties`, `pbir visuals format` | references/REFERENCE.md § Property |
-| Report | `pbir new report`, `pbir report rebind`, `pbir report convert`, `pbir report merge`, `pbir validate`, `pbir backup`, `pbir restore` | references/REFERENCE.md § Report |
-| Pages | `pbir pages …`, `pbir add page` | references/REFERENCE.md § Pages |
-| Visuals | `pbir add visual`, `pbir visuals …` | references/REFERENCE.md § Visuals |
-| Conditional formatting | `pbir visuals cf …`, `pbir visuals format-field`, `pbir visuals format-state` | references/REFERENCE.md § CF |
-| Filters | `pbir filters …`, `pbir add filter` | references/REFERENCE.md § Filters |
-| Fields | `pbir fields …` | references/REFERENCE.md § Fields |
-| Theme | `pbir theme …` | references/REFERENCE.md § Theme |
-| DAX | `pbir dax measures …`, `pbir dax viscalcs …` | references/REFERENCE.md § DAX |
-| Bookmarks & annotations | `pbir bookmarks …`, `pbir annotations …`, `pbir add annotation` | references/REFERENCE.md § Bookmarks |
-| Connection / publish | `pbir connect`, `pbir profile`, `pbir download`, `pbir publish`, `pbir open` | references/REFERENCE.md § Connection |
-| Model inspection | `pbir model …` | references/REFERENCE.md § Model |
-| Removal | `pbir rm` | references/REFERENCE.md § Removal |
-| Batch | `pbir batch run`, `pbir validate` | references/REFERENCE.md § Batch |
+| Discovery | `pbir ls`, `pbir tree`, `pbir find`, `pbir cat`, `pbir get` | pbir-cli-commands.md § Discovery |
+| Schema | `pbir schema types`, `pbir schema containers`, `pbir schema describe`, `pbir schema check`, `pbir schema upgrade` | pbir-cli-commands.md § Schema |
+| Property get/set | `pbir set`, `pbir get`, `pbir visuals properties`, `pbir visuals format` | pbir-cli-commands.md § Property |
+| Report | `pbir new report`, `pbir report rebind`, `pbir report convert`, `pbir report merge`, `pbir validate`, `pbir backup`, `pbir restore` | pbir-cli-commands.md § Report |
+| Pages | `pbir pages …`, `pbir add page` | pbir-cli-commands.md § Pages |
+| Visuals | `pbir add visual`, `pbir visuals …` | pbir-cli-commands.md § Visuals |
+| Conditional formatting | `pbir visuals cf …`, `pbir visuals format-field`, `pbir visuals format-state` | pbir-cli-commands.md § CF |
+| Filters | `pbir filters …`, `pbir add filter` | pbir-cli-commands.md § Filters |
+| Fields | `pbir fields …` | pbir-cli-commands.md § Fields |
+| Theme | `pbir theme …` | pbir-cli-commands.md § Theme |
+| DAX | `pbir dax measures …`, `pbir dax viscalcs …` | pbir-cli-commands.md § DAX |
+| Bookmarks & annotations | `pbir bookmarks …`, `pbir annotations …`, `pbir add annotation` | pbir-cli-commands.md § Bookmarks |
+| Connection / publish | `pbir connect`, `pbir profile`, `pbir download`, `pbir publish`, `pbir open` | pbir-cli-commands.md § Connection |
+| Model inspection | `pbir model …` | pbir-cli-commands.md § Model |
+| Removal | `pbir rm` | pbir-cli-commands.md § Removal |
+| Batch | `pbir batch run`, `pbir validate` | pbir-cli-commands.md § Batch |
 
 ### Discovery Quickstart
 
@@ -71,7 +63,7 @@ pbir schema types                              # List visual types
 pbir schema describe card.title                # Properties, types, ranges
 ```
 
-See references/REFERENCE.md § Discovery and references/REFERENCE.md § Schema for the full flag set.
+See pbir-cli-commands.md § Discovery and pbir-cli-commands.md § Schema for the full flag set.
 
 ### Gotchas
 
@@ -82,7 +74,7 @@ See references/REFERENCE.md § Discovery and references/REFERENCE.md § Schema f
 | "Report not found" | Missing `.Report` type suffix | Paths require `Name.Report`, `Name.Page`, `Name.Visual` |
 | `set` fails with "unknown property" | Property not discovered first | Run `pbir schema describe <type>.<container>` |
 | Publish fails after local edits | Structure invalid | Run `pbir validate` before publish |
-| `pbir validate` floods `SCHEMA_DEGRADED` warnings | Declared visualContainer schema version isn't bundled with the CLI; a fallback schema was used | Cosmetic, one per file — only errors block. Note schema-valid ≠ engine-valid: verify hand-authored SQExpr shapes against Desktop-serialized reports (e.g. microsoft/BCApps); see `pbir-filters` § TopN |
+| `pbir validate` floods `SCHEMA_DEGRADED` warnings | Declared visualContainer schema version isn't bundled with the CLI; a fallback schema was used | Cosmetic, one per file — only errors block. Note schema-valid ≠ engine-valid: verify hand-authored SQExpr shapes against Desktop-serialized reports (e.g. microsoft/BCApps); see [filters.md](filters.md) § TopN |
 | UnicodeEncodeError on Windows | cp1252 stdout encoding | Set `PYTHONIOENCODING=utf-8` |
 | Theme changes not applied per visual | Visual has inline override | `pbir visuals clear-formatting --only-containers -f` |
 | `pbir download` fails | fab CLI not authenticated | Run `fab auth login` first |
@@ -95,8 +87,8 @@ See references/REFERENCE.md § Discovery and references/REFERENCE.md § Schema f
 
 ### See also
 
-- [references/REFERENCE.md](references/REFERENCE.md) — full per-command flag and argument reference
+- [pbir-cli-commands.md](pbir-cli-commands.md) — full per-command flag and argument reference
 - `pbir-report-workflow` — end-to-end report creation with this CLI
-- `pbir-pages` — page.json structure consumed by `pbir pages …`
-- `pbir-visual-json` — visual.json structure consumed by `pbir visuals …`
-- `pbir-themes` — theme JSON structure consumed by `pbir theme …`
+- [pages.md](pages.md) — page.json structure consumed by `pbir pages …`
+- [visual-json.md](visual-json.md) — visual.json structure consumed by `pbir visuals …`
+- [themes.md](themes.md) — theme JSON structure consumed by `pbir theme …`
