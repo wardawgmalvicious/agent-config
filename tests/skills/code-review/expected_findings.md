@@ -294,35 +294,49 @@ descriptions ✓ format string discipline ✓ summarizeBy on IDs ✓.
 ## dax_fixture.dax
 
 DAX function casing + table-qualification + DIVIDE + VAR/RETURN
-decomposition fixture.
+decomposition fixture. Every measure in it is valid DAX: DAX ignores
+case, and line 3's guard keeps `/` off a zero. So casing and layout are
+🟢 style, and line 3 is critical for what its guard returns, not for
+`/`.
 
 🔴 Critical:
 
-- `dax_fixture.dax:1` — `sumx` lowercase; functions should be
-  UPPERCASE (`SUMX`). (Style per coding-dax.md)
-- `dax_fixture.dax:1` — Bare column references `[Quantity]`,
-  `[Unit Price]`; should be table-qualified: `'Transaction
-  Line'[Quantity]`. (Style — measure-vs-column ambiguity)
-- `dax_fixture.dax:3` — `/` divide operator without `DIVIDE()`. Will
-  return infinity or error on `[Revenue] = 0`. The IF guard is the
-  workaround for missing DIVIDE. (Anti-pattern)
+- `dax_fixture.dax:3` — `IF([Revenue] = 0, 0, ...)` is also true when
+  `[Revenue]` is BLANK: every comparison operator but `==` treats BLANK
+  as 0. So each row with no sales shows a 0% margin, and visuals keep
+  the rows a BLANK would drop. `DIVIDE()` returns BLANK for a zero or
+  BLANK denominator, replacing both the guard and `/`. (Correctness;
+  DIVIDE over `/` per coding-dax.md)
 
 🟡 Warning:
 
+- `dax_fixture.dax:1` — Bare column references `[Quantity]`,
+  `[Unit Price]`; should be table-qualified: `'Transaction
+  Line'[Quantity]`. They work, but read as measures. (Maintainability
+  per coding-dax.md)
 - `dax_fixture.dax:5-9` — `CALCULATE([Total Sales],
   SAMEPERIODLASTYEAR(...))` evaluated twice instead of decomposed into
   `VAR`/`RETURN`. (Performance + style)
 - `dax_fixture.dax:11-15` — Nested `IF` four levels deep. Should be
   `SWITCH(TRUE(), ...)`. (Anti-pattern)
-- `dax_fixture.dax:1` — Single-line measure for non-trivial logic;
-  should be multi-line with function args on separate lines. (Style)
+
+🟢 Suggestion:
+
+- `dax_fixture.dax:1` — `sumx` lowercase; functions should be
+  UPPERCASE (`SUMX`). DAX is case-insensitive, so it runs. (Style per
+  coding-dax.md § "Casing")
+- `dax_fixture.dax:1,3,7,8,12-15` — Multi-argument calls on one line,
+  with no space before `(`. The rule puts each argument of a call with
+  two or more on its own line, and writes `SUMX (`. (Style per
+  coding-dax.md § "Indentation and whitespace")
 
 Not a finding: measure names with spaces (`Total Sales`, `Margin Pct`,
 `Sales YoY %`, `Customer Tier`) follow coding-tmdl.md § "Naming", in
 TMDL context or standalone DAX alike.
 
 Coverage: DAX rule co-load ✓ function casing ✓ table-qualified column
-refs ✓ DIVIDE over `/` ✓ VAR/RETURN decomposition ✓ IF→SWITCH ✓.
+refs ✓ DIVIDE over `/` and BLANK as 0 ✓ VAR/RETURN decomposition ✓
+IF→SWITCH ✓ argument layout ✓.
 
 ---
 
