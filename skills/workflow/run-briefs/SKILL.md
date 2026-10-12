@@ -65,6 +65,11 @@ level, the oldest `written` first. The chain ends at the target.
   `git worktree list --porcelain` shows for it, and the queue view's
   reading where the repo has one (`uv run scripts/handoff-status.py`
   here).
+- A brief untracked or modified in the main checkout:
+  `git status --porcelain -- <queue>/<stem>.md` prints a line. The
+  worktree branches from `HEAD` without that change, and for an
+  untracked brief the gate's "brief gone" passes with nothing done
+  (2026-10-12).
 
 Print the chain before the first launch, with what stops it where it
 does. The user typed the command; nothing is asked.
