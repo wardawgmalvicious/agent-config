@@ -210,7 +210,7 @@ fab deploy --config config.yml --target_env test \
 
 The config file resolves source folders, target workspace IDs/names, and per-env GUID replacements through fabric-cicd's parameter model — same `$workspace.$id` and `$items.<Type>.<name>.$id` tokens as the Azure DevOps tutorial's token table (its Key Takeaways line drops the second `$`, 2026-10-09). Authenticates via the active `fab auth` session (interactive or SPN).
 
-**When to use `fab deploy` vs Power BI deployment pipelines:** `fab deploy` is **source-of-truth-is-Git** (workspace = artifact of the deploy). Power BI deployment pipelines is **source-of-truth-is-workspace** (dev workspace promotes to test/prod workspaces via the service-side pipeline). They are distinct surfaces — don't mix.
+**When to use `fab deploy` vs Power BI deployment pipelines:** `fab deploy` is **source-of-truth-is-Git** (workspace = artifact of the deploy). Power BI deployment pipelines is **source-of-truth-is-workspace** (dev workspace promotes to test/prod workspaces via the service-side pipeline). They are distinct surfaces, so never deploy into one workspace by both; Git into the first stage with pipelines onward is not a mix but Learn's option 3, "Git only through dev" (2026-10-09). The **fabric-deploy** skill picks between them.
 
 ### Built-in Azure DevOps task (`FabricCLI@1`, preview)
 
