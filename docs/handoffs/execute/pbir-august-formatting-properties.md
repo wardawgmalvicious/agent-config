@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: []
-blocked-by: [pbir-skills-into-pbir-report-workflow.md]
+blocked-by: []
 written: 2026-10-07
 ---
 
@@ -27,7 +27,7 @@ written: 2026-10-07
   lifetime invocation or none, so it waited on
   the user's portfolio decision (`7240d9e`). Three of
   them fold into `pbir-report-workflow` and the fourth is archived, so
-  it waits for the fold.
+  it waited for the fold, which landed on 2026-10-12 (`c19548a`).
 
 ## What the schema names now
 
@@ -71,9 +71,8 @@ Fetch or upgrade before deciding any of these needs Desktop.
 
 ## Where it lands
 
-In `skills/powerbi/pbir-report-workflow/references/`, once
-[pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)
-has folded the PBIR skills there:
+In `skills/powerbi/pbir-report-workflow/references/`, where the PBIR
+skills now live:
 
 - `visual-json.md`, from `pbir-visual-json`: every property above, and
   the axis names and slicer encodings that were to go to

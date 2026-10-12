@@ -18,8 +18,8 @@ written: 2026-10-01
   here has seen.
 - **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items,
-  and folds the PBIR skills into `pbir-report-workflow`
-  ([pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)).
+  and folds the PBIR skills into `pbir-report-workflow`, done on
+  2026-10-12 (`c19548a`).
   On reopening, weigh a reference there for the report side before a
   skill of its own.
 

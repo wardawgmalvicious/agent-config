@@ -2,7 +2,7 @@
 status: open
 priority: 3
 needs: []
-blocked-by: [pbir-skills-into-pbir-report-workflow.md, ai-instructions-into-fabric-tmdl.md]
+blocked-by: [ai-instructions-into-fabric-tmdl.md]
 written: 2026-10-09
 ---
 

@@ -67,9 +67,8 @@ behaviour Learn does not state.
 
 Whether the four-file limit binds the `pbir` CLI's own writes to
 `report.json` while Desktop holds the PBIP open with the preview on. If
-it does, `pbir-report-workflow`'s references owe the caveat, once
-[pbir-skills-into-pbir-report-workflow.md](pbir-skills-into-pbir-report-workflow.md)
-has landed.
+it does, `pbir-report-workflow`'s references owe the caveat; the PBIR
+skills folded into them on 2026-10-12.
 
 ## Re-measure before acting
 

@@ -268,6 +268,15 @@
         "paths": "f9256509871e120e"
       }
     },
+    "pbir-report-workflow": {
+      "behaviour": {
+        "date": "2026-10-12",
+        "commit": "c19548a",
+        "routing": "a0bf1be2b5b22dbb",
+        "body": "5db334a43a22e594",
+        "references": "960a534f838971ff"
+      }
+    },
     "prune-branches": {
       "behaviour": {
         "date": "2026-09-30",
