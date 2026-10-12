@@ -14,10 +14,8 @@ A name or a credential has reached GitHub: in a file, a commit message,
 a pull request, a branch name. **A rewrite in place is not the remedy.**
 `refs/pull/N/head` pin every commit a pull request touched, and GitHub
 serves unreachable objects by SHA until a collection on no schedule you
-control — the reasoning is
-`C:/Repos/Personal/agent-config/docs/evidence/user-claude-md.md`
-§ "Git identity is folder-scoped", and GitHub's own page says the same of
-clones, forks and "cached views"
+control. GitHub's own page says the same of clones, forks and "cached
+views", and of the pull requests themselves
 ([references/pushed-leaks.md](references/pushed-leaks.md)). Deleting the
 repository and creating it again is the immediate remedy, and the one in
 the owner's hands: the pull request refs go with the repository. The

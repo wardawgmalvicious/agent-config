@@ -5,11 +5,9 @@ measured. The skill cites this file; nothing here is restated there.
 
 ## Why a rewrite in place is not the remedy
 
-The two reasons are in
-`C:/Repos/Personal/agent-config/docs/evidence/user-claude-md.md`
-§ "Git identity is folder-scoped": `refs/pull/N/head` pin every commit a
-pull request ever touched, and GitHub serves unreachable objects by
-explicit SHA until it garbage-collects, on no schedule you control.
+Two mechanisms keep the commits reachable: `refs/pull/N/head` pin every
+commit a pull request ever touched, and GitHub serves unreachable objects
+by explicit SHA until it garbage-collects, on no schedule you control.
 GitHub's own page, "Removing sensitive data from a repository"
 (docs.github.com, read 2026-10-01), says the same in its words:
 
@@ -31,8 +29,8 @@ It names the one route besides the recreate, and bounds it:
 So a leaked name, which no rotation touches, has two routes: Support's
 purge after a rewrite, on GitHub's judgment of what is sensitive and
 never tried here, and the recreate, which the owner runs and which takes
-effect at once — "the only immediate remedy", in the evidence file's
-words. On the secret itself: "as a first step you need to revoke and/or
+effect at once, the only immediate remedy. On the secret itself:
+"as a first step you need to revoke and/or
 rotate that secret." On everyone else's copies: "You cannot remove
 sensitive data from other users' clones of your repository", "You will
 need to coordinate with the owners of the forks … GitHub cannot provide
@@ -66,8 +64,8 @@ snapshot restores them; the skill's `repo-settings.ps1` records settings.
 
 Measured 2026-10-01, `pwsh -NoProfile`, gh 2.101.0:
 
-- From `C:\Repos\Personal\machine-config`, a repo under the personal
-  identity root: `git config user.name` and `gh api user -q .login` both
+- From a clone under the personal identity root:
+  `git config user.name` and `gh api user -q .login` both
   answered the personal account.
 - From the session scratchpad, outside both identity roots:
   `git config user.name` exited 1, and `gh api user -q .login` answered
@@ -161,8 +159,9 @@ seven translated SHAs on the stale one — is in
 
 ## The stale remote-tracking ref
 
-`identity-guard.sh` scans a push as `git log … "$REF" --not --remotes`
-(lines 308–309 at `cbd4b89`). Probed 2026-10-01 in a scratch repo, git
+`~/.claude/hooks/identity-guard.sh` scans a push as
+`git log … "$REF" --not --remotes` in its pre-push mode (read
+2026-10-01). Probed 2026-10-01 in a scratch repo, git
 2.55.0.windows.3: two commits pushed to a bare `origin`; the bare repo
 deleted and re-initialised empty.
 
@@ -180,13 +179,12 @@ cleanup the trap is live.
 
 ## Hooks in a fresh clone
 
-agent-config wires its guards through pre-commit:
-`default_install_hook_types: [pre-commit, commit-msg, pre-push]`, so one
-`pre-commit install` arms all three stages, and
-`scripts/bootstrap-pre-commit` does that on a fresh clone. Its two guard scripts run as `bash <script>`
-under `language: system`, which is why their committed mode, `100644` by
-`git ls-files -s`, does not matter there. It matters where git runs the
-file itself, under `core.hooksPath`: a POSIX clone does not run a hook
+A repo that wires its guards through pre-commit lists the stages in
+`default_install_hook_types`, and one `pre-commit install` arms every
+one of them. A guard run as `bash <script>` under `language: system`
+runs whatever its committed mode, since bash reads the file. The mode
+matters where git runs the file itself, under
+`core.hooksPath`: a POSIX clone does not run a hook
 without the executable bit, and the repo recreated on 2026-09-23 carried
 such a window in its history. `git update-index --chmod=+x <file>` sets
 the bit in the index on a machine whose filesystem does not.
