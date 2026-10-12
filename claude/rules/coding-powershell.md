@@ -82,6 +82,25 @@ $script:Failures = @()
 #endregion
 ```
 
+**One help line can drop the whole block.** A line inside it whose first
+text is a dot and a word, such as a wrapped `.NET`, `.gitignore` or
+`.sqlproj`, is read as a help keyword. An unknown one, or a real one
+followed by prose, makes `Get-Help` ignore the block and print only the
+syntax line, with no error, and PSScriptAnalyzer flags none of them;
+punctuation straight after the word, as in `.env:`, is safe. Rewrap so
+the line starts with another word, and pin the help with a test that
+fails on a dropped block (pwsh 7.6.6, PSScriptAnalyzer 1.25.0, Pester
+6.1.0, 2026-10-12):
+
+```powershell
+It 'has parsed comment-based help' {
+    (Get-Help $scriptPath).description | Should -Not -BeNullOrEmpty
+}
+```
+
+With no `.DESCRIPTION`, assert instead that `.Synopsis` does not start with
+the script's file name: a dropped block falls back to the syntax line.
+
 ## Status output
 
 Scripts that change machine state report through bracketed-level helpers
