@@ -69,6 +69,12 @@ When editing these files:
   forward verbatim across edits and moves; never recompute or drop it.
   A brand-new view has no way to know its hash in advance — omit the
   header and accept one round-trip.
+- **Read an item's folder path from the repo, never from Learn's
+  example.** A KQL database can sit inside its Eventhouse's folder, as
+  `<Name>.Eventhouse/.children/<Name>.KQLDatabase/` with its own
+  `.platform`, where Learn's Eventhouse Git page shows the two side by
+  side. Seen in client Git history from 2026-09-16; which Eventhouses
+  nest this way is unknown.
 
 ## A portal commit serializes live state — absence is a deletion
 
