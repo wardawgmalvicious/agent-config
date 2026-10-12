@@ -70,3 +70,41 @@ comes back with new evidence gets a new entry.
   at local scope in that one repo, pinned rather than `@latest`, with
   `DESKTOP_COMMANDER_DISABLE_TELEMETRY=1`; neither the pin nor the
   opt-out stops the flags fetch.
+
+## 2026-10-12 — sequential-thinking for step-by-step reasoning
+
+- **From**: the user, for the user-scope template, having seen it
+  around. Weighed from its source at `modelcontextprotocol/servers`
+  `bbb701e`, whose `package.json` reads `1.0.0`, npm's `latest` that
+  day.
+- **Why not**: it does nothing Claude Code lacks. Its one tool,
+  `sequentialthinking`, appends each thought to an in-memory array and
+  returns only counters: it never hands a thought back, reasons nothing
+  itself and keeps nothing past the process, so the thinking is the
+  model writing the `thought` argument, a prompt in a tool schema. It
+  dates from late 2024, before any Claude model had extended thinking,
+  and Anthropic's post on the same pattern, its `think` tool, gained an
+  update on 2025-12-15 recommending extended thinking "instead of a
+  dedicated think tool in most cases". Each thought is a full model
+  turn, where native thinking needs none, and leaves the thought and a
+  JSON receipt in the transcript. Claude Code blunts it further. Tool
+  search leaves only its name in context, and the server sets no
+  `instructions` saying when to search for it; `alwaysLoad: true` would
+  load it into every session and hold startup up to 5 s for the `npx`
+  spawn. Claude Code also cuts a tool description at 2,048 characters:
+  this one is 2,781, and the cut falls mid-word in the parameter list,
+  dropping the whole "You should:" block, the eleven rules that shape
+  the loop. `CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH` lifts the cut, but
+  for every server. Scope is not the reason: bound to nothing, it would
+  pass the README's test. It would, though, be the first user-scope
+  server needing a local runtime, Node and `cmd /c npx`, and unpinned
+  it follows `latest`, which moved from `2026.8.31` to `1.0.0` on
+  2026-10-11 (UTC), a release its changelog calls "the last release of
+  the legacy-era server". Upstream calls its reference servers
+  "educational examples", "not as production-ready solutions".
+- **Would change it**: a model or client with no native reasoning,
+  where the pattern can earn its turns, or an A/B on a hard task in
+  which it beats raising the session's effort. It would go at local
+  scope first, pinned to an exact version with
+  `DISABLE_THOUGHT_LOGGING=true`, and into the global template only
+  once measured working from Claude Code.
