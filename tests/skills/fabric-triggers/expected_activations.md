@@ -45,11 +45,11 @@ an apparent one.
 | `SampleESS.EventSchemaSet/EventSchemaSetDefinition.json` | `fabric-event-schema-set` | 4,850 |
 | `SampleDash.KQLDashboard/.platform` | `fabric-realtime-dashboard` | 1,839 |
 | `SampleDash.KQLDashboard/RealTimeDashboard.json` | `fabric-realtime-dashboard` | 1,839 |
-| **`SampleNB.Notebook/.platform`** | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | **6,448** |
-| `SampleNB.Notebook/notebook-content.py` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
-| `SampleNB.Notebook/notebook-settings.json` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
-| `SampleSparkNB.Notebook/.platform` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
-| `SampleSparkNB.Notebook/notebook-content.sql` | `fabric-error-handling`, `fabric-spark`, `fabric-spark-monitoring` | 6,448 |
+| **`SampleNB.Notebook/.platform`** | *(none)* | **0** |
+| `SampleNB.Notebook/notebook-content.py` | *(none)* | 0 |
+| `SampleNB.Notebook/notebook-settings.json` | *(none)* | 0 |
+| `SampleSparkNB.Notebook/.platform` | *(none)* | 0 |
+| `SampleSparkNB.Notebook/notebook-content.sql` | *(none)* | 0 |
 | `SampleVL.VariableLibrary/.platform` | `fabric-variable-library` | 2,693 |
 | `SampleVL.VariableLibrary/settings.json` | `fabric-variable-library` | 2,693 |
 | `SampleVL.VariableLibrary/variables.json` | `fabric-variable-library` | 2,693 |
@@ -106,10 +106,11 @@ an apparent one.
 | `SampleRX.Reflex/ReflexEntities.json` | `fabric-activator` | 5,205 |
 | `SampleAct.Activator/.platform` | `fabric-activator` | 5,205 |
 
-Together with `../pbip-triggers/`, all **25** conditional skills in the
-payload are now covered — 10 there, 15 here. `fabric-iq` covers four
+Together with `../pbip-triggers/`, all **22** conditional skills in the
+payload are now covered — 10 there, 12 here. `fabric-iq` covers four
 item types, one router with each item's glob, since the four IQ skills
-folded into it on 2026-10-12.
+folded into it on 2026-10-12. The notebook skills folded into
+`fabric-spark` the same day, which kept no glob (assertion 3).
 
 ## Assertions that carry weight
 
@@ -120,8 +121,8 @@ folded into it on 2026-10-12.
 `.platform` in a *non*-PBIP item type. `pbip-project-structure` used to
 glob a bare `**/.platform`, which is a Fabric item marker rather than a
 PBIP one; in a client repo that matched 31 files across Notebooks,
-Eventstreams, Lakehouses and Warehouses. Two skills on this file is
-correct. Three means the bare glob is back.
+Eventstreams, Lakehouses and Warehouses. No skill on this file is
+correct. `pbip-project-structure` here means the bare glob is back.
 
 Every other `.platform` here is a second witness to the same fix.
 
@@ -150,48 +151,19 @@ call the static check uses. A flat SQL project would still activate. This
 is written down because the opposite was believed for a while and filed as
 a live bug risk; it is not one.
 
-**3. Three skills glob `**/*.Notebook/**` and no path can select one.**
-`fabric-spark`, `fabric-error-handling` and — since 2026-09-01 —
-`fabric-spark-monitoring`. This fixture is the measurement behind that,
-and it was the standing case for merging the first two — Workstream C1 of
-the retired `skill-context-cost.md`. **The merge was declined on
-2026-09-01**, on the same reasoning that killed C2 (recorded in full at
-[`../pbip-triggers/`](../pbip-triggers/expected_activations.md), assertion
-4) plus one argument specific to this pair.
-
-The arithmetic is worse here than for C2: the two descriptions are 1,479
-chars (~548 tok) against ~379 for a merged entry, so the ceiling is **~169
-tokens** — and zero in this repo, where `skillOverrides` collapses both to
-`name-only`. Against that, `DESCRIPTION_MAX` of 1,024 forces a 31% cut to
-the combined trigger text, and the rename touches `skillOverrides`, the
-junctions, client-repo relinks and the prose cross-references in
-`fabric-gotchas`, `fabric-mlv` and `fabric-spark-monitoring`.
-
-The specific argument: **co-firing is not sameness.** `fabric-spark` is
-Fabric product surface — ABFS URIs, `notebookutils.runtime.context`,
-`enableSchemas` immutability, REST upload quirks. `fabric-error-handling`
-is *this repo's own convention* — the Tier 1 / Tier 2 split and the
-canonical `results` shape. They share a glob because both live in
-notebooks, not because they are one topic. Keeping them apart is what lets
-the convention be revised without touching product documentation, and
-lets either one be re-scoped later without dragging the other along.
-
-Reconsider only if the two bodies start duplicating each other's content.
-Permanent co-activation on its own is not sufficient and never was.
-
-The third one was added deliberately, reversing the "probably a bad trade"
-the brief recorded against it. That verdict priced an activation at the
-skill's *body* (~2,030 tokens on every Notebook touch). It is not: a
-`paths:` match emits a `skill_listing` attachment carrying the skill's
-listing entry, and the body loads only if the skill is then invoked. So
-the real trade is 239 description tokens in *every* session against the
-same entry in *Notebook-touching* sessions only — which is the trade the
-whole workstream is built on.
-
-`**/*.Notebook/**` only, though the skill's description also covers
-`sparkJobDefinitions`. Widening it to `**/*.SparkJobDefinition/**` needs
-that item type verified against a real export and a fixture added in the
-same commit; the reference repo has none, and neither does this set.
+**3. A notebook activates no skill.** Until 2026-10-12 three skills
+globbed `**/*.Notebook/**` — `fabric-spark`, `fabric-error-handling` and
+`fabric-spark-monitoring` — so a notebook Read listed all three, and no
+path could select one. Merging them was declined on 2026-09-01, when the
+saving was a listing ceiling of ~169 tokens and co-firing was read as no
+sign of one topic. The user chose the fold on 2026-10-09 (`7240d9e`):
+in six client sessions the three were listed on notebook Reads and none
+was invoked, while `fabric-mlv` and `fabric-ai-functions` sat in every
+listing besides. All five are now one `fabric-spark` with no glob,
+always listed, so a request made in words reaches it before any notebook
+is read, which no glob can. The *(none)* on both notebook folders is
+that decision, not a gap: the rules still load there, as § "Rules load
+here too" shows.
 
 **4. A Lakehouse activates nothing, on all four files.** All four zeros
 are **deliberate**, and each was tried against a real candidate before

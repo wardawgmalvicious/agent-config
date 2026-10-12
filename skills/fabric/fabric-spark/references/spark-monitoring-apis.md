@@ -1,18 +1,18 @@
 # Fabric Spark monitoring — log and resource-usage APIs
 
 The log and `resourceUsage` endpoints that sit alongside the Spark
-History Server routes in the parent
-[SKILL.md](../SKILL.md). Same auth, same base URL, same path
-parameters — these are literal siblings of `/jobs` under
-`.../applications/{appId}/`.
+History Server routes in [spark-monitoring.md](spark-monitoring.md).
+Same auth, same base URL, same path parameters — these are literal
+siblings of `/jobs` under `.../applications/{appId}/`.
 
 **Provenance:** doc-verified 2026-08-30 against Microsoft Learn
 ([livy-log](https://learn.microsoft.com/fabric/data-engineering/livy-log),
 [driver-log](https://learn.microsoft.com/fabric/data-engineering/driver-log),
 [executor-log](https://learn.microsoft.com/fabric/data-engineering/executor-log),
 [resource-usage-apis](https://learn.microsoft.com/fabric/data-engineering/resource-usage-apis)).
-**Not exercised live** — unlike the SHS routes in SKILL.md, which were
-run on 2026-08-17. Verify response shapes before depending on them.
+**Not exercised live** — unlike the SHS routes in spark-monitoring.md,
+which were run on 2026-08-17. Verify response shapes before depending
+on them.
 
 ## Common route shape
 
@@ -32,7 +32,7 @@ GET https://api.fabric.microsoft.com/v1/workspaces/{workspaceId}
 
 ## Auth and scopes
 
-Same delegated token as the parent skill. Required scopes are
+Same delegated token as spark-monitoring.md. Required scopes are
 `Item.Read.All` / `Item.ReadWrite.All`, **or** the group matching the
 item type that launched the application:
 
@@ -116,13 +116,14 @@ across log kinds:
 
 Parse per route rather than writing one shared deserializer. Note the
 executor timestamp is not the `GMT`-suffixed ISO form the rest of this
-surface uses — the `strptime` recipe in SKILL.md does not apply to it.
+surface uses — the `strptime` recipe in spark-monitoring.md does not
+apply to it.
 
 ## Resource-usage APIs
 
 The quantitative complement to the five-phase attribution recipe in
-SKILL.md: where that recipe infers idle time by subtraction, this
-endpoint reports it directly.
+spark-monitoring.md: where that recipe infers idle time by
+subtraction, this endpoint reports it directly.
 
 ### Timeline
 

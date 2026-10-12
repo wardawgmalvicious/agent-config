@@ -1,11 +1,3 @@
----
-name: fabric-mlv
-description: "Use for Fabric Materialized Lake Views (MLVs) — `CREATE MATERIALIZED LAKE VIEW` Spark SQL (GA March 2026) + still-preview `@fmlv.materialized_lake_view` PySpark decorator on a schema-enabled lakehouse (Runtime 1.3). Covers CREATE / SHOW / ALTER RENAME / DROP / REFRESH FULL syntax, `CONSTRAINT ... CHECK ... ON MISMATCH DROP|FAIL` data quality rules, partitioning/TBLPROPERTIES, optimal refresh (skip/incremental/full) + CDF prerequisite, the supported-SQL-constructs table, lineage-driven dependency ordering, scheduling (time-based vs event-triggered Preview, per-schedule Spark environment, Extended lineage across lakehouses/workspaces), `RefreshMaterializedLakeViews` REST job-type, run history (25 runs / 7 days), data quality report, gotchas: no ALTER definition only RENAME, no DML/UDF/temp views/time-travel, all-uppercase schemas rejected, names lowercased, `spark.conf.set` ignored on refresh, 24-hour run cap, overlapping refreshes skipped, PySpark always full-refresh, deleting defining notebook breaks refresh."
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Fabric Materialized Lake Views (MLV)
 
 Declarative SQL/PySpark transformations that persist as Delta tables in a schema-enabled lakehouse. Fabric handles refresh strategy, dependency order, and data quality enforcement so you don't write notebook orchestration.
@@ -308,12 +300,77 @@ Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. La
 - Microsoft Learn: [What are materialized lake views in Microsoft Fabric?](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/overview-materialized-lake-view)
 - Microsoft Learn: [Spark SQL reference for materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/create-materialized-lake-view)
 - Microsoft Learn: [Optimal refresh for materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/refresh-materialized-lake-view)
-- Comprehensive MS Learn link bundle (concept / SQL ref / PySpark fmlv / optimal refresh / lineage / scheduling REST / monitoring / data quality report / lakehouse schemas + Runtime 1.3 prereqs): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (concept / SQL ref / PySpark fmlv / optimal refresh / lineage / scheduling REST / monitoring / data quality report / lakehouse schemas + Runtime 1.3 prereqs): [§ MS Learn link bundle](#ms-learn-link-bundle), below
+
+## MS Learn link bundle
+
+Curated set of Microsoft Learn pages relevant to Microsoft Fabric Materialized Lake Views (MLVs) — the declarative `CREATE MATERIALIZED LAKE VIEW` Spark SQL surface (GA March 2026), the still-preview `@fmlv.materialized_lake_view` PySpark decorator, optimal refresh (skip / incremental / full) and the CDF prerequisite, lineage-driven scheduling, the `RefreshMaterializedLakeViews` REST API, the auto-generated data quality report, and the lakehouse-schemas + Runtime 1.3 prerequisites.
+
+The 3 highest-leverage entry points (concept overview, Spark SQL reference, optimal refresh) are also linked in § Reference above; this section holds the comprehensive set.
+
+**Note on coverage:** MLVs are documented thoroughly under `learn.microsoft.com/fabric/data-engineering/materialized-lake-views/`. This file's value-add over the docs is the consolidated gotchas table (PySpark notebook organization rules, `spark.conf.set` ignored on refresh, names lowercased, the supported-construct table for incremental fallback, the Skipped-vs-Canceled status display mismatch).
+
+### Concept and when to use
+
+- [What are materialized lake views in Microsoft Fabric?](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/overview-materialized-lake-view) — start here. Concept, lifecycle (create / refresh / query / monitor), authoring options, when MLVs fit vs when to use Spark notebooks or Real-Time Intelligence instead. The South Central US region exclusion lives here.
+- [Get started with materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/get-started-with-materialized-lake-views) — the prerequisites: workspace on Fabric capacity, **schema-enabled lakehouse**, **Runtime 1.3**.
+- [Tutorial: Implement medallion architecture with materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/tutorial) — end-to-end bronze → silver → gold walkthrough.
+- [Use materialized lake views for medallion architecture (OneLake guidance)](https://learn.microsoft.com/fabric/onelake/onelake-medallion-lakehouse-architecture#use-materialized-lake-views-for-medallion-architecture) — where MLVs fit in the broader medallion / data-mesh story.
+
+### Spark SQL reference
+
+- [Spark SQL reference for materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/create-materialized-lake-view) — `CREATE [OR REPLACE] [IF NOT EXISTS]`, `CONSTRAINT ... CHECK ... ON MISMATCH DROP|FAIL`, `PARTITIONED BY`, `TBLPROPERTIES`, `SHOW MATERIALIZED LAKE VIEWS`, `SHOW CREATE`, `ALTER ... RENAME` (only RENAME, no definition update), `DROP`, plus the Spark-SQL limitations (no DML, no time-travel, no UDFs, no temp views as sources, no all-uppercase schemas, session-level `spark.conf.set` ignored on refresh).
+
+### PySpark (`fmlv` — preview)
+
+- [PySpark reference for materialized lake views (Preview)](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/create-materialized-lake-view-pyspark) — `import fmlv`, the `@fmlv.materialized_lake_view` decorator, `@fmlv.check`, the SQL-vs-PySpark decision flowchart, the notebook organization rules (one decorator per cell, helpers above, hardcoded literals only, don't delete the defining notebook), and the PySpark-only limitations (always full refresh, lineage-schedule-only, no variables in decorator, periods reserved in names).
+
+### Optimal refresh (skip / incremental / full)
+
+- [Optimal refresh for materialized lake views in a lakehouse](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/refresh-materialized-lake-view) — the optimal-refresh decision engine, the supported-SQL-constructs table (which constructs allow incremental vs force full), the CDF (`delta.enableChangeDataFeed=true`) prerequisite for incremental, `REFRESH MATERIALIZED LAKE VIEW ... FULL`, the manage-toggle to disable optimal refresh, and the explicit "PySpark-defined MLVs always use full refresh" / "non-Delta sources always use full refresh" carveouts.
+- [Use Delta Lake change data feed (Databricks docs — referenced from MS Learn)](https://learn.microsoft.com/azure/databricks/delta/delta-change-data-feed) — the underlying CDF mechanism the MLV optimal-refresh engine reads.
+
+### Lineage and scheduling
+
+- [Manage Fabric materialized lake views lineage](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/view-lineage) — the lineage view, dependency graph, custom Spark environment, the auto-refresh-every-2-minutes UI behavior, the deleted-environment fallback.
+- [Schedule a materialized lake view refresh](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/schedule-lineage-run) — the **Manage schedules** pane and independent per-schedule runs, refresh scope (all vs selected views), **Time-based vs Event-triggered (Preview)** refresh types (Job events / OneLake events, the Private-Link exclusion, the load-bearing auto-created "FMLV Refresh" Notebook + Activator), Advanced settings (per-schedule Spark environment across the same capacity, per-schedule Optimal refresh, the schedule → lakehouse → system priority order), **Extended lineage** for cross-lakehouse and cross-workspace chains (lakehouse tree, unselected-means-all default, upstream-first ordering with parallel branches, single Recent-runs entry, `ReadAll`/`ReadWrite` permissions, faulted nodes blocking the run), the **On demand lineage refresh** execution modes, and the 24-hour run cap plus the skip-if-already-running behavior.
+- [Recent runs of materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/run-history) — the **last 25 runs OR last 7 days, whichever comes first** retention rule, the run-state semantics (In progress / Success / Failed / Skipped / Canceled), the "child views auto-marked Skipped if parent fails" behavior.
+- [Monitor materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/monitor-materialized-lake-views) — Monitor hub for `RefreshMaterializedLakeViews` job-type runs, sort/filter/search, view-detail and cancel actions, the `MLV_LakehouseName_JobInstanceID` activity-name pattern.
+
+### REST API (job scheduler — `RefreshMaterializedLakeViews`)
+
+- [Manage and refresh materialized lake views in Fabric with APIs](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/materialized-lake-views-public-api) — every endpoint (Create / Get / List / Update / Delete schedule, Run on-demand, List / Get / Cancel job instances) with `{jobType}=RefreshMaterializedLakeViews`, the schedule-limits-per-lakehouse caveat, the Skipped-vs-Canceled status mismatch between Monitoring hub and lineage view.
+- [Lakehouse — Materialized Lake Views (REST reference)](https://learn.microsoft.com/rest/api/fabric/lakehouse/materialized-lake-views) — the five MLV execution definition operations (Create / List / Get / Update / Delete on `mlvexecutiondefinitions`), whose id scopes an on-demand refresh or a schedule through `executionData.mlvExecutionDefinitionId`.
+- [Job scheduler — Run On Demand Item Job](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/run-on-demand-item-job?tabs=HTTP) — the underlying generic on-demand endpoint the MLV API binds to.
+- [Job scheduler — Create Item Schedule](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/create-item-schedule?tabs=HTTP) — the underlying generic schedule CRUD.
+- [Job scheduler — Get Item Job Instance](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/get-item-job-instance?tabs=HTTP) — for polling a returned `Location` header to completion.
+
+### Data quality report
+
+- [Data quality report for materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/data-quality-reports) — the auto-generated Power BI report (Overview + MLV Detail pages), the violations-vs-drops semantics (drops ≤ violations), the **DirectQuery 1M-row cap on non-premium**, the workspace/lakehouse-name-with-special-characters generation failure, and the `Read` / `ReadData` SQL-analytics-endpoint permission required for recipients.
+
+### Lakehouse prerequisites
+
+- [Lakehouse schemas (Public preview)](https://learn.microsoft.com/fabric/data-engineering/lakehouse-schemas) — the `enableSchemas` toggle that's required for MLVs and is **immutable per lakehouse** (you can't add schemas to an existing non-schema lakehouse without recreating).
+- [Fabric Runtime 1.3](https://learn.microsoft.com/fabric/data-engineering/runtime-1-3) — the runtime version MLV authoring requires. The MLV get-started page still names 1.3 exactly as of 2026-08-29.
+- [Fabric Runtime 2.0 (GA Aug 2026)](https://learn.microsoft.com/fabric/data-engineering/runtime-2-0) — Spark 4.1 / Delta Lake 4.2 / Python 3.13 / Java 21 / Scala 2.13 / R 4.5.2 / Azure Linux 3.0. **Not** currently named in the MLV prerequisites, and still opt-in: it was planned to become the default for new workspaces and environment items in late September 2026, but Learn's runtime page still says "By default, all new workspaces currently use Runtime 1.3" (2026-10-06). Also carries the environment-republish breaking change indexed in `fabric-gotchas`.
+- [Spark views in lakehouses](https://learn.microsoft.com/fabric/data-engineering/lakehouse-spark-views) — the lightweight (non-persisted) alternative for cases where you don't need MLV materialization.
+
+### Delta Lake (the storage layer MLVs persist into)
+
+- [What is Delta Lake?](https://learn.microsoft.com/azure/databricks/delta/) — the table format MLVs persist as. CDF, partitioning, table properties.
+- [Delta Lake table properties reference](https://learn.microsoft.com/azure/databricks/delta/table-properties) — for `TBLPROPERTIES` keys you can set on an MLV (`delta.enableChangeDataFeed`, `delta.minReaderVersion`, etc.).
+
+### Comparison points
+
+- [Materialized views in KQL (Eventhouse)](https://learn.microsoft.com/kusto/management/materialized-views/materialized-view-overview?view=microsoft-fabric) — the analogous KQL feature in Eventhouse; not the same engine, similar concept. Useful when a user is choosing between Lakehouse + MLV and Eventhouse + KQL MV.
+- [Schedule refreshes in Databricks SQL (`SCHEDULE` / `TRIGGER ON UPDATE`)](https://learn.microsoft.com/azure/databricks/ldp/dbsql/schedule-refreshes) — the Databricks materialized-view counterpart. Fabric's MLVs do not currently support a SQL-clause-level `SCHEDULE` — schedules are separate objects on the lakehouse, scoped to all views, selected views, or (with Extended lineage) upstream lakehouses.
 
 ## See also
 
-- `fabric-spark` — PySpark in Fabric notebooks (the broader Spark surface; MLVs are one consumer)
+- [SKILL.md](../SKILL.md) — PySpark in Fabric notebooks (the broader Spark surface; MLVs are one consumer); covers the no-external-HTTP rule and `abfss://` URI shape relevant to MLV `SELECT` sources
 - `fabric-eventhouse` — KQL materialized views (different engine, similar concept)
-- `fabric-error-handling` — notebook/pipeline error patterns; useful when wrapping MLV refresh in a larger flow
+- [error-handling.md](error-handling.md) — notebook/pipeline error patterns; useful when wrapping MLV refresh in a larger flow
 - `fabric-warehouse-monitoring` — Warehouse `queryinsights` + DMVs; workspace-monitoring and Capacity Metrics links in its references bundle
+- `fabric-rest-api` — generic LRO / 202 Accepted polling pattern used by the MLV on-demand endpoint
 - `pbip-project-structure` — `.Lakehouse/` folder placement when MLV-bearing lakehouses live in a PBIP repo

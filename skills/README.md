@@ -131,7 +131,7 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (28)
+## Microsoft Fabric platform (24)
 
 - [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
   Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
@@ -204,17 +204,18 @@ construction. Split out of `workflow` 2026-09-11.
   Dashboard (KQLDashboard) JSON authoring: baseQueries wiring,
   load-time validation rules, 24-column grid, visual options,
   display-edge formatting in KQL.
-- [fabric-mlv/](fabric/fabric-mlv/) — Materialized Lake Views: `CREATE
-  MATERIALIZED LAKE VIEW` Spark SQL + the preview `@fmlv` PySpark
-  decorator. Refresh modes, CDF prerequisite, lineage scheduling.
-- [fabric-spark/](fabric/fabric-spark/) — Fabric Spark patterns.
+- [fabric-spark/](fabric/fabric-spark/) — Spark in Fabric: notebooks,
+  lakehouses and the Spark item definitions in its body, while its
+  `references/` hold four jobs in depth: a Spark job queued, slow or
+  failed, through the monitoring APIs; the Tier 1 / Tier 2
+  error-handling convention for notebook code; materialized lake views;
+  and AI Functions on a DataFrame. Always listed, with no glob, so a
+  request made in words reaches it before any notebook is read. Folded
+  from `fabric-spark-monitoring`, `fabric-error-handling`, `fabric-mlv`
+  and `fabric-ai-functions` on 2026-10-12.
 - [fabric-warehouse-monitoring/](fabric/fabric-warehouse-monitoring/) —
   Warehouse query monitoring: `OPTION (LABEL = ...)`, `queryinsights`
   schema, retention windows.
-- [fabric-spark-monitoring/](fabric/fabric-spark-monitoring/) — Spark runtime
-  diagnostics via the monitoring REST APIs: Livy session listings,
-  Spark History Server mirror, five-phase wall-clock attribution,
-  high-concurrency session reuse verification.
 - [fabric-security/](fabric/fabric-security/) — workspace roles, item-level
   permissions, SQL GRANT/DENY/REVOKE, RLS/CLS bypass via Spark/OneLake.
 - [fabric-catalog-governance/](fabric/fabric-catalog-governance/) — the
@@ -257,13 +258,8 @@ construction. Split out of `workflow` 2026-09-11.
   `fabric-graph`, `fabric-data-agent` and `fabric-operations-agent` on
   2026-10-12; Learn's IQ workload also holds semantic models, which are
   `fabric-tmdl`'s, and Plan, which has no skill.
-- [fabric-ai-functions/](fabric/fabric-ai-functions/) — `ai.*` LLM functions
-  on pandas/PySpark DataFrames in notebooks: import paths, config
-  objects, custom endpoints, billing meters.
 - [fabric-variable-library/](fabric/fabric-variable-library/) — variable
   libraries.
-- [fabric-error-handling/](fabric/fabric-error-handling/) — error-handling
-  conventions across Fabric components.
 - [fabric-gotchas/](fabric/fabric-gotchas/) — common 401/403/404 failures,
   PowerBIEntityNotFound, snapshot conflicts, plus a MUST/PREFER/AVOID
   best-practices summary.

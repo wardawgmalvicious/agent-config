@@ -1,6 +1,6 @@
 # Fabric AI Functions — Reference
 
-Deep reference for `fabric-ai-functions`. Read the SKILL.md first; come here for the full
+Deep reference for [ai-functions.md](ai-functions.md). Read that first; come here for the full
 config-parameter tables, multimodal helpers, and the MS Learn link bundle.
 
 ## Contents

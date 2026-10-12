@@ -2,7 +2,7 @@
 
 Curated set of Microsoft Learn pages relevant to error handling in Fabric notebooks and pipeline orchestration. The convention this skill encodes (Tier 1 hard-fail / Tier 2 soft-fail with `results = {succeeded, skipped, failed}`) is in-house — these MS Learn links cover the *primitives* the convention is built on: `notebookutils.notebook.exit()`, `runMultiple()` DAG with retries, pipeline error paths, the Fail activity, and the Job Scheduler exit-value retrieval pattern.
 
-The 3 highest-leverage entry points (NotebookUtils notebook run/orchestration, pipeline errors and conditional execution, Fabric notebooks troubleshooting) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
+The 3 highest-leverage entry points (NotebookUtils notebook run/orchestration, pipeline errors and conditional execution, Fabric notebooks troubleshooting) are also linked in [error-handling.md](error-handling.md)'s `## Reference` section for in-context use; this file holds the comprehensive set.
 
 ## Notebook-level error mechanics
 
@@ -38,4 +38,4 @@ The 3 highest-leverage entry points (NotebookUtils notebook run/orchestration, p
 
 ## See also (this repo)
 
-- The Tier 1 / Tier 2 convention itself is documented in the parent SKILL.md and is *not* upstream MS Learn content — these references cover the platform primitives the convention rests on.
+- The Tier 1 / Tier 2 convention itself is documented in [error-handling.md](error-handling.md) and is *not* upstream MS Learn content — these references cover the platform primitives the convention rests on.

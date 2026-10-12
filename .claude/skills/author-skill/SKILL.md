@@ -104,7 +104,7 @@ half-covered there without any dedicated skill existing.
 
 **An incidental grep hit is not coverage.** The worked failure is a
 Mirroring search matching "Spark History Server mirror" in
-`fabric-spark-monitoring` — same substring, unrelated subject. Read the
+`fabric-spark` — same substring, unrelated subject. Read the
 surrounding heading before counting a hit. Conversely, a topic can be
 genuinely covered under vocabulary you did not grep for; skim the
 `skills/README.md` section list for the relevant domain as a second

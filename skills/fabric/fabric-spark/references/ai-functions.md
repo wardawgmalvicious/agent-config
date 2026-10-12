@@ -1,11 +1,3 @@
----
-name: fabric-ai-functions
-description: "Use for Microsoft Fabric AI Functions (Data Science) — one-line LLM transformations on pandas and PySpark DataFrames in Fabric notebooks: `ai.analyze_sentiment`, `ai.classify`, `ai.extract`, `ai.embed`, `ai.summarize`, `ai.translate`, `ai.fix_grammar`, `ai.generate_response`, `ai.similarity`. Covers the two import paths (`synapse.ml.aifunc` pandas single-node vs `synapse.ml.spark.aifunc` PySpark distributed), pandas Series-accessor vs PySpark `df.ai` DataFrame-accessor shapes, GA defaults (`gpt-5-mini` + `reasoning_effort=low`, `openai` no longer required), pandas `aifunc.Conf` vs PySpark `OpenAIDefaults` config (concurrency, temperature/top_p/verbosity/seed), `gpt-5.1` opt-in and gpt-4.1→gpt-5.1 migration, custom Azure OpenAI/Foundry endpoints, `ExtractLabel` schema extract, PySpark chaining, `ai.stats` + Exception/Filter/CapacityExceeded results, multimodal `column_type=path`, prerequisites (F2+, Runtime 1.3+, Copilot tenant switch), and Copilot-&-AI billing. Also in SQL/Warehouse and Dataflow Gen2."
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Fabric AI Functions
 
 One-line, LLM-powered transformations applied to whole pandas or PySpark DataFrames in Fabric notebooks. Fabric handles the model endpoint, auth, request orchestration, batching, and retries — you call a DataFrame method and get an enriched column back. Nine prebuilt functions cover sentiment, classification, extraction, embeddings, grammar, custom prompts, similarity, summarization, and translation.
@@ -128,7 +120,7 @@ df.ai.translate(to_lang="spanish", input_col="text", output_col="out",
                 deploymentName="gpt-5.1", concurrency=200)
 ```
 
-Key params (full table in [references/REFERENCE.md](references/REFERENCE.md)): `deployment_name`/`model_deployment_name`, `reasoning_effort`, `verbosity`, `seed` (pandas — reproducibility), `temperature`, `top_p`, `timeout` (pandas), `concurrency` (PySpark: per-call only, per worker, up to 1000), `api_type` (PySpark: `responses` default, set `chat_completions` for non-OpenAI Foundry models), `embedding_deployment_name`, `URL` + `subscription_key` (custom endpoints).
+Key params (full table in [ai-functions-tables.md](ai-functions-tables.md)): `deployment_name`/`model_deployment_name`, `reasoning_effort`, `verbosity`, `seed` (pandas — reproducibility), `temperature`, `top_p`, `timeout` (pandas), `concurrency` (PySpark: per-call only, per worker, up to 1000), `api_type` (PySpark: `responses` default, set `chat_completions` for non-OpenAI Foundry models), `embedding_deployment_name`, `URL` + `subscription_key` (custom endpoints).
 
 ### Model migration
 
@@ -195,11 +187,11 @@ Same capability, different engines — not covered in depth here:
 - Microsoft Learn: [Customize AI Functions with pandas](https://learn.microsoft.com/fabric/data-science/ai-functions/pandas/configuration) · [with PySpark](https://learn.microsoft.com/fabric/data-science/ai-functions/pyspark/configuration)
 - Microsoft Learn: [Billing for AI Functions](https://learn.microsoft.com/fabric/data-science/ai-functions/billing)
 - Starter notebooks: `https://aka.ms/fabric-aifunctions-starter-notebooks` · Eval notebooks: `https://aka.ms/fabric-aifunctions-eval-notebooks`
-- Full config-parameter tables, multimodal helpers, and the complete MS Learn link bundle: [references/REFERENCE.md](references/REFERENCE.md)
+- Full config-parameter tables, multimodal helpers, and the complete MS Learn link bundle: [ai-functions-tables.md](ai-functions-tables.md)
 
 ## See also
 
-- `fabric-spark` — the broader PySpark-in-Fabric surface; AI Functions are one consumer of it
+- [SKILL.md](../SKILL.md) — the broader PySpark-in-Fabric surface; AI Functions are one consumer of it
 - `fabric-iq` — Data Agents: governed NL-to-data over semantic models/lakehouses (different tool, different job)
 - `fabric-warehouse` — the T-SQL `ai_*` scalar functions
 - `fabric-warehouse-monitoring` — Capacity Metrics app links in its references bundle

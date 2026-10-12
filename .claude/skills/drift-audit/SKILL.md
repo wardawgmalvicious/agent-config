@@ -40,7 +40,7 @@ A single reference applied to every source is intentional: the audit window is "
 
 Prohibited tools this turn: `Edit`, `Write`, `MultiEdit`, `NotebookEdit`. Do not call them regardless of what the audit findings suggest is needed.
 
-If the user asks within this same turn to "fix the drift you found", "update fabric-mlv", "rewrite the skill", "patch CLAUDE.md", etc., refuse and explain:
+If the user asks within this same turn to "fix the drift you found", "update fabric-spark", "rewrite the skill", "patch CLAUDE.md", etc., refuse and explain:
 
 > The audit is read-only by design. Each artifact rewrite is its own task with its own context — the audit report you just received is the input to that follow-up. Start a new request naming the specific skill or rule to update.
 

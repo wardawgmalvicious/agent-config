@@ -303,10 +303,8 @@ than the globs.
 
 ## Cost note
 
-These files are inert until opened. Reading anything under either
-`*.Notebook/` folder pulls three skills no path can separate — and if all
-three are invoked, ~6,448 tokens of bodies, the worst in this set.
-Activation itself costs only the three listing entries.
-`SampleSparkNB.Notebook/notebook-content.sql` is dearer still: it adds
-`coding-sparksql` and `coding-tsql` on top. Don't leave a fixture open
-while doing unrelated work.
+These files are inert until opened. Reading one activates its row's
+skills, which costs their listing entries, and loads each rule its path
+matches in full: `SampleSparkNB.Notebook/notebook-content.sql` activates
+no skill since 2026-10-12, but loads both `coding-sparksql` and
+`coding-tsql`. Don't leave a fixture open while doing unrelated work.

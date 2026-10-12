@@ -1,13 +1,3 @@
----
-name: fabric-error-handling
-description: "Use when writing error handling in Fabric notebooks — the Tier 1 (setup, preconditions, hard-fail, raise immediately) vs Tier 2 (bulk operations, soft-fail, track per-item, print summary) convention. Covers the canonical `results = {succeeded, skipped, failed}` shape, the STRICT=False default for scheduled runs, STRICT=True for CI/orchestration, per-item metrics with a parallel per_item list, boundary rules (Tier 1 helpers may be called inside Tier 2 loops; don't wrap Tier 1 in try/except at the notebook level), and anti-patterns to avoid (silent continue, parallel bookkeeping lists)."
-paths:
-  - "**/*.Notebook/**"
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Error handling convention (Fabric notebooks)
 
 Two tiers. Pick the right one per block of code; don't mix them inside a single logical operation.
@@ -87,9 +77,9 @@ Keep a parallel `per_table = []` (or `per_item = []`) list for metrics that don'
 - Microsoft Learn: [NotebookUtils notebook run and orchestration](https://learn.microsoft.com/fabric/data-engineering/notebookutils/notebookutils-notebook-run) — `exit()`, `runMultiple()`, the don't-wrap-`exit()`-in-try/except rule
 - Microsoft Learn: [Errors and Conditional execution (pipeline patterns)](https://learn.microsoft.com/azure/data-factory/tutorial-pipeline-failure-error-handling) — Try-Catch / Do-If-Else / Do-If-Skip-Else
 - Microsoft Learn: [Fabric notebooks troubleshooting guide](https://learn.microsoft.com/fabric/data-science/fabric-notebooks-troubleshooting-guide)
-- Comprehensive MS Learn link bundle (notebook exit/runMultiple/DAG / pipeline error paths / Fail activity / Spark exception classes / workspace monitoring): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (notebook exit/runMultiple/DAG / pipeline error paths / Fail activity / Spark exception classes / workspace monitoring): [error-handling-links.md](error-handling-links.md)
 
 ## See also
 
-- fabric-spark skill — notebook environment the tiers apply to
+- [SKILL.md](../SKILL.md) — notebook environment the tiers apply to
 - fabric-gotchas skill — cross-cutting error causes (snapshot conflict, auth, etc.)

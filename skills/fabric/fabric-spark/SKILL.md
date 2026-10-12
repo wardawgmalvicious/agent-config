@@ -1,14 +1,22 @@
 ---
 name: fabric-spark
-description: "Use for PySpark / Spark in Microsoft Fabric notebooks. Covers the no-external-HTTP constraint (land data in Files/ first), abfss:// URI format for OneLake (GUIDs not names), `notebookutils.runtime.context` for identity lookups vs `spark.conf.*` for session tuning, mssparkutils, lakehouse `enableSchemas` immutability and cross-lakehouse 3-part names, table maintenance (OPTIMIZE/VACUUM/V-Order) impact on SQL Endpoint, Delta Lake default, REST notebook upload quirks (bare-string source `400 exceptionCulprit:1`, `metadata.dependencies.lakehouse` for default-lakehouse binding, 411 on empty-body getDefinition, `/result` LRO suffix, `?updateMetadata=true` requires `.platform`), notebook-execution gotchas (`defaultLakehouse` needs id+name, never retry POST), and in-notebook auto-restart via `%%configure retriableOptions { enabled, maxAttempt }` (April 2026, for pipeline-driven runs)."
-paths:
-  - "**/*.Notebook/**"
+description: "Use for Spark in Microsoft Fabric: a notebook (a `.Notebook` folder), PySpark or Spark SQL, a lakehouse and its tables, a Spark job definition or environment; a Spark job that is slow, queued or failed, Livy sessions or the Spark History Server; error handling in notebook code; a materialized lake view (MLV); or AI Functions on a DataFrame."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
 ---
 
 # Spark / PySpark in Fabric
+
+This file holds notebooks, lakehouses and the Spark item definitions.
+Each job below has a reference of its own: read it before answering one.
+
+| The job | Read first |
+| --- | --- |
+| A Spark job queued, slow or failed; Livy sessions; the History Server | [spark-monitoring.md](references/spark-monitoring.md) |
+| Error handling in a notebook's code | [error-handling.md](references/error-handling.md) |
+| A materialized lake view | [mlv.md](references/mlv.md) |
+| AI Functions on a DataFrame | [ai-functions.md](references/ai-functions.md) |
 
 ## Key Constraints
 
@@ -165,6 +173,6 @@ A custom live pool attaches to an environment, but its configuration doesn't tra
 ## See also
 
 - fabric-rest-api skill — notebook definition upload API and LRO pattern
-- fabric-error-handling skill — Tier 1/2 convention for notebook code
+- [error-handling.md](references/error-handling.md) — Tier 1/2 convention for notebook code
 - fabric-warehouse-monitoring skill — Query Insights for SQLEP queries against lakehouse tables
-- fabric-spark-monitoring skill — Livy session listings, Spark History Server mirror, notebook wall-clock attribution
+- [spark-monitoring.md](references/spark-monitoring.md) — Livy session listings, Spark History Server mirror, notebook wall-clock attribution

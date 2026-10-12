@@ -97,13 +97,6 @@
         "references": "8f85db1940300fc8"
       }
     },
-    "fabric-error-handling": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "5b66c4a51bea08b1"
-      }
-    },
     "fabric-event-schema-set": {
       "activation": {
         "date": "2026-10-01",
@@ -153,15 +146,6 @@
         "references": "16442224b23b3b1b"
       }
     },
-    "fabric-mlv": {
-      "behaviour": {
-        "date": "2026-09-12",
-        "commit": "8c862ee",
-        "routing": "3040260ca3e79a2c",
-        "body": "ddd8b0b49c405385",
-        "references": "dfaa30fd268d644a"
-      }
-    },
     "fabric-realtime-dashboard": {
       "activation": {
         "date": "2026-09-12",
@@ -193,13 +177,6 @@
       }
     },
     "fabric-spark": {
-      "activation": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "paths": "5b66c4a51bea08b1"
-      }
-    },
-    "fabric-spark-monitoring": {
       "activation": {
         "date": "2026-09-12",
         "commit": "75f1625",
