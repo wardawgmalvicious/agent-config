@@ -117,6 +117,15 @@ git log --all -p -m --format='%H %an %ae %cn %ce %B' | grep -i -c '<term>'   # 0
 git for-each-ref --format='%(refname) %(contents)' | grep -i '<term>'         # nothing back is the pass
 ```
 
+- **And the snapshot**: a description, topic or homepage naming the term
+  comes back in step 5, through `gh repo create --description` and
+  `-Apply` both. Edit it out of the file, and say so at step 4: `-Check`
+  now reports that line as drift, and step 5 applies the edited value.
+
+```bash
+grep -i -c '<term>' <the snapshot>    # 0 is the pass
+```
+
 ## 4. Checkpoint, then delete
 
 Report where things stand: the snapshot's path and `-Check`'s exit, the
