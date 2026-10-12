@@ -119,7 +119,7 @@ From `docs/handoffs/CLAUDE.md`, which is the authority; this is the
 order the coordinator runs it in.
 
 ```bash
-claude agents --json | jq -b -r '.[] | select(.cwd | ascii_downcase | endswith("agent-config")) | "\(.pid)\t\(.status)\t\(.name)"'   # any row but this session: stop
+claude agents --json | jq -b -r '.[] | select(.cwd | ascii_downcase | endswith("agent-config")) | "\(.pid)\t\(.sessionId)\t\(.status)\t\(.name)"'   # any row but this session's sessionId: stop
 git -C .claude/worktrees/<stem> rebase main            # auto mode may refuse it as [Git Destructive]: the user's word lets it run
 (cd .claude/worktrees/<stem> && pre-commit run --all-files)   # nothing hooks a rebase or a fast-forward
 git merge --ff-only worktree-<stem>
@@ -128,6 +128,16 @@ git log --oneline <preflight-HEAD>..HEAD               # the landed commits, pos
 ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'   # after any deploy: must print nothing
 git worktree remove .claude/worktrees/<stem> && git branch -d worktree-<stem>   # only with the brief gone from main
 ```
+
+**This session's row is the one whose `sessionId` is its own id**, the
+directory above `scratchpad` in its scratchpad path. Both checked on
+2026-10-12 matched: an interactive session's row and a `-p`
+coordinator's. Never match by name: a `claude --resume <id> -p` dropped
+its `-n` name, and the resumed coordinator was listed as
+`agent-config-15`. Whether a resumed row keeps its `sessionId` is
+unmeasured; both coordinators that day found themselves by walking their
+process ancestry instead (`Get-Process -Id $PID`, then `.Parent`, up to
+the `claude` process).
 
 `git worktree remove` refuses a dirty worktree, `fatal: '<path>'
 contains modified or untracked files, use --force to delete it`, and
