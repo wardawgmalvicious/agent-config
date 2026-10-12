@@ -46,14 +46,16 @@ Every Tier 2 notebook exposes a top-level boolean in its config cell:
 
 ```python
 # False (default) — print the summary and continue even if some items failed.
-#                   Right for scheduled runs: one bad item shouldn't stop the
-#                   rest of the work, and the per-item report is enough signal.
-# True  — raise RuntimeError after the summary when any item failed. Use from
-#         CI / orchestration where you want the notebook exit code to reflect state.
+#                   Right for a notebook on its own schedule: one bad item shouldn't
+#                   stop the rest of the work, and the per-item report is enough signal.
+# True  — raise RuntimeError after the summary when any item failed. Use from a
+#         pipeline, CI or other orchestration, where the run's status must reflect state.
 STRICT = False
 ```
 
 After the summary, `if STRICT and results["failed"]: raise RuntimeError(...)`. The default is `False` — best-effort with a clear report is what most maintenance runs want.
+
+**A notebook a pipeline runs takes `STRICT = True`**, a nightly maintenance run included (decided 2026-10-12). The pipeline sees the notebook's outcome, not its summary, so with `False` a run whose items failed ends as a success and no failure path fires. `True` loses no coverage: the raise comes after the loop has reached every item.
 
 ## Boundaries
 

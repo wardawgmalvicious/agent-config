@@ -88,11 +88,12 @@ inlined body, which witnesses the expansion, and answered as the `mlv`
 payload did.
 
 **Seen in the run**: `errors` set `STRICT = True` and said why. The
-convention defaults to `False` for scheduled runs and keeps `True` for
+convention defaulted to `False` for scheduled runs and kept `True` for
 orchestration, and a notebook a pipeline runs nightly is both; with
-`False`, the pipeline would report success over failed tables. Not
-changed: the convention is in-house, so which default fits a
-pipeline-run notebook is the user's call.
+`False`, the pipeline would report success over failed tables. The
+user chose `True` for a pipeline-run notebook on 2026-10-12, and
+`error-handling.md` § "STRICT flag" now says so; the case has not been
+rerun since.
 
 **Listing**: the router's entry is 342 characters, all description,
 against the five skills' 2,040 always listed and 2,125 more on a
