@@ -57,24 +57,41 @@ sumx (
 -- Good
 Total Sales YoY % =
 VAR _SalesCurrent = [Total Sales]
-VAR _SalesPrior = CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+VAR _SalesPrior =
+    CALCULATE (
+        [Total Sales],
+        SAMEPERIODLASTYEAR ( 'Date'[Date] )
+    )
 VAR _Result =
-    DIVIDE ( _SalesCurrent - _SalesPrior, _SalesPrior )
+    DIVIDE (
+        _SalesCurrent - _SalesPrior,
+        _SalesPrior
+    )
 RETURN
     _Result
 
 -- Bad (no variables, repeats Total Sales evaluation)
 Total Sales YoY % =
 DIVIDE (
-    [Total Sales] - CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( 'Date'[Date] ) ),
-    CALCULATE ( [Total Sales], SAMEPERIODLASTYEAR ( 'Date'[Date] ) )
+    [Total Sales]
+        - CALCULATE (
+            [Total Sales],
+            SAMEPERIODLASTYEAR ( 'Date'[Date] )
+        ),
+    CALCULATE (
+        [Total Sales],
+        SAMEPERIODLASTYEAR ( 'Date'[Date] )
+    )
 )
 ```
 
 ## Indentation and whitespace
 
 - Function arguments on separate lines for any function with 2+
-  arguments or any argument that's itself a non-trivial expression.
+  arguments or any argument that's itself a non-trivial expression
+  (SQLBI: inline only a single argument that is not a function call).
+  A call quoted inside a prose bullet, or a `NAMEOF` output table, shows
+  one call and may stay on one line.
 - Space before `(` after function name: `CALCULATE (` not `CALCULATE(`.
   SQLBI style; reads more like English.
 - Indent function body 4 spaces.
@@ -98,7 +115,11 @@ errors out. Always `DIVIDE()`.
 
 ```dax
 -- Good
-Margin % = DIVIDE ( [Profit], [Revenue] )
+Margin % =
+DIVIDE (
+    [Profit],
+    [Revenue]
+)
 
 -- Bad
 Margin % = [Profit] / [Revenue]

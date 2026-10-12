@@ -115,7 +115,11 @@ table '_Sales Measures'
 		displayFolder: "Core"
 		formatString: "$#,##0.00"
 
-	measure 'Total Sales YTD' = TOTALYTD ( [Total Sales], 'Date'[Date] )
+	measure 'Total Sales YTD' =
+			TOTALYTD (
+				[Total Sales],
+				'Date'[Date]
+			)
 		displayFolder: "YTD"
 		formatString: "$#,##0.00"
 ```

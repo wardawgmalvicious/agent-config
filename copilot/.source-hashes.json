@@ -13,13 +13,13 @@
     "coding-bicep": "201e9caf755992900dd4e72ef3e928e673ad973359b047815bc3c641eaef5991",
     "coding-ci-workflows": "c58edad3c089ee5bc429f1af51c2b4e3340d438db3cb0649f47d5ad124bf04af",
     "coding-csharp": "e5be9ed50ceabbaae3363d6d78f530f9b947217c7607192e9a79cd07eded4650",
-    "coding-dax": "b9b514fdcbd047d2de1b58b1d54c1dd71c5658a00a4d68aa8875697e5bdb0fa9",
+    "coding-dax": "bdf9a0a023fc5be6b0cc80ccac4dcc7ac1e15ed206f57fc46722dba06519d6a5",
     "coding-expressions": "c5c26f048d3e3268a9b22c80dfd32dd0eaf109832d1e9798cd05264b00002bd3",
-    "coding-kql": "c5cb1567310b14bc67b1d205eb923134eb92f941e5c9106f17d9026fef32277a",
+    "coding-kql": "4dfbcf7916816f5f9950f3e8311ca906aac433259b9c0bc6570944a9c7282fb9",
     "coding-m": "3aaec6b5decb8d370a2c0b6a958a234320a5c6d2d3cb7e3c6353062184d72767",
     "coding-python": "1181d110fddef71f8e541e40254fe244a7ebb5054fcbbf68e41a2f9c8173fca4",
     "coding-sparksql": "4cb804aad1bd04c8309f347dac1d7ab312d9191eb871e1a61912a130578c73a6",
-    "coding-tmdl": "e6a948588226ea93bdd3472a7ce7b380fd45bdf9b4fb26c4fd94e1852752913e",
+    "coding-tmdl": "c55ccc7ea431c9eda4a3db7791baec47d5c0c99fdf27b36027813d7c187fff63",
     "coding-tsql": "2019fec22ea96568b1014da3fb60091a74498ade1d23cea7bc0b532c10222ec6",
     "coding-xaml": "e4acf727da88c21037428cfd644213d574310a7e9131b89817c08d285e962d2c"
   }

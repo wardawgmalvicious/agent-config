@@ -20,9 +20,12 @@ supersedes this one.
 
 ## Casing
 
+- **KQL is case-sensitive for everything** — table names, column names,
+  operators and functions (KQL overview, read 2026-10-08). **So casing
+  is syntax, not style: `WHERE` or `TOLOWER()`, uppercased like T-SQL,
+  is a query that does not run.**
 - **Operators / keywords**: lowercase — `where`, `project`, `summarize`,
-  `extend`, `join`, `let`, `order by`, `take`, `top`. **This is the
-  KQL convention; do not uppercase like T-SQL.**
+  `extend`, `join`, `let`, `order by`, `take`, `top`.
 - **Functions**: lowercase — `tolower()`, `parse_json()`, `bin()`,
   `ago()`.
 - **Table names**: PascalCase — matches Microsoft's first-party tables
@@ -64,7 +67,7 @@ filters) → `extend` → `summarize` → `project` → `order by` → `take`.
 // Good
 SigninLogs
 | where TimeGenerated > ago(7d)         // time filter first
-| where ResultType != 0                 // other filters
+| where ResultType != "0"               // other filters; a string column
 | project TimeGenerated, UserPrincipalName, IPAddress, ResultType
 | extend UserDomain = tostring(split(UserPrincipalName, "@")[1])
 | summarize FailedSignins = count() by UserDomain
@@ -87,7 +90,7 @@ let FailureThreshold = 10;
 let SuspiciousIp =
     SigninLogs
     | where TimeGenerated > ago(LookbackWindow)
-    | where ResultType != 0
+    | where ResultType != "0"
     | summarize Failures = count() by IPAddress
     | where Failures > FailureThreshold;
 SigninLogs
