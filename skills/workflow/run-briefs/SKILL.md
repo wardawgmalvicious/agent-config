@@ -33,7 +33,7 @@ prompt and why each sentence is there is
 git rev-parse --path-format=absolute --git-dir --git-common-dir   # two equal paths: the main checkout; a worktree cannot land
 git rev-parse HEAD                                                 # kept: every branch tip is compared to it
 claude --version                                                   # the CLI the workers run; this session may run another binary
-ls -d docs/handoffs/execute docs/handoffs 2>/dev/null | head -1     # the queue directory: execute/ where it exists, else docs/handoffs/
+for d in docs/handoffs/execute docs/handoffs; do [ -d "$d" ] && { echo "$d"; break; }; done   # the queue directory: execute/ where it exists, else docs/handoffs/; never ls -d, which sorts its operands
 grep -n -A1 '"worktree"' .claude/settings.json                     # must read "baseRef": "head"
 ```
 
