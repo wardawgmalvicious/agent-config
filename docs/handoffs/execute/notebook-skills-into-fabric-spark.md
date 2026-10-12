@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: []
-blocked-by: [fabric-deploy-skill.md]
+blocked-by: []
 written: 2026-10-09
 ---
 
@@ -15,9 +15,10 @@ written: 2026-10-09
   Four skills become references of `fabric-spark` as they stand, and its
   `paths:` goes. No platform fact is added, so nothing is drilled and
   `/author-skill` does not apply.
-- **After the pilot**: [fabric-deploy-skill.md](fabric-deploy-skill.md)
-  tests the router shape first, and this is its second wave's notebook
-  item, widened by the user.
+- **After the pilot**: `fabric-deploy` tested the router shape first
+  and held, landing on 2026-10-12
+  ([result](../../../tests/skills/fabric-deploy/README.md)); this is
+  its second wave's notebook item, widened by the user.
 
 ## Why
 
@@ -81,7 +82,8 @@ Its "See also" lines for `fabric-error-handling` and
   SQL, lakehouse, Livy, Spark History Server, slow or queued job,
   materialized lake view, MLV, AI Functions, error handling. Upstream
   skills-for-fabric 0.3.14 cut its descriptions by about 40% "with no
-  loss of routing accuracy", as `fabric-deploy-skill.md` cites.
+  loss of routing accuracy" (the 2026-09-10 skills-for-fabric audit's
+  brief 08, at `7dd627e`).
 - `disable-model-invocation: false`, `# model: inherit` and `effort`
   commented, as today.
 
@@ -118,9 +120,10 @@ the commit that folds:
 grep -rnE 'fabric-spark-monitoring|fabric-error-handling|fabric-mlv|fabric-ai-functions' --exclude-dir=audits --exclude-dir=.git .
 ```
 
-**Client repos**: relink each with exactly the groups it holds, as
-`fabric-deploy-skill.md` says; the relink prunes the four dangling
-junctions. The main client repo's `"off"` for `fabric-ai-functions`
+**Client repos**: relink each with exactly the groups it holds, as the
+pilot did (`git show 1813e9d:docs/handoffs/execute/fabric-deploy-skill.md`,
+§ "The rename trap"); the relink prunes the four dangling junctions.
+The main client repo's `"off"` for `fabric-ai-functions`
 then names nothing, which is harmless and that repo's to tidy.
 
 ## Verify
@@ -145,9 +148,6 @@ then names nothing, which is harmless and that repo's to tidy.
 
 ## Re-measure before acting
 
-- The pilot's result, in `fabric-deploy-skill.md`. If its router routed
-  worse than the pair it replaced, stop and put this brief back to the
-  user, who decided it before that result.
 - `uv run --with pyyaml python scripts/skill-telemetry.py coverage`
   rows for the five skills, and the grep above.
 - Whether `/triage` has applied the client prompt audit's hunks to any

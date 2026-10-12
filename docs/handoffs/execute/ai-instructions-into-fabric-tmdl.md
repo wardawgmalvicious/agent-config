@@ -8,8 +8,8 @@ written: 2026-10-06
 
 # Handoff: fold fabric-semantic-model-ai-instructions and fabric-tmdl-api into fabric-tmdl
 
-- **Written**: 2026-10-06, by the session that wrote
-  `fabric-deploy-skill.md`, from the user's observation that this skill
+- **Written**: 2026-10-06, by the session that wrote the `fabric-deploy`
+  pilot's brief, from the user's observation that this skill
   reads as a reference document rather than a skill. Measured against
   the payload at `3c69353`.
 - **Widened**: 2026-10-09, by the user's portfolio decision (`7240d9e`):
@@ -128,8 +128,9 @@ grep -rnE 'semantic-model-ai-instructions|fabric-tmdl-api' --exclude-dir=audits 
 ```
 
 **Client repos**: relink each repo holding the `fabric` group with
-exactly the groups it already holds, as `fabric-deploy-skill.md` says;
-the relink prunes the two dangling junctions.
+exactly the groups it already holds, as the pilot did
+(`git show 1813e9d:docs/handoffs/execute/fabric-deploy-skill.md`,
+§ "The rename trap"); the relink prunes the two dangling junctions.
 
 ## Verify
 
@@ -159,9 +160,10 @@ the relink prunes the two dangling junctions.
   the moved file says so: carry its result, not the question.
 - Whether `/triage` has applied the client prompt audit's hunks to any
   of the three: its 2026-10-09 run, `6af0b27`, took the platform half.
-- `fabric-deploy-skill.md` and the other fold briefs that
-  `platform-persona-groups.md` waits on edit the same shared files
-  (`skillOverrides`, `skills/README.md`, `.tested.json`, the registry).
+- The other fold briefs, those `platform-persona-groups.md` waits on
+  and `auth-cli-gotchas-into-fabric-rest-api.md`, edit the same shared
+  files (`skillOverrides`, `skills/README.md`, `.tested.json`, the
+  registry).
   If two run at once, the second to land rebases over the first.
 
 ## Not checked

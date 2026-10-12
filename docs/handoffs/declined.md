@@ -142,7 +142,8 @@ new evidence gets a verdict, or a new entry.
 - **Why not**: as with code-review's checklist above, it is body text,
   paid only when `fabric-gotchas` runs and never in the listing, and no
   run has measured what it adds over a bare model.
-- **Would change it**: the second wave in `fabric-deploy-skill.md`,
+- **Would change it**: the second wave's `fabric-rest-api` fold,
+  [auth-cli-gotchas-into-fabric-rest-api.md](execute/auth-cli-gotchas-into-fabric-rest-api.md),
   which turns the gotchas into a symptom-to-owner index, or a run whose
   baseline arm states these preferences unprompted.
 

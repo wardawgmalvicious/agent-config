@@ -2,7 +2,7 @@
 status: open
 priority: 3
 needs: []
-blocked-by: [fabric-deploy-skill.md, notebook-skills-into-fabric-spark.md, pbir-skills-into-pbir-report-workflow.md, ai-instructions-into-fabric-tmdl.md, iq-skills-into-fabric-iq.md]
+blocked-by: [notebook-skills-into-fabric-spark.md, pbir-skills-into-pbir-report-workflow.md, ai-instructions-into-fabric-tmdl.md, iq-skills-into-fabric-iq.md]
 written: 2026-10-09
 ---
 
@@ -78,8 +78,9 @@ Counted 2026-10-09, before the folds; re-count when this runs.
 - 19 files outside `skills/` naming a path under `skills/fabric/`, and 8
   under `skills/powerbi/`;
 - every client repo relinked with its new groups, which prunes the
-  junctions the move leaves dangling, as `fabric-deploy-skill.md`
-  § "The rename trap" says of a relink;
+  junctions the move leaves dangling, as the pilot's brief says of a
+  relink (`git show 1813e9d:docs/handoffs/execute/fabric-deploy-skill.md`,
+  § "The rename trap");
 - the hold on new platform skills, which lifts as this lands, on the
   user's word of 2026-10-09: delete it from `/author-skill` step 1, and
   ask the user whether each brief deferred on client work reopens:

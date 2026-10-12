@@ -95,6 +95,15 @@
         "references": "3f74a59569594dd5"
       }
     },
+    "fabric-deploy": {
+      "behaviour": {
+        "date": "2026-10-09",
+        "commit": "abb9a74",
+        "routing": "94aca35f90a880b5",
+        "body": "a575d9d71b2ef12a",
+        "references": "8f85db1940300fc8"
+      }
+    },
     "fabric-error-handling": {
       "activation": {
         "date": "2026-09-12",

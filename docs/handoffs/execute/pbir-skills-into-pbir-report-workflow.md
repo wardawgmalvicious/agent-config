@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: []
-blocked-by: [fabric-deploy-skill.md]
+blocked-by: []
 written: 2026-10-09
 ---
 
@@ -19,9 +19,10 @@ written: 2026-10-09
   `pbip-project-structure` stays a skill, since it covers the semantic
   model side too. No platform fact is added, so `/author-skill` does not
   apply.
-- **After the pilot**: [fabric-deploy-skill.md](fabric-deploy-skill.md)
-  tests the router shape first, and this is its second wave's PBIR item,
-  widened by the user.
+- **After the pilot**: `fabric-deploy` tested the router shape first
+  and held, landing on 2026-10-12
+  ([result](../../../tests/skills/fabric-deploy/README.md)); this is
+  its second wave's PBIR item, widened by the user.
 
 ## Why
 
@@ -176,9 +177,6 @@ harmless and that repo's to tidy.
 
 ## Re-measure before acting
 
-- The pilot's result, in `fabric-deploy-skill.md`. If its router routed
-  worse than the pair it replaced, stop and put this brief back to the
-  user, who decided it before that result.
 - `pbir --version` (0.9.32 was current on 2026-10-07): `pbir-cli.md`
   names its verbs.
 - Whether `/triage` has applied the client prompt audit's hunks to any

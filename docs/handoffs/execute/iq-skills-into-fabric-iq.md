@@ -16,8 +16,9 @@ written: 2026-10-09
   bodies as they stand. The three held edits below are the only content
   change; nothing else is drilled, and `/author-skill` does not apply.
 - **Not after the pilot**: the user held the notebook and PBIR routers
-  for [fabric-deploy-skill.md](fabric-deploy-skill.md)'s result, not
-  this one. No client session uses these skills, so its routing risks
+  for the `fabric-deploy` pilot's result, which held
+  ([result](../../../tests/skills/fabric-deploy/README.md)), not this
+  one. No client session uses these skills, so its routing risks
   no client work.
 
 ## Why
