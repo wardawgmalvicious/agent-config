@@ -307,6 +307,10 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
   real run would make. The `UserInteractive` half is for a scheduled
   task with no desktop: reasoned, not measured.
 
+  A yes/no prompt also has to decide what no keyboard means, consent or
+  abort, and send both the pre-check and the `catch` there, since each
+  sees a case the other misses (a setup script's pre-flight, 2026-10-12).
+
 - **`-NoProfile` when a script touches profiles**, or anything else the
   current session loaded at startup. A script that rewrites
   `profile.ps1` must not be running under the copy it is replacing.
@@ -395,7 +399,9 @@ Docs: [ConvertFrom-Json](https://learn.microsoft.com/powershell/module/microsoft
 - Mutating with no dry-run path.
 - `Read-Host`, `Get-Credential`, `Out-GridView`, `pause` in anything that
   may run non-interactively (scheduled tasks, CI, agent sessions), unless
-  guarded as § "Windows and system operations" shows.
+  guarded as § "Windows and system operations" shows. A guard on
+  `[Environment]::UserInteractive` alone reads as one and is not: it is
+  `True` in an agent shell, so the prompt still runs (2026-10-12).
 - `$null` for a .NET `string` argument where null and `''` differ, as in
   `SetEnvironmentVariable`: it arrives as `''`. Pass `[NullString]::Value`.
 - Swallowing errors with `-ErrorAction SilentlyContinue` and no
