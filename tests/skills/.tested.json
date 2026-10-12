@@ -299,6 +299,15 @@
         "references": "ef5530ac9d3b7232"
       }
     },
+    "run-briefs": {
+      "behaviour": {
+        "date": "2026-10-12",
+        "commit": "8c93440",
+        "routing": "5049054b4fa8eb46",
+        "body": "dde37d885147ba76",
+        "references": "ee17840dbc345465"
+      }
+    },
     "test-skill": {
       "behaviour": {
         "date": "2026-09-30",
