@@ -328,17 +328,21 @@ refs ✓ DIVIDE over `/` ✓ VAR/RETURN decomposition ✓ IF→SWITCH ✓.
 
 ## kql_fixture.kql
 
-KQL lowercase-keyword + time-filter-first + tolower-anti-pattern
-fixture.
+KQL case-sensitivity + time-filter-first + tolower-anti-pattern +
+string-column type fixture.
 
 🔴 Critical:
 
 - `kql_fixture.kql:2-6` — Operators uppercased (`SUMMARIZE`, `WHERE`,
-  `WHERE`, `ORDER BY`, `TAKE`). KQL convention is **lowercase**.
-  (Style per coding-kql.md — explicit anti-pattern, "do not uppercase
-  like T-SQL")
+  `WHERE`, `ORDER BY`, `TAKE`). KQL is case-sensitive for operators, so
+  the query does not run; they must be lowercase. (Correctness per
+  coding-kql.md § "Casing")
 - `kql_fixture.kql:9` — `TOLOWER(...)` uppercase function name; KQL
-  functions are lowercase (`tolower`). (Style)
+  function names are case-sensitive (`tolower`), so it does not
+  resolve. (Correctness)
+- `kql_fixture.kql:10` — `ResultType != 0` compares a string column
+  (`SigninLogs.ResultType`, "0 indicates success") with a number; it
+  should be `!= "0"`. (Correctness per coding-kql.md § "Clause order")
 - `kql_fixture.kql:2-4` — `summarize` (line 2) before `where
   TimeGenerated` (line 4); filters AFTER aggregation force full table
   scan. Time filter should be FIRST clause. (Performance per
@@ -360,7 +364,8 @@ fixture.
 🟢 Suggestion:
 
 - `kql_fixture.kql:6` — `TAKE 100` after `ORDER BY` is the right
-  order, but uppercase syntax. (Style)
+  order, but uppercase and so not valid KQL (reported with the
+  line 2-6 casing finding above).
 - `kql_fixture.kql:4` — `7d` literal embedded directly in `ago()`;
   consider `let LookbackWindow = 7d;`. (Style)
 
