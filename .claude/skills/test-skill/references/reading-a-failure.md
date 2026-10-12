@@ -605,3 +605,10 @@ on a `result` holding only that line. The worker's exit came back as a
 `command_lifecycle` records instead (above), so read what precedes the
 second `init` before grading either. The real pilot's coordinator
 blocked on `Wait-Process` and emitted a single `result`.
+
+**An arm resumed by id reports the session's cost, not its own.** The
+resume is a new process, yet its `total_cost_usd` and `modelUsage`
+include the turns before it: $2.115 where the first process had read
+$1.738, so the resume itself spent $0.377. Every `modelUsage` token
+count was the two runs' sum, while `num_turns` was the resume's alone,
+9 after 22 (2026-10-12, 2.1.293). Subtract the cost, never add it.
