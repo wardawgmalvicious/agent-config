@@ -116,15 +116,18 @@ against the four skills' 4,958.
 
 **Cost**: router arms $4.63, baseline arms $1.14, the slash arm $0.54.
 
-**Found, not fixed**:
+**Found, and fixed after the run** (2026-10-12), with neither case
+rerun since:
 
-- `graph.md` and `graph-reference.md` carry no path-search syntax,
+- `graph.md` and `graph-reference.md` carried no path-search syntax,
   `ANY SHORTEST` or a path mode; the `graph` payload said so before
-  writing it from the standard.
-- `ontology-reference.md`'s troubleshooting table still prescribes
+  writing it from the standard. Both now carry Learn's path search
+  prefixes, path modes, quantifiers and predicate placement.
+- `ontology-reference.md`'s troubleshooting table prescribed
   `Support group by in GQL`, which `ontology.md` and `data-agent.md`
-  retire; the `consume` payload caught it. The row follows Learn's
-  troubleshooting page, which still says it (2026-10-12).
+  retire; the `consume` payload caught it. The row followed Learn's
+  troubleshooting page, which still says it (2026-10-12); it now departs
+  from the page and says why.
 
 **What the run cannot show**: variance, with one run per arm; and the
 client repos' listing, which runs to its cap, while this probe lists
