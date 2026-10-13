@@ -260,8 +260,14 @@ def load_manifest() -> dict:
 
 
 def write_manifest(data: dict) -> None:
+    """Write LF, the line ending .gitattributes pins this file to.
+
+    Without newline=, write_text() writes each newline as os.linesep, so on
+    Windows every stamp wrote CRLF: one that changed no hash still left the
+    file modified in `git status`, with an empty diff (2026-10-12).
+    """
     MANIFEST.write_text(
-        json.dumps(data, indent=2, sort_keys=True) + chr(10), encoding="utf-8"
+        json.dumps(data, indent=2, sort_keys=True) + chr(10), encoding="utf-8", newline=chr(10)
     )
 
 
