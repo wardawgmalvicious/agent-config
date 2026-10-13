@@ -146,6 +146,17 @@ not fully merged`; after a fast-forward neither applies. All of these
 ran unprompted in an auto-mode session on 2026-10-12, on worktrees the
 session's own workers had created.
 
+**The subshell keeps this session in the main checkout.** The Bash
+tool's working directory persists between calls, and on 2026-10-12
+(2.1.296) a bare `cd .claude/worktrees/<stem> && pre-commit run
+--all-files` left the coordinator there: the harness then named the
+worktree the session's primary working directory, with the note "Do NOT
+cd to the original repository root". From there, `git merge --ff-only
+worktree-<stem>` merges the branch into itself: `Already up to date.`,
+exit 0, `main` unmoved (a scratch repo, same day). No `EnterWorktree`
+was behind the move, so no guard held: a `git -C` read of the main
+checkout ran, and so did the `cd` back.
+
 **The rebase and the classifier.** On 2026-10-06 (2.1.289) auto mode
 refused `git rebase main` in a brief's worktree as `[Git Destructive]`
 until the user said to run it. On 2026-10-12 (2.1.293)

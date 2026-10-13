@@ -161,11 +161,15 @@ with what the coordinator adds in front:
    for a later session's sweep. With the pid gone, `git worktree unlock`
    it; with the pid alive, stop, since a session holds it.
 3. **Rebase and check**: `git -C .claude/worktrees/<stem> rebase main`,
-   then `pre-commit run --all-files` inside the worktree, because no hook
-   runs on a rebase or a fast-forward. Auto mode may refuse the rebase as
-   `[Git Destructive]`; it did on 2026-10-06 and did not on 2026-10-12,
-   whose rule text exempts a rebase of the agent's own branch. A refusal
-   goes to the user, whose word in the conversation lets it run.
+   then `(cd .claude/worktrees/<stem> && pre-commit run --all-files)`,
+   because no hook runs on a rebase or a fast-forward. **Keep the
+   subshell**: a bare `cd` persists, and step 4 run from the worktree
+   prints `Already up to date.`, exits 0 and leaves `main` unmoved
+   ([references/landing-gate.md](references/landing-gate.md)). Auto
+   mode may refuse the rebase as `[Git Destructive]`; it did on
+   2026-10-06 and did not on 2026-10-12, whose rule text exempts a
+   rebase of the agent's own branch. A refusal goes to the user, whose
+   word in the conversation lets it run.
 4. **Fast-forward**: `git merge --ff-only worktree-<stem>`. Cite the
    branch's SHAs only after the rebase, checked with
    `git merge-base --is-ancestor <sha> main`.
