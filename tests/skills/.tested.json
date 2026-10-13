@@ -144,6 +144,15 @@
         "paths": "6b3fa9fee9e3d90e"
       }
     },
+    "fabric-rest-api": {
+      "behaviour": {
+        "date": "2026-10-12",
+        "commit": "f4012fd",
+        "routing": "a33f02ec7286a486",
+        "body": "a85e160bbd8d3ab2",
+        "references": "4116f21bb6f894fe"
+      }
+    },
     "fabric-semantic-model-audit": {
       "behaviour": {
         "date": "2026-09-03",
