@@ -278,8 +278,10 @@ each viewer's Entra identity, so:
 
 > The `visual.json` encoding for the **Field value** icon source is deliberately
 > **not** given here — it was not observed against a real PBIP export, and this
-> skill's property paths are only worth having when they are verified. The block
-> above is the Rules style and does not carry over unchanged.
+> skill's property paths are only worth having when they are verified. No schema
+> settles it either: on 2026-10-12 `pbir schema describe` typed `values.icon`
+> only as an object, and theme schema 2.157 added nothing for it. The block above
+> is the Rules style and does not carry over unchanged.
 
 ### Gotchas
 
