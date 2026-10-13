@@ -87,7 +87,7 @@ separates on the refresh.
   `PATCH /v1/workspaces/{wsId}/items/{itemId}/definition`. Learn's
   Update Item Definition is
   `POST /v1/workspaces/{workspaceId}/items/{itemId}/updateDefinition`
-  (read 2026-10-12), so that skill's line is wrong.
+  (read 2026-10-12), so that skill's line was wrong: fixed the same day.
 
 **Activation**: `test-activation.ps1 -Set pbip` on the same commit read
 16 of 16 fixtures and matched every activation delta, skills and rules.

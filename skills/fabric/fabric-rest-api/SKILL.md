@@ -133,7 +133,7 @@ as `"(Empty)"`, and the headers, though like `az rest` it does not poll
 Item types with content (Notebook, SemanticModel, Report, DataPipeline) accept a `definition` object containing `format`, `parts`, and base64-encoded payloads.
 
 ```
-PATCH /v1/workspaces/{wsId}/items/{itemId}/definition[?updateMetadata=true]
+POST /v1/workspaces/{wsId}/items/{itemId}/updateDefinition[?updateMetadata=true]
 ```
 
 - **`?updateMetadata=true` controls whether `.platform` is honored.** Without it, any `.platform` part in `definition.parts` is silently ignored — `displayName`/`description` won't update.
