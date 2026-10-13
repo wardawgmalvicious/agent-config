@@ -1,103 +1,67 @@
 ---
 status: open
 priority: 2
-needs: []
+needs: [desktop]
 blocked-by: []
 written: 2026-10-07
 ---
 
-# Handoff: encode the August 2026 formatting settings in the PBIR guidance
+# Handoff: confirm the August 2026 formatting properties in a PBIP export
 
-- **Written**: 2026-10-07, by a `/triage` sweep, from four audit
-  follow-ups of the 2026-09-07 `powerbi` run, retired 2026-10-08: 04,
-  10 and 13, and the deferred JSON half of 09, which a plain `applied`
-  stamp kept out of every view. Each reads back with
-  `git show 7dd627e:docs/audits/2026-09-07/powerbi/completed/<file>`,
-  the files being `04-catalog-new-visual-formatting-properties.md`,
-  `10-supply-drilled-evidence-for-matrix-properties.md`,
-  `13-propagate-new-formatting-to-authoring-skills.md` and
-  `09-add-url-sourced-custom-icons.md`. Re-measured at
-  `4b6e108`: `pbir`'s schema now names part of what all four waited on
-  a Desktop round-trip for.
-- **Kind**: an edit to `pbir-report-workflow`'s references, from the
-  schema where it names a property and from a PBIP export where it does
-  not. Nothing is drafted. The follow-ups hold the evidence, the UI
-  paths and the constraint; this brief holds what is still open.
-- **Re-aimed**: 2026-10-09. It targeted four skills, each with one
-  lifetime invocation or none, so it waited on
-  the user's portfolio decision (`7240d9e`). Three of
-  them fold into `pbir-report-workflow` and the fourth is archived, so
-  it waited for the fold, which landed on 2026-10-12 (`c19548a`).
+- **Written**: 2026-10-07, by a `/triage` sweep, from four follow-ups of
+  the 2026-09-07 `powerbi` audit: 04, 10, 13 and the JSON half of 09.
+  Each reads back with
+  `git show 7dd627e:docs/audits/2026-09-07/powerbi/completed/<file>`.
+- **Narrowed**: 2026-10-12. Report theme schema 2.157, which `pbir`
+  0.9.32, the latest, does not bundle, named all but one of the settings
+  this brief held for Desktop. The names landed in
+  `pbir-report-workflow`'s `visual-json.md`, § "August 2026 formatting
+  properties", which says what was measured; the commit that narrowed
+  this brief says how. What is left needs a PBIP saved by Desktop.
+- **Kind**: a probe in Power BI Desktop, then an edit to
+  `pbir-report-workflow`'s references. The follow-ups' constraint
+  stands: a name comes from a schema or an export, never from a UI label.
 
-## What the schema names now
+## What only an export settles
 
-Measured 2026-10-07 with `pbir schema describe --json` on `pbir` 0.9.29
-(local schemas visualConfiguration 2.3.0, visualContainer 2.9.0,
-formattingObjectDefinitions 1.5.0). On 2026-09-08, `pbir` 0.9.7 had
-none of the first three rows.
+1. **Desktop writes the 2.157 names**: `categoryAxis.outerPadding`,
+   `selection.singleDate`, the slicer `dropdown` object,
+   `items.expandCollapseIconColor`, the matrix `columnHeaders` +/- icons,
+   and the donut's `centerValue`, `value`, `label`, `image` and
+   `centerBackground`, rather than the names `pbir`'s June catalog shows
+   (`background`, `valueBold`, `valueDisplayUnits` …).
+2. **The suffix each number takes**, which a schema type does not
+   decide: `pbir set` writes `innerPadding` as `20D`, while
+   skills-for-fabric v0.3.13's examples wrote `26L`
+   (`git show 79eddb3:skills/powerbi/powerbi-report-authoring/references/cartesian.md`,
+   line 528).
+3. **The freeze toggle**: whether **Layout** > **Freeze** > **Row
+   headers** writes `rowHeaders.unfrozen`, and whether off is `true`.
+4. **The Field-value icon** (09): the `values.icon` shape when the
+   **Icons** format style is **Field value**, which
+   `conditional-formatting.md` withholds.
 
-| Setting | Follow-up | In the schema |
-| --- | --- | --- |
-| Matrix +/- icons, row and column headers | 04 item 3, 10 E-2 | `pivotTable.rowHeaders` and `.columnHeaders`: `showExpandCollapseButtons`, `expandCollapseButtonsColor`, `expandCollapseButtonsSize` |
-| Matrix auto-expand | 10 E-1 and E-2 | `autoExpand` on both, "While editing, automatically expands…" |
-| Donut centre value | 04 item 6 | `donutChart.centerValue.show`; which of `value`, `label`, `image` and `background` carry its format is not shown |
-| Slicer Selection icon section | 13 D-2 | `slicer.selectionIcon.color` |
-| Slicer Date picker style | 13 D-2 | `slicer.data.mode` lists `RelativeDatePicker` and `Single` beside the older values |
-| Space between categories | 13 D-1 | `columnChart.categoryAxis.innerPadding`, "Space between categories (inner padding)" |
-| Space between series | 13 D-1 | `columnChart.layout.stackedGapSize`, "Space between series"; `clusteredColumnChart.layout.clusteredGapSize` |
-| Overlap series | 10 E-4 | `clusteredColumnChart.layout.clusteredGapOverlaps` is the likely one, unconfirmed |
+## Where it runs
 
-`powerbi-report-authoring`'s `cartesian.md` showed `clusteredGapSize`
-and `stackedGapSize` under `layout` on 2026-10-07, so 13's D-1 is a
-label mapping, not a new property. That skill is archived, so the
-mapping goes where the properties do.
-
-## What still needs an export
-
-Absent from that schema on 2026-10-07:
-
-- the **Single date** toggle (04 item 1; `slicer.selection` still holds
-  only `selectAllCheckboxEnabled`, `singleSelect`, `strictSingleSelect`);
-- the slicer **Dropdown** and **Hierarchy** sections (04 item 2);
-- the matrix **default freeze state** (04 item 4);
-- **Outer padding** (04 item 5, 13 D-1);
-- the single-date row in `slicers.md`'s sizing table, which only a
-  render gives (13 D-2);
-- the Field-value icon source in `visual.json` (09).
-
-Newer schemas exist: `pbir schema status` showed visualConfiguration
-2.7.0 and visualContainer 2.12.0 remote, and `pbir` 0.9.32 is out.
-Fetch or upgrade before deciding any of these needs Desktop.
+Power BI Desktop, August 2026 release or later, on a PBIR project in
+git. Set each setting on a visual of its type, save, and read the
+`visual.json` diff.
+[pbir-cli-writes-with-desktop-open.md](pbir-cli-writes-with-desktop-open.md)
+needs the same setup, so one sitting can serve both. Keep any repo,
+workspace or client name out of what lands.
 
 ## Where it lands
 
-In `skills/powerbi/pbir-report-workflow/references/`, where the PBIR
-skills now live:
-
-- `visual-json.md`, from `pbir-visual-json`: every property above, and
-  the axis names and slicer encodings that were to go to
-  `powerbi-report-authoring`'s `cartesian.md` and `slicers.md`, the
-  skill archived on 2026-10-09.
-- `design/assets/base.json`, from `powerbi-report-design`: only if an
-  asset change is justified; 13's constraint prefers omission.
-- `conditional-formatting.md`: the Field-value icon.
-
-`pbir-report-workflow` owes a retest, which `skill-status.py --stale`
-names. The follow-ups' constraint still binds: a property name comes
-from the schema or an export, never from a UI label, and one that
-cannot be observed is left out.
-
-## Not checked
-
-- Whether Desktop writes these properties as the schema names them: a
-  schema says what is valid, an export what Desktop writes.
-- `pbir validate` on a report using any of them.
+`skills/powerbi/pbir-report-workflow/references/`: `visual-json.md` §
+"August 2026 formatting properties" drops each caveat the export
+settles and corrects any name it contradicts, and
+`conditional-formatting.md` gains item 4. A `references/` edit owes no
+retest.
 
 ## Re-measure before acting
 
 ```bash
-pbir --version                                     # 0.9.29 on 2026-10-07
-pbir schema status                                 # visualContainer 2.9.0 local, 2.12.0 remote
-pbir schema describe pivotTable columnHeaders --json
-grep -rn -iE "autoExpand|showExpandCollapseButtons|centerValue|RelativeDatePicker" skills/powerbi/   # none on 2026-10-07
+pbir --version              # 0.9.29 on 2026-10-12; 0.9.32 bundles the same schemas
+pbir schema status          # reportThemeSchema 2.155 local, 2.157 remote on 2026-10-12
+grep -n "August 2026" skills/powerbi/pbir-report-workflow/references/visual-json.md
 ```
