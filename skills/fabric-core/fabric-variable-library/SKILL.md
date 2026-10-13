@@ -28,7 +28,7 @@ VariableLibrary does not support the `format` field in definition requests: omit
 | Type | Tier | Description |
 |---|---|---|
 | `String` | Basic | Text |
-| `Boolean` | Basic | true / false (stored as a string!) |
+| `Boolean` | Basic | JSON `true` / `false`, never quoted |
 | `Number` | Basic | Floating-point. **Not supported in pipelines** |
 | `Integer` | Basic | Whole numbers |
 | `DateTime` | Basic | ISO 8601 |
@@ -43,12 +43,17 @@ VariableLibrary does not support the `format` field in definition requests: omit
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/variableLibrary/definition/variables/1.0.0/schema.json",
   "variables": [
     { "name": "lakehouse_name", "type": "String", "value": "bronze_lakehouse" },
-    { "name": "enable_logging", "type": "Boolean", "value": "true" },
+    { "name": "enable_logging", "type": "Boolean", "value": true },
     { "name": "target_warehouse", "type": "ItemReference",
       "value": { "itemId": "...", "workspaceId": "..." } }
   ]
 }
 ```
+
+A Boolean's `value` is a bare JSON `true` or `false`: Learn's definition
+article types `value` as JSON, and an update from Git took a bare one
+and `getDefinition` returned it bare (a client estate, 2026-10-13).
+Whether a sync rejects a quoted `"true"` or coerces it is unverified.
 
 ## settings.json + Value Sets
 
@@ -71,10 +76,16 @@ Every entry in `valueSetsOrder` must have a matching file under `valueSets/`:
   "$schema": "...",
   "name": "dev",
   "variableOverrides": [
-    { "name": "lakehouse_name", "value": "bronze_dev" }
+    { "name": "lakehouse_name", "value": "bronze_dev" },
+    { "name": "enable_logging", "value": false }
   ]
 }
 ```
+
+An override takes its variable's JSON type, so a Boolean's is bare too,
+though Learn's `VariableOverride` table types `value` as String: its
+value-sets page says a value set holds values of each variable's own
+type, and the same round trip carried a bare override.
 
 ## Git-sync validation (`InvalidContent`)
 
