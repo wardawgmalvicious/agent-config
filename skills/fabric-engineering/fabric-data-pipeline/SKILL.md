@@ -219,7 +219,7 @@ the run-on-demand REST API**, where a pipeline is `jobType: Pipeline`
 | `Weekly` | `times[]` + `weekdays[]` |
 | `Monthly` | `times[]`, `recurrence`, `occurrence{occurrenceType, dayOfMonth \| weekIndex + WeekDay}` |
 
-Four traps:
+Five traps:
 
 - **`endDateTime` is mandatory and there is no open-ended schedule.** A
   schedule silently stops firing at its end date with no error and no
@@ -234,10 +234,17 @@ Four traps:
 - **First commit after enabling CI/CD is noisy.** Every item that
   already had a schedule shows as uncommitted. Review rather than
   bulk-committing.
+- **Turning a schedule off in Git means deleting `enabledControlType`
+  too.** A portal edit can add `"enabledControlType": "UserEnabled"`
+  beside `enabled`, and an update from Git then refuses `false`:
+  `'enabled' is required to be true when 'enabledControlType' is 'UserEnabled'`
+  (`GitSyncFailed`). Set `false` and delete the line in one edit, and
+  have a script that flips the flag do both and fail if the pair survives
+  (seen in a client estate, 2026-10-13; on no Learn page).
 
-Also: max **20 schedules** per pipeline; `enabled: false` is a real
-state that survives deployment, so a disabled schedule promotes as
-disabled.
+Also: max **20 schedules** per pipeline; `enabled: false` with no
+`enabledControlType` beside it is a real state that survives Git sync
+and deployment, so a disabled schedule promotes as disabled.
 
 ## 8. CI/CD limitations specific to pipelines
 

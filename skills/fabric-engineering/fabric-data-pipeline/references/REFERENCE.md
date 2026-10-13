@@ -207,7 +207,8 @@ Top level is `{ "schedules": [ … ] }`. Each entry:
 
 | Field | Notes |
 | --- | --- |
-| `enabled` | Boolean. Survives deployment — a disabled schedule promotes disabled |
+| `enabled` | Boolean. Survives Git sync and deployment — a disabled schedule promotes disabled — with no `enabledControlType` beside it |
+| `enabledControlType` | **Not in the schema**, which sets no `additionalProperties`, so neither declares nor forbids it; no Learn page names it, and Learn's two `.schedules` screenshots lack it (all 2026-10-13). A portal edit wrote `"UserEnabled"`, and Git sync then refused `enabled: false` beside it (`SKILL.md` § 7, a client estate, 2026-10-13). Its other values, and what turning a schedule off or the scheduler's auto-disable writes, are unread |
 | `jobType` | `"Execute"` for pipelines. The schema declares **no enum**, so treat this as observed rather than validated |
 | `configuration` | Below; `type` is the only schema-required field |
 | `parameters` | Array. Values passed to the pipeline at trigger time |
