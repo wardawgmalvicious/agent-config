@@ -237,3 +237,7 @@ load_date = LoadDate
   stdin, on Windows: text mode writes each `\n` as CRLF, as `write_text()`
   does, so the child stores the CRs. Pass `input=s.encode("utf-8")` and
   decode its output yourself (reproduced 2026-10-12, Python 3.13.14).
+- `module.__version__` for a package's version: a convention, and
+  `playwright` 1.63.0 defines none, so it raises `AttributeError` at run
+  time (2026-10-12). Read the installed distribution instead, with
+  `importlib.metadata.version("playwright")`, stdlib since Python 3.8.
