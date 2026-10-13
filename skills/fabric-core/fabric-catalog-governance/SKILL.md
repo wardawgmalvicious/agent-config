@@ -14,7 +14,10 @@ posture across three areas — *Manage your data estate*, *Protect, secure
 experiences, **Policies** (preview) among them, and administrative ones
 — capacities, workspaces, tenant settings, Azure connections, workloads
 and more — each shown as far as the viewer's admin role allows (Learn,
-2026-10-06). This skill does the same work through the REST APIs, where
+2026-10-06). Govern itself went generally available in September 2026,
+rolling out by region, with the Admin portal standing in where it has
+not arrived; What's New keeps its February 2025 preview row too (Learn,
+2026-10-13). This skill does the same work through the REST APIs, where
 it can be counted, scheduled and fixed in bulk.
 
 The output is **findings**, not a rewrite. Do not write to a tenant
