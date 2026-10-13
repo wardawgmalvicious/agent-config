@@ -143,10 +143,14 @@ conditions hold it together (a client Fabric repo, 2026-09-26):
   `copilot-instructions.md` or an applied `*.instructions.md` loads its
   target in full, 64 KB there, while links in `AGENTS.md` and `CLAUDE.md`
   are not followed. A code span holds under either value.
-- **`chat.useClaudeMdFile` stays `false`.** On, Copilot also reads the
-  `CLAUDE.md`, Claude-only lines included, and `~/.claude/CLAUDE.md` with
-  it. VS Code's sources are additive, so a fact kept in both `AGENTS.md`
-  and a Copilot file is read twice: give each fact one home.
+- **Each fact has one home.** VS Code's sources are additive, so a fact
+  kept in both `AGENTS.md` and a Copilot file is read twice. Leave
+  `chat.useClaudeMdFile` at its default, `true`: the Local agent then
+  reads the `CLAUDE.md`, Claude-only lines included, and
+  `~/.claude/CLAUDE.md`, which is wanted since 2026-10-08. Whether it
+  expands `@AGENTS.md`, reading `AGENTS.md` twice beside
+  `chat.useAgentsMdFile`, is untested; the standalone Copilot app does
+  (2026-10-05).
 
 **Every VS Code claim here is the Local agent harness**, one of four a
 session's **Session Target** picks. Customizations follow the harness,
@@ -162,7 +166,7 @@ route not traced; a Claude-target turn loaded `~/.claude/rules` by
 
 | Harness | Project | Targeted | User |
 | --- | --- | --- | --- |
-| Local, VS Code's own | `.github/copilot-instructions.md`, `AGENTS.md` or `CLAUDE.md` | `.github/instructions/**/*.instructions.md`, or `.claude/rules` | VS Code profile storage, by the docs; the bundle lists `~/.claude/rules` too |
+| Local, VS Code's own | `.github/copilot-instructions.md`, `AGENTS.md` or `CLAUDE.md` | `.github/instructions/**/*.instructions.md`, or `.claude/rules` | VS Code profile storage, and `~/.claude/rules`, which the docs omit but the bundle lists and a turn read by scope (2026-10-13) |
 | Copilot, the Copilot SDK | `.github/copilot-instructions.md` or `AGENTS.md`; its panel also lists the root `CLAUDE.md` | `.github/instructions/**/*.instructions.md` | `~/.copilot/instructions` |
 | Claude, the Claude Agent SDK, on by default (`github.copilot.chat.claudeAgent.enabled`) | `CLAUDE.md`, `.claude/CLAUDE.md` | `.claude/rules`, by `paths:` | `~/.claude/rules` |
 

@@ -57,15 +57,38 @@ can. So "this repo should be lightweight" is a profile task, and
   under `%APPDATA%\Code\User\profiles\<id>\` unless it shares Default's;
   `%APPDATA%\Code\User\settings.json` is Default's alone, and the
   Settings UI edits the current window's profile. A switch set in one
-  profile is absent from the rest: on 2026-09-11 one profile carried
-  none of the Copilot `chat.*Locations` switches, so Copilot there still
-  inherited the whole `~/.claude` payload, hooks included.
+  profile is absent from the rest, so what the Local agent reads is
+  decided per profile: on 2026-09-11 one profile carried none of the
+  `chat.*Locations` entries the others wrote out `false`, so its Local
+  agent alone read the whole `~/.claude` payload.
 - **An unlisted location keeps its default, and the default is on.** The
   `chat.*Locations` settings are location → boolean maps *over* the
-  documented defaults, so turning inheritance off means writing every
-  location out as `false`. Omitting one leaves it enabled with nothing
-  to show for it: `.claude/skills` and `.claude/rules` stayed live that
-  way while every root listed beside them read `false`.
+  built-in locations, nine of them Claude's (1.141.0), so leaving one
+  out reads it as surely as listing it `true`: every profile here does
+  one or the other for Claude's rules, skills and agents, since the Local
+  agent reading them is wanted (2026-10-08). Turning one off means
+  writing it out `false`, since an omitted one stays live:
+  `.claude/skills` and `.claude/rules` did on 2026-09-11, while every
+  root listed beside them read `false`.
+- **Claude's hooks stay off.** A Claude-format hook runs under the Local
+  agent only with `chat.useClaudeHooks` on, which defaults `false`, with
+  no experiment and no configuration default able to move it (1.141.0).
+  Leave it unset, as every profile here does (2026-10-13); in Default
+  nothing else holds those hooks off. Reading Claude's guidance is
+  wanted, while its hook scripts were never tested under another
+  harness.
+- **These switches govern the Local harness alone, and an experiment
+  can move a new chat off it.** Each says it is "only used by the Local
+  agent harness"; the Copilot target reads nothing under `~/.claude`,
+  and the Claude target reads it as Claude Code does.
+  `chat.defaultToCopilotHarness` and `chat.editor.preferCopilotHarness`,
+  default `false`, start a new chat on the Copilot target in Local's
+  place, and `chat.editor.localAgent.enabled`, default `true`, hides
+  Local when off. All three are experiment-controlled at startup, but an
+  experiment changes only a default (1.141.0), so a value a profile sets
+  holds against it, and a policy outranks both. A Claude-target pick is
+  unaffected; the docs mark Local and these switches for removal
+  together, so plan for the Claude target.
 - **The Settings UI may not save.** Object-valued `chat.*` settings
   edited through the UI can leave `settings.json` untouched with no
   error — measured 2026-09-09, repeated edits against an mtime four days
@@ -104,8 +127,7 @@ can. So "this repo should be lightweight" is a profile task, and
 Profiles accumulate. Extensions are installed once on a whim and never
 removed, and Default is where they land, so the working set grows
 monotonically unless something measures it. On this machine
-`machine-config`'s `scripts/vscode-profiles.ps1 -Audit` reports the four
-failure modes — Default-only extensions, dangling formatter
-references, live-vs-repo drift, and profiles re-linked to Default — plus
-any profile leaving a Claude location or switch on, and
-exits non-zero on findings.
+`machine-config`'s `scripts/vscode-profiles.ps1 -Audit` reports these
+failure modes among others — Default-only extensions, dangling formatter
+references, live-vs-repo drift, and profiles re-linked to Default — and
+exits non-zero on findings. It checks no `chat.*` setting.

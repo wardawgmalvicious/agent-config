@@ -1466,6 +1466,56 @@ repo's inbox was not opened.
 So 2 and 3 hold, which reads as remove, after the one decision the turn
 left.
 
+#### What the harness switches decide, 2026-10-13
+
+The harness-switches brief landed this day. Its two rules,
+`claude/rules/vscode-scoping.md` and
+`claude/rules/agent-instructions-scoping.md`, now keep Claude's files in
+the Local agent, by the user's call of 2026-10-08, and say what an
+experiment can move. Measured on VS Code 1.141.0 (`2a59476c9b`), its
+bundle and settings unchanged since the brief's reading of 2026-10-08:
+
+- **An experiment changes only a default.** In
+  `workbench.desktop.main.js`, the contribution
+  `workbench.contrib.configurationDefaultOverridesContribution` asks the
+  assignment service, for each setting carrying `experiment`, for the
+  treatment `config.<setting>`, and registers the value through
+  `deltaConfiguration({addedDefaults})` as
+  `{overrides: {<setting>: <value>}, source: "experiments"}`. A
+  registered default with `preventExperimentOverride` stops it. VS
+  Code's settings page puts default settings lowest and policy highest
+  ("later scopes override earlier scopes", read 2026-10-13), so a value a
+  profile or workspace sets holds against an experiment.
+- **This machine is in none of the three harness experiments.** The
+  cached assignment, `memento/experiment.service.memento` in
+  `%APPDATA%\Code\User\globalStorage\state.vscdb`, read from a copy,
+  holds 106 features, and no `config.chat.defaultToCopilotHarness`,
+  `config.chat.editor.preferCopilotHarness` or
+  `config.chat.editor.localAgent.enabled`. It holds
+  `config.chat.copilotHarnessIntroduction.mode` at `afterRequest`, whose
+  stable default is `off`: an introduction to the Copilot harness after a
+  new session's first request. No live profile sets a harness setting,
+  and no `SOFTWARE\Policies\Microsoft\VSCode` key exists under `HKLM` or
+  `HKCU`.
+- **Only a set value moves `chat.useClaudeHooks`.** It defaults
+  `false`, `restricted`, with `disallowConfigurationDefault`
+  and no `experiment`, and says "When disabled, only Copilot-format hooks
+  are used". The brief had every profile also keeping its Claude hook
+  locations `false` or `chat.useHooks` `false`; Default does neither,
+  listing only `.github/hooks` and `~/.copilot/hooks` `false`, so its
+  default alone holds Claude's hooks off there. Fabric sets
+  `chat.useHooks` `false`, Config both, and Azure its three Claude hook
+  locations `false`.
+- **The Local agent reads `~/.claude/rules`**, by the user's re-run of
+  the 2026-09-09 measurement this day: a Local-target chat on a `.sql`
+  file in a client Fabric repo, which holds no T-SQL rule of its own,
+  named the user-scope one as applying, by its scope. The docs list only
+  VS Code profile storage there.
+
+Search the bundle by `registeredExperimentalDefaults`, and slice it with
+`node` or Python as § "Reproducing" above does, since a wide `grep -o`
+window timed out at 120 s again.
+
 ### User-scope MCP servers are bound to nothing
 
 **A server bound to no workspace is still bound to a tenant.**

@@ -134,10 +134,14 @@ conformance checking.
   and the silent failures around it — formatters naming extensions that
   are not enabled, `useDefaultFlags` linking a profile back to Default,
   globs that cannot match leading dots — and the three that decide
-  whether Copilot's `chat.*Locations` switches hold: settings are per
+  what VS Code's Local agent reads of Claude's files: settings are per
   profile, an unlisted location defaults to on, and the Settings UI may
-  not save. Also `chat.includeReferencedInstructions`, which makes a
-  link in an instructions file an include. Triggers on `.vscode/*.json`,
+  not save. Since 2026-10-13 those read as keeping the files in, as the
+  user chose on 2026-10-08, and the rule adds that Claude's hooks stay
+  off and that an experiment can start a new chat off Local, though not
+  past a value a profile sets. Also
+  `chat.includeReferencedInstructions`, which makes a link in an
+  instructions file an include. Triggers on `.vscode/*.json`,
   `*.code-workspace`, and any `vscode/**/*.json` — stored profile
   settings and a standalone `keybindings.json` alike. No glob sees a
   live profile under `%APPDATA%\Code\User`, so `~/.claude/CLAUDE.md`
@@ -171,7 +175,9 @@ conformance checking.
   `CLAUDE.md` anywhere on the path
   silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
   and the `@AGENTS.md` import form that loses none, with the two
-  conditions a client Fabric repo found for it. Built from cold probes
+  conditions a client Fabric repo found for it; the second kept
+  `chat.useClaudeMdFile` off until 2026-10-13, and now leaves it on, as
+  the user chose on 2026-10-08. Built from cold probes
   on 2.1.282 and the memory docs, 2026-09-25. Since 2026-09-27 it also
   holds a nested file to around 60 lines and keeps one out of `.claude/`
   and out of a folder copied elsewhere, from agent-config's own

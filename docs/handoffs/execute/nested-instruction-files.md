@@ -91,8 +91,9 @@ relying on any of it: `AGENTS.md` support shipped in 2.1.277.
   discovery rules and file formats of the selected harness": in VS Code
   1.139.1 `chat.useAgentsMdFile`, `chat.useNestedAgentsMdFiles` and
   `chat.useClaudeMdFile` each say they are "only used by the Local agent
-  harness" (2026-09-26), the split
-  [copilot-harness-switches.md](copilot-harness-switches.md) investigates.
+  harness" (2026-09-26), the split whose files by harness
+  [agent-instructions-scoping.md](../../../claude/rules/agent-instructions-scoping.md)
+  tabulates.
 - **GitHub.com's Copilot agent** reads the nearest `AGENTS.md` anywhere
   in the repo or, failing one, a single root `CLAUDE.md` or `GEMINI.md`,
   with no VS Code setting involved, by docs.github.com's
@@ -474,17 +475,15 @@ which load as nested files in any session here that Reads them, so
    `**/CLAUDE.local.md`, `**/AGENTS.md`, `**/.claude/rules/**/*.md`,
    `**/.github/copilot-instructions.md` and
    `**/.github/instructions/**/*.md`, the two directories recursive
-   since the memory page says rules are "discovered recursively". Its
-   port is deferred in `copilot/.source-hashes.json` until the harness
-   brief answers. It carries the Phase 1 tables, the
+   since the memory page says rules are "discovered recursively". It
+   never got a Copilot port: the Copilot payload was removed on
+   2026-10-13. It carries the Phase 1 tables, the
    import form with the two conditions the client repo found, and the
    cutover's five losses, kept short, since it loads on every Read of an
    instruction file in every repo. Every Copilot switch it names is read
-   by VS Code's Local harness only, so its Copilot claims say so until
-   [copilot-harness-switches.md](copilot-harness-switches.md) answers
-   what the other harnesses read. One row in
-   `learn`'s Step 3 table routes a loader learning to it; whether it gets
-   a Copilot port is `copilot-payload.md`'s call. It fires on the Read
+   by VS Code's Local harness only, so its Copilot claims say so, and its
+   table gives what each harness reads. One row in `learn`'s Step 3
+   table routes a loader learning to it. It fires on the Read
    before any edit to an instruction file, but not when a first nested
    file is created, which no glob sees (`editing-rules.md`): closing that
    is what the skill deferred in 1 would do.
