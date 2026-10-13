@@ -62,11 +62,28 @@ a different field from the entity's own top-level `type`.
 | `name` | string | yes | |
 | `runSettings.executionIntervalInSeconds` | number | no | Poll interval |
 | `query.queryString` | string | yes | The KQL |
-| `eventhouseItem.targetUniqueIdentifier` | GUID | yes | The Eventhouse |
+| `eventhouseItem.targetUniqueIdentifier` | GUID | yes | The Eventhouse, by Learn; the portal writes `eventhouseItem` otherwise (below) |
 | `parentContainer.targetUniqueIdentifier` | GUID | yes | |
 
 An interval of 60–300 s keeps the Eventhouse effectively always-on — see
 SKILL.md §5.
+
+**A portal-written source differs from Learn's table.** One made by
+setting a rule on a KQL queryset, as the portal committed it, had no
+`targetUniqueIdentifier` under `eventhouseItem`, which held `itemId`,
+`workspaceId` and `itemType` `KustoDatabase`: the KQL database, not the
+Eventhouse. In Git `itemId` was the database's `logicalId` and
+`workspaceId` all zeros; live, both were object IDs. It also held
+`runSettings.isStopped`, the source's own run switch beside the rule's
+`shouldRun`; an empty `queryParameters`; and `metadata`, the
+`workspaceId`, `querySetId` and `queryId` of the queryset tab the rule
+came from (a committed file and two live `getDefinition` reads, one
+client estate, 2026-10-13; unverified here). Learn still showed its own
+shape that day, so copy a source from a `getDefinition` of one the
+portal made, as SKILL.md §3 says of instances; whether an older or
+API-written source takes Learn's form is unknown. How the two links
+fared in a deploy: `fabric-deploy`'s `references/deployment-pipelines.md`,
+§ *Item pairing and autobinding*.
 
 ### `realTimeHubSource-v1`
 
