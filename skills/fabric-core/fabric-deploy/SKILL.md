@@ -56,8 +56,9 @@ workspace (Git only through dev)" (read 2026-10-09). Decision guide:
   from 2026-12-01, no Git integration at all without read-write
   permission on the workspace's items (read 2026-10-13);
 - for a deployment pipeline, a second permission system on top of the
-  workspace roles, pipeline Admin, and on a delegated token the
-  deploy-only scope, `Pipeline.Deploy` or `DeploymentPipeline.Deploy.All`
+  workspace roles, pipeline Admin, and on an app registration's
+  delegated token the deploy-only scope, `Pipeline.Deploy` or
+  `DeploymentPipeline.Deploy.All`, which an `az` token deployed without
   ([deployment-pipelines.md](references/deployment-pipelines.md) §
   Permissions, § Delegated scopes).
 
@@ -169,7 +170,7 @@ A deploy moves metadata, not data, on every route. After one:
 
 | Symptom | Cause, and where the fix is |
 | --- | --- |
-| 403 from a pipeline call | Say which system is missing: pipeline Admin, a workspace role on both stages, or `Pipeline.Deploy` on a delegated token. [deployment-pipelines.md](references/deployment-pipelines.md) § Permissions, § Delegated scopes |
+| 403 from a pipeline call | Say which system is missing: pipeline Admin, a workspace role on both stages, or `Pipeline.Deploy` on an app registration's delegated token. [deployment-pipelines.md](references/deployment-pipelines.md) § Permissions, § Delegated scopes |
 | 401 or "credential required" from the library | Since v1.0 it needs an explicit `token_credential`. [fabric-cicd.md](references/fabric-cicd.md) § Troubleshooting |
 | An item duplicated instead of overwritten | Pairing. [deployment-pipelines.md](references/deployment-pipelines.md) § Item pairing and autobinding |
 | A report that lost its semantic model | Autobinding, in the same section |

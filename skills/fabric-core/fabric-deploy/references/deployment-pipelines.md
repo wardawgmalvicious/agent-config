@@ -82,6 +82,15 @@ the registration do nothing for its token.
 `Pipeline.ReadWrite.All` can create pipelines and assign workspaces and
 still cannot deploy.
 
+**An `az` token deployed without it.** A token from
+`az account get-access-token` for `https://api.fabric.microsoft.com`
+carries `scp` `user_impersonation` alone, and with one List Deployment
+Pipelines, List Stages, List Stage Items, List and Get Operations and
+Deploy Stage Content all succeeded (Azure CLI 2.90.0, one client estate,
+2026-10-13; unverified here). No Learn page read says why, so read the
+table as what an app registration must request, not as a scope an `az`
+token lacks (inferred).
+
 **Service principals and managed identities** are supported on the read
 and assign operations. On **deploy** they are supported *"only when all
 the items involved in the operation support service principals"* — so one
