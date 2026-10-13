@@ -210,3 +210,28 @@ and Learn is the source the skill transcribes.
   settles. The routing retest is covered by `skill-status.py --stale`,
   which lists `fabric-eventstream` as `retest-routing`; the gotcha and
   the `description` landed in `e01b5a2`.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `9b77fc7`, for the routing retest the two
+  `description` edits owed: `1c4c028`'s "filter by ID not name" and
+  `e01b5a2`'s four tables in brace form. Phase A static only, 74 of 74
+  with the rules pass agreeing, since the `paths:` hash is unchanged
+  since 2026-09-12. `-p` arms in a probe outside the repo holding all
+  five platform groups, Opus 5.5 at `xhigh`,
+  `--tools Read,Skill --strict-mcp-config`, inbound messages refused,
+  `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`, each opening with a `Read`
+  of the `SampleES.Eventstream` fixture. The `--safe-mode` baseline's
+  `init` listed 58 commands without `commit` or `fabric-rest-api`, the
+  payload's 78, and only a payload `Read` emitted `commands_changed`
+  naming the skill. Three payload queries each called
+  `Skill fabric-eventstream` next: an empty monitoring database plus
+  KQL for the messages behind the error counts,
+  `EventStreamDiagnosticLogs` named literally, and a
+  `where ArtifactId ==` returning no rows. On the first, the
+  per-eventstream **Log Eventstream activity** opt-in,
+  `EventStreamDiagnosticLogs` holding the text behind the counts, the
+  republish rule and throttled rows came from the skill alone; the
+  baseline named no `EventStream*` table, and guessed `ItemId` unaided,
+  so that column did not separate. Every payload arm relayed the
+  `getschema`-first caveat, so the deferred column check stays visible
+  and stays with `eventstream-monitoring-columns.md`. What to change
+  items 1 to 3 and 5 were not exercised. Stamp written.

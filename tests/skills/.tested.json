@@ -116,11 +116,11 @@
         "paths": "9523948940741796"
       },
       "behaviour": {
-        "date": "2026-09-13",
-        "commit": "f4a1f9b",
-        "routing": "72ba9379f335ce7d",
-        "body": "9d60df8aec3c5534",
-        "references": "1a6338310de40ee9"
+        "date": "2026-10-13",
+        "commit": "92b196d",
+        "routing": "86468460023d037b",
+        "body": "9e1b851cdc921e4b",
+        "references": "f88a348df7df60ff"
       }
     },
     "fabric-iq": {
