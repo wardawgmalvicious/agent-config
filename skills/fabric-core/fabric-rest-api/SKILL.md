@@ -188,7 +188,13 @@ at another, and
 `GET /v1/workspaces/{wsId}/git/status`, returns both: `workspaceHead`, the
 commit the workspace is synced to, `remoteCommitHash`, the branch head, and
 `changes[]`, each carrying `workspaceChange`, `remoteChange` and
-`conflictType`. Heads that differ, with no `remoteChange` on any entry,
+`conflictType`. A side with no change reads `null`, where Learn's
+examples leave the key out, so `has("remoteChange")` counts every entry
+as incoming: test the value (114 entries in one client estate,
+2026-10-12 and 2026-10-13). `conflictType` is always set, to `None`,
+`Conflict` or `SameChanges`, the same change on both sides (Learn, read
+2026-10-13); whether an update stops on `SameChanges` is unmeasured.
+Heads that differ, with no `remoteChange` on any entry,
 are the normal state after a push that changes no item folder, and the
 workspace still commits (observed 2026-10-01). A workspace stranded on
 `Git_HeadNotSynced` shows differing heads too:
@@ -217,6 +223,12 @@ and 2026-10-13).
 { "workspaceHead": "<git/status workspaceHead>", "remoteCommitHash": "<git/status remoteCommitHash>", "options": { "allowOverrideItems": true } }
 ```
 
+Per-item options go in `options.itemOptionsByLogicalId`, each entry a
+`logicalId` and the options that item type's Update Definition takes, as
+in Learn's `validateOnly: true` example; deployment pipelines have the
+twin, `itemOptionsBySourceItemId` (`fabric-deploy`'s
+`references/deployment-pipelines.md`).
+
 - **Both calls need the caller's Git credentials.**
   `GET …/git/myGitCredentials` answers `source`: `Automatic`,
   `ConfiguredConnection` (with a `connectionId`) or `None`; on `None`, set
@@ -237,7 +249,10 @@ and 2026-10-13).
 `mode`: `All`; `Selective`, with `items`, each a `logicalId` or `objectId`;
 or **`FileLevelSelective`** (preview), with `itemsWithFileSelection`, each
 item plus `selectedFiles` — paths relative to the item root, forward
-slashes, no wildcards, an empty list meaning every file. Pass
+slashes, no wildcards, an empty list meaning every file. Get Status with
+`?includeFilesDetails=true` lists those paths: each item gains a
+`fileChanges[]` whose entries carry a `path` and the three change fields
+(Learn, read 2026-10-13; never called here). Pass
 `workspaceHead` from `git/status`. It needs the same Git credentials and is
 long-running like the two calls above. Committing only some of an item's
 files can leave its definition incomplete (Learn, 2026-10-06).
@@ -263,6 +278,10 @@ between them: script the rollback first. Connect also sets
 `connectionSettings.additionalRolesAuthorizedToChangeBranch` to `None`,
 admins only, unless the body passes it, and Get Connection does not
 return it: pass it on every connect where non-admins switch branch.
+Get Connection does return `gitConnectionType`: `Full`, every item in
+the branch synced, or `Selective`, only those a user picked; how Get
+Status and Update From Git behave on a selective connection is
+unmeasured (Learn, read 2026-10-13).
 
 **`git/status` types items outside its documented enum.** One call
 (2026-09-30, one tenant) typed a semantic model, a Plan and a SQL
@@ -273,8 +292,11 @@ Data Functions item as `FunctionSet` and a report as `report`
 (`UserDataFunction`, `Report` on Learn), and repeated `dataset` and
 `SQLDbNative`. Four on 2026-10-12 added a KQL database, a notebook and a
 variable library as `KustoDatabase`, `SynapseNotebook` and `Variables`
-(`KQLDatabase`, `Notebook`, `VariableLibrary`). A script filtering
-`changes[]` on documented type names
+(`KQLDatabase`, `Notebook`, `VariableLibrary`). Reads in a client estate
+on 2026-10-12 and 2026-10-13 added an Activator, a KQL queryset and a
+pipeline as `ReflexProject`, `KustoQueryWorkbench` and `Pipeline`
+(`Reflex`, `KQLQueryset`, `DataPipeline`, re-read 2026-10-13). A script
+filtering `changes[]` on documented type names
 skips those items without a word, case-insensitively too. Match on
 `itemMetadata.itemIdentifier` instead: `logicalId` where present, else
 `objectId`. Learn requires one of the two, and its example of an item
