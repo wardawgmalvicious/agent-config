@@ -142,10 +142,11 @@ new evidence gets a verdict, or a new entry.
 - **Why not**: as with code-review's checklist above, it is body text,
   paid only when `fabric-gotchas` runs and never in the listing, and no
   run has measured what it adds over a bare model.
-- **Would change it**: the second wave's `fabric-rest-api` fold,
-  [auth-cli-gotchas-into-fabric-rest-api.md](execute/auth-cli-gotchas-into-fabric-rest-api.md),
-  which turns the gotchas into a symptom-to-owner index, or a run whose
-  baseline arm states these preferences unprompted.
+- **Would change it**: a run whose baseline arm states these
+  preferences unprompted. The other trigger, the second wave's
+  `fabric-rest-api` fold, landed on 2026-10-12: it turned the gotchas
+  into a symptom-to-owner index and left the lists as they were, below
+  the index in `skills/fabric/fabric-rest-api/references/gotchas.md`.
 
 ## 2026-10-09 — Rewording powerbi-report-design's triggers, review step and archetype default
 
