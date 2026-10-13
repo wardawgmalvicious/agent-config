@@ -270,6 +270,24 @@ parameter holds a model or workspace ID. Rebind it by changing the value
 or with a parameter rule. Learn's pages disagree on Direct Lake rules; see
 [deployment-pipelines-tables.md](deployment-pipelines-tables.md).
 
+**A KQL queryset and an Activator's KQL source rebound, against Learn.**
+Learn's dependency-binding table has a queryset find its database by
+`clusterUri` and `databaseName`, its `databaseItemId` "an object ID that
+doesn't rebind", and says deployment pipelines bind as Git does (Learn
+`cross-workspace-dependency-binding`, read 2026-10-13). Yet one first
+deploy of a KQL database, a queryset and an Activator together, all new
+to the target and in one workspace, left the target queryset's
+`dataSources` on the target's database ID and query URI, and the
+Activator's `kqlSource-v1` `eventhouseItem` on the target's database and
+workspace. The Activator's `metadata` link to the queryset kept the IDs
+of the workspace the rule was authored in. In Git both database
+references held the database's `logicalId` (`getDefinition` on both
+sides and the committed files, one client estate, 2026-10-13;
+unverified here). So read a deployed consumer's definition rather than
+assume either binding. Unread: a consumer deployed without its database,
+a database in another workspace, and a Real-Time Dashboard, which Learn
+gives the queryset's pattern.
+
 ### Repairing a broken pairing
 
 The only supported repair is to **unassign the workspace from the stage
