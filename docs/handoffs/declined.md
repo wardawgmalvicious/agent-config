@@ -173,3 +173,29 @@ new evidence gets a verdict, or a new entry.
   `[Environment]::UserInteractive` (grep, 2026-10-12).
 - **Would change it**: a `Read-Host`, `Get-Credential` or `pause` call
   site in another repo's PowerShell.
+
+## 2026-10-13 — A repo-settings.ps1 refusal that names the steps to add `_repo`
+
+- **From**: a note of 2026-10-12, by a session in the personal
+  fabric-tools repo, which adopted a snapshot older than `_repo`.
+- **Why not**: the script's header now gives the steps, and the refusal
+  is the guard. A file's place in a clone does not show whose settings
+  it holds; only `-Check` matching every setting does, and a way past
+  the refusal in its own message invites skipping that step.
+- **Would change it**: a session refused for a missing `_repo` that did
+  not find the header's steps.
+
+## 2026-10-13 — Checking a repo's history before handing it a settings snapshot
+
+- **From**: the same note, which also asked that such a hand-off say the
+  run needs the user's word, after auto mode denied its `-Check` as
+  `[Out-of-Place Publication]`.
+- **Why not**: the hand-off was a one-time move, finished on 2026-10-12
+  (`56258aa`, `8964603`). On 2026-10-13 no personal repo held a
+  snapshot without `_repo`: agent-config's and fabric-tools' carry one,
+  and claude-rewrite-extension holds none on GitHub. A client repo's
+  own snapshot predates `_repo`, but that repo reads and writes it with
+  its own copy of the script, which reads no `_repo`. The denial was
+  seen once, its cause unknown.
+- **Would change it**: another hand-off of snapshots, or the same denial
+  in a `recreate-repo` run.

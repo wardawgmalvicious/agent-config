@@ -3,19 +3,23 @@ status: deferred
 priority: 3
 needs: [user]
 blocked-by: []
-reopen-when: IT answers on Anthropic's hosts for the corporate network, or WebFetch fails its domain check in a Claude-target session there
+reopen-when: machine-config's gateway brief picks a route that needs a payload change, or WebFetch fails its domain check in a session on that network
 written: 2026-10-06
 ---
 
-# Handoff: Claude Code on the corporate network waits on IT
+# Handoff: Claude Code on the corporate network waits on the gateway brief
 
 - **Written**: 2026-10-06, from two inbox notes of 2026-10-02 and
   2026-10-05 by VS Code sessions in a client Fabric repo, the first
   updated on that network on 2026-10-05, and from the Claude-target
   turn's transcript, read on this machine. Re-measured against the
   payload at `1a0c5f7`, which held none of it.
-- **Kind**: a decision, the user's, parked until IT answers. Nothing is
-  drafted, and nothing here is worth building before that answer.
+- **Folded**: 2026-10-13, an inbox note of 2026-10-12 by a session in
+  machine-config reviewing its gateway brief, re-measured against the
+  payload at `cabf9c9`.
+- **Kind**: a decision, the user's, parked first on IT, which answered
+  on 2026-10-12, and now on machine-config's gateway brief, where the
+  pick is made. Nothing is drafted.
 
 ## Why it waits
 
@@ -27,10 +31,45 @@ are in [copilot-payload-retirement.md](copilot-payload-retirement.md)
 § "The corporate network, 2026-10-05"; once that brief lands, they are
 in `docs/evidence/user-claude-md.md`.
 
-Asking IT to allow those hosts comes first. The filter reset every
-Anthropic name it was shown, which makes a deliberate block likely, and
+Asking IT to allow those hosts came first. The filter reset every
+Anthropic name it was shown, which made a deliberate block likely, and
 routing around a deliberate block is the organization's call, not a
-technical one.
+technical one. IT answered on 2026-10-12.
+
+## IT's answer, 2026-10-12
+
+IT approved the user's own use of Claude Code and declined only to open
+Anthropic's endpoints to the whole organization, which wants mainly
+Claude Desktop. The filter stays, as a decision about scope rather than
+a refusal of that use. The user relayed it to a machine-config session
+that day, which sent it here as an inbox note.
+
+The user decided the same day to pursue machine-config's
+`docs/handoffs/claude-code-gateway.md`, to keep its self-hosted hop
+deferred rather than drop it, and to plan its token option next without
+waiting on the first. They also find the Copilot-model fallback short
+of features they rely on, and its usage looked much higher (not
+measured).
+
+That brief, on an unlanded branch on 2026-10-12, orders three options:
+
+- **A per-device exception from IT**, first: it matches the scope IT
+  chose, builds nothing and loses no feature.
+- **The token**, kept under its own name and applied only on that
+  network, per launch or by a toggle, since one at User scope costs
+  Remote Control and the claude.ai connectors on every network (§ "What
+  is left if IT keeps the block").
+- **A self-hosted hop**, deferred, now of two kinds: an LLM gateway,
+  which raises a question under Anthropic's legal and compliance terms
+  on intermediating claude.ai credentials, and a forward proxy, which
+  never sees the token.
+
+Its two questions for this repo were answered on 2026-10-13 by a note
+to machine-config's inbox: nothing in the payload starts a session
+under the background supervisor, since its headless workers are
+children of the session that launches them, and the payload relies on
+none of Remote Control, claude.ai connectors, `/schedule` or the
+Artifact tool.
 
 ## What the user decided, 2026-10-02
 
@@ -91,16 +130,18 @@ blocklist, and a settings change takes the user's yes.
 
 ## Where it lands
 
-Nothing until IT answers, or the tell above is seen.
+Nothing until machine-config's gateway brief settles a route this repo
+must follow, or the tell above is seen.
 
-- IT allows the hosts: this brief is deleted, with that recorded.
-- IT keeps the block: the user picks between the Claude target alone, the
-  token and a gateway. The token is a note to machine-config's inbox; a
-  gateway is a project of its own. **Assuming the block holds, a note
-  scoping the gateway went to machine-config's inbox on 2026-10-07**, as
-  the search for a solution, and was triaged there that day into its
-  `docs/handoffs/claude-code-gateway.md` (open, P3, needs user); this
-  brief stays deferred until IT answers.
+- IT allows the hosts, as a per-device exception would: this brief is
+  deleted, with that recorded.
+- IT kept the filter and approved the user's own use (2026-10-12), a
+  case this list did not name. The pick between the Claude target
+  alone, the token and a gateway is made in machine-config's
+  `docs/handoffs/claude-code-gateway.md`, triaged there on 2026-10-07
+  from a note this repo sent assuming the block held. The token needs
+  nothing from the payload, as the note of 2026-10-13 told it; a route
+  that does reopens this brief.
 - The WebFetch tell is seen: `skipWebFetchPreflight` goes into
   `claude/settings.json` on the user's yes, deployed with
   `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
