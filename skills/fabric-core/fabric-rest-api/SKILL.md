@@ -304,14 +304,19 @@ URL path is `/jobs/{jobType}/schedules` — NOT `/jobs/instances/schedules`. Bod
     "startDateTime": "2026-01-01T06:00:00.000Z",
     "endDateTime":   "2027-01-01T06:00:00.000Z",
     "type": "Daily",
-    "interval": 1,
     "localTimeZoneId": "UTC",
     "times": ["06:00"]
   }
 }
 ```
 
-`enabled`, `configuration.startDateTime`, `configuration.endDateTime`, and `configuration.type` are all required. Omitting `endDateTime` returns 400. `type` ∈ `Daily | Weekly | Monthly`; `Weekly` also requires `weekDays` (array of day names). List with `GET .../schedules`; delete with `DELETE .../schedules/{scheduleId}`.
+`enabled`, `configuration.startDateTime`, `configuration.endDateTime`,
+and `configuration.type` are all required. Omitting `endDateTime`
+returns 400. `type` ∈ `Cron | Daily | Weekly | Monthly` (Learn's Create
+Item Schedule, read 2026-10-13); `Cron` takes `interval`, in minutes and
+not a cron expression, and `Weekly` also requires `weekdays` (array of
+day names). List with `GET .../schedules`; delete with
+`DELETE .../schedules/{scheduleId}`.
 
 ## Rate Limiting
 
