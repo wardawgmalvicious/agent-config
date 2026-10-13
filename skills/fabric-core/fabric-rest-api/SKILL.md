@@ -280,7 +280,9 @@ and `myGitCredentials` (required for GitHub), then
 kept uncommitted work uncommitted and answered
 `requiredAction: CommitToGit` (2026-10-12): commit `Selective`, as above.
 Connect and Disconnect take workspace Admin, and nothing is connected
-between them: script the rollback first. Connect also sets
+between them: script the rollback first. Disconnecting stops nothing in
+the workspace: a schedule bound to a Variable Library ran, and read its
+variable, on time after it (seen once, 2026-10-13). Connect also sets
 `connectionSettings.additionalRolesAuthorizedToChangeBranch` to `None`,
 admins only, unless the body passes it, and Get Connection does not
 return it: pass it on every connect where non-admins switch branch.
