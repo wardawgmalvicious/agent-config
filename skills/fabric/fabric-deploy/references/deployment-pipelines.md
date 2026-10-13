@@ -401,11 +401,11 @@ are unique tenant-wide.
 
 - [fabric-cicd.md](fabric-cicd.md) — the Git-driven counterpart:
   `publish_all_items`, `parameter.yml`, feature flags
+- [fab-deploy.md](fab-deploy.md) — `fab deploy`, for the Git-driven path
 - fabric-rest-api skill — long-running-operation polling and the
-  `getDefinition` contract change detection needs; `fab api` mechanics,
-  and `fab deploy` for the Git-driven path, in its `references/cli.md`;
-  token audiences and service principal setup behind the scopes table,
-  in its `references/auth.md`
+  `getDefinition` contract change detection needs; `fab api` mechanics
+  in its `references/cli.md`; token audiences and service principal
+  setup behind the scopes table, in its `references/auth.md`
 - fabric-variable-library skill — a supported item type whose value sets
   are the other way to vary config per stage
 - fabric-tmdl skill — the `Text` M parameters a Direct Lake on OneLake

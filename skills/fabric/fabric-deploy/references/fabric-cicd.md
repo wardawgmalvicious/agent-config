@@ -270,7 +270,7 @@ Full YAML: [example/release_pipeline](https://microsoft.github.io/fabric-cicd/la
 
 ## See also
 
-- fabric-rest-api skill's `references/cli.md` — `fab deploy`, the wrapper over this library
+- [fab-deploy.md](fab-deploy.md) — `fab deploy`, the wrapper over this library
 - [deployment-pipelines.md](deployment-pipelines.md) — service-side
   deployment pipelines: Fabric Core `deploymentPipelines/...`, or Power BI
   `pipelines/...` through `fab api -A powerbi`

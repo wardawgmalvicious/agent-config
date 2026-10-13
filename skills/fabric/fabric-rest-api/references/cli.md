@@ -176,51 +176,10 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes" -X post -i '{"ty
 
 ## Workspace Deployment (`fab deploy`, v1.5+)
 
-One-command CI/CD that wraps the [fabric-cicd](https://microsoft.github.io/fabric-cicd/latest/) Python library. Deploys items from local source folders to a target workspace, with environment-aware parameterization. Use this — not `fab api` — for code-first workspace promotion from a Git checkout.
-
-```bash
-fab deploy --config <config_file> [-tenv <env>] [-P '<json-array>'] [-f] [--output_format <fmt>] [--bulk_publish]
-```
-
-| Flag | Purpose |
-|---|---|
-| `--config <file>` | **Required.** Path to the deployment YAML. Defines source items, target workspace, item-types-in-scope, and the parameter file. |
-| `-tenv`, `--target_env <env>` | Picks the env block (e.g. `dev` / `test` / `prod`) from the config + parameter file. |
-| `-P`, `--params '<json>'` | JSON-array of override parameters: `'[{"p1":"v1","p2":"v2"}]'`. **Quote the whole array** — single object form (`-P key=value`) is *not* what this verb accepts (that's `fab find`'s param style — they differ). |
-| `-f`, `--force` | Skip interactive confirmation (required in CI). |
-| `--output_format <fmt>` | Override output format (json / text / etc.). |
-| `--bulk_publish` | **v1.7+**, flagged experimental by `fab` when last read. Publish every item in one bulk-import API call instead of one at a time; the Bulk Import Item Definitions API underneath is GA (September 2026). |
-
-Examples:
-
-```bash
-fab deploy --config config.yml --target_env dev
-fab deploy --config config.yml --target_env prod -f
-fab deploy --config config.yml --target_env test \
-  -P '[{"param1":"value1"}]' -f
-```
-
-The config file resolves source folders, target workspace IDs/names, and per-env GUID replacements through fabric-cicd's parameter model — same `$workspace.$id` and `$items.<Type>.<name>.$id` tokens as the Azure DevOps tutorial's token table (its Key Takeaways line drops the second `$`, 2026-10-09). Authenticates via the active `fab auth` session (interactive or SPN).
-
-**When to use `fab deploy` vs Power BI deployment pipelines:** `fab deploy` is **source-of-truth-is-Git** (workspace = artifact of the deploy). Power BI deployment pipelines is **source-of-truth-is-workspace** (dev workspace promotes to test/prod workspaces via the service-side pipeline). They are distinct surfaces, so never deploy into one workspace by both; Git into the first stage with pipelines onward is not a mix but Learn's option 3, "Git only through dev" (2026-10-09). The **fabric-deploy** skill picks between them.
-
-### Built-in Azure DevOps task (`FabricCLI@1`, preview)
-
-There are two ways to run `fab` in an Azure DevOps pipeline:
-
-1. **Install-then-script** (the pattern in the [fabric-cicd ADO tutorial](https://learn.microsoft.com/fabric/cicd/tutorial-fabric-cicd-azure-devops)) — a `pip install ms-fabric-cli` step followed by a script step that calls `fab`. Works everywhere, but you own the install/version pinning in every pipeline.
-2. **Built-in task** (preview, March 2026) — the [Azure DevOps Pipelines extension for Fabric](https://marketplace.visualstudio.com/items?itemName=ms-fabric.fabric-devops-pipelines) (marketplace ID `ms-fabric.fabric-devops-pipelines`) ships `fab` as a native `FabricCLI@1` task. The CLI is auto-provisioned in the pipeline runtime — **no `pip install` step**. Auth is via an Azure DevOps **service connection** to your Fabric tenant (rather than passing SPN env vars into a script). Get started at [aka.ms/FabCLI](https://aka.ms/FabCLI).
-
-```yaml
-- task: FabricCLI@1
-  inputs:
-    scriptType: 'pscore'          # ps | pscore | batch | bash
-    scriptLocation: 'inlineScript'
-    inlineScript: 'fab ls'
-    FabricCLIVersion: 'v1.2.0'    # pin the CLI version
-```
-
-Prefer the built-in task for new pipelines (less boilerplate, service-connection auth); keep install-then-script when you need a CLI version the task doesn't yet offer, a self-hosted agent, or non-ADO CI. The task is **preview** — pin `FabricCLIVersion` and validate before relying on it for prod promotion.
+`fab deploy`, and the `FabricCLI@1` task that runs `fab` in Azure
+DevOps, are the **fabric-deploy** skill's: its `references/fab-deploy.md`
+holds the flags, beside the fabric-cicd library the verb wraps and the
+route choice between them and deployment pipelines.
 
 ## Deployment Pipelines (Power BI service-side)
 
@@ -364,14 +323,13 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 
 - Microsoft Learn: [Fabric command line interface (install + login)](https://learn.microsoft.com/rest/api/fabric/articles/fabric-command-line-interface)
 - GitHub Pages: [Fabric CLI documentation (canonical per-command reference)](https://microsoft.github.io/fabric-cli/)
-- GitHub Pages: [`fab deploy` command reference](https://microsoft.github.io/fabric-cli/commands/fs/deploy/)
 - Microsoft Learn: [Item management overview (REST APIs `fab` wraps)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/item-management-overview)
 - Microsoft Learn What's New: [Fabric CLI v1.5 GA — March 2026](https://learn.microsoft.com/fabric/fundamentals/whats-new#generally-available-features) — one-command workspace deploys with fabric-cicd integration, first-class Power BI (rebind/refresh), pre-installed in Fabric Notebooks, Python 3.13, 30+ item types.
 - Comprehensive MS Learn link bundle (concept / examples / underlying REST / authentication / lakehouse ops / CI/CD): [cli-links.md](cli-links.md)
 
 ## See also
 
-- fabric-deploy skill — picking the route and planning a deploy; its `references/fabric-cicd.md` covers the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
+- fabric-deploy skill — picking the route and planning a deploy; its `references/fab-deploy.md` holds `fab deploy` and the `FabricCLI@1` task, and its `references/fabric-cicd.md` covers the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
 - [The skill's body](../SKILL.md) — direct REST patterns behind `fab api`
 - fabric-tmdl skill — its `references/definition-api.md` covers definition payloads for semantic models
 - [auth.md](auth.md) — token audiences when acquiring tokens outside `az login`

@@ -28,11 +28,11 @@ no `.platform` part and states no exception.
 The payload disagrees with itself:
 
 - `fabric-rest-api`'s `references/cli.md` says never to include
-  `.platform` in a direct definition call (line 262; `fabric-cli`'s
+  `.platform` in a direct definition call (line 221; `fabric-cli`'s
   `SKILL.md:270` on 2026-10-09, until that skill folded into
   `fabric-rest-api` on 2026-10-12), and its troubleshooting row says
   `.platform` breaks REST definition calls, being "Git metadata, not a
-  part" (`:358`). Learn calls it a part, and
+  part" (`:317`). Learn calls it a part, and
   `fabric-rest-api` (`SKILL.md:149-151`), `fabric-spark` (`:112-113`)
   and `fabric-activator` (`:163-165`) say an update without the flag
   ignores it.
