@@ -20,7 +20,7 @@ Fabric SQL Database is an Azure SQL Database hosted within a Fabric workspace. I
 | `nvarchar`, `datetime`, `money` | Not supported | Fully supported |
 | Triggers | Not supported | Fully supported |
 | MERGE | Supported (GA) | Fully supported |
-| ALTER COLUMN | Not supported | Fully supported |
+| ALTER COLUMN | Metadata-only widening, in preview | Fully supported |
 | Recursive CTEs | Not supported | Fully supported |
 | `FOR XML` | Not supported | Fully supported |
 | Transaction isolation levels | Snapshot only | All levels |
