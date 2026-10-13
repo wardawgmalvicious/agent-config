@@ -6,7 +6,7 @@ blocked-by: []
 written: 2026-10-13
 ---
 
-# Handoff: a schedule's Controller across Git sync and deployment, and `enabledControlType`'s other values, are unread
+# Handoff: a schedule's Controller through a deployment pipeline, and `enabledControlType`'s other values, are unread
 
 - **Written**: 2026-10-13, from one inbox note of 2026-10-13 by a
   session in a client Fabric repo whose CI turns pipeline schedules off
@@ -21,6 +21,10 @@ written: 2026-10-13
   way. Re-measured against the payload at `240d023`, which named none
   of its fields; its correction to `fabric-rest-api`'s schedule types
   landed in that run.
+- **Folded**: 2026-10-13, a fourth inbox note from the same estate,
+  which brought the first binding by Git sync into a workspace that
+  never had one. Re-measured against the payload at `cf7a595`, which
+  changed nothing this brief names.
 - **Kind**: an investigation in a Fabric tenant, then edits to that
   trap, its reference rows, `fabric-rest-api`'s Job Scheduling and
   `fabric-variable-library`. Nothing is drafted.
@@ -34,8 +38,9 @@ variable library", and a search found no pipeline page that names one
 same, by the user's screenshots as the note relays them (2026-10-13): a
 *Controller* with *Select variable*, warning that the variable's Boolean
 value will set the schedule's on/off property. So a Variable Library may
-switch a schedule per environment where CI now edits `enabled`. Unread:
-whether Git sync and deployment pipelines keep the binding.
+switch a schedule per environment where CI now edits `enabled`. Git
+sync kept a binding once (below); whether a deployment pipeline does is
+unread.
 
 **What a binding writes** is a field of its own at the entry level, not
 a `VariableReference` parameter. One binding's portal commit changed
@@ -60,11 +65,10 @@ schedule, as the first note inferred. The 1.0.0 schema requires
 schema while the portal writes it and the scheduler runs it: a third way
 the schema trails the portal. A script that flips `enabled` has nothing
 to flip there: the estate's CI selects `.enabled == true` or
-`.enabledControlType == "UserEnabled"`, and neither matched. Not seen: a
-binding that arrives by Git sync in a workspace that never had it, which
-the estate's next PR to its Dev workspace will be, or by a deployment
-pipeline. Until one is, a binding is made in the portal, not written by
-hand.
+`.enabledControlType == "UserEnabled"`, and neither matched. Written in
+this form and brought by Git sync into a workspace that never had one, a
+binding was kept (below), so the portal's two lines can be written by
+hand; one brought by a deployment pipeline is not seen.
 
 **When a flip takes effect.** The binding resolves through the active
 value set: the variable's default is `false`, the workspace's active
@@ -100,6 +104,35 @@ put the portal flip at "about a minute"; the table bounds it. Learn's
 schedule's parameters may sync late after CI/CD (read here,
 2026-10-13); the table measures that lag for a Controller.
 
+**A binding through Git sync.** A second workspace of the estate held
+the pipeline's schedule unbound and off from about 10:57 UTC on
+2026-10-13: `"enabled": false`, and no `enabledControlType`. A pull
+request merged at 17:54:45 replaced those lines with the bound pair
+above, and the user synced the workspace to it between 17:55 and 18:22.
+Read by the estate's session, times UTC:
+
+| When | What |
+| --- | --- |
+| 18:22 | `getDefinition`'s `.schedules` part matched the branch's file, line endings aside; List Item Schedules read `enabled` `false`, control type `VariableReferenceManaged`, and `enabledEvalState` and `nextResolveVariableReferenceDateTime` both `null` |
+| before 18:42 | The portal's Schedules pane, in the user's screenshot: *Inactive*, under variable control, *Not available* for its last and next update |
+| 18:42:40 | Same schedule ID as the portal's; `enabled` `false`, `enabledEvalState` `Normal`, next read 18:49:23, `createdDateTime` 18:02:25 |
+
+The variable defaults to `false` and that workspace's value set does not
+override it, so off is right, and List Item Job Instances shows no run
+of the pipeline there. So the binding survives Git sync into a workspace
+whose schedule was unbound, and `enabledEvalState` and the next read
+both `null` mean it has not been read yet, not that it failed: the first
+read came 20 to 40 minutes after `createdDateTime`, so judge a synced
+binding only once `enabledEvalState` is set. The estate's session, its
+first read at 18:22, had recorded that as an open question.
+`createdDateTime` is the sync's minute, though the workspace had held
+the schedule since about 10:57, while the schedule of the flips above,
+bound in the portal, kept its creation time of 04:54:16: the sync seems
+to replace a schedule rather than edit it (inferred; the old ID and
+creation time were not read). A flip was not tried there; it should
+take effect at a read, since that workspace read the same `Normal`
+through both of its flips (inferred).
+
 **`enabledControlType`'s other values.** Seen once, as `UserEnabled`,
 after a portal edit that moved a schedule's start and end dates
 (measured by the note's session, 2026-10-13). Unread: what the portal
@@ -117,9 +150,10 @@ read, and cannot set it. On the bound schedule above it read
 `VariableReferenceManaged` and carried a third field,
 `nextResolveVariableReferenceDateTime`, which no unbound schedule has
 shown; `enabledEvalState` read `Normal` there throughout, on and off,
-so it does not follow on/off. Unread: `enabledEvalState`'s other values,
-the auto-disabled state perhaps among them, and whether every item
-type's schedules carry the field.
+so it does not follow on/off. It read `null` before a synced binding's
+first read (above). Unread: `enabledEvalState`'s other values, the
+auto-disabled state perhaps among them, and whether every item type's
+schedules carry the field.
 
 **Other items' `.schedules`.** Whether a notebook's or a user data
 function's file carries the field, and whether Git sync checks it there
@@ -130,9 +164,10 @@ notebook's, show none (viewed 2026-10-13).
 
 `skills/fabric-engineering/fabric-data-pipeline/SKILL.md` § 7: the
 `enabledControlType` trap, which names the Controller first, as the way
-to switch a schedule per environment with no CI flip, if the binding
-survives Git sync and deployment. Scope the trap whatever that read
-says: its bold lead says turning a schedule off means deleting
+to switch a schedule per environment with no CI flip: the binding
+survives Git sync (above), while deployment is unread. Scope the trap
+whatever that read says: its bold lead says turning a schedule off
+means deleting
 `enabledControlType` too, which a bound entry, with no `enabled` to set,
 contradicts. Its `references/REFERENCE.md` § "`.schedules` — full
 schema": the `enabled` row (absent on a bound entry), the
@@ -146,7 +181,8 @@ notebook's `.schedules` on 2026-10-13.
 
 `skills/fabric-core/fabric-rest-api/SKILL.md` § "Job Scheduling" gains
 an `enabledDetail` line, `nextResolveVariableReferenceDateTime` among
-its fields, once its values are read.
+its fields, once its values are read: `null` and `Normal` so far, with
+the wait before a synced binding's first read.
 
 `skills/fabric-core/fabric-variable-library/SKILL.md`: a short schedule
 section beside "Lakehouse shortcut consumption", carrying the timing
@@ -183,7 +219,7 @@ Search Learn again for a pipeline schedule's Controller first: a
 pipeline page that documents it, or its `.schedules` form, may settle
 part of this without a tenant.
 
-The estate's next PR to its Dev workspace will be the first binding to
-arrive by Git sync in a workspace that never had it: read
-`~/handoff-inbox/agent-config/` for a note on it, which may settle the
-Git-sync half without a tenant.
+The Git-sync half came by an inbox note of 2026-10-13 and is folded
+above. A binding brought by a deployment pipeline still needs a tenant,
+or a note from an estate that deploys a bound schedule: read
+`~/handoff-inbox/agent-config/` for one.
