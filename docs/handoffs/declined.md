@@ -199,3 +199,21 @@ new evidence gets a verdict, or a new entry.
   seen once, its cause unknown.
 - **Would change it**: another hand-off of snapshots, or the same denial
   in a `recreate-repo` run.
+
+## 2026-10-13 — Adding `enabledControlType` to fabric-data-pipeline's description
+
+- **From**: a note of 2026-10-13, by a session in a client Fabric repo
+  whose CI turns pipeline schedules off.
+- **Why not**: the description already names `.schedules`, and the
+  skill's `paths:` glob lists it on any Read in a `*.DataPipeline`
+  folder, so a session editing that file reaches it. A session meeting
+  the error without that file reaches `fabric-rest-api`, which has no
+  `paths:` and whose description sends any Fabric error, a Git sync's
+  included, to its index; this run added the row there that names § 7.
+  The description held 997 of 1,024 characters on 2026-10-13, as
+  `lint-frontmatter.py` counts them (the note's 1,001 counted UTF-8
+  bytes, two em-dashes in), so a field name would displace a trigger
+  phrase and owe an activation retest.
+- **Would change it**: a transcript in which a session met this error,
+  or edited a `.schedules` file, with `fabric-data-pipeline` listed and
+  not invoked.
