@@ -35,11 +35,11 @@
         "paths": "b86587d3e87b7b1d"
       },
       "behaviour": {
-        "date": "2026-09-12",
-        "commit": "75f1625",
-        "routing": "d282a0868907f459",
-        "body": "2efcf1c3f7713d92",
-        "references": "a6f6b68ecffdc5e2"
+        "date": "2026-10-13",
+        "commit": "54ada90",
+        "routing": "84ee0656cd48a1cd",
+        "body": "74a8f2bfa49f2ed6",
+        "references": "e17526d463a52b5e"
       }
     },
     "fabric-catalog-governance": {
