@@ -20,9 +20,7 @@
     },
     "skillOverrides": {
         "fabric-activator": "name-only",
-        "fabric-auth": "name-only",
         "fabric-catalog-governance": "name-only",
-        "fabric-cli": "name-only",
         "fabric-data-pipeline": "name-only",
         "fabric-database": "name-only",
         "fabric-dataflow": "name-only",
@@ -30,7 +28,6 @@
         "fabric-event-schema-set": "name-only",
         "fabric-eventhouse": "name-only",
         "fabric-eventstream": "name-only",
-        "fabric-gotchas": "name-only",
         "fabric-iq": "name-only",
         "fabric-realtime-dashboard": "name-only",
         "fabric-rest-api": "name-only",

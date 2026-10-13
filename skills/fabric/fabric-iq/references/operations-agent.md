@@ -138,7 +138,7 @@ two different encodings.**
 
   **Do not conclude that `logicalId` and the runtime item ID are
   interchangeable.** They are still different strings and substituting
-  one for the other still fails — see `fabric-gotchas` on
+  one for the other still fails — see `fabric-rest-api`, *Item IDs*, on
   `PowerBIEntityNotFound`. What the confirmation buys is the *derivation*
   — reverse it yourself, offline — not a licence to paste one where the
   other belongs.

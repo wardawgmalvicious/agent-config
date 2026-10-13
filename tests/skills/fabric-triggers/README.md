@@ -122,7 +122,7 @@ The three `metadata.type` values were checked directly rather than assumed.
 A GitHub code search for `"type": "DataAgent"` inside `.platform` files
 returns 78 real exports; `"type": "GraphModel"` returns two (plus this
 fixture set); `"type": "AISkill"` — the legacy name still carried in
-fabric-cli's `ItemType` enum and in the portal's `/aiskills/` URL — returns
+the Fabric CLI's `ItemType` enum and in the portal's `/aiskills/` URL — returns
 **none**. The portal name did not follow the item type into Git.
 
 `SampleRX.Reflex/` comes from neither source. It is modelled on a real

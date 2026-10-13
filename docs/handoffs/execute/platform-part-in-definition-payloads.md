@@ -27,11 +27,13 @@ no `.platform` part and states no exception.
 
 The payload disagrees with itself:
 
-- `fabric-cli` says never to include `.platform` in a direct
-  definition call (`SKILL.md:270` on 2026-10-09), and its
-  troubleshooting row says `.platform` breaks REST definition calls,
-  being "Git metadata, not a part" (`:366`). Learn calls it a part, and
-  `fabric-rest-api` (`SKILL.md:139-141`), `fabric-spark` (`:112-113`)
+- `fabric-rest-api`'s `references/cli.md` says never to include
+  `.platform` in a direct definition call (line 262; `fabric-cli`'s
+  `SKILL.md:270` on 2026-10-09, until that skill folded into
+  `fabric-rest-api` on 2026-10-12), and its troubleshooting row says
+  `.platform` breaks REST definition calls, being "Git metadata, not a
+  part" (`:358`). Learn calls it a part, and
+  `fabric-rest-api` (`SKILL.md:149-151`), `fabric-spark` (`:112-113`)
   and `fabric-activator` (`:163-165`) say an update without the flag
   ignores it.
 - `fabric-tmdl`'s `references/definition-api.md` says never to include
@@ -56,15 +58,16 @@ status, any error text, and whether the name changed.
 - **Both calls succeed and the second renames the model**:
   `definition-api.md`'s "never" becomes "only with
   `?updateMetadata=true`, to change the name or description",
-  `fabric-cli`'s two lines say the same for every item type, and
+  `cli.md`'s two lines say the same for every item type, and
   `fabric-dataflow` § 6 drops the divergence it records.
 - **The semantic model rejects the part**: `definition-api.md` keeps its
-  rule, with the error text, and `fabric-cli`'s two lines narrow to
+  rule, with the error text, and `cli.md`'s two lines narrow to
   semantic models, since other item types take the part.
 
 ## Where it lands
 
-`skills/fabric/fabric-cli/SKILL.md`, two lines; `fabric-dataflow` § 6;
+`skills/fabric/fabric-rest-api/references/cli.md`, two lines;
+`fabric-dataflow` § 6;
 and `fabric-tmdl/references/definition-api.md`'s `.platform` line,
 `fabric-tmdl-api`'s line 15 until the 2026-10-12 fold, which dropped
 that skill's description. A body edit owes a retest:
@@ -83,5 +86,5 @@ tenant is named.
 ## Re-measure before acting
 
 ```bash
-grep -rn 'updateMetadata\|\.platform`' skills/fabric/fabric-cli/SKILL.md skills/fabric/fabric-tmdl/references/definition-api.md skills/fabric/fabric-dataflow/SKILL.md skills/fabric/fabric-rest-api/SKILL.md skills/fabric/fabric-spark/SKILL.md
+grep -rn 'updateMetadata\|\.platform`' skills/fabric/fabric-rest-api/references/cli.md skills/fabric/fabric-tmdl/references/definition-api.md skills/fabric/fabric-dataflow/SKILL.md skills/fabric/fabric-rest-api/SKILL.md skills/fabric/fabric-spark/SKILL.md
 ```

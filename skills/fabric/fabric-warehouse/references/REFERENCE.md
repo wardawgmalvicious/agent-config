@@ -13,7 +13,7 @@ The 3 highest-leverage entry points (concept overview, performance guidelines, s
 
 ## Connect
 
-- [Connect to Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/how-to-connect) — connection patterns: SQL editor, SSMS, Azure Data Studio, JDBC, Python notebooks via the `%%tsql` magic command. Pair with the `fabric-auth` skill for token-audience details.
+- [Connect to Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/how-to-connect) — connection patterns: SQL editor, SSMS, Azure Data Studio, JDBC, Python notebooks via the `%%tsql` magic command. Pair with `fabric-rest-api`'s `references/auth.md` for token-audience details.
 
 ## Tables, data types, schema
 

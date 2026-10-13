@@ -104,4 +104,4 @@ Item-level Purview labels became programmatically discoverable on the core item 
 ## See also
 
 - fabric-warehouse skill — SQL GRANT/DENY surface on Warehouse
-- fabric-auth skill — token audiences for each access path
+- fabric-rest-api skill — token audiences for each access path, in its `references/auth.md`

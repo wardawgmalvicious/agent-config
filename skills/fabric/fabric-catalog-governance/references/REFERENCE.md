@@ -45,7 +45,7 @@ file is the link bundle behind it.
 - [Admin List Items](https://learn.microsoft.com/rest/api/fabric/admin/items/list-items) — the Preview banner, the 10,000-record page cap and its fixed type order, `state: active` only, and the field list that contains no label, endorsement or domain.
 - [Take ownership of Fabric items](https://learn.microsoft.com/fabric/fundamentals/item-ownership-take-over) — "there's no API support for changing ownership of Fabric items", no takeover as a service principal, the child-item cascade, and the mirrored items that can never change owner.
 - [Associate an item identity](https://learn.microsoft.com/rest/api/fabric/articles/item-management/associate-item-identity) — the supported item types, the Write-on-all-children requirement, the stop-on-child-failure behaviour, and the type-qualified URL that errors.
-- [Catalog Search](https://learn.microsoft.com/rest/api/fabric/core/catalog/search) — Preview, the excluded item types, and the six fields it returns. Discovery belongs to `fabric-cli` / `fabric-rest-api`; this page is here to bound what a search-based count can claim.
+- [Catalog Search](https://learn.microsoft.com/rest/api/fabric/core/catalog/search) — Preview, the excluded item types, and the six fields it returns. Discovery belongs to `fabric-rest-api`, `fab find` included; this page is here to bound what a search-based count can claim.
 
 ## Mechanics that bound a sweep
 

@@ -47,7 +47,7 @@ The 3 highest-leverage entry points (item management overview, long-running oper
 - [What is Microsoft Fabric Git integration?](https://learn.microsoft.com/fabric/cicd/git-integration/intro-to-git-integration) — concept + considerations + commit-size and ADO-specific limits. Read alongside the REST reference.
 - [Automate Git integration with a service principal in Azure DevOps](https://learn.microsoft.com/fabric/cicd/git-integration/automate-git-integration-with-service-principal) — SPN-backed Git connections, configured-vs-automatic credentials, the connection-id + Update My Git Credentials flow.
 - [Bulk Import Item Definitions API tutorial (CI/CD with Azure DevOps)](https://learn.microsoft.com/fabric/cicd/tutorial-bulkapi-cicd) — end-to-end Azure DevOps pipeline using the bulk-import API to deploy items from Git folders to a target workspace.
-- [Get started with deployment pipelines](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines) — UI walkthrough; deployment-pipelines REST endpoints follow the same shape (the `fabric-cli` skill shows the `fab api -A powerbi pipelines` patterns).
+- [Get started with deployment pipelines](https://learn.microsoft.com/fabric/cicd/deployment-pipelines/get-started-with-deployment-pipelines) — UI walkthrough; deployment-pipelines REST endpoints follow the same shape (the `fabric-deploy` skill's `references/deployment-pipelines.md`, *Through `fab`*, shows the `fab api` patterns for both surfaces).
 
 ## MCP server (agent-driven Fabric REST)
 

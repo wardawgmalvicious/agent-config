@@ -1,11 +1,3 @@
----
-name: fabric-cli
-description: "Use for the Fabric CLI `fab` (v1.5 GA March 2026, `pip install ms-fabric-cli`, Python 3.10–3.13, pre-installed in Fabric Notebooks) — filesystem-style CLI over Fabric + Power BI REST. Covers path syntax (Workspace.Workspace/Item.ItemType, .ItemType suffix mandatory, hidden roots .capacities/.connections/.domains/.gateways), auth (`fab auth login` or `FAB_TOKEN` + `FAB_TOKEN_ONELAKE` env tokens, not `az login`), navigation (ls/cd/pwd/exists/get/desc/find), item CRUD (mkdir/set/rm/cp/mv/ln/export/import), ACLs, capacity/domain assign, labels, jobs (incl. semantic-model refresh + dataflow), table maintenance, shortcuts via `fab ln`, `fab deploy --config <yaml>` for one-command workspace CI/CD on top of fabric-cicd (v1.5+), `fab api` REST passthrough (-A powerbi/storage/azure), deployment pipelines, report rebind via `fab set semanticModelId`, DuckDB-on-OneLake, executing DAX via fab api, and common gotchas (InvalidPath, GUID vs friendly names for schema tables, -f for non-interactive)."
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Fabric CLI (`fab`)
 
 Filesystem-style CLI over the Fabric + Power BI REST APIs. Paths use `Workspace.Workspace/Item.ItemType/...`. The `.ItemType` suffix is **mandatory** on items. Workspaces use `.Workspace`; hidden roots like `.capacities`, `.connections`, `.domains`, `.gateways` expose tenant resources.
@@ -366,7 +358,7 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 | `.platform` breaks REST definition calls | Git metadata, not a part | Strip before any direct API payload |
 | DAX quote chaos | Bash + JSON double escaping | Write JSON to a temp file via heredoc |
 | Session burning CUs after `nb exec` | Forgotten Livy session | Wrap session cleanup in `finally`; idle sessions cost compute until 20-min timeout |
-| `fab job run` wrong job type | *(rare)* | CLI auto-selects; if needed use `fab api` with correct `jobType` per fabric-rest-api skill |
+| `fab job run` wrong job type | *(rare)* | CLI auto-selects; if needed use `fab api` with correct `jobType` per [the skill's body](../SKILL.md), *Job Execution* |
 
 ## Reference
 
@@ -375,11 +367,11 @@ fab api -A powerbi "groups/$WS_ID/datasets/$MODEL_ID/refreshes?\$top=1"
 - GitHub Pages: [`fab deploy` command reference](https://microsoft.github.io/fabric-cli/commands/fs/deploy/)
 - Microsoft Learn: [Item management overview (REST APIs `fab` wraps)](https://learn.microsoft.com/rest/api/fabric/articles/item-management/item-management-overview)
 - Microsoft Learn What's New: [Fabric CLI v1.5 GA — March 2026](https://learn.microsoft.com/fabric/fundamentals/whats-new#generally-available-features) — one-command workspace deploys with fabric-cicd integration, first-class Power BI (rebind/refresh), pre-installed in Fabric Notebooks, Python 3.13, 30+ item types.
-- Comprehensive MS Learn link bundle (concept / examples / underlying REST / authentication / lakehouse ops / CI/CD): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (concept / examples / underlying REST / authentication / lakehouse ops / CI/CD): [cli-links.md](cli-links.md)
 
 ## See also
 
 - fabric-deploy skill — picking the route and planning a deploy; its `references/fabric-cicd.md` covers the Python library `fab deploy` wraps: direct `FabricWorkspace` / `publish_all_items` usage, parameter.yml model, feature flags
-- fabric-rest-api skill — direct REST patterns behind `fab api`
+- [The skill's body](../SKILL.md) — direct REST patterns behind `fab api`
 - fabric-tmdl skill — its `references/definition-api.md` covers definition payloads for semantic models
-- fabric-auth skill — token audiences when acquiring tokens outside `az login`
+- [auth.md](auth.md) — token audiences when acquiring tokens outside `az login`

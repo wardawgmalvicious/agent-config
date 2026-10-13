@@ -94,7 +94,7 @@ FROM sys.dm_db_external_tables_log_status;   -- is_blocked: 1 = last update bloc
 EXEC sys.sp_dw_refresh_ext_table 'dbo.<table>';
 ```
 
-Schema changes (add/drop tables or columns, type changes) need the full-item Refresh SQL endpoint metadata REST API instead. Full preview note — enablement, architecture, limitations — lives in the **fabric-spark skill**; the slow-SQLEP gotcha cross-references it in the **fabric-gotchas skill**.
+Schema changes (add/drop tables or columns, type changes) need the full-item Refresh SQL endpoint metadata REST API instead. Full preview note — enablement, architecture, limitations — lives in the **fabric-spark skill**; the slow-SQLEP gotcha cross-references it in the **fabric-rest-api skill**'s `references/gotchas.md`.
 
 ## Result Set Caching
 
@@ -135,4 +135,4 @@ Auto-maintained for single-column histograms, average column length, and table c
 ## See also
 
 - fabric-warehouse skill — T-SQL authoring rules for the queries you're monitoring
-- fabric-gotchas skill — cross-cutting error index
+- fabric-rest-api skill — the cross-cutting error index, in its `references/gotchas.md`

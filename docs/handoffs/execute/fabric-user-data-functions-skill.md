@@ -166,7 +166,8 @@ run plus small idle OneLake storage.
   Its docs name `definitions.json` and `functions.json`, both wrong
   against the portal.
 - `fab` 1.7.0 handles the type, without a run verb; `export` writes
-  REST's IDs and `bulk-export` Git's (landed in fabric-cli 2026-10-01).
+  REST's IDs and `bulk-export` Git's (landed in fabric-cli 2026-10-01,
+  now `fabric-rest-api`'s `references/cli.md`).
 
 ## Doc defects, for `/drift-audit` and the skill's caveats
 

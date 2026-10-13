@@ -204,6 +204,5 @@ that carries its full version.
 ## See also
 
 - `fabric-eventhouse` — the natural KQL-Database pair for analytics on streamed events
-- `fabric-rest-api` — Eventstream item REST endpoints, LRO polling, jobType values
-- `fabric-auth` — token audience for Fabric REST against Eventstream items
+- `fabric-rest-api` — Eventstream item REST endpoints, LRO polling, jobType values; the token audience for Fabric REST against Eventstream items in its `references/auth.md`
 - `fabric-warehouse-monitoring` — Warehouse-side query monitoring; workspace-monitoring links in its references bundle

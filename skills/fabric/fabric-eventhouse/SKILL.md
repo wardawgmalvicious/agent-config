@@ -316,7 +316,5 @@ ADX and Eventstream. URL pattern, auth requirements, and the config block:
 
 ## See also
 
-- fabric-auth skill — `kusto.kusto.windows.net/.default` audience details
-- fabric-cli skill — `fab` CLI for Eventhouse item creation, principals, exports
-- fabric-rest-api skill — `kqlDatabases` listing endpoint and pagination
+- fabric-rest-api skill — `kqlDatabases` listing endpoint and pagination; `kusto.kusto.windows.net/.default` audience details in its `references/auth.md`; the `fab` CLI for Eventhouse item creation, principals and exports in its `references/cli.md`
 - fabric-iq skill — the *other* graph workload: the standalone Fabric **GraphModel** item (GQL / ISO-39075 over OneLake). Different engine; the KQL graph operators above do NOT apply there.

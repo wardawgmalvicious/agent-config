@@ -1,6 +1,7 @@
 ---
 name: fabric-rest-api
-description: "Use for Microsoft Fabric REST API patterns: listing and paginating workspaces/items with continuationToken/continuationUri, calling /v1/workspaces/{wsId}/items, handling long-running operations (202 Accepted, Location header, polling /v1/operations/{id}, Retry-After, /result), the runtime item ID vs .platform logicalId distinction (PowerBIEntityNotFound root cause), the 201-or-202 create pattern, jobType values for /jobs/instances (RunNotebook, Pipeline, SparkJob, Refresh — NOT DefaultJob), the `definition` envelope and `?updateMetadata=true` `.platform` flag, Git integration APIs (git/status workspaceHead vs remoteCommitHash, updateFromGit), job scheduling (Daily/Weekly/Monthly), 429 rate limiting with Retry-After, capacity assignment, and the GA `sensitivityLabel` field on List/Get/Update Item responses (GUID only, not settable via PATCH)."
+description: "Use when calling the Microsoft Fabric or Power BI REST APIs, authenticating to them or running the Fabric CLI `fab` — tokens and audiences, `az login` and `az rest`, a service principal's tenant settings and workspace roles, workspaces and items, item IDs, definitions, long-running operations, pagination, jobs and schedules, Git integration, throttling, capacity — and when troubleshooting any Fabric error: its index maps an error code or symptom, from a REST call, a Git sync, a deploy, a notebook, a warehouse or a report publish, to the reference or skill that owns the fix."
+when_to_use: "Use for a 401 or 403 from Fabric, Power BI, OneLake, SQL or KQL; a token for the wrong audience; a service principal refused though its app registration holds API permissions; `fab` commands, `fab auth` or `fab api`; EntityNotFound or PowerBIEntityNotFound; a 202 to poll or a 429 to back off from; or error text to look up, such as InvalidContent, DataLoss, MissingDefinitionParts, Git_HeadNotSynced or a 24556 snapshot conflict."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -10,6 +11,15 @@ disable-model-invocation: false
 
 Base URL: `https://api.fabric.microsoft.com/v1`
 
+Three jobs have a reference of their own: read it before answering one.
+The rest of this file is the REST API itself.
+
+| The job | Read first |
+| --- | --- |
+| A token or its audience, `az login` or `az rest`, a TDS connection, or what authorizes a service principal | [auth.md](references/auth.md) |
+| The Fabric CLI, `fab`: paths, commands, `fab auth`, `fab api` | [cli.md](references/cli.md) |
+| An error code, error text or symptom, from any Fabric surface | [gotchas.md](references/gotchas.md), whose index names the reference or skill that owns the fix |
+
 ## Finding Workspaces and Items
 
 1. List workspaces: `GET /v1/workspaces` → paginate with `continuationToken`
@@ -17,7 +27,7 @@ Base URL: `https://api.fabric.microsoft.com/v1`
 3. List items in workspace: `GET /v1/workspaces/{wsId}/items?type={ItemType}`
 4. Type-specific endpoints return extra `properties` (connection strings, etc.):
    `GET /v1/workspaces/{wsId}/{lakehouses|warehouses|notebooks|semanticModels|...}`
-5. Cross-workspace discovery (no `wsId` in path): `POST /v1/catalog/search` with `{ "search": "Sales Revenue", "pageSize": 50, "filter": "Type eq 'Lakehouse'" }` → permission-trimmed items (each with `id` GUID + `workspaceId`) across your whole accessible estate, by catalog metadata (name/description/workspace name). OneLake Catalog Search API (Preview, March 2026); same capability as the `fab find` CLI verb (fabric-cli skill) and the Fabric Core MCP server's `search_catalog` tool.
+5. Cross-workspace discovery (no `wsId` in path): `POST /v1/catalog/search` with `{ "search": "Sales Revenue", "pageSize": 50, "filter": "Type eq 'Lakehouse'" }` → permission-trimmed items (each with `id` GUID + `workspaceId`) across your whole accessible estate, by catalog metadata (name/description/workspace name). OneLake Catalog Search API (Preview, March 2026); same capability as the `fab find` CLI verb ([cli.md](references/cli.md)) and the Fabric Core MCP server's `search_catalog` tool.
 
 ## Sensitivity Labels on Item Responses
 
@@ -181,9 +191,9 @@ commit the workspace is synced to, `remoteCommitHash`, the branch head, and
 `conflictType`. Heads that differ, with no `remoteChange` on any entry,
 are the normal state after a push that changes no item folder, and the
 workspace still commits (observed 2026-10-01). A workspace stranded on
-`Git_HeadNotSynced` shows differing heads too: fabric-gotchas' row for
-that error holds its likelier cause, how sure that is, and the missing
-button.
+`Git_HeadNotSynced` shows differing heads too:
+[gotchas.md](references/gotchas.md)'s row for that error holds its
+likelier cause, how sure that is, and the missing button.
 
 [Update From Git](https://learn.microsoft.com/rest/api/fabric/core/git/update-from-git),
 `POST …/git/updateFromGit`, updates only the items the incoming commits

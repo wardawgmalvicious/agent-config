@@ -50,7 +50,8 @@ cost is that it also matches SQL that is not T-SQL. Two carve-outs:
 - **Built-in *type* names**: lowercase — `sysname`, `int`, `varchar`.
   Under a case-sensitive model collation (Fabric Warehouse's default)
   the uppercase form resolves as a missing user-defined type and fails
-  the whole DacFx build. Symptom and why it hides: `fabric-gotchas`.
+  the whole DacFx build. Symptom and why it hides: `fabric-rest-api`,
+  its `references/gotchas.md`.
 - **Identifiers** (tables, columns, schemas, parameters, variables,
   indexes, constraints, procs, functions): PascalCase.
 - **Aliases**: a column alias is PascalCase, like a column

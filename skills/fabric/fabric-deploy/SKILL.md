@@ -20,7 +20,7 @@ it.
 | Source of truth | Route | Learn's option | Read |
 | --- | --- | --- | --- |
 | Git, one branch pushed to each stage by a script or CI | the fabric-cicd Python library | 2 | [fabric-cicd.md](references/fabric-cicd.md) |
-| Git, the same in one command | `fab deploy --config`, which wraps the library and reads its `config.yml` and `parameter.yml` | 2 | `fabric-cli` § Workspace Deployment, then [fabric-cicd.md](references/fabric-cicd.md) |
+| Git, the same in one command | `fab deploy --config`, which wraps the library and reads its `config.yml` and `parameter.yml` | 2 | `fabric-rest-api`'s `references/cli.md` § Workspace Deployment, then [fabric-cicd.md](references/fabric-cicd.md) |
 | Git, a branch per stage, each stage's workspace connected | Git integration's Update From Git | 1 | `fabric-rest-api` § Git Integration APIs |
 | The workspace: dev promoted to test and prod in the service | deployment pipelines | 3 | [deployment-pipelines.md](references/deployment-pipelines.md) |
 
@@ -174,10 +174,10 @@ A deploy moves metadata, not data, on every route. After one:
 
 ## See also
 
-- `fabric-cli` — `fab api` mechanics, and the `fab deploy` flags
 - `fabric-rest-api` — long-running operations, Git integration, and the
-  definition APIs every route sits on
-- `fabric-auth` — token audiences and service principal setup
+  definition APIs every route sits on; `fab api` mechanics and the
+  `fab deploy` flags in its `references/cli.md`; token audiences and
+  service principal setup in its `references/auth.md`
 - `fabric-variable-library` — value sets, the other way to vary config
   per stage
 - A Data Factory pipeline's activities are `fabric-data-pipeline`'s, a

@@ -8,7 +8,7 @@ Curated set of Microsoft Learn pages and canonical GitHub Pages references for t
 - **v1.6.x (April 2026)**: adds `fab find` for OneLake-catalog search across workspaces; promotes VariableLibrary from portal-only to full CRUD via standard verbs; adds `fab rm --hard` permanent delete; adds Map and DigitalTwinBuilder item types; adds Lakehouse export/import (previously metadata-only); CLI-startup perf improvements.
 - Python 3.10 / 3.11 / 3.12 / 3.13. Confirm the running install with `fab --version`.
 
-The 3 highest-leverage entry points (CLI Learn intro, canonical GitHub Pages docs, item management overview) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
+The 3 highest-leverage entry points (CLI Learn intro, canonical GitHub Pages docs, item management overview) are also linked in [cli.md](cli.md)'s `## Reference` section for in-context use; this file holds the comprehensive set.
 
 **Note on docs split:** The Microsoft Learn coverage of `fab` is light — primarily the install/login walkthrough and the What's New release notes. The full per-command reference (every verb, flag, output schema) lives on the GitHub Pages site at `microsoft.github.io/fabric-cli/`, maintained by the CLI team. Both are linked below.
 

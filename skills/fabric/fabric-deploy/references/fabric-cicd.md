@@ -81,7 +81,7 @@ class FabricNotebookCredential(TokenCredential):
         return AccessToken(notebookutils.credentials.getToken("pbi"), int(time.time()) + 3600)
 ```
 
-The identity needs Contributor+ on the target workspace (Admin for `enable_hard_delete`). SPNs additionally need the tenant setting *Service principals can call Fabric public APIs*, as the admin portal titles it (older Learn pages: *can use Fabric APIs*) — same prerequisites as any Fabric REST automation (see fabric-auth skill).
+The identity needs Contributor+ on the target workspace (Admin for `enable_hard_delete`). SPNs additionally need the tenant setting *Service principals can call Fabric public APIs*, as the admin portal titles it (older Learn pages: *can use Fabric APIs*) — same prerequisites as any Fabric REST automation (see `fabric-rest-api`'s `references/auth.md`).
 
 ## parameter.yml
 
@@ -270,10 +270,9 @@ Full YAML: [example/release_pipeline](https://microsoft.github.io/fabric-cicd/la
 
 ## See also
 
-- fabric-cli skill — `fab deploy` wrapper over this library
+- fabric-rest-api skill's `references/cli.md` — `fab deploy`, the wrapper over this library
 - [deployment-pipelines.md](deployment-pipelines.md) — service-side
   deployment pipelines: Fabric Core `deploymentPipelines/...`, or Power BI
   `pipelines/...` through `fab api -A powerbi`
-- fabric-auth skill — token audiences, SPN setup, 401 debugging
-- fabric-rest-api skill — the underlying item-definition / LRO API patterns
+- fabric-rest-api skill — the underlying item-definition / LRO API patterns; token audiences, SPN setup and 401 debugging in its `references/auth.md`
 - fabric-variable-library skill — value-set selection semantics this library keys off `environment`

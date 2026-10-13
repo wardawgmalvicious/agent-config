@@ -1,6 +1,6 @@
 ---
 name: fabric-catalog-governance
-description: "Audit and remediate Microsoft Fabric governance posture through the REST APIs — what the OneLake catalog Govern tab reports, done by API. Covers domains and subdomains, workspace-to-domain and workspace-to-capacity assignment, domain roles, sensitivity-label coverage and bulkSetLabels, tags, description and endorsement coverage, and item ownership, split by caller tier: Fabric administrator (/v1/admin/*, scanner API) versus data owner (Core API plus workspace, domain or capacity roles). Use when asked to audit governance, find unlabeled, undescribed or unendorsed items or workspaces with no domain, bulk-assign workspaces to a domain, change labels in bulk, or say who can fix a finding. Gates every irreversible write and names the fixes that have no API. For catalog search use fabric-cli (fab find); for workspace roles and OneLake security use fabric-security."
+description: "Audit and remediate Microsoft Fabric governance posture through the REST APIs — what the OneLake catalog Govern tab reports, done by API. Covers domains and subdomains, workspace-to-domain and workspace-to-capacity assignment, domain roles, sensitivity-label coverage and bulkSetLabels, tags, description and endorsement coverage, and item ownership, split by caller tier: Fabric administrator (/v1/admin/*, scanner API) versus data owner (Core API plus workspace, domain or capacity roles). Use when asked to audit governance, find unlabeled, undescribed or unendorsed items or workspaces with no domain, bulk-assign workspaces to a domain, change labels in bulk, or say who can fix a finding. Gates every irreversible write and names the fixes that have no API. For catalog search use fabric-rest-api (fab find); for workspace roles and OneLake security use fabric-security."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: max   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -23,8 +23,8 @@ unless asked separately, and then only through §6.
 Three neighbours own the adjacent ground:
 
 - **Catalog search** — finding an item across workspaces — is the
-  Explore tab. That is `fab find` (`fabric-cli`) and
-  `POST /v1/catalog/search` (`fabric-rest-api`).
+  Explore tab. That is `fab find` and `POST /v1/catalog/search`, both
+  `fabric-rest-api`'s.
 - **Access** — workspace roles, item permissions, OneLake security, and
   the shape of the `sensitivityLabel` field including resolving its GUID
   through Graph — is `fabric-security`. This skill measures label
@@ -100,7 +100,8 @@ Use the REST passthrough instead:
 fab api -X post "workspaces/$WS_ID/assignToDomain" -i '{"domainId":"<id>"}'
 ```
 
-See `fabric-cli` for `fab` syntax and `fabric-auth` for token audiences.
+See `fabric-rest-api` for `fab` syntax and token audiences: its
+`references/cli.md` and `references/auth.md`.
 
 ## 2. Audit before you remediate
 

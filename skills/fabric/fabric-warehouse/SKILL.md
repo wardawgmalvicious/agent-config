@@ -260,5 +260,4 @@ item definitions** — `sysname`, never `SYSNAME`. See `coding-tsql` —
 - fabric-database skill — full Azure SQL engine inside Fabric, none of these restrictions apply
 - fabric-warehouse-monitoring skill — Query Insights, query labels, DMVs, KILL, Result Set Caching, statistics
 - fabric-security skill — GRANT/DENY/RLS/CLS/DDM SQL syntax for Warehouse
-- fabric-auth skill — TDS connection essentials (port 1433, Initial Catalog vs FQDN, Encrypt=Yes)
-- fabric-gotchas skill — cross-cutting error index
+- fabric-rest-api skill — TDS connection essentials (port 1433, Initial Catalog vs FQDN, Encrypt=Yes) in its `references/auth.md`, and the cross-cutting error index in its `references/gotchas.md`

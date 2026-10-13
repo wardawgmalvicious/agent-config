@@ -1,17 +1,17 @@
 # MS Learn link bundle — Fabric gotchas & troubleshooting
 
-Curated set of Microsoft Learn pages that back the cross-cutting error/gotcha index in this skill. Organized by error class, each entry pairs the gotcha with the canonical Microsoft documentation that explains the underlying constraint and (where relevant) the fix.
+Curated set of Microsoft Learn pages that back the cross-cutting error/gotcha index in [gotchas.md](gotchas.md). Organized by error class, each entry pairs the gotcha with the canonical Microsoft documentation that explains the underlying constraint and (where relevant) the fix.
 
-The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface area limitations, transactions / write-write conflicts) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
+The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface area limitations, transactions / write-write conflicts) are also linked in [gotchas.md](gotchas.md)'s `## Reference` section for in-context use; this file holds the comprehensive set.
 
-**Use pattern:** when you hit a specific gotcha listed in the parent SKILL.md table, jump directly to the matching link below for the deep dive.
+**Use pattern:** when you hit a specific gotcha listed in the [gotchas.md](gotchas.md) table, jump directly to the matching link below for the deep dive.
 
 ## Authentication and authorization (401 / 403 / 404)
 
 - [Microsoft Entra authentication for Fabric SQL](https://learn.microsoft.com/fabric/data-warehouse/entra-id-authentication) — confirms SQL auth is unsupported; explains the Entra-only model. Companion to the 401 token-audience gotcha.
 - [Workspace roles in Fabric](https://learn.microsoft.com/fabric/fundamentals/roles-workspaces) — Admin / Member / Contributor / Viewer responsibility matrix. Background for the 403-on-Power-BI-API-as-Viewer gotcha.
 - [Item-level permissions (Read / ReadData / ReadAll / Share / Write)](https://learn.microsoft.com/fabric/security/permission-model) — the layer underneath workspace roles; relevant when 404 EntityNotFound is actually a permission issue.
-- See `fabric-auth` skill for the full token audience table and `az login` flow variants.
+- See [auth.md](auth.md) for the full token audience table and `az login` flow variants.
 
 ## Runtime ID vs `.platform` `logicalId` (`PowerBIEntityNotFound`)
 
@@ -20,13 +20,13 @@ The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface ar
 - **They are separate strings but not independent values.** For an item **created in the portal**, `logicalId` is the runtime item ID with its 16 bytes reversed — so the runtime ID can be derived offline from a committed `.platform`, with no API call. Measured 2026-09-03 against `GET /v1/workspaces/{ws}/items` across 19 workspaces: 21 of 21 resolvable reversals hit a real item with the same `displayName` and `type`; none hit a different item; no raw `logicalId` was itself an item ID.
 - **Not for git-first items.** An item authored as files and synced *into* a workspace carries a fresh client-side v4 that encodes nothing. Origin is what separates the two forms (76 of 76, no cross-cases) — an item whose oldest commit is a portal sync (`Committing N items from workspace …`) reverses; one first added by a human commit does not.
 - Deriving is safe; **substituting is still the bug this row exists for.** Fabric does not fall back from one to the other at runtime.
-- See `fabric-rest-api` skill for the canonical rules and the snippet.
+- See [the skill's body](../SKILL.md) for the canonical rules and the snippet.
 
 ## TDS connection (Warehouse / SQL endpoint / SQL Database)
 
 - [Connect to Fabric SQL endpoint or warehouse with SQL Server Management Studio](https://learn.microsoft.com/fabric/data-warehouse/connectivity) — connection-string fields, `Initial Catalog = <item display name>` (NOT FQDN), `Encrypt=Yes`, port 1433.
 - [Connectivity in Fabric Data Warehouse — networking and firewall](https://learn.microsoft.com/fabric/data-warehouse/connectivity) — what to allow through outbound firewall (`*.datawarehouse.fabric.microsoft.com`, `*-pbidedicated.windows.net`).
-- See `fabric-auth` skill for the TDS connection essentials table (MARS unsupported, etc.).
+- See [auth.md](auth.md) for the TDS connection essentials table (MARS unsupported, etc.).
 
 ## Snapshot conflicts (24556 / 24706) and transactions
 
@@ -57,7 +57,7 @@ The 3 highest-leverage entry points (Warehouse troubleshooting, T-SQL surface ar
 
 - [Update item definition (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/core/items/update-item-definition) — confirms the API REPLACES the entire definition; omitting parts deletes them. The `?updateMetadata=true` flag for `.platform` updates.
 - [Run on demand item job (Fabric REST)](https://learn.microsoft.com/rest/api/fabric/core/job-scheduler/run-on-demand-item-job) — required `jobType` values: `RunNotebook`, `Pipeline`, `SparkJob`, `Refresh`, `TableMaintenance`. `DefaultJob` is *not* a valid value despite appearing in some examples.
-- See `fabric-rest-api` skill for the LRO polling pattern.
+- See [the skill's body](../SKILL.md) for the LRO polling pattern.
 
 ## sqlcmd version / ODBC / connectivity
 

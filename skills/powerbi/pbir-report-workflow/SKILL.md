@@ -309,7 +309,8 @@ Notes:
 - A specific page or a bookmark state can be exported via the
   `powerBIReportConfiguration` body (`pages`, `defaultBookmark`).
 - Empty visuals in the export usually mean a binding mismatch — see
-  fabric-gotchas (byConnection rebind / TMDL binding diff).
+  `fabric-rest-api`'s `references/gotchas.md` (byConnection rebind /
+  TMDL binding diff).
 - If a `scripts/data/report-png.sh` wrapper is deployed in the repo
   (an internal local-cli template), prefer it over raw curl.
 

@@ -127,9 +127,9 @@ load-bearing for triggering — and move it into the body.
    State that as the reason this skill exists, so the duplication reads
    as deliberate.
 2. **Check for existing coverage first.** `grep -rli` the topic across
-   `skills/*/*/SKILL.md`, and check `fabric-gotchas` specifically — the
-   `/learn` skill already treats it as the default home for
-   troubleshooting content. Warn on the failure mode from drift brief 07:
+   `skills/*/*/SKILL.md`, and check `fabric-rest-api`'s
+   `references/gotchas.md` specifically — the `/learn` skill already
+   treats it as the default home for troubleshooting content. Warn on the failure mode from drift brief 07:
    incidental grep hits ("Spark History Server mirror") are not coverage.
    If an existing skill covers the topic, stop and propose extending it.
 3. **Name and namespace.** Behavioral skills take the verb you invoke;

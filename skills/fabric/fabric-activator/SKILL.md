@@ -1,7 +1,7 @@
 ---
 name: fabric-activator
 description: "Use for Microsoft Fabric Activator — the `Reflex` item type (Reflex and Activator are the same item) that watches data and fires rules and alerts. Covers `ReflexEntities.json` as Git and REST see it: a flat JSON array of entities wired by `uniqueIdentifier`, with `definition.instance` an escaped JSON string and not a nested object; the `/reflexes` REST namespace and its permission split — List needs only a viewer role, but `getDefinition` needs read AND write; `displayName` not `name` on create; query sources (Power BI, KQL queryset, Real-Time Dashboard) versus streaming (Eventstream, Fabric events, Azure Blob events); actions and their silent parameter coercion (Copy job takes none, a bad number becomes 0); the preview remote MCP server; and the limits and costs that bite — 500 rules per item, 10,000 events/s stops a rule, stopping a rule does not stop its billed event listener, and a Blob-events source, Power BI source or User Data Function action makes a Git commit or a deployment fail."
-when_to_use: "Fires on any file under `*.Reflex/` or `*.Activator/`, so `ReflexEntities.json` and `.platform` both match and `fabric-git-serialization` co-loads. The definition, REST surface and gotchas — not the portal click-path. For an Eventstream's Activator destination, or the KQL database behind a `kqlSource-v1`, open that item's own definition file: those skills are glob-scoped elsewhere and unreachable by name from here. `fabric-rest-api`, `fabric-auth`, `fabric-deploy` and `fabric-cli` are reachable by name."
+when_to_use: "Fires on any file under `*.Reflex/` or `*.Activator/`, so `ReflexEntities.json` and `.platform` both match and `fabric-git-serialization` co-loads. The definition, REST surface and gotchas — not the portal click-path. For an Eventstream's Activator destination, or the KQL database behind a `kqlSource-v1`, open that item's own definition file: those skills are glob-scoped elsewhere and unreachable by name from here. `fabric-rest-api` and `fabric-deploy` are reachable by name."
 paths:
   - "**/*.Reflex/**"
   - "**/*.Activator/**"
@@ -31,8 +31,7 @@ own definition file instead:
 | --- | --- |
 | Wiring an Activator destination onto an Eventstream, or `Set alert` from one | Open the `.Eventstream` item's definition |
 | The KQL database a `kqlSource-v1` queries | Open the `.Eventhouse` / `.KQLDatabase` item's definition |
-| LRO polling, `continuationToken` pagination, token audiences | `fabric-rest-api`, `fabric-auth` — both reachable by name |
-| `fab` invocation and `fab api` passthrough | `fabric-cli` — reachable by name |
+| LRO polling, `continuationToken` pagination, token audiences, `fab` invocation and `fab api` passthrough | `fabric-rest-api` — reachable by name; audiences are its `references/auth.md`, `fab` its `references/cli.md` |
 
 ## 1. What is on disk
 
@@ -378,11 +377,11 @@ Every code, grouped by stage, with cause and fix, is in
 ## See also
 
 - `fabric-rest-api` — LRO polling, `continuationToken` pagination, the
-  Git integration APIs
-- `fabric-auth` — token audiences for Fabric REST
+  Git integration APIs; token audiences for Fabric REST, in its
+  `references/auth.md`; `fab` and `fab api` passthrough, in its
+  `references/cli.md`
 - `fabric-deploy` — deploys, from a Git checkout or through deployment
   pipelines
-- `fabric-cli` — `fab` and `fab api` passthrough
 - `claude/rules/fabric-git-serialization.md` — co-loads on these paths
 - Open the `.Eventstream` or `.Eventhouse` item's definition to reach the
   skills that own those (they cannot be named from here)

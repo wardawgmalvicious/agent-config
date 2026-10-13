@@ -144,17 +144,15 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (24)
+## Microsoft Fabric platform (19)
 
-- [fabric-auth/](fabric/fabric-auth/) — token audiences for Fabric REST,
-  Power BI REST, OneLake, Warehouse SQL, KQL, XMLA, Azure ARM. Includes
-  `az login` and `az account get-access-token` patterns for 401 debugging.
 - [fabric-rest-api/](fabric/fabric-rest-api/) — Fabric REST patterns:
   pagination with `continuationToken`, long-running operations (202 +
   Location + polling), `jobType` values, item definitions, `?updateMetadata`.
-- [fabric-cli/](fabric/fabric-cli/) — `fab` CLI: filesystem-style access over
-  Fabric + Power BI REST. Path syntax, navigation, item CRUD, ACLs,
-  capacity/domain, jobs, `fab api` REST passthrough.
+  Its `references/` hold authentication and token audiences, the `fab`
+  CLI, and the error index that names the owner of each symptom's fix.
+  Folded from `fabric-auth`, `fabric-cli` and `fabric-gotchas` on
+  2026-10-12.
 - [fabric-deploy/](fabric/fabric-deploy/) — deploying workspace content
   from one stage to the next by whichever route fits: it picks the route,
   checks the identity, plans and stops before a write, then verifies,
@@ -246,7 +244,7 @@ construction. Split out of `workflow` 2026-09-11.
   settings, none of which it covers. Gates every irreversible write, and
   routes the three fixes that have no write API at all — endorsement, DLP
   policies, item ownership — to the person who can make them. Search is
-  `fabric-cli`'s; access and the label field are `fabric-security`'s.
+  `fabric-rest-api`'s; access and the label field are `fabric-security`'s.
 - [fabric-tmdl/](fabric/fabric-tmdl/) — TMDL semantic-model authoring,
   with the Definition API and a model's AI instructions as references.
 - [fabric-semantic-model-audit/](fabric/fabric-semantic-model-audit/) —
@@ -269,9 +267,6 @@ construction. Split out of `workflow` 2026-09-11.
   `fabric-tmdl`'s, and Plan, which has no skill.
 - [fabric-variable-library/](fabric/fabric-variable-library/) — variable
   libraries.
-- [fabric-gotchas/](fabric/fabric-gotchas/) — common 401/403/404 failures,
-  PowerBIEntityNotFound, snapshot conflicts, plus a MUST/PREFER/AVOID
-  best-practices summary.
 
 ## Power BI Desktop / Reports (2)
 

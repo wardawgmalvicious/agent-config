@@ -95,12 +95,12 @@ Before naming anything, find out whether the topic is already covered.
 
 ```
 grep -li "<topic term>" skills/*/*/SKILL.md .claude/skills/*/SKILL.md
-grep -n -i "<topic term>" skills/fabric/fabric-gotchas/SKILL.md
+grep -n -i "<topic term>" skills/fabric/fabric-rest-api/references/gotchas.md
 ```
 
-Check `fabric-gotchas` explicitly. `/learn` treats it as the default
-home for cross-product troubleshooting content, so a topic can be
-half-covered there without any dedicated skill existing.
+Check that file explicitly. `/learn` treats it as the default home for
+cross-product troubleshooting content, so a topic can be half-covered
+there without any dedicated skill existing.
 
 **An incidental grep hit is not coverage.** The worked failure is a
 Mirroring search matching "Spark History Server mirror" in

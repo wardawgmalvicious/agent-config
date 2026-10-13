@@ -1,11 +1,3 @@
----
-name: fabric-auth
-description: "Use when authenticating to Microsoft Fabric APIs — getting 401 Unauthorized errors, choosing token audience/scope for Fabric REST, Power BI REST, OneLake, Warehouse/SQL, KQL, XMLA, or Azure ARM, or running `az login` / `az account get-access-token` / `az rest` for Fabric. Covers the full token-audience table, the OneLake-only `storage.azure.com/.default` requirement, `az login` flow variants (--allow-no-subscriptions, --use-device-code, SPN cert, managed identity), `az rest --resource` requirement (Fabric URL is not a built-in Azure endpoint), JWT decoding for 401 debugging, and why using the wrong audience is the #1 cause of 401s."
-# model: inherit  # any model: value blocks Copilot slash invocation
-# effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
-disable-model-invocation: false
----
-
 # Fabric authentication & token audiences
 
 All Fabric operations require Microsoft Entra ID OAuth 2.0 bearer tokens. **Using the wrong audience is the #1 cause of 401 errors.**
@@ -96,4 +88,4 @@ When connecting via `sqlcmd`, ODBC drivers, or any TDS client:
 - Microsoft Learn: [Authenticate to Azure using Azure CLI](https://learn.microsoft.com/cli/azure/authenticate-azure-cli)
 - Microsoft Learn: [MSAL overview](https://learn.microsoft.com/entra/msal/overview)
 - Microsoft Learn: [Microsoft Entra authentication for Fabric SQL](https://learn.microsoft.com/fabric/data-warehouse/entra-id-authentication)
-- Comprehensive MS Learn link bundle (concept / Fabric REST auth / Azure CLI / OAuth flows / MSAL by language / SPN & managed identity / scopes & claims / Fabric-specific): [references/REFERENCE.md](references/REFERENCE.md)
+- Comprehensive MS Learn link bundle (concept / Fabric REST auth / Azure CLI / OAuth flows / MSAL by language / SPN & managed identity / scopes & claims / Fabric-specific): [auth-links.md](auth-links.md)

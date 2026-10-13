@@ -87,7 +87,7 @@ The 3 highest-leverage entry points (Item Definition overview, Semantic Model de
 - [Microsoft Fabric REST API — overview](https://learn.microsoft.com/rest/api/fabric/articles/) — `api.fabric.microsoft.com` audience.
 - [Power BI REST API — refresh dataset](https://learn.microsoft.com/rest/api/power-bi/datasets/refresh-dataset) — `analysis.windows.net/powerbi/api` audience for refresh.
 - [Power BI REST API — datasources / data source bindings](https://learn.microsoft.com/rest/api/power-bi/datasets/get-datasources) — Power BI audience for data-source operations.
-- See `fabric-auth` skill for the full token-audience table and `az login` flow.
+- See `fabric-rest-api`'s `references/auth.md` for the full token-audience table and `az login` flow.
 
 ### TMDL language reference
 
@@ -124,6 +124,4 @@ The 3 highest-leverage entry points (Item Definition overview, Semantic Model de
 ## See also
 
 - fabric-tmdl's [SKILL.md](../SKILL.md) — TMDL authoring rules at the file level
-- fabric-rest-api skill — LRO polling pattern, runtime item ID vs logicalId, the 201-or-202 create pattern
-- fabric-auth skill — Fabric vs Power BI audience selection
-- fabric-cli skill — `fab export` / `fab import` wrap these APIs
+- fabric-rest-api skill — LRO polling pattern, runtime item ID vs logicalId, the 201-or-202 create pattern; Fabric vs Power BI audience selection in its `references/auth.md`; `fab export` / `fab import`, which wrap these APIs, in its `references/cli.md`

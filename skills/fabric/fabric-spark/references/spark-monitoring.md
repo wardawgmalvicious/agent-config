@@ -19,7 +19,8 @@ Delegated token. On a Fabric-only tenant (no Azure subscription) the
 login itself needs `az login --allow-no-subscriptions`. Base URL is
 `https://api.fabric.microsoft.com/v1`; plain `curl` with a bearer
 header works from there — no SDK or MCP server required. Full token
-audience table and 401 debugging: **fabric-auth** skill.
+audience table and 401 debugging: **fabric-rest-api** skill, its
+`references/auth.md`.
 
 ## Listing Livy sessions
 
@@ -177,4 +178,5 @@ notebook one.
   patterns
 - [SKILL.md](../SKILL.md) — notebook authoring, session configuration,
   high-concurrency setup
-- **fabric-auth** skill — token audiences and 401 debugging
+- **fabric-rest-api** skill, its `references/auth.md` — token audiences
+  and 401 debugging

@@ -17,8 +17,9 @@ written: 2026-10-01
   supported-item lists and the MCP README. Three of the note's small
   edits landed beside this brief: fabric-cicd's three Cosmos rules, now
   in `fabric-deploy`'s `references/fabric-cicd.md`, fabric-auth's
-  audience row and fabric-mirroring's native-item line, archived with
-  that skill on 2026-10-09.
+  audience row, now in `fabric-rest-api`'s `references/auth.md`, and
+  fabric-mirroring's native-item line, archived with that skill on
+  2026-10-09.
 - **Kind**: an edit, by `/author-skill`:
   `skills/fabric/fabric-cosmos-db/`, `paths: "**/*.CosmosDBDatabase/**"`.
   Nothing is drafted.
@@ -115,7 +116,8 @@ ranges that differ from `indexing-policies` (byte size minimum 1, read
   they were.
 - **`Git_HeadNotSynced`**: here a branch four single-parent commits ahead
   with no net item change hid **Update all** and blocked nothing. That
-  data point landed in fabric-gotchas' row on 2026-10-01.
+  data point landed in fabric-gotchas' row on 2026-10-01, now in
+  `fabric-rest-api`'s `references/gotchas.md`.
 
 ## The OneLake copy and its SQL analytics endpoint
 
@@ -197,12 +199,13 @@ every product, observed).
 ## For the skill to carry once it exists
 
 - `fabric-database` § See also: not Cosmos DB in Fabric; see this skill.
-- `fabric-gotchas` rows pointing here: "Offer Type is restricted to
-  Autoscale for your account." (documented); "Workload Error Code
-  Unknown" saving a `float16` vector path (observed); "Workload Error
-  Code ContainerOperationFailure" from a Git Update that changes a
-  partition key (observed); and the 401 "…accepts tokens intended for
-  []", pointing at fabric-auth's row.
+- Rows in `fabric-rest-api`'s `references/gotchas.md` pointing here:
+  "Offer Type is restricted to Autoscale for your account."
+  (documented); "Workload Error Code Unknown" saving a `float16` vector
+  path (observed); "Workload Error Code ContainerOperationFailure" from
+  a Git Update that changes a partition key (observed); and the 401
+  "…accepts tokens intended for []", pointing at the audience row in
+  its `references/auth.md`.
 - A pointer to a deployed `scripts/data/cosmos.sh`, worded as
   `fabric-eventhouse` § "Connection" words `kql.sh`'s (2026-10-12): the
   read-only reader of a live container, which refuses a cross-partition
@@ -238,7 +241,8 @@ Microsoft's public sample data.
 
 - `grep -rli cosmos skills/`: on 2026-10-01, the files above plus
   fabric-cicd, fabric-auth and fabric-mirroring's new line; the last
-  was archived on 2026-10-09, and the first merged into `fabric-deploy`
-  on 2026-10-12.
+  was archived on 2026-10-09, the first merged into `fabric-deploy` on
+  2026-10-12, and the second folded into `fabric-rest-api` the same
+  day.
 - Learn's Cosmos DB in Fabric `faq` and `limitations` before encoding
   the deltas table, which preview churn can move.

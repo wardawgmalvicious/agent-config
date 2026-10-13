@@ -122,4 +122,4 @@ The 3 highest-leverage entry points (NotebookUtils notebook run/orchestration, p
 ## See also
 
 - [SKILL.md](../SKILL.md) — notebook environment the tiers apply to
-- fabric-gotchas skill — cross-cutting error causes (snapshot conflict, auth, etc.)
+- fabric-rest-api skill's `references/gotchas.md` — cross-cutting error causes (snapshot conflict, auth, etc.)

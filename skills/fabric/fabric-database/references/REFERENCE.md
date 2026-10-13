@@ -18,7 +18,7 @@ The 3 highest-leverage entry points (overview, feature comparison vs Azure SQL D
 - [Create a SQL database in the Fabric portal](https://learn.microsoft.com/fabric/database/sql/create) — UI walkthrough.
 - [Connect to your Fabric SQL database](https://learn.microsoft.com/fabric/database/sql/connect) — connection patterns: SQL editor, SSMS, ADS, MSSQL VS Code extension.
 - [Create a SQL database via REST API](https://learn.microsoft.com/fabric/database/sql/deploy-rest-api) — PowerShell 5.1 and 7.4 worked examples for SQL database CRUD via the Items API. Pair with `fabric-rest-api`.
-- [Create a SQL database via Fabric CLI](https://learn.microsoft.com/fabric/database/sql/deploy-cli) — `fab` CLI alternative for programmatic SQL DB creation. Pair with `fabric-cli`.
+- [Create a SQL database via Fabric CLI](https://learn.microsoft.com/fabric/database/sql/deploy-cli) — `fab` CLI alternative for programmatic SQL DB creation. Pair with `fabric-rest-api`'s `references/cli.md`.
 
 ## Limitations and supported features
 

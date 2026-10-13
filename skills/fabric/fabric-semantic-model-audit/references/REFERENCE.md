@@ -110,7 +110,7 @@ a Direct Lake model uses SSO unless it is bound to a fixed-identity
 connection with SSO off. The refusal is a 401
 `PowerBINotAuthorizedException`, which reads like a missing permission
 (observed 2026-10-07 on Direct Lake on OneLake). Query as a user there;
-fabric-gotchas has the row.
+`fabric-rest-api`'s `references/gotchas.md` has the row.
 
 ## 4. Fabric notebook tier — `sempy.fabric`
 

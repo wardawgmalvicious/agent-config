@@ -103,7 +103,7 @@ never checks. Each of these runs fine interactively and fails only there:
 - **`SQL71501 ... [dbo].[V].[Col] or [dbo].[V].[alias]::[Col]`** — the `::` candidate marks a known product bug in validation, not a real ambiguity, and aliasing does not clear it. First rule out a genuinely missing object elsewhere in the same run; then, in order: replace `SELECT *` in CTEs and derived tables with explicit column lists, split the view so each ambiguous source is its own view, stop joining `OPENROWSET(BULK ...)` to another dynamically shaped source in one statement.
 - **Uppercase built-in type name** (`SYSNAME`) — see `coding-tsql` *Casing*.
 - **Changing a column that has `IDENTITY`** — commit/update fails until `IDENTITY_INSERT` is enabled for the table.
-- **Stale `.sqlproj` SDK pin** — see `fabric-gotchas`, the `MSB4019` row.
+- **Stale `.sqlproj` SDK pin** — see `fabric-rest-api`'s `references/gotchas.md`, the `MSB4019` row.
 - **Cyclic references between warehouse items** — fail branch-out and Git→workspace sync.
 - **A Dataflow Gen2 with a warehouse output destination** — creates a `DataflowsStagingWarehouse` item in the repo that blocks commit and update.
 

@@ -115,7 +115,7 @@ note mode you name the destination; you do not open it for writing.
 | Domain procedure, API shape, syntax, gotcha for one product area | `skills/<group>/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<group>/<name>/references/REFERENCE.md` |
 | The payload repo's own procedure — the drift pipeline, authoring, testing | `.claude/skills/<name>/SKILL.md` — project scope there, live on save, no deploy step |
 | A convention of the payload repo itself — how its files are edited, tested or deployed | root `CLAUDE.md` in the payload checkout takes the rule and its tell (the error text, or the silence); guidance a file there triggers goes to a `paths:`-scoped rule in `.claude/rules/`; the evidence goes to `docs/evidence/root-claude-md.md` under the same heading. Project scope, no deploy step |
-| Cross-product troubleshooting symptom (error text → cause) | `skills/fabric/fabric-gotchas/SKILL.md` **and** a one-line cross-reference from the owning skill |
+| Cross-product troubleshooting symptom (error text → cause) | `skills/fabric/fabric-rest-api/references/gotchas.md` **and** a one-line cross-reference from the owning skill |
 | Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
 | How agent instruction files load, or which home a kind of guidance takes in any repo — a nested `CLAUDE.md`, an `AGENTS.md`, the `@AGENTS.md` import form | `claude/rules/agent-instructions-scoping.md`. A repo's own placement decision stays in that repo (Step 0) |
 | Environment or machine-wide constraint for every session | `claude/CLAUDE.md` takes the rule, its tell (the error text, or the silence) and one date; the evidence — how it was measured, what was believed before — goes to `docs/evidence/user-claude-md.md` under the same heading. A copy, not live until the deploy script runs; see Step 8 |
@@ -185,10 +185,10 @@ actually unclear; where Step 3 gave one obvious owner, it adds nothing.
 - Already covered correctly → nothing to do; say so.
 - Covered but wrong or stale → the edit is a **correction**; quote the
   current text in the proposal.
-- Covered in `fabric-gotchas` but missing from the owning skill (or
-  vice versa) → add the cross-reference only.
+- Covered in `fabric-rest-api`'s `references/gotchas.md` but missing
+  from the owning skill (or vice versa) → add the cross-reference only.
 
-`fabric-gotchas` is the natural magnet for everything; guard against
+That file is the natural magnet for everything; guard against
 duplicates there most carefully.
 
 ## Step 5 — Verify before encoding
@@ -334,7 +334,7 @@ recovered.
 (do not commit yourself). Suggested subject shape:
 
 - `docs(fabric-deploy): note parameter.yml regex is case-sensitive`
-- `fix(fabric-gotchas): correct cause of 24556 snapshot conflict`
+- `fix(fabric-warehouse): correct cause of 24556 snapshot conflict`
 - `feat(rules): add KQL materialize() guidance`
 
 Anything outside the skills tree deploys by copy, so an edit to a rule,
@@ -368,8 +368,8 @@ Proposal:
 > +   mismatch (including whitespace) is skipped with no error; check
 > +   `change_log_level("DEBUG")` output. (Docs: <link>, verified v1.3.)
 > ```
-> Also add to `fabric-gotchas` under "Deployment" as a one-liner
-> pointing here.
+> Also add a one-line row to `fabric-rest-api`'s
+> `references/gotchas.md` pointing here.
 
 In note mode the same analysis is written to the inbox instead, with
 that destination named rather than opened.

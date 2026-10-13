@@ -2,7 +2,7 @@
 
 Curated set of Microsoft Learn pages relevant to authenticating to Fabric APIs and data planes — Microsoft identity platform concepts, MSAL token-acquisition patterns, Azure CLI sign-in flows, OAuth 2.0 grant types, service principals and managed identities, and the Fabric-specific token-audience and TDS connection surface. Load on demand when designing or debugging auth flows.
 
-The 3 highest-leverage entry points (Authenticate to Azure CLI, MSAL overview, Entra authentication for Fabric SQL) are also linked in the parent SKILL.md `## Reference` section for in-context use; this file holds the comprehensive set.
+The 3 highest-leverage entry points (Authenticate to Azure CLI, MSAL overview, Entra authentication for Fabric SQL) are also linked in [auth.md](auth.md)'s `## Reference` section for in-context use; this file holds the comprehensive set.
 
 ## Concept and overview
 

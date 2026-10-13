@@ -65,7 +65,8 @@ by Fabric rather than Entra — the tenant setting *Service principals can
 call Fabric public APIs* (older Learn pages: *can use Fabric APIs*), plus
 *Service principals can create workspaces, connections, and deployment
 pipelines* to create a pipeline, pipeline Admin, and the workspace roles
-above (fabric-auth, *Decoding a token to debug 401s*). Skip API
+above (`fabric-rest-api`'s `references/auth.md`, *Decoding a token to
+debug 401s*). Skip API
 permissions on that app registration entirely, as the docs say outright;
 there is no `Pipeline.Deploy` to grant an SPN, and delegated scopes on
 the registration do nothing for its token.
@@ -400,17 +401,16 @@ are unique tenant-wide.
 
 - [fabric-cicd.md](fabric-cicd.md) — the Git-driven counterpart:
   `publish_all_items`, `parameter.yml`, feature flags
-- fabric-cli skill — `fab api` mechanics, and `fab deploy` for the
-  Git-driven path
 - fabric-rest-api skill — long-running-operation polling and the
-  `getDefinition` contract change detection needs
-- fabric-auth skill — token audiences and service principal setup behind
-  the scopes table
+  `getDefinition` contract change detection needs; `fab api` mechanics,
+  and `fab deploy` for the Git-driven path, in its `references/cli.md`;
+  token audiences and service principal setup behind the scopes table,
+  in its `references/auth.md`
 - fabric-variable-library skill — a supported item type whose value sets
   are the other way to vary config per stage
 - fabric-tmdl skill — the `Text` M parameters a Direct Lake on OneLake
-  model needs before a parameter rule can rebind it
-- fabric-gotchas skill — the greyed-out rule dropdown, and the
-  schema-and-data refresh false alarm on a parameterized Direct Lake model
+  model needs before a parameter rule can rebind it, and its *Gotchas*
+  row on the schema-and-data refresh false alarm on a parameterized
+  Direct Lake model
 - **Not** fabric-data-pipeline — that is the Data Factory orchestration
   item, unrelated to this despite the name

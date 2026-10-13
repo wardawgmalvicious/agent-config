@@ -34,4 +34,4 @@ the destructive verb is the better-known one.
 
 A rename attempted while availability is on does not report this
 cleanly: it surfaces as a `520` claiming to be temporary. See
-`fabric-gotchas`.
+`fabric-rest-api`'s `references/gotchas.md`.

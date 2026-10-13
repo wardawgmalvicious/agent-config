@@ -57,4 +57,4 @@ Fabric SQL Database is an Azure SQL Database hosted within a Fabric workspace. I
 ## See also
 
 - fabric-warehouse skill — the distributed DW engine with its own restrictions
-- fabric-auth skill — `database.windows.net` token audience
+- fabric-rest-api skill — `database.windows.net` token audience, in its `references/auth.md`

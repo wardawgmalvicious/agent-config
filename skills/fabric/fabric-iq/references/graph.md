@@ -2,7 +2,7 @@
 
 Graph in Fabric models a **labeled property graph** directly over **OneLake Delta tables** — no ETL, no data duplication. You define node/edge types and map them to columns; on save, Fabric ingests the tables and builds a read-optimized queryable graph. Query it with **GQL** (the ISO/IEC 39075 standard) via UI, REST, or NL2GQL.
 
-**Item type name: `GraphModel`** — the `metadata.type` a Git-synced export writes into `.platform`, so the folder serializes as `<name>.GraphModel`; also the REST collection `/GraphModels` and the Catalog Search filter `Type eq 'GraphModel'`. fabric-cli knows the name only for `fab find`: its `ItemType` enum has no GraphModel entry, so `fab` cannot create or address one. New item → *Analyze and train data* → *Graph model*.
+**Item type name: `GraphModel`** — the `metadata.type` a Git-synced export writes into `.platform`, so the folder serializes as `<name>.GraphModel`; also the REST collection `/GraphModels` and the Catalog Search filter `Type eq 'GraphModel'`. The Fabric CLI knows the name only for `fab find`: its `ItemType` enum has no GraphModel entry, so `fab` cannot create or address one. New item → *Analyze and train data* → *Graph model*.
 
 ## Three things that catch people out
 
@@ -88,7 +88,7 @@ az rest --method post \
   --body '{ "query": "MATCH (n:Person) WHERE n.birthday > 19800101 RETURN n.firstName, n.lastName LIMIT 100" }'
 ```
 
-- **Token audience is `https://api.fabric.microsoft.com`** (`az account get-access-token --resource https://api.fabric.microsoft.com`). See fabric-auth.
+- **Token audience is `https://api.fabric.microsoft.com`** (`az account get-access-token --resource https://api.fabric.microsoft.com`). See `fabric-rest-api`'s `references/auth.md`.
 - List graphs in a workspace: `GET /v1/workspaces/{workspaceId}/GraphModels`.
 - **Application errors return HTTP 200**, not 4xx. You MUST inspect `status.code`, a **five-character** code: `00000` success with rows, `00001` omitted result (reserved for future DDL/DML), `01000` warning or information, `02000` no rows yet, `42000` user-correctable query error, `50000` system error. Detail is in `status.diagnostics`, where `_graphaneGqlStatus` keeps the engine's canonical GQLSTATUS (`22003` overflow and `22012` division by zero both surface as `42000`), and in chained `status.cause`. Do not assume success from HTTP 200, and don't parse `description`.
 - **A still-running query is not an empty result.** A query that doesn't finish within the request returns HTTP 200, `02000`, an empty table and `result.nextPage`. Re-send the same body with `&continuationToken=<nextPage>`, percent-encoded exactly once, until `nextPage` is absent. Execution gets **20 minutes in total, continuations included**, then HTTP 408 `QueryTimeout`.
@@ -133,7 +133,5 @@ Note the indirection: the **graphType** declares abstract `alias`es (`Customer_n
 
 - **fabric-eventhouse** — the *other* graph story: KQL `make-graph` / `graph-match` / openCypher in Eventhouse. Different engine; do not conflate.
 - **fabric-tmdl**, `references/definition-api.md` — definition envelope, LRO polling, base64, "include all parts" rule (applies to GraphModel definitions too)
-- **fabric-rest-api** — runtime item ID vs `.platform` logicalId, LRO 202 pattern, pagination
-- **fabric-auth** — `api.fabric.microsoft.com` token audience for the query API
+- **fabric-rest-api** — runtime item ID vs `.platform` logicalId, LRO 202 pattern, pagination; the `api.fabric.microsoft.com` token audience for the query API in its `references/auth.md`; not its `references/cli.md` for this item, since `fab` has no `GraphModel` type and cannot create or address one (see the top of this file)
 - [data-agent.md](data-agent/data-agent.md) — graph as a Data Agent source for NL2GQL (preview)
-- **fabric-cli** — not for this item: `fab` has no `GraphModel` type and cannot create or address one (see the top of this file)
