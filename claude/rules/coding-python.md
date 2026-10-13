@@ -237,6 +237,13 @@ load_date = LoadDate
   stdin, on Windows: text mode writes each `\n` as CRLF, as `write_text()`
   does, so the child stores the CRs. Pass `input=s.encode("utf-8")` and
   decode its output yourself (reproduced 2026-10-12, Python 3.13.14).
+- `subprocess.run(["az", ...])` on Windows, where `az` is `az.cmd`:
+  CreateProcess appends only `.exe` to a bare name, so it raises
+  `FileNotFoundError` (WinError 2) where a shell finds `az`. Pass
+  `shutil.which("az")`, which resolves `az.CMD` (reproduced 2026-10-13,
+  Python 3.13.14), and no untrusted argument: `cmd.exe` parses a
+  `.cmd`'s arguments again, with no escaping from Python (subprocess
+  docs).
 - `module.__version__` for a package's version: a convention, and
   `playwright` 1.63.0 defines none, so it raises `AttributeError` at run
   time (2026-10-12). Read the installed distribution instead, with
