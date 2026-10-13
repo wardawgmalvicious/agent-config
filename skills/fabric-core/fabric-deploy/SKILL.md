@@ -118,9 +118,12 @@ What to show, by route:
 - **Library or `fab deploy`**: every run is a full deploy, so list the
   item types and folders in scope, whether orphans go, and any
   `enable_*_unpublish` flag that lets a data-bearing item be deleted.
-- **Update From Git**: the `changes[]` from Get Status. A body of just
-  the two hashes applies or refuses and never overwrites; say so if the
-  plan adds `allowOverrideItems` or a `conflictResolution`, which do.
+- **Update From Git**: the `changes[]` from Get Status: the incoming
+  items it will add, replace or delete, and any `conflictType` of
+  `Conflict`, which stops it unless the plan adds a `conflictResolution`.
+  Say so if it does, since that keeps one side's version of each
+  conflicting item. The body is `fabric-rest-api`'s, § Git Integration
+  APIs.
 - **Deployment pipelines**: no API compares stages before a deploy, so
   list the stage items with their pairing. An unpaired item lands as a
   new copy, a selective deploy deletes nothing in the target, and an

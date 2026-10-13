@@ -201,13 +201,20 @@ changed. It requires `remoteCommitHash`; `workspaceHead` is checked
 against the service's own head, failing `WorkspaceHeadMismatch`, and may
 be null only right after Initialize Connection. It will not start with
 items in conflict and no `conflictResolution`, nor with incoming items
-present and `options.allowOverrideItems` not `true`. **So the two hashes
-from `git/status`, and nothing else, are the safe body**: it applies or it
-refuses, and never overwrites. Add either field on purpose, after reading
-`changes[]`.
+present and `options.allowOverrideItems` not `true`. **By Learn, then,
+the two hashes alone apply only an update that brings no item**, as the
+`Git_HeadNotSynced` fix in [gotchas.md](references/gotchas.md) did once
+(2026-09-30); the refusal itself is unmeasured. Send the flag, as both
+of Learn's examples and Microsoft's `GitIntegration-UpdateFromGit.ps1`
+sample do (read 2026-10-13), and keep the safety in `changes[]`: stop on
+any `conflictType` of `Conflict`, and add a `conflictResolution` only on
+purpose. In one client estate the flag overwrote nothing outside the
+incoming set: across 12 updates, every item holding uncommitted work the
+incoming commits did not touch still read `Modified` after (2026-10-12
+and 2026-10-13).
 
 ```json
-{ "workspaceHead": "<git/status workspaceHead>", "remoteCommitHash": "<git/status remoteCommitHash>" }
+{ "workspaceHead": "<git/status workspaceHead>", "remoteCommitHash": "<git/status remoteCommitHash>", "options": { "allowOverrideItems": true } }
 ```
 
 - **Both calls need the caller's Git credentials.**
