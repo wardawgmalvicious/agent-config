@@ -110,10 +110,11 @@ availability off, change, toggle back on. Full matrix:
 it before enabling one.** A database policy covers every table, and a
 table's own overrides it (Learn). Fabric set one, `IsEnabled: true`, in
 the second after it created a database by REST, and a sibling read the
-same, as did one Git sync created, whose tables had none of their own
-(journal and policy reads, 2026-10-12; portal and deployment-pipeline
-creation unchecked). So `.show database D policy streamingingestion`,
-then the table's for one that refuses, and
+same, as did one Git sync created and one a deployment pipeline created,
+whose tables had none of their own (journal and policy reads,
+2026-10-12, and policy reads, 2026-10-13; portal creation unchecked). So
+`.show database D policy streamingingestion`, then the table's for one
+that refuses, and
 `.alter table Events policy streamingingestion enable` only where neither
 is on.
 
@@ -150,7 +151,7 @@ Full command syntax and CSV/JSON mapping definitions:
 | **Caching** | Hot (SSD) vs cold tier window | `.alter table T policy caching hot = 30d` |
 | **Partitioning** | Hash key for extent pruning | Hash on column with `XxHash64`, `MaxPartitionCount` |
 | **Merge** | Background extent merge thresholds | `RowCountUpperBoundForMerge`, `MaxExtentsToMerge` |
-| **Streaming ingestion** | Enable streaming endpoint | Table or database; Fabric sets it on a database made by REST or Git sync. `.show database D policy streamingingestion` first |
+| **Streaming ingestion** | Enable streaming endpoint | Table or database; Fabric sets it on a database made by REST, Git sync or a deployment pipeline. `.show database D policy streamingingestion` first |
 
 Database-level policies (`.alter database MyDB policy ...`) act as defaults; table-level overrides them. Check effective policy with `.show table T policy retention`.
 
