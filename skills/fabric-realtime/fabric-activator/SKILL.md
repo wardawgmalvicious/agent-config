@@ -327,6 +327,20 @@ metric is owned by whoever created it, and only that user can query it.
 Change the credentials or lose their access and ingestion stops —
 recreate the ingestion and its rules under the new user.
 
+**An update from Git rewrites a rule's stored definition, not the
+running rule.** Learn tells whoever changes a rule to select **Update**
+"to make sure that the running rule uses the new values" (*Create a
+rule*, § *Start and stop your rule*), and an update from Git selects
+nothing. In one client estate on 2026-10-13, Git brought a running rule
+a new headline and message: the workspace read synced, and
+`getDefinition` and the file both held the new text, yet the next two
+activations sent the old text word for word. So after an update from
+Git changes a running rule, open the rule and select **Update**, then
+judge by the next activation, never by the definition. Unverified: that
+**Update** takes up the definition Git wrote, and whether a REST
+`updateDefinition`, or a deployment into a stage running the rule,
+leaves it behind the same way.
+
 ## 12. Gotchas
 
 | Symptom | Cause | Fix |
@@ -335,6 +349,7 @@ recreate the ingestion and its rules under the new user.
 | `getDefinition` fails on one item only | Encrypted sensitivity label blocks the API | No API route; read it in the portal |
 | Create returns 400 about `DisplayName` | `name` sent instead of `displayName` | Use `displayName` |
 | Commit or deploy fails for one Activator | A Blob-events source, Power BI source, or UDF action | §11 — no workaround |
+| An alert still sends its old text after an update from Git, though the definition reads new | Git rewrote the stored rule; the running rule keeps the values it was started or last updated with | §11 — select **Update**, then check the next activation |
 | Rule silently stopped | Over 10,000 events/s | Reduce event rate or narrow the rule |
 | A job ran with a 0 or `false` parameter | Silent coercion of an unparseable value | Match the target item's parameter name and type exactly |
 | A cloned attribute reads the wrong column | Only `payload.name` was changed, not the `EventFieldSelector` `fieldName` | Edit both, inside the escaped `instance` |
