@@ -203,6 +203,10 @@ Notebook, Dataflow and Stored procedure activities only.
 Declared `$schema`:
 `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/schedules/1.0.0/schema.json`
 
+The schema trails the portal: it lacks `enabledControlType`, and it puts
+`parameters` where no portal-written file does (both below). Read a
+portal-written file before trusting the schema's shape.
+
 Top level is `{ "schedules": [ … ] }`. Each entry:
 
 | Field | Notes |
@@ -211,6 +215,7 @@ Top level is `{ "schedules": [ … ] }`. Each entry:
 | `enabledControlType` | **Not in the schema**, which sets no `additionalProperties`, so neither declares nor forbids it; no Learn page names it, and Learn's two `.schedules` screenshots lack it (all 2026-10-13). A portal edit wrote `"UserEnabled"`, and Git sync then refused `enabled: false` beside it (`SKILL.md` § 7, a client estate, 2026-10-13). Its other values, and what turning a schedule off or the scheduler's auto-disable writes, are unread |
 | `jobType` | `"Execute"` for pipelines. The schema declares **no enum**, so treat this as observed rather than validated |
 | `configuration` | Below; `type` is the only schema-required field |
+| `parameters` | An array the portal writes **here, beside `configuration`**: `[]` on a schedule that passes none. The schema puts it under `configuration` instead (below) |
 
 `configuration` fields, by `type`:
 
@@ -228,12 +233,17 @@ Top level is `{ "schedules": [ … ] }`. Each entry:
 `occurrence` is `{ occurrenceType (required), dayOfMonth, weekIndex,
 WeekDay }` — note the capitalized `WeekDay`.
 
-`configuration` also takes `parameters`, its only place in the schema:
-an array of `{ name, type, value }`, all three required, whose `type`
-takes one value, `VariableReference` (schema 1.0.0, read 2026-10-13).
-No portal-written file with parameters has been read, so where the
-portal puts them is unverified. Learn's job-scheduler page warns that a
-Variable Library used in the parameters can sync late after CI/CD.
+The schema declares `parameters` only under `configuration`: an array of
+`{ name, type, value }`, all three required, whose `type` takes one
+value, `VariableReference` (schema 1.0.0, read 2026-10-13). Every
+portal-written file read so far puts the array beside `configuration`
+instead: a client pipeline's commit and its `getDefinition`, two public
+pipelines' `[]`, and a public Dataflow's list of one item typed
+`"Text"`, outside that enum (all read 2026-10-13). Write it where the
+portal does. No pipeline schedule that passes parameters has been read,
+so a pipeline item's shape is unconfirmed. Learn's job-scheduler page
+warns that a Variable Library used in the parameters can sync late after
+CI/CD.
 
 The schema marks only `configuration.type` required; the portal requires
 both `startDateTime` and `endDateTime` and offers no open-ended option.
