@@ -178,9 +178,16 @@
     },
     "fabric-tmdl": {
       "activation": {
-        "date": "2026-09-01",
-        "commit": "975b87f",
-        "paths": "409f354247e397aa"
+        "date": "2026-10-12",
+        "commit": "1f6842a",
+        "paths": "cd6ef2cb8388c4bb"
+      },
+      "behaviour": {
+        "date": "2026-10-12",
+        "commit": "1f6842a",
+        "routing": "d2ffdea1888121b2",
+        "body": "69e7de2e5af83d22",
+        "references": "c6df67cc8ff49a9f"
       }
     },
     "fabric-variable-library": {
