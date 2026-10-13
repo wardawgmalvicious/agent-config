@@ -61,7 +61,11 @@ rule (Learn, 2026-10-12), and fabric-cicd v1.4.0 rebinds it only through
 `parameter.yml`'s `find_replace`, with the cluster URI present. So rewrite
 `databaseArtifactId` per stage: in a build per environment, by `find_replace`,
 or in the portal after each deploy. Whether `database`'s logicalId alone binds
-is untested.
+is untested, and a deployment pipeline may rebind one anyway: a KQL
+queryset, which Learn says binds the same way, rebound to the target's
+database in one deploy (2026-10-13, `fabric-deploy`'s
+`references/deployment-pipelines.md`), so read a deployed dashboard's
+`dataSources` before rewriting them.
 
 ## Load-time validation rules
 
