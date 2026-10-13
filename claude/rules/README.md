@@ -101,7 +101,11 @@ conformance checking.
   glob skips other YAML, since one repo's 24 hand-kept job definitions
   would otherwise load a CI rule. Read against a client repo's three
   new workflows and their Bicep, which hit six of its sections, the
-  immutable OIDC `sub` among them.
+  immutable OIDC `sub` among them. Since 2026-10-13 it also holds a
+  `$(...)` that empties a step output, the moving `ubuntu-latest`
+  label, and caches scoped by branch, by pull request and by trigger.
+  A personal repo's first workflow met the first two and the branch
+  scope in real runs on 2026-10-12, and the docs give the other two.
 - [coding-markdown.md](coding-markdown.md) — hand-authored markdown:
   READMEs, design notes, runbooks, handoff briefs, agent instruction
   files. The only rule here scoped to `**/*.md`, so it loads in nearly

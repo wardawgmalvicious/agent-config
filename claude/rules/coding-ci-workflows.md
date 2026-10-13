@@ -157,6 +157,22 @@ behind a flag say so.
   repeats on one ref. `gh cache list --json key,ref` shows each entry's
   ref, and a `workflow_dispatch` run proves the hit on `main` without a
   push (2026-10-12).
+- **A pull request's cache serves only that pull request.** A
+  `pull_request` run saves under its merge ref, `refs/pull/<n>/merge`,
+  and the entry "can only be restored by re-runs of the pull request",
+  never by the base branch or another pull request (read 2026-10-13).
+  Warm the default branch from a `push` run instead: every pull request
+  can read its entries.
+- **A low-trust trigger cannot save to the default branch's cache.**
+  Only `push`, `workflow_dispatch`, `repository_dispatch`, `delete`,
+  `registry_package`, `page_build` and `schedule` write there. A run
+  from any other event on the default branch, `pull_request_target`,
+  `issue_comment` and `workflow_run` among them, can restore, but "the
+  save fails but the step and the job do not": the log's warning is all
+  that shows it (read 2026-10-13). Let a `push` workflow keep the cache
+  and give those runs `actions/cache/restore`. A write-capable
+  `cache-mode` opts out, and reopens the cache poisoning the default
+  exists to stop.
 
 ## OIDC subject claims
 
