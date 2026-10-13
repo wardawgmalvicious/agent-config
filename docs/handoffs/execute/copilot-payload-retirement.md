@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 2
-needs: [user]
+needs: []
 blocked-by: []
 written: 2026-09-30
 ---
@@ -14,8 +14,9 @@ written: 2026-09-30
   day (transcript `230c3b1b`).
 - **Kind**: a removal. The upkeep stopped the day this was written; the
   deletion waited on one turn only the user could run, which passed on
-  2026-10-05, and now waits on one decision of the user's (§ "The
-  decision the turn left"). Nothing is drafted.
+  2026-10-05, then on the decision it left (§ "The decision the turn
+  left"), which the user made on 2026-10-13 with the four other calls
+  this brief put to them. Nothing is drafted.
 
 ## The decision
 
@@ -339,7 +340,8 @@ left.
 ### The decision the turn left
 
 **Whether the standalone GitHub Copilot desktop app is a supported
-harness is the user's call before anything is removed.** It runs
+harness was the user's call before anything was removed, and on
+2026-10-13 they said it is not**, so the payload goes as below. It runs
 Copilot CLI in worktrees it creates, so no VS Code target and no
 `.vscode/settings.json` applies to it. A session in it reported what it
 had loaded, on 2026-10-05 in a client Fabric repo, then checked that on
@@ -376,9 +378,9 @@ target, on the same runtime, loads the same is inferred, not tested.
 The user's call of 2026-10-08, that Copilot may read `~/.claude` and
 they would rather it did
 ([copilot-harness-switches.md](copilot-harness-switches.md)), bears on
-this: it prefers Claude's files to a payload of Copilot's own. Whether
-it settles the app, which reads nothing under `~/.claude`, is still the
-user's to say.
+this: it prefers Claude's files to a payload of Copilot's own. It did
+not settle the app, which reads nothing under `~/.claude`; the answer
+of 2026-10-13 did.
 
 ## Before the turn: the upkeep has stopped
 
@@ -565,7 +567,10 @@ deployed state, but the hook and the files it reads leave in one commit.
 - **`.github/repo-settings.json` lists a `github-copilot` topic.**
   Dropping it, with
   `skills/workflow/recreate-repo/scripts/repo-settings.ps1 -Apply`,
-  changes the public repo's settings, so it takes the user's yes.
+  changes the public repo's settings, so it took the user's yes, given
+  on 2026-10-13: the topic leaves the file in the removal, and the
+  `-Apply` runs from the main checkout after the merge, once the
+  script's diff against GitHub shows that one change.
 
 Find the rest by what the payload was called, since most of this repo's
 other mentions of Copilot are the Fabric and Power BI feature, and stay:
@@ -581,10 +586,10 @@ git grep -n -i -E 'copy-copilot|lint-instructions|copilot/instructions|source-ha
 - **Remove what the script deployed to `~/.copilot`**, or the Copilot
   target goes on reading stale copies. The script has no uninstall, so
   this is by hand from its two manifests, and an `rm` outside the repo
-  takes the user's yes: the files that
+  took the user's yes, given on 2026-10-13: the files that
   `instructions/.managed-instructions.json` lists and the folders that
   `skills/.managed-skills.json` lists, then both manifests. On
-  2026-09-30 that was 12 ports and 4 skills.
+  2026-09-30 and 2026-10-13 that was 12 ports and 4 skills.
   `cross-repo-handoffs.instructions.md` beside them is no port: it keeps
   a Copilot-target session inside its workspace, and it stays.
 
@@ -597,8 +602,9 @@ and `.github/instructions/` went, with the 8 ports and their manifest.
 It kept `.github/skills/` and its manifest, which the user held back for
 now, and pointed its Local agent at Claude's files
 ([copilot-harness-switches.md](copilot-harness-switches.md)). So the
-note shrinks to `.github/skills/`, once the user says, and a check that
-the branch landed. Those copies lagged 27 files across 16 skills that
+note shrinks to `.github/skills/` and its manifest, which the user said
+on 2026-10-13 should go, and a check that the branch landed. Those
+copies lagged 27 files across 16 skills that
 day, and their manifest lacks `fabric-event-schema-set` only because
 the skill was added here on 2026-10-01 (`7905f58`), after that repo's
 last skills sync.
@@ -700,7 +706,10 @@ branch holds. The target's Copilot group was three models on
 the Agent Host log as the grading session read it, while the Local
 target ran Claude Opus 5.5 on Copilot that day. So `learn`'s `fable`
 pin names a model the Copilot-routed target cannot serve, as `opus`
-would: put that to the user. The live `~/.claude/settings.json` carries
+would. **Put to the user, they kept it on 2026-10-13**: should a
+`/learn` there fail, unpinning is one line. So the marker's exemption
+is reworded too, as a pin kept on purpose. The live
+`~/.claude/settings.json` carries
 `"model": "opus"`, a key of its own that the deploy keeps, and the turn
 raised no error on it: it ran on the picker's model. Whether a skill's
 pin is ignored the same way, or fails, is unseen.
