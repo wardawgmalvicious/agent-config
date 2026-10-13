@@ -2,7 +2,10 @@
 
 An index from a symptom to its fix. Where another reference or skill
 owns the fix, the row names that owner instead of restating it: read the
-owner before acting. A fix with no other home stays in its row.
+owner before acting. A fix with no other home stays in its row. A named
+skill with a `paths:` glob answers `Unknown skill` until a file it
+matches is Read; read `<name>/SKILL.md` in the skills folder that holds
+this skill instead.
 
 | Symptom | Cause | Fix, or its owner |
 | --- | --- | --- |
