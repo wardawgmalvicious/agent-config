@@ -206,13 +206,49 @@ Renaming a table, measure, or column requires updates in every location that ref
 - Multiple `.Report/` and `.SemanticModel/` folders can coexist in one project
 - Fabric Git Integration only processes `definition.pbir` — other `.pbir` files are ignored but can coexist
 
+### External Edits with Desktop Open
+
+Desktop picks up a saved external edit only with a **preview** switched
+on: *File > Options and settings > Options > Preview features > **Detect
+and reload external PBIP changes***, then restart, on the August 2026
+release or later. Without it, close and reopen the project. Per
+[Learn](https://learn.microsoft.com/power-bi/developer/projects/projects-external-editing),
+read 2026-10-12:
+
+1. Save in Desktop first: it writes nothing to the project files until
+   you do.
+2. Edit the file externally and save it there.
+3. Take the **Apply external changes** banner. With unsaved changes in
+   Desktop it warns that they will be overwritten; *Cancel* keeps them,
+   leaving the external edit on disk, unapplied.
+
+- A reload replaces the whole report, model or both, never one file or
+  visual. It resets filters and some UI, and does not reload `cache.abf`.
+- During the preview, `definition.pbir`, `report.json`,
+  `mobileState.json` and `semanticModelDiagramLayout.json` cannot be
+  edited outside Desktop.
+- With `.pbi/unappliedChanges.json` present, apply those pending changes
+  before editing model expressions externally, or Desktop discards the
+  external expression edits when it applies them.
+- **A script reloads through the Desktop Bridge**, also a preview: a
+  local JSON-RPC named pipe, `pbi-desktop-bridge-{processId}`, that runs
+  one operation at a time and errors on a second. Read
+  `hasUnsavedChanges` from `application.state.get/v1` before calling
+  `file.reload/v1`, whose `reloadModelDefinition: false` reloads the
+  report alone. The `powerbi-desktop` CLI wraps both as `status` and
+  `reload`. The bridge is on by default (*Options > Security > Desktop
+  Bridge*), and an admin can turn it off with the registry policy
+  `DesktopNamedPipeBridge`
+  ([Learn](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-desktop-bridge-overview),
+  read 2026-10-12).
+
 ### Gotchas
 
 | Issue | Cause | Fix |
 |---|---|---|
 | Parse error on open | File saved with UTF-8 BOM | Re-save as UTF-8 without BOM |
 | 260-char path error on Git clone | Deep GUID folder nesting | Shorten root path; rename GUID folders |
-| PBI Desktop ignores external edits | Apply-changes prompt dismissed or not shown | Desktop **detects** external project-file changes and prompts to apply them with one click — take the prompt. Reopening the project is the fallback only when no prompt appears |
+| PBI Desktop ignores external edits | The detection preview is off, the external file is unsaved, or the **Apply external changes** banner was not taken | Switch the preview on and take the banner; with it off, close and reopen the project. See External Edits with Desktop Open |
 | Broken visual after table rename | Missed cascade location | Grep for old name across `.json`, `.tmdl`, `.dax` (both DAXQueries folders) |
 | Empty `reportExtensions.json` crashes Desktop | `"entities": []` is invalid | Delete the file instead of leaving empty |
 | Forked project shows as same Fabric item | `logicalId` not regenerated | New GUID per `.platform` on fork |

@@ -13,6 +13,8 @@ The 3 highest-leverage entry points (PBIP overview, model authoring, Fabric Git 
 - [Power BI Desktop project — report folder](https://learn.microsoft.com/power-bi/developer/projects/projects-report) — `definition.pbir`, the `definition/` folder (PBIR JSON) vs `report.json` legacy, `pages/`, `visuals/`, `bookmarks/`, `StaticResources/`. Pairs with every `pbir-*` skill.
 - [Save Power BI Desktop file as a PBIP project](https://learn.microsoft.com/power-bi/developer/projects/projects-save-as-pbip) — File → Save As workflow.
 - [Model authoring in Power BI Desktop projects](https://learn.microsoft.com/power-bi/developer/projects/projects-overview#model-authoring) — TMDL view, external-tool integration unique to PBIP.
+- [Edit PBIP files outside Power BI Desktop](https://learn.microsoft.com/power-bi/developer/projects/projects-external-editing) — the detection preview, the **Apply external changes** banner, and the four files it keeps from external editing. Behind the parent skill's "External Edits with Desktop Open".
+- [What is the Power BI Desktop Bridge?](https://learn.microsoft.com/power-bi/developer/agentic/power-bi-desktop-bridge-overview) — the named-pipe JSON-RPC API a script reloads Desktop through: `application.state.get/v1`, `file.reload/v1`, the `powerbi-desktop` CLI.
 
 ## Entry-point file shapes
 
