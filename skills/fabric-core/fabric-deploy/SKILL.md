@@ -48,7 +48,13 @@ workspace (Git only through dev)" (read 2026-10-09). Decision guide:
 - for a service principal, on any route, the tenant setting *Service
   principals can call Fabric public APIs* (older Learn pages: *can use
   Fabric APIs*);
-- for Update From Git, the caller's own Git credentials;
+- for Update From Git, the caller's own Git credentials, and more than
+  the REST page's Contributor: write permission on every item, item
+  ownership where a tenant switch blocks non-owners, and Build on
+  external dependencies, by Learn's
+  [Git permissions table](https://learn.microsoft.com/fabric/cicd/git-integration/git-integration-process#permissions);
+  from 2026-12-01, no Git integration at all without read-write
+  permission on the workspace's items (read 2026-10-13);
 - for a deployment pipeline, a second permission system on top of the
   workspace roles, pipeline Admin, and on a delegated token the
   deploy-only scope, `Pipeline.Deploy` or `DeploymentPipeline.Deploy.All`
