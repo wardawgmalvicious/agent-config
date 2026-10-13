@@ -20,8 +20,7 @@ format. This repo's own config sits where each tool looks:
 `.claude/skills/` (`ls -d .claude/skills/*/`) holds skills that act only on
 this repo: project scope, deployed nowhere, reached by no deploy script
 (2026-09-09), since elsewhere they only spend listing budget. Payload upkeep
-that must also run in client repos goes in `skills/meta/` (`learn`), whose
-`.no-copilot` marker lets it pin `model:` (`editing-skills.md`).
+that must also run in client repos goes in `skills/meta/` (`learn`).
 **`.claude/settings.json` collapses every platform
 skill description to `name-only` here**, so none can match by description in
 this repo: a miss here is no trigger bug. `lint-skill-overrides.py` checks

@@ -97,13 +97,6 @@ same reasoning that split out `social`: the group is a unit of
 deployment, and this one is deployed to Claude Code's user scope and to
 nothing else.
 
-It carries a [`.no-copilot`](meta/.no-copilot) marker file, which
-`scripts/lint-frontmatter.py` reads to allow an active `model:` key: a
-pin kept on purpose, where every other group's is commented because
-VS Code's Claude target on a Copilot-routed model can serve only that
-group's models. The name is kept from the retired Copilot payload,
-whose script read the same file to leave the group out.
-
 - [learn/](meta/learn/) — "learn!": capture a session learning into the
   skill, rule or `CLAUDE.md` that should have covered it. Detects which
   guidance was actually in use, checks existing coverage, verifies

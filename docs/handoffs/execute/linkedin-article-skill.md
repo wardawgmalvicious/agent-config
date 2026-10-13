@@ -139,9 +139,9 @@ two.
 
 - Deployed by `link-claude.ps1 -SkillGroups workflow,social,meta`, so
   live at user scope in every session on this machine.
-- `social` carries **no `.no-copilot` marker**, so `lint-frontmatter.py`
-  treats it as Copilot-reachable and an active `model:` key fails the
-  lint. Keep it commented, as `linkedin-highlights` does.
+- An active `model:` key fails `lint-frontmatter.py` in every
+  `skills/<group>/`, since a pinned skill hangs on VS Code's Claude
+  target. Keep it commented, as `linkedin-highlights` does.
 - Names are one flat namespace across both trees.
 
 ## The peer-behaviour piece stays blocked, and half its fix exists

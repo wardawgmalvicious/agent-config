@@ -44,18 +44,16 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   `effort` has no `inherit` value: omitting it is the inherit, so carry it
   commented. An unsupported level falls back, silently, to the highest
   supported one below it.
-- `model:` is active only where its pin is kept on purpose:
-  `.claude/skills/`, and a `skills/<group>/` carrying a `.no-copilot`
-  marker; unpinned there, it reads `model: inherit`. Everywhere else under
+- `model:` is active only in `.claude/skills/`, where a pin is kept on
+  purpose; unpinned there, it reads `model: inherit`. Everywhere under
   `skills/` it is commented, as `# model: inherit` (`commit` keeps
-  `# model: sonnet`). VS Code's Claude session target reads
-  `~/.claude/skills`, and on a model from its Copilot group serves only
-  that group, three models with no Opus and no Fable on 2026-10-05, so a
-  pin can name one it cannot serve; whether that fails or is ignored is
-  unseen. The user kept `learn`'s `fable` pin on 2026-10-13: should a
-  `/learn` there fail, unpinning is one line. Until then the reason was
-  Copilot's slash dispatch, which any active `model:` stopped for a
-  vendored skill (2026-09-09). `lint-frontmatter.py` enforces the split
+  `# model: sonnet`, `learn` `# model: fable`), since **a pinned skill
+  hangs on VS Code's Claude session target**, which reads
+  `~/.claude/skills`. On Opus 5.5 through Copilot, `/learn test` sent with
+  `model: fable` hung and left no transcript while `/commit` and
+  `/prune-branches` loaded, and `learn` loaded once unpinned, though the
+  target listed Fable 5.1 among its models (2026-10-13). Nothing errors:
+  the failure is the silence. `lint-frontmatter.py` enforces the split
   (`pre-commit-hooks.md` has how to prove it).
 - Where `model:` is active the pin is live, since those skills are reached
   by typing their names. Pin `fable` only where judgment is irreducible —

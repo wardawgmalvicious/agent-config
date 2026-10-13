@@ -25,9 +25,8 @@ paths:
   both arms.
 - A change to `reaches_copilot()` in `lint-frontmatter.py` is proved the
   same way, with one `SKILL.md` carrying an active `model:`: it must fail at
-  `skills/workflow/…` and pass at `.claude/skills/…` and at
-  `skills/meta/learn/SKILL.md`, then fail there with `.no-copilot` removed,
-  which shows the marker, not the group name, doing the work (2026-09-15).
+  `skills/workflow/…` and at `skills/meta/learn/SKILL.md`, and pass at
+  `.claude/skills/…` (2026-10-13).
 - Skill names are one flat namespace across both trees, since Claude Code
   addresses a skill by name alone. `scripts/lint-skill-scopes.py` runs over
   the whole set because a collision belongs to a pair. A name in both trees

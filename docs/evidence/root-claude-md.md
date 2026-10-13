@@ -240,6 +240,20 @@ payload whole: `git show 68d61eb:scripts/copy-copilot.ps1` recovers the
 script, `git show 68d61eb:.claude/rules/copilot-payload.md` its rule,
 and `git ls-tree -r 68d61eb copilot` the ports.
 
+**2026-10-13.** `learn`'s `fable` pin hung the skill on VS Code's Claude
+target, so the `.no-copilot` marker went, and root's clause on
+`skills/meta/` with it. In a client Fabric repo, on Opus 5.5 through
+Copilot, the user sent `/learn test` and it hung: no transcript appeared
+in any project, while `/commit`, which shares `learn`'s `effort: xhigh`,
+and `/prune-branches` each reached the model, which called the Skill
+tool and loaded the skill. With the pin commented out (`1555200`),
+`/learn test` loaded the same way, on `claude-opus-5-5`. The target had
+listed Claude Fable 5.1 among its six Copilot models since 2026-10-12,
+by the Agent Host log, so the pin fails whatever the list holds. The
+marker had nothing left to exempt, so it went with
+`is_no_copilot_group()`, and `lint-frontmatter.py` now fails an active
+`model:` anywhere under `skills/`.
+
 ## Commands
 
 ```bash
@@ -2216,6 +2230,26 @@ reason. `/learn` was not sent in the 2026-10-05 turn, so whether a
 skill's pin fails or is ignored on a Copilot-routed model is unseen,
 and the user kept `learn`'s pin on 2026-10-13, unpinning being one line
 should a `/learn` there fail.
+
+**2026-10-13.** The same day a `/learn` there failed (§ "Preamble"), so
+`editing-skills.md`'s `model:` bullet lost its exemption for a marked
+group and its unseen case. After "`# model: sonnet`)." it had read:
+"VS Code's Claude session target reads `~/.claude/skills`, and on a
+model from its Copilot group serves only that group, three models with
+no Opus and no Fable on 2026-10-05, so a pin can name one it cannot
+serve; whether that fails or is ignored is unseen. The user kept
+`learn`'s `fable` pin on 2026-10-13: should a `/learn` there fail,
+unpinning is one line. Until then the reason was Copilot's slash
+dispatch, which any active `model:` stopped for a vendored skill
+(2026-09-09)." On the Claude target, with the pin, `/learn` typed bare
+left the send button disabled on Opus 5.5 and on Fable 5.1, where bare
+`/commit` and `/prune-branches` enabled it, and `/learn test` sent on
+Opus 5.5 hung with no transcript. So `learn` is unpinned, as
+`# model: fable`, and moves from `effort: xhigh` to `max`, since the
+`effort` bullet keeps `xhigh` for `commit` and the `fable` pins only.
+`pre-commit-hooks.md`'s proof of `reaches_copilot()` drops its marker
+step: a change must fail at `skills/workflow/…` and at
+`skills/meta/learn/SKILL.md`, and pass at `.claude/skills/…`.
 
 ## Validating a change
 

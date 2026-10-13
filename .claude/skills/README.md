@@ -149,9 +149,9 @@ repo assumption — edit mode inside this checkout, note mode everywhere
 else, writing to `~/handoff-inbox/` instead of editing. It went to a new
 `skills/meta/` group rather than `workflow/` because its subject is the
 agent payload rather than the user's repo — the same subject as the six
-here, differing only in needing to run everywhere. The group's
-`.no-copilot` marker is what lets it **keep** its `model: fable` pin as
-deployed payload, a pin kept on purpose (`skills/meta/.no-copilot`).
+here, differing only in needing to run everywhere. As payload it carries
+no active `model:` pin, since a pinned skill hangs on VS Code's Claude
+target (`.claude/rules/editing-skills.md`, 2026-10-13).
 
 **The general lesson for this directory**, paid for twice: the test for
 project scope is *where the skill runs*, not *where its output lands*.

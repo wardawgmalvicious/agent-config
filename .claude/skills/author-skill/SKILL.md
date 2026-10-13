@@ -181,8 +181,7 @@ command, and every cross-reference.
   `skills/power-bi/` for `pbir-`/`pbid-`/`pbip-` and a semantic-model
   `fabric-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
   repo-general behavioral verbs (`ls skills/workflow`), `skills/meta/` for
-  upkeep of the agent configuration that must also run in client repos,
-  whose `.no-copilot` marker lets a skill keep an active `model:` pin
+  upkeep of the agent configuration that must also run in client repos
   (`ls skills/meta`), and `skills/social/` for personal-profile writing
   (`linkedin-highlights`). A new group goes in `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS` in
   `scripts/lint-skill-overrides.py`; a platform one stays out of the

@@ -132,32 +132,16 @@ def is_project_scope_skill(path: Path) -> bool:
     return any(a == ".claude" and b == "skills" for a, b in zip(parts, parts[1:]))
 
 
-def is_no_copilot_group(path: Path) -> bool:
-    """True for a skill in a `skills/<group>/` whose pins are kept on purpose.
-
-    A group opts in by carrying a `.no-copilot` marker file, a name kept
-    from when the retired Copilot payload read the same file to leave the
-    group out. A file beside the skills, rather than a list of group names
-    here, keeps the exemption with the group it covers, and a new group
-    takes it by adding the file.
-
-    The marker sits beside the skill directories, so for
-    `skills/<group>/<name>/SKILL.md` the group directory is two levels up.
-    """
-    group_dir = path.resolve().parent.parent
-    return (group_dir / ".no-copilot").is_file()
-
-
 def reaches_copilot(path: Path) -> bool:
     """True if this skill may run on a Copilot-routed model, unexempted.
 
-    VS Code's Claude session target reads `~/.claude/skills`, and on a model
-    from its Copilot group it answers through a proxy that serves only that
-    group, so a pin can name a model it cannot serve. This gates the ban on
-    that question, not on which tree the file sits in, which over-applied
-    it to every group under `skills/` until 2026-09-15.
+    VS Code's Claude session target reads `~/.claude/skills`, so every skill
+    under `skills/` can run there; `.claude/skills/`, this repo's own, keeps
+    its pins on purpose (see is_project_scope_skill). A `.no-copilot`
+    marker file let `skills/meta/` keep `learn`'s pin until 2026-10-13,
+    when that pin hung the skill there.
     """
-    return not is_project_scope_skill(path) and not is_no_copilot_group(path)
+    return not is_project_scope_skill(path)
 
 
 def lint_file(path: Path) -> list[str]:
@@ -206,30 +190,29 @@ def lint_file(path: Path) -> list[str]:
     rule_mode = is_rule(path)
 
     if not rule_mode:
-        # An active `model:` can name a model that VS Code's Claude session
-        # target cannot serve on a Copilot-routed model: its Copilot group was
-        # Claude Sonnet 5.5, Claude Sonnet 5 and Claude Haiku 4.5 on
-        # 2026-10-05, so no `opus` and no `fable`, and whether a pin there
-        # fails or is ignored is unseen. Carry the value as a commented
-        # placeholder instead; the field buys little even in Claude Code,
-        # being slash-only and inert on conditional skills. Until 2026-10-13
-        # the reason was Copilot's own slash dispatch, which any `model:`
-        # stopped for a vendored skill (2026-09-09); nothing is vendored now.
+        # An active `model:` hangs the skill on VS Code's Claude session
+        # target on a Copilot-routed model: on 2026-10-13, on Opus 5.5,
+        # `/learn test` with `model: fable` hung with no transcript while
+        # `/commit` and `/prune-branches` loaded, and `learn` loaded once
+        # unpinned, though the target listed Claude Fable 5.1 among its
+        # models. Carry the value as a commented placeholder instead; the
+        # field buys little even in Claude Code, being slash-only and inert
+        # on conditional skills. Until 2026-10-13 the reason was a model the
+        # target might not serve, and before that Copilot's own slash
+        # dispatch, which any `model:` stopped for a vendored skill
+        # (2026-09-09).
         #
-        # Two kinds of skill are exempt, each a pin kept on purpose -- see
-        # reaches_copilot above: `.claude/skills/`, this repo's own, and a
-        # `skills/<group>/` carrying a `.no-copilot` marker, `learn`'s group,
-        # whose `fable` pin the user kept on 2026-10-13: should a `/learn` on
-        # a Copilot-routed model fail, unpinning is one line. Both are reached
-        # by typing their names, so the slash-only limit is no limit there. No
+        # `.claude/skills/`, this repo's own, is exempt -- see reaches_copilot
+        # above: its pins are kept on purpose, reached by typing their names
+        # in a session here, so the slash-only limit is no limit there. No
         # value whitelist is imposed -- the set of aliases Claude Code accepts
         # is not documented anywhere this linter could check, and guessing it
         # wrong would reject a working pin.
         if "model" in fm and reaches_copilot(path):
             fail(
                 "model-key",
-                f"`model: {fm['model']}` can name a model VS Code's Claude target "
-                "cannot serve on a Copilot-routed model. Comment it out: "
+                f"`model: {fm['model']}` hangs the skill on VS Code's Claude "
+                "target on a Copilot-routed model. Comment it out: "
                 f"`# model: {fm['model']}`.",
             )
 
