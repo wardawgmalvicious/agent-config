@@ -132,7 +132,12 @@ For Fabric REST API deployments, use the id form: `"connectionString": "semantic
 
 ### PBIX vs PBIP
 
-PBIP is still **preview**. Saving as PBIP requires *File > Options and settings > Options > Preview features > **Power BI Project (.pbip) save option***.
+PBIP and PBIR are generally available, and Learn's save-as steps name
+no preview feature
+([overview](https://learn.microsoft.com/power-bi/developer/projects/projects-overview),
+[external editing](https://learn.microsoft.com/power-bi/developer/projects/projects-external-editing),
+read 2026-10-12). Detecting external edits is still a preview: see
+External Edits with Desktop Open.
 
 | Aspect | PBIX | PBIP |
 |---|---|---|
