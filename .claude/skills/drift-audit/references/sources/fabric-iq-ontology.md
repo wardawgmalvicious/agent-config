@@ -66,6 +66,11 @@ re-check — whether a source aimed at an unused workload earns its slot —
 resolves the other way round from how it reads: *not* having a sample is
 precisely why the docs are this skill's only ground truth.
 
+**Re-measured 2026-10-13.** The persona split put `fabric-iq` in the
+`fabric-ai` group, which neither client repo links, so the skill is
+live only in `fabric-tools`, a personal repo that links every Fabric
+group.
+
 **The doc set split on 2026-09-29.** The FabCon EU release (`80a24c9`)
 rebuilt it for a *new experience*, the default for new items, whose
 definition is TMDL; the *old experience*, whose definition is JSON, kept
