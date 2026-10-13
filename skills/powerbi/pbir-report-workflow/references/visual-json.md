@@ -189,6 +189,122 @@ Optional sibling file at `visuals/{VisualName}/mobile.json`. Mirrors `visual.jso
 | `cardVisual` | Theme JSON keys `paddingUniform` (default 12) and `backgroundTransparency` documented under `cardVisual` style preset. Category headers participate in Edit interactions; Multi-category layout `Autogrid` capped at 4 rows (toggle off for more). | When clearing legacy padding, write `"paddingUniform": 0`. Theme schema URL is `reportThemeSchema-2.149.json`. |
 | `narrativeVisual` (smart narrative) | Defaults to **Copilot mode** for users with a Copilot license. Character limit raised to **10,000**. | Narrative visual.json content beyond 10,000 chars should now load; treat default-mode probes carefully — un-licensed users still land in classic mode. |
 
+### August 2026 formatting properties
+
+Power BI's August 2026 release added the formatting settings below. Their
+names come from Microsoft's report theme schema 2.157
+([`reportThemeSchema-2.157.json`](https://github.com/microsoft/powerbi-desktop-samples/blob/main/Report%20Theme%20JSON%20Schema/reportThemeSchema-2.157.json)),
+whose `visualStyles` use the object and property names that a
+`visual.json` `objects` block does. No PBIP export has yet shown Desktop
+writing them, so check a name against one saved report before relying on
+it. Labels are the format pane's, as Learn and the schema's titles give
+them.
+
+`pbir set` refused every name tried that is new in 2.157, on 0.9.29 and
+0.9.32 alike, while 0.9.29 took every one its bundled theme schema,
+2.155, already had. Write the new ones into `visual.json` by hand
+([pbir-cli.md](pbir-cli.md), Gotchas). 0.9.29's `pbir validate` passes
+them; with `--semantic` it warns on the `dropdown` and `centerBackground`
+objects, and lists as info the new properties its catalog lacks.
+
+Types are the schema's, and a fill is a `solid.color` object, as in
+[conditional-formatting.md](conditional-formatting.md). A type does not
+settle a number's literal suffix: the schema types `labelDisplayUnits` as
+an integer, yet it takes `D` (Gotchas, above). Which suffix Desktop
+writes for these is open.
+
+#### Matrix (`pivotTable`)
+
+| Format pane | Property | Type |
+| --- | --- | --- |
+| Row headers > +/- icons | `rowHeaders.showExpandCollapseButtons` | boolean |
+| Row headers > +/- icons > Color | `rowHeaders.expandCollapseButtonsColor` | fill |
+| Row headers > +/- icons > Expand/collapse icon size | `rowHeaders.expandCollapseButtonsSize` | number, 8–60 |
+| Column headers > +/- icons | the same three on `columnHeaders`, new in 2.157 | as for rows |
+| Row or Column headers > Options > Auto expand | `autoExpand` on `rowHeaders` or `columnHeaders` | boolean |
+
+**Layout** > **Freeze** > **Row headers**, the default freeze state, has
+no property the schema ties to it. The one candidate is
+`rowHeaders.unfrozen`, a boolean in the theme schema since 2.149 or
+earlier and untitled there. `pbir`'s own gloss, "Allow row headers to
+scroll horizontally instead of staying frozen/pinned", would make `true`
+the toggle turned off. It is unconfirmed until an export shows it.
+
+#### Bar, column and line charts
+
+Learn puts the first three under **Layout** in the **Columns**, **Bars**
+or **Lines** section.
+
+| Format pane | Property | Carried by | Type |
+| --- | --- | --- | --- |
+| Outer padding | `categoryAxis.outerPadding`, new in 2.157 | every bar, column, line, area, combo, ribbon, scatter and waterfall type | integer, percent |
+| Space between categories | `categoryAxis.innerPadding` | the same, less line and area | integer, percent |
+| Space between series | `layout.stackedGapSize` | stacked and 100% stacked bar and column, ribbon, line and stacked column | number |
+| Space between series | `layout.clusteredGapSize` | clustered bar and column, line and clustered column | number |
+| Overlap series | `layout.clusteredGapOverlaps` | the three clustered types | boolean |
+| Flip overlap | `layout.clusteredGapOverlapReverse` | the three clustered types | boolean |
+
+The schema titles `outerPadding` "Space at edges". The two "Space
+between" labels replaced Category spacing and Series spacing; the
+properties, in the schema since 2.149, kept their names.
+
+#### Slicer (`slicer`)
+
+| Format pane | Property | Type |
+| --- | --- | --- |
+| Slicer settings > Options > Style | `data.mode` | string, below |
+| Slicer settings > Selection controls > Single date | `selection.singleDate`, new in 2.157 | boolean |
+| Dropdown > Border color | `dropdown.borderColor`, new in 2.157, as is all of `dropdown` | fill |
+| Dropdown > Rounded corners | `dropdown.borderRadius`, or `borderIndividualCorners` with `borderTopLeftCorner` and its three siblings | integer; boolean, integers |
+| Dropdown > Open icon | `dropdown.iconColor`, `iconTransparency`, `iconSize` | fill, number, number 8–60 |
+| Dropdown > Accent bar | `dropdown.accentBarColor`, `accentBarPosition`, `accentBarTransparency`, `accentBarWidth` | fill; `'Left'`, `'Right'`, `'Bottom'` or `'Top'`; number; number |
+| Hierarchy > Icon color | `items.expandCollapseIconColor`, new in 2.157 | fill |
+| Hierarchy > Icon | `items.expandCollapseToggleType` | integer: `0` Chevron, `1` Plus/minus, `2` Caret |
+| Selection icon > Color | `selectionIcon.color` | fill |
+
+`data.mode` takes the style, the schema's title in brackets where it
+differs: `'Dropdown'`, `'VerticalList'` (Vertical list),
+`'HorizontalList'` (Tile), `'Basic'` (List), `'Between'`, `'Before'`,
+`'After'`, `'Single'` (Single Value), `'Relative'` (Relative Date),
+`'RelativeTime'` (Relative Time) and `'RelativeDatePicker'` (Date
+Picker). `'Single'` is not the Single date toggle. 2.157 names no
+property for the Date picker's **Anchor** or **Offset**. Learn puts the
+Dropdown section on the Dropdown style alone, and Hierarchy and Selection
+icon on Dropdown and Vertical list.
+
+#### Donut chart (`donutChart`)
+
+**Center value** is `centerValue.show`, a boolean. Its format is in four
+objects that came with it in 2.157:
+
+| Format pane | Object | Properties |
+| --- | --- | --- |
+| Value | `value` | `show`, `value`, `labelDisplayUnits`, `labelPrecision`, `showBlankAs`, `fontFamily`, `fontSize`, `fontColor`, `bold`, `italic`, `underline`, `textWrap` |
+| Label | `label` | `show`, `text`, `position`, `gap`, `fontFamily`, `fontSize`, `fontColor`, `bold`, `italic`, `underline`, `textWrap` |
+| Image | `image` | `show`, `image`, `altText`, `position`, `size`, `gap`, `transparency` |
+| Background | `centerBackground` | `show`, `fillColor`, `image`, `fit`, `imageTransparency`, `padding`, `transparency` |
+
+On `label` and `image`, `position` is `'Top'` (above the value) or
+`'Bottom'`; `fit` is `'Fit'`, `'Stretch'` or `'Fill'`; `gap`, `size` and
+`padding` are integers. How Learn's custom measure, **Value** >
+**Field**, is written is not shown.
+
+`pbir schema describe` shows other names for these, from version 0.1.1 of
+Microsoft's visual capabilities catalog, published 2026-06-12, which
+`pbir` bundles and notes may lag the product: a `background` object
+holding the centre's fill, image and padding, and `valueBold`,
+`valueFontColor`, `valueDisplayUnits`, `valuePrecision` and the like on
+`value`. Theme schema 2.157 has none of these, its `background` being
+the container's `color`, `show` and `transparency`. Write 2.157's names.
+
+Sources, read 2026-10-12: the theme schema above, and Learn's
+[matrix format settings](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-matrix-visual-format-settings),
+[x-axis and y-axis](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-customize-x-axis-and-y-axis),
+[slicer visual](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-slicer-visual)
+and
+[pie and donut chart](https://learn.microsoft.com/power-bi/visuals/power-bi-visualization-pie-donut-chart)
+pages.
+
 ### Reference
 
 - Microsoft Learn: [Visualizations overview in Power BI](https://learn.microsoft.com/power-bi/visuals/power-bi-visualizations-overview)

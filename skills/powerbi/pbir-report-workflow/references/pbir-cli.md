@@ -2,7 +2,7 @@
 
 Agent-first CLI for manipulating local Power BI reports in PBIR format. Install separately: `uv tool install pbir-cli`. Verify with `pbir --version`.
 
-**Run discovery before every mutation.** `pbir schema describe <type>.<container>` is the canonical way to confirm a property exists before `pbir set`. Run `pbir validate` after every mutation.
+**Run discovery before every mutation.** `pbir schema describe <type>.<container>` is the canonical way to confirm a property exists before `pbir set`; both lag Desktop's August 2026 formatting (Gotchas). Run `pbir validate` after every mutation.
 
 ### Path Syntax
 
@@ -73,6 +73,7 @@ See pbir-cli-commands.md § Discovery and pbir-cli-commands.md § Schema for the
 | Glob pattern returns nothing | Missing `-f` flag on `set` | Add `-f` for glob selectors |
 | "Report not found" | Missing `.Report` type suffix | Paths require `Name.Report`, `Name.Page`, `Name.Visual` |
 | `set` fails with "unknown property" | Property not discovered first | Run `pbir schema describe <type>.<container>` |
+| `set` refuses a name from Desktop's August 2026 formatting, even one `schema describe` lists: `Unknown component: centerValue`, or `has no property 'showExpandCollapseButtons'. Did you mean: showExpandCollapseButtons` | Of the names tried, `set` took those in its bundled theme schema, 2.155, and refused those new in 2.157. `--no-validate` covers only selector and state writes; 0.9.32 and `schema fetch --regenerate` change nothing (2026-10-12) | Write the property into `visual.json` by hand, from [visual-json.md](visual-json.md) § August 2026 formatting properties, then `pbir validate` |
 | Publish fails after local edits | Structure invalid | Run `pbir validate` before publish |
 | `pbir validate` floods `SCHEMA_DEGRADED` warnings | Declared visualContainer schema version isn't bundled with the CLI; a fallback schema was used | Cosmetic, one per file — only errors block. Note schema-valid ≠ engine-valid: verify hand-authored SQExpr shapes against Desktop-serialized reports (e.g. microsoft/BCApps); see [filters.md](filters.md) § TopN |
 | UnicodeEncodeError on Windows | cp1252 stdout encoding | Set `PYTHONIOENCODING=utf-8` |
