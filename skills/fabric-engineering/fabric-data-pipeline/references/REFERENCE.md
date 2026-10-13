@@ -211,7 +211,6 @@ Top level is `{ "schedules": [ … ] }`. Each entry:
 | `enabledControlType` | **Not in the schema**, which sets no `additionalProperties`, so neither declares nor forbids it; no Learn page names it, and Learn's two `.schedules` screenshots lack it (all 2026-10-13). A portal edit wrote `"UserEnabled"`, and Git sync then refused `enabled: false` beside it (`SKILL.md` § 7, a client estate, 2026-10-13). Its other values, and what turning a schedule off or the scheduler's auto-disable writes, are unread |
 | `jobType` | `"Execute"` for pipelines. The schema declares **no enum**, so treat this as observed rather than validated |
 | `configuration` | Below; `type` is the only schema-required field |
-| `parameters` | Array. Values passed to the pipeline at trigger time |
 
 `configuration` fields, by `type`:
 
@@ -228,6 +227,13 @@ Top level is `{ "schedules": [ … ] }`. Each entry:
 
 `occurrence` is `{ occurrenceType (required), dayOfMonth, weekIndex,
 WeekDay }` — note the capitalized `WeekDay`.
+
+`configuration` also takes `parameters`, its only place in the schema:
+an array of `{ name, type, value }`, all three required, whose `type`
+takes one value, `VariableReference` (schema 1.0.0, read 2026-10-13).
+No portal-written file with parameters has been read, so where the
+portal puts them is unverified. Learn's job-scheduler page warns that a
+Variable Library used in the parameters can sync late after CI/CD.
 
 The schema marks only `configuration.type` required; the portal requires
 both `startDateTime` and `endDateTime` and offers no open-ended option.
