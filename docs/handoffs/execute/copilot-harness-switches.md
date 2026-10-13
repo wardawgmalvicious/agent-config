@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 2
-needs: [user]
+needs: []
 blocked-by: []
 written: 2026-09-26
 ---
@@ -17,7 +17,8 @@ written: 2026-09-26
   wants the new VS Code settings model worked out first. Since
   2026-10-06 it also holds two calls of the user's (§ "A client repo
   pointed its Local agent at Claude's files", § "Six agents in the
-  Default profile"); the user answered the first on 2026-10-08.
+  Default profile"); the user answered the first on 2026-10-08 and the
+  second on 2026-10-13.
 - **Cut down on 2026-10-13**, when the Copilot payload was removed.
   VS Code's panels of 2026-09-30 and the standalone Copilot app of
   2026-10-05 answered questions 1 and 6 for what the Copilot harness
@@ -43,8 +44,8 @@ remain:
    `chat.includeReferencedInstructions` gotcha holds as written.
    `git grep -cE 'chat\.(\*Locations|agentSkillsLocations|instructionsFilesLocations|hookFilesLocations|agentFilesLocations|useClaudeMdFile|useClaudeHooks)' -- ':!docs/handoffs'`
    lists every file that still names a switch.
-2. **The six agents** in the Default profile are the user's call
-   (§ "Six agents in the Default profile").
+2. **The six agents** in the Default profile go, by the user's call of
+   2026-10-13 (§ "Six agents in the Default profile").
 3. **Whether an experiment can move new chats off the Local harness**
    (§ "Can an experiment move new chats off Local").
 
@@ -154,6 +155,16 @@ its new setting re-read in the bundle here on 2026-10-09:
   `chat.useClaudeMdFile` defaults `true`, `chat.useClaudeHooks` `false`,
   and `chat.includeReferencedInstructions` `false`, its description
   unchanged ("only used by the Local agent harness").
+
+Re-measured by the user on 2026-10-13, on this machine's 1.141.0, by the
+2026-09-09 method (§ "Re-measure before acting"): in a client Fabric
+repo whose own `.claude/rules/` holds no T-SQL rule, a Local-target chat
+on an open `.sql` file reasoned that `coding-tsql.md` applies "since
+it's a .sql file", that one of the repo's own rules does not by its
+scope, and whether a platform skill bore on it. So the Local agent saw
+`~/.claude/rules`, each rule with its scope, as the bundle says and the
+docs do not. Read from the chat's reasoning; its references list was
+not read.
 
 ## Can an experiment move new chats off Local
 
@@ -281,8 +292,13 @@ nor machine-config names. The Local target reads them, and no Agent Host
 target does: those read user agents "from the selected host's folder,
 such as `~/.copilot/agents` or `~/.claude/agents`, and not from VS Code
 profile user data" (VS Code's custom-agents page, fetched 2026-10-05).
-So they go dark with the Local harness. **Keep, migrate or delete is the
-user's call.** *Migrate User Data Customizations* (§ "Questions the
+So they go dark with the Local harness. **Keep, migrate or delete was the
+user's call, and on 2026-10-13 they chose delete**: each has a
+maintained skill on the same subject now, `fabric-rest-api`,
+`fabric-security`, `fabric-spark`, `fabric-database`, `fabric-tmdl` and
+`fabric-warehouse`, and none of the six had changed since 2026-06-17.
+They sit in no repo, so they are deleted at landing, from the main
+checkout, on that yes. *Migrate User Data Customizations* (§ "Questions the
 removal settled", question 3) would
 copy them to the selected host's folder, and `~/.claude/agents` deploys
 from `claude/agents/` here, by copy.
@@ -354,4 +370,5 @@ build's commit directory; an older one can linger beside it.
   (§ "What was measured"). That measurement's method, from `README.md`
   § "Tool support" as `git show 68d61eb:README.md` holds it: a `.sql`
   file open in a client repo, and which of the rules in
-  `~/.claude/rules` loaded.
+  `~/.claude/rules` loaded. Re-measured so on 2026-10-13 (§ "What was
+  measured").
