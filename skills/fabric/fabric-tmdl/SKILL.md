@@ -65,6 +65,14 @@ Two jobs have a reference of their own: read it before answering one.
 - Prefix `VAR` names with `_`: `VAR _totalSales = ...`
 - Use `displayFolder` to organize measures into logical groups
 - Add `///` descriptions to explain business logic
+- **If a `scripts/data/dax.sh` wrapper is deployed in the repo** (an
+  internal local-cli template), run a new measure against the published
+  model before writing it into TMDL: `dax.sh -q 'DEFINE MEASURE …
+  EVALUATE …'` returns what a report would show, after relationships
+  and filter context, and its values say which `formatString` fits. It
+  reads the **published** model, so a change on disk not yet deployed
+  is not in it. It is an accelerator that happens to be present, never
+  a dependency.
 
 ### Relationship Rules
 
