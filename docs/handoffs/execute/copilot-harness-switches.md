@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: [user]
-blocked-by: [copilot-payload-retirement.md]
+blocked-by: []
 written: 2026-09-26
 ---
 
@@ -18,22 +18,35 @@ written: 2026-09-26
   2026-10-06 it also holds two calls of the user's (§ "A client repo
   pointed its Local agent at Claude's files", § "Six agents in the
   Default profile"); the user answered the first on 2026-10-08.
+- **Cut down on 2026-10-13**, when the Copilot payload was removed.
+  VS Code's panels of 2026-09-30 and the standalone Copilot app of
+  2026-10-05 answered questions 1 and 6 for what the Copilot harness
+  reads, and the removal rewrote or deleted the files this brief was to
+  edit for the old claim: `claude/CLAUDE.md`'s section, now "GitHub
+  Copilot does not inherit this payload",
+  `.claude/rules/copilot-payload.md`, `README.md` § "Tool support" and
+  `scripts/copy-copilot.ps1`.
 
-## The claim in question
+## What is left
 
-This repo keeps Copilot out of the `~/.claude` payload with VS Code
-switches: every `chat.*Locations` entry naming a Claude root written out
-`false`, and `chat.useClaudeMdFile` off where the payload's `CLAUDE.md`
-should not reach Copilot. `claude/CLAUDE.md` § "GitHub Copilot no longer
-inherits this payload" states the result: Copilot reads "never
-`~/.claude`, except `CLAUDE.md` where `chat.useClaudeMdFile` is on".
+The old claim, that VS Code switches keep Copilot out of `~/.claude`,
+left `claude/CLAUDE.md` on 2026-10-13. Every one of those switches
+describes itself as "only used by the Local agent harness", and the
+user's call of 2026-10-08 turned them the other way. Three things
+remain:
 
-Every one of those switches describes itself as "only used by the Local
-agent harness", so the claim is true of that harness with the switches
-off and unknown for any other. New chat sessions still start in the
-Local harness, so the switches hold on this machine today. The same
-build ships an Agent Host Copilot SDK harness that does not read them,
-and marks the Local harness for removal "in a future release".
+1. **Two rules take that call** (§ "A client repo pointed its Local
+   agent at Claude's files"): `claude/rules/agent-instructions-scoping.md`,
+   where `chat.useClaudeMdFile` stays `false`, and
+   `claude/rules/vscode-scoping.md`, whose § "Drift" and gotchas still
+   frame inheriting `~/.claude` as a hazard. Its
+   `chat.includeReferencedInstructions` gotcha holds as written.
+   `git grep -cE 'chat\.(\*Locations|agentSkillsLocations|instructionsFilesLocations|hookFilesLocations|agentFilesLocations|useClaudeMdFile|useClaudeHooks)' -- ':!docs/handoffs'`
+   lists every file that still names a switch.
+2. **The six agents** in the Default profile are the user's call
+   (§ "Six agents in the Default profile").
+3. **Whether an experiment can move new chats off the Local harness**
+   (§ "Can an experiment move new chats off Local").
 
 ## What was measured
 
@@ -142,119 +155,82 @@ its new setting re-read in the bundle here on 2026-10-09:
   and `chat.includeReferencedInstructions` `false`, its description
   unchanged ("only used by the Local agent harness").
 
-## What it puts in question here
+## Can an experiment move new chats off Local
 
-Outside `docs/handoffs/`, 42 mentions in 13 files on 2026-09-26:
+Does an explicit `false` for both harness settings hold against an
+experiment? A set value outranks a default, and a default is all an
+experiment changes, but that is unverified here.
 
-```bash
-git grep -cE 'chat\.(\*Locations|agentSkillsLocations|instructionsFilesLocations|hookFilesLocations|agentFilesLocations|useClaudeMdFile|useClaudeHooks)' -- ':!docs/handoffs'
-```
+By VS Code's agents docs (fetched 2026-10-05 by a client repo's
+session), `chat.editor.preferCopilotHarness` (experimental), which the
+device policy `ChatEditorPreferCopilotHarness` can enforce from 1.134,
+starts a new editor chat on the Copilot target where Local would have
+started. It "does not migrate existing sessions or change explicit or
+remembered Claude and Codex selections", so a Claude pick holds.
 
-The ones that state the model rather than cite it:
+Moot for machine-config, by its session of 2026-10-08, since the
+keep-out switches it existed to hold are gone (§ "What machine-config
+already did"). Not moot here, corrected on 2026-10-09: on the new
+default the Local harness is the one that reads `~/.claude`, and the
+Copilot harness reads none of it (§ "Questions the removal settled"),
+so an experiment that starts new chats on the Copilot harness, or hides
+Local through `chat.editor.localAgent.enabled`, takes the payload from
+those sessions. Whether an explicit `true` for that setting holds is
+the same question.
 
-- `claude/CLAUDE.md` § "GitHub Copilot no longer inherits this payload",
-  and root `CLAUDE.md`'s line that Copilot takes `CLAUDE.md` only where a
-  profile turns `chat.useClaudeMdFile` on.
-- `claude/rules/vscode-scoping.md`: the per-profile and
-  unlisted-location gotchas, and `chat.includeReferencedInstructions`,
-  every one a Local-only setting. Two of its passages, as read
-  2026-10-06, meet the documented facts in § "What was measured":
-  `:60-62`, that a profile with none of the switches "still inherited
-  the whole `~/.claude` payload, hooks included", where Claude-format
-  hooks also need `chat.useClaudeHooks`, off by default; and `:63-68`,
-  "**An unlisted location keeps its default, and the default is
-  on.**", where the hooks map is documented with an empty default and
-  the Local agent's user instructions as profile storage.
-- `.claude/rules/copilot-payload.md`: the switches in its first bullet,
-  and its bullet on hooks, where 1.139.0 runs no Claude-format hook unless
-  `chat.useClaudeHooks` is on, and that defaults off.
-- `README.md` § "Tool support", `scripts/copy-copilot.ps1`, and the two
-  `docs/evidence/` ledgers that record these switches.
+## Questions the removal settled
 
-## Questions for the investigation
+The investigation asked six questions; the fifth is the section above.
+The rest were answered or made moot by 2026-10-13:
 
-1. What does the Agent Host Copilot SDK harness read, and does any of it
-   come from `~/.claude` or a workspace's `.claude/` by default?
-
-   Answered for the standalone Copilot app, which runs the same Copilot
-   CLI runtime, on 2026-10-05: nothing from `~/.claude`, and a
-   workspace's `.claude/rules/` as an index by `paths:`
-   ([copilot-payload-retirement.md](copilot-payload-retirement.md)
-   § "The decision the turn left"). VS Code's Copilot target is inferred
-   to match, not tested.
-
-   A candidate for its hooks, unverified: the hooks page (`91b05da`,
-   2026-09-21) gives the Copilot target the "Shared Copilot SDK
-   implementation" and sends it to [GitHub's Copilot hooks
-   reference](https://docs.github.com/en/copilot/reference/hooks-reference),
-   then says "Some harnesses discover the same hook files, such as
-   `.github/hooks/*.json` or `.claude/settings.json`. This file
-   compatibility does not make their behavior identical." That could
-   explain the 2 hook entries the Copilot panel counted on 2026-09-30,
-   which nobody opened
-   ([copilot-payload-retirement.md](copilot-payload-retirement.md)
-   § "Not checked"). The page does not say which harness discovers
-   `.claude/settings.json`.
-2. Does that harness have any off-switch for Claude's files, per profile
-   or otherwise?
-3. What does *Migrate Location Settings* move, and where? Its strings
-   say it moves customizations found through the location settings, and
-   `~/.claude/skills` is a junction into this repo. Try it on a scratch
-   profile first, never a real one.
-
-   Documented, not run (VS Code's agents and agent-customization docs,
-   fetched 2026-10-05 by a client repo's session): with an Agent Host
-   target selected, the Agent Customizations editor offers four
-   migrations. *Migrate Location Settings*
-   (`chat.customizations.locationsMigration.enabled`, default `false`)
-   moves the agents, instructions and skills those settings found into
-   the selected host's folders, clears the settings by default, and
-   deletes the originals only if asked. For the Claude host it has
-   nothing to move, since those locations are its own folders; for the
-   Copilot host it would copy `.claude/*` into Copilot's folders, the
-   duplication the retirement removes, so it is not run there. *Migrate
-   User Data Customizations*
-   (`chat.customizations.userDataMigration.enabled`, default `false`)
-   copies agents and instructions a profile stores, *Migrate Prompt
-   Files* converts them to skills, and *Migrate MCP Servers* moves
-   servers to `.mcp.json` or `$COPILOT_HOME/mcp-config.json`.
-4. When is the Local harness due to go? The release notes should say.
-
-   No date, by the same docs: prompt files "continue to work with the
-   Local agent for now, but the Local agent will be removed in a future
-   release", and `chat.agentFilesLocations`, `chat.modeFilesLocations`,
-   `chat.instructionsFilesLocations` and `chat.agentSkillsLocations` are
-   "deprecated because Agent Host sessions don't use them". The settings
-   and the harness leave together, so plan for the Claude target, not
-   for Local running on its defaults.
-5. Does an explicit `false` for both harness settings hold against an
-   experiment? A set value outranks a default, and a default is all an
-   experiment changes, but that is unverified here.
-
-   By the same docs, `chat.editor.preferCopilotHarness` (experimental),
-   which the device policy `ChatEditorPreferCopilotHarness` can enforce
-   from 1.134, starts a new editor chat on the Copilot target where
-   Local would have started. It "does not migrate existing sessions or
-   change explicit or remembered Claude and Codex selections", so a
-   Claude pick holds.
-
-   Moot for machine-config, by its session of 2026-10-08, since the
-   keep-out switches it existed to hold are gone (§ "What
-   machine-config already did"). Not moot here, corrected on
-   2026-10-09: on the new default the Local harness is the one that
-   reads `~/.claude`, and the Copilot harness reads none of it
-   (question 1), so an experiment that starts new chats on the Copilot
-   harness, or hides Local through `chat.editor.localAgent.enabled`,
-   takes the payload from those sessions. Whether an explicit `true`
-   for that setting holds is the same question.
-6. Does the SDK harness read `AGENTS.md` and `CLAUDE.md`, and follow an
-   instructions file's links, and under what settings? The answer
-   decides whether the import form's two Copilot conditions outlive the
-   Local harness.
-
-   The standalone app reads both, expanding the root `CLAUDE.md`'s
-   `@AGENTS.md`, so `AGENTS.md` loads twice (2026-10-05, the section
-   named under question 1).
+- **What the Agent Host Copilot harness reads** (question 1): nothing
+  from `~/.claude`, and a workspace's `.claude/rules/` as an index by
+  `paths:`, in the standalone Copilot app, which runs the same Copilot
+  CLI runtime (2026-10-05; `docs/evidence/root-claude-md.md` § "How this
+  repo is structured", 2026-10-13). VS Code's Copilot target is inferred
+  to match, not tested. A candidate for its hooks, unverified: the hooks
+  page (`91b05da`, 2026-09-21) gives the Copilot target the "Shared
+  Copilot SDK implementation" and sends it to [GitHub's Copilot hooks
+  reference](https://docs.github.com/en/copilot/reference/hooks-reference),
+  then says "Some harnesses discover the same hook files, such as
+  `.github/hooks/*.json` or `.claude/settings.json`. This file
+  compatibility does not make their behavior identical." That could
+  explain the 2 hook entries the Copilot panel counted on 2026-09-30,
+  which nobody opened (`docs/evidence/user-claude-md.md` § "What each
+  target lists"). The page does not say which harness discovers
+  `.claude/settings.json`.
+- **An off-switch for Claude's files** (question 2): moot, since the
+  user wants them read (2026-10-08) and the Copilot harness reads none.
+- **What *Migrate Location Settings* moves** (question 3): documented,
+  not run (VS Code's agents and agent-customization docs, fetched
+  2026-10-05 by a client repo's session). With an Agent Host target
+  selected, the Agent Customizations editor offers four migrations.
+  *Migrate Location Settings*
+  (`chat.customizations.locationsMigration.enabled`, default `false`)
+  moves the agents, instructions and skills those settings found into
+  the selected host's folders, clears the settings by default, and
+  deletes the originals only if asked. For the Claude host it has
+  nothing to move, since those locations are its own folders; for the
+  Copilot host it would copy `.claude/*` into Copilot's folders, the
+  duplication the retirement removed, so it is not run there. *Migrate
+  User Data Customizations*
+  (`chat.customizations.userDataMigration.enabled`, default `false`)
+  copies agents and instructions a profile stores, *Migrate Prompt
+  Files* converts them to skills, and *Migrate MCP Servers* moves
+  servers to `.mcp.json` or `$COPILOT_HOME/mcp-config.json`.
+- **When the Local harness goes** (question 4): no date, by the same
+  docs: prompt files "continue to work with the Local agent for now,
+  but the Local agent will be removed in a future release", and
+  `chat.agentFilesLocations`, `chat.modeFilesLocations`,
+  `chat.instructionsFilesLocations` and `chat.agentSkillsLocations` are
+  "deprecated because Agent Host sessions don't use them". The settings
+  and the harness leave together, so plan for the Claude target, not
+  for Local running on its defaults.
+- **Whether the SDK harness reads `AGENTS.md` and `CLAUDE.md`**
+  (question 6): the standalone app reads both, expanding the root
+  `CLAUDE.md`'s `@AGENTS.md`, so `AGENTS.md` loads twice (2026-10-05,
+  the evidence named under question 1). Whether it follows an
+  instructions file's links was not seen.
 
 ## A client repo pointed its Local agent at Claude's files
 
@@ -266,8 +242,8 @@ and agents on, `.github/*` and `~/.copilot/*` off, `chat.useClaudeMdFile`
 off, and `chat.includeReferencedInstructions` `false`, since one of its
 rules links by Markdown. That contradicts
 `claude/rules/agent-instructions-scoping.md`, where
-`chat.useClaudeMdFile` stays `false`, and `claude/CLAUDE.md` § "GitHub
-Copilot no longer inherits this payload", and it runs against the
+`chat.useClaudeMdFile` stays `false`, as it did `claude/CLAUDE.md`'s
+Copilot section until 2026-10-13, and it runs against the
 premise of machine-config's `-Audit`, though that checks profiles, not a
 workspace's settings. **It is the new default, by the user's call of
 2026-10-08**, which a machine-config session relayed and the user
@@ -276,12 +252,12 @@ confirmed at `/triage` on 2026-10-09: Copilot may read `~/.claude` and
 shared with other developers, the user builds none for others and stays
 on Claude Code, and on the days they use GitHub Copilot at work it reads
 Claude's files too. machine-config acted on it that day (§ "What
-machine-config already did"). Here it changes three files:
+machine-config already did"). Here it changed three files, and
+`claude/CLAUDE.md`'s "never `~/.claude`" was rewritten when the Copilot
+payload was removed on 2026-10-13. Two are left:
 `claude/rules/agent-instructions-scoping.md`, where
-`chat.useClaudeMdFile` stays `false`; `claude/CLAUDE.md`'s "never
-`~/.claude`", which
-[copilot-payload-retirement.md](copilot-payload-retirement.md)
-rewrites; and `claude/rules/vscode-scoping.md`, whose § "Drift" still
+`chat.useClaudeMdFile` stays `false`, and
+`claude/rules/vscode-scoping.md`, whose § "Drift" still
 says `-Audit` reports a profile leaving a Claude location or switch on,
 which it stopped doing, and whose gotchas on per-profile switches and
 unlisted locations, still true, are framed as hazards to switching
@@ -306,7 +282,8 @@ target does: those read user agents "from the selected host's folder,
 such as `~/.copilot/agents` or `~/.claude/agents`, and not from VS Code
 profile user data" (VS Code's custom-agents page, fetched 2026-10-05).
 So they go dark with the Local harness. **Keep, migrate or delete is the
-user's call.** *Migrate User Data Customizations* (question 3) would
+user's call.** *Migrate User Data Customizations* (§ "Questions the
+removal settled", question 3) would
 copy them to the selected host's folder, and `~/.claude/agents` deploys
 from `claude/agents/` here, by copy.
 
@@ -368,12 +345,13 @@ build's commit directory; an older one can linger beside it.
 
 - VS Code's version, and each string and default above in its bundle:
   1.139.0 on 2026-09-24, 1.139.1 on 2026-09-26.
-- The mention count above, by its own command.
+- The files the `git grep` under § "What is left", item 1, lists.
 - machine-config's `ClaudeLocations` and `ClaudeSwitches`.
 - The Local agent's user-scope instructions, re-measured before this
   brief's conclusions or `claude/rules/vscode-scoping.md` change. The
   docs say profile storage, while the 1.139.0 bundle lists
   `~/.claude/rules` and a 2026-09-09 measurement saw rules load from it
-  (§ "What was measured"). `README.md:202-206` names that method: a
-  `.sql` file open in a client repo, and which of the rules in
+  (§ "What was measured"). That measurement's method, from `README.md`
+  § "Tool support" as `git show 68d61eb:README.md` holds it: a `.sql`
+  file open in a client repo, and which of the rules in
   `~/.claude/rules` loaded.

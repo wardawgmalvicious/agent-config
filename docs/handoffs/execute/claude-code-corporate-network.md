@@ -26,10 +26,11 @@ written: 2026-10-06
 On the corporate network a filter resets Anthropic's hosts by name, so
 Claude Code fails on its sign-in, not its route, and no proxy setting
 changes that (`docs/handoffs/declined.md`, 2026-10-06). The
-measurements, and the rule that carries them into `claude/CLAUDE.md`,
-are in [copilot-payload-retirement.md](copilot-payload-retirement.md)
-§ "The corporate network, 2026-10-05"; once that brief lands, they are
-in `docs/evidence/user-claude-md.md`.
+measurements are in
+[docs/evidence/user-claude-md.md](../../evidence/user-claude-md.md)
+§ "The corporate network, 2026-10-05", under the heading of the
+`claude/CLAUDE.md` section that carries the rule, "GitHub Copilot does
+not inherit this payload" (2026-10-13).
 
 Asking IT to allow those hosts came first. The filter reset every
 Anthropic name it was shown, which made a deliberate block likely, and

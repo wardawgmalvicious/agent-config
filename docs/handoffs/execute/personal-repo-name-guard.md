@@ -43,9 +43,10 @@ What that shape would still miss (read from the header, 2026-09-30):
 - **A substring match fails on real text.** Each list line is a
   case-insensitive fixed string, and `agent-config` is inside the Learn
   slug `data-agent-configurations`
-  ([copilot-client-repo-findings.md](copilot-client-repo-findings.md),
-  item 2, which met it in `lint-instructions.py`). These names need
-  word boundaries.
+  (`copilot-client-repo-findings.md`, item 2, which met it in the
+  Copilot ports' linter; both left on 2026-10-13, and
+  `git log --diff-filter=D -- docs/handoffs/execute/copilot-client-repo-findings.md`
+  finds the commit). These names need word boundaries.
 - **Branch names and pull request text are outside it.** It scans added
   lines and messages on `git commit` and `git push`, never a ref's name,
   and a PR is opened through `gh` or `github-mcp`.
