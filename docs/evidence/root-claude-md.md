@@ -28,13 +28,13 @@ heading records what the move changed.
 
 This repo is the source for the user's coding-agent configuration
 (skills, a subagent, coding rules, hooks, MCP server templates,
-settings) — see [README.md](README.md) for the full picture. Claude
+settings) — see [README.md](../../README.md) for the full picture. Claude
 Code is the harness it is written for and validated against; the
 content is structured so other tools can cherry-pick it, not promised
 to work in them.
 
 Root `CLAUDE.md` is project-scope instruction and is never deployed.
-[claude/CLAUDE.md](claude/CLAUDE.md) is Claude's user-scope payload.
+[claude/CLAUDE.md](../../claude/CLAUDE.md) is Claude's user-scope payload.
 They share a name and nothing else — neither is a mirror of the other.
 This file is also the repo's *only* project-scope instruction file. A
 `.github/copilot-instructions.md` and a root `AGENTS.md` each existed
@@ -131,7 +131,7 @@ exists only for Copilot's sake, and now asks the question it actually
 means (*can Copilot reach this file?*) rather than *which tree is it
 in*, which over-applied the ban to `social` as well. The marker is a
 file rather than a list in each script precisely so the two cannot
-disagree; see [skills/meta/.no-copilot](skills/meta/.no-copilot).
+disagree; see [skills/meta/.no-copilot](../../skills/meta/.no-copilot).
 
 **The cost is a prune hazard, and it is the reason every documented
 invocation had to change.** `-SkillGroups` deletes what it does not
@@ -513,7 +513,7 @@ GitHub tool surface into every session on the machine. Since the global
 template went Docker-free on 2026-09-14 nothing here needs that gateway
 at all, so the entry is pure noise and the reconcile deletes it — but it
 still returns on the next connect. The switch replaces exactly one key and round-trips the rest
-untouched — see [claude/mcp/README.md](claude/mcp/README.md) for the two
+untouched — see [claude/mcp/README.md](../../claude/mcp/README.md) for the two
 `ConvertFrom-Json` switches that make that round trip lossless, both of
 which fail silently when omitted.
 
@@ -534,7 +534,7 @@ level, no group directory in between — so `~/.claude/skills` is a real
 directory holding one junction per skill, not a single junction for
 `skills/`. (Claude Code doesn't read `~/.claude/mcp` at all; that copy
 exists so the template-copy commands in
-[claude/mcp/README.md](claude/mcp/README.md) resolve from a stable
+[claude/mcp/README.md](../../claude/mcp/README.md) resolve from a stable
 path.)
 
 The deployed names on the right are fixed by each tool and never
@@ -614,7 +614,7 @@ The `~/.claude` paths could never travel in a clone, which is why
 `copilot/` and `scripts/copy-copilot.ps1` exist — and since the cutover
 that is the whole path rather than the half of it a teammate needed.
 Full detail, including the settings block and the traps, is in
-[README.md](README.md#tool-support); this repo is authored and validated
+[README.md](../../README.md#tool-support); this repo is authored and validated
 against Claude Code, and Copilot wiring is not maintained here.
 
 This file (root `CLAUDE.md`) is project scope only — it is **not**
@@ -872,7 +872,7 @@ repo:
 
 `docs/audits/` is a **tracked, dated ledger** — one directory per run,
 committed when written and kept after it is spent. See
-[docs/audits/README.md](docs/audits/README.md) for the lifecycle and
+[docs/audits/README.md](../audits/README.md) for the lifecycle and
 why it differs from `execute/`. It was gitignored until 2026-09-07 on
 the grounds that audit output is regenerable; the powerbi source 404ing
 at every endpoint that same day disproved it. Briefs there may quote
@@ -881,7 +881,7 @@ still exists before acting on it.
 
 Work that is scoped but not yet done lives in
 `docs/handoffs/execute/`, and
-**[execute/README.md](docs/handoffs/execute/README.md) is the
+**[execute/README.md](../handoffs/execute/README.md) is the
 queue** — the only place the execution order lives, so read it before
 starting a session here. Those briefs are *not* numbered the way
 `/drift-handoff` numbers its output: they are committed, deleted
@@ -1768,7 +1768,7 @@ the work stayed in the main checkout, as 2026-09-30 above settled.
   guidance has a narrower trigger (a file type, a product area),
   prefer a path-scoped rule or a skill instead. A rule there carries
   itself, what its failure looks like and one date; its evidence goes
-  to [docs/evidence/user-claude-md.md](docs/evidence/user-claude-md.md)
+  to [docs/evidence/user-claude-md.md](user-claude-md.md)
   under the same heading. `scripts/lint-claude-md.py` caps the file's
   length in pre-commit, so a learning that does not fit moves something
   out rather than raising the cap. After editing it,
@@ -2153,9 +2153,9 @@ list anywhere; the README carried one for four months and every skill
 on it had been edited since. Run `--stale` instead.
 
 After changing a skill, rule, subagent, or enforcement hook, follow the
-procedure in [tests/skills/code-review/README.md](tests/skills/code-review/README.md),
-[tests/skills/fabric-semantic-model-audit/README.md](tests/skills/fabric-semantic-model-audit/README.md)
-or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/README.md):
+procedure in [tests/skills/code-review/README.md](../../tests/skills/code-review/README.md),
+[tests/skills/fabric-semantic-model-audit/README.md](../../tests/skills/fabric-semantic-model-audit/README.md)
+or [tests/agents/security-reviewer/README.md](../../tests/agents/security-reviewer/README.md):
 
 - Run in a **fresh** agent session — for context hygiene (accumulated
   context can mask a co-load failure), and because subagents, commands,
@@ -2194,8 +2194,8 @@ or [tests/agents/security-reviewer/README.md](tests/agents/security-reviewer/REA
 
 Changing a `paths:` glob changes *whether a skill fires at all*, which
 none of the fixtures above test. That contract belongs to
-[tests/skills/pbip-triggers/](tests/skills/pbip-triggers/) and
-[tests/skills/fabric-triggers/](tests/skills/fabric-triggers/) —
+[tests/skills/pbip-triggers/](../../tests/skills/pbip-triggers/) and
+[tests/skills/fabric-triggers/](../../tests/skills/fabric-triggers/) —
 disjoint fixture sets that between them assert **every** conditional
 skill in the payload.
 Assertions live in each set's `expected_activations.md`, which is where
