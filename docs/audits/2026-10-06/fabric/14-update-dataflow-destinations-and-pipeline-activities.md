@@ -206,3 +206,22 @@ rather than edits.
   edit for the settings it does not reach) while its connection stays
   bound, as Learn's CI/CD architecture page still says; `REF:93-98` keeps
   fixed schema for Warehouse and flags the preview.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `c1e2c69`, for `fabric-dataflow`'s half alone; that
+  skill also carries `2123003`'s and the restructure's `when_to_use`
+  edits, which owed a routing retest. Phase A static only, 74/74 and
+  16/16, the `paths:` stamp standing. `-p` arms in a probe outside the
+  repo holding all five platform groups, Opus 5.5 with effort unpinned,
+  `--tools Skill,Read --strict-mcp-config`, inbound messages refused,
+  `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`. The `--safe-mode`
+  baseline's `init` listed 58 commands, the payload's 78. In both
+  payload arms the fixture `Read` emitted `commands_changed` naming the
+  skill, and `Skill fabric-dataflow` followed. Both items separated. On
+  a dev-test-prod Snowflake query the payload gave the destination as GA
+  through the latest gateway, where the baseline said preview, gateway
+  unconfirmed; it also gave the Table name expression the third
+  `**Needs**:` landed, where the baseline said to hand-edit the M. On a
+  destinations-and-staging query it gave Excel as a file format and
+  Optimized copy to Lakehouse, off by default; the baseline said CSV
+  only and named no such option. Stamp written. `fabric-data-pipeline`'s
+  half stays deferred.
