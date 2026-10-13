@@ -212,3 +212,21 @@ nothing but their size, so split them freely at execution time.
   line after it says a semantic model takes none ("Semantic Models do
   not support data source descriptions") and is routed to from the
   agent instructions.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `cf7a595`, for D-4 alone; that commit also carries
+  `607d09a`'s rename of the skill's catalog-search pointer from
+  `fabric-cli` to `fabric-rest-api`, a `description` edit. Phase A
+  skipped: no `paths:` glob. `-p` arms in a probe outside the repo
+  holding all five platform groups, Opus 5.5 at `xhigh`,
+  `--tools Skill --strict-mcp-config`, inbound messages refused,
+  `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`. The `--safe-mode`
+  baseline's `init` listed 58 commands without the skill, the
+  payload's 78. On one governance-audit query the payload called
+  `Skill fabric-catalog-governance`, then `fabric-rest-api`, and both
+  D-4 additions separated: table discovery, flagged as undocumented in
+  the Search API reference, and the Govern tab's Policies (preview) and
+  admin experiences. The baseline gave neither. A catalog-search query
+  routed to `fabric-rest-api`, and did again with the pointer deleted
+  from a probe copy, one arm each: on that query the pointer is not
+  what routes it. Stamp written. The other five D-sections were not
+  exercised.

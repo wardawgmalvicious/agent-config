@@ -44,11 +44,11 @@
     },
     "fabric-catalog-governance": {
       "behaviour": {
-        "date": "2026-09-12",
-        "commit": "1a6c068",
-        "routing": "18770fd1c861ea09",
-        "body": "bcb8ad60411a942d",
-        "references": "4f01ee8ace74ed99"
+        "date": "2026-10-13",
+        "commit": "cf7a595",
+        "routing": "f595bfb1550d8b50",
+        "body": "02867b26cdd4d119",
+        "references": "042081d7ac348f54"
       }
     },
     "fabric-data-pipeline": {
