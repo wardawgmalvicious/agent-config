@@ -39,9 +39,10 @@ pipeline schedule bound to a Variable Library Boolean whose default is
 `false`, in a workspace whose active value set overrides it to `true`,
 read `"enabled": true` and `enabledEvalState: "Normal"` from List Item
 Schedules, twice. So, by that reading, the binding resolves through the
-active value set. Not reported yet: what it wrote to `.schedules`, and
-whether flipping the value moves `enabled`. The estate's session
-promised a note on both.
+active value set. A flip moved it: when the override was set to `false`
+in the portal and committed, the schedule read `"enabled": false` about
+a minute later (once). Not reported yet: what the binding wrote to
+`.schedules`. The estate's session promised a note on it.
 
 **`enabledControlType`'s other values.** Seen once, as `UserEnabled`,
 after a portal edit that moved a schedule's start and end dates
@@ -109,5 +110,5 @@ pipeline page that documents it, or its `.schedules` form, may settle
 part of this without a tenant.
 
 Read `~/handoff-inbox/agent-config/` too: the estate's session promised
-a note on what its binding writes and how a flip behaves, which may
-settle the Controller without a tenant.
+a note on what its binding writes, which may settle the Controller
+without a tenant.
