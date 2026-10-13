@@ -154,7 +154,8 @@ moved, no skill's name or content changed, and each skill went with the
 job it serves, so the two semantic-model skills sit with the Power BI
 work. The gain is in the listing, since a skill with a `paths:` glob
 lists nothing until a matching file is read: a repo with narrower work
-pays for fewer always-listed skills.
+pays for fewer always-listed skills. `powerbi` became `power-bi` the
+same day, hyphenated like the Fabric groups.
 
 ### Fabric core (5)
 
@@ -295,9 +296,9 @@ Reports and semantic models, in PBIR, PBIP and TMDL. The two `fabric-`
 skills keep their prefix: the folder follows the job, the name the
 item's platform.
 
-- [pbip-project-structure/](powerbi/pbip-project-structure/) — PBIP folder
+- [pbip-project-structure/](power-bi/pbip-project-structure/) — PBIP folder
   layout.
-- [pbir-report-workflow/](powerbi/pbir-report-workflow/) — Power BI
+- [pbir-report-workflow/](power-bi/pbir-report-workflow/) — Power BI
   reports in PBIR: the end-to-end build through the `pbir` CLI, from
   requirements and model field discovery through scaffold, 3-30-300
   layout, sort, filters and conditional formatting to validate, publish
@@ -313,9 +314,9 @@ item's platform.
   `pbir-conditional-formatting` and `powerbi-report-design` on
   2026-10-12, since client report work ran through the CLI, where the
   file skills' globs never fired.
-- [fabric-tmdl/](powerbi/fabric-tmdl/) — TMDL semantic-model authoring,
+- [fabric-tmdl/](power-bi/fabric-tmdl/) — TMDL semantic-model authoring,
   with the Definition API and a model's AI instructions as references.
-- [fabric-semantic-model-audit/](powerbi/fabric-semantic-model-audit/) —
+- [fabric-semantic-model-audit/](power-bi/fabric-semantic-model-audit/) —
   reviewing a *finished* model rather than authoring one: star-schema
   shape and the two opposite meanings of "flatten", relationship health,
   memory cost, and readiness for reports, agents and ontologies. Named
@@ -354,8 +355,9 @@ it from a commit on `main` that holds it. A restored skill also needs its
 `skillOverrides` entry back, and a Fabric one its two rows in
 `tests/skills/fabric-triggers/expected_activations.md`, which
 `lint-skill-overrides` and the static check each ask for. The checkout
-lands it at that commit's path, under the `skills/fabric/` of before the
-2026-10-13 persona split, so move it into the group of its job.
+lands it at that commit's path, under the `skills/fabric/` or
+`skills/powerbi/` of before the 2026-10-13 regrouping, so move it into the
+group of its job.
 
 - `fabric-copy-job` — the Copy job item: full and incremental copy,
   watermark and CDC, its JSON definition and REST runs.

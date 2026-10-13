@@ -39,7 +39,7 @@
 
     Every platform group but windows deploys for either fixture set, the
     PROBE_GROUPS of activation-expect.py. The pbip fixtures activate
-    fabric-tmdl* on their .SemanticModel files, which the powerbi group
+    fabric-tmdl* on their .SemanticModel files, which the power-bi group
     holds, and the fabric set's headline negative assertion — that
     pbip-project-structure must NOT fire on SampleNB.Notebook/.platform — is
     vacuous unless that skill is present to fail.
@@ -145,7 +145,7 @@ try {
     Write-Host "`n== deploy: the platform groups -> $probeClaude ==" -ForegroundColor Cyan
     & (Join-Path $PSScriptRoot 'link-claude.ps1') `
         -ClaudeDir $probeClaude -SkillsOnly `
-        -SkillGroups fabric-core, fabric-engineering, fabric-realtime, fabric-ai, powerbi | Out-Null
+        -SkillGroups fabric-core, fabric-engineering, fabric-realtime, fabric-ai, power-bi | Out-Null
     $linked = @(Get-ChildItem (Join-Path $probeClaude 'skills') -Force).Count
     Write-Host "   $linked skills linked"
 

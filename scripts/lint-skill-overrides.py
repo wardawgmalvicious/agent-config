@@ -64,7 +64,7 @@ SETTINGS_REL = ".claude/settings.json"
 # ones its work needs (skills/README.md).
 PLATFORM_GROUPS = {
     "fabric-core", "fabric-engineering", "fabric-realtime", "fabric-ai",
-    "powerbi", "windows",
+    "power-bi", "windows",
 }
 BEHAVIOURAL_GROUPS = {"workflow", "social", "meta"}
 

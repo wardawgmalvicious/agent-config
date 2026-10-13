@@ -55,12 +55,12 @@ SETS = {
 # Skill groups the probe must deploy: every platform group but windows,
 # whose one skill has no glob. ALL are needed for EITHER set: the pbip
 # fixtures activate fabric-tmdl* on their .SemanticModel files, which the
-# powerbi group holds since the 2026-10-13 persona split, and the fabric
+# power-bi group holds since the 2026-10-13 persona split, and the fabric
 # set's headline negative assertion -- that pbip-project-structure must
 # NOT fire on SampleNB.Notebook/.platform -- is vacuous unless
 # pbip-project-structure is actually deployed. test-activation.ps1 deploys
 # the same list.
-PROBE_GROUPS = ("fabric-core", "fabric-engineering", "fabric-realtime", "fabric-ai", "powerbi")
+PROBE_GROUPS = ("fabric-core", "fabric-engineering", "fabric-realtime", "fabric-ai", "power-bi")
 
 
 # --------------------------------------------------------------------------

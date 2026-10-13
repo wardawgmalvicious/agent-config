@@ -52,7 +52,7 @@ workspace or client name out of what lands.
 
 ## Where it lands
 
-`skills/powerbi/pbir-report-workflow/references/`: `visual-json.md` §
+`skills/power-bi/pbir-report-workflow/references/`: `visual-json.md` §
 "August 2026 formatting properties" drops each caveat the export
 settles and corrects any name it contradicts, and
 `conditional-formatting.md` gains item 4. A `references/` edit owes no
@@ -63,5 +63,5 @@ retest.
 ```bash
 pbir --version              # 0.9.29 on 2026-10-12; 0.9.32 bundles the same schemas
 pbir schema status          # reportThemeSchema 2.155 local, 2.157 remote on 2026-10-12
-grep -n "August 2026" skills/powerbi/pbir-report-workflow/references/visual-json.md
+grep -n "August 2026" skills/power-bi/pbir-report-workflow/references/visual-json.md
 ```

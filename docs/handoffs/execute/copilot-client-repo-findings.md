@@ -57,9 +57,9 @@ kept and re-synced now and then. The exploration left that open.
   `fabric,powerbi,workflow`, as the first `.EXAMPLE` did until the
   2026-10-13 persona split renamed the platform groups.
 - The help is stale, twice. `-SkillGroups` read "(fabric, powerbi,
-  workflow). Defaults to all of them", no longer one set; the persona
-  split rewrote the list as examples, "(fabric-core, powerbi, workflow,
-  ...)", and left "Defaults to all of them" as it was. The paragraph
+  workflow). Defaults to all of them", no longer one set; the regrouping
+  of 2026-10-13 rewrote the list as examples, "(fabric-core, power-bi,
+  workflow, ...)", and left "Defaults to all of them" alone. The paragraph
   beneath says the `workflow` group holds `code-review` and `commit` and
   that `land` moved to project scope, while `skills/workflow/` holds
   `code-review`, `commit`, `land` and `prune-branches` (2026-09-30).
@@ -93,7 +93,7 @@ note's eight** (2026-09-30):
 
 ```bash
 git grep -nP '\b(agent|machine|claude)-config\b' -- \
-  skills/fabric-* skills/powerbi skills/workflow skills/social
+  skills/fabric-* skills/power-bi skills/workflow skills/social
 ```
 
 - The note's other two, in `fabric-iq`'s data agent files, are a Learn

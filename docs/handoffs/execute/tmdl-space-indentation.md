@@ -16,7 +16,7 @@ written: 2026-10-08
 
 ## What is open
 
-`skills/powerbi/fabric-tmdl/SKILL.md` says "Spaces cause validation
+`skills/power-bi/fabric-tmdl/SKILL.md` says "Spaces cause validation
 errors" (line 15 on 2026-10-08), and its troubleshooting table blames
 "Spaces-for-tabs validation errors" on an editor expanding tabs (line
 216). One parser disagrees, and Learn does not settle it:
@@ -66,12 +66,12 @@ Learn's default and holds either way.
 
 ## Where it lands
 
-`skills/powerbi/fabric-tmdl/SKILL.md`, a platform skill, deployed only
+`skills/power-bi/fabric-tmdl/SKILL.md`, a platform skill, deployed only
 where a `-ClaudeDir` run linked it. A body edit owes a retest:
 `uv run --with pyyaml scripts/skill-status.py --stale` says so.
 
 ## Re-measure before acting
 
 ```bash
-grep -n "Spaces cause\|Spaces-for-tabs" skills/powerbi/fabric-tmdl/SKILL.md   # lines 15 and 216 on 2026-10-08
+grep -n "Spaces cause\|Spaces-for-tabs" skills/power-bi/fabric-tmdl/SKILL.md   # lines 15 and 216 on 2026-10-08
 ```

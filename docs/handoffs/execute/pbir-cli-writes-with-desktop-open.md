@@ -55,7 +55,7 @@ client name out of what lands.
 
 ## Where it lands
 
-`skills/powerbi/pbir-report-workflow/references/`: the rebind finding
+`skills/power-bi/pbir-report-workflow/references/`: the rebind finding
 in `pbir-cli.md`'s issue table, the theme finding in `themes.md`, each
 saying what the failure looks like. A `references/` edit owes no
 retest.
@@ -63,6 +63,6 @@ retest.
 ## Re-measure before acting
 
 ```bash
-grep -n "rebind" skills/powerbi/pbir-report-workflow/references/pbir-cli*.md   # pbir-cli.md:34, pbir-cli-commands.md:48 on 2026-10-12
-grep -n -i "restart\|external change" skills/powerbi/pbir-report-workflow/references/themes.md   # nothing on 2026-10-12
+grep -n "rebind" skills/power-bi/pbir-report-workflow/references/pbir-cli*.md   # pbir-cli.md:34, pbir-cli-commands.md:48 on 2026-10-12
+grep -n -i "restart\|external change" skills/power-bi/pbir-report-workflow/references/themes.md   # nothing on 2026-10-12
 ```

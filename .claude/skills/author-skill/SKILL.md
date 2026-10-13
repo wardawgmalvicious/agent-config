@@ -167,7 +167,7 @@ command, and every cross-reference.
   sits at project scope now.
 - **Within `skills/`, the job picks the group directory**; the group
   directory is load-bearing: `skills/fabric-*/` by a `fabric-*` skill's job,
-  `skills/powerbi/` for `pbir-`/`pbid-`/`pbip-` and a semantic-model
+  `skills/power-bi/` for `pbir-`/`pbid-`/`pbip-` and a semantic-model
   `fabric-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
   repo-general behavioral verbs (`ls skills/workflow`), `skills/meta/` for
   upkeep of the agent configuration that must also run in client repos,

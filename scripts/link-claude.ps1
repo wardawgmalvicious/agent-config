@@ -34,7 +34,7 @@
     a recursive copy.
 
     SKILLS ARE DIFFERENT. The repo groups them by persona and domain
-    (skills/fabric-core/, skills/powerbi/, skills/workflow/), but Claude
+    (skills/fabric-core/, skills/power-bi/, skills/workflow/), but Claude
     Code only discovers a
     skill at <skills-root>/<name>/SKILL.md — one level, with no group
     directory in between. A single junction for skills/ would therefore
@@ -180,7 +180,7 @@
     servers the global template declares.
 
 .EXAMPLE
-    ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric-core,fabric-engineering,powerbi -SkillsOnly
+    ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric-core,fabric-engineering,power-bi -SkillsOnly
     Give a client repo the platform groups its work needs and nothing else.
 #>
 [CmdletBinding()]

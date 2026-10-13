@@ -68,7 +68,7 @@ beside the data agent's Agent Store route, or one beside the
 AI-instructions guidance in `fabric-tmdl/references/ai-instructions.md`,
 beside the model's Copilot access setting. Since the 2026-10-13 persona
 split, `fabric-iq` sits in the `fabric-ai` group, which neither client
-repo links, and `fabric-tmdl` in `powerbi`, which both do: a reference
+repo links, and `fabric-tmdl` in `power-bi`, which both do: a reference
 under `fabric-iq` reaches neither, the note's own repo included.
 
 ## Not checked
@@ -84,5 +84,5 @@ from it is quoted.
 ## Re-measure before acting
 
 ```bash
-grep -rln -i "copilot chat" skills/powerbi/ skills/fabric-*/   # fabric-semantic-model-ai-instructions alone on 2026-10-08
+grep -rln -i "copilot chat" skills/power-bi/ skills/fabric-*/   # fabric-semantic-model-ai-instructions alone on 2026-10-08
 ```

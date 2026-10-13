@@ -338,7 +338,7 @@ Helper scripts for repo maintenance and observability.
   brief's conclusions rest on these answers. No dependencies.
 - [test-semantic-model-audit.ps1](test-semantic-model-audit.ps1) — the
   behaviour test for
-  [`fabric-semantic-model-audit`](../skills/powerbi/fabric-semantic-model-audit/SKILL.md),
+  [`fabric-semantic-model-audit`](../skills/power-bi/fabric-semantic-model-audit/SKILL.md),
   a skill with no `paths:` glob at all: given it *is* loaded, does it
   produce the right findings? `-Mode shipped|baseline|nocarveout|all`.
   The third mode is the one that discriminates — it strips the

@@ -86,5 +86,5 @@ tenant is named.
 ## Re-measure before acting
 
 ```bash
-grep -rn 'updateMetadata\|\.platform`' skills/fabric-core/fabric-rest-api/references/cli.md skills/powerbi/fabric-tmdl/references/definition-api.md skills/fabric-engineering/fabric-dataflow/SKILL.md skills/fabric-core/fabric-rest-api/SKILL.md skills/fabric-engineering/fabric-spark/SKILL.md
+grep -rn 'updateMetadata\|\.platform`' skills/fabric-core/fabric-rest-api/references/cli.md skills/power-bi/fabric-tmdl/references/definition-api.md skills/fabric-engineering/fabric-dataflow/SKILL.md skills/fabric-core/fabric-rest-api/SKILL.md skills/fabric-engineering/fabric-spark/SKILL.md
 ```

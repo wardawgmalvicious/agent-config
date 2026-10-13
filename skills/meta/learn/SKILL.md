@@ -98,7 +98,7 @@ Do **not** ask the user which skill was used. Reconstruct it:
 
 **Record a skill by its `name:`, not by the path you saw it at.** A
 deployed skill sits at `~/.claude/skills/<name>/`, flat — the payload's
-group segment (`fabric`, `powerbi`, `workflow`) is not visible there, so
+group segment (`fabric-core`, `workflow`) is not visible there, so
 a path copied out of context names a directory the source repo does not
 have. Step 3 resolves the group; in note mode the receiving session
 does.

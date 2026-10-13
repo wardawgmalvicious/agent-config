@@ -94,7 +94,7 @@ $ErrorActionPreference = 'Stop'
 $repo       = Split-Path -Parent $PSScriptRoot
 $skillName  = 'fabric-semantic-model-audit'
 $fixtureSrc = Join-Path $repo "tests/skills/$skillName/fixtures"
-$skillSrc   = Join-Path $repo "skills/powerbi/$skillName"
+$skillSrc   = Join-Path $repo "skills/power-bi/$skillName"
 $marker     = '.audit-probe'  # link-claude.ps1 names it too, to admit a worktree run
 
 # The prompt must NOT mention planning, snowflakes, or the carve-out. Naming
@@ -183,7 +183,7 @@ foreach ($m in $modes) {
             # report skills, so it is invoked from a listing like a client repo's.
             & (Join-Path $PSScriptRoot 'link-claude.ps1') `
                 -ClaudeDir $probeClaude -SkillsOnly `
-                -SkillGroups fabric-core, fabric-engineering, fabric-realtime, fabric-ai, powerbi | Out-Null
+                -SkillGroups fabric-core, fabric-engineering, fabric-realtime, fabric-ai, power-bi | Out-Null
             $target = Join-Path $probeClaude "skills/$skillName"
             if (-not (Test-Path $target)) { throw "$skillName did not deploy; the probe would test nothing." }
             Write-Host "  deployed project-scoped: $(@(Get-ChildItem (Join-Path $probeClaude 'skills') -Force).Count) skills"

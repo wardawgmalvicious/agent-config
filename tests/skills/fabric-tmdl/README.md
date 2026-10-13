@@ -32,7 +32,7 @@ Both read the pbip set's
 Build a probe outside this repo, since `.claude/settings.json` here
 collapses every platform description to `name-only`:
 
-- `payload/.claude/skills/`: a copy of every folder in `skills/powerbi/`
+- `payload/.claude/skills/`: a copy of every folder in `skills/power-bi/`
   and the Fabric groups, `skills/fabric-*/`, one `skills/fabric/` holding
   this skill too when this ran.
 - `baseline/`: no `.claude/`, run with `--safe-mode`.
