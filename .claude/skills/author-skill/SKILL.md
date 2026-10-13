@@ -112,8 +112,15 @@ It ranks that skill's pairs by shared distinctive tokens, so what already
 clusters around your topic shows up before you have written a line. A
 description that does not exist yet cannot be scored, so this runs
 against the neighbour here and against the candidate at step 7. Read its
-output into the three outcomes; it changes what you find, not what you
+output into the outcomes below; it changes what you find, not what you
 do about it.
+
+**A new platform skill needs client work that uses the item or feature**
+(decided 2026-10-09, standing since 2026-10-13). An item type existing
+is no reason: a `paths:` glob makes a skill cheap to load, not to own,
+since each still owes drift-audit edits, fixtures, retests and rename
+fixes. Items in the Git-sync sandbox are made to be tested and do not
+count. Without client use, stop and name what a client repo must use.
 
 **Before authoring a *platform* skill, check upstream first.** Microsoft
 ships a catalog at `microsoft/skills-for-fabric`, and vendoring one of
@@ -123,14 +130,18 @@ counterpart table as a starting map. Decide vendor-versus-author
 deliberately; the failure this prevents is a local skill and an upstream
 one competing for the same request, with no record of why both exist.
 
-Three outcomes:
+Four outcomes:
 
 - **Covered correctly** — stop. Say where, and that nothing is needed.
 - **Covered partially, in a skill that owns the domain** — stop and
   propose *extending* that skill instead. A second skill splitting one
   domain makes both harder to trigger, because the model is choosing
   between two descriptions that both half-match.
-- **Not covered** — continue.
+- **Not covered, beside a skill that owns its neighbourhood** — stop and
+  propose a reference under it, as the 2026-10-12 folds did: an edit only
+  to `references/` owes no retest (`refs-only`). A skill of its own must
+  pass step 3's one-skill-or-two test.
+- **Not covered, with no such neighbour** — continue.
 
 The stop cases are real stops. Do not proceed to drilling because the
 topic is interesting.
@@ -476,8 +487,8 @@ worktree", 2026-10-01).
   go in the skill. Marked-unverified is the only exception, and it
   carries a date.
 - **The stop cases in steps 1 and 2 are stops.** Route to `/learn`,
-  propose an extension, or hand off to a generic authoring skill — do
-  not author anyway.
+  propose an extension or a reference, wait for client work, or hand off
+  to a generic authoring skill — do not author anyway.
 - **Name before drilling.** Naming and the one-skill-or-two call go to
   the user first; both are cheap now and expensive after a draft exists.
 - **Brief before draft**, even in one session.
