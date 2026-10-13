@@ -25,6 +25,17 @@ KQL management and query patterns specific to Fabric Eventhouse. Assumes familia
   `{"db":"<dbName>", "csl":"<KQL>"}`.
 - **KQL `|` breaks shell escaping** — write the JSON body to a temp file and pass
   `--body @<file>`, never inline.
+- **If a `scripts/data/kql.sh` wrapper is deployed in the repo** (an
+  internal local-cli template), prefer it over the `az rest` recipe for
+  queries and management commands: it takes KQL on `-q`, from a file
+  with `-i` or on stdin with no temp file, and routes a leading-dot
+  command to `/v1/rest/mgmt`. It fails on an HTTP error status, and it
+  reads a 200's body for the partial failures and warnings Kusto reports
+  there, printing each on stderr with a non-zero exit, so a flagged
+  result never passes for a clean one. `-l` lists the databases the repo
+  has configured and `-h` prints the rest. It is an accelerator that
+  happens to be present, never a dependency; item definitions still take
+  the REST envelope.
 
 Worked `az rest` invocation and the REST item-definition envelope:
 [references/programmatic-access.md](references/programmatic-access.md).
