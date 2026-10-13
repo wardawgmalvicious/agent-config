@@ -248,7 +248,9 @@ used to make is in `references/reading-a-failure.md`.
 ### 8. The cold behavioural session
 
 **Cold, always.** Skills hot-reload, but subagents, commands and rules
-do not, and accumulated context can mask a co-load failure.
+do not, and accumulated context can mask a co-load failure. Fingerprint
+the skill first, for step 9:
+`find <skill-dir> -type f | sort | xargs sha256sum | sha256sum`.
 
 Establish the baseline first:
 
@@ -403,13 +405,11 @@ never `'*'`: the arm's own shell inherits it, and its native `jq` breaks
 
 ### 9. Confirm the fixtures are unmodified
 
-```bash
-git status
-```
-
-Expect no modifications. Fixtures are read-only by validation contract;
-a run that edits its own inputs invalidates every later comparison. If
-one changed, revert it and find out which mode did it.
+`git status` should show no change: fixtures are read-only by contract,
+and an edit to one voids every later comparison, so revert it and find
+which mode made it. Re-run step 8's fingerprint too: a change means an
+edit reached the skill mid-run, which step 10's stamp would record as
+tested; find whose with `ListAgents` and re-run the arms it reached.
 
 ### 10. Stamp, retire the brief, report and hand off
 

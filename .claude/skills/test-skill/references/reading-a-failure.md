@@ -421,6 +421,18 @@ Another live session's commit discarded one, staged or not — twice on
 landed (root `CLAUDE.md`, Branching and concurrent sessions; the
 re-stamp above).
 
+**A stamp certifies whatever is on disk when it is written.** Its
+hashes come from the working tree at `--stamp` time, so an edit that
+reaches the skill after the arms launch, a peer's or the run's own, is
+recorded as tested though no arm read it, and nothing says so: step 8's
+fingerprint and step 9's comparison are the check. A peer holding an
+edit for your stamp hears that it is written from you, since your idle
+notice comes whenever a turn ends, background arms still running.
+`fabric-activator`, 2026-10-13: a `/triage` session held two edits for
+the tester's "safe" message, which came after its idle notice, and the
+edits then read `review-body` against the fresh stamp (`857e65f`,
+`c1e2c69`; Claude Code 2.1.296).
+
 **A stamp taken in a linked worktree can name a commit `main` never
 gets.** Landing rebases the branch onto `main` before the fast-forward
 (`docs/handoffs/CLAUDE.md`), and whenever `main` has moved, that
