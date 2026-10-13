@@ -155,11 +155,11 @@
     },
     "fabric-semantic-model-audit": {
       "behaviour": {
-        "date": "2026-09-03",
-        "commit": "243c779",
-        "routing": "b4bd9e345432feb3",
-        "body": "9eb113704da30660",
-        "references": "127b40cbb55fb4a8"
+        "date": "2026-10-13",
+        "commit": "14e9bb9",
+        "routing": "6b1fcc5e09fa6267",
+        "body": "4d09f2ce19eca2aa",
+        "references": "65ac9ac7fc775f4a"
       }
     },
     "fabric-spark": {

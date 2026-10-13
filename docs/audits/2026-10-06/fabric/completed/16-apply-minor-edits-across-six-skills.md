@@ -230,3 +230,24 @@ nothing but their size, so split them freely at execution time.
   from a probe copy, one arm each: on that query the pointer is not
   what routes it. Stamp written. The other five D-sections were not
   exercised.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `9b77fc7`, for D-5 and brief 20's row 10; that body
+  also carries `fd564a6`'s `description` edit, which dropped the
+  `pbid-tom-live` clause. Phase A skipped: no `paths:` glob. Four `-p`
+  arms in a probe outside the repo holding all five platform groups
+  from `HEAD`, envelope as for D-4; `init` listed 58 commands for the
+  baseline, 78 for the payload, where `fabric-iq` and `fabric-tmdl`,
+  both conditional, were unlisted, so no other skill body could carry
+  D-5. On a readiness query for a data agent and Copilot Chat, the
+  model-invoked arm called `Skill fabric-semantic-model-audit` and the
+  slash arm expanded with no call. Both gave the value search's Q&A
+  dependency with both retirement dates, and Copilot Chat documented
+  only under RLS, OLS and sensitivity labels, AI instructions not
+  named. The baseline gave neither, and said Copilot Chat reads the
+  data agent's Prep-for-AI settings; Learn's Copilot Chat page, read
+  2026-10-13, still names only RLS, OLS, labels and DLP. The
+  no-source-instructions line did not separate: the baseline
+  volunteered it. An open-Desktop memory query, the dropped clause's
+  ground, also called the skill, which named the DMV route as one it
+  does not script and no retired skill. Stamp written. D-1, D-2, D-3
+  and D-6 were not exercised.
