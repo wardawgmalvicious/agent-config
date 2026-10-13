@@ -341,6 +341,16 @@ judge by the next activation, never by the definition. Unverified: that
 `updateDefinition`, or a deployment into a stage running the rule,
 leaves it behind the same way.
 
+**A rule set from a KQL queryset or a Real-Time Dashboard tile runs a
+copy of its query**, taken when the rule was created and run straight
+against the Eventhouse: later edits to the queryset or tile "have no
+effect on the rule", which runs on if the source is deleted, and the
+only way to a new query is to delete the rule and set it again from the
+changed source (Learn, *Ingestion from KQL Querysets* and *Ingestion
+from Real-Time Dashboards*, read 2026-10-13). So an update from Git that
+changes the query never reaches the rule, and neither does **Update**.
+Whether a Power BI or Warehouse source copies its query is unchecked.
+
 ## 12. Gotchas
 
 | Symptom | Cause | Fix |
@@ -350,6 +360,7 @@ leaves it behind the same way.
 | Create returns 400 about `DisplayName` | `name` sent instead of `displayName` | Use `displayName` |
 | Commit or deploy fails for one Activator | A Blob-events source, Power BI source, or UDF action | §11 — no workaround |
 | An alert still sends its old text after an update from Git, though the definition reads new | Git rewrote the stored rule; the running rule keeps the values it was started or last updated with | §11 — select **Update**, then check the next activation |
+| An alert set from a KQL queryset or dashboard tile still fires on the old query after the query changed and synced | The rule runs a copy of the query taken when it was created | §11 — delete the rule and set it again from the changed source |
 | Rule silently stopped | Over 10,000 events/s | Reduce event rate or narrow the rule |
 | A job ran with a 0 or `false` parameter | Silent coercion of an unparseable value | Match the target item's parameter name and type exactly |
 | A cloned attribute reads the wrong column | Only `payload.name` was changed, not the `EventFieldSelector` `fieldName` | Edit both, inside the escaped `instance` |
