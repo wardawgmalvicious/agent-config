@@ -183,9 +183,18 @@ the state is terminal. The reference also documents **`200 OK`** with the
 `DeploymentPipelineOperationExtendedInfo` inline — `id`, `status`,
 `executionPlan` — and no headers to follow, so branch on the status code
 before reading a header. `deployment-id` is a **different** UUID from
-`x-ms-operation-id` — the samples show both — and is not the operation
-ID; poll with the latter. For **24 hours** after completion the extended
-result is available from Get Operation Result.
+`x-ms-operation-id`: the pipeline's own operation ID, by Learn's
+samples, which give one UUID as Deploy Stage Content's `deployment-id`
+and as the ID Get Deployment Pipeline Operation is called with and
+returns (read 2026-10-13; the header itself unmeasured). Poll the deploy
+with `x-ms-operation-id`, and never send that to
+`/v1/deploymentPipelines/{id}/operations/{operationId}`: it answered
+`404` `EntityNotFound`, `resourceType` `DeploymentPipelineOperation`, on
+every one of 85 polls while the deploy succeeded (one client estate,
+2026-10-13). For **24 hours** after completion,
+`GET /v1/operations/{x-ms-operation-id}/result` returns the extended
+result, with `status`, `executionPlan` and an `id` that is the pipeline
+operation's (seen 2026-10-13).
 
 **A failed deploy keeps its error on the step.** The operation reads
 `Failed` with no error of its own. Its `executionPlan.steps[]` has one
