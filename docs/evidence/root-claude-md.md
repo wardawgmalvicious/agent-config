@@ -1649,6 +1649,22 @@ merge`, exit 1, and took it once staged (git 2.55.0.windows.3).
 `/commit` § "When another session shares this tree" carries the route;
 the work stayed in the main checkout, as 2026-09-30 above settled.
 
+**2026-10-13.** A tester holds a skill it never edits. A `/triage` run
+had landed most of a note's edits when `ListAgents` showed six busy
+sessions named `test-skill: <skill>`, one of them on `fabric-activator`,
+which two of the remaining edits touched. `scripts/skill-status.py`
+takes a stamp's hashes from the working tree when `--stamp` runs, since
+the stamp "must describe what was tested, not what HEAD had" (its
+`Snapshot` docstring), so an edit landing between the arms and the stamp
+would have been stamped as tested. Asked, the tester said to hold both
+edits until it messaged "safe", not on its idle notice, since its turns
+end while background probe arms run; the notice did arrive first
+(Claude Code 2.1.296). The edits then landed (`857e65f`, `c1e2c69`) and
+read `review-body` against the fresh stamp, as the tester said they
+would. `editing-skills.md` § "A skill a peer is testing" carries the
+editor's side, and `/test-skill` steps 8 and 9, with its
+`references/reading-a-failure.md`, the tester's.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

@@ -127,3 +127,12 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   there finds this checkout, and paths built on `$PSScriptRoot` land in
   the skill folder, exit 0 (2026-10-12). `coding-bash.md`'s
   `SCRIPT_DIR/../..` is for a script that lives in the repo it serves.
+
+## A skill a peer is testing
+
+A tester edits no file, yet holds its skill: `/test-skill`'s stamp
+hashes the skill as it is on disk when written, so an edit landing
+mid-run is recorded as tested, with nothing to say so. Before editing a
+skill, ask a `ListAgents` row that names it, as `test-skill: <name>`
+rows did, and hold the edit until it says the stamp is written. Its idle
+notice is not that: its turns end while probe arms run (2026-10-13).
