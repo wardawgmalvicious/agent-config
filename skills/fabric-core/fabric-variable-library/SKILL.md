@@ -103,12 +103,18 @@ Use `getLibrary()` + dot notation:
 ```python
 lib = notebookutils.variableLibrary.getLibrary("MyConfig")
 name = lib.lakehouse_name        # String
-flag = lib.enable_logging        # Returns string "true" / "false"
+flag = lib.enable_logging        # Boolean: typed, by Learn
 
-# Boolean: compare as string — bool("false") is True in Python!
-if flag.lower() == "true":
+# Holds for a bool and for a string "true" / "false" alike
+if str(flag).lower() == "true":
     ...
 ```
+
+Learn says values come back typed, and tests a Boolean with a bare
+`if debug_mode:` (read 2026-10-13); no run here has confirmed it, in
+either kernel. Hence the test above: `flag.lower()` raises
+`AttributeError` on a real bool, and `bool(flag)` turns the string
+`"false"` true.
 
 **Wrong patterns** (cause runtime failure or silent bugs):
 
@@ -269,7 +275,7 @@ where no glob can see it. Tried and reverted 2026-09-01.
 | Issue | Resolution |
 |---|---|
 | `.get("lib", "var")` fails at runtime | Use `getLibrary("lib").var`, or `get()` with one reference path, `"$(/**/lib/var)"` |
-| `bool("false")` → `True` | Compare as string: `flag.lower() == "true"` |
+| `bool("false")` → `True`, or `'bool' object has no attribute 'lower'` | Test `str(flag).lower() == "true"`, which holds whether a Boolean arrives typed or as a string |
 | Definition rejected — `format` field | Omit `format` entirely — VariableLibrary does not support it |
 | Pipeline variable wrong type | Map correctly: Boolean→Bool, Integer→Int, DateTime/Guid→String, Item/ConnectionReference→**Object**. `Number` has no pipeline type — switch the variable to Integer or String |
 | Pipeline expression treated as literal | Wrap in `{"value": "...", "type": "Expression"}` |
