@@ -203,6 +203,11 @@ every product, observed).
   Code ContainerOperationFailure" from a Git Update that changes a
   partition key (observed); and the 401 "…accepts tokens intended for
   []", pointing at fabric-auth's row.
+- A pointer to a deployed `scripts/data/cosmos.sh`, worded as
+  `fabric-eventhouse` § "Connection" words `kql.sh`'s (2026-10-12): the
+  read-only reader of a live container, which refuses a cross-partition
+  aggregate on a container of several partition key ranges and names
+  `sql.sh` on the item's SQL analytics endpoint instead.
 - Trigger vocabulary: Cosmos DB in Fabric, `CosmosDBDatabase`, NoSQL
   database, container, partition key, RU/s, autoscale, `maxThroughput`,
   `ContainerOperationFailure`, `cosmos.fabric.microsoft.com`, Gateway
