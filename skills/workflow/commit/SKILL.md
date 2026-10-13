@@ -275,7 +275,12 @@ with the commit and why it was made unasked.
   <sha> -- <path>`. Copy nothing from the shared tree while a peer
   commits: a `cp` inside their stash window takes `HEAD`'s version, and
   the worktree's staged diff comes back empty, so write the edit into
-  the worktree's copy instead. The `git diff --quiet` before the
+  the worktree's copy instead, or carry one already made as a blob, from
+  `git hash-object -w <path>` or, for one commit's share of a split
+  file, the blob `stage-part.py` staged, `git rev-parse :<path>`. A
+  blob equal to `HEAD:<path>`'s was read inside their window: take it
+  again (six commits through two worktrees, 2026-10-13). The
+  `git diff --quiet` before the
   fast-forward is the shared side's check: it refuses while their stash
   has your file reading as `HEAD`, the moment a fast-forward would fail
   their restore twice and leave their edits in the patch file alone.
@@ -286,6 +291,7 @@ with the commit and why it was made unasked.
 
   ```bash
   git worktree add -b <branch> <scratch>/wt HEAD   # then write your edit into <scratch>/wt/<path>
+  git -C <scratch>/wt cat-file blob <sha> > <scratch>/wt/<path>   # or carry it as a blob, <sha> from git hash-object -w <path>
   git -C <scratch>/wt add <path> && git -C <scratch>/wt diff --cached   # your hunk alone; commit there
   git diff --quiet <branch> -- <path> && git add <path> && git merge --ff-only <branch>   # refuses mid-stash: retry
   git worktree remove <scratch>/wt && git branch -d <branch>
