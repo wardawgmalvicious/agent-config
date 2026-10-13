@@ -26,9 +26,10 @@
     folder is a junction under ~/.claude/skills, and git run from it
     answers the checkout behind the junction, so defaults built on
     $PSScriptRoot would name that checkout's repo while writing into the
-    skill folder (measured 2026-10-12). Until that day every snapshot
-    lived beside this script, in the repo that sources ~/.claude, so a
-    recreate run from any other repo wrote into that one.
+    skill folder (measured 2026-10-12). Until that day the defaults put
+    every snapshot they wrote beside this script, in the repo that
+    sources ~/.claude, so a recreate run from any other repo wrote into
+    that one. One repo kept its own in its clone as well, from 2026-09-23.
 
     Three modes, one per switch. -Check is the default and is read-only.
       -Export  read the live repo and overwrite the JSON file with it
@@ -45,7 +46,11 @@
     repo's settings, and a crossed -Apply patched the other repo with that
     one's, its owner check passing because one account owned both. A file
     that names no repo, or is not JSON, is refused too and never
-    overwritten.
+    overwritten. One exported before 2026-10-01, when _repo arrived, has
+    none: to adopt it, check from its history that it is the clone's own,
+    add "_repo": "<owner>/<name>" by hand, and run -Check before -Export,
+    since only every setting matching the live repo shows whose settings
+    the file holds (adopted so in another repo, 2026-10-12).
 
     CURATED, NOT A DUMP. The file holds settable values only. The raw
     `gh api repos/...` answer also carries ids, counters, timestamps and
