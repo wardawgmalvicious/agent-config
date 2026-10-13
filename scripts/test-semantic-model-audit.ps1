@@ -50,8 +50,8 @@
        here and the residual count is asserted to be zero.
 
     DEPLOYMENT IS PROJECT-SCOPED, ON PURPOSE. The obvious route --
-    `link-claude.ps1 -SkillGroups workflow,social,meta,fabric -Force` -- pushes 29 skills
-    into ~/.claude/skills, visible to every session on this machine until a
+    `link-claude.ps1 -SkillGroups workflow,social,meta,powerbi -Force` -- pushes the
+    skill's whole group into ~/.claude/skills, visible to every session on this machine until a
     restoring run happens; a forgotten restore is the 2026-08-31 failure.
     None of it is needed: project scope only ADDS names user scope lacks, and
     this skill is exactly such a name. `-SkillGroups` does not prune user
@@ -94,7 +94,7 @@ $ErrorActionPreference = 'Stop'
 $repo       = Split-Path -Parent $PSScriptRoot
 $skillName  = 'fabric-semantic-model-audit'
 $fixtureSrc = Join-Path $repo "tests/skills/$skillName/fixtures"
-$skillSrc   = Join-Path $repo "skills/fabric/$skillName"
+$skillSrc   = Join-Path $repo "skills/powerbi/$skillName"
 $marker     = '.audit-probe'  # link-claude.ps1 names it too, to admit a worktree run
 
 # The prompt must NOT mention planning, snowflakes, or the carve-out. Naming
@@ -179,7 +179,7 @@ foreach ($m in $modes) {
 
         if ($m -ne 'baseline') {
             & (Join-Path $PSScriptRoot 'link-claude.ps1') `
-                -ClaudeDir $probeClaude -SkillsOnly -SkillGroups fabric | Out-Null
+                -ClaudeDir $probeClaude -SkillsOnly -SkillGroups powerbi | Out-Null
             $target = Join-Path $probeClaude "skills/$skillName"
             if (-not (Test-Path $target)) { throw "$skillName did not deploy; the probe would test nothing." }
             Write-Host "  deployed project-scoped: $(@(Get-ChildItem (Join-Path $probeClaude 'skills') -Force).Count) skills"

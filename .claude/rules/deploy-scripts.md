@@ -61,7 +61,7 @@ edit goes live.
   back to the main tree, printing `Relink` and still ending `Done`
   (2026-09-02). Given `-ClaudeDir`, `-SkillGroups` prunes that directory's
   `skills/`, never user scope.
-- `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric` pushes only
-  the Fabric skills into a client repo, without this machine's agents, hooks
-  or rules. They are junctions, so every save to one is live in that repo's
-  sessions from then on.
+- `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric-core` pushes
+  only that group's skills into a client repo, without this machine's
+  agents, hooks or rules. They are junctions, so every save to one is live
+  in that repo's sessions from then on.

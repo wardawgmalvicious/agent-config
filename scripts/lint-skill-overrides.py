@@ -60,8 +60,12 @@ SETTINGS_REL = ".claude/settings.json"
 
 # Groups whose skills MUST be collapsed, and groups that must not be
 # required to be. Anything else fails as unclassified -- see the module
-# docstring.
-PLATFORM_GROUPS = {"fabric", "powerbi", "windows"}
+# docstring. The fabric-* groups are personas: a client repo links the
+# ones its work needs (skills/README.md).
+PLATFORM_GROUPS = {
+    "fabric-core", "fabric-engineering", "fabric-realtime", "fabric-ai",
+    "powerbi", "windows",
+}
 BEHAVIOURAL_GROUPS = {"workflow", "social", "meta"}
 
 # The one value this repo uses. Kept as a constant so a deliberate policy

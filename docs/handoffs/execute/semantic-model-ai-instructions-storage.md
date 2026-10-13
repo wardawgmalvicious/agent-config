@@ -21,7 +21,7 @@ written: 2026-10-07
 
 ## What is open
 
-`skills/fabric/fabric-tmdl/references/ai-instructions.md:271` says the
+`skills/powerbi/fabric-tmdl/references/ai-instructions.md:271` says the
 AI-instructions blob "is not stored in TMDL": it was
 `fabric-semantic-model-ai-instructions/SKILL.md:263` until that skill
 folded into `fabric-tmdl` on 2026-10-12. The skill's glob until the
@@ -97,6 +97,6 @@ out, and the client repo is cited by kind.
 ## Re-measure before acting
 
 ```bash
-grep -rn "not stored in TMDL" skills/fabric/   # fabric-semantic-model-ai-instructions/SKILL.md:263 on 2026-10-07 and 2026-10-08; fabric-tmdl/references/ai-instructions.md:271 on 2026-10-12
+grep -rn "not stored in TMDL" skills/powerbi/   # fabric-semantic-model-ai-instructions/SKILL.md:263 on 2026-10-07 and 2026-10-08; fabric-tmdl/references/ai-instructions.md:271 on 2026-10-12
 grep -rn "CustomInstructions" skills/          # nothing on 2026-10-08
 ```

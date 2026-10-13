@@ -81,5 +81,5 @@ from it is quoted.
 ## Re-measure before acting
 
 ```bash
-grep -rln -i "copilot chat" skills/fabric/   # fabric-semantic-model-ai-instructions alone on 2026-10-08
+grep -rln -i "copilot chat" skills/powerbi/ skills/fabric-*/   # fabric-semantic-model-ai-instructions alone on 2026-10-08
 ```

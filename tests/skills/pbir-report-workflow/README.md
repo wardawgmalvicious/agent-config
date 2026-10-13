@@ -46,9 +46,10 @@ custom theme. `scaffold` builds a new report and reads none of it.
 Build a probe outside this repo, since `.claude/settings.json` here
 collapses every platform description to `name-only`:
 
-- `router/.claude/skills/`: a copy of every folder in `skills/fabric/`
-  and `skills/powerbi/`, the two groups both client repos hold, so the
-  router's entry competes with every Fabric description.
+- `router/.claude/skills/`: a copy of every folder in the platform
+  groups both client repos hold (`skills/fabric/` and `skills/powerbi/`
+  then, split by persona on 2026-10-13), so the router's entry competes
+  with every Fabric description.
 - `baseline/`: no `.claude/`, run with `--safe-mode`.
 - `Sales.Report/` at each arm's root.
 

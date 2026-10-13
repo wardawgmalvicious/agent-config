@@ -34,7 +34,7 @@
   and the troubleshooting page still links `concepts-generate.md#…`
   anchors on a page that moved. A page link loses little, since each
   page is fetched whole. Chosen 2026-10-07.
-- `artifacts`: `skills/fabric/fabric-iq/`, which holds the ontology and
+- `artifacts`: `skills/fabric-ai/fabric-iq/`, which holds the ontology and
   both agents since 2026-10-12,
   `claude/rules/fabric-git-serialization.md`, `claude/mcp/` — the
   project template's `ontology-remote-mcp` entry serves the endpoint

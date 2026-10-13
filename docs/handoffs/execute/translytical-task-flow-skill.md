@@ -85,7 +85,7 @@ a report calls.
 
 ## Where it lands
 
-A new `skills/fabric/` or `skills/powerbi/` skill, the group being part
+A new `skills/fabric-*/` or `skills/powerbi/` skill, the group being part
 of the decision, or a reference beside the vendored report skill if
 upstream's file is vendored instead.
 

@@ -40,7 +40,8 @@ onelake: One of our Power BI reports shows images stored in a lakehouse's Files 
 Build a probe outside this repo, since `.claude/settings.json` here
 collapses every platform description to `name-only`:
 
-- `router/.claude/skills/`: a copy of every folder in `skills/fabric/`.
+- `router/.claude/skills/`: a copy of every folder in the Fabric groups,
+  `skills/fabric-*/`, one `skills/fabric/` when this ran.
 - `baseline/`: nothing, run with `--safe-mode`.
 - To compare with a previous shape, a third arm holding that commit's
   `skills/fabric/`, exported with `git archive <sha> skills/fabric`.

@@ -46,7 +46,7 @@ ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'  # after 
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force  # default; -Force adds claude/CLAUDE.md, settings.json
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta         # same, when neither of those changed
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -GlobalMcp  # prune ~/.claude.json's MCP servers; after Docker Desktop
-./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric,powerbi  # committable, for a client repo
+./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric-core,fabric-engineering,powerbi  # committable, for a client repo
 ./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow  # Copilot's user scope: never social; meta refused
 ./skills/workflow/recreate-repo/scripts/repo-settings.ps1  # GitHub settings vs .github/repo-settings.json; -Export, -Apply
 ```

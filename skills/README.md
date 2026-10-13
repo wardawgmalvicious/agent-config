@@ -144,16 +144,31 @@ construction. Split out of `workflow` 2026-09-11.
   against the identity denylist, which is the step nothing else covers:
   `identity-guard` gates only `git commit` and `git push`.
 
-## Microsoft Fabric platform (19)
+## Platform groups
 
-- [fabric-rest-api/](fabric/fabric-rest-api/) — Fabric REST patterns:
+A platform group is a persona: pruned from user scope, and linked into a
+client repo by `link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly
+-SkillGroups <groups>`, naming only the groups whose work that repo does.
+Split by persona from `fabric` and `powerbi` on 2026-10-13: folders
+moved, no skill's name or content changed, and each skill went with the
+job it serves, so the two semantic-model skills sit with the Power BI
+work. The gain is in the listing, since a skill with a `paths:` glob
+lists nothing until a matching file is read: a repo with narrower work
+pays for fewer always-listed skills.
+
+### Fabric core (5)
+
+Any Fabric repo: the REST surface, deployment, security, governance and
+variable libraries.
+
+- [fabric-rest-api/](fabric-core/fabric-rest-api/) — Fabric REST patterns:
   pagination with `continuationToken`, long-running operations (202 +
   Location + polling), `jobType` values, item definitions, `?updateMetadata`.
   Its `references/` hold authentication and token audiences, the `fab`
   CLI, and the error index that names the owner of each symptom's fix.
   Folded from `fabric-auth`, `fabric-cli` and `fabric-gotchas` on
   2026-10-12.
-- [fabric-deploy/](fabric/fabric-deploy/) — deploying workspace content
+- [fabric-deploy/](fabric-core/fabric-deploy/) — deploying workspace content
   from one stage to the next by whichever route fits: it picks the route,
   checks the identity, plans and stops before a write, then verifies,
   while its `references/` hold the fabric-cicd library and deployment
@@ -161,75 +176,9 @@ construction. Split out of `workflow` 2026-09-11.
   job before any tool. Merged from `fabric-cicd` and
   `fabric-deployment-pipelines` on 2026-10-12, the pilot for regrouping
   platform skills around the job a user asks for.
-- [fabric-data-pipeline/](fabric/fabric-data-pipeline/) — DataPipeline item
-  as Git serializes it: the `pipeline-content.json` envelope, activity
-  anatomy and `policy`, the activity-type enum including the
-  `InvokePipeline` → `ExecutePipeline` deprecation, deactivation via
-  `state` + `onInactiveMarkAs`, and the `.schedules` job-scheduler file
-  nothing else in the payload reaches. Named for the item type rather
-  than `fabric-pipeline` because "pipeline" already means deployment and
-  release pipelines in `fabric-deploy`'s territory. Expression syntax stays
-  in the `coding-expressions` rule, which co-loads on the same file.
-- [fabric-dataflow/](fabric/fabric-dataflow/) — the Dataflow Gen2 item as
-  Git and REST see it: the `.Dataflow` folder's `mashup.pq` and
-  `queryMetadata.json`, the typed `/dataflows` namespace, the three CI/CD
-  patterns, the Gen1 upgrade routes, and the refresh, publish and cost
-  limits. Named for the item type, which is `Dataflow` — the folder, the
-  `ItemType` enum and the API all drop the "Gen2" that every user types,
-  so the generation earns its place in the description as a trigger token
-  instead of in the name. Two findings shape it: `getDefinition` needs
-  **write** permission, so there is no read-only route to a definition,
-  and the definition format requires a composite `connectionId` whose
-  `ClusterId` half **no documented endpoint returns** — which is why
-  authoring a bound dataflow purely over REST is not a supported path.
-  M style stays in the `coding-m` rule, which co-loads on `mashup.pq`.
-- [fabric-warehouse/](fabric/fabric-warehouse/) — Fabric Warehouse T-SQL,
-  unsupported types, MERGE constraints, COPY INTO auth.
-- [fabric-database/](fabric/fabric-database/) — Fabric SQL database.
-- [fabric-eventhouse/](fabric/fabric-eventhouse/) — Fabric Eventhouse + KQL.
-- [fabric-eventstream/](fabric/fabric-eventstream/) — Fabric Eventstream.
-- [fabric-event-schema-set/](fabric/fabric-event-schema-set/) — the Event
-  Schema Set item a schema-associated Eventstream validates events
-  against: `EventSchemaSetDefinition.json`, its four description stores,
-  the bare Avro record you upload against the envelope the portal
-  generates, and which route mints a version. Every portal save does,
-  while a Git sync stores `versions[]` as pushed, so it carries scripts
-  to append a version from Git and read the result back. Split from
-  `fabric-eventstream` by item, as the family divides; that skill keeps
-  the producer contract and the `dataschema` anatomy.
-- [fabric-activator/](fabric/fabric-activator/) — the Activator item, which
-  the API and Git both call `Reflex`: `ReflexEntities.json` as a flat array
-  of entities wired by `uniqueIdentifier`, the escaped-JSON-string trap in
-  `definition.instance`, the `/reflexes` REST namespace, rule sources and
-  actions, the preview remote MCP server, and the limits, CU meters and
-  lifecycle-management exclusions. Named for the portal name rather than the
-  item type, inverting the usual rule: every request arrives saying
-  "Activator", so `fabric-reflex` would have been named after the half of
-  the vocabulary nobody types — `Reflex` earns its place in the description
-  as a trigger token instead. Two findings decide how it reads: reading a
-  definition needs **write** permission, there being no read-only route to
-  one, and **stopping a rule does not stop its billed event listener** —
-  only deleting it does. Wiring Activator as an Eventstream destination
-  stays `fabric-eventstream`'s.
-- [fabric-realtime-dashboard/](fabric/fabric-realtime-dashboard/) — Real-Time
-  Dashboard (KQLDashboard) JSON authoring: baseQueries wiring,
-  load-time validation rules, 24-column grid, visual options,
-  display-edge formatting in KQL.
-- [fabric-spark/](fabric/fabric-spark/) — Spark in Fabric: notebooks,
-  lakehouses and the Spark item definitions in its body, while its
-  `references/` hold four jobs in depth: a Spark job queued, slow or
-  failed, through the monitoring APIs; the Tier 1 / Tier 2
-  error-handling convention for notebook code; materialized lake views;
-  and AI Functions on a DataFrame. Always listed, with no glob, so a
-  request made in words reaches it before any notebook is read. Folded
-  from `fabric-spark-monitoring`, `fabric-error-handling`, `fabric-mlv`
-  and `fabric-ai-functions` on 2026-10-12.
-- [fabric-warehouse-monitoring/](fabric/fabric-warehouse-monitoring/) —
-  Warehouse query monitoring: `OPTION (LABEL = ...)`, `queryinsights`
-  schema, retention windows.
-- [fabric-security/](fabric/fabric-security/) — workspace roles, item-level
+- [fabric-security/](fabric-core/fabric-security/) — workspace roles, item-level
   permissions, SQL GRANT/DENY/REVOKE, RLS/CLS bypass via Spark/OneLake.
-- [fabric-catalog-governance/](fabric/fabric-catalog-governance/) — the
+- [fabric-catalog-governance/](fabric-core/fabric-catalog-governance/) — the
   governance posture of a tenant, reached by REST: what the OneLake
   catalog **Govern** tab reports, counted and remediated by API. Domains
   and domain roles, workspace-to-domain and workspace-to-capacity
@@ -245,18 +194,92 @@ construction. Split out of `workflow` 2026-09-11.
   routes the three fixes that have no write API at all — endorsement, DLP
   policies, item ownership — to the person who can make them. Search is
   `fabric-rest-api`'s; access and the label field are `fabric-security`'s.
-- [fabric-tmdl/](fabric/fabric-tmdl/) — TMDL semantic-model authoring,
-  with the Definition API and a model's AI instructions as references.
-- [fabric-semantic-model-audit/](fabric/fabric-semantic-model-audit/) —
-  reviewing a *finished* model rather than authoring one: star-schema
-  shape and the two opposite meanings of "flatten", relationship health,
-  memory cost, and readiness for reports, agents and ontologies. Named
-  `-audit` and not `-review` because `code-review` is diff-scoped and
-  this is corpus-scoped; carries the `fabric-` prefix even though it is a
-  procedure, since `drift-audit` already holds the bare verb slot.
-  Unconditional on purpose — a `paths:` glob would co-load an audit
-  procedure on every one-line measure edit.
-- [fabric-iq/](fabric/fabric-iq/) — the Fabric IQ items: ontology, graph
+- [fabric-variable-library/](fabric-core/fabric-variable-library/) — variable
+  libraries.
+
+### Fabric engineering (6)
+
+Lakehouses, warehouses, databases and the pipelines between them.
+
+- [fabric-data-pipeline/](fabric-engineering/fabric-data-pipeline/) — DataPipeline item
+  as Git serializes it: the `pipeline-content.json` envelope, activity
+  anatomy and `policy`, the activity-type enum including the
+  `InvokePipeline` → `ExecutePipeline` deprecation, deactivation via
+  `state` + `onInactiveMarkAs`, and the `.schedules` job-scheduler file
+  nothing else in the payload reaches. Named for the item type rather
+  than `fabric-pipeline` because "pipeline" already means deployment and
+  release pipelines in `fabric-deploy`'s territory. Expression syntax stays
+  in the `coding-expressions` rule, which co-loads on the same file.
+- [fabric-dataflow/](fabric-engineering/fabric-dataflow/) — the Dataflow Gen2 item as
+  Git and REST see it: the `.Dataflow` folder's `mashup.pq` and
+  `queryMetadata.json`, the typed `/dataflows` namespace, the three CI/CD
+  patterns, the Gen1 upgrade routes, and the refresh, publish and cost
+  limits. Named for the item type, which is `Dataflow` — the folder, the
+  `ItemType` enum and the API all drop the "Gen2" that every user types,
+  so the generation earns its place in the description as a trigger token
+  instead of in the name. Two findings shape it: `getDefinition` needs
+  **write** permission, so there is no read-only route to a definition,
+  and the definition format requires a composite `connectionId` whose
+  `ClusterId` half **no documented endpoint returns** — which is why
+  authoring a bound dataflow purely over REST is not a supported path.
+  M style stays in the `coding-m` rule, which co-loads on `mashup.pq`.
+- [fabric-warehouse/](fabric-engineering/fabric-warehouse/) — Fabric Warehouse T-SQL,
+  unsupported types, MERGE constraints, COPY INTO auth.
+- [fabric-database/](fabric-engineering/fabric-database/) — Fabric SQL database.
+- [fabric-spark/](fabric-engineering/fabric-spark/) — Spark in Fabric: notebooks,
+  lakehouses and the Spark item definitions in its body, while its
+  `references/` hold four jobs in depth: a Spark job queued, slow or
+  failed, through the monitoring APIs; the Tier 1 / Tier 2
+  error-handling convention for notebook code; materialized lake views;
+  and AI Functions on a DataFrame. Always listed, with no glob, so a
+  request made in words reaches it before any notebook is read. Folded
+  from `fabric-spark-monitoring`, `fabric-error-handling`, `fabric-mlv`
+  and `fabric-ai-functions` on 2026-10-12.
+- [fabric-warehouse-monitoring/](fabric-engineering/fabric-warehouse-monitoring/) —
+  Warehouse query monitoring: `OPTION (LABEL = ...)`, `queryinsights`
+  schema, retention windows.
+
+### Fabric real-time (5)
+
+Real-Time Intelligence: Eventhouse and KQL, Eventstream and its schemas,
+Activator and dashboards.
+
+- [fabric-eventhouse/](fabric-realtime/fabric-eventhouse/) — Fabric Eventhouse + KQL.
+- [fabric-eventstream/](fabric-realtime/fabric-eventstream/) — Fabric Eventstream.
+- [fabric-event-schema-set/](fabric-realtime/fabric-event-schema-set/) — the Event
+  Schema Set item a schema-associated Eventstream validates events
+  against: `EventSchemaSetDefinition.json`, its four description stores,
+  the bare Avro record you upload against the envelope the portal
+  generates, and which route mints a version. Every portal save does,
+  while a Git sync stores `versions[]` as pushed, so it carries scripts
+  to append a version from Git and read the result back. Split from
+  `fabric-eventstream` by item, as the family divides; that skill keeps
+  the producer contract and the `dataschema` anatomy.
+- [fabric-activator/](fabric-realtime/fabric-activator/) — the Activator item, which
+  the API and Git both call `Reflex`: `ReflexEntities.json` as a flat array
+  of entities wired by `uniqueIdentifier`, the escaped-JSON-string trap in
+  `definition.instance`, the `/reflexes` REST namespace, rule sources and
+  actions, the preview remote MCP server, and the limits, CU meters and
+  lifecycle-management exclusions. Named for the portal name rather than the
+  item type, inverting the usual rule: every request arrives saying
+  "Activator", so `fabric-reflex` would have been named after the half of
+  the vocabulary nobody types — `Reflex` earns its place in the description
+  as a trigger token instead. Two findings decide how it reads: reading a
+  definition needs **write** permission, there being no read-only route to
+  one, and **stopping a rule does not stop its billed event listener** —
+  only deleting it does. Wiring Activator as an Eventstream destination
+  stays `fabric-eventstream`'s.
+- [fabric-realtime-dashboard/](fabric-realtime/fabric-realtime-dashboard/) — Real-Time
+  Dashboard (KQLDashboard) JSON authoring: baseQueries wiring,
+  load-time validation rules, 24-column grid, visual options,
+  display-edge formatting in KQL.
+
+### Fabric AI (1)
+
+The Fabric IQ items. Every skill here carries a glob, so the group adds
+nothing to a listing until a matching file is read.
+
+- [fabric-iq/](fabric-ai/fabric-iq/) — the Fabric IQ items: ontology, graph
   model, data agent and operations agent. It picks the item by the job or
   the folder suffix and carries what crosses them, an ontology grounding
   both agents and generating a graph among it, while its `references/`
@@ -265,10 +288,12 @@ construction. Split out of `workflow` 2026-09-11.
   `fabric-graph`, `fabric-data-agent` and `fabric-operations-agent` on
   2026-10-12; Learn's IQ workload also holds semantic models, which are
   `fabric-tmdl`'s, and Plan, which has no skill.
-- [fabric-variable-library/](fabric/fabric-variable-library/) — variable
-  libraries.
 
-## Power BI Desktop / Reports (2)
+### Power BI (4)
+
+Reports and semantic models, in PBIR, PBIP and TMDL. The two `fabric-`
+skills keep their prefix: the folder follows the job, the name the
+item's platform.
 
 - [pbip-project-structure/](powerbi/pbip-project-structure/) — PBIP folder
   layout.
@@ -288,11 +313,21 @@ construction. Split out of `workflow` 2026-09-11.
   `pbir-conditional-formatting` and `powerbi-report-design` on
   2026-10-12, since client report work ran through the CLI, where the
   file skills' globs never fired.
+- [fabric-tmdl/](powerbi/fabric-tmdl/) — TMDL semantic-model authoring,
+  with the Definition API and a model's AI instructions as references.
+- [fabric-semantic-model-audit/](powerbi/fabric-semantic-model-audit/) —
+  reviewing a *finished* model rather than authoring one: star-schema
+  shape and the two opposite meanings of "flatten", relationship health,
+  memory cost, and readiness for reports, agents and ontologies. Named
+  `-audit` and not `-review` because `code-review` is diff-scoped and
+  this is corpus-scoped; carries the `fabric-` prefix even though it is a
+  procedure, since `drift-audit` already holds the bare verb slot.
+  Unconditional on purpose — a `paths:` glob would co-load an audit
+  procedure on every one-line measure edit.
 
-## Windows apps (1)
+### Windows apps (1)
 
-A platform group, like `fabric` and `powerbi`: pruned from user scope,
-and linked into a repo that ships a Windows app with
+Linked into a repo that ships a Windows app with
 `link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups windows`.
 Opened 2026-10-01 for `msix-packaging`, which loads into no session
 until a repo links it.
@@ -318,7 +353,9 @@ as for spent briefs. Each line says what one covered and how to restore
 it from a commit on `main` that holds it. A restored skill also needs its
 `skillOverrides` entry back, and a Fabric one its two rows in
 `tests/skills/fabric-triggers/expected_activations.md`, which
-`lint-skill-overrides` and the static check each ask for.
+`lint-skill-overrides` and the static check each ask for. The checkout
+lands it at that commit's path, under the `skills/fabric/` of before the
+2026-10-13 persona split, so move it into the group of its job.
 
 - `fabric-copy-job` — the Copy job item: full and incremental copy,
   watermark and CDC, its JSON definition and REST runs.

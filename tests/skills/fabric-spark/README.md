@@ -41,7 +41,8 @@ a per-table `OPTIMIZE` and `VACUUM` loop with no error handling.
 Build a probe outside this repo, since `.claude/settings.json` here
 collapses every platform description to `name-only`:
 
-- `payload/.claude/skills/`: a copy of every folder in `skills/fabric/`.
+- `payload/.claude/skills/`: a copy of every folder in the Fabric groups,
+  `skills/fabric-*/`, one `skills/fabric/` when this ran.
 - `baseline/`: no `.claude/`, run with `--safe-mode`.
 - `TableMaintenance.Notebook/` at each arm's root.
 

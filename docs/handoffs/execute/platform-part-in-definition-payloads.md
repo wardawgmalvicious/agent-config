@@ -66,7 +66,7 @@ status, any error text, and whether the name changed.
 
 ## Where it lands
 
-`skills/fabric/fabric-rest-api/references/cli.md`, two lines;
+`skills/fabric-core/fabric-rest-api/references/cli.md`, two lines;
 `fabric-dataflow` § 6;
 and `fabric-tmdl/references/definition-api.md`'s `.platform` line,
 `fabric-tmdl-api`'s line 15 until the 2026-10-12 fold, which dropped
@@ -86,5 +86,5 @@ tenant is named.
 ## Re-measure before acting
 
 ```bash
-grep -rn 'updateMetadata\|\.platform`' skills/fabric/fabric-rest-api/references/cli.md skills/fabric/fabric-tmdl/references/definition-api.md skills/fabric/fabric-dataflow/SKILL.md skills/fabric/fabric-rest-api/SKILL.md skills/fabric/fabric-spark/SKILL.md
+grep -rn 'updateMetadata\|\.platform`' skills/fabric-core/fabric-rest-api/references/cli.md skills/powerbi/fabric-tmdl/references/definition-api.md skills/fabric-engineering/fabric-dataflow/SKILL.md skills/fabric-core/fabric-rest-api/SKILL.md skills/fabric-engineering/fabric-spark/SKILL.md
 ```

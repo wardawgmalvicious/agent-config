@@ -90,7 +90,7 @@ note's eight** (2026-09-30):
 
 ```bash
 git grep -nP '\b(agent|machine|claude)-config\b' -- \
-  skills/fabric skills/powerbi skills/workflow skills/social
+  skills/fabric-* skills/powerbi skills/workflow skills/social
 ```
 
 - The note's other two, in `fabric-iq`'s data agent files, are a Learn

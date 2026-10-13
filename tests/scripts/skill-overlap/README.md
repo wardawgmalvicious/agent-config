@@ -51,8 +51,8 @@ the `lint-skill-routing` hook. A `files:` pattern that misses prints
 path that must match and one that must not:
 
 ```bash
-pre-commit run lint-skill-routing --files skills/fabric/fabric-rest-api/SKILL.md  # Passed
-pre-commit run lint-skill-routing --files README.md                               # Skipped
+pre-commit run lint-skill-routing --files skills/fabric-core/fabric-rest-api/SKILL.md  # Passed
+pre-commit run lint-skill-routing --files README.md                                    # Skipped
 ```
 
 Both were run when the hook was added, 2026-09-15, the first against

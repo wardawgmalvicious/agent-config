@@ -21,7 +21,7 @@ written: 2026-10-01
   fabric-mirroring's native-item line, archived with that skill on
   2026-10-09.
 - **Kind**: an edit, by `/author-skill`:
-  `skills/fabric/fabric-cosmos-db/`, `paths: "**/*.CosmosDBDatabase/**"`.
+  `skills/fabric-engineering/fabric-cosmos-db/`, `paths: "**/*.CosmosDBDatabase/**"`.
   Nothing is drafted.
 - **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items.
@@ -219,7 +219,7 @@ every product, observed).
 
 ## Where it lands
 
-`skills/fabric/fabric-cosmos-db/SKILL.md` and its `references/`, a
+`skills/fabric-engineering/fabric-cosmos-db/SKILL.md` and its `references/`, a
 `skills/README.md` row, fixtures and `expected_activations.md` rows via
 `/test-skill`.
 

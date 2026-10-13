@@ -65,10 +65,10 @@ Helper scripts for repo maintenance and observability.
   Never overwrites a drifted mirror copy, deletes a real directory, or
   removes a target-only file without `-Force`; exits 1 when anything
   needs attention.
-  `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric` pushes only
-  the Fabric skills into a client repo's `.claude`, without this machine's
-  agents, hooks or rules; they are junctions, so every later save to one
-  is live in that repo's sessions.
+  `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric-core` pushes
+  only that group's skills into a client repo's `.claude`, without this
+  machine's agents, hooks or rules; they are junctions, so every later
+  save to one is live in that repo's sessions.
 - [copy-copilot.ps1](copy-copilot.ps1) — copy two payloads into a repo's
   `.github` as real, committable files, so GitHub Copilot serves them to
   everyone who clones it: skill groups into `.github/skills`, and the
@@ -153,7 +153,7 @@ Helper scripts for repo maintenance and observability.
   collectors return nothing for an absent root and a check that compared
   nothing must not report a pass. No dependencies. Run by pre-commit.
 - [lint-skill-overrides.py](lint-skill-overrides.py) — check that every
-  `fabric/` and `powerbi/` skill has a `name-only` `skillOverrides` entry
+  platform-group skill has a `name-only` `skillOverrides` entry
   in `.claude/settings.json`, which collapses their descriptions in
   sessions here. Runs over the whole set: the block is a by-name map with
   no pattern form, so a new platform skill is silently uncovered, and the
@@ -338,7 +338,7 @@ Helper scripts for repo maintenance and observability.
   brief's conclusions rest on these answers. No dependencies.
 - [test-semantic-model-audit.ps1](test-semantic-model-audit.ps1) — the
   behaviour test for
-  [`fabric-semantic-model-audit`](../skills/fabric/fabric-semantic-model-audit/SKILL.md),
+  [`fabric-semantic-model-audit`](../skills/powerbi/fabric-semantic-model-audit/SKILL.md),
   a skill with no `paths:` glob at all: given it *is* loaded, does it
   produce the right findings? `-Mode shipped|baseline|nocarveout|all`.
   The third mode is the one that discriminates — it strips the

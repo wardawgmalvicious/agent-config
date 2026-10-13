@@ -375,7 +375,7 @@ the group into the probe instead. Moved unchanged, bar the exit-code
 paragraph's dates.
 
 ```powershell
-./scripts/link-claude.ps1 -SkillGroups workflow,social,meta,fabric   # or ...,powerbi
+./scripts/link-claude.ps1 -SkillGroups workflow,social,meta,fabric-core   # or any other platform group
 ```
 
 `-SkillGroups` **prunes** — a group not listed is removed. This

@@ -234,7 +234,7 @@ outside this repo; give the baseline a sibling with no `.claude/`, since
 ```powershell
 $probe = '<a scratch directory outside this repo>'
 New-Item -ItemType Directory "$probe/payload/.claude/skills", "$probe/baseline" | Out-Null
-Get-ChildItem skills/fabric -Directory | ForEach-Object {   # or skills/powerbi
+Get-ChildItem skills/<group> -Directory | ForEach-Object {   # the skill's own group: fabric-core, powerbi, ...
     Copy-Item $_.FullName "$probe/payload/.claude/skills" -Recurse }
 ```
 

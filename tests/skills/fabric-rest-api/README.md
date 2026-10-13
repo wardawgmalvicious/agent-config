@@ -37,7 +37,8 @@ case also tests the index's line on reaching such an owner.
 Build a probe outside this repo, since `.claude/settings.json` here
 collapses every platform description to `name-only`:
 
-- `router/.claude/skills/`: a copy of every folder in `skills/fabric/`.
+- `router/.claude/skills/`: a copy of every folder in the Fabric groups,
+  `skills/fabric-*/`, one `skills/fabric/` when this ran.
 - `old/.claude/skills/`: the same at the commit before the fold,
   exported with `git archive c45e5cc skills/fabric`.
 - `baseline/`: no `.claude/`, run with `--safe-mode`.

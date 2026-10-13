@@ -95,7 +95,7 @@ Before naming anything, find out whether the topic is already covered.
 
 ```
 grep -li "<topic term>" skills/*/*/SKILL.md .claude/skills/*/SKILL.md
-grep -n -i "<topic term>" skills/fabric/fabric-rest-api/references/gotchas.md
+grep -n -i "<topic term>" skills/fabric-core/fabric-rest-api/references/gotchas.md
 ```
 
 Check that file explicitly. `/learn` treats it as the default home for
@@ -177,10 +177,10 @@ command, and every cross-reference.
   2026-09-09 split took this repo's own maintenance skills out of user
   scope for exactly this reason; `ls -d .claude/skills/*/` lists what
   sits at project scope now.
-- **Within `skills/`, the namespace picks the group directory**, and the
-  group directory is load-bearing. `skills/fabric/` for `fabric-*`,
-  `skills/powerbi/` for `pbir-`/`pbid-`/`pbip-` and the vendored
-  `powerbi-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
+- **Within `skills/`, the job picks the group directory**; the group
+  directory is load-bearing: `skills/fabric-*/` by a `fabric-*` skill's job,
+  `skills/powerbi/` for `pbir-`/`pbid-`/`pbip-` and a semantic-model
+  `fabric-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
   repo-general behavioral verbs (`ls skills/workflow`), `skills/meta/` for
   upkeep of the agent configuration that must also run in client repos,
   kept from Copilot by its `.no-copilot` marker (`ls skills/meta`), and

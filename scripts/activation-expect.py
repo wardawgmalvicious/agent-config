@@ -52,12 +52,15 @@ SETS = {
     "fabric": "tests/skills/fabric-triggers",
 }
 
-# Skill groups the probe must deploy. BOTH are needed for EITHER set:
-# the pbip fixtures activate fabric-tmdl* on their .SemanticModel files,
-# and the fabric set's headline negative assertion -- that
-# pbip-project-structure must NOT fire on SampleNB.Notebook/.platform --
-# is vacuous unless pbip-project-structure is actually deployed.
-PROBE_GROUPS = ("fabric", "powerbi")
+# Skill groups the probe must deploy: every platform group but windows,
+# whose one skill has no glob. ALL are needed for EITHER set: the pbip
+# fixtures activate fabric-tmdl* on their .SemanticModel files, which the
+# powerbi group holds since the 2026-10-13 persona split, and the fabric
+# set's headline negative assertion -- that pbip-project-structure must
+# NOT fire on SampleNB.Notebook/.platform -- is vacuous unless
+# pbip-project-structure is actually deployed. test-activation.ps1 deploys
+# the same list.
+PROBE_GROUPS = ("fabric-core", "fabric-engineering", "fabric-realtime", "fabric-ai", "powerbi")
 
 
 # --------------------------------------------------------------------------
@@ -339,11 +342,11 @@ def cmd_check(args) -> int:
             failures.append(
                 "skills are NOT deployed to the probe: the startup listing is "
                 f"missing {len(missing)} unconditional skill(s) that the "
-                f"fabric+powerbi groups should have put there, e.g. "
+                f"platform groups should have put there, e.g. "
                 f"{missing[:4]}. Every fixture would report 'nothing loaded'.")
         else:
             print(f"  ok  startup listing carries all {len(unconditional)} "
-                  "unconditional fabric+powerbi skills (deploy succeeded)")
+                  "unconditional platform skills (deploy succeeded)")
         leaked = sorted(seen & set(skills))
         if leaked:
             failures.append(

@@ -17,9 +17,9 @@
 
     1. The platform skills are not deployed on this machine.
        ~/.claude/skills carries the workflow group only, so an undeployed
-       probe finds no fabric/powerbi skill to activate. Guarded by asserting
-       that the STARTUP listing carries the unconditional skills of both
-       groups before any fixture is read.
+       probe finds no platform skill to activate. Guarded by asserting
+       that the STARTUP listing carries the unconditional skills of every
+       probed group before any fixture is read.
 
     2. Reading the debug log instead of the transcript. `--debug-file` emits
        its skill lines before any Read runs, so it can never witness an
@@ -37,11 +37,12 @@
     are therefore computed against the read order actually observed, so
     expected_activations.md stays a plain per-file table.
 
-    Both skill groups deploy for either fixture set. The pbip fixtures
-    activate fabric-tmdl* on their .SemanticModel files, and the fabric
-    set's headline negative assertion — that pbip-project-structure must NOT
-    fire on SampleNB.Notebook/.platform — is vacuous unless that skill is
-    present to fail.
+    Every platform group but windows deploys for either fixture set, the
+    PROBE_GROUPS of activation-expect.py. The pbip fixtures activate
+    fabric-tmdl* on their .SemanticModel files, which the powerbi group
+    holds, and the fabric set's headline negative assertion — that
+    pbip-project-structure must NOT fire on SampleNB.Notebook/.platform — is
+    vacuous unless that skill is present to fail.
 
     The probe directory is disposable and lives outside this repo. Teardown
     runs in a finally block: an interrupted run that left skill junctions
@@ -139,9 +140,12 @@ try {
     New-Item -ItemType File -Path (Join-Path $ProbeRoot $marker) | Out-Null
     Copy-Item $fixtureSrc (Join-Path $ProbeRoot 'fixtures') -Recurse
 
-    Write-Host "`n== deploy: fabric + powerbi -> $probeClaude ==" -ForegroundColor Cyan
+    # The same groups as PROBE_GROUPS in activation-expect.py, which asserts
+    # the startup listing against them.
+    Write-Host "`n== deploy: the platform groups -> $probeClaude ==" -ForegroundColor Cyan
     & (Join-Path $PSScriptRoot 'link-claude.ps1') `
-        -ClaudeDir $probeClaude -SkillsOnly -SkillGroups fabric, powerbi | Out-Null
+        -ClaudeDir $probeClaude -SkillsOnly `
+        -SkillGroups fabric-core, fabric-engineering, fabric-realtime, fabric-ai, powerbi | Out-Null
     $linked = @(Get-ChildItem (Join-Path $probeClaude 'skills') -Force).Count
     Write-Host "   $linked skills linked"
 

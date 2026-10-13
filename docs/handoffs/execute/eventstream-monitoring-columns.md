@@ -18,7 +18,7 @@ written: 2026-10-08
 
 ## What is open
 
-`skills/fabric/fabric-eventstream/references/monitoring.md` gives the
+`skills/fabric-realtime/fabric-eventstream/references/monitoring.md` gives the
 Eventstream monitoring tables' base columns as `ItemId`, `ItemName` and
 `ItemKind`, from Learn on 2026-10-06, but its three KQL samples still
 filter on `ArtifactId` (lines 24, 31 and 39 on 2026-10-08), under a
@@ -43,7 +43,7 @@ second on.
 ## Re-measure before acting
 
 ```bash
-grep -n 'where ArtifactId' skills/fabric/fabric-eventstream/references/monitoring.md   # lines 24, 31, 39 on 2026-10-08
+grep -n 'where ArtifactId' skills/fabric-realtime/fabric-eventstream/references/monitoring.md   # lines 24, 31, 39 on 2026-10-08
 ```
 
 In the monitoring database, a `getschema` on any of the four

@@ -11,13 +11,13 @@ written: 2026-09-02
 
 - **Written**: 2026-09-02, after fetching the two
   `learn.microsoft.com/fabric/iq/plan/` links that prompted
-  the [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md) work and
+  the [`fabric-semantic-model-audit`](../../../skills/powerbi/fabric-semantic-model-audit/SKILL.md) work and
   finding they were about something else entirely.
 - **Kind**: coverage decision, answered yes on 2026-09-30. Since
   2026-10-09 the expected home is a reference under `fabric-iq` rather
   than a skill of its own: Learn lists Planning among the IQ workload's
   items, and that skill,
-  [`fabric-iq`](../../../skills/fabric/fabric-iq/SKILL.md), landed on
+  [`fabric-iq`](../../../skills/fabric-ai/fabric-iq/SKILL.md), landed on
   2026-10-12. Confirm the shape with the user on reopening.
 - **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items.
@@ -51,7 +51,7 @@ down: the correction is cheap now and expensive after a skill has been
 drafted against the wrong premise.
 
 The genuine modelling-audit content shipped separately as
-[`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md),
+[`fabric-semantic-model-audit`](../../../skills/powerbi/fabric-semantic-model-audit/SKILL.md),
 drilled against different sources.
 
 ## Step 0 — the gating question
@@ -491,7 +491,7 @@ Lighter than the other two briefs, but not nil:
   will co-load with anything touching the planning semantic model. Half
   A's date-table and dimension guidance must not restate their
   conventions — cite and move on.
-- [`fabric-semantic-model-audit`](../../../skills/fabric/fabric-semantic-model-audit/SKILL.md)
+- [`fabric-semantic-model-audit`](../../../skills/powerbi/fabric-semantic-model-audit/SKILL.md)
   — now shipped — needs to know that a *planning* model is legitimately
   shaped differently from a reporting one. **Done 2026-09-03, and no
   longer this brief's work**: its "what an audit must not flag" section
@@ -566,8 +566,8 @@ paragraphs stale.
   relationship fixed at 20:38 and measures added at 20:43; the
   planning-sheet probes ran to 22:48, and the system database's DDL was
   committed at 02:10 on 2026-10-01.
-- `grep -n "fabric_plan_sys" skills/fabric/fabric-database/SKILL.md` and
-  `grep -n "more rows" skills/fabric/fabric-tmdl/SKILL.md`: the two
+- `grep -n "fabric_plan_sys" skills/fabric-engineering/fabric-database/SKILL.md`
+  and `grep -n "more rows" skills/powerbi/fabric-tmdl/SKILL.md`: the two
   overlap edits, landed 2026-09-30.
 - The Plan definition page, before the draft calls a part required or
   optional.

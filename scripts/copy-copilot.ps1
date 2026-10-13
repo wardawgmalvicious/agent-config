@@ -191,8 +191,9 @@
     must not quietly delete the instructions a previous run placed.
 
 .PARAMETER SkillGroups
-    Which skill groups under skills/ to copy (fabric, powerbi, workflow).
-    Defaults to all of them, matching link-claude.
+    Which skill groups under skills/ to copy, named as their directories
+    are (fabric-core, powerbi, workflow, ...). Defaults to all of them,
+    matching link-claude.
 
     THE WORKFLOW GROUP IS NOW PORTABLE, which reverses the advice that
     stood here. It used to hold this repo's own maintenance skills
@@ -231,7 +232,7 @@
     next run without it prunes what still matches nothing.
 
 .EXAMPLE
-    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric,powerbi,workflow
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric-core,fabric-engineering,powerbi,workflow
     The normal call. Vendors the platform skills, and the ported
     instructions whose applyTo matches a file in that repo, into its
     .github as committable files, leaving anything the client authored
@@ -244,7 +245,7 @@
     house style without the Fabric/Power BI skill surface.
 
 .EXAMPLE
-    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric -WhatIf
+    ./scripts/copy-copilot.ps1 -CopilotDir C:\Repos\<Client>\<Project>\.github -SkillGroups fabric-core -WhatIf
     Preview: show what would be copied, pruned, skipped or held back,
     writing nothing.
 
@@ -255,7 +256,7 @@
 
 .NOTES
     Copying personally authored skills into a client repo commits that
-    content to the client's history. The platform (fabric/powerbi) skills
+    content to the client's history. The platform (fabric-*, powerbi) skills
     are generic, derived from public Microsoft docs, so this is low risk --
     but it is a one-way door once pushed, so review the diff before
     committing, the same as any vendored dependency.

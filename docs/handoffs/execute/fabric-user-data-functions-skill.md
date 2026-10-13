@@ -18,7 +18,7 @@ written: 2026-10-01
   row, both now in `fabric-deploy`'s references, the serialization
   rule's UDF bytes, and fabric-rest-api's `FunctionSet` type.
 - **Kind**: an edit, by `/author-skill`:
-  `skills/fabric/fabric-user-data-functions/`,
+  `skills/fabric-engineering/fabric-user-data-functions/`,
   `paths: "**/*.UserDataFunction/**"`, the serialization rule's glob.
   Nothing is drafted. The report side of translytical task flows is a
   second skill, [translytical-task-flow-skill.md](translytical-task-flow-skill.md).
@@ -202,7 +202,7 @@ authoring (proxy functions, `RETURNS` to narrow the inferred
 
 ## Where it lands
 
-`skills/fabric/fabric-user-data-functions/SKILL.md` and `references/`,
+`skills/fabric-engineering/fabric-user-data-functions/SKILL.md` and `references/`,
 a `skills/README.md` row, fixtures via `/test-skill`. Test queries the
 note proposed: "My Power BI data function button doesn't list my
 function"; "Publishing fails on a parameter named `product_name`"; "Will

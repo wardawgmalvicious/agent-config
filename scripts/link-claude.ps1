@@ -33,8 +33,9 @@
     window in which a live session could miss a hook is a rename rather than
     a recursive copy.
 
-    SKILLS ARE DIFFERENT. The repo groups them by domain (skills/fabric/,
-    skills/powerbi/, skills/workflow/), but Claude Code only discovers a
+    SKILLS ARE DIFFERENT. The repo groups them by persona and domain
+    (skills/fabric-core/, skills/powerbi/, skills/workflow/), but Claude
+    Code only discovers a
     skill at <skills-root>/<name>/SKILL.md — one level, with no group
     directory in between. A single junction for skills/ would therefore
     surface nothing at all. So $ClaudeDir/skills is a REAL directory
@@ -44,8 +45,8 @@
 
     -SkillGroups selects which groups deploy, which is what makes a partial
     payload possible: pair it with -ClaudeDir and -SkillsOnly to push just
-    the Fabric skills into a client repo's .claude/ without also linking
-    this machine's agents, hooks, and rules there.
+    the platform groups a client repo's work needs into its .claude/ without
+    also linking this machine's agents, hooks, and rules there.
 
     Deselecting a group PRUNES its skills from the target on the next run.
     Pruning only ever deletes a junction whose target resolves inside this
@@ -164,7 +165,7 @@
     ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta
     THIS MACHINE'S DEFAULT. User scope, but only the repo-general verbs
     (code-review, commit, land, prune-branches), the social group
-    (linkedin-highlights) and the meta group (learn); fabric and powerbi
+    (linkedin-highlights) and the meta group (learn); the platform groups
     are pruned from ~/.claude/skills, and so is any group left off the
     list. The five skills in .claude/skills/ are in no group and are
     deployed by nothing -- see the .DESCRIPTION.
@@ -179,8 +180,8 @@
     servers the global template declares.
 
 .EXAMPLE
-    ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric,powerbi -SkillsOnly
-    Give a client repo the platform skills and nothing else.
+    ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric-core,fabric-engineering,powerbi -SkillsOnly
+    Give a client repo the platform groups its work needs and nothing else.
 #>
 [CmdletBinding()]
 param(

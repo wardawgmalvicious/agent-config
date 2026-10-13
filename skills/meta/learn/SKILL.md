@@ -115,7 +115,7 @@ note mode you name the destination; you do not open it for writing.
 | Domain procedure, API shape, syntax, gotcha for one product area | `skills/<group>/<name>/SKILL.md` at the heading where it belongs; detail or long examples go in `skills/<group>/<name>/references/REFERENCE.md` |
 | The payload repo's own procedure — the drift pipeline, authoring, testing | `.claude/skills/<name>/SKILL.md` — project scope there, live on save, no deploy step |
 | A convention of the payload repo itself — how its files are edited, tested or deployed | root `CLAUDE.md` in the payload checkout takes the rule and its tell (the error text, or the silence); guidance a file there triggers goes to a `paths:`-scoped rule in `.claude/rules/`; the evidence goes to `docs/evidence/root-claude-md.md` under the same heading. Project scope, no deploy step |
-| Cross-product troubleshooting symptom (error text → cause) | the fix at the owning skill's heading, **and** a row in `skills/fabric/fabric-rest-api/references/gotchas.md` naming that owner; the fix goes in that row only when no skill owns it |
+| Cross-product troubleshooting symptom (error text → cause) | the fix at the owning skill's heading, **and** a row in `skills/fabric-core/fabric-rest-api/references/gotchas.md` naming that owner; the fix goes in that row only when no skill owns it |
 | Language / style convention that should apply whenever a file type is open | `claude/rules/coding-<lang>.md` (path-scoped via `paths:`) |
 | How agent instruction files load, or which home a kind of guidance takes in any repo — a nested `CLAUDE.md`, an `AGENTS.md`, the `@AGENTS.md` import form | `claude/rules/agent-instructions-scoping.md`. A repo's own placement decision stays in that repo (Step 0) |
 | Environment or machine-wide constraint for every session | `claude/CLAUDE.md` takes the rule, its tell (the error text, or the silence) and one date; the evidence — how it was measured, what was believed before — goes to `docs/evidence/user-claude-md.md` under the same heading. A copy, not live until the deploy script runs; see Step 8 |
@@ -364,7 +364,7 @@ folder name with space skipped silently → fabric-deploy → references/fabric-
 
 Proposal:
 
-> **skills/fabric/fabric-deploy/references/fabric-cicd.md → ## Item-type caveats (the ones that bite)**
+> **skills/fabric-core/fabric-deploy/references/fabric-cicd.md → ## Item-type caveats (the ones that bite)**
 > ```diff
 > + - **Folder names must match the item display name exactly** — a
 > +   mismatch (including whitespace) is skipped with no error; check

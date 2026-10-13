@@ -7,8 +7,9 @@ paths:
 # The skillOverrides block
 
 - `.claude/settings.json`'s `skillOverrides` collapses every platform skill
-  description — `skills/fabric/`, `skills/powerbi/` and `skills/windows/`,
-  the groups in `PLATFORM_GROUPS` — to `name-only` in sessions here. It
+  description — the `skills/fabric-*/`, `skills/powerbi/` and
+  `skills/windows/` groups in `PLATFORM_GROUPS` — to `name-only` in
+  sessions here. It
   stays even though the default prune keeps those skills out of
   `~/.claude/skills`: it keeps them auditable from this repo and the shape
   ready for a future edit.

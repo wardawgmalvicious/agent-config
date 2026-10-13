@@ -54,7 +54,8 @@ IQ item folders, `SampleOnt.Ontology`, `SampleOntTmdl.Ontology`,
 `.claude/settings.json` here collapses every platform description to
 `name-only`:
 
-- `payload/.claude/skills/`: a copy of every folder in `skills/fabric/`.
+- `payload/.claude/skills/`: a copy of every folder in the Fabric groups,
+  `skills/fabric-*/`, one `skills/fabric/` when this ran.
 - `baseline/`: no `.claude/`, run with `--safe-mode`.
 - The five item folders at each arm's root.
 
