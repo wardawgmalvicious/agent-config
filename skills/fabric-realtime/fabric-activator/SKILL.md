@@ -341,6 +341,14 @@ judge by the next activation, never by the definition. Unverified: that
 `updateDefinition`, or a deployment into a stage running the rule,
 leaves it behind the same way.
 
+**A deployed rule polls in its new stage at once.** Deployed into a
+stage that never had it, a rule read `shouldRun: true`, its source's
+`isStopped` `false`, and the target database ran its query within two
+seconds of the deploy (one client estate, 2026-10-13), so it billed
+there from the start. Keep a stage quiet through the data its query
+reads. `.show queries` rows whose `ClientActivityId` starts `Activator;`
+show a source polling, with no portal.
+
 **A rule set from a KQL queryset or a Real-Time Dashboard tile runs a
 copy of its query**, taken when the rule was created and run straight
 against the Eventhouse: later edits to the queryset or tile "have no
