@@ -169,6 +169,14 @@ rules used to rebind items require parameters of type `Text`.
 parameters (rules apply) · report visuals · report pages · dashboard
 tiles · model metadata · item relationships.
 
+**An item's job schedules are included too**, though that list names
+none: "When you deploy an item, its schedules are automatically
+included" (Learn `job-scheduler`, read 2026-10-13). A schedule a first
+deploy created in the target was owned by the deploying user (one client
+estate, 2026-10-13), so the same page's expiry of schedules when "a user
+doesn't log in to Fabric for 90 consecutive days" would fall on the
+deployer's sign-ins (inferred).
+
 **Sensitivity labels** are copied only when a new item is deployed or an
 existing item is deployed to an empty stage, or when the source has a
 label with protection and the target does not (which prompts for
