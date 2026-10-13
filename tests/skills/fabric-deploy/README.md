@@ -44,7 +44,9 @@ collapses every platform description to `name-only`:
   `skills/fabric-*/`, one `skills/fabric/` when this ran.
 - `baseline/`: nothing, run with `--safe-mode`.
 - To compare with a previous shape, a third arm holding that commit's
-  `skills/fabric/`, exported with `git archive <sha> skills/fabric`.
+  Fabric skills, exported with `git archive <sha> skills/fabric` for a
+  commit before the 2026-10-13 persona split, or naming its four
+  `skills/fabric-*` groups after it.
 - Both fixtures at each arm's root.
 
 Run each case in each arm from that arm's directory, with

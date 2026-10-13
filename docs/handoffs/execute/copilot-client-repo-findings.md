@@ -54,9 +54,12 @@ kept and re-synced now and then. The exploration left that open.
   into a repo's `.github` that forgets the flag copies
   `linkedin-highlights` there, to be committed with the rest. Read from
   the script and `skills/*/`, not run: the client's run named
-  `fabric,powerbi,workflow`, as the first `.EXAMPLE` does.
-- The help is stale, twice. `-SkillGroups` reads "(fabric, powerbi,
-  workflow). Defaults to all of them", no longer one set. The paragraph
+  `fabric,powerbi,workflow`, as the first `.EXAMPLE` did until the
+  2026-10-13 persona split renamed the platform groups.
+- The help is stale, twice. `-SkillGroups` read "(fabric, powerbi,
+  workflow). Defaults to all of them", no longer one set; the persona
+  split rewrote the list as examples, "(fabric-core, powerbi, workflow,
+  ...)", and left "Defaults to all of them" as it was. The paragraph
   beneath says the `workflow` group holds `code-review` and `commit` and
   that `land` moved to project scope, while `skills/workflow/` holds
   `code-review`, `commit`, `land` and `prune-branches` (2026-09-30).

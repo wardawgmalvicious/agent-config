@@ -108,7 +108,7 @@ have kept unverified work out of `main`'s history only, and the history
 already takes it: `land`'s four edits landed at 09:44–09:46 local that
 day and `c0283d9` stamped their behaviour at 11:17, while
 `skill-status.py --stale` tracks the gap. Nor could a probe stand in,
-since `test-activation.ps1` deploys only `fabric` and `powerbi`, into its
+since `test-activation.ps1` deploys only the platform groups, into its
 probe's project scope, and leaves user scope alone. So the worktree
 stays, holding the claim, and the brief stays, holding the check, until
 the check passes; a fix goes forward on `main`.
