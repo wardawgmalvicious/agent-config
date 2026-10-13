@@ -219,6 +219,27 @@ for `fabric-sqlendpoint` and `fabric-kqlendpoint` give in
 `claude/mcp/README.md`. `git show 6e09cce:.vscode/mcp.template.json`
 recovers the template.
 
+**2026-10-13.** The Copilot payload was removed, as
+`docs/handoffs/execute/copilot-payload-retirement.md` set out; that
+brief was deleted when it landed. VS Code's Claude session target runs
+Claude Code's own engine and reads `~/.claude`, and a turn through it on
+the corporate network on 2026-10-05 answered and loaded user rules, so
+`copilot/` had no reader the user supports: on 2026-10-13 they said the
+standalone GitHub Copilot app, the one harness left reading it, is not
+one. The brief's measurements and the turn's grading moved verbatim to
+`docs/evidence/user-claude-md.md` § "GitHub Copilot does not inherit
+this payload". So the `<tool>/` paragraph drops its `copilot/` clause,
+and `skills/meta/`'s `.no-copilot` marker now only lets `learn` keep its
+`model: fable` pin, which the user kept that day. `lint-frontmatter.py`
+still fails an active `model:` elsewhere under `skills/`, for a new
+reason: the Claude target on a Copilot-routed model serves only that
+group's models, Claude Sonnet 5.5, Claude Sonnet 5 and Claude Haiku 4.5
+on 2026-10-05, where it had been Copilot's slash dispatch (2026-09-09).
+`68d61eb`, the last commit before the removal branched, holds the
+payload whole: `git show 68d61eb:scripts/copy-copilot.ps1` recovers the
+script, `git show 68d61eb:.claude/rules/copilot-payload.md` its rule,
+and `git ls-tree -r 68d61eb copilot` the ports.
+
 ## Commands
 
 ```bash
@@ -457,6 +478,12 @@ through the junction, it answered `31 setting(s) already match`, exit 0.
 Every other repo's snapshot now lives in a clone of that repo, on the
 user's answer to the pilot that moved the script, which reversed the
 2026-09-27 decision to keep them all here (`0af9fa4`).
+
+**2026-10-13.** Both `copy-copilot.ps1` lines left with the script
+(§ "Preamble", same date). Until then they read as routine to every
+session here, while the freeze that said not to run them sat in
+`.claude/rules/copilot-payload.md`, which loaded only on a Read under
+`copilot/` (a prompt audit of this repo, 2026-10-08, finding 17).
 
 ## How this repo is structured
 
@@ -762,6 +789,45 @@ measured on 2.1.291 (§ "Validating a change", 2026-10-06). Edit rests on
 the 2.1.288 changelog bullet and the memory docs, which say a path-scoped
 rule triggers on "the Read, Write, or Edit tool", and was not measured
 here.
+
+**2026-10-13.** The `copilot/instructions/` row left with the payload
+(§ "Preamble", same date), and so did the sentence that Copilot takes
+only `CLAUDE.md` from `~/.claude` while `copy-copilot.ps1` routes the
+rest, with `.claude/rules/copilot-payload.md`, which it cited. The
+sentence had put a Local-agent setting, `chat.useClaudeMdFile`, on the
+Copilot harness, and its "only" no longer held: every VS Code profile
+here reads `~/.claude` on VS Code's default locations since the user's
+call of 2026-10-08 (`docs/handoffs/execute/copilot-harness-switches.md`).
+The user's answer of 2026-10-13 rested on what the standalone Copilot
+app loads, as the retirement brief recorded it. The app runs Copilot CLI
+in worktrees it creates, so no VS Code target and no
+`.vscode/settings.json` applies to it. A session in it reported what it
+had loaded, on 2026-10-05 in a client Fabric repo, then checked that on
+disk:
+
+- **In full**: the repo's `AGENTS.md`, and its root `CLAUDE.md` with
+  `@AGENTS.md` expanded, so `AGENTS.md` twice; and
+  `~/.copilot/instructions/cross-repo-handoffs.instructions.md`.
+- **As an index the agent opens itself**: the ports in
+  `~/.copilot/instructions`, by `applyTo`, and the repo's
+  `.claude/rules/`, by `paths:`.
+- **Skills by name and description**: the repo's `.github/skills/`,
+  which shadows same-named ones in `~/.copilot/skills/`, then those, and
+  the app's own.
+- **Nothing under `~/.claude`**, and no `.claude/skills/`: its junctions
+  are git-ignored, so a worktree never has them.
+
+After the removal the app keeps `AGENTS.md`, the index of the repo's
+`.claude/rules/`, the handoff rule and its own skills, and loses the 12
+ports and both skill sets. On 2026-10-06, comparing each port with its
+`claude/rules/` source by distinct non-blank lines after the
+frontmatter, `coding-tsql` had 10 found only in the port and 19 only in
+the rule, `coding-sparksql` 14 and 14, `coding-bicep` 1 and 19,
+`coding-xaml` 3 and 6, `coding-csharp` 2 and 4, `coding-expressions` 1
+and 3, and the other six 0 and 2. Pointing
+`COPILOT_CUSTOM_INSTRUCTIONS_DIRS` at `~/.claude/rules` instead is
+untested; it was unset at User scope on 2026-10-06, and the app does
+parse `paths:` in a repo's `.claude/rules/`.
 
 ## How the pieces trigger
 
@@ -2135,6 +2201,21 @@ folder finds the payload checkout through the junction: the
 `repo-settings.ps1` suite, run against the version that did, failed 17
 of 74, one an `-Export` of another repo written beside the script, exit
 0.
+
+**2026-10-13.** With the payload removed (§ "Preamble", same date), the
+rules lost what kept it up: `editing-rules.md` its port bullet, its
+`copilot/instructions/*.md` glob and "or its Copilot port" from its
+title; `editing-skills.md` its bullet against refreshing a `workflow`
+copy; `pre-commit-hooks.md` the Copilot ports from its list of pair
+checks; and root's list of rules here, `copilot-payload.md`.
+`lint-instructions.py` and its hook went in the same commit as the
+ports, so no commit ran it over half a payload, and `payload-coverage.py`
+lost its `--ports` mode, which only `copy-copilot.ps1` called.
+`editing-skills.md`'s `model:` bullet keeps the split and changes its
+reason. `/learn` was not sent in the 2026-10-05 turn, so whether a
+skill's pin fails or is ignored on a Copilot-routed model is unseen,
+and the user kept `learn`'s pin on 2026-10-13, unpinning being one line
+should a `/learn` there fail.
 
 ## Validating a change
 

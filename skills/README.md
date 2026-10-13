@@ -98,12 +98,11 @@ deployment, and this one is deployed to Claude Code's user scope and to
 nothing else.
 
 It carries a [`.no-copilot`](meta/.no-copilot) marker file, which
-`scripts/copy-copilot.ps1` reads to exclude it from every run — a bare
-one included, where every other group is selected — and which
-`scripts/lint-frontmatter.py` reads to allow an active `model:` key,
-since the ban on that field exists only because Copilot cannot resolve
-it. One file, two readers, so the exclusion and the exemption cannot
-disagree.
+`scripts/lint-frontmatter.py` reads to allow an active `model:` key: a
+pin kept on purpose, where every other group's is commented because
+VS Code's Claude target on a Copilot-routed model can serve only that
+group's models. The name is kept from the retired Copilot payload,
+whose script read the same file to leave the group out.
 
 - [learn/](meta/learn/) — "learn!": capture a session learning into the
   skill, rule or `CLAUDE.md` that should have covered it. Detects which
@@ -128,9 +127,7 @@ payload. See [.claude/skills/README.md](../.claude/skills/README.md).
 
 Personal-profile writing, in its own group so it can be deployed
 apart from `workflow`. It serves any repo, so Claude Code takes both
-groups at user scope; a workplace Copilot has no use for it, so
-`copy-copilot.ps1 -SkillGroups workflow` leaves it out by
-construction. Split out of `workflow` 2026-09-11.
+groups at user scope. Split out of `workflow` 2026-09-11.
 
 - [linkedin-highlights/](social/linkedin-highlights/) — turn a repo
   you worked in into the prose for one LinkedIn Experience role's

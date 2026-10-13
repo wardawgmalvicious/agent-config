@@ -42,7 +42,8 @@ repos:
   # also names its own script in `files:`, and any script that script
   # loads. A change to a checker can fail files already committed, yet a
   # commit touching only the checker skipped its hook until 2026-09-27:
-  # be7c7ac added lint-instructions' link check with that hook Skipped.
+  # be7c7ac added a link check, to a linter since retired, with its hook
+  # Skipped.
   # CI runs --all-files, which would catch it, but only after the push to
   # main. lint-skills and lint-rules lint the files they are handed, and
   # `types: [markdown]` would drop a script anyway, so they take no script
@@ -202,23 +203,6 @@ repos:
         entry: python scripts/handoff-status.py . --check --no-inbox
         language: python
         files: '^(docs/(handoffs|audits)/|scripts/(handoff|audit)-status\.py$)'
-        pass_filenames: false
-
-      # copilot/instructions/*.instructions.md carry `applyTo`, not `paths:`,
-      # so lint-frontmatter.py would reject every one and is scoped away from
-      # them. This validates them instead, blocks a personal-repo name or
-      # profile path reaching a client repo, and fails when a rule changes
-      # without its hand-written port following. Runs over the whole set
-      # rather than the changed files, since a rule edit and its port live in
-      # different directories and either one alone is the interesting case.
-      # lint-frontmatter.py is in `files:` too, since the linter loads its
-      # glob primitives.
-      - id: lint-instructions
-        name: Validate Copilot instructions and check port drift
-        entry: python scripts/lint-instructions.py
-        language: python
-        additional_dependencies: [pyyaml]
-        files: '^(claude/rules/|copilot/|scripts/lint-instructions\.py$|scripts/lint-frontmatter\.py$)'
         pass_filenames: false
 
       # The identity-guard Claude Code hook sees only commits Claude Code

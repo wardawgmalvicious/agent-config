@@ -20,15 +20,15 @@ the marker appeared nowhere in the transcript. Project scope only ever
 So re-creating one of the seven project-scope names under skills/ does not
 conflict, error, or warn. The project-scope skill simply stops being the
 one that loads, and the only symptom is a skill behaving like an older
-version of itself. Nothing in either deploy script can catch it:
+version of itself. Nothing in the deploy script can catch it:
 link-claude.ps1 walks skills/ and never looks at .claude/skills, which is
 correct — those skills deploy nowhere — but it means the collision is
 invisible on both sides.
 
 THE CROSS-GROUP CASE IS ALREADY LOUD, and is included because it is the
-same namespace and the same data. link-claude.ps1 and copy-copilot.ps1
-both throw on a duplicate name across groups, so that one cannot ship
-silently. What they cannot do is fail before the commit: without this you
+same namespace and the same data. link-claude.ps1 throws on a duplicate
+name across groups, so that one cannot ship silently. What it cannot do
+is fail before the commit: without this you
 land the collision and discover it at the next deploy. Catching both here
 costs one extra comparison.
 

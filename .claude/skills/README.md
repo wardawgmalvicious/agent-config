@@ -6,8 +6,7 @@ distinction is not filing — it is what the two directories mean.
 
 `skills/` is **payload**: content deployed elsewhere, by
 `scripts/link-claude.ps1` into `~/.claude/skills` as one junction per
-skill, or by `scripts/copy-copilot.ps1` into a client repo's
-`.github/skills` as committed files. These six are not payload. Their
+skill. These six are not payload. Their
 whole subject is this repo's own structure — its groups, its linter, its
 handoff queue, its audit ledger — so outside this working tree they have
 nothing to act on.
@@ -20,9 +19,9 @@ real and paid in the wrong place.
 
 Being here means:
 
-- **No script touches them.** Both deploy scripts select out of
-  `skills/`, so neither can see this directory. Neither needed changing
-  when these moved.
+- **No script touches them.** The deploy script selects out of
+  `skills/`, so it cannot see this directory, and needed no change when
+  these moved.
 - **They are live on save, for sessions in this repo only.** No junction
   and no copy step — Claude Code reads them in place. Blast radius is
   one working tree instead of the machine.
@@ -36,9 +35,9 @@ Being here means:
   re-creating one of these names under `skills/` shadows the copy here:
   no conflict, no warning, and the only symptom is a skill behaving like
   an older version of itself. `scripts/lint-skill-scopes.py` fails the
-  commit on it, and on a duplicate across `skills/` groups. Neither
-  deploy script can see the first case — `link-claude.ps1` never reads
-  this directory, correctly, since nothing here deploys.
+  commit on it, and on a duplicate across `skills/` groups. The deploy
+  script cannot see the first case — `link-claude.ps1` never reads this
+  directory, correctly, since nothing here deploys.
 
 The deployed groups are the counter-case: useful in any repo, so
 deployable. `/commit` and `/code-review` never left
@@ -152,7 +151,7 @@ else, writing to `~/handoff-inbox/` instead of editing. It went to a new
 agent payload rather than the user's repo — the same subject as the six
 here, differing only in needing to run everywhere. The group's
 `.no-copilot` marker is what lets it **keep** its `model: fable` pin as
-deployed payload.
+deployed payload, a pin kept on purpose (`skills/meta/.no-copilot`).
 
 **The general lesson for this directory**, paid for twice: the test for
 project scope is *where the skill runs*, not *where its output lands*.

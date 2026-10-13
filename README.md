@@ -1,9 +1,9 @@
 # Agent Config
 
 Personal configuration for coding agents: skills, subagents, coding
-rules, hooks, MCP templates, and settings. Clone it anywhere; scoped
-link scripts wire durable content into Claude Code and GitHub Copilot
-without putting any tool's runtime directory under Git.
+rules, hooks, MCP templates, and settings. Clone it anywhere; a scoped
+link script wires durable content into Claude Code, in a terminal or
+VS Code, without putting any tool's runtime directory under Git.
 
 ## What this is
 
@@ -78,8 +78,8 @@ rearranging the root.
 - [skills/](skills/) — 30+ skills: Fabric, Power BI / TMDL, the
   repo-general behavioral verbs (`code-review`, `commit`, `land`,
   `prune-branches`) and the `meta` group (`learn`), whose subject is the
-  agent payload itself and which is never vendored to Copilot. Consumed
-  by Claude Code and GitHub Copilot. See
+  agent payload itself. Consumed by Claude Code, in a terminal or as
+  VS Code's Claude session target. See
   [skills/README.md](skills/README.md).
 
 The skills that maintain *this* repo — `author-skill`, `test-skill`,
@@ -182,239 +182,36 @@ stay separable:
   it went unused; see the history around `codex/` if you want it back.
   Skills use the open Agent Skills format, so any tool that reads
   `SKILL.md` can consume [skills/](skills/) directly.
-- **GitHub Copilot** — reads **its own directories only, by choice**.
-  The Claude paths are *documented defaults* on the VS Code agent
-  surface — `~/.claude/rules` for instructions, `~/.claude/skills` for
-  skills, `~/.claude/agents` for subagents, `~/.claude/CLAUDE.md` for
-  always-on instructions, `~/.claude/settings.json` for hooks (it
-  parses Claude Code's hook format) — so `link-claude.ps1` alone *was*
-  enough, and Copilot was a second consumer of the Claude-format
-  payload rather than a separate one. Since 2026-09-09 that inheritance
-  is switched off deliberately: every `chat.*Locations` entry naming a
-  Claude root is `false`, leaving `.github/*` and `~/.copilot/*`.
-  Claude for Claude, Copilot for Copilot — so `copy-copilot.ps1` is the
-  only route from this repo to Copilot, on this machine as much as in a
-  clone. `chat.useClaudeMdFile` is the one exception, set per VS Code
-  profile like every `chat.*` setting. Which profile sets it which way
-  is machine state, kept outside this repo: a named profile's settings
-  in `machine-config`'s `configs/vscode/profiles/`, Default's in
-  Settings Sync. The format facts
-  measured under inheritance still hold, and now describe the vendored
-  payload: on 2026-09-09 a `.sql` file open in a client repo loaded
-  exactly two of the twelve rules in `~/.claude/rules`, the two whose
-  globs matched, confirming `paths:`/`applyTo` scoping carries over
-  intact.
+- **VS Code's chat** — the **session target** picks the harness that
+  runs a session, and the harness, not the model, decides what it reads.
+  VS Code's hooks page lists five targets, Local, Copilot, Claude, Codex
+  and Cloud, with the Chat view and the Agents window as clients of
+  either host (rendered 2026-10-06).
+  - **Claude** runs Claude Code's own engine, the Claude Agent SDK with
+    every settings scope and Claude Code's system prompt, so it reads
+    this payload through `~/.claude` as a terminal session does. A turn
+    on a client repo on 2026-10-05 loaded user rules by `paths:` and ran
+    the user-scope hooks, on a model billed through Copilot. It drops
+    `WebSearch` and answers permission prompts through VS Code, and an
+    organization can switch it off (the `Claude3PIntegration` policy).
+    This is the target the payload is for.
+  - **Local**, VS Code's own harness, reads Claude's formats beside
+    Copilot's wherever its `chat.*Locations` settings leave them on, as
+    every profile here does since 2026-10-08. The docs mark those
+    settings and the harness for removal "in a future release", and
+    [vscode-scoping.md](claude/rules/vscode-scoping.md) has the traps in
+    them.
+  - **Copilot** reads `.github/*` and `~/.copilot/*`, nothing under
+    `~/.claude`, and **Codex** reads `AGENTS.md`: neither gets this
+    payload. On a client repo on 2026-09-30 the Copilot target's panel
+    also listed the repo's root `CLAUDE.md`, by a route not traced.
 
-    | Artifact | Workspace defaults | User-profile defaults |
-    | --- | --- | --- |
-    | Skills | `.github/skills`, `.claude/skills`, `.agents/skills` | `~/.copilot/skills`, `~/.claude/skills`, `~/.agents/skills` |
-    | Instructions | `.github/instructions`, `.claude/rules` | `~/.copilot/instructions`, `~/.claude/rules` |
-    | Agents | `.github/agents`, `.claude/agents` | `~/.copilot/agents`, `~/.claude/agents` |
-
-    Checked 2026-09-09 against `microsoft/vscode-docs@main`.
-
-    **The `chat.*Locations` settings are switchboards, not wiring.**
-    `chat.agentSkillsLocations`, `chat.instructionsFilesLocations`,
-    `chat.agentFilesLocations` and `chat.modeFilesLocations` are all
-    marked deprecated and "only used by the Local agent" — which is easy
-    to read as inert, and is not. The Local agent *is* the sidebar Chat,
-    so each still governs exactly the surface you work in; the note
-    scopes them away from Copilot CLI and cloud agents. Each is a
-    location → boolean map over the defaults above, and the sidebar
-    honours a change immediately: measured 2026-09-09 by setting
-    `~/.claude/skills` false (the skills left the picker) and
-    `~/.copilot/skills` true (they came back from there). So nothing
-    needs enabling — but anything can be **disabled**, which is how you
-    stop a skill listing twice when two roots hold it, and since
-    2026-09-09 how the whole Claude payload is held back from Copilot.
-
-    **`chat.hookFilesLocations` is a fifth switchboard and not part of
-    that family.** It carries no deprecation note; hooks are marked
-    **Preview** instead, with the docs warning that "the configuration
-    format and behavior might change." Its defaults are `.github/hooks`,
-    `.claude/settings.json`, `.claude/settings.local.json` and
-    `~/.claude/settings.json` — all `false` here, since Copilot has no
-    use for this repo's hooks. Preview plus an explicit false-map is a
-    staleness pair worth watching: a release that adds a default
-    location adds it **enabled**, past every `false` already written.
-
-    **Two silent failures, both met on 2026-09-09.** An **unlisted
-    location keeps its default, and the default is on** — each map sits
-    *over* the defaults above, so disabling inheritance means writing
-    every Claude root out as `false`; `.claude/skills` and `.claude/rules`
-    stayed live by omission while every root listed beside them read
-    `false`. And **the Settings UI does not reliably persist these**:
-    object-valued `chat.*` settings edited through it can leave
-    `settings.json` untouched with no error, caught only by an mtime
-    four days stale under repeated edits — and met again 2026-09-11,
-    when two of four object-valued settings set through the UI never
-    reached the file. Edit the file directly and check it afterwards.
-
-    **And every one of these is per profile.** Each VS Code profile
-    keeps its own `settings.json` under
-    `%APPDATA%\Code\User\profiles\<id>\` unless it is set to share
-    Default's; `%APPDATA%\Code\User\settings.json` is Default's alone,
-    and the Settings UI writes to the current window's profile. So a
-    switch-off is done once per profile, and a profile left untouched
-    inherits the whole Claude payload, hooks included — which is what
-    one profile here was found doing on 2026-09-11.
-
-    **The Local agent is scheduled for removal**, which makes these
-    temporary in a way "deprecated" alone does not convey. The docs say
-    it about prompt files: they "continue to work with the Local agent
-    for now, but the Local agent will be removed in a future release."
-    Its replacement, Agent Host, "reads user-level customizations from
-    harness-agnostic folders like `~/.copilot` and `~/.claude`" — so
-    the payload keeps reaching Copilot without these settings at all.
-    Whether Agent Host honours them is **not** stated either way, and
-    their own note scopes them to the Local agent, so plan on the
-    switchboard going and the discovery staying. Checked 2026-09-09.
-
-    **That now cuts the other way.** While these settings were only a
-    deduplication tool, losing them cost nothing. They are what enforces
-    the Claude/Copilot separation as of 2026-09-09 — so a switchboard
-    that goes while `~/.claude` discovery stays would silently restore
-    the inheritance just switched off, with no error and no setting left
-    to express the intent. Nothing signals it; watch for it in the
-    `vscode-docs` drift source.
-
-    Three traps. `chat.instructionsFilesLocations` accepts **folders
-    only** — an entry for `~/.claude/CLAUDE.md` is silently ignored,
-    and because `chat.useClaudeMdFile` loads that file anyway, the dead
-    setting looks like it worked. VS Code also **omits any setting left
-    at its default** when it writes `settings.json`, so
-    `chat.useClaudeMdFile` vanishes from the file when set to `true` and
-    only appears when set to `false` — absent means on, not unset. And
-    no copy into `~/.copilot/agents` or `~/.agents/skills` is needed;
-    both only invite drift, and `~/.agents/skills` is shared ground —
-    on this machine it holds 28 Copilot-for-Azure skills with their own
-    manifest and lockfile.
-
-    **MCP is the one thing this payload cannot carry.** Nothing reads
-    `~/.claude/mcp` — not even Claude Code; it exists so the commands in
-    [claude/mcp/README.md](claude/mcp/README.md) resolve from a stable
-    path — and `~/.claude.json` is Claude Code's own runtime state.
-    Copilot reads a workspace `.mcp.json`, the same file as Claude
-    Code, or `~/.copilot/mcp-config.json` (see
-    [claude/mcp/README.md](claude/mcp/README.md)).
-
-    **Copilot validates skill frontmatter against its own field list and
-    warns rather than failing** — with one exception that does not warn
-    at all. Measured 2026-09-04: an unsupported key leaves the skill
-    loaded and listed, with a diagnostic naming it — unlike the claude.ai
-    upload path, which hard-fails. Supported are `argument-hint`,
-    `compatibility`, `context`, `description`,
-    `disable-model-invocation`, `license`, `metadata`, `name` and
-    `user-invocable`. **Most skills here still warn**: `paths:` on 27,
-    `effort:` on 9, `allowed-tools:` on 5. So the warning is ambient, and
-    adding a Claude-only field costs nothing that was not already being
-    paid — but it also means a *real* frontmatter mistake is camouflaged
-    by the noise.
-
-    **The exception is `model:`, which breaks slash invocation outright.**
-    An active `model:` of any value — `inherit` as much as a real model
-    name — stops VS Code dispatching that skill as a slash command:
-    nothing is sent, no session is created, and it presents as a hang
-    rather than an error, so there is no diagnostic to trace back.
-    Measured 2026-09-09 with single-variable probes, after `/commit` and
-    `/code-review` both hung in a client repo while the same skills were
-    auto-loading there normally. Auto-load is unaffected — it adds text
-    to a request already in flight, where slash invocation builds a new
-    one carrying the skill's own parameters. `model` is a supported field
-    on Copilot *prompt* files, where it selects the LLM, which is the
-    likeliest reason a value it cannot resolve kills dispatch. All 50
-    skills here now carry `model:` commented out, and
-    [lint-frontmatter.py](scripts/lint-frontmatter.py) rejects an active
-    one so it cannot return silently.
-
-    **A skill is slash-invocable in Copilot**, whatever Copilot Chat
-    says about itself. Asked why `/commit` did not work, it answered
-    that only `.github/prompts/*.prompt.md` is, and that was wrong: the
-    docs say skills "are available as slash commands in chat, alongside
-    prompt files", and `user-invocable` defaults to `true`. The hang was
-    the `model:` key above. Don't build a prompt-file wrapper for a
-    skill — prompt files are deprecated for Agent Host, and VS Code ships
-    a migration converting them *into* skills. Checked 2026-09-09; both
-    `commit` and `code-review` confirmed in the `/` menu from
-    `~/.copilot/skills` on 2026-09-11.
-
-    Copilot does hard-
-    require one thing Claude Code never checks: a skill's **directory
-    name must equal its frontmatter `name:`**. All 50 here comply, and
-    `copy-copilot.ps1` verifies it before copying.
-
-    **Copilot CLI is a different consumer with a different table.** It
-    lists the same three project roots but only `~/.copilot/skills` and
-    `~/.agents/skills` at personal scope — **not** `~/.claude/skills` —
-    and reads instructions from `~/.copilot/copilot-instructions.md`,
-    `~/.copilot/instructions/**/*.instructions.md`, plus repo-scope
-    `.github/copilot-instructions.md`, `AGENTS.md`, `CLAUDE.md`,
-    `.claude/CLAUDE.md` and `GEMINI.md`. `COPILOT_HOME` replaces
-    `~/.copilot` throughout. So "Copilot reads it" is not one fact —
-    check which Copilot. (Checked 2026-09-09 against docs.github.com.)
-
-    `paths:` being unsupported has a consequence worth stating plainly:
-    **a conditional skill is unconditional in Copilot.** All 27 load
-    unconditionally there, so the conditional/unconditional listing-cost
-    split that governs `when_to_use` adoption is a Claude Code fact only,
-    and "free because it is conditional" does not transfer.
-
-    **Rules are the opposite, and the pair is easy to conflate.** In
-    `.claude/rules` Copilot implements `paths:` deliberately, as the
-    Claude Rules format, defaulting to `**` when the key is absent — so
-    a rule stays conditional there exactly as it is here, while a skill
-    does not. Measured 2026-09-09: a `.sql` file open in a client repo
-    loaded two of the twelve rules in `~/.claude/rules`, the two whose
-    globs matched, from user scope with nothing deployed. Note which
-    key each surface reads — `.github/instructions` takes `applyTo`
-    instead, and an instructions file carrying **neither** is never
-    applied automatically at all.
-
-    **`~/.claude/skills` does resolve** — retested 2026-09-09, with the
-    sidebar loading skills from `~/.claude/skills/<name>/SKILL.md`
-    through this repo's junctions. A 2026-09-04 entry here claimed the
-    opposite and was wrong; the likeliest cause is that
-    `chat.agentSkillsLocations` had that root switched off, since the
-    setting turns out to be a live per-location toggle rather than the
-    additive allowlist it was read as. That correction also retires the
-    "Copilot sees this payload at project scope only" conclusion built
-    on top of it.
-
-    Copilot parses the Claude hook format, not its semantics. Matchers
-    are read and **ignored**, so a matcher-scoped hook fires on every
-    tool call; tool input properties are camelCase
-    (`tool_input.filePath`, not `tool_input.file_path`); and tool names
-    differ (`create_file`, `replace_string_in_file`). The
-    `security-reviewer` write guard is matcher-scoped, so under Copilot
-    it runs far wider than it does under Claude Code.
-
-    Sessions on **Agent Host** read user-level instructions and agents
-    from harness-agnostic folders (`~/.copilot/instructions`,
-    `~/.claude/rules`, `~/.copilot/agents`) instead of VS Code profile
-    user data — the change that removed the "or your user data"
-    fallback from both location tables in mid-2026.
-
-- **[copilot/](copilot/) is the one exception, and it is for other
-  people.** A junction cannot be committed, so a teammate cloning a
-  client repo gets nothing from the paths above.
-  [copilot/instructions/](copilot/instructions/) holds
-  `claude/rules/` bodies re-emitted as `*.instructions.md` with
-  `applyTo` globs, which
-  [scripts/copy-copilot.ps1](scripts/copy-copilot.ps1) vendors into a
-  repo's `.github/instructions` as real files: only those whose
-  `applyTo` matches a file the repo tracks, since VS Code lists every
-  one it finds in each request, while `~/.copilot` gets them all.
-  This is the only place
-  the repo carries one piece of guidance in two formats, and the reason
-  is that they are genuinely different: `applyTo` is a single
-  comma-separated string where `paths:` is a list, and an instructions
-  file with **no** `applyTo` never auto-applies at all — so a straight
-  copy would ship files that silently do nothing. That makes the port a
-  translation rather than a copy, which means it is hand-written and can
-  rot, so
-  [scripts/lint-instructions.py](scripts/lint-instructions.py) fails a
-  commit when a rule moves without its port following. This repo has
-  already lost two parallel instruction payloads to exactly that drift.
+  Until 2026-10-13 a second payload, `copilot/` and the script that
+  copied it, vendored skill groups and hand-made instruction ports into
+  a repo's `.github` and into `~/.copilot` for the Copilot target. The Claude target left it no reader, so it was
+  removed, and
+  [docs/evidence/root-claude-md.md](docs/evidence/root-claude-md.md)
+  names the last commit that holds it.
 
 "Agnostic" here means *structured so other tools can consume it* — the
 content is written for and validated with Claude Code first.
@@ -450,11 +247,10 @@ content is written for and validated with Claude Code first.
     ./scripts/link-claude.ps1
     ```
 
-3. Using GitHub Copilot too? There is nothing to link and, as of
-   2026-08-29, little to enable — most of the `~/.claude` paths step 2
-   created are already VS Code defaults. `~/.claude/agents` is the
-   exception and needs an explicit entry; see
-   [Tool support](#tool-support) for the block to paste.
+3. Using VS Code's chat? Pick the **Claude** session target, which
+   reads `~/.claude` as Claude Code does, so there is nothing more to
+   deploy. [Tool support](#tool-support) has what the other targets
+   read.
 
 4. Bootstrap pre-commit hooks (installs `pre-commit` via `uv` and runs
    it once across all files). **Requires

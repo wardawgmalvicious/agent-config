@@ -171,10 +171,9 @@ command, and every cross-reference.
   `fabric-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
   repo-general behavioral verbs (`ls skills/workflow`), `skills/meta/` for
   upkeep of the agent configuration that must also run in client repos,
-  kept from Copilot by its `.no-copilot` marker (`ls skills/meta`), and
-  `skills/social/` for personal-profile writing (`linkedin-highlights`),
-  split out so a workplace Copilot deployment of `workflow` never carries
-  it. A new group goes in `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS` in
+  whose `.no-copilot` marker lets a skill keep an active `model:` pin
+  (`ls skills/meta`), and `skills/social/` for personal-profile writing
+  (`linkedin-highlights`). A new group goes in `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS` in
   `scripts/lint-skill-overrides.py`; a platform one stays out of the
   `-SkillGroups` default, linked per repo by `-ClaudeDir` (`windows`,
   2026-10-01), and a user-scope one joins that default everywhere it is

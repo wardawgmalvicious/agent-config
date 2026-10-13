@@ -36,7 +36,7 @@ paths:
   name repeated across `skills/` groups would fail both deploy scripts
   anyway; this fails it before the commit.
 - Any check whose defect belongs to a pair — names, `skillOverrides`
-  coverage, routing, test stamps, audit indexes, Copilot ports — runs over
+  coverage, routing, test stamps, audit indexes — runs over
   the whole set with `pass_filenames: false`, since no per-file hook can see
   a pair.
 - Only `tests/` is gitleaks-allowlisted, because its fixtures hold fake

@@ -13,11 +13,11 @@
 #
 # None of which shows up HERE, because `text=auto` normalizes on the way
 # into the index either way -- so the tree looks clean while being
-# arbitrarily mixed. It showed up DOWNSTREAM. scripts/copy-copilot.ps1
-# vendors this payload into client repos as real committed files, so every
-# flip landed there as the entire payload modified with nothing visibly
-# changed (159 files, 2026-09-09). That script normalizes on its own now,
-# but the instability was here, so it is fixed here too.
+# arbitrarily mixed. It showed up DOWNSTREAM: a script, retired on
+# 2026-10-13, vendored this payload into client repos as real committed
+# files, so every flip landed there as the entire payload modified with
+# nothing visibly changed (159 files, 2026-09-09). The instability was
+# here, so it is fixed here.
 #
 # In .gitattributes rather than core.eol deliberately: this is committed,
 # so it holds for every clone on every machine, where local config is

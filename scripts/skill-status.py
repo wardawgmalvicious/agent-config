@@ -15,8 +15,8 @@ the prose above the list was four months old. A list of tested skills is
 a status fact per skill, and this repo has already lost three of those to
 drift (the conditional-skill total, the skillOverrides count, the queue
 rows). So the record is a STAMP -- written by /test-skill at its last
-step, the way lint-instructions.py --stamp records a port -- and the list
-is DERIVED from the stamp plus what the skill looks like now.
+step -- and the list is DERIVED from the stamp plus what the skill looks
+like now.
 
 The manifest is tests/skills/.tested.json. Each stamp records the date,
 the commit, and a hash of the part of the skill that phase tested:

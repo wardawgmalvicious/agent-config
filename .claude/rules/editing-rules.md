@@ -2,10 +2,9 @@
 paths:
   - "claude/rules/*.md"
   - ".claude/rules/*.md"
-  - "copilot/instructions/*.md"
 ---
 
-# Editing a rule, or its Copilot port
+# Editing a rule
 
 - A rule carries only `paths:`, and loads when a file matching it is Read,
   Written or Edited, never for a `cat`, `sed` or heredoc edit. A Write's or
@@ -43,10 +42,3 @@ paths:
   `docs/evidence/root-claude-md.md` under the root heading it came from. An
   HTML comment costs no context but shows on every Read, so use one only for
   a note to the next editor, never for evidence.
-- A rule with a port in `copilot/instructions/` leaves the port as it is:
-  the Copilot payload is being retired, and no port is redone
-  (2026-09-30). Pre-commit still fails the rule edit, with `drift`, until
-  `uv run --with pyyaml scripts/lint-instructions.py --stamp` records the
-  new hash, and fails a new rule as `untracked` until
-  `copilot/.source-hashes.json` lists it under `deferred`
-  (`docs/handoffs/execute/copilot-payload-retirement.md`).

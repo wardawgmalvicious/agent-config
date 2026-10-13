@@ -13,17 +13,16 @@ project-scope instruction file that loads at startup, and `.claude/rules/`
 holds what a file here triggers. Add no parallel file for another tool: a
 `copilot-instructions.md` and an `AGENTS.md` each drifted and were deleted.
 **`<tool>/` names a payload's format, not its only consumer**: `claude/`
-holds Claude Code's formats; `copilot/`, payload for other repos, exists
-only because `applyTo` and `paths:` differ; `skills/` is top-level as no one
-tool owns its format. This repo's own config sits where each tool looks:
+holds Claude Code's formats; `skills/` is top-level as no one tool owns its
+format. This repo's own config sits where each tool looks:
 `.mcp.json`, which VS Code reads too, and `.claude/settings.json`.
 
 `.claude/skills/` (`ls -d .claude/skills/*/`) holds skills that act only on
 this repo: project scope, deployed nowhere, reached by no deploy script
 (2026-09-09), since elsewhere they only spend listing budget. Payload upkeep
 that must also run in client repos goes in `skills/meta/` (`learn`), whose
-`.no-copilot` marker keeps it from Copilot and lets it pin `model:`
-(`copilot-payload.md`). **`.claude/settings.json` collapses every platform
+`.no-copilot` marker lets it pin `model:` (`editing-skills.md`).
+**`.claude/settings.json` collapses every platform
 skill description to `name-only` here**, so none can match by description in
 this repo: a miss here is no trigger bug. `lint-skill-overrides.py` checks
 coverage; a new group goes in its `PLATFORM_GROUPS` or `BEHAVIOURAL_GROUPS`.
@@ -46,8 +45,6 @@ ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'  # after 
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force  # default; -Force adds claude/CLAUDE.md, settings.json
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta         # same, when neither of those changed
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -GlobalMcp  # prune ~/.claude.json's MCP servers; after Docker Desktop
-./scripts/copy-copilot.ps1 -CopilotDir <repo>/.github -SkillGroups fabric-core,fabric-engineering,power-bi  # committable, for a client repo
-./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow  # Copilot's user scope: never social; meta refused
 ./skills/workflow/recreate-repo/scripts/repo-settings.ps1  # GitHub settings vs .github/repo-settings.json; -Export, -Apply
 ```
 
@@ -69,15 +66,11 @@ deletes `meta`: restore one on purpose.
 | `claude/CLAUDE.md` | `~/.claude/CLAUDE.md` | plain copy | after `scripts/link-claude.ps1 -Force` |
 | `claude/settings.json` | `~/.claude/settings.json` | key-level merge: target-only keys kept, shared keys replaced whole | after `scripts/link-claude.ps1 -Force` |
 | `claude/mcp/.mcp.global.template.json` | `~/.claude.json` (top-level `mcpServers` only) | single-key reconcile, prunes | after `scripts/link-claude.ps1 -GlobalMcp` |
-| `copilot/instructions/` | `<repo>/.github/instructions` | file copy (`scripts/copy-copilot.ps1`) | in a teammate's clone, once committed there |
 
 **`skills/` is the only junction** (2026-09-02): edit-to-live is the skill
 authoring loop, while a junction elsewhere made every uncommitted state live
 machine-wide, a half-written hook included. Never turn a copy into a link: a
 symlinked `~/.claude/settings.json` broke upstream three times in 2026.
-Copilot takes only `CLAUDE.md` from `~/.claude`, where a profile turns on
-`chat.useClaudeMdFile`; `copy-copilot.ps1` routes the rest
-(`copilot-payload.md`, [README](README.md#tool-support)).
 
 ## How the pieces trigger
 
@@ -150,7 +143,7 @@ refused, `cd` back too, until `EnterWorktree` (probed 2026-09-24, 2.1.282).
 - **Read a file before changing it, and change it with Edit or Write**: the
   Read loads its `.claude/rules/` guidance first, an Edit or Write after the
   change, `sed` or heredoc never, silently. For a new file, Read a sibling.
-- Rules here: `editing-skills.md`, `editing-rules.md`, `copilot-payload.md`,
+- Rules here: `editing-skills.md`, `editing-rules.md`,
   `editing-claude-md.md`, `deploy-scripts.md`, `hooks-and-agents.md`,
   `pre-commit-hooks.md`, `activation-testing.md` and `skill-overrides.md`.
 - Long detail goes in a skill's own `references/`, not its `SKILL.md`.

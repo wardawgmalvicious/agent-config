@@ -69,37 +69,6 @@ Helper scripts for repo maintenance and observability.
   only that group's skills into a client repo's `.claude`, without this
   machine's agents, hooks or rules; they are junctions, so every later
   save to one is live in that repo's sessions.
-- [copy-copilot.ps1](copy-copilot.ps1) — copy two payloads into a repo's
-  `.github` as real, committable files, so GitHub Copilot serves them to
-  everyone who clones it: skill groups into `.github/skills`, and the
-  pre-translated instruction files from
-  [copilot/instructions/](../copilot/instructions/) into
-  `.github/instructions`. `-Payload` picks either or both. `-CopilotDir`
-  is mandatory with no default, so every run names its target: a repo's
-  `.github`, or `~/.copilot`, the only user-scope route since every
-  Claude root was switched off for Copilot on 2026-09-09. A repo gets
-  only the instruction ports whose `applyTo` matches a file it tracks,
-  worked out by `payload-coverage.py --ports` through `uv`; `~/.copilot`
-  gets every one, and `-AllInstructions` ships every one to a repo too.
-  Its negative cases are
-  [tests/scripts/copy-copilot/test-port-selection.sh](../tests/scripts/copy-copilot/test-port-selection.sh).
-  Ownership is the whole difficulty: a client's `.github` may already hold
-  skills or instructions this repo did not write, and in a repo that
-  authors its own `.instructions.md` a first-run collision is the norm
-  rather than a fault. So each payload tracks what it deployed in its own
-  manifest beside its own files (`.managed-skills.json`,
-  `.managed-instructions.json`), re-syncs and prunes only what it owns,
-  and skips a collision it did not create unless `-Force` adopts it. The
-  manifests are bare lists of names — no source repo, commit, path, user
-  or explanatory note, since they deploy into client repos and this one is
-  personal.
-  Two asymmetries worth knowing. A payload left out of `-Payload` is left
-  **alone**, while a group left out of `-SkillGroups` is **pruned** — the
-  first narrows what a run touches, the second narrows what a payload
-  contains. And it reports rather than prevents double discovery: with
-  `.claude/skills` alongside a skill is merely listed twice, but with
-  `.claude/rules` alongside the same guidance *loads* twice on a matching
-  file, since Copilot honours `paths:` there and `applyTo` here.
 - [lint-claude-md.py](lint-claude-md.py) — cap both `CLAUDE.md` files at
   the memory docs' line target: `claude/CLAUDE.md`, which loads into every
   session on the machine, and root `CLAUDE.md`, which loads into every
@@ -121,22 +90,6 @@ Helper scripts for repo maintenance and observability.
   glob checks. Used by the pre-commit `Validate SKILL.md frontmatter` and
   `Validate rules frontmatter` hooks; can also run manually as
   `python scripts/lint-frontmatter.py <path>...`.
-- [lint-instructions.py](lint-instructions.py) — validate
-  `copilot/instructions/*.instructions.md` and guard them against drift from
-  the `claude/rules/*.md` they were hand-translated from. Three checks in one
-  pass. **Frontmatter**: `applyTo` is one comma-separated glob string, not a
-  list — a list parses as valid YAML and then matches nothing, and
-  `lint-frontmatter.py` cannot check these at all since it *requires*
-  `paths:`. **Leakage**: a personal-repo name or profile path must never
-  reach a client repo, so the hand-stripping is checkable rather than
-  remembered. **Drift**: each port is one-time and hand-written, so an edit
-  to a rule otherwise leaves its port stale with nothing anywhere to say so
-  — the exact way the two previous parallel instruction payloads here died.
-  Hashes live in `copilot/.source-hashes.json`, which stays in this repo and
-  is never deployed; it also lists the rules deliberately **not** ported and
-  why, so a newly added rule surfaces as a decision to make rather than an
-  omission. Re-record after a deliberate port with `--stamp`. Run by
-  pre-commit.
 - [lint-skill-scopes.py](lint-skill-scopes.py) — enforce the flat skill-name
   namespace across both trees. Claude Code addresses a skill by name alone —
   no group segment, no scope qualifier — so two skills sharing a name is
@@ -147,7 +100,7 @@ Helper scripts for repo maintenance and observability.
   name in both `skills/` and `.claude/skills/` resolves to the user-scope
   copy, and the project-scope one just stops loading, symptomless apart from
   a skill behaving like an older version of itself. **Cross-group** is
-  already fatal in both deploy scripts; it is caught here only so it fails
+  already fatal in `link-claude.ps1`; it is caught here only so it fails
   before the commit instead of at the next deploy. Also fails — rather than
   passing silently — when either tree is missing or empty, since both
   collectors return nothing for an absent root and a check that compared
@@ -190,12 +143,6 @@ Helper scripts for repo maintenance and observability.
   value now lives in [_skill_inventory.py](_skill_inventory.py)'s
   `glob_flags()`, and neither script was migrated only because neither needs
   anything else that module offers.
-
-  `--ports` answers the narrower question `copy-copilot.ps1` asks: which
-  Copilot instruction ports can apply in a repo, by the same matcher,
-  leaving out the target's own vendored payload, and how that compares
-  with the ports its `.github/instructions` already carries. `--json` is
-  the form that script reads, and that script's suite exercises both.
 
   Findings are candidates, not work. `NON_TEXT` filters what cannot carry a
   convention (images, binaries, signing material) and deliberately stops
@@ -350,27 +297,15 @@ Helper scripts for repo maintenance and observability.
   each against
   [expected_findings.md](../tests/skills/fabric-semantic-model-audit/expected_findings.md).
 
-There is still deliberately **no `link-copilot.ps1`**, and
-`copy-copilot.ps1` is not one: it copies rather than links, for the
-reasons its header gives. It has two targets. A client repo's `.github`
-gets **committable** files, so a teammate cloning it gets the skills
-without this repo, without a script, and without a machine that has
-either. And `~/.copilot` is this machine's user scope:
-
-```powershell
-./scripts/copy-copilot.ps1 -CopilotDir ~/.copilot -SkillGroups workflow
-```
-
-That second target was pointless until 2026-09-09, because Copilot read
-the `~/.claude` paths `link-claude.ps1` creates — measured that day, when
-a `.sql` file open in a client repo loaded exactly the two rules in
-`~/.claude/rules` whose globs matched. The same day every Claude root was
-switched off for Copilot, so `~/.copilot` is now the only way this
-payload reaches it outside a repo. First deployed 2026-09-11. Copies are
-not live: re-run it after editing `commit`, `code-review` or a ported
-rule. `workflow` alone, never `social` — a workplace Copilot has no use
-for `linkedin-highlights`. See the Tool support section of the
-[root README](../README.md#tool-support).
+There is deliberately **no script for GitHub Copilot**. One copied
+skill groups and hand-made instruction ports into a repo's `.github` and
+into `~/.copilot` from 2026-09-09 until its removal on 2026-10-13, when
+VS Code's Claude session target, which reads `~/.claude` itself, had
+left the copies no reader. The ledger names the
+last commit that holds it
+([docs/evidence/root-claude-md.md](../docs/evidence/root-claude-md.md)),
+and the Tool support section of the
+[root README](../README.md#tool-support) has what reads the payload now.
 
 ## Recreating a repo
 

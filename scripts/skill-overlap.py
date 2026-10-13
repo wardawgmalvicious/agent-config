@@ -380,8 +380,8 @@ def _usage_by_name() -> dict[str, dict]:
 
 USAGE_CAVEATS = (
     "Telemetry is THIS MACHINE ONLY. Platform skills have been pruned from\n"
-    "user scope here since 2026-08-31, and they reach teammates through\n"
-    "copy-copilot.ps1, where no transcript exists. Most LISTED-NEVER-CHOSEN\n"
+    "user scope here since 2026-08-31, and are linked per repo by\n"
+    "-ClaudeDir instead. Most LISTED-NEVER-CHOSEN\n"
     "listings predate that prune. A `proj` row is counted against this\n"
     "repo's sessions alone -- never compare `listed` across scopes.\n"
     "Rarely used is not unused, and nothing here says delete."

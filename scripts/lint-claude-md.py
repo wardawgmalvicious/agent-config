@@ -103,8 +103,8 @@ NO_NESTED = {
     ),
 }
 IN_A_SKILL = (
-    "a skill's directory is junctioned into ~/.claude/skills/ and copied "
-    "into client repos by copy-copilot.ps1, so this would ship with it"
+    "a skill's directory is junctioned into ~/.claude/skills/, and into a "
+    "client repo's .claude/skills/ by -ClaudeDir, so this would ship with it"
 )
 MISPLACED_WHERE_TO = (
     "Put guidance a file triggers in a paths:-scoped rule, guidance for one "
