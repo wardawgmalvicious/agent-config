@@ -227,15 +227,15 @@ deployed already, and `.claude/skills/` is read in place.
 **In a linked worktree, stop instead** for a skill in those three groups:
 step 8 would test the main checkout's copy, silently. Land it first.
 
-Copy the skill's whole group into the payload probe's **project scope**,
-outside this repo; give the baseline a sibling with no `.claude/`, since
-`--safe-mode` stops a skill loading, not a `Read` of its file.
+Copy every Fabric and Power BI group into the payload probe's **project
+scope**, outside this repo; give the baseline a sibling with no `.claude/`,
+since `--safe-mode` stops a skill loading, not a `Read` of its file.
 
 ```powershell
 $probe = '<a scratch directory outside this repo>'
 New-Item -ItemType Directory "$probe/payload/.claude/skills", "$probe/baseline" | Out-Null
-Get-ChildItem skills/<group> -Directory | ForEach-Object {   # the skill's own group: fabric-core, powerbi, ...
-    Copy-Item $_.FullName "$probe/payload/.claude/skills" -Recurse }
+Get-ChildItem skills -Directory | Where-Object Name -Match '^(fabric-.+|powerbi)$' |   # every rival, not the skill's group alone; '^windows$' for msix-*
+    Get-ChildItem -Directory | ForEach-Object { Copy-Item $_.FullName "$probe/payload/.claude/skills" -Recurse }
 ```
 
 User scope serves every live session and this touches none; copies make

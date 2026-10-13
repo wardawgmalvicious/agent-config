@@ -49,9 +49,9 @@
        the confound pushes toward standing down. Both references are stripped
        here and the residual count is asserted to be zero.
 
-    DEPLOYMENT IS PROJECT-SCOPED, ON PURPOSE. The obvious route --
-    `link-claude.ps1 -SkillGroups workflow,social,meta,powerbi -Force` -- pushes the
-    skill's whole group into ~/.claude/skills, visible to every session on this machine until a
+    DEPLOYMENT IS PROJECT-SCOPED, ON PURPOSE. The obvious route -- adding the
+    platform groups to `link-claude.ps1 -SkillGroups workflow,social,meta -Force` --
+    pushes them into ~/.claude/skills, visible to every session on this machine until a
     restoring run happens; a forgotten restore is the 2026-08-31 failure.
     None of it is needed: project scope only ADDS names user scope lacks, and
     this skill is exactly such a name. `-SkillGroups` does not prune user
@@ -178,8 +178,12 @@ foreach ($m in $modes) {
         Copy-Item $fixtureSrc (Join-Path $root 'fixtures') -Recurse
 
         if ($m -ne 'baseline') {
+            # Every Fabric and Power BI group: the neighbours the skill had in
+            # skills/fabric/ before the 2026-10-13 persona split, plus the two
+            # report skills, so it is invoked from a listing like a client repo's.
             & (Join-Path $PSScriptRoot 'link-claude.ps1') `
-                -ClaudeDir $probeClaude -SkillsOnly -SkillGroups powerbi | Out-Null
+                -ClaudeDir $probeClaude -SkillsOnly `
+                -SkillGroups fabric-core, fabric-engineering, fabric-realtime, fabric-ai, powerbi | Out-Null
             $target = Join-Path $probeClaude "skills/$skillName"
             if (-not (Test-Path $target)) { throw "$skillName did not deploy; the probe would test nothing." }
             Write-Host "  deployed project-scoped: $(@(Get-ChildItem (Join-Path $probeClaude 'skills') -Force).Count) skills"
