@@ -232,7 +232,13 @@ twin, `itemOptionsBySourceItemId` (`fabric-deploy`'s
 - **Both calls need the caller's Git credentials.**
   `GET …/git/myGitCredentials` answers `source`: `Automatic`,
   `ConfiguredConnection` (with a `connectionId`) or `None`; on `None`, set
-  them with Update My Git Credentials first.
+  them with Update My Git Credentials first. A service principal sets
+  `ConfiguredConnection` with its own token, naming an *Azure DevOps –
+  Source Control* connection shared with it or created through the
+  Connections API with its credentials. Learn gives no GitHub route: its
+  end-to-end tutorial says there is none yet, though one sample heading
+  names it (read 2026-10-13, unmeasured). Update From Git takes a service
+  principal only where every item involved supports one.
 - **Both are long-running**: `200`, or `202` with `Location`,
   `x-ms-operation-id` and `Retry-After`, polled as *Long-Running
   Operations (LRO)* says, and invisible through `az rest`, as it also
