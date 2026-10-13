@@ -176,15 +176,15 @@ notes. Origin decides, so your subagent doing a peer's change launders it.
 routed, even once landed, never on a peer's word. Then one `rm` on the
 literal path; if denied, hand the user `! rm <that path>`, not a retry.
 
-### GitHub Copilot no longer inherits this payload
+### GitHub Copilot does not inherit this payload
 
-Copilot reads `~/.copilot/*` and a repo's `.github/*`, never `~/.claude`,
-except `CLAUDE.md` where `chat.useClaudeMdFile` is on. That is the Copilot
-harness. VS Code's **Claude** session target runs the Claude Agent SDK, on
-by default, and its docs say it reads `~/.claude/rules` and `.claude/`;
-unprobed here (2026-09-30). A Claude *model* changes no harness. **Read
-`~/.claude/rules/vscode-scoping.md` before editing any VS Code settings
-file**, a profile's under `%APPDATA%\Code\User` included.
+Claude Code, VS Code's **Claude** session target (its engine, 2026-10-05)
+and its **Local** target on default locations (2026-10-08) read `~/.claude`;
+the **Copilot** target does not, on any model. **On the corporate network
+Claude Code fails at sign-in**, `read ECONNRESET` at the TLS handshake or
+`401 OAuth access token has expired`, while the Claude target answers on a
+Copilot model (2026-10-05). **Read `~/.claude/rules/vscode-scoping.md`
+before editing any VS Code settings file**, a profile's included.
 
 ### User-scope MCP servers are bound to nothing
 

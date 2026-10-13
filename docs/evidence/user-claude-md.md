@@ -1121,7 +1121,7 @@ path, which the user asked on 2026-09-23 to keep out of the file.
 `claude/rules/coding-bash.md` cited this ledger twice as "the evidence
 file it names", and now names it by path.
 
-### GitHub Copilot no longer inherits this payload
+### GitHub Copilot does not inherit this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
 root is `false`, so Copilot inherits none of `~/.claude`'s skills,
@@ -1196,6 +1196,275 @@ and its results note lands in this repo's as
 `claude/rules/agent-instructions-scoping.md`, because the user picks a
 Claude model in Copilot as a matter of course, and that picks no
 harness.
+
+**2026-10-13.** The heading drops "no longer", which a prompt audit in a
+client repo read as migration wording on 2026-10-08, and the section is
+rewritten around what reads the payload now, as the Copilot payload's
+retirement brief asked. Claude Code reads `~/.claude`, and so does VS Code's Claude target, by
+Claude Code's own engine, which the turn graded below confirmed. So does
+the Local target on VS Code's default locations, which every profile
+here keeps since the user's call of 2026-10-08 (a prompt audit of this
+repo, decision 2), its hooks aside. The Copilot target does not. That
+settles three things the old text said:
+
+- "Never `~/.claude`, except `CLAUDE.md` where `chat.useClaudeMdFile` is
+  on. That is the Copilot harness." put a Local-agent setting on the
+  Copilot harness. The custom-instructions page says "The Local agent
+  searches for Claude instructions in these locations when
+  `setting(chat.useClaudeMdFile)` is enabled", and its "Choose a format"
+  table (`4f4413d`, 2026-09-23) gives Copilot
+  `.github/copilot-instructions.md` or `AGENTS.md`, and
+  `.github/instructions/**/*.instructions.md`, but no `CLAUDE.md`. The
+  2026-09-30 Copilot panel listed the repo's root one all the same, by a
+  route not traced.
+- Its "never `~/.claude`" disagreed with the rule it pointed to:
+  `claude/rules/vscode-scoping.md` has a profile carrying none of the
+  `chat.*Locations` switches inherit the whole payload (2026-09-11), and
+  this heading's entry of 2026-09-24 found a profile reading it.
+- "Unprobed here" is settled by the turn graded below.
+
+The section also takes the corporate network's rule, with its tell and
+its date, from the measurements below. The file sat at its 200-line cap,
+so the rewrite pays for those lines: it no longer names the Copilot
+target's own folders, and the pointer to `vscode-scoping.md` no longer
+names the profiles' folder, which that rule gives. Re-measured on
+2026-10-13 on VS Code 1.141.0 (`2a59476c9b`): each string under "What
+the build does" below is still in the bundle, and a window's MCP logs
+name `.mcp.json`'s servers as `workspace-dot-mcp.0.*` and no longer
+`mcp.config.ws0`, since `.vscode/mcp.json` went on 2026-10-04. The
+retirement brief's measurements and the turn's grading follow verbatim,
+as that brief asked, its sub-headings a level down.
+
+All on 2026-09-30, on VS Code 1.139.1 (commit `04c0d99f4f`), bar the
+last two subsections, which carry their own dates. When this brief
+lands, this section moves verbatim to `docs/evidence/user-claude-md.md`.
+
+#### What each target lists
+
+The user opened the Agent Customizations panel on one client Fabric repo
+under three targets. Each count was then checked against the folders on
+disk:
+
+- **Claude**: 26 instructions, which are the root `CLAUDE.md` and the 3
+  files in `.claude/rules`, then the 21 files in `~/.claude/rules` and
+  `~/.claude/CLAUDE.md`. 76 skills, 6 of them at user scope, the six in
+  `~/.claude/skills`; `.claude/skills` holds 45, and the other 25 were
+  outside the screenshot. 5 agents and 1 hook.
+- **Copilot**: 26 instructions, which are
+  `.github/copilot-instructions.md`, `AGENTS.md`, the root `CLAUDE.md`
+  and the 10 files in `.github/instructions`, then the 13 in
+  `~/.copilot/instructions`. 93 skills: 48 in `.github/skills`, 4 in
+  `~/.copilot/skills` and 28 in `~/.agents/skills`, and 13 built in.
+  2 hooks.
+- **Codex**: 1 instruction, `AGENTS.md`. 61 skills: the same 48, and 13
+  built in.
+
+Every count that could be checked matches, and the two 26s are a
+coincidence. **Only the Claude target lists an instruction or a skill
+under `~/.claude` or `.claude/`.** Copilot lists the repo's root
+`CLAUDE.md` beside its own files, and whether a setting decides that was
+not traced. The 28 in
+`~/.agents/skills` are Azure skills something else installed, none of
+this payload. Claude's one hook entry is `~/.claude/settings.json`: the
+build lists one entry per settings file that declares hooks, and the
+repo's two declare none. Under the Claude target the MCP page shows only
+"Access to MCP servers is disabled by your organization".
+
+#### What the build does
+
+In `resources/app/out/vs/platform/agentHost/node/agentHostMain.js`:
+
+- **A Claude session is Claude Code.** It loads
+  `@anthropic-ai/claude-agent-sdk` and passes
+  `settingSources:["user","project","local"]` and
+  `systemPrompt:{type:"preset",preset:"claude_code"}`: all three
+  settings scopes and Claude Code's own prompt, so `CLAUDE.md`, rules,
+  skills, hooks and permissions load by the same code as in a terminal.
+- **It changes three things.** `disallowedTools:["WebSearch"]` removes
+  one tool; two in-process hooks are added, on `PreToolUse` and
+  `UserPromptSubmit`; and permission prompts are answered through
+  VS Code (`canUseTool`).
+- **A Copilot-group model goes through a proxy VS Code runs**: the
+  session gets `ANTHROPIC_BASE_URL` and a per-session
+  `ANTHROPIC_AUTH_TOKEN`, in place of Anthropic's endpoint. A model from
+  the Anthropic group takes no proxy: VS Code's docs call that route
+  bring-your-own-key.
+- **VS Code holds the MCP switch.** It reads the working directory's
+  `.mcp.json` itself, leaves an enabled server there for the SDK to
+  start, and names each server that is not enabled in the SDK's
+  `deniedMcpServers`. `.claude.json` appears nowhere in the file, so a
+  user-scope server cannot be on that list by name.
+
+In `resources/app/out/vs/workbench/workbench.desktop.main.js`:
+
+- `chat.mcp.access` takes `none`, `registry` or `all`, default `all`,
+  and carries the policy `ChatMCP`, which returns `none` when the
+  account's Copilot entitlement has `mcp` false, and `registry` when its
+  `mcpAccess` is `registry_only`. Under `registry` it refuses a server
+  that did not come from the registry.
+- `chat.agentHost.claudeAgent.enabled`, default `true`, carries the
+  policy `Claude3PIntegration`, which the docs'
+  `github.copilot.chat.claudeAgent.enabled` refers to as well. **An
+  organization can switch the Claude target off**, as this one switched
+  MCP off.
+
+#### What no one has seen
+
+A turn, until 2026-10-05 (§ "How it graded"). Of the 200 transcripts
+under `~/.claude/projects` touched in the three days to 2026-09-30, 166
+came from the Claude Code extension
+(`entrypoint` `claude-vscode`) and 34 from `claude -p` (`sdk-cli`): none
+from this target. VS Code's Agents window lists Claude Code's own
+sessions, since it reads the same store, so a session shown there proves
+nothing.
+
+#### Reproducing
+
+Identifiers in the minified bundles change with every build, and an
+update replaces the build's folder, so search by content:
+`settingSources`, `deniedMcpServers`, `ANTHROPIC_BASE_URL`,
+`Claude3PIntegration`, `ChatMCP`. Each file is one line of megabytes,
+and a command built on `grep -o '.\{0,900\}<term>.\{0,900\}'` timed out
+at 120 s, so slice it:
+
+```bash
+out="$LOCALAPPDATA/Programs/Microsoft VS Code/<commit>/resources/app/out"
+python3.13 - "$(cygpath -w "$out/vs/platform/agentHost/node/agentHostMain.js")" settingSources <<'PY'
+import sys
+data = open(sys.argv[1], "rb").read()
+at = data.find(sys.argv[2].encode())
+print(at, data[max(0, at - 900):at + 900].decode("utf-8", "replace"))
+PY
+```
+
+#### What VS Code read for MCP
+
+On 2026-10-03, on VS Code 1.140.0 and Copilot Chat 0.68.0, the day the
+user enabled MCP servers for the organization:
+
+- **VS Code reads both workspace files.** Each server it registers gets
+  a log, `mcpServer.<source>.<name>.log`, in the window's folder under
+  `%APPDATA%\Code\logs\`. This repo's window registered
+  `microsoft-learn-mcp` from `.vscode/mcp.json` as `mcp.config.ws0`, and
+  again, with `github-mcp`, from `.mcp.json` as `workspace-dot-mcp.0`:
+  one server, twice. A client Fabric repo's window, with no
+  `.vscode/mcp.json`, registered the six servers in its `.mcp.json`.
+- **None had started.** Every log was empty, so what VS Code's own
+  agents make of `${VAR}` and `headersHelper` in `.mcp.json` is unseen;
+  ten of the project template's entries carry a `headersHelper`. The
+  window had registered no server in the 26 hours it had been open,
+  which fits the policy change reaching it: inferred, not traced.
+- **Later that day the Local target started `github-mcp` from
+  `.mcp.json`, and expanded no variable in it.** `${NAME}` and
+  `${env:NAME}` both reached GitHub as typed, and `headersHelper` was
+  ignored; with the helper alone, VS Code signed in to GitHub itself.
+  The user kept the `${VAR}` header, so `github-mcp` fails in the Local
+  target by decision (`claude/mcp/README.md` § "GitHub and multiple
+  accounts"). The Claude target starts these servers through the SDK,
+  so it should expand `${VAR}` as Claude Code does, given the variable
+  in its environment: unseen. The Claude Code extension skips any
+  project helper, the Fabric ones included, until the folder's
+  lowercase-drive key is trusted (§ "The DCR error is a credential
+  failure" there); whether the Claude target does is unseen, so a
+  helper-backed server failing in step 5 below may be that rather than
+  the policy.
+- **The docs agree.** VS Code's MCP servers page (`ms.date` 2026-09-30)
+  calls `.mcp.json` the "Workspace, portable format", and says "The flow
+  also lists the deprecated .vscode/mcp.json and VS Code user-profile
+  destinations for compatibility." Of the Agent Host, where a Claude
+  session runs: "the Agent Host doesn't read .vscode/mcp.json directly.
+  Instead, VS Code forwards your MCP server configuration to the Agent
+  Host, except servers that require interactive input".
+- **The VS Code session behind this was no Claude-target turn.** It ran
+  in the Local target on a Claude model; its transcript, in
+  `GitHub.copilot-chat\transcripts\` under VS Code's workspace storage,
+  says `"producer":"copilot-agent"`.
+
+#### The corporate network, 2026-10-05
+
+Measured on that network from 14:37 to 15:53 UTC by a VS Code session in
+a client Fabric repo, with Windows `curl.exe`, Git Bash's curl,
+`openssl s_client` and Claude Code 2.1.289: four CLI runs and the
+extension's log. **No proxy and no TLS inspection: a filter resets
+Anthropic's hosts by name.**
+
+- **No proxy anywhere.** WinHTTP goes direct; WinINET has no proxy and no
+  PAC URL; auto-detect is on, but `wpad` does not resolve and the .NET
+  system proxy comes back direct. `github.com`, `pypi.org` and
+  `login.microsoftonline.com` answer directly.
+- **Reset by name.** `api.anthropic.com`, `claude.ai`, `claude.com`,
+  `platform.claude.com`, `mcp-proxy.anthropic.com` and
+  `console.anthropic.com` resolve to `160.79.104.10` and
+  `2607:6bc0::10`. TCP connects in about 45 ms, and the connection is
+  reset as the TLS handshake begins: `curl: (35) Recv failure:
+  Connection was reset`, or `read ECONNRESET` in Claude Code's log.
+- **Sign-in and refresh never got through.** `platform.claude.com`,
+  `claude.com`, `console.anthropic.com` and `mcp-proxy.anthropic.com`
+  failed every try, as did every token refresh in the log and a `/login`
+  at 15:32.
+- **The API got through in bursts.** curl passed around 15:10, 15:39 and
+  15:52, ten tries of ten at 15:52 over IPv4 and IPv6, while
+  `platform.claude.com` failed ten of ten on the same addresses;
+  `claude.ai` passed once. 6 of 7 of Claude Code's model requests
+  arrived, and each was answered `401 OAuth access token has expired`:
+  the stored token had expired, and no refresh could reach
+  `platform.claude.com`. So Claude Code fails on its login, not its
+  route.
+- **No TLS inspection**: completed handshakes showed publicly issued
+  certificates.
+- At 17:15 UTC a second session there saw `api.anthropic.com` and
+  `platform.claude.com` reset while `api.github.com` answered `200`.
+  VS Code's chat reaches its models through GitHub's hosts, which that
+  network does not filter, so the Local target and the Claude target on
+  a Copilot model both answered there.
+
+#### How it graded
+
+The turn ran on 2026-10-05 from 16:27 to 20:05 UTC: a Claude-target
+chat on a client Fabric repo opened as a folder, on the corporate
+network, in VS Code 1.140 (build `07f806f999`), with Claude Code 2.1.281
+by the transcript and SDK 0.3.281. A Local-target session in that repo
+graded it from disk up to 17:15 UTC; `/triage` re-graded the whole
+transcript, `399df72e`, on this machine on 2026-10-06. The note in that
+repo's inbox was not opened.
+
+1. **Found**: `entrypoint` `sdk-ts` on all 929 entries that carry one,
+   so the `grep -L` above finds it.
+2. **Holds.** 261 answers, every one on `claude-sonnet-5-5`, routed
+   through Copilot: the Agent Host logged no Anthropic credential
+   (`tokenSource=absent`, `apiKeySource=absent`), as the grading session
+   read it, and that day's Anthropic-routed runs ended `401` (§ "The
+   corporate network, 2026-10-05"). Two error entries came after the
+   first grading. VS Code's proxy answered `402` `quotaExceeded`, "You
+   have exceeded your monthly quota", at 18:19:48 UTC, and 195 answers
+   on the same model followed it, by a route not traced. At 20:05:33 UTC
+   "Autocompact is thrashing" ended the session.
+3. **Holds.** `nested_memory` records of type `User`:
+   `claude-config-scoping.md` from 16:39 UTC, after Reads of `.mcp.json`,
+   and `coding-markdown.md` from 18:15 UTC. No `.sql` file was read, so
+   not `coding-tsql.md`, but by the same mechanism.
+4. **Holds.** 102 lines of `instructions-loaded.log` carry the session's
+   id. `identity-guard` was not seen to fire, since a passing hook leaves
+   no entry.
+5. **Not as expected.** Offered from the start: three VS Code extension
+   servers; `microsoft-learn-mcp`, which only `~/.claude.json` defines,
+   so the SDK read that file itself; and VS Code's bridged `host` and
+   `client`. From 18:06 UTC three more, Docker Desktop's `MCP_DOCKER`
+   among them, from a source not traced: `~/.claude.json` held only
+   `microsoft-learn-mcp` on 2026-10-06. By 17:15 UTC none of the seven
+   servers in that repo's `.mcp.json` was offered, though VS Code
+   registered all seven in that window, and its `.claude/settings*.json`
+   carry neither `enabledMcpjsonServers` nor
+   `enableAllProjectMcpServers`. Whether a later one is among the seven,
+   and why none came earlier, were not checked, so `${VAR}` and a
+   project `headersHelper` under this target are still unseen. The
+   session called `client` three times, and `host` and
+   `microsoft-learn-mcp` once each; the Learn call returned a result.
+6. **Not sent.** No user slash command: the 23 `<command-name>` strings
+   sit inside `prompt_snapshot` attachments.
+
+So 2 and 3 hold, which reads as remove, after the one decision the turn
+left.
 
 ### User-scope MCP servers are bound to nothing
 

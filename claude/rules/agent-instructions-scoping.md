@@ -154,13 +154,16 @@ and the model picker changes only who answers and who bills (VS Code
 docs, 2026-09-30). In 1.139.1 `chat.useAgentsMdFile`,
 `chat.useNestedAgentsMdFiles` (off by default) and `chat.useClaudeMdFile`
 each say they are "only used by the Local agent harness" (2026-09-26),
-whose removal the bundle announces. The docs give the other local
-harnesses their own formats, unprobed on this machine; Codex reads
-`AGENTS.md`, nested ones too:
+whose removal the bundle announces. The docs give each harness its own
+formats, and VS Code's panels on a client repo listed each target's files
+to match (2026-09-30), the Copilot target adding the root `CLAUDE.md` by a
+route not traced; a Claude-target turn loaded `~/.claude/rules` by
+`paths:` (2026-10-05). Codex reads `AGENTS.md`, nested ones too:
 
 | Harness | Project | Targeted | User |
 | --- | --- | --- | --- |
-| Copilot, the Copilot SDK | `.github/copilot-instructions.md` or `AGENTS.md` | `.github/instructions/*.instructions.md` | `~/.copilot/instructions` |
+| Local, VS Code's own | `.github/copilot-instructions.md`, `AGENTS.md` or `CLAUDE.md` | `.github/instructions/**/*.instructions.md`, or `.claude/rules` | VS Code profile storage, by the docs; the bundle lists `~/.claude/rules` too |
+| Copilot, the Copilot SDK | `.github/copilot-instructions.md` or `AGENTS.md`; its panel also lists the root `CLAUDE.md` | `.github/instructions/**/*.instructions.md` | `~/.copilot/instructions` |
 | Claude, the Claude Agent SDK, on by default (`github.copilot.chat.claudeAgent.enabled`) | `CLAUDE.md`, `.claude/CLAUDE.md` | `.claude/rules`, by `paths:` | `~/.claude/rules` |
 
 GitHub.com's Copilot agent differs again: it reads the nearest
