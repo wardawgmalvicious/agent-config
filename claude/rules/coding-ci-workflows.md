@@ -52,6 +52,11 @@ behind a flag say so.
 - **`rev:` in `.pre-commit-config.yaml` is the same property**: a tag
   clones whatever it names today. `pre-commit autoupdate --freeze`
   stores "frozen" hashes instead.
+- **`runs-on: ubuntu-latest` moves the same way**, to Ubuntu 26.04 from
+  2026-10-19 to 2026-11-19 (actions/runner-images#14748). Pin the image,
+  `ubuntu-24.04`, where a job's output is compared across runs, as with
+  golden images, rendered files or snapshot tests; `-latest` suits a job
+  that needs only a shell.
 
 ## Triggers
 
@@ -127,11 +132,31 @@ behind a flag say so.
   `GITHUB_TOKEN` aside, no secret reaches a run from a fork, and an
   unset secret expands to `''`. A secret cannot appear in `if:`
   directly: set it in a job-level `env:` and test that.
+- **A substitution inside another command cannot fail its step.** A
+  Linux `run:` gets `set -e`, which reads only the outer command's
+  status, so `echo "v=$(cmd)" >> "$GITHUB_OUTPUT"` passes when `cmd`
+  fails and writes `v=`, and every key, tag or name built from it is
+  empty; with no pipe, `pipefail` cannot help. Assign, test, write:
+  `v=$(cmd)` fails on `cmd`'s status, then `test -n "$v"`. The tell is
+  a doubled separator, `chromium--Linux`, or a traceback in a passed
+  step's log (two green runs, 2026-10-12).
 - **In pre-commit, a `files:` or `types:` pattern that matches nothing
   prints `(no files to check)Skipped`**, which scans as a pass. A hook
   whose own script is outside its `files:` skips when only that script
   changes, even when the change fails files already committed (measured
   2026-09-26).
+
+## Caches
+
+- **A cache saved on a branch never restores on `main`.** Runs restore
+  from their own branch and the default branch, pull requests from the
+  base too, and "a cache created for the child `feature-b` branch would
+  not be accessible to a workflow run triggered on the parent `main`
+  branch" (read 2026-10-13). So the first `main` run after a landing
+  misses, green, and saves its own; read a miss as a bug only when it
+  repeats on one ref. `gh cache list --json key,ref` shows each entry's
+  ref, and a `workflow_dispatch` run proves the hit on `main` without a
+  push (2026-10-12).
 
 ## OIDC subject claims
 
