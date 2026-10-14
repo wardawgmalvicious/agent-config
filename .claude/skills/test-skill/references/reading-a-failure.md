@@ -281,6 +281,20 @@ all: read a capped arm's answer off its assistant records. Expect an
 arm to spend its cap plus the rest of the turn that crosses it, $0.17
 here.
 
+**An answer the output cap split ends in a `result` holding its last
+turn alone.** At the cap the CLI injects a user record, "Output token
+limit hit. Resume directly…", and the model goes on in a new turn; the
+`result` then reads `success`, `is_error` false and `stop_reason`
+`end_turn`, with that last turn's text and no other. Measured 2026-10-14
+on 2.1.293: a `--safe-mode` baseline, Opus 5.5 at max effort, was cut
+mid-code-block after 11,119 characters, and its `result` held only the
+3,456 that followed (`num_turns` 2, $3.70); a Haiku 5.5 arm under
+`CLAUDE_CODE_MAX_OUTPUT_TOKENS=400` resumed three times and kept 768 of
+2,966. `turn_start_resume_kind` read `none` in both, and `isSynthetic`
+marks a skill body's injection too, so the tell is the record's text.
+Read the answer off the text records, as the read under "A peer can
+still message an arm" does.
+
 **The plan's five-hour window ends an arm the same way, with no answer.**
 Measured 2026-10-06 on 2.1.291: the window stood at 95% when four Opus
 baselines launched at max effort beside the user's other sessions, and
@@ -375,7 +389,7 @@ $slash = '{"type":"user","message":{"role":"user","content":"/<name> <question>"
 ```
 
 Each message ends in a `result` of its own, so the slash answer is the
-second: the first is the `Read` turn's `ok`, which the `.[0].result` read
+second: the first is the `Read` turn's `ok`, which the first-answer read
 below would grade (`pbip-project-structure`, 2026-10-13, 2.1.293: two
 results, of 2 turns and 15).
 
@@ -680,10 +694,13 @@ the heads-up on Opus. The first `result` has `result_index` 0, the
 second 1, and the second's `total_cost_usd` is the running total, $3.24
 to the first's $2.75. So `select(.type=="result") | .result` prints both
 answers back to back, and a read of the last `result` takes the peer's.
-Grade the first, and print the count beside it:
+Grade the first, off the text records before it rather than its
+`result`, which an output-cap resume leaves holding one turn (above),
+and print the count beside it; for a two-message arm, take the records
+between the first `result` and the second:
 
 ```bash
-jq -s -r '[.[] | select(.type == "result")] | "results: \(length)", .[0].result' arm.jsonl
+jq -b -s -r '(map(.type == "result") | index(true)) as $r | "results: \([.[] | select(.type == "result")] | length)", (.[:$r][] | select(.type == "assistant") | .message.content[]? | select(.type == "text") | .text)' arm.jsonl
 ```
 
 The day's other three arms each carried one `init`, one `result` and no
