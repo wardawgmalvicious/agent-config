@@ -168,6 +168,11 @@ run plus small idle OneLake storage.
 - `fab` 1.7.0 handles the type, without a run verb; `export` writes
   REST's IDs and `bulk-export` Git's (landed in fabric-cli 2026-10-01,
   now `fabric-rest-api`'s `references/cli.md`).
+- Its schedule pane has a **Controller**, binding on/off to a Variable
+  Library Boolean (Learn's *Schedule a user data function*, read
+  2026-10-14). A pipeline's binding serializes as `fabric-data-pipeline`
+  § 7 says and survives Git sync and a deploy; a UDF's `.schedules` is
+  unread.
 
 ## Doc defects, for `/drift-audit` and the skill's caveats
 
