@@ -205,6 +205,17 @@ at least one of:
   answers through a small model, which on 2026-10-06 gave PostCompact
   an `additionalContext` field the page never grants it.
 - A second reproduction in the session (different input, same result).
+  For KQL the engine itself can reproduce it, on a local Kusto emulator:
+  `bash ${CLAUDE_SKILL_DIR}/scripts/kql-emulator.sh query <file.kql>`,
+  with `block <file.md> <n>` to take a fence as the file ships it. Record
+  the engine build `start` prints and write "Kusto emulator, <date>; not
+  yet run in Fabric", since it proves the language, never a Fabric
+  feature or a speed. `start` needs `--accept-eula`, which accepts
+  Microsoft's licence terms, so pass it only with the user's agreement.
+  Its first pull takes minutes, so run it in the background, and `stop`
+  it when done. A claim that something can't be done is the cheapest to
+  test this way: `coding-kql`'s "can't be regexed in" fell to one query
+  (2026-10-13).
 - The user explicitly confirms it's known behaviour, not a fluke.
 
 **Check the shape of the command that took the measurement.** `$?`
