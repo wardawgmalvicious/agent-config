@@ -366,6 +366,11 @@ $slash = '{"type":"user","message":{"role":"user","content":"/<name> <question>"
         --tools Read,Skill --strict-mcp-config
 ```
 
+Each message ends in a `result` of its own, so the slash answer is the
+second: the first is the `Read` turn's `ok`, which the `.[0].result` read
+below would grade (`pbip-project-structure`, 2026-10-13, 2.1.293: two
+results, of 2 turns and 15).
+
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
 `/author-skill` just wrote is invisible everywhere until
