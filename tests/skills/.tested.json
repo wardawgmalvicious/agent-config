@@ -121,6 +121,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "a05eb41ecdfcb0ba"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "9313122",
+        "routing": "f878e796b42ac86f",
+        "body": "9cb475a059f15f5b",
+        "references": "908e11d77867268f"
       }
     },
     "fabric-eventstream": {

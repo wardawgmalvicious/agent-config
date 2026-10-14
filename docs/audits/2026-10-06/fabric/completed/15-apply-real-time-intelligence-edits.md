@@ -219,3 +219,29 @@ a side.
   policy query can read an accelerated external table with
   `external_table()` when its acceleration policy's `Hot` period covers
   all data, GA since July 2026 per What's New.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `9313122`, for `fabric-eventhouse`'s half, D-1 and
+  D-2, as the skill's first behaviour stamp; that body also carries the
+  later streaming-policy, `kql.sh` and deployment-pipeline edits. Phase
+  A ran static only, 74 of 74 with the rules pass matching, since the
+  `paths:` glob has not moved since its 2026-09-12 stamp. Eight `-p`
+  arms on four queries drawn from the `description`, which has no
+  `when_to_use`, in a probe outside the repo holding all five platform
+  groups, Opus 5.5 at `xhigh`, `--tools Read,Skill --strict-mcp-config`,
+  inbound messages refused, `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`.
+  `init` listed 58 commands for the baseline, 78 for the payload, and
+  only the payload's fixture `Read` emitted `commands_changed` naming
+  the skill; three model-invoked arms called `Skill fabric-eventhouse`
+  and the slash arm expanded with no call. D-2 separated on status: the
+  payload gave subitem selection on a database shortcut as GA since
+  September 2026, chosen in the consumer's shortcut settings, where the
+  baseline volunteered the mechanism but called it preview and put the
+  choice with the producer; Learn's `onelake-shortcuts` page, read
+  2026-10-13, sides with the skill. D-1 sits in
+  `references/REFERENCE.md`, outside the behaviour hash, and no arm
+  reached it. Owed to `/learn`, not fixed here: an
+  `arg_max(Timestamp, *)` view without `autoUpdateSchema` is disabled
+  when its source table gains a column (Learn), which the body's
+  `.create-merge` advice leaves out, and
+  `references/programmatic-access.md` sends `@/tmp/kql_body.json`,
+  which a native `az` reads as `C:\tmp`.
