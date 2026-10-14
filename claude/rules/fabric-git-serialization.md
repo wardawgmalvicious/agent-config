@@ -48,7 +48,9 @@ parts (`pipeline-content.json`, `variables.json`, eventstream/report
 JSON, Warehouse `.sql` scripts) **has no final newline** — a trailing
 newline added locally is stripped on the next portal round-trip,
 producing a whitespace-only diff. TMDL, `notebook-content.*`, and
-`.kql` parts *do* end with a newline. A User Data Functions
+`.kql` parts *do* end with a newline: every `notebook-content.py` and
+`.sql` in 10 portal commits ended in exactly one, 2026-07-31 to
+2026-09-15; `.ipynb` is unmeasured. A User Data Functions
 `function_app.py` has no canonical end: it is stored as the editor's text
 ended, with no final newline after one publish and `\n\n\n` after the
 next (three portal commits, 2026-09-30), so the rule below is the only
@@ -179,6 +181,11 @@ scoped to the workspace folders holding item definitions:
 strips the portal's CRLF lines and restarts the ping-pong from the
 other side. This does not retroactively fix already-committed blobs;
 expect one more normalization commit before it settles.
+
+`-text` keeps a notebook's CRs too, and the portal will not drop them:
+its serializer writes its own marker and `# META` lines LF but keeps
+cell text byte for byte, so a part committed CRLF stays CRLF until
+converted locally (1,040 of 1,128 lines came back CRLF, 2026-08-10).
 
 **A view header's own line ending can differ by workspace.** In one
 estate a sandbox workspace writes it LF and the Dev workspace CRLF. On
