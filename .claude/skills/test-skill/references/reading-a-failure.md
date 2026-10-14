@@ -173,7 +173,10 @@ absent, `mcp_servers` 0; 57 with the payload and all four present. A
 grep for `code-review` reads as a leaked payload when nothing leaked,
 and on the day `code-review` itself is under test its absence cannot be
 read off the list — assert its siblings instead, and read the count
-drop as the payload minus one.
+drop as the payload minus one. The built-ins include skills a baseline
+can call: a `fabric-realtime-dashboard` baseline called `Skill dataviz`,
+which its own `init` listed (2026-10-13, 2.1.293), so check a baseline's
+`Skill` name against that list before reading it as a leak.
 
 **`--safe-mode` does not strip the web tools.** It removes the payload,
 not `WebFetch` and `WebSearch`, so against a skill that caches public
