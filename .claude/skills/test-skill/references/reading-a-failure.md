@@ -378,6 +378,18 @@ second: the first is the `Read` turn's `ok`, which the `.[0].result` read
 below would grade (`pbip-project-structure`, 2026-10-13, 2.1.293: two
 results, of 2 turns and 15).
 
+The stream holds no `<command-name>` record; only the session
+transcript records the expansion. In the stream the witnesses are the
+second `init`, whose `slash_commands` gained the skills the `Read`
+activated, and the absence of a `Skill` call: 78 to 80 on
+`fabric-warehouse`, which brought `-monitoring`, and 1 more on
+`fabric-eventhouse` (2026-10-13, 2.1.293). The second `result`'s
+`total_cost_usd` and `modelUsage` are the process's running total, as a
+peer's turn's are (below): the `fabric-warehouse` arm's 30,192 output
+tokens were the `Read` turn's 191 plus the slash turn's 30,001, summed
+off the transcript's own records. Subtract the first `result` for the
+slash turn's own spend.
+
 **A new workflow skill has no junction until the linker runs once.**
 `~/.claude/skills` holds one junction per skill, so a directory
 `/author-skill` just wrote is invisible everywhere until
