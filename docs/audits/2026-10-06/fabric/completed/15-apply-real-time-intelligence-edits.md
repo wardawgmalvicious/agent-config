@@ -245,3 +245,21 @@ a side.
   `.create-merge` advice leaves out. A payload arm also called
   `references/programmatic-access.md`'s `@/tmp/kql_body.json` broken;
   it works, since Git Bash converts the argument (measured 2026-10-13).
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `9313122`, for `fabric-realtime-dashboard`'s half,
+  D-5, as the skill's first behaviour stamp (`dfe7492`); that body also
+  carries the later multistat-size, `changeDetection` and stage-rebinding
+  edits. Phase A ran static only, 74 of 74 with the rules pass matching.
+  Six Opus 5.5 arms on three queries drawn from the `description`,
+  which has no `when_to_use`, and a Haiku slash arm, under the flags and
+  probe of the half above; `init` listed 58 commands for the baseline,
+  78 for the payload. All three model-invoked arms called
+  `Skill fabric-realtime-dashboard`, and the slash arm expanded with no
+  call. The multistat minimum separated: given five stats for a 12×5
+  gap, the baseline wrote a tile that loads and fails when drawn, where
+  the payload gave 15×3 and the draw-time error. Stage rebinding
+  separated in part, and the missing image-export API not at all. No
+  arm reached D-5's four notes, the Maps tile, the other sources, the
+  eight visuals with reference lines and the AI custom visual builder,
+  so they stay unexercised. Edits after the stamp moved the body, so the
+  skill reads `review-body`.
