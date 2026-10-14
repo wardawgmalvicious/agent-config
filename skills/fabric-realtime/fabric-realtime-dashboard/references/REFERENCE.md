@@ -28,7 +28,10 @@ let money = (v: real) {
 
 Usage: `| summarize Total = sum(NetPrice) | project Total = money(Total)`.
 Caveat: string values lose the stat visual's automatic k/M abbreviation
-(usually the point), and numeric color rules no longer apply.
+(usually the point), and numeric color rules no longer apply. Grouping
+stops at millions: `$999,999,999.99` is the largest correct output, and a
+billion prints as `$1000,000,000.00`; add a tier before values reach it
+(arithmetic traced 2026-10-13, not run on a cluster).
 
 Percent variant inline: `strcat(tostring(round(100.0 * a / b, 1)), "%")`,
 guarding division with `iff(b == 0, "n/a", ...)`.
