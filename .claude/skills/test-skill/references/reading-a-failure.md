@@ -486,6 +486,18 @@ answered `git push origin BRANCH:main`, preserving every SHA. Read the
 baseline first, diff the two answers, and let the discriminator fall out
 of the disagreement.
 
+**A claim that separates may be a rule's.** The `Read` that activates a
+conditional skill also loads each rule its path matches, and
+`--safe-mode` strips rules with the rest of the payload, so a rule's
+claim separates just as the skill's would. Grep `claude/rules/` for the
+claim before crediting the skill; step 5's rules pass names the rules a
+fixture loads. Three runs met it on 2026-10-13 (2.1.293), each payload
+transcript carrying the rule's `nested_memory` record and no baseline's:
+`fabric-warehouse`'s `QUALIFY` and `MEDIAN` sat in `coding-tsql` too,
+`fabric-realtime-dashboard`'s string formatting in `coding-kql`, and
+`fabric-eventhouse`'s "a Git-to-workspace sync runs those
+`.create-merge` lines" in `fabric-git-serialization`.
+
 **A baseline that beats the payload has found a defect in the skill,
 not failed the run.** Where the two disagree, read the source the skill
 cites before grading; when it sides with the baseline, the skill is
