@@ -99,7 +99,9 @@ rules out.
    `changelog` on-disk diff and the scratchpad carve-out cross. The body
    needs one explicit precedence line: instructions reasoning from the
    parent's tool scope do not transfer; the agent's own tool list and
-   scratchpad rule govern.
+   scratchpad rule govern. **2026-10-14:** both quoted lines are gone.
+   § 3 now sanctions Bash in the scratchpad and § 4c keeps files on disk,
+   so on these two points the parent and an agent with `Bash` agree.
 
 6. **`maxTurns: 30` is an unlisted silent-failure mode.** Failure item 6
    covers 404s, renames, oversized listings and exhausted budgets — not a

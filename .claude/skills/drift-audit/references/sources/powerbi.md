@@ -54,11 +54,12 @@ in the private `MicrosoftDocs/powerbi-docs-pr` (also 404 to us).
 takedown and were reparented, and the public mirror preserved the private
 repo's SHAs, so upstream bytes are still reachable under another namespace.
 
-1. **Get the target SHA first.** `WebFetch` the live Learn page (the
-   `url` above) and read the **`git_commit_id`** meta tag — a bare 40-hex
-   SHA. Ask for that tag by name; a broad prompt summarizes the page and
-   drops it. Use `WebFetch`, not a shell `curl`: § 3 keeps this skill
-   read-only and Bash is deliberately outside its tool scope.
+1. **Get the target SHA first.** It is the live Learn page's (the `url`
+   above) **`git_commit_id`** meta tag — a bare 40-hex SHA. `curl` the
+   page into the scratchpad (SKILL.md § 3) and `grep` for the tag, which
+   reads it exactly: `<meta name="git_commit_id" content="0e80b00b…" />`
+   on 2026-10-14. With no Bash, `WebFetch` the page and ask for that tag
+   by name; a broad prompt summarizes the page and drops it.
 
    **Do not read `original_content_git_url` for this.** It carries a
    *branch*, not a SHA — `.../powerbi-docs-pr/blob/live/...`, checked
@@ -186,7 +187,9 @@ path rather than the exception. Size first with `get_commit` at
 take the two-ref diff on the single `path`. Both 2026-09-07 runs reached
 that conclusion independently and from opposite directions — one via raw
 URLs, one via `github-mcp` — which is the evidence it is a property of
-the source rather than of either run.
+the source rather than of either run. All of this is the path without a
+clone: on one (SKILL.md § 4a), `--numstat` sizes every landing and the
+diff reads `path` alone, so the release's size never reaches context.
 
 The base for that two-ref diff is **the last commit touching `path`
 before the floor**, not the release merge's parent — see SKILL.md § 4b,

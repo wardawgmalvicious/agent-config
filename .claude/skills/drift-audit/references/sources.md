@@ -55,6 +55,9 @@ What "an entry" means for the diff, per shape.
   carries no GA signal at all. Check the source's entry before reading a
   removal as a promotion. Capture the feature,
   description, and status cells plus any `drill.host` link in the row.
+  A row added and deleted inside the window is in neither prior nor
+  HEAD, so only walking every in-window version finds it (SKILL.md § 4a
+  step 3).
 - **`prose`** — the page is dated headings with paragraphs under them. The
   unit is a **heading block**. Diff at paragraph granularity within a
   changed block; a wholly new heading is one entry.
@@ -64,10 +67,9 @@ What "an entry" means for the diff, per shape.
   heading. Apply the entry's `filter`, if it has one, per bullet before
   anything else — an excluded bullet is bucket (d) and is never drilled.
   Changelogs append at the top, so a commit patch is a small block of new
-  lines. At or below the ">5" commit count, diff them from patches; above
-  it a two-ref diff is fine **provided both refs are diffed on disk and
-  only the new region enters context** — never let two full files into the
-  conversation (SKILL.md § 4a).
+  lines, and a long window reads only the new region of an on-disk
+  two-ref diff — never let two full files into the conversation
+  (SKILL.md § 4a step 3).
 
 **All three contracts have now been exercised.** The two What's New
 sources are table-driven. `vscode-agent` exercised `prose` on 2026-08-29
@@ -90,8 +92,9 @@ registry entry plus a validated run, not a skill rewrite.
    because the What's New sources are.
 2. Create `sources/<id>.md` with every field filled. A missing `drill.via`
    defaults to `webfetch`; a missing `sections` list means the WebFetch
-   fallback cannot do targeted re-fetch, so the source is github-mcp-only
-   in practice for pages over ~40 KB. If `path` is a directory, `files` is
+   fallback cannot do targeted re-fetch, so a broad fetch that comes back
+   summarized leaves the source unread on that path (SKILL.md § 4b). If
+   `path` is a directory, `files` is
    not optional in practice — without it, content fetches return a listing
    and the audit has nothing to diff.
 3. If the page carries more entries per window than a report can usefully

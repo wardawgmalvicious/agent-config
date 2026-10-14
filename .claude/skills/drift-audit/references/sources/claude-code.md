@@ -52,8 +52,8 @@ pipeline harder than the What's New sources do:
   Read(...) deny rules to files reached through a symlinked search path`
   is a permissions-model finding wearing a bugfix prefix.
 - **Size.** 945 KB and 414 version sections on 2026-10-06, and it only
-  grows. This is why
-  SKILL.md § 4a treats `changelog` sources specially: letting two full
+  grows. This source is why SKILL.md § 4a keeps two refs on disk once
+  they outgrow the budget: letting two full
   files into context to diff them would pull ~1.2 MB to learn what a small
   append-at-top region already says. The bound is not "always patch" — it
   is to keep the full files out of the conversation, by per-commit patch

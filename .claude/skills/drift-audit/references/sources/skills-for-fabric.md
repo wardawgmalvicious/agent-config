@@ -51,6 +51,13 @@ is running a stranger's prompt.
 
 ## Fetch — one `CHANGELOG.md` patch per commit, isolated by file pagination
 
+**On a clone (SKILL.md § 4a), steps 1 and 2 below are not needed.**
+`git log --first-parent -p <base>..<head> -- CHANGELOG.md` gives each
+landing's patch for this file alone, and lists the merge rather than the
+branch commit, so the date-floor miss below does not arise. Step 3's
+base file is `git show <base>:CHANGELOG.md`, and step 4 nets a pair of
+rewrites by `git rev-parse <ref>:CHANGELOG.md` at each ref.
+
 Each release lands as one squashed commit, `Release vX from internal
 repo`, on a `release/vX` branch, roughly weekly — `0.3.12` through
 `0.3.15` shipped 2026-08-13, 08-20, 08-26 and 09-04. It reaches `main`
@@ -93,9 +100,8 @@ history:
    (`https://raw.githubusercontent.com/microsoft/skills-for-fabric/<sha>/CHANGELOG.md`)
    and run `grep -c` per name against the local copy, as the 2026-09-12
    run did — 44,935 bytes on disk, none of it in the conversation, where
-   `get_file_contents` would have put all of it. Same exemption the
-   `changelog` shape contract already states for a two-ref diff, applied
-   to the base read.
+   `get_file_contents` would have put all of it. SKILL.md § 4a step 3's
+   on-disk rule, applied to the base read.
 4. Net a pair of whole-file rewrites (+N/−N on every line) by comparing
    the file's blob SHA at the two refs from a root listing —
    `get_file_contents`, `path: "/"`, `fields: ["name","sha"]` — instead

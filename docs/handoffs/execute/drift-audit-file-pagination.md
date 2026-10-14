@@ -40,6 +40,10 @@ to a two-ref file diff. It never names the paginated read.
   under the five-commit line, sent it to step 5's two-ref diff instead
   (`git show 7dd627e:docs/audits/2026-09-07/powerbi/00b-audit-report-rerun.md`).
   `references/sources/powerbi.md` records the same trap.
+- Since 2026-10-14 § 4a prefers a clone, where
+  `git log --first-parent -p -- <path>` isolates one file's patch with
+  no pagination. The question now covers only each step's *Without a
+  clone*, the `github-mcp` route.
 
 ## If yes
 
