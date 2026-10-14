@@ -585,6 +585,32 @@ on `commit`: the same shared-tree walkthrough kept the `git diff
 put the regression on the new code block rather than on the query or
 the model.
 
+**A platform skill keeps its own name.** Step 7 copies it into the
+probe and leaves user scope without it, so the rename buys nothing: put
+the pre-edit tree in a sibling probe directory, beside the same copies
+of every other group, and run it model-invoked with the payload arm's
+flags. The two then differ by the edit alone, `description` included,
+which no slash arm reads. An `-old` copy of a conditional skill keeps
+its `paths:`, so `/<name>-old` would answer `Unknown command` until a
+matching `Read` ran in the same process (inferred from the two
+measurements above, not run).
+
+```bash
+rm -r <probe>/old/.claude/skills/<name>   # step 7's copy of the current tree
+git archive <edit>^ skills/<group>/<name> | tar -x -C <scratch>
+mv <scratch>/skills/<group>/<name> <probe>/old/.claude/skills/
+```
+
+`diff -rq --strip-trailing-cr` across the two probes' skill folders
+should name only the files the edit touched. That arm is the only
+witness a defect fix has, since the fix brings the payload to what the
+baseline already said. Measured 2026-10-13 on `fabric-warehouse`
+(2.1.293, `585caab`): asked which pipeline activity should call a
+procedure that returns nothing, the pre-edit tree chose Script, "our
+fabric-warehouse skill says it only works with Azure SQL and SQL MI",
+where the current tree and the baseline chose the Stored procedure
+activity.
+
 **The same route tests a wording before it lands.** Copy the skill's
 directory to `<probe>/.claude/skills/<name>-next/`, set its `name:` to
 match, edit the copy, and slash-invoke it as `-old` is: the live
