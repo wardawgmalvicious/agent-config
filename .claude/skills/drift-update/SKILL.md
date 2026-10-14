@@ -273,6 +273,19 @@ Two adjustments to the repo's standard gates:
   write: its log and the regenerated index are a diff under `docs/audits/`,
   which `lint-audit-index` and `lint-briefs` both check.
 
+**A KQL edit runs on the engine too**, whether or not the brief's steps
+name it. When a brief writes a `kusto` or `kql` fence, or a claim about
+what a KQL function or operator returns, run it on the local Kusto
+emulator before stamping, with `skills/meta/learn/scripts/kql-emulator.sh`:
+its `block <file> <n>` takes the fence as written, and its `query` runs
+it joined after a file of `let <Table> = datatable(...)` stubs for any
+table it reads. Ask the user before the run's first `start`, since
+`--accept-eula` accepts Microsoft's licence terms, and log the engine
+build under **Verification**. The engine proves the language, not
+Fabric, so a result that disagrees with the brief stops the run as any
+failed step does, and the user decides; without Docker or that yes, the
+check is deferred, as below, never failed.
+
 A failed verification stops the run. Report the command, its output, and the
 state of the tree; leave the edits in place rather than reverting, so the user
 can see what happened.
