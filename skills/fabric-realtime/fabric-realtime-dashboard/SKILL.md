@@ -38,6 +38,10 @@ All KQL text lives in `queries[]`; everything else points at it:
   `let _name = (<text>);`) — no scalar lambdas, no internal `let` statements.
 - `parameters[]` — `kind: "duration"` exposes two variables via
   `beginVariableName` / `endVariableName` (commonly `_startTime` / `_endTime`).
+  A tile added to a new page doesn't bring its parameter along: where
+  `showOnPages.kind` is `"selection"`, append that page's `id` to
+  `showOnPages.pageIds`, or the tile renders with the parameter's
+  `defaultValue`, when it has a usable one (Learn, 2026-10-13).
 - `dataSources[]` — a Fabric KQL database is `kind: "kusto-trident"`, on
   which schema v81 requires `id`, `name`, `clusterUri`, `database`,
   `workspace` and `databaseArtifactId` (the KQLDatabase item id). **Git and
@@ -72,21 +76,26 @@ database in one deploy (2026-10-13, `fabric-deploy`'s
 - **Every `queryId` referenced exactly once**, counted across
   `tiles[].queryRef.queryId`, `baseQueries[].queryId`, and
   `parameters[].dataSource.queryRef.queryId`. Duplicating a tile means
-  duplicating its query with a fresh id too.
+  duplicating its query with a fresh id too. A shared one fails the load
+  with `/queries: Some query IDs are used in multiple query references
+  (tiles, base queries, parameters)`.
 - **A Fabric Maps tile (preview) has no query.** It embeds a pre-authored
   map item as-is and references it by item ID, so it stands outside both
   this rule and the `queries[]` rule above. Learn shows no JSON for it, so
   its tile shape is undocumented (2026-10-06).
 - **Every `id` is an RFC-4122 UUID**, unique within its category. Readable
-  pseudo-ids are rejected. For deterministic scripted edits use
+  pseudo-ids are rejected with `Needs to follow the UUID format as defined
+  by RFC 4122`. For deterministic scripted edits use
   `uuid.uuid5(namespace, label)`.
 - **Misleading error**: `/tiles/N/queryRef ... must have required property
   'baseQueryId'` almost always means a malformed `queryRef.queryId` — the
   schema's `oneOf` fails the `query` branch and reports the `baseQuery`
   branch's complaints instead. Fix the UUID and the cascade clears.
 - **Identity preservation**: never change existing `id`s (top-level, tile,
-  page, query, dataSource, parameter), `pageId`, `queryRef.queryId`,
-  `dataSource.dataSourceId`, parameter `variableName`s, or `.platform`
+  page, query, dataSource, parameter), the top-level `eTag` and
+  `schema_version`, `pageId`, `queryRef.queryId`,
+  `dataSource.dataSourceId`, a v63 source's `scopeId`, parameter
+  `variableName`s (a duration's two names too), or `.platform`
   `logicalId`. A changed identifier is treated as delete + recreate on the
   next *Update from Git*, losing pinned references and share targets.
 
