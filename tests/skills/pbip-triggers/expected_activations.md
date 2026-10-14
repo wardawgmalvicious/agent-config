@@ -54,10 +54,8 @@ between them.
 **3. `control/notes.md` activates no *skill*.** If one fires, the
 observation method is wrong — check this before believing any other row.
 It does pull the `coding-markdown` **rule**, whose glob is `**/*.md`; that
-is correct. This set carries no rules table to record it in, unlike
-[`../fabric-triggers/`](../fabric-triggers/expected_activations.md) — the
-rules pass has never been run over these fixtures, so the only rule
-documented here is the one that made this assertion wrong.
+is correct, and § "Rules load here too" below records the rules the other
+fixtures load.
 
 **4. No report file activates a skill.** The six `pbir-*` file skills
 folded into `pbir-report-workflow` on 2026-10-12 as its references, and
@@ -85,6 +83,22 @@ glob, `**/*.SemanticModel/definition/cultures/*.tmdl`, sits inside it.
 `fabric-tmdl`'s body names the reference to read before each of the two
 jobs. A second semantic-model skill on any of these four rows means one
 of them is back as a skill.
+
+## Rules load here too
+
+The rules pass, the static snippet in
+[`../fabric-triggers/README.md`](../fabric-triggers/README.md) run over
+`claude/rules/*.md`, first ran over these fixtures on 2026-10-13:
+
+| Fixture file | Rules |
+| --- | --- |
+| every file under `SampleReport.Report/` or `SampleModel.SemanticModel/` | `fabric-git-serialization` |
+| `SampleReport.pbip` | *(none)*: it sits outside both item folders |
+| `control/notes.md` | `coding-markdown` **only** |
+| `…/definition/model.tmdl`, `…/definition/cultures/en-US.tmdl` | + `coding-dax`, `coding-tmdl` |
+
+So a report file that activates no skill, `visual.json` among them,
+still loads a rule.
 
 ## Known gaps
 
