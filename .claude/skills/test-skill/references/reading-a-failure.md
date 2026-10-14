@@ -294,12 +294,19 @@ baseline. The arm that crossed got one reading `rejected`,
 the process exited 1. Read `is_error`, not `subtype`, and rerun after
 the reset: the 18 turns are in the assistant records, the answer is
 not. `--max-budget-usd` sees none of it, so read the window before
-launching: a cheap arm's first `rate_limit_event` carries `utilization`
-and `resetsAt`, in Unix seconds. On 2026-10-13 (2.1.293) the Haiku slash
-arm, sent first, read `allowed_warning` at 0.91 for $0.012; the six Opus
-arms waited 53 minutes for `resetsAt`, launched at `allowed` and all
-finished, $2.93 together. The window is the account's, so crossing it
-stops the user's live sessions too, not the arms alone.
+launching: a cheap arm's first `rate_limit_event` carries
+`unifiedWindows.five_hour.utilization` and `resetsAt`, in Unix seconds,
+at every `status`. Read that figure. `status` reads `allowed` until it
+passes 0.9, and a top-level `utilization` appears, with
+`surpassedThreshold`, only once `status` reads `allowed_warning`, so
+neither warns while the window sits just below the line. On 2026-10-13
+(2.1.293) the Haiku slash arm, sent first, read `allowed_warning` at
+0.91 for $0.012; the six Opus arms waited 53 minutes for `resetsAt`,
+launched at `allowed` and all finished, $2.93 together. Other testers'
+arms read `allowed` at 0.88 and at 0.9 that evening, four testers live,
+and arms launched just after the reset read 0 to 0.02. The window is the
+account's, so crossing it stops the user's live sessions too, not the
+arms alone.
 
 **A routing arm needs only its first tool call.** `--max-turns 1` ends
 it there: the `Skill` call is in the stream, the `result` reads
