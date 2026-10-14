@@ -256,7 +256,7 @@ read 2026-10-12:
 | PBI Desktop ignores external edits | The detection preview is off, the external file is unsaved, or the **Apply external changes** banner was not taken | Switch the preview on and take the banner; with it off, close and reopen the project. See External Edits with Desktop Open |
 | Broken visual after table rename | Missed cascade location | Grep for old name across `.json`, `.tmdl`, `.dax` (both DAXQueries folders) |
 | Empty `reportExtensions.json` crashes Desktop | `"entities": []` is invalid | Delete the file instead of leaving empty |
-| Forked project shows as same Fabric item | `logicalId` not regenerated | New GUID per `.platform` on fork |
+| Update from Git fails, or a commit is refused, on "duplicate logical IDs" | A forked folder kept its `logicalId` | New GUID per `.platform`, or the dialog's **Fix with direct commit** ([Learn](https://learn.microsoft.com/fabric/cicd/troubleshoot-cicd#update-failure-fix-duplicate-logical-ids), read 2026-10-13) |
 | Thick PBIX cannot be converted to PBIP via script | `DataModel` binary is opaque | Use File → Save As in PBI Desktop |
 | Merge conflicts in `diagramLayout.json` | Auto-generated per user | Treat as binary or add to `.gitignore` |
 
