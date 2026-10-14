@@ -270,9 +270,13 @@ with the commit and why it was made unasked.
   Stage the path first: `--ff-only` refuses an unstaged file as `Your
   local changes to the following files would be overwritten by merge`,
   even one already identical, and refuses once a peer's commit has moved
-  `main`: branch again from the new `main` in the worktree and commit
-  again, taking each file from your own commit with `git -C <wt> checkout
-  <sha> -- <path>`. When the shared copy also holds a peer's uncommitted
+  `main`: branch again from the new `main` in the worktree and redo each
+  commit, `git -C <wt> cherry-pick -n <sha>`, `git diff --cached`, then
+  `commit -C <sha>`. Never `checkout <sha> -- <path>` there: that is your
+  commit's whole file, built on the old `main`, so where their commit
+  touched the same path, as one stamp manifest, it reverts their change
+  and the fast-forward takes it (2026-10-13, read off its blob, not run).
+  When the shared copy also holds a peer's uncommitted
   edit beside yours, as one manifest several testers stamp at once does,
   `git diff --quiet` exits 1 with no output, and `git add` takes their
   edit too, which `--ff-only` refuses as above. Stage your commit's blob
@@ -305,7 +309,8 @@ with the commit and why it was made unasked.
   git -C <scratch>/wt add <path> && git -C <scratch>/wt diff --cached   # your hunk alone; commit there
   git diff --quiet <branch> -- <path> && git add <path> && git merge --ff-only <branch>   # refuses mid-stash: retry
   git update-index --cacheinfo <mode>,<blob>,<path> && git merge --ff-only <branch>   # a peer's edit beside yours; <mode>,<blob> from git ls-tree
-  git worktree remove <scratch>/wt && git branch -d <branch>
+  git -C <scratch>/wt switch -c <branch>-2 main && git -C <scratch>/wt cherry-pick -n <sha>   # main moved: redo each commit, then commit -C <sha>
+  git worktree remove <scratch>/wt && git branch -d <branch>   # a superseded <branch> takes -D
   ```
 - **Record what you left.** Commit only what is yours, and name the
   deferred piece in the commit message so `git log` carries it rather
