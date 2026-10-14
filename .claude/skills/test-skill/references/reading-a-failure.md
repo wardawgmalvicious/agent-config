@@ -132,8 +132,9 @@ description needs `Skill` allowed; the slash path, which inlines the
 body, is unaffected. A Haiku arm reported `dontAsk` as given and `auto`
 as `default` (one `dontAsk` arm and three `auto` arms, 2026-10-06,
 2.1.291). On 2.1.293 it reads `auto`, flag or none (two probes,
-2026-10-13): read the `init` record rather than assume either, since
-whether the mode then acts as auto is unmeasured.
+2026-10-13): read the `init` record rather than assume either. Auto mode
+gained Haiku 5.5 by then (permission-modes page, read 2026-10-13), and a
+`haiku` skill pin ran on it under auto (`editing-skills.md`).
 
 **A probe's environment is its arm's environment.** A variable set to
 launch a slash probe from Bash stays in the `claude` process, and its
