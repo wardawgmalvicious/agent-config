@@ -425,6 +425,27 @@ file Bash wrote. Until this entry the line read "`/tmp` is `C:\tmp` to a
 native child", and a `/test-skill` probe arm on Opus 5.5 took it to
 cover that argument, calling `fabric-eventhouse`'s recipe broken.
 
+#### A link to a scratchpad file opens nothing
+
+Added 2026-10-14 as a bullet; it never had a section of its own. The
+scratchpad lives under `%TEMP%`, outside every workspace, and the VS Code
+extension's prompt makes links workspace-relative, so in a client Fabric
+Git-sync sandbox repo a link to a scratchpad file neither navigated nor
+opened it (observed 2026-09-30; the user reported earlier occurrences and
+asked for the rule). The harness also hands the scratchpad over in 8.3
+form, `C:\Users\<USERNA~1>\…`. `cygpath -lw` expands it, exit 0, and
+`cygpath -l -u` prints its usage text, so a test built on it answers "no"
+for a file that exists (measured 2026-10-01).
+
+Re-measured 2026-10-14 in the extension: its prompt still asks for
+workspace-relative links and still names the scratchpad in 8.3 form, and
+`cygpath -lw` still expanded the profile path while `cygpath -l -u`
+printed its usage and exited 1. Untested: why an absolute link failed,
+and whether a `file:///` or `vscode://file/` link opens. The bullet took
+the two lines the fold of § "A native program's argv is one Windows
+command line" below left, bringing `claude/CLAUDE.md` back to its 200-line
+cap.
+
 #### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open

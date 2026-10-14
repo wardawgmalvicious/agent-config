@@ -50,6 +50,8 @@ the bytes: a round trip through a translating layer proves nothing.
   install root (2026-09-12). Use the scratchpad path.
 - **`/tmp` is `C:\tmp` inside a native child's code**: `FileNotFoundError`.
   Bash converts arguments (2026-10-13). Use the scratchpad or `cygpath -w`.
+- **A link to a scratchpad file opens nothing** (2026-09-30): give its path
+  in a code block, expanded from 8.3 (`USERNA~1`) by `cygpath -lw`.
 - **`mv` denying a directory rename** (`Permission denied`) means a held
   handle: retry, and don't change shell or settings.
 - **A native program takes a payload on stdin**, not argv or `<(...)`:
