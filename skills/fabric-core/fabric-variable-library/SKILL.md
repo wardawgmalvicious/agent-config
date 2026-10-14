@@ -266,6 +266,44 @@ as the bare `**/.platform` that had to be narrowed out of
 `pbip-project-structure`. The discriminator is `$(...)` *inside* the file,
 where no glob can see it. Tried and reverted 2026-09-01.
 
+## Schedule consumption
+
+A job schedule's on/off can follow a **Boolean** variable, through the
+*Edit schedule* pane's *Controller*. Learn documents it only on
+*Schedule a user data function*, and its supported-items list names no
+schedule (both read 2026-10-14), yet a pipeline's pane has it too (a
+client estate, 2026-10-13). A pipeline's `.schedules` entry then holds
+the reference in place of `enabled` (`fabric-data-pipeline` § 7), so
+switching a schedule per environment is a value-set edit, with no CI
+step rewriting `enabled`. Default the variable to `false`: a first sync
+or a deploy to an empty stage leaves **Default** active (Learn's
+*Variable library CI/CD*), so a new workspace leaves the schedule off
+until a value set that turns it on is made active.
+
+**A flip takes effect when the schedule next reads the variable**, which
+List Item Schedules gives as
+`enabledDetail.nextResolveVariableReferenceDateTime` (`fabric-rest-api`).
+One Cron schedule at a 15-minute interval, each change made once (the
+same estate, 2026-10-13):
+
+| Change | Took effect |
+| --- | --- |
+| The override, edited in the portal | within 2 minutes, before the next read |
+| The override, by an update from Git | at the next read, about 12 minutes on |
+| A binding, synced over an unbound schedule | first read 20 to 40 minutes after the schedule's `createdDateTime` |
+| A binding, deployed to a stage that never held the item | read within 82 seconds, the next 15 minutes after creation |
+
+Reads came 15 and 16 minutes apart, so whether they follow the
+schedule's interval or a fixed timer is unknown. A schedule that is off
+still reads, and turns back on at the first read after its value does.
+Saving a binding moved the run times off their old grid, as turning the
+schedule back on did. A deploy carries the binding, not an on/off
+state: the target resolves it against its own active value set, which a
+deploy leaves alone (Learn). Unread: a value that arrives by deployment
+(probably waiting for a read too), a flip in a deploy's target, a target
+whose value set turns the schedule on, a redeploy over a schedule the
+target holds, and a service principal deploying.
+
 ## Runtime ID rule (cross-reference)
 
 `ItemReference` variable values are passed **verbatim** to consumers — they are NOT resolved against `.platform` `logicalId`. Always store the **runtime item ID** (the GUID from the Fabric portal URL or `GET /v1/workspaces/{wsId}/items` response). See fabric-rest-api skill for the runtime-vs-logicalId distinction — using the wrong one is a leading cause of `PowerBIEntityNotFound` from pipelines.
@@ -287,6 +325,7 @@ where no glob can see it. Tried and reverted 2026-09-01.
 | Git sync fails `InvalidContent (ValueMismatch)` | Rename propagated to `variables.json` but not every `valueSets/*.json`, or an empty `value` — the library rejects `""`; use a `FILL-ME` sentinel |
 | `AttributeError: 'str' object has no attribute 'value'` on ItemReference | Pure-Python kernel returns dict-like — `.get("itemId")` is already the GUID; only call `.value()` when it exists |
 | Lookup fails under SPN / scheduled run | `notebookutils.variableLibrary` has no SPN support — pass values as notebook parameters from the pipeline |
+| A schedule bound to a variable hasn't switched after its value changed through Git | It switches at its next read of the variable, which `enabledDetail.nextResolveVariableReferenceDateTime` gives; see *Schedule consumption* |
 
 ## Reference
 
