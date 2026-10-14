@@ -61,6 +61,13 @@ Worked `az rest` invocation and the REST item-definition envelope:
   (inferred from their end state, 2026-10-07; Learn's deployment pages
   don't say). Run drops live in each stage.
 - `.alter-merge table T (NewCol: string)` — add column.
+- **A column added or dropped disables each materialized view over the
+  table built on `arg_max(Timestamp, *)`, `arg_min(Timestamp, *)` or
+  `take_any(*)`** without `autoUpdateSchema = true`. Re-run
+  `.alter materialized-view` with its exact query, then
+  `.enable materialized-view` (Learn, 2026-10-13). `autoUpdateSchema`
+  skips both, but Learn warns that a dropped source column can then lose
+  view data irreversibly.
 - **`.alter table T (Col1:type, Col2:type, …)`** restates the whole column
   list and is the only command that **reorders**: the table keeps exactly
   the columns listed, in that order, and **drops any left out, with their
@@ -287,6 +294,7 @@ preview: [references/graph-operators.md](references/graph-operators.md).
 | `Forbidden (403)` on management commands | Insufficient role | Need `admin` or `ingestor` database role |
 | OneLake / ADLS ingest auth fails | Missing `;impersonate` on URI | Append `;impersonate` to the storage URI |
 | Materialized view stuck at 0% | No new source data or backfill pending | `.show materialized-view MV statistics` |
+| Materialized view disabled after a column add or drop | `arg_max(Timestamp, *)`-style view without `autoUpdateSchema` | `.alter materialized-view` with the same query, then `.enable materialized-view` |
 | `.drop column` fails | Column referenced by materialized view or function | Drop dependents first |
 | Streaming ingestion errors | No streaming policy on the table or its database, or a table-level `false` over the database's | Read both policies, then `.alter table T policy streamingingestion enable` |
 | External table returns no data | Path / format / schema mismatch | Verify `abfss://` path, `dataformat=`, and column types match source |
