@@ -361,11 +361,11 @@
     },
     "test-skill": {
       "behaviour": {
-        "date": "2026-09-30",
-        "commit": "c145751",
+        "date": "2026-10-14",
+        "commit": "4b02e4e",
         "routing": "7bcea1fe9f8495a2",
-        "body": "c01ad50d7ffc51a3",
-        "references": "7f85193c2babcb0e"
+        "body": "862d45158a6dfb14",
+        "references": "3514277a67bee4a0"
       }
     },
     "triage": {
