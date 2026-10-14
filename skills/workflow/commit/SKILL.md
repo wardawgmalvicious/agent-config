@@ -272,7 +272,17 @@ with the commit and why it was made unasked.
   even one already identical, and refuses once a peer's commit has moved
   `main`: branch again from the new `main` in the worktree and commit
   again, taking each file from your own commit with `git -C <wt> checkout
-  <sha> -- <path>`. Copy nothing from the shared tree while a peer
+  <sha> -- <path>`. When the shared copy also holds a peer's uncommitted
+  edit beside yours, as one manifest several testers stamp at once does,
+  `git diff --quiet` exits 1 with no output, and `git add` takes their
+  edit too, which `--ff-only` refuses as above. Stage your commit's blob
+  alone, `git update-index --cacheinfo <mode>,<blob>,<path>` with both
+  read off `git ls-tree <branch> -- <path>`: an index already at the
+  target lets the fast-forward through and leaves their edit on disk,
+  unstaged. Tell this from their stash window by
+  `git diff <branch> -- <path>`, which adds only their lines here and
+  removes yours there (2026-10-13, git 2.55.0.windows.3, then both ways
+  in a scratch repo). Copy nothing from the shared tree while a peer
   commits: a `cp` inside their stash window takes `HEAD`'s version, and
   the worktree's staged diff comes back empty, so write the edit into
   the worktree's copy instead, or carry one already made as a blob, from
@@ -294,6 +304,7 @@ with the commit and why it was made unasked.
   git -C <scratch>/wt cat-file blob <sha> > <scratch>/wt/<path>   # or carry it as a blob, <sha> from git hash-object -w <path>
   git -C <scratch>/wt add <path> && git -C <scratch>/wt diff --cached   # your hunk alone; commit there
   git diff --quiet <branch> -- <path> && git add <path> && git merge --ff-only <branch>   # refuses mid-stash: retry
+  git update-index --cacheinfo <mode>,<blob>,<path> && git merge --ff-only <branch>   # a peer's edit beside yours; <mode>,<blob> from git ls-tree
   git worktree remove <scratch>/wt && git branch -d <branch>
   ```
 - **Record what you left.** Commit only what is yours, and name the
