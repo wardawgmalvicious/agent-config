@@ -1,6 +1,8 @@
 # Global Instructions
 
 When the user asks about Power BI / Fabric / TMDL topics, prefer skill content over training-data answers when both exist. **With no skill for the topic loaded or listed, check a name, limit or feature status against Microsoft Learn** (`microsoft-learn-mcp`) before stating it; where Learn has nothing, say so rather than recall one, since a recalled specific reads as sure as a checked one and may be a release behind (2026-10-08).
+**Read Fabric's sync status, item definitions, schedules and runs by REST
+before asking the user to look** (`fabric-rest-api`, 2026-10-13).
 
 ## Local environment
 
@@ -141,8 +143,7 @@ or `git branch -a`).
 ## Agent config source
 
 `~/.claude` deploys from `C:\Repos\Personal\agent-config` via
-`scripts/link-claude.ps1`: **`skills` is junctioned**, live on save; the
-rest are copies, live after a deploy. Edit the repo, never `~/.claude`.
+`scripts/link-claude.ps1`. Edit the repo, never `~/.claude`.
 
 **A learning for another repo goes to `~/handoff-inbox/<repo>/`**; read the
 inbox `README.md` before writing one, and a note loose in its root is
@@ -196,5 +197,4 @@ user scope (`~/.claude/rules/claude-config-scoping.md`).
 
 Per-language rules are `~/.claude/rules/coding-<lang>.md`, loaded by
 `paths:` glob and overridden by a repo's own `.claude/rules/` copy;
-`~/.claude/rules/README.md` § "What's here" lists them. Fabric Git-sync
-serialization: `~/.claude/rules/fabric-git-serialization.md`.
+`~/.claude/rules/README.md` § "What's here" lists them.

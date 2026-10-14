@@ -37,6 +37,46 @@ nothing"), so every session can check a specific against Learn, and the
 line now says to. The line stays unwrapped: the file sat at the
 200-line cap, and wrapping it would have cost five lines.
 
+**2026-10-14.** The preamble's Fabric live-state line, to read sync
+status, item definitions, schedules and runs by REST before asking the
+user to look, came from an inbox note of 2026-10-13 by a session in a
+client Fabric estate repo, whose own instructions had made it their
+first rule. The calls read and change nothing: Git Get Status
+(`GET …/git/status`) and `POST …/items/{id}/getDefinition`, both
+long-running, Job Scheduler's List Item Schedules and List Item Job
+Instances, and Git Get Connection for whether a workspace is connected
+at all. Measured in the estate:
+
+- About ten round trips on 2026-10-12 and 2026-10-13 went this way,
+  where each had meant the user selecting **Update all** and reporting
+  what the workspace showed; the user judged that the session needed
+  little direction from them.
+- One List Item Schedules read answered what the portal's Schedules pane
+  could not: whether a binding had been read yet, and when it would be.
+- A read is a snapshot. One schedule read `enabledEvalState: null` at
+  18:22 UTC and `Normal` at 18:42 on 2026-10-13, and the session had
+  already recorded the first as an open question.
+
+Only the read half is global. A write, an update from Git among them,
+follows each repo's own rule for which environment a session may change:
+the estate updates its first stage unasked after a push, its second only
+on the user's word, and reaches its last two only through deployment
+pipelines, while another repo may have no first stage at all.
+
+The user chose this file on 2026-10-14 over three homes that each miss
+a case. A section of `claude/rules/fabric-git-serialization.md` loads
+only on a Read, Write or Edit of a `.platform` file or an item folder,
+so not in a session asked about a run before it opens one, nor after
+`/compact` until the next. `fabric-rest-api`'s `when_to_use` is listed
+only in repos that link the skill, since no platform skill is at user
+scope, and says how to make the calls rather than to make them unasked.
+Each repo's own instructions reach only the repos that adopt them, and
+one had. The brief's candidate ran to five wrapped lines; these two drop
+its clause on writes, since the line says only to read, and a write to a
+workspace already waits on the repo's rule or the user's word. The room
+came from two lines cut the same day, recorded under § "Agent config
+source" and § "Coding conventions".
+
 ## Local environment
 
 Windows 11. Two shells, each spawned fresh per tool call: PowerShell 7.6
@@ -1132,6 +1172,24 @@ path, which the user asked on 2026-09-23 to keep out of the file.
 `claude/rules/coding-bash.md` cited this ledger twice as "the evidence
 file it names", and now names it by path.
 
+**2026-10-14.** The clause "**`skills` is junctioned**, live on save;
+the rest are copies, live after a deploy" went out to make room for the
+preamble's Fabric live-state line. A session that edits the payload does
+so in this repo, where root `CLAUDE.md`'s table says how each path
+deploys and when it is live, and a session elsewhere with a learning
+writes an inbox note, not an edit. The clause was working guidance for
+this one repo, which the user asked on 2026-09-23 to keep out of the
+file, and inexact besides, as a machine-config prompt audit's inbox note
+of 2026-10-09 found: `Get-Item` reads `Directory` for `~/.claude/skills`
+and `Junction` for `~/.claude/skills/land`, targeting
+`skills\workflow\land`, so each skill is a junction and the folder that
+holds them is not, as root `CLAUDE.md`'s "one junction per skill" says.
+Re-measured on 2026-10-14, with the same three answers. The rewording
+that note asked for, briefed as `claude-md-skills-junction.md` and left
+unapproved at that day's triage table, lands as this cut. The opening
+paragraph of this section, "`skills` is junctioned, and is the only
+thing that is", stays as written on 2026-09-23.
+
 ### GitHub Copilot does not inherit this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
@@ -1559,3 +1617,13 @@ the session that made this edit, in the VS Code extension on 2.1.292,
 had none either. So the pointer now names the one list that exists,
 `~/.claude/rules/README.md` § "What's here", which deploys with the
 rules and links each one.
+
+**2026-10-14.** The section's last sentence, "Fabric Git-sync
+serialization: `~/.claude/rules/fabric-git-serialization.md`.", went out
+to make room for the preamble's Fabric live-state line. It had stood
+since the file moved into `claude/` (`1a25ac8`, 2026-08-28), naming a
+rule that loads on its own `paths:` globs, `.platform` files and item
+folders, and that the README named in the sentence before lists; the
+`commit` skill names the rule for its Fabric checks too. What only the
+pointer reached is a session about to create an item folder, since a
+rule loads once a matching file exists, not before.
