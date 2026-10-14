@@ -509,6 +509,18 @@ so `skill-status.py` asks for the retest. Measured 2026-10-13 on
 analytics endpoints default to user's-identity mode", the baseline
 called delegated the default, and Learn sided with the baseline.
 
+**A defect a payload arm reports in the skill is a claim to verify
+too.** The arm carries user-scope `CLAUDE.md` beside the skill, so its
+"this fails on this machine" can be `CLAUDE.md`'s, not a measurement.
+On `fabric-eventhouse`, 2026-10-13, an arm said the skill's
+`az rest --body @/tmp/kql_body.json` "fails on this machine because az
+reads it as C:\tmp", from `CLAUDE.md`'s `/tmp` trap. Git Bash converts
+that argument: a native `python3.13` received `@/tmp/x` as
+`@C:/Users/<username>/AppData/Local/Temp/x` (MSYS 3.6.9, reproduced in
+a second session). The claim reached a committed ledger bullet and
+`edd519b`'s message before `/learn` caught it, so reproduce a reported
+defect before recording it.
+
 **Scope the arms to the hash that moved.** The stamp keeps four,
 `paths`, `routing`, `body` and `references` (`scripts/skill-status.py`),
 and `--stale` names the one an edit moved as its verdict. Each has one
