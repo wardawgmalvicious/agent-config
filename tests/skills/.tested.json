@@ -70,6 +70,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "2de395b103ca8fbd"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "33df886",
+        "routing": "f510b9acc5311396",
+        "body": "e50b7deafb1ada35",
+        "references": "b2c7653d4d8fec57"
       }
     },
     "fabric-dataflow": {

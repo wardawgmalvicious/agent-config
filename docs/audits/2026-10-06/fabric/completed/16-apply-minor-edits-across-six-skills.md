@@ -272,3 +272,29 @@ nothing but their size, so split them freely at execution time.
   created SQL analytics endpoints start in delegated identity access
   mode by default", and the RLS query's payload arm repeated it where
   the baseline was right. This run exercised D-3 alone.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `efb44e8`, for D-2 and brief 20's row 1, as
+  `fabric-database`'s first behaviour stamp. Phase A ran static only,
+  fabric 74/74 and pbip 16/16; the glob did not move. Five `-p` arms on
+  two queries, envelope as for D-4 with `Read` added to `--tools`, each
+  opening with a `Read` of a `.SQLDatabase` table file; `init` listed 58
+  commands for the baseline and 78 for the payload, whose `Read` alone
+  emitted `commands_changed` naming the skill. The vector query's table
+  was the `SampleSQL` fixture's DDL less its first line, a comment that
+  states the skill's headline. On that query, which also asked after the
+  Warehouse and its `MERGE`, the model-invoked arm called
+  `Skill fabric-database` and the slash arm, sent after the `Read` in
+  one stream-json process, expanded with no call. Both gave the index as
+  GA with its 100-row minimum and Warehouse `MERGE` as GA; the baseline
+  called both preview and gave no minimum, and Learn, read 2026-10-13,
+  sides with the skill. No vectors in the Warehouse did not separate:
+  the baseline volunteered it. The Plan system database stand-down,
+  which no brief added, separated too: asked to index or delete a
+  `__fabric_plan_sys.SQLDatabase` table and report on it, the payload
+  named the Plan item and sent the report to its writeback destination,
+  where the baseline, holding off on both edits unaided, had the user
+  query the database. Stamp written. One adjacent finding: Learn's
+  `CREATE VECTOR INDEX` page says a schema-only DACPAC deployment can
+  succeed without the index below 100 rows, and DacFx doesn't add it
+  once rows arrive, where both payload arms, as inference, expected an
+  Update from Git to hit the limit.
