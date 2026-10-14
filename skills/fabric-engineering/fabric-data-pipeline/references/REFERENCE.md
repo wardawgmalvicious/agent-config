@@ -210,16 +210,19 @@ Notebook, Dataflow and Stored procedure activities only.
 Declared `$schema`:
 `https://developer.microsoft.com/json-schemas/fabric/gitIntegration/schedules/1.0.0/schema.json`
 
-The schema trails the portal: it lacks `enabledControlType`, and it puts
-`parameters` where no portal-written file does (both below). Read a
+The schema trails the portal three ways: it lacks `enabledControlType`
+and `enabledVariableReference`; it requires `enabled`, which a bound
+entry omits; and it puts `parameters` where no portal-written file does
+(all below; the entry's definition re-read 2026-10-14). Read a
 portal-written file before trusting the schema's shape.
 
 Top level is `{ "schedules": [ … ] }`. Each entry:
 
 | Field | Notes |
 | --- | --- |
-| `enabled` | Boolean. Survives Git sync and deployment — a disabled schedule promotes disabled — with no `enabledControlType` beside it |
-| `enabledControlType` | **Not in the schema**, which sets no `additionalProperties`, so neither declares nor forbids it; no Learn page names it, and Learn's two `.schedules` screenshots lack it (all 2026-10-13). A portal edit wrote `"UserEnabled"`, and Git sync then refused `enabled: false` beside it (`SKILL.md` § 7, a client estate, 2026-10-13). Its other values, and what turning a schedule off or the scheduler's auto-disable writes, are unread |
+| `enabled` | Boolean, schema-required, and **absent on a bound entry** (`enabledVariableReference` below). Unbound, it survives Git sync and deployment — a disabled schedule promotes disabled — with no `enabledControlType` beside it |
+| `enabledControlType` | **Not in the schema**, which sets no `additionalProperties`, so neither declares nor forbids it; no Learn page names it, and Learn's two `.schedules` screenshots lack it (all 2026-10-13). Two values seen: `"UserEnabled"`, which a portal edit wrote and beside which Git sync refused `enabled: false` (`SKILL.md` § 7), and `"VariableReferenceManaged"`, which a Controller binding writes (both a client estate, 2026-10-13). What turning a schedule off or the scheduler's auto-disable writes is unread |
+| `enabledVariableReference` | **Not in the schema** either. A Controller binding's Boolean variable, as `$(/**/<library>/<variable>)`, the form of a shortcut's target, written with `enabledControlType: "VariableReferenceManaged"` in place of `enabled`. A portal binding changed only those two lines; Git sync kept them in a workspace whose schedule was unbound, and a deployment pipeline carried them (a client estate, 2026-10-13). Whether a notebook's or a user data function's `.schedules` takes it is unread |
 | `jobType` | `"Execute"` for pipelines. The schema declares **no enum**, so treat this as observed rather than validated |
 | `configuration` | Below; `type` is the only schema-required field |
 | `parameters` | An array the portal writes **here, beside `configuration`**: `[]` on a schedule that passes none. The schema puts it under `configuration` instead (below) |
@@ -250,7 +253,9 @@ pipelines' `[]`, and a public Dataflow's list of one item typed
 portal does. No pipeline schedule that passes parameters has been read,
 so a pipeline item's shape is unconfirmed. Learn's job-scheduler page
 warns that a Variable Library used in the parameters can sync late after
-CI/CD.
+CI/CD. A Controller binding is no such parameter: it writes
+`enabledVariableReference` and left the entry's `"parameters": []` as
+it was (a client estate, 2026-10-13).
 
 The schema marks only `configuration.type` required; the portal requires
 both `startDateTime` and `endDateTime` and offers no open-ended option.

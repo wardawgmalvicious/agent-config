@@ -234,7 +234,18 @@ Five traps:
 - **First commit after enabling CI/CD is noisy.** Every item that
   already had a schedule shows as uncommitted. Review rather than
   bulk-committing.
-- **Turning a schedule off in Git means deleting `enabledControlType`
+- **To switch a schedule per environment, bind it rather than flip
+  it.** The *Edit schedule* pane's *Controller* binds on/off to a
+  Variable Library Boolean, and the entry then holds
+  `"enabledVariableReference": "$(/**/<library>/<variable>)"` and
+  `"enabledControlType": "VariableReferenceManaged"` in place of
+  `enabled`. Each workspace resolves the variable against its own active
+  value set, and Git sync and a first deploy each kept the binding (a
+  client estate, 2026-10-13; Learn names the Controller only for a user
+  data function, 2026-10-14). A flip is then a value-set edit, timed in
+  `fabric-variable-library`, and a script that flips `enabled` finds
+  nothing to flip. **On an unbound entry, turning a schedule off in Git
+  means deleting `enabledControlType`
   too.** A portal edit can add `"enabledControlType": "UserEnabled"`
   beside `enabled`, and an update from Git then refuses `false`:
   `'enabled' is required to be true when 'enabledControlType' is 'UserEnabled'`
@@ -244,7 +255,9 @@ Five traps:
 
 Also: max **20 schedules** per pipeline; `enabled: false` with no
 `enabledControlType` beside it is a real state that survives Git sync
-and deployment, so a disabled schedule promotes as disabled.
+and deployment, so a disabled schedule promotes as disabled. A bound
+entry fails the published schema, which requires `enabled`, though the
+portal writes it ([references/REFERENCE.md](references/REFERENCE.md)).
 
 ## 8. CI/CD limitations specific to pipelines
 
