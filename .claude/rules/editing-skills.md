@@ -71,8 +71,9 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   reached by its description runs on the session model, while the session
   is told it runs on the pin, so only `message.model` in the transcript
   shows which ran. In auto mode, where sessions here start, a pin to a
-  model auto mode does not support, Haiku among them, is dropped even
-  when slash-invoked (2026-10-07, 2.1.291). It is inert on a conditional
+  model auto mode does not support, Haiku 4.5 among them, is dropped even
+  when slash-invoked, while `haiku`, now Haiku 5.5, runs on its pin
+  (2026-10-13, 2.1.293). It is inert on a conditional
   skill, which has no cold slash route, and live on an unconditional
   one. `effort` applies on both paths, at either scope.
 - The session default is saved per model, under `modelSettings` in

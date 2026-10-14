@@ -2267,6 +2267,32 @@ Opus 5.5 hung with no transcript. So `learn` is unpinned, as
 step: a change must fail at `skills/workflow/…` and at
 `skills/meta/learn/SKILL.md`, and pass at `.claude/skills/…`.
 
+**2026-10-13.** The auto-mode caveat in `editing-skills.md`'s `model:`
+bullet named Haiku as a model whose pin auto mode drops, after the
+2026-10-07 table's SAH arm, a typed `/name` pinned `haiku` that ran on
+Sonnet. On 2.1.293 the same shape runs on the pin. Four cold `claude -p`
+arms, each a Sonnet session with `--tools Skill --allowedTools Skill`,
+typed the pinned skill's `/name` from PowerShell; the reply's
+`message.model` decided each, and `modelUsage` agreed:
+
+| Pin | Mode | Ran on | Transcript |
+| --- | --- | --- | --- |
+| `haiku` | auto | `claude-haiku-5-5` | `9a1fbde8` |
+| `haiku` | default | `claude-haiku-5-5` | `36ccc0f7` |
+| `claude-haiku-4-5` | auto | `claude-sonnet-5-5` | `75eaffd8` |
+| `claude-haiku-4-5` | default | `claude-haiku-4-5-20251001` | `bcf1a8ca` |
+
+The permission-modes page, read the same day, now lists auto mode's
+models as "Claude Opus 4.6 or later, Sonnet 4.6 or later, Haiku 5.5, or a
+Fable model" on the Anthropic API, and "Older models, including Sonnet
+4.5, Opus 4.5, Haiku 4.5, and claude-3 models, are not supported on any
+provider", where on 2026-10-07 it listed "Haiku" bare. The skills page
+still says an unsupported model "also isn't used, and the session keeps
+its current model", which the `claude-haiku-4-5` pair shows. So the rule
+stands and only its example moved, to Haiku 4.5. A Haiku 5.5 session's
+`init` reading `auto`, with or without `--permission-mode auto`
+(`test-skill`'s `references/reading-a-failure.md`), fits the same change.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
