@@ -355,6 +355,20 @@ not a cron expression, and `Weekly` also requires `weekdays` (array of
 day names). List with `GET .../schedules`; delete with
 `DELETE .../schedules/{scheduleId}`.
 
+List Item Schedules also returns an `enabledDetail` that Learn's
+`ItemSchedule` lacks (read 2026-10-14): `enabledControlType`
+(`UserEnabled`, or `VariableReferenceManaged` where a Variable Library
+sets on/off, per `fabric-data-pipeline` § 7), `enabledEvalState`
+(`Normal` so far, on and off alike) and, when bound,
+`nextResolveVariableReferenceDateTime`, when the schedule next reads its
+variable. After Git sync brought a binding, `enabledEvalState` and the
+next read stayed `null` until the first read, 20 to 40 minutes after
+`createdDateTime`: wait for `enabledEvalState` before judging one (a
+client estate, 2026-10-13, on pipeline schedules). Update Item Schedule
+cannot set the control type; what its required `enabled` does to a
+bound schedule, `enabledEvalState`'s other values and other item types'
+`enabledDetail` are unread.
+
 ## Rate Limiting
 
 `429 Too Many Requests` includes a `Retry-After` header (seconds). Honor it; never tight-loop. Use exponential backoff with jitter when `Retry-After` is absent.
