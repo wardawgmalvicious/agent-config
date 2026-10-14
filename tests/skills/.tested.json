@@ -153,6 +153,15 @@
         "references": "4116f21bb6f894fe"
       }
     },
+    "fabric-security": {
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "efb44e8",
+        "routing": "7342a7c4d3ddfb21",
+        "body": "086fabf7ca20d478",
+        "references": "d63362e91db3bce3"
+      }
+    },
     "fabric-semantic-model-audit": {
       "behaviour": {
         "date": "2026-10-13",

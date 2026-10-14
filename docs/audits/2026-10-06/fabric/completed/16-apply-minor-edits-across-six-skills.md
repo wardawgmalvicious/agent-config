@@ -251,3 +251,24 @@ nothing but their size, so split them freely at execution time.
   ground, also called the skill, which named the DMV route as one it
   does not script and no retired skill. Stamp written. D-1, D-2, D-3
   and D-6 were not exercised.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `efb44e8`, for D-3, as `fabric-security`'s first
+  behaviour stamp; that body also carries `c2cf8a7`'s engine-enforcement
+  wording and `607d09a`'s `fabric-rest-api` pointer. Phase A skipped:
+  no `paths:` glob. Seven `-p` arms on three queries in a probe outside
+  the repo holding all five platform groups, envelope as for D-4;
+  `init` listed 58 commands for the baseline, 78 for the payload. On a
+  OneLake security query for a mirrored Azure Databricks catalog and a
+  mirrored Azure SQL database, the model-invoked arm called
+  `Skill fabric-security` and the slash arm expanded with no call. Both
+  put `DefaultReader` on Read for the catalog and ReadAll for the
+  database, so on the catalog they replaced the role rather than
+  removing the group's Read; the baseline gave ReadAll for both. Learn's
+  access-control-model table, read 2026-10-13, still sides with the
+  skill. `Read` as the only permission on both did not separate: the
+  baseline volunteered it. Stamp written. One adjacent finding, outside
+  this brief: the skill's "newer SQL analytics endpoints default to
+  user's-identity mode", from `97ffd24`, contradicts Learn, "Newly
+  created SQL analytics endpoints start in delegated identity access
+  mode by default", and the RLS query's payload arm repeated it where
+  the baseline was right. This run exercised D-3 alone.
