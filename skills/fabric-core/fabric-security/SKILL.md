@@ -61,7 +61,9 @@ WITH (STATE = ON);
 
 Test as the actual target user — owner-testing bypasses RLS.
 
-## Dynamic Data Masking (DDM) — Warehouse only
+## Dynamic Data Masking (DDM)
+
+Warehouse, and a SQL analytics endpoint in delegated-identity mode, where masks go on existing columns with `ALTER TABLE … ALTER COLUMN … ADD MASKED WITH (FUNCTION = …)`. User's-identity mode doesn't support DDM (Learn, 2026-10-13).
 
 ```sql
 CREATE TABLE dbo.Customers (

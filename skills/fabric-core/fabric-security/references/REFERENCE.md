@@ -27,7 +27,7 @@ The 3 highest-leverage entry points (security overview, permission model, OneLak
 
 ## Per-item authorization (SQL granular, Direct Lake)
 
-- [Secure your Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/security) — warehouse-specific layered access model, DDM (warehouse-only), CMK (customer-managed keys). Pair with `fabric-warehouse` skill.
+- [Secure your Fabric Data Warehouse](https://learn.microsoft.com/fabric/data-warehouse/security) — warehouse-specific layered access model, DDM (Warehouse and SQL analytics endpoint), CMK (customer-managed keys). Pair with `fabric-warehouse` skill.
 - [SQL granular permissions in Microsoft Fabric](https://learn.microsoft.com/fabric/data-warehouse/sql-granular-permissions) — `GRANT` / `DENY` / `REVOKE` syntax, auto-create-on-GRANT pattern, querying granted permissions via `sys.database_principals`.
 - [Authorization in SQL database in Fabric](https://learn.microsoft.com/fabric/database/sql/authorization) — SQL Database item permissions and SQL-engine-level access controls (different from Warehouse).
 - [Integrate Direct Lake security](https://learn.microsoft.com/fabric/fundamentals/direct-lake-security-integration) — semantic-model security on top of OneLake security, OLS / RLS interaction, the metadata-visibility caveat for Viewers with Build permission.
