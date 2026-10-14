@@ -242,6 +242,6 @@ a side.
   reached it. Owed to `/learn`, not fixed here: an
   `arg_max(Timestamp, *)` view without `autoUpdateSchema` is disabled
   when its source table gains a column (Learn), which the body's
-  `.create-merge` advice leaves out, and
-  `references/programmatic-access.md` sends `@/tmp/kql_body.json`,
-  which a native `az` reads as `C:\tmp`.
+  `.create-merge` advice leaves out. A payload arm also called
+  `references/programmatic-access.md`'s `@/tmp/kql_body.json` broken;
+  it works, since Git Bash converts the argument (measured 2026-10-13).
