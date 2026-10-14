@@ -240,10 +240,13 @@ item definitions** — `sysname`, never `SYSNAME`. See `coding-tsql` —
   own Learn page lists Fabric Data Warehouse, though the activity
   overview names only Azure SQL, Synapse and SQL Server (2026-10-13);
   until then this skill said the activity could not reach a Warehouse.
-- **Use Script when a later activity reads the result**: only its
-  output documents `resultSets`, as the check-then-act pattern in
+- **When a later activity reads the result, use Lookup or Script**, never
+  the Stored procedure activity, which exposes no result set. Lookup
+  hands a ForEach `output.value` and fails unless the procedure returns
+  exactly one result set; Script keeps them all, as `resultSets[n].rows`,
+  which the check-then-act pattern in
   [references/table-health-metrics.md](references/table-health-metrics.md)
-  needs.
+  reads (Learn's Lookup page and Script output table, 2026-10-13).
 
 ## Beyond T-SQL authoring
 
