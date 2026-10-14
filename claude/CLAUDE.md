@@ -46,8 +46,8 @@ the bytes: a round trip through a translating layer proves nothing.
   pwsh, or `MSYS2_ARG_CONV_EXCL=/x` on that command; `'*'` breaks git's ssh.
 - **`$TMPDIR` is unset**: `"$TMPDIR/x"` fails `Permission denied` at the Git
   install root (2026-09-12). Use the scratchpad path.
-- **`/tmp` is `C:\tmp` to a native child**, which raises `FileNotFoundError`
-  (2026-09-15). Use the scratchpad, or `cygpath -w`.
+- **`/tmp` is `C:\tmp` inside a native child's code**: `FileNotFoundError`.
+  Bash converts arguments (2026-10-13). Use the scratchpad or `cygpath -w`.
 - **`mv` denying a directory rename** (`Permission denied`) means a held
   handle: retry, and don't change shell or settings.
 - **Native `jq` writes CRLF** (1.8.2, 2026-09-30): `comm` and `diff` miss

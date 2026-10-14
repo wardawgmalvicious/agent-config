@@ -374,6 +374,17 @@ error names the boundary. Use the scratchpad path, which is a Windows
 path both sides read identically, or `cygpath -w /tmp/x` before handing
 one across. Measured 2026-09-15.
 
+**2026-10-13.** The trap holds for a path the child resolves itself, and
+not for an argument: Bash converts a `/tmp` path passed as one before
+the child starts. On MSYS 3.6.9 `python3.13` received `/tmp/x` as
+`C:/Users/<username>/AppData/Local/Temp/x`, and `@/tmp/x` likewise with
+its `@` kept, while `os.path.abspath('/tmp/x')` in its own code still
+gave `C:\tmp\x`. `az` on `PATH` is a Bash launcher handing `"$@"` to a
+native `python.exe`, so `az rest --body @/tmp/kql_body.json` reads the
+file Bash wrote. Until this entry the line read "`/tmp` is `C:\tmp` to a
+native child", and a `/test-skill` probe arm on Opus 5.5 took it to
+cover that argument, calling `fabric-eventhouse`'s recipe broken.
+
 #### "Permission denied" renaming a directory
 
 Windows refuses a directory rename while any process holds an open
