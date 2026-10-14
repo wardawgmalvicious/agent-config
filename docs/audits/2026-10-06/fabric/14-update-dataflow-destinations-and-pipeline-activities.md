@@ -225,3 +225,24 @@ rather than edits.
   Optimized copy to Lakehouse, off by default; the baseline said CSV
   only and named no such option. Stamp written. `fabric-data-pipeline`'s
   half stays deferred.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `efb44e8`, for `fabric-data-pipeline`'s half, the
+  skill's first behaviour stamp; it also carries `b03ffa0`'s
+  `enabledControlType` trap, tested beside it. Phase A static only,
+  74/74 for skills and for rules, the `paths:` stamp standing. Probe and
+  flags as above; the baselines' `init` listed 58 commands, the
+  payload's 78, and each payload arm's fixture `Read` emitted
+  `commands_changed` naming the skill. Asked for all three changes as
+  JSON, the payload called `Skill`, read `REFERENCE.md` and separated on
+  three items: it refused Lakehouse maintenance on a schema-enabled
+  lakehouse, where the baseline could not confirm; it named Increasing
+  Delay, where the baseline said retries wait a fixed interval and built
+  an `Until` loop; and it named run conditions, serialization
+  undocumented, which the baseline did not know. Two did not separate:
+  the baseline also refused to guess a `type` and also held retry
+  intervals static. Neither gave the 3,600-second maximum. `b03ffa0`'s
+  remedy did not separate either: asked for a CI script disabling
+  schedules, the baseline deleted `enabledControlType` by inference and
+  guessed a silent override, while both payload arms, the slash arm with
+  no `Skill` call, gave the `GitSyncFailed` refusal and its text. Stamp
+  written.

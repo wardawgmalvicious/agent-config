@@ -56,6 +56,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "894a66668f5336a8"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "52257e1",
+        "routing": "218165b9d6d14900",
+        "body": "57b4a326bf63433b",
+        "references": "f2c31d9bdf41c015"
       }
     },
     "fabric-database": {
