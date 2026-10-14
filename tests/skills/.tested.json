@@ -204,6 +204,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "5bc852842f6ba741"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "33df886",
+        "routing": "deaa1e89cce92f89",
+        "body": "5f9546554d7f05cf",
+        "references": "5d3c1f16695c46e9"
       }
     },
     "fabric-warehouse": {
