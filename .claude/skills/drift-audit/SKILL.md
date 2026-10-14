@@ -25,14 +25,19 @@ Don't restate the set of sources anywhere, as a list or as a count — the direc
 
 ## 2. Argument parsing
 
-The user invokes with a prior reference — slash form `/drift-audit <ref>`, natural language ("audit since SHA `abc1234`", "audit since 2026-03-15"), or no argument. The reference is applied to every audited source independently.
+The user invokes with a prior reference — slash form `/drift-audit <ref>`, natural language ("audit since SHA `abc1234`", "audit since 2026-03-15"), or no argument. A passed reference is applied to every audited source independently; with none, each source takes its own floor from the ledger.
 
 - **SHA** (40-hex or 7+hex prefix) — resolve to its commit timestamp against any registered source's repo (the SHA's source repo doesn't have to match; we only need its date). Use that date as the floor for every source's `since` window.
 - **ISO date** (`YYYY-MM-DD`) — use directly as the floor.
-- **No argument** — default to 35 days back from today. Print the resolved floor date in the audit window section.
+- **No argument** — each source floors at its own last audit, read from the ledger, which keeps the newest run of every source for the next audit to start from (`docs/audits/README.md` § Retiring a run):
+  - **Find the run.** `Glob` pattern `00*-audit-report*.md`, `path` `docs/audits`, lists every run's report, a re-run's `00b-…` too. Per selected source, take the one under `<date>/<id>/` with the latest date, read from the path, not from `Glob`'s order, which is by modification time; where one directory holds two, the later name. The ledger here is never empty, so a `Glob` that finds no report has failed, as § 1's lookup can: stop and say so.
+  - **Read only its footer.** `Grep` that report for `^## Next run` with `-A 30`. It is the report's last section, so that reaches the end; never Read the whole report for it.
+  - **Take the source's line**, the one naming it by label or id. Its head SHA is from that source's own repo, so it is that source's prior reference alone, resolved as the SHA bullet resolves one, and § 4b takes it as the diff base. Where the line or the source's entry names a different floor, take that one: `powerbi`'s 2026-10-06 footer says to reuse 2026-09-01, because Learn's month labels would fall before a later date. A footer with no line for the source is asked about, not guessed.
+  - **No run on disk** — that source floors 35 days back from today.
+  - **Report it.** Print each source's floor, and the run it came from, in the audit window section.
 - **Anything else** — ask the user to clarify; do not guess.
 
-A single reference applied to every source is intentional: the audit window is "what changed since I last checked," not "what changed in the Fabric repo specifically." Each source resolves the window against its own commits.
+A passed reference applies to every source, intentionally: the audit window is "what changed since I last checked," not "what changed in the Fabric repo specifically." Each source resolves the window against its own commits. With no argument, "since I last checked" is per source, because sources get audited on different dates: on 2026-10-13 the newest `skills-for-fabric` run was from 2026-09-12 and the rest from 2026-10-06, and a single 35-day floor, 2026-09-08, already fell after the 2026-09-01 that `powerbi`'s footer says to reuse.
 
 **`--sources <id,id>`** narrows the run to the named registry ids. Absent, audit every registered source. An id with no file under `references/sources/` is an error — list the valid ids, those files' names less `.md`, and stop rather than silently auditing a subset. Skipped sources are named in the report so an empty bucket is never mistaken for a clean one.
 
@@ -81,7 +86,7 @@ Worked once, at 2026-09-08, against the registered set: `fabric` up to 14 (3 + i
 
 A source the registry marks github-mcp-only — `claude-code` today — is not attempted on this path at all: name it in the report's skipped list rather than diffing a summary of it. A source whose entry defines its own fetch strategy is priced by that strategy and not by this rule.
 
-**Resolving the diff base — one rule, and it governs both fetch paths.** If the user supplied a SHA whose repo matches this source, use that SHA directly. If a SHA from another source's repo, fall back to the date resolution. For a date, the base is **the last commit that touched the source's `path` before the floor** — `list_commits` with that `path`, `until: <floor-date>T00:00:00Z`, `perPage: 1`, `fields: ["sha"]`.
+**Resolving the diff base — one rule, and it governs both fetch paths.** If the prior reference is a SHA whose repo matches this source, passed or taken from the ledger by § 2, use that SHA directly, and drop it from § 4a's in-window list, which starts at midnight of its date and so returns it: its changes are already in the base. If a SHA from another source's repo, fall back to the date resolution. For a date, the base is **the last commit that touched the source's `path` before the floor** — `list_commits` with that `path`, `until: <floor-date>T00:00:00Z`, `perPage: 1`, `fields: ["sha"]`.
 
 **Not "the parent of the oldest in-window commit"**, which is wrong on any repo that merges release branches. The oldest in-window commit is typically the monthly release *merge*, so its first parent is a same-day main-branch commit that never touched the audited file and is dated *inside* the window. Measured on `powerbi` on 2026-09-07: that rule resolved `f1f53694` (2026-08-20, touching `service-get-started.md` and `power-bi-visualization-card.md` — not `whats-new.md`), where the correct rule resolves `443eb78f` (2026-07-22, the July release merge, which is genuinely the file's previous version).
 
@@ -147,7 +152,9 @@ Emit one markdown report to the conversation, sections in this exact order. If a
 ```markdown
 ## Audit window
 
-- Floor: <ISO date> (resolved from: <sha | date | default-35d>)
+- Floor: <ISO date> (resolved from: <sha | date>) | per source (resolved from: ledger)
+  - <id>: `<sha-or-date>` (<date>) from <`docs/audits/<run-date>/<id>/` | default-35d>
+  - ...on a per-source floor only, one line per audited source...
 - Fetch path: <github-mcp | WebFetch fallback>
 - Sources audited: <id, id> — skipped: <id, id | none>
 - <label>: <commit-count> commits in window — prior `<prior-sha-or-floor>` (<prior-date>) → head `<head-sha>` (<head-date>)
@@ -202,13 +209,13 @@ Report rules:
 - **URLs are anchor-stripped** per the source's `drill.strip`, per the Phase 1 invariant.
 - **No invention.** MCP transports, URLs, server names — quote the upstream reference or say "TBD". Never fabricate.
 - **Enumerate the in-window commits, never just the count.** One line each, with its date and what it is. A bare "3 commits in window" is unfalsifiable: it hides which commits were inspected and which were only listed, and it strands a later reader who wants to reproduce the diff. Twice now — 2026-09-07 on `powerbi`, both runs — the per-commit list has been the thing someone needed to check afterwards. Where a commit was listed but never fetched, say so on its line rather than describing it.
-- **Next-run footer always printed.** Even when buckets are empty — the SHAs are the user's handoff to next month.
+- **Next-run footer always printed.** Even when buckets are empty — the SHAs are the user's handoff to next month, and a no-argument run reads them back from the ledger (§ 2). So each audited source gets its own line, with its head SHA, and on that line any floor the next run should take instead.
 
 ## 8. Closing constraints
 
 After emitting the report, restate the read-only contract briefly so any follow-up turn in the same conversation lands cleanly:
 
-> Audit complete. Read-only contract: no skill / rule / `CLAUDE.md` / MCP-template edits this turn. To capture the recommended actions as handoff briefs on disk, run `/drift-handoff` now — it reads this report from the conversation, so it has to run before the context is lost. A later session then executes those briefs with `/drift-update`. To act on a finding directly instead, start a new request naming the specific artifact and the action.
+> Audit complete. Read-only contract: no skill / rule / `CLAUDE.md` / MCP-template edits this turn. To capture the recommended actions as handoff briefs on disk, run `/drift-handoff` now — it reads this report from the conversation, so it has to run before the context is lost. Its copy of this report is also where the next no-argument audit takes each source's floor. A later session then executes those briefs with `/drift-update`. To act on a finding directly instead, start a new request naming the specific artifact and the action.
 
 Constraints to honour throughout the turn:
 
