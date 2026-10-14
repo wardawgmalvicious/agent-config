@@ -125,13 +125,15 @@ the user. Under `auto` the same block is refused by name, and three
 arms of three then split their reads and ran the script. A `git push`
 inside a `{ }` block was refused in both modes. A Haiku probe given
 `--permission-mode auto` reported `default` in its `init` record, so a
-cheap Haiku check of the envelope tests the wrong mode. Measured
+cheap Haiku check of the envelope tested the wrong mode. Measured
 2026-10-01 on 2.1.282 (`32f6847`). Under `dontAsk` a `Skill` call is
 refused with the same generic form, so an arm that reaches a skill by
 description needs `Skill` allowed; the slash path, which inlines the
-body, is unaffected. A Haiku arm reports `dontAsk` as given where it
-reports `auto` as `default` (one `dontAsk` arm and three `auto` arms,
-2026-10-06, 2.1.291).
+body, is unaffected. A Haiku arm reported `dontAsk` as given and `auto`
+as `default` (one `dontAsk` arm and three `auto` arms, 2026-10-06,
+2.1.291). On 2.1.293 it reads `auto`, flag or none (two probes,
+2026-10-13): read the `init` record rather than assume either, since
+whether the mode then acts as auto is unmeasured.
 
 **A probe's environment is its arm's environment.** A variable set to
 launch a slash probe from Bash stays in the `claude` process, and its
@@ -323,7 +325,7 @@ instead of setting it there.
 **`--safe-mode` keeps the permission mode too**, so a baseline runs in
 the payload arm's: `permissions.defaultMode`, `auto` in user scope here
 since 2026-08-31, survives the strip. Measured 2026-10-07 on 2.1.291 on
-Sonnet, since Haiku reports auto as `default` (above): under
+Sonnet, since Haiku then reported auto as `default` (above): under
 `--safe-mode` the `init` record read `permissionMode` `auto` from a
 scratch directory and from this repo, `slash_commands` down from 79 and
 85 to 58, while a control leaving user settings out with
