@@ -275,7 +275,9 @@ with the commit and why it was made unasked.
   `commit -C <sha>`. Never `checkout <sha> -- <path>` there: that is your
   commit's whole file, built on the old `main`, so where their commit
   touched the same path, as one stamp manifest, it reverts their change
-  and the fast-forward takes it (2026-10-13, read off its blob, not run).
+  and the fast-forward takes it (2026-10-13, read off its blob). The
+  cherry-pick was run twice that day: the manifest auto-merged, and every
+  peer stamp survived.
   When the shared copy also holds a peer's uncommitted
   edit beside yours, as one manifest several testers stamp at once does,
   `git diff --quiet` exits 1 with no output, and `git add` takes their
