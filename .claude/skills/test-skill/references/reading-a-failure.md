@@ -464,6 +464,17 @@ answered `git push origin BRANCH:main`, preserving every SHA. Read the
 baseline first, diff the two answers, and let the discriminator fall out
 of the disagreement.
 
+**A baseline that beats the payload has found a defect in the skill,
+not failed the run.** Where the two disagree, read the source the skill
+cites before grading; when it sides with the baseline, the skill is
+wrong. Stamp anyway, since a stamp records that the body was tested,
+not that it is right; name the claim in the commit message and any
+ledger bullet, and hand it to `/learn`, whose edit moves the body hash
+so `skill-status.py` asks for the retest. Measured 2026-10-13 on
+`fabric-security`: an RLS payload arm repeated the body's "newer SQL
+analytics endpoints default to user's-identity mode", the baseline
+called delegated the default, and Learn sided with the baseline.
+
 **Scope the arms to the hash that moved.** The stamp keeps four,
 `paths`, `routing`, `body` and `references` (`scripts/skill-status.py`),
 and `--stale` names the one an edit moved as its verdict. Each has one
