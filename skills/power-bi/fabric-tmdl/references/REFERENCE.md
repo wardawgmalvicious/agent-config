@@ -289,7 +289,7 @@ An empty `perspective 'X'` declaration with no children is a valid placeholder.
 | Property | Type |
 |---|---|
 | `name` | objectName (culture code, e.g. `en-US`) |
-| `linguisticMetadata` | block with `content` (JSON string) + `contentType: json` |
+| `linguisticMetadata` | block with `content` (JSON string) + `contentType: json`; its `CustomInstructions` key holds the model's [AI instructions](ai-instructions.md) |
 | `translations` | object keyed by object reference |
 
 ```tmdl
