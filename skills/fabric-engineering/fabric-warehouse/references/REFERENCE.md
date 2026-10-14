@@ -26,7 +26,7 @@ The 3 highest-leverage entry points (concept overview, performance guidelines, s
 - [Ingest data into the Warehouse (overview)](https://learn.microsoft.com/fabric/data-warehouse/ingest-data) — decision matrix: COPY INTO vs pipelines vs dataflows vs T-SQL ingestion. Start here when picking an ingestion pattern.
 - [Ingest data using the COPY statement](https://learn.microsoft.com/fabric/data-warehouse/ingest-data-copy) — `COPY INTO` syntax, Parquet / CSV examples, ADLS Gen2 / Blob sources.
 - [Ingest data using Transact-SQL](https://learn.microsoft.com/fabric/data-warehouse/ingest-data-tsql) — CTAS, `INSERT...SELECT`, `SELECT INTO` patterns; cross-warehouse three-part naming.
-- [Ingest data using pipelines](https://learn.microsoft.com/fabric/data-warehouse/ingest-data-pipelines) — Copy job and Data pipeline integration. Reminder: only the **Script** activity (not the Stored Procedure activity) supports invoking warehouse stored procedures from pipelines.
+- [Ingest data using pipelines](https://learn.microsoft.com/fabric/data-warehouse/ingest-data-pipelines) — Copy job and Data pipeline integration.
 
 ## Performance and caching
 

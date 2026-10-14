@@ -1,6 +1,6 @@
 ---
 name: fabric-warehouse
-description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename, IDENTITY GA Aug 2026 (bigint, RESEED), transactional ALTER TABLE GA April 2026, CTAS workaround), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/variables), COPY INTO with AUTO_CREATE_TABLE + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry), DDL in transactions (Sch-M blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA), sp_get_table_health_metrics (SQLEP), GPU acceleration (preview), Recycle-bin recovery, Git/CI-CD 2.0 (DacFx DataLoss sync block, .sqlproj SDK pin, SQLEP), pipeline calls via Script activity (NOT Stored Procedure)."
+description: "Use for T-SQL against Fabric Warehouse (NOT Fabric SQL Database — see fabric-database). Covers unsupported types (nvarchar/datetime/money/xml/tinyint/hierarchyid), unsupported features (FOR XML, recursive CTEs, triggers, CREATE USER, cursors), MERGE (GA Jan 2026), ALTER COLUMN (preview), schema evolution (ADD nullable / DROP COLUMN / sp_rename, IDENTITY GA Aug 2026 (bigint, RESEED), transactional ALTER TABLE GA April 2026, CTAS workaround), PK/UNIQUE/FK NONCLUSTERED+NOT ENFORCED only, 8060-byte row limit, CTAS Synapse-vs-Fabric rules (no DISTRIBUTION/CCI/variables), COPY INTO with AUTO_CREATE_TABLE + bcp (preview), OPENROWSET surface, snapshot-only isolation (24556/24706 retry), DDL in transactions (Sch-M blocks reads), Time Travel (UTC, single per SELECT; SQLEP preview) + Warehouse Snapshots (GA), sp_get_table_health_metrics (SQLEP), GPU acceleration (preview), Recycle-bin recovery, Git/CI-CD 2.0 (DacFx DataLoss sync block, .sqlproj SDK pin, SQLEP), pipeline calls via Script or Stored procedure activity."
 paths:
   - "**/*.Warehouse/**/*.sql"
 # model: inherit  # any model: value blocks Copilot slash invocation
@@ -235,8 +235,15 @@ item definitions** — `sysname`, never `SYSNAME`. See `coding-tsql` —
 
 ## Pipeline Integration
 
-- **Use the Script activity** (with a Warehouse connection) to invoke Warehouse stored procedures from Fabric Data Pipelines.
-- **The Stored Procedure activity does NOT support Fabric Warehouse** — it only supports Azure SQL / SQL MI. Common pitfall when wiring up DW from pipelines.
+- **The Script and Stored procedure activities both run Warehouse
+  stored procedures** from a pipeline. The Stored procedure activity's
+  own Learn page lists Fabric Data Warehouse, though the activity
+  overview names only Azure SQL, Synapse and SQL Server (2026-10-13);
+  until then this skill said the activity could not reach a Warehouse.
+- **Use Script when a later activity reads the result**: only its
+  output documents `resultSets`, as the check-then-act pattern in
+  [references/table-health-metrics.md](references/table-health-metrics.md)
+  needs.
 
 ## Beyond T-SQL authoring
 
