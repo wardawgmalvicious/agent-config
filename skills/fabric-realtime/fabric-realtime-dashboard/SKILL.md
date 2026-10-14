@@ -144,9 +144,11 @@ There are no per-tile number-format options (only the kpi visual has
 `kpi__valueFormat`). Currency / percent presentation is done in KQL by
 emitting formatted strings — see [references/REFERENCE.md](references/REFERENCE.md)
 for a validated `money()` lambda (`"$1,234,567.89"`, rounding carry,
-negatives). KQL has no `format_number()` and RE2 regex has no lookahead, so
-comma grouping must be hand-rolled. Numeric axes (bar/column y-columns) must
-stay numeric — put the unit in the tile title and column name
+negatives), which stops grouping at millions, and an unbounded one-liner
+that groups the reversed digits. KQL has no `format_number()` and RE2 regex
+has no lookahead, so comma grouping is hand-rolled either way. Numeric
+axes (bar/column y-columns) must stay numeric — put the unit in the tile
+title and column name
 (`['Order Value ($)']`) instead. Related KQL pitfalls (`round()` returns
 `real`, `toint()` nulls on decimal strings): `rules/coding-kql.md`.
 

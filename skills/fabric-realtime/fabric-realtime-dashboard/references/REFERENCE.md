@@ -4,8 +4,9 @@
 
 Validated Aug 2026 (incl. rounding carry `$999.995 → $1,000.00`, negatives
 `-$14,751.36`, millions). Needed because KQL has no `format_number()` and RE2
-has no lookahead for regex comma insertion. Duplicate into each query that
-needs it — base queries are tabular only and cannot host a scalar lambda.
+has no lookahead for the usual regex comma insertion. Duplicate into each
+query that needs it — base queries are tabular only and cannot host a
+scalar lambda.
 
 ```kusto
 let money = (v: real) {
@@ -30,8 +31,25 @@ Usage: `| summarize Total = sum(NetPrice) | project Total = money(Total)`.
 Caveat: string values lose the stat visual's automatic k/M abbreviation
 (usually the point), and numeric color rules no longer apply. Grouping
 stops at millions: `$999,999,999.99` is the largest correct output, and a
-billion prints as `$1000,000,000.00`; add a tier before values reach it
-(arithmetic traced 2026-10-13, not run on a cluster).
+billion prints as `$1000,000,000.00` (Kusto emulator, 2026-10-13); past
+that, use the reversed grouping below.
+
+**Unbounded alternative**: reverse the digits and group them, which needs
+no lookahead. On the same values `fmtMoney` matched `money()` below a
+billion, rounding carry and negatives included, and stayed right above
+it, `$1,234,567,890.12`. `fmtInt` alone drops a minus sign, `-1234` to
+`1,234`, so `fmtMoney` passes it `abs()` and prefixes the sign (Kusto
+emulator, engine 1.0.9782, 2026-10-13; not yet run in Fabric).
+
+```kusto
+let fmtInt = (n: long) {
+    reverse(strcat_array(extract_all('([0-9]{1,3})', reverse(tostring(n))), ','))
+};
+let fmtMoney = (x: real) {
+    let cents = tolong(round(abs(x) * 100));
+    strcat(iff(x < 0 and cents > 0, '-', ''), '$', fmtInt(cents / 100), '.', substring(tostring(100 + cents % 100), 1))
+};
+```
 
 Percent variant inline: `strcat(tostring(round(100.0 * a / b, 1)), "%")`,
 guarding division with `iff(b == 0, "n/a", ...)`.
