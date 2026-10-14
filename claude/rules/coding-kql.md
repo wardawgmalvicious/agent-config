@@ -177,10 +177,16 @@ RecentEvent | summarize count() by Account
 - `toint("150.00000000")` returns null **silently** — decimal-formatted
   strings need `toint(todecimal(x))`. Bites hardest on all-string
   bronze tables where quantities serialize with trailing decimals.
-- There is no `format_number()`, and RE2 regex has no lookahead, so
-  thousands separators can't be regexed in — hand-roll a formatting
-  lambda (case/substring) when a visual needs `"$1,234,567.89"`
-  strings. (Verified live 2026-08.)
+- There is no `format_number()`, and RE2 regex has no lookahead, so the
+  usual thousands-separator pattern fails (verified live 2026-08). Group
+  the reversed digits instead when a visual needs `"$1,234,567.89"`
+  strings. It takes a non-negative `n`, since it drops a minus sign, so
+  format `abs()` and prefix the sign (Kusto emulator, 2026-10-13):
+
+  ```kql
+  reverse(strcat_array(extract_all('([0-9]{1,3})', reverse(tostring(n))), ','))
+  ```
+
 - `summarize` aggregates with no `by` over empty input return one row
   (`count()` = 0, `sum()` = 0), not an empty result — dashboard stat
   tiles show 0 rather than "no data" without extra coalescing.
