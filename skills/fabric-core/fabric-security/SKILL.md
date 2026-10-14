@@ -1,6 +1,6 @@
 ---
 name: fabric-security
-description: "Use for the Fabric security/permission model. Covers the layers (workspace roles Admin/Member/Contributor/Viewer, item-level Read/ReadData/ReadAll, OneLake security data access roles, SQL GRANT/DENY/REVOKE), Admin/Member/Contributor bypass of RLS/CLS/DDM, least-privilege pattern (Viewer + SQL GRANT), ReadData vs ReadAll distinction (SQL vs Spark/OneLake), the mode-dependent RLS/CLS enforcement across engines (OneLake security GA May 2026 enforces in Spark/Lakehouse/Direct-Lake-on-OneLake and SQL endpoints in user's-identity mode; the old Spark/OneLake bypass survives only for SQL-defined RLS and delegated-identity-mode endpoints), auto-create of users on GRANT (no CREATE USER), and the 40-warehouses-per-workspace token-size limit."
+description: "Use for the Fabric security/permission model. Covers the layers (workspace roles Admin/Member/Contributor/Viewer, item-level Read/ReadData/ReadAll, OneLake security data access roles, SQL GRANT/DENY/REVOKE), Admin/Member/Contributor bypass of RLS/CLS/DDM, least-privilege pattern (item share + SQL GRANT; a Viewer already holds ReadData), ReadData vs ReadAll distinction (SQL vs Spark/OneLake), the mode-dependent RLS/CLS enforcement across engines (OneLake security GA May 2026 enforces in Spark/Lakehouse/Direct-Lake-on-OneLake and SQL endpoints in user's-identity mode; the old Spark/OneLake bypass survives only for SQL-defined RLS and delegated-identity-mode endpoints), auto-create of users on GRANT (no CREATE USER), and the 40-warehouses-per-workspace token-size limit."
 # model: inherit  # any model: value blocks Copilot slash invocation
 # effort: medium   # unset = inherit session effort; there is no 'effort: inherit'
 disable-model-invocation: false
@@ -18,7 +18,7 @@ disable-model-invocation: false
 ## Key Principles
 
 - Admin/Member/Contributor roles grant full data read and bypass RLS/CLS/DDM
-- Use **Viewer role + SQL GRANT** for least-privilege consumer access
+- **A Viewer already reads every table**: the role carries `CONNECT` + ReadData on every Warehouse and SQL analytics endpoint in the workspace, so a `GRANT` adds nothing for one. For least-privilege consumer access, share the one item with no extra permissions and `GRANT` (next line), or keep Viewer and `DENY`; on an endpoint in user's-identity mode, OneLake roles decide instead. Learn's warehouse security page still says to "assign them to the Viewer role and grant read access on specific objects through T-SQL"; its workspace-roles page gives Viewer ReadData (both read 2026-10-13).
 - Sharing an item with no extra permissions → CONNECT only (can't read tables until GRANT SELECT)
 - "Read all data using SQL" (ReadData) → equivalent to `db_datareader`
 - "Read all data using Apache Spark" (ReadAll) → OneLake file access, does NOT affect SQL permissions
