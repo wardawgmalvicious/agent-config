@@ -20,8 +20,8 @@ wrong.
 | `Lookup` | Retrieves data for use in later activities |
 | `GetMetadata` | Retrieves metadata from a data source |
 | `Delete` | Deletes data from a data source |
-| `Script` | Executes custom scripts (PowerShell, Python, …) |
-| `SqlServerStoredProcedure` | Executes a stored procedure in SQL Server |
+| `Script` | Runs query or nonquery SQL against a database store; see below |
+| `SqlServerStoredProcedure` | Runs a stored procedure in a T-SQL store; see below |
 | `KustoQueryLanguage` | Executes a KQL query on Azure Data Explorer |
 | `IfCondition` | Branches on a conditional expression |
 | `Switch` | Branches on a switch expression |
@@ -52,6 +52,13 @@ wrong.
 | `Email` | Sends an email notification |
 | `MicrosoftTeams` | Posts to Microsoft Teams |
 | `Teams` | Posts to Teams |
+
+Two rows depart from the REST page, which says `Script` "Executes
+custom scripts (PowerShell, Python, etc.)" and `SqlServerStoredProcedure`
+"Executes a stored procedure in SQL Server". The activities' own Learn
+pages, read 2026-10-13, list only database stores for Script, Fabric
+Data Warehouse among them, and seven T-SQL stores for the Stored
+procedure activity, Fabric Data Warehouse and SQL database included.
 
 ## `typeProperties` — the Fabric-specific activities
 
