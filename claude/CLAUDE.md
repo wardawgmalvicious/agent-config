@@ -52,6 +52,10 @@ the bytes: a round trip through a translating layer proves nothing.
   Bash converts arguments (2026-10-13). Use the scratchpad or `cygpath -w`.
 - **`mv` denying a directory rename** (`Permission denied`) means a held
   handle: retry, and don't change shell or settings.
+- **A native program takes a payload on stdin**, not argv or `<(...)`:
+  past **32,767** chars bash says `Argument list too long` (exit 126),
+  `/mingw64/bin/curl` turns non-cp1252 text to `?` (2026-09-23), and none
+  opens a `<(...)` path, so a `diff` of two `jq` calls passes (2026-10-01).
 - **Native `jq` writes CRLF** (1.8.2, 2026-09-30): `comm` and `diff` miss
   every LF line, `read` keeps the `\r` and `> file` is CRLF, while `grep`
   and a one-line `$(...)` hide it. Pass `-b` always, not only for payloads.
@@ -69,12 +73,6 @@ Python raises `ZoneInfoNotFoundError`: use
 `uv run --no-project --with tzdata python` or `pwsh`'s `[TimeZoneInfo]`
 (2026-09-23). **`Z` stamps are UTC**, so a day's last hours read as
 tomorrow: date from the harness's local clock, and quote both.
-
-### A native program's argv is one Windows command line
-
-Past **32,767** chars bash says `Argument list too long` (exit 126), and
-`/mingw64/bin/curl` turns non-cp1252 text to `?`, exit 0 (2026-09-23). Use
-stdin, with `jq -b`, per `~/.claude/rules/coding-bash.md`.
 
 ### Command-line tooling
 

@@ -146,8 +146,8 @@ argument. One remedy, two reasons, standing on different evidence:
 - **A native Windows program's argv is one command line**, capped at
   32,767 characters, and Git Bash's curl decodes it through the ANSI
   code page — wrong results with exit 0. Measured 2026-09-23;
-  `~/.claude/CLAUDE.md` § "A native program's argv is one Windows
-  command line" has the rule, and the same heading of
+  `~/.claude/CLAUDE.md` § "Shell traps" has the rule, and the heading
+  "A native program's argv is one Windows command line" of
   `C:/Repos/Personal/agent-config/docs/evidence/user-claude-md.md` has
   the measurements.
 

@@ -438,6 +438,64 @@ handle closes. Don't touch settings either — a Claude Code permission
 or sandbox denial refuses *before* the program runs, so it never
 arrives as the program's own error text.
 
+#### A native program's argv is one Windows command line
+
+Text handed to a native `.exe` as an argument fails two ways (measured
+2026-09-23; fabric-tools `6ed07e1`, `83ccce4`):
+
+- **Length.** The command line is capped at 32,767 characters. Past it
+  bash answers `Argument list too long`, exit 126, and the program
+  never starts. Between Git Bash programs there is no cap — `bash -c`
+  took 50,000 characters intact — so it bites at the first native one.
+- **Encoding, silently.** `/mingw64/bin/curl`, first on `PATH`, decodes
+  its arguments through the ANSI code page: `é` leaves as one non-UTF-8
+  byte, and anything outside cp1252 as `?`. Live, a Kusto query read
+  back U+FFFD and `?`, and a filter holding U+00A0 returned unrelated
+  rows, both exit 0. System32's `curl.exe` and jq's `--arg` were right.
+
+Stdin avoids both, but **native jq reads stdin in text mode**: CRLF
+arrives as LF, and a 0x1A byte ends the input without error. `-b` makes
+stdin and stdout binary from jq 1.7 — 1.6 dies `Unknown option -b`, per
+its source, not a run — and `--rawfile` stays text mode regardless. The
+convention is `~/.claude/rules/coding-bash.md` § "Secrets and payloads
+stay off argv".
+
+**2026-10-14.** A section of its own until this date, now a Shell traps
+bullet that leads with the remedy, stdin, and carries § "A native
+program can't open `<(...)`" below too, since the two share it.
+`claude/CLAUDE.md` stood at its 200-line cap, and the fold made room for
+that trap with two lines to spare, without dropping a rule. The bullet lost
+curl's "exit 0" and the pointer to `~/.claude/rules/coding-bash.md`, whose
+citation now finds the rule in § "Shell traps".
+
+#### A native program can't open `<(...)`
+
+Added 2026-10-14 to the argv trap's bullet; it never had a section of its
+own. Process substitution hands a command `/proc/<pid>/fd/63`, which
+exists only inside the MSYS runtime: MSYS programs open it, and a native
+one gets the path verbatim. Measured 2026-10-01 on GNU bash 5.3.15, MSYS
+3.6.9 and winget's `jq` 1.8.2: `jq -b . <(echo '{"a":1}')` printed
+`Could not open file /proc/<pid>/fd/63` and exited 2, a `diff` of two
+such calls on different objects exited 0, and the piped form differed,
+exit 1; `python3.13` received `'/proc/<pid>/fd/63'` as its argument. It
+surfaced in an inbox note from a client Fabric Git-sync sandbox repo as
+three false passes in one command comparing a JSON object across two
+commits; behind `2>/dev/null` nothing would have shown. Same root as
+§ "`/tmp` is two directories, one per side of the MSYS boundary": a path
+only the MSYS side resolves.
+
+Re-measured 2026-10-14 in the Bash tool, with the forms left untested
+that day. `jq` still exits 2 and the `diff` 0. `/dev/stdin` and
+`/dev/fd/0` fail alike, `jq -b .` reporting `/proc/self/fd/0` and
+`/proc/<pid>/fd/0` as files it could not open, each exit 2. Given a
+`<(...)` path, `node` v24.16.0 threw `ENOENT` opening
+`C:\proc\<pid>\fd\63`, exit 1, and `yq` v4.53.6 answered "The system
+cannot find the path specified.", exit 1. `git diff --no-index` of two
+such paths printed `error: Could not access` with the path and exited 1,
+the code it uses for "the files differ" (git 2.55.0.windows.3). Piped or
+redirected instead, `jq`, `yq` and `node` each read the same input, and
+the piped `diff` exited 1.
+
 #### Native `jq` writes CRLF to stdout
 
 Added 2026-09-30 as a bullet; it never had a section of its own. `jq`
@@ -580,28 +638,6 @@ read as tomorrow: a transcript's `2026-09-23T02:42:51Z` was 22:42 on
 only against merge times quoted beside them. Date what you write from
 the local clock, which the harness states, and show both when quoting a
 UTC stamp.
-
-### A native program's argv is one Windows command line
-
-Text handed to a native `.exe` as an argument fails two ways (measured
-2026-09-23; fabric-tools `6ed07e1`, `83ccce4`):
-
-- **Length.** The command line is capped at 32,767 characters. Past it
-  bash answers `Argument list too long`, exit 126, and the program
-  never starts. Between Git Bash programs there is no cap — `bash -c`
-  took 50,000 characters intact — so it bites at the first native one.
-- **Encoding, silently.** `/mingw64/bin/curl`, first on `PATH`, decodes
-  its arguments through the ANSI code page: `é` leaves as one non-UTF-8
-  byte, and anything outside cp1252 as `?`. Live, a Kusto query read
-  back U+FFFD and `?`, and a filter holding U+00A0 returned unrelated
-  rows, both exit 0. System32's `curl.exe` and jq's `--arg` were right.
-
-Stdin avoids both, but **native jq reads stdin in text mode**: CRLF
-arrives as LF, and a 0x1A byte ends the input without error. `-b` makes
-stdin and stdout binary from jq 1.7 — 1.6 dies `Unknown option -b`, per
-its source, not a run — and `--rawfile` stays text mode regardless. The
-convention is `~/.claude/rules/coding-bash.md` § "Secrets and payloads
-stay off argv".
 
 ### Command-line tooling
 
