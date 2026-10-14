@@ -268,7 +268,17 @@ Hard limit. Plan for it.
 - Maintain a **regression question bank** (50–100 representative questions with approved answers).
 - Re-run the bank after any material change to the instructions or the model.
 - Track accuracy over time. Investigate any degradation immediately.
-- Version control the blob in your repo. It is not stored in TMDL — treat it as a separate first-class artifact.
+- Version control the instructions blob with the model: a service
+  edit's next portal commit wrote it into
+  `definition/cultures/<culture>.tmdl`, as the `CustomInstructions` key
+  of the culture's `linguisticMetadata` (observed 2026-10-07), so Git
+  sync and deployment carry it, and `getDefinition` returned it there
+  too, with no `Copilot/` part (2026-10-14). Learn's semantic model
+  definition example also lists a `Copilot/Instructions/instructions.md`
+  part, undescribed; what writes one, and whether a Power BI Desktop
+  save does, is unverified
+  ([SemanticModel definition](https://learn.microsoft.com/rest/api/fabric/articles/item-management/definitions/semantic-model-definition),
+  read 2026-10-14).
 - Assign ownership: who approves changes, who maintains descriptions, who signs off on new rules.
 
 ---
