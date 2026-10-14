@@ -310,6 +310,13 @@
         "date": "2026-09-01",
         "commit": "975b87f",
         "paths": "f9256509871e120e"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "9313122",
+        "routing": "068130245dbc7db1",
+        "body": "69c51b4bdbadd626",
+        "references": "f1113acfc9b728be"
       }
     },
     "pbir-report-workflow": {
