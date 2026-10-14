@@ -1,6 +1,6 @@
 ---
 name: test-skill
-description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Reads its inputs from disk — brief or shipped frontmatter — so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript and the stream-json `commands_changed` record are the only witnesses (`skills-invoked.log` and `--debug-file` cannot see it), and `-SkillGroups` prunes user scope so the standing prune must be restored afterwards. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
+description: "Validate a drafted skill — write its trigger fixtures, update the activation contract table, run the static and real-path activation tests, then behaviourally test it in a cold session against a `--safe-mode` baseline. Reads its inputs from disk — brief or shipped frontmatter — so it runs cold. Encodes the traps that make a broken test look like a broken glob: activation is keyed to the `Read` tool so a Bash `cat` activates nothing, it is a per-session cumulative delta so a silent second match is deduplication not failure, the transcript and the stream-json `commands_changed` record are the only witnesses (`skills-invoked.log` and `--debug-file` cannot see it), and a platform skill run in this repo is a guaranteed false negative, its description collapsed to name-only, so it runs from a probe copy at project scope, never user scope. Skills only — rules, subagents and hooks keep the manual procedure in root CLAUDE.md."
 when_to_use: "Use when asked to test, validate or verify a skill, to check whether a `paths:` glob fires, after editing a `description`, `when_to_use` or `paths:` glob, or as the follow-on to `/author-skill`."
 argument-hint: "[skill-name]"
 disable-model-invocation: false
@@ -477,11 +477,11 @@ activated". Work down this table before touching a glob:
 
 | Symptom | Real cause |
 | --- | --- |
-| Nothing activated, any fixture | The platform skills are not deployed — `~/.claude/skills` carries only the standing `workflow`, `social` and `meta` groups |
+| Nothing activated, any fixture | The platform skills are not in the probe — `~/.claude/skills` carries only the standing `workflow`, `social` and `meta` groups, so a hand-run probe needs step 7's copy |
 | Nothing activated, probe looks fine | The probe read with `cat`. Activation is keyed to the **`Read` tool**; Bash `cat` and `Grep` touch the same bytes and activate nothing. This machine defaults to auto mode, which prefers `cat` |
 | The second matching file activates nothing | Correct behaviour. Activation is a **cumulative delta** — an attachment names only what was not already active |
 | An activation looks one or two reads late | Attachments **flush in batches**; attribute it to the group read since the last flush, not to one file |
-| A negative assertion always passes | The skill it is asserting *against* is not deployed. Both groups must deploy for either set |
+| A negative assertion always passes | The skill it is asserting *against* is not in the probe. Every Fabric and Power BI group must be there for either set: `test-activation.ps1` links every one, and step 7 copies them |
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read in that same process: a `--resume` answered it too (2026-09-12). Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
