@@ -246,3 +246,38 @@ was transient, so a plain base-to-head diff would have missed it.
 - **Closed**: 2026-10-06 — `platform-features.md:13` now says
   `BULK LOAD` is unsupported and `BULK INSERT` works for compatibility,
   mapped to `COPY INTO`, as `SKILL.md`'s Ingestion bullet does.
+- **Behavioural confirmation**: 2026-10-13, `/test-skill` in a fresh
+  session against `9313122`, for D-1 to D-4, as `fabric-warehouse`'s
+  first behaviour stamp; the skill now sits in
+  `skills/fabric-engineering/` (`54b615d`). Phase A ran static only,
+  fabric 74/74 and pbip 16/16 with the rules pass agreeing; the glob did
+  not move. Five `-p` arms on two queries in a probe outside the repo
+  holding all five platform groups, Opus 5.5 at `xhigh`,
+  `--tools Read,Skill --strict-mcp-config`, inbound messages refused,
+  `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`, each asking about a copy of
+  the `SampleWH` fixture; `init` listed 58 commands for the baseline and
+  78 for the payload, whose `Read` alone emitted `commands_changed`
+  naming the skill. On an ingestion port (`BULK INSERT` through a SAS
+  credential, a top-N CTE, a median, GRANTs lost on deployment) the
+  model-invoked arm called `Skill fabric-warehouse` and read both
+  references. D-1, D-3 and D-4 separated: `BULK INSERT` accepted for
+  compatibility; `CREDENTIAL = (IDENTITY = 'Workspace Identity')`, with
+  Viewer and `INSERT` but no bulk-operations permission; a
+  post-deployment script for the GRANTs. The baseline moved the load to
+  `COPY INTO`, offered only the caller's Entra identity, and said
+  deployment pipelines have no post-deployment hook, which Learn's
+  `deployment-scripts` page, read 2026-10-13, contradicts. D-2's
+  `QUALIFY` and `MEDIAN` separated too, but `coding-tsql` co-loads on
+  the same file carrying both, so the references are not their only
+  source. On a schema-change walkthrough the model-invoked arm called
+  the skill and the slash arm, sent after the `Read` in one stream-json
+  process, expanded with no call; both gave the 2.0 `DataLoss … Rows
+  were detected` refusal, the non-transactional sync, and
+  `IDENTITY_INSERT` with a mandatory reseed to keep the IDs, where the
+  baseline said every ID must change; Learn's IDENTITY page, read
+  2026-10-13, sides with the skill. Stamp written. One adjacent finding,
+  outside this brief: `SKILL.md`'s Pipeline Integration says the Stored
+  Procedure activity does not support Fabric Warehouse, and the
+  ingestion payload arm repeated it where the baseline offered the
+  activity; Learn's stored-procedure-activity page, read 2026-10-13,
+  lists Fabric Data Warehouse among its stores.

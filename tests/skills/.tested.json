@@ -239,6 +239,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "760da7b30fc22ba3"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "dfe7492",
+        "routing": "fa152c2ab939dee6",
+        "body": "ecb68198d3cf5309",
+        "references": "644fc8fd7a1ec130"
       }
     },
     "fabric-warehouse-monitoring": {
