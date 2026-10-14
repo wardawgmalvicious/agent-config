@@ -58,11 +58,12 @@ rather than prompted; then `references/sources/powerbi.md`. Project
 scope, so nothing deploys; the body edit owes `drift-audit` a
 `/test-skill` retest, which `skill-status.py --stale` will name.
 
-Two open briefs edit the same file:
-[drift-audit-owed-rechecks.md](drift-audit-owed-rechecks.md), at § 2
-and § 7, which plans around Bash being outside the skill's reach, and
+One other open brief edits the same file,
 [drift-audit-file-pagination.md](drift-audit-file-pagination.md), at
-§ 4a step 5. Whichever lands second re-reads the file.
+§ 4a step 5: whichever lands second re-reads the file. § 2's owed
+re-checks, landed 2026-10-14, read the ledger with `Grep` and say
+`handoff-status.py` is out of reach without Bash: if decision 3 adds
+Bash to `allowed-tools`, that sentence changes with it.
 
 **Land this before the next `fabric` audit.** A run that follows § 4a
 as written puts both refs in context, and its base-to-head diff cannot

@@ -292,9 +292,10 @@ home. `completed/` then means nothing is left in the ledger, not that
 the work is done, and once a later run of its source exists the run is
 retired whole (`docs/audits/README.md` § "Retiring a run", decided
 2026-10-08). A re-check that the next audit of its source performs
-stays in its log, and
-[drift-audit-owed-rechecks.md](drift-audit-owed-rechecks.md) takes up
-why that audit never reads it.
+stays in its log, where that audit looks for it (2026-10-14):
+`/drift-audit` § 2 lists what each run owes, its report gives each an
+outcome, and `/drift-handoff` briefs the stamps that close each one or
+record what it still waits on.
 
 ## Filenames are stable
 

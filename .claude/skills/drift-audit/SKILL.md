@@ -41,6 +41,13 @@ A passed reference applies to every source, intentionally: the audit window is "
 
 **`--sources <id,id>`** narrows the run to the named registry ids. Absent, audit every registered source. An id with no file under `references/sources/` is an error — list the valid ids, those files' names less `.md`, and stop rather than silently auditing a subset. Skipped sources are named in the report so an empty bucket is never mistaken for a clean one.
 
+**Owed re-checks.** Once every floor is resolved, find the follow-ups this run owes. A brief whose open work only a drift audit can do names that audit on its log's `**Needs**:` line (`/drift-update` § 4.6), and `/triage` leaves such a line for the audit to settle: on 2026-10-07 a `powerbi` follow-up still waited on the audit that had run the day before. `handoff-status.py` lists these lines too, but needs Bash, which `allowed-tools` leaves out:
+
+- **List the open lines.** `Grep` pattern `^- \*\*Needs\*\*:`, `path` `docs/audits`, `glob` `!**/completed/**`, output mode `content` with line numbers. The negated glob drops every brief under a `completed/` folder (2026-10-14, CLI 2.1.293), which is every finished one: `scripts/audit-status.py` files a brief there once its log leaves nothing open, and the `lint-audit-index` hook fails a commit with one on the wrong side. A brief never run has no such line. In each file only the hit with the highest line number counts, since a later session appends a fresh line rather than rewriting one.
+- **Keep the ones owed here**, from any run's directory, `prompt-audit/` included: a line whose words before its first ` — ` name the next drift audit of a selected source, by id or label, or of any source, or the first one after a condition, such as Learn republishing, which this window meets or does not. `/drift-update` writes `the next <source-id> drift audit`; older lines vary, as "the next `fabric` audit" and "the next `/drift-audit --sources fabric-iq-ontology` run" do.
+- **Read what each owes**: its line whole, from its log, and the step of its brief that the line names, each by `Read`'s `offset` and `limit`, never the whole brief.
+- **Do each where its work falls**, a check of this skill's own behaviour in the phase it names, an upstream question in this window's diff, and report every one under § 7's `## Owed re-checks`.
+
 ## 3. Read-only scope
 
 Prohibited tools this turn: `Edit`, `Write`, `MultiEdit`, `NotebookEdit`. Do not call them regardless of what the audit findings suggest is needed.
@@ -185,10 +192,18 @@ Emit one markdown report to the conversation, sections in this exact order. If a
 - <short bullet, no detail>
 - <short bullet, no detail>
 
+## Owed re-checks
+
+- **`<run-date>/<dir>/<NN>-<slug>.md`** — owed to <the next `<id>` drift audit | any drift audit>, by its `**Needs**:` line at `:<line>`
+  - Owes: <what the line, and the step it names, ask of this run>
+  - Outcome: <passed | failed | answered | not in this window> — <what this run saw, and the action carrying any work | what the window lacked>
+  - Leaves open: <what else its line names, such as a fresh session | nothing>
+
 ## Recommended actions
 
 1. <ordered, flag-only — name the artifact and the action verb>
 2. ...
+n. <last, whenever Owed re-checks lists any — stamp each one's log>
 
 ## Next run
 
@@ -209,6 +224,7 @@ Report rules:
 - **URLs are anchor-stripped** per the source's `drill.strip`, per the Phase 1 invariant.
 - **No invention.** MCP transports, URLs, server names — quote the upstream reference or say "TBD". Never fabricate.
 - **Enumerate the in-window commits, never just the count.** One line each, with its date and what it is. A bare "3 commits in window" is unfalsifiable: it hides which commits were inspected and which were only listed, and it strands a later reader who wants to reproduce the diff. Twice now — 2026-09-07 on `powerbi`, both runs — the per-commit list has been the thing someone needed to check afterwards. Where a commit was listed but never fetched, say so on its line rather than describing it.
+- **Every owed re-check gets an outcome**, even on a run that could do none of them, so the next reader knows it was looked for. *Passed* and *failed* are checks this run performed; *answered* is an upstream question this window settles, either way; *not in this window* names what was missing: a floor after what the check must reproduce, which only `/drift-audit <its floor> --sources <id>` would hold, a condition still unmet, or no in-window change for it to read. A failure, and an answer that calls for an edit, is a finding like any other, with its bucket entry and its own action, which the outcome names. The last action stamps them all, and `/drift-handoff` writes it as the brief that closes each one or records what it still waits on.
 - **Next-run footer always printed.** Even when buckets are empty — the SHAs are the user's handoff to next month, and a no-argument run reads them back from the ledger (§ 2). So each audited source gets its own line, with its head SHA, and on that line any floor the next run should take instead.
 
 ## 8. Closing constraints

@@ -70,6 +70,14 @@ Number the files `01-`, `02-`, … with a kebab-case slug naming the work: `01-c
 
 If grouping is genuinely ambiguous, split rather than merge. An over-split brief is a small annoyance; an under-split one hides a task with its own failure mode inside another task's verification.
 
+**Owed re-checks take one brief of their own, the last**, whenever the report's `## Owed re-checks` lists any. It covers the report's last action, and comes last because it names the briefs that carry a failed or answered re-check's work. In a run of several sources, each re-check goes in the stamp of the first directory, in id order, whose source could settle it, so no log is stamped twice. Its Kind is bookkeeping in the ledger, as the 2026-09-12 `skills-for-fabric` run's brief 03 was (`docs/audits/2026-09-12/skills-for-fabric/completed/03-stamp-the-2026-09-10-deferred-verifications.md`), and its *What to change* appends to each re-check's own log, rewriting nothing above:
+
+- **A `**Closed**:` line** on each one passed, failed or answered whose `**Needs**:` line waited on this audit alone, naming this run's directory and the brief that carries any work.
+- **A fresh `**Needs**:` line** on each one not in this window, saying what the window lacked, and on each whose line names more than this audit, keeping the rest. It names an audit in `/drift-update`'s words, `the next <source-id> drift audit`.
+- **Each target's directory regenerated**, `uv run scripts/audit-status.py --dir <it>`, which files a closed brief under `completed/`, and any live path to a brief it moved re-pointed (`git grep -n <filename>`).
+
+Its *Verification* greps each target for its new line, then runs `uv run scripts/audit-status.py --check` and `pre-commit run --all-files`. Write it even where no action names it, and say so in chat: stamping transcribes outcomes the audit already reached, so it re-opens nothing.
+
 ## 5. Brief contents
 
 `Read` [references/brief-format.md](references/brief-format.md) for the section-by-section spec and a complete worked example. In summary, every brief carries:
@@ -85,7 +93,7 @@ Write each brief to be read **cold**, by a session with none of this conversatio
 ## 6. What not to write
 
 - **No brief for a bucket (d) no-op.** They are in `00-audit-report.md`; that is enough.
-- **No brief for a finding absent from `Recommended actions`.** Buckets (a), (b), and (c) can each carry findings the audit deliberately did not promote to an action. Promoting one here would be re-opening the analysis, which is exactly what the split exists to prevent.
+- **No brief for a finding absent from `Recommended actions`.** Buckets (a), (b), and (c) can each carry findings the audit deliberately did not promote to an action. Promoting one here would be re-opening the analysis, which is exactly what the split exists to prevent. The one brief written without its action is § 4's owed re-checks stamp, when a report leaves that action out.
 
 This boundary is the skill's main editorial rule, and it has a failure mode: an empty or short file set looks like a clean audit. So **say in chat which findings were deliberately left unwritten**, by name, with one line each on why they stayed conversational. A finding the user wants briefed after all is a new `/drift-audit` recommendation or an explicit request — not a judgment call made here.
 

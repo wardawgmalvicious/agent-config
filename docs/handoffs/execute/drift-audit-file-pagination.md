@@ -46,8 +46,7 @@ to a two-ref file diff. It never names the paginated read.
 Step 5 gains the paginated read as its first move on an oversized
 squashed commit, before the two-ref diff; the source entries keep only
 what is theirs. The body edit owes `drift-audit` a retest
-(`skill-status.py --stale`). `drift-audit-owed-rechecks.md` edits § 2
-of the same file: whichever lands second re-reads it.
+(`skill-status.py --stale`).
 
 ## Re-measure before acting
 

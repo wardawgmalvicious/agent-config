@@ -324,8 +324,9 @@ Append to the brief file:
 - **Verification**: <which steps ran and passed>
 - **Deferred**: <what could not be checked here, and what would check it>
 - **Deviations**: <anything done differently from the brief, and why — or none>
-- **Needs**: <only when work is left open: user, tenant, desktop or a short
-  phrase, comma-separated, or none — then what it is for>
+- **Needs**: <only when work is left open: user, tenant, desktop, the next
+  <source-id> drift audit or a short phrase, comma-separated, or none —
+  then what it is for>
 ```
 
 An `already-applied` stamp uses the same shape with different content:
@@ -394,9 +395,12 @@ in its log is seen only by what reads the log for it.
 `uv run scripts/handoff-status.py` lists every escalated, deferred and
 applied-with-deferrals brief with no `**Closed**:` line, grouped by that line,
 and `lint-briefs` fails the commit on one without it. A deferred re-check
-gets one too, naming what performs it, such as the next audit of that source,
-and so does an adjacent finding, stamped `applied with deferrals`. Found
-2026-09-11, when two runs' follow-ups turned out to be in no queue.
+gets one too, naming what performs it, and so does an adjacent finding,
+stamped `applied with deferrals`. Found 2026-09-11, when two runs'
+follow-ups turned out to be in no queue. Name an audit as the template does,
+`the next <source-id> drift audit`, or `the next drift audit` where any
+source's run will do: `/drift-audit` § 2 finds what each run owes by these
+lines, and its report gives each an outcome.
 
 ## 5. Report and hand off
 
