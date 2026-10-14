@@ -156,6 +156,13 @@
         "date": "2026-09-12",
         "commit": "75f1625",
         "paths": "6b3fa9fee9e3d90e"
+      },
+      "behaviour": {
+        "date": "2026-10-13",
+        "commit": "9313122",
+        "routing": "1d602c7a0fbaf866",
+        "body": "7c61733a39d859ca",
+        "references": "2087d043b3c2013e"
       }
     },
     "fabric-rest-api": {
