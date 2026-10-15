@@ -391,7 +391,7 @@ conditional skill, the `commands_changed` record that witnesses the
 matching `Read` (`references/reading-a-failure.md`) inline, so nothing
 has to locate a session id under `~/.claude/projects/`. Read the answers
 rather than grepping them (2026-09-12): your last message's text records,
-not `result`, which holds one turn (`references/reading-a-failure.md`).
+not `result`, which holds one turn, nor any peer's turn after it.
 
 **Launch a slash probe from PowerShell**, not the Bash tool. MSYS2
 rewrites a leading-slash argument to `C:/Program Files/Git/<name>`, so
