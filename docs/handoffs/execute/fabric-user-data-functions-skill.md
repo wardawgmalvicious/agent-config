@@ -20,17 +20,13 @@ written: 2026-10-01
 - **Kind**: an edit, by `/author-skill`:
   `skills/fabric-engineering/fabric-user-data-functions/`,
   `paths: "**/*.UserDataFunction/**"`, the serialization rule's glob.
-  Nothing is drafted. The report side of translytical task flows is
-  § "The report side: translytical task flows", at the end.
+  Nothing is drafted. The report side of translytical task flows is a
+  second skill, [translytical-task-flow-skill.md](translytical-task-flow-skill.md).
 - **Audit 2026-10-06**: What's New added "Warehouse User Data Function integration (Preview)" ([report](../../audits/2026-10-06/fabric/00-audit-report.md)).
 - **2026-10-09**: the user's portfolio decision (`7240d9e`)
   holds new platform skills back until client work holds their items.
   The only User Data Functions items on this machine, two, sit in the
   sandbox repo (2026-10-08).
-- **Folded**: 2026-10-15, on the user's word, the report side's own
-  brief, `translytical-task-flow-skill.md` (written 2026-10-01), since
-  only a report calling this item could reopen it, and the portfolio
-  decision had already put a reference ahead of its own skill.
 
 Labels: **documented** is Learn or the fabric-cicd repo, read by the
 note's session 2026-09-30 or 2026-10-01, several only as search excerpts
@@ -242,107 +238,3 @@ sandbox holds the item at all three stages, but its alias and
   deploy skills merged into `fabric-deploy` on 2026-10-12.
 - Learn's service-limits and programming-model pages, before encoding
   any limit.
-
-## The report side: translytical task flows
-
-- **Written**: 2026-10-01, from an inbox note of 2026-10-01 by a session
-  in a client Fabric Git-sync sandbox repo, which proposed it at the
-  user's suggestion. Re-measured against the payload at `4f473d2`: no
-  `translytical`, `DataFunction` or `visualLink` hit under `skills/`.
-  On 2026-10-15 still none but `fabric-deploy`'s button row.
-- **Kind**: a decision, then `/author-skill`. Deferred until the probe
-  below has run, since the button's serialization is the part nothing
-  here has seen.
-- **It reopens after the function does**: its own brief waited for a
-  client repo's report to call the function, and for the sandbox probe
-  below to have captured the button's PBIR, with slicer, field and
-  measure bindings.
-- **2026-10-09**: the user's portfolio decision (`7240d9e`)
-  holds new platform skills back until client work holds their items,
-  and folds the PBIR skills into `pbir-report-workflow`, done on
-  2026-10-12 (`c19548a`).
-  On reopening, weigh a reference there for the report side before a
-  skill of its own.
-
-### Why a second skill
-
-Requests for write-back from a report rarely name a UDF, and the UDF
-skill's description is already crowded by disambiguating Spark and DAX
-UDFs. The pattern spans
-four items: the function, the data store, the semantic model (storage
-mode decides when a write shows) and the report's button and slicers. It
-has its own docs: the overview, the button page, two tutorials, the
-in-report alerts pattern, and the SQL database and Cosmos DB task-flow
-pages. The UDF skill keeps the function's contract for Power BI: a `str`
-return, `UserThrownError`, Execute permission, the invocation context.
-This one takes the report side.
-
-### What is known
-
-- **The button pins its function** (documented, translytical overview,
-  confirmed 2026-10-01): it stores a workspace, function set and data
-  function, and stays pinned after a deploy or move. Landed in
-  `fabric-deployment-pipelines` § Limits on 2026-10-01, since moved to
-  `fabric-deploy`'s `references/deployment-pipelines.md`.
-- **Power BI lists only functions that return `str`**, shows the string,
-  and shows "Something went wrong" on failure; Desktop can't trigger the
-  action until published; a defaulted parameter may stay unmapped
-  (documented, search excerpts, 2026-09-30).
-- **GA since March 2026** (Desktop 2.152.882.0), with optional
-  parameters and numeric input slicers from May 2026 (search excerpts);
-  the buttons page's "preview" sentence is stale.
-- **One open tension**: the buttons page says an action can't take a
-  numeric measure as a field's value, while the data function button
-  page offers a `SELECTEDVALUE` measure for passing an id.
-- **Upstream's PBIR shape**, documented in `microsoft/skills-for-fabric`
-  `skills/powerbi-report-cli/references/authoring/button-part-02.md`
-  (commit `6c11ad5`, read 2026-09-30) and never observed here: a
-  `visualLink` of `type: 'DataFunction'`, a `dataFunction` object of
-  `kind: "ItemLocation"` whose `byReference` holds the UDF's `itemId` and
-  `workspaceId` as literal GUIDs, and `metadata.dataFunction` caching the
-  function name, `autoRefresh` and a `parameters[]` copy with each
-  binding (`type: "SlicerParameter"`). Field and measure bindings take
-  another `type` upstream doesn't show; a missing reference validates
-  and leaves the button disabled at runtime.
-
-**Corrected at triage**: the note expected a re-sync of the vendored
-`powerbi-report-authoring` to bring that reference in. The reference
-lives in upstream's `powerbi-report-cli`, not in the vendored pair
-(`powerbi-report-authoring`, `powerbi-report-design`, vendored at
-`v0.3.13`), so a re-sync would not. Whether `powerbi-report-cli` is a
-rename of the vendored skill wasn't checked; the `skills-for-fabric`
-drift source would settle it.
-
-### The probe this waits on
-
-In the sandbox workspace: a write function on the UDF item, a table for
-it in the SQL database, that table in the Direct Lake model, and a
-report button. It should capture the button's PBIR with slicer, field and
-measure bindings, test the measure tension, time how soon a write shows
-through Direct Lake on OneLake (a row reached the database's OneLake
-replica in 17 s once, 2026-10-01), show what the report does with a
-`UserThrownError`, and show whose identity `executing_user` carries when
-a report calls.
-
-### Where it lands
-
-A new `skills/fabric-*/` or `skills/power-bi/` skill, the group being part
-of the decision, or a reference beside the vendored report skill if
-upstream's file is vendored instead. Since 2026-10-12 no vendored report
-skill remains, `powerbi-report-authoring` archived and
-`powerbi-report-design` folded into `pbir-report-workflow`, so that
-option is now a `pbir-report-workflow` reference.
-
-### Not checked
-
-The data function button page and both tutorials beyond search
-excerpts; whether upstream's `powerbi-report-cli` is vendorable as is.
-
-### Re-measure before acting
-
-- `grep -rni "translytical\|DataFunction" skills/`: nothing on
-  2026-10-01 but the deployment-pipelines row and the UDF brief.
-- `list_commits` on upstream `skills/powerbi-report-cli` and the once
-  vendored pair's paths, per the vendored-files procedure the drift
-  registry dropped on 2026-10-12:
-  `git show ff87db6:.claude/skills/drift-audit/references/sources/skills-for-fabric.md`.
