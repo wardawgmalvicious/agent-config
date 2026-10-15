@@ -85,6 +85,26 @@ expect_no_line() {
     fi
 }
 
+# expect_group <label> <heading> <brief filename>...: the first group under
+# that heading holds those briefs, in that order, and no others
+expect_group() {
+    local label=$1 heading=$2 rows
+    shift 2
+    rows=$(awk -v h="    $heading" '
+        { sub(/\r$/, "") }
+        on && !/^      / { exit }
+        on { printf "%s ", $2 }
+        $0 == h { on = 1 }' "$tmproot/out.txt")
+    if [[ "$rows" == "$* " ]]; then
+        echo "ok    $label"
+        pass=$((pass + 1))
+    else
+        echo "FAIL  $label: '$heading' holds '$rows', not '$* '"
+        sed 's/^/        /' "$tmproot/out.txt"
+        fail=$((fail + 1))
+    fi
+}
+
 # One repo under a grouping directory, as repos sit here -- C:/Repos/<group>.
 fix="$tmproot/root/group/fixrepo"
 queue="$fix/docs/handoffs/execute"
@@ -136,6 +156,12 @@ fm tick "status: open" "priority: 3" 'reopen-when: `x` opens with a backtick' "w
 fm colon "status: open" "priority: 3" "reopen-when: a typo reaches a run: what-if" \
     "written: 2026-09-26"
 fm item "status: open" "priority: 3" "needs: [desktop, a run: what-if]" "written: 2026-09-26"
+# Briefs one sitting can clear print together, a group for each need but the
+# user's, though by priority alone tenancy sorts between desk1 and desk2.
+fm desk1 "status: open" "priority: 2" "needs: [desktop]" "written: 2026-09-20"
+fm tenancy "status: open" "priority: 2" "needs: [tenant]" "written: 2026-09-21"
+fm desk2 "status: open" "priority: 3" "needs: [desktop]" "written: 2026-09-19"
+fm both "status: open" "priority: 2" "needs: [user, desktop]" "written: 2026-09-22"
 # A worktree named after f claims it. A worktree needs a commit to branch from.
 git_t() { git -c user.name=t -c user.email=t@example.com "$@"; }
 git_t -C "$fix" commit -q --allow-empty -m init
@@ -227,6 +253,11 @@ expect_brief "a commit that never landed is parked" park.md "in flight (parked)"
 expect_brief "a committed branch the main checkout holds is merged" merged.md \
     "in flight (merged)"
 expect_line "needs: [user] waits on the user" "needs user"
+expect_group "each need but the user's heads a group of its own" "needs desktop" \
+    desk1.md desk2.md
+expect_group "a need's group holds no other need" "needs tenant" tenancy.md
+expect_group "a need of the user's outranks any other" "needs you" u.md both.md
+expect_line "audit follow-ups keep one group for the other needs" "    needs something else"
 expect_line "a blocker that exists blocks" "blocked by f.md"
 expect_line "an unknown status is a finding" "frontmatter docs/handoffs/execute/bad.md: status is maybe"
 expect_line "deferred with no trigger is a finding" \

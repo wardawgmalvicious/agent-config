@@ -38,6 +38,17 @@ run in parallel, and a worktree named after a brief claims it. What still
 conflicts between worktrees is real content, an evidence ledger above
 all, and that surfaces at rebase rather than in silence.
 
+**No folder groups the queue either** (2026-10-15). A folder per need,
+such as `power-bi-desktop/`, would keep state in a path, where nothing
+checks it against the frontmatter: 12 commits from 2026-09-28 changed a
+brief's `needs` in place, two of them, on 2026-10-12 and 2026-10-14,
+making a brief a Desktop brief, and each would have been a move. A folder
+per subject would move less, but `/triage`'s prior-decision grep,
+`/author-skill`, `/test-skill` and the `name-session.sh` hook all read
+`execute/` flat, and would miss a brief below it without an error. So the
+view prints a group for each need instead, and the briefs one sitting can
+clear list together.
+
 Waves 1–18 are spent, closed between 2026-08-31 and 2026-09-03. Their
 briefs are deleted and their outcomes live in the artifacts they changed,
 per the [lifecycle](#lifecycle) below.

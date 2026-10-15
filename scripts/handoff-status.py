@@ -28,9 +28,10 @@ A brief states its own state in frontmatter, or an index states it:
               blocked-by   [brief.md, ...], each a file beside this one
               reopen-when  the trigger, required when deferred
               written      YYYY-MM-DD, the tiebreak within a bucket
-            Such briefs print grouped -- ready, needs you, needs something
-            else, blocked, deferred -- by bucket, then oldest first, and
-            one is "in flight" while a git worktree is named after it:
+            Such briefs print grouped -- ready, needs you, a group for
+            each other need, named for it (needs desktop, needs tenant),
+            blocked, deferred -- by bucket, then oldest first, and one is
+            "in flight" while a git worktree is named after it:
               held    a live session's lock, or a lock naming no pid
               merged  its branch committed, and the main checkout's HEAD
                       holds that: landed, its deployed-payload check to run
@@ -53,7 +54,9 @@ A brief states its own state in frontmatter, or an index states it:
             repo keeps one: a brief not yet run, or one whose execution log
             leaves work open -- escalated, deferred or applied with
             deferrals -- and carries no **Closed** line. Its **Needs** line
-            groups it as frontmatter's needs does, `none` reading as ready.
+            groups it as frontmatter's needs does, `none` reading as ready,
+            but every other need shares "needs something else", since a
+            Needs line holds phrases and each would head a group of one.
             The rule and the log parser are audit-status.py's, loaded from
             beside this file, so the directory index and this view agree.
             A run whose briefs are all finished, once a later run of its
@@ -572,6 +575,22 @@ def detail(brief: Brief, report: RepoReport) -> str:
     return "".join(f"  {part}" for part in parts)
 
 
+def by_need(group: str, members: list[Brief]) -> list[tuple[str, list[Brief]]]:
+    """Each heading a group's briefs print under, in order, with its briefs.
+
+    Every need but the user's heads a group of its own, named for it, so the
+    briefs one sitting can clear print together: under one heading for them
+    all, four Desktop briefs printed with a tenant one between them
+    (2026-10-15). Audit follow-ups keep the one heading.
+    """
+    if group != "needs something else":
+        return [(group, members)] if members else []
+    split: dict[str, list[Brief]] = {}
+    for brief in members:
+        split.setdefault("needs " + ", ".join(brief.items("needs")), []).append(brief)
+    return sorted(split.items(), key=lambda item: item[0])
+
+
 def print_report(report: RepoReport, today: dt.date) -> None:
     repo = report.repo
     stated = report.stated_paths
@@ -600,12 +619,12 @@ def print_report(report: RepoReport, today: dt.date) -> None:
         here = [b for b in report.stated if b.path.parent == directory]
         for group in GROUPS:
             members = sorted((b for b in here if b.group == group), key=lambda b: b.sort_key)
-            if members:
-                print(f"    {group}")
-            for brief in members:
-                print(f"      P{brief.get('priority') or '?'}  {brief.path.name:<46}  "
-                      f"written {brief.get('written') or '?':<10}  "
-                      f"touched {touched(brief.path)}{detail(brief, report)}")
+            for heading, briefs in by_need(group, members):
+                print(f"    {heading}")
+                for brief in briefs:
+                    print(f"      P{brief.get('priority') or '?'}  {brief.path.name:<46}  "
+                          f"written {brief.get('written') or '?':<10}  "
+                          f"touched {touched(brief.path)}{detail(brief, report)}")
     if report.audits or report.retirable:
         print_audits(report)
     for row in report.dangling:
