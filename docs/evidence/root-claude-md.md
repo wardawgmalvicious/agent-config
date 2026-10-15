@@ -1665,6 +1665,24 @@ would. `editing-skills.md` § "A skill a peer is testing" carries the
 editor's side, and `/test-skill` steps 8 and 9, with its
 `references/reading-a-failure.md`, the tester's.
 
+**2026-10-15.** Asked again whether a skill edit should go on a branch
+and pass its test before it merges, the user kept 2026-09-30's answer:
+a brief's work takes its worktree, and work with no brief stays on
+`main`. The question was new in one part, the test, and the test
+settles it for the deployed groups. `~/.claude/skills` junctions the
+main checkout's copy and user scope outranks project scope, so a probe
+run from a worktree tests `main`'s version, which is why `/test-skill`
+step 7 stops in a linked worktree for a skill in those groups. A test
+before the merge is possible only for a platform skill, whose probe
+copies the tree it runs in, and for `.claude/skills/`, which a worktree
+loads from its own copy. The user turned down the one exception
+proposed, a platform skill's body or trigger edit tested in a worktree
+before the fast-forward, which the proposal had held back until a
+broken platform edit reaches a client session. What lagged that day
+was retests, 13 skills by `skill-status.py --stale`, which no merge
+gate clears, and this section records no silent collision since
+2026-09-30, its reopen condition.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +
