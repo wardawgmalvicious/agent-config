@@ -400,8 +400,8 @@ the last one that got duplicated into prose drifted three ways at once.
 ## Sweeping the queue
 
 A sweep reads the whole queue for briefs to merge or prune, as one did
-on 2026-10-15, when 25 briefs became 22, and 20 once the parked
-`drift-audit-on-disk-diffing` branch lands. Nothing is written before
+on 2026-10-15, when 25 briefs became 22, and 20 by its edits on the parked
+`drift-audit-on-disk-diffing` branch. Nothing is written before
 the user answers one numbered list of verdicts, and each verdict lands
 as its own commit, its reasoning in the message.
 
