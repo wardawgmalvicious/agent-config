@@ -235,8 +235,11 @@ After the push:
   the remedy.** The first publishes before the hooks exist; the second is
   the rewrite in place this skill replaces.
 - **A snapshot stays in a clone of the repo it describes**, or outside
-  every repo, never in another repo's tree: the script's default keeps
-  it there, and a `-Path` you pass must too.
+  every repo, never in another repo's tree by your own choice: the
+  script's default keeps it there, and a `-Path` you pick must too.
+  Asked for another repo of the owner's, never a client's, name this
+  rule, grep that copy for the term as step 3 does, and keep the
+  clone's for `-Apply`.
 - **Not this skill's:** a leak not yet pushed, which a local rewrite
   removes before any push, `commit`'s identity scan being the
   prevention; a branch to land or prune (`land`, `prune-branches`); the
