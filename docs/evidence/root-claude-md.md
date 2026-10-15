@@ -2293,6 +2293,11 @@ stands and only its example moved, to Haiku 4.5. A Haiku 5.5 session's
 `init` reading `auto`, with or without `--permission-mode auto`
 (`test-skill`'s `references/reading-a-failure.md`), fits the same change.
 
+**2026-10-15.** `editing-skills.md` gained "Listing text routes; it
+cannot license", from `/test-skill commit` on 2026-10-14. The arms, the
+`CLAUDE.local.md` control and the rule's new home are in
+`docs/evidence/user-claude-md.md` § "Agent config source", same date.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

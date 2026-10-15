@@ -27,6 +27,12 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   `scripts/lint-frontmatter.py` gate each, so an edit to one cannot overflow
   the other and a failure names the field to cut; `LISTING_MAX` fires only
   if those two are edited apart (2026-09-01).
+- **Listing text routes; it cannot license.** A `when_to_use` granting what
+  the harness withholds reads as the skill's claim, not the user's word:
+  `commit`'s "use it unasked, on the user's standing word" fired in 0 of 3
+  Opus 5.5 arms against the harness's commit-only-when-asked, one of them
+  searching memory for that word (2026-10-14, 2.1.293). A standing
+  permission goes in `claude/CLAUDE.md`; the skill keeps the procedure.
 - Lint with `uv run --with pyyaml scripts/lint-frontmatter.py <SKILL.md>`;
   pre-commit runs it over both trees. PowerShell passes a wildcard through
   unexpanded, which fails, so expand it first:
