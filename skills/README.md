@@ -107,6 +107,23 @@ nothing else.
   analysis and writes a note to `~/handoff-inbox/` rather than editing
   outside the current workspace. Pinned `model: fable` — routing a
   learning to the right file is the judgment the pin is for.
+- [scope-instructions/](meta/scope-instructions/) — where a repo's agent
+  guidance should live, section by section: root, a `paths:` rule, a
+  nested `CLAUDE.md` or `AGENTS.md`, a skill, a hook, a README or
+  nowhere, judged by the event that loads each home and whether it comes
+  before the mistake. It applies the tables in
+  `claude/rules/agent-instructions-scoping.md` rather than carrying its
+  own, Reads every instruction file in its main context so that rule
+  loads where the proposal is written, and backs each move with
+  `scripts/folder-sessions.py`, which counts per folder the sessions
+  that worked there, opened its README first, loaded its nested files
+  and compacted. It exists because the built-ins skip the question: on a
+  fixture built to six known answers, `CLAUDE_CODE_NEW_INIT=1` `/init`
+  and the `claude-md-improver` plugin skill moved no section out of root
+  in three runs between them (2026-10-15). Named for the rule it
+  applies, as the `*-scoping` rules name which home a thing takes; the
+  counterpart of `learn`, whose Step 0 hands a repo's own placement back
+  to that repo.
 
 The six skills that maintain *this* repo — `author-skill`,
 `test-skill`, `drift-audit`, `drift-handoff`,
