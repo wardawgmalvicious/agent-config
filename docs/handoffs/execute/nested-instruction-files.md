@@ -588,11 +588,20 @@ systems and its session ids stay out of every commit (`author-skill`
 ## Re-measure before acting
 
 - `uv run scripts/test-instruction-loading.py`: a FAIL means the loader
-  changed under a conclusion here.
+  changed under a conclusion here. Run 2026-10-15 on 2.1.293, 15 of 18
+  passed, and a re-run of the other three repeated them. **7 failed**: a
+  main-checkout Read in `.claude/worktrees/w1/` loaded no `CLAUDE.md`
+  there, so the exclude declined in Phase 2 would now prevent nothing;
+  the nearest changelog entry is 2.1.286's, on worktree subagents loading
+  the project file a second time. 6 and 8 were INVALID, which judges no
+  loader: 6's subagent now ends with a `SubagentHandback` call, and 8's
+  model stopped after its Write, which loaded `w/CLAUDE.md` as 2.1.288
+  has a Write do. 8's Bash arm is stale by the changelog too: since
+  2.1.293 a single-file `cat` loads a nested `CLAUDE.md` or `paths:` rule.
 - `claude --version`: `AGENTS.md` needs 2.1.277, and `/memory` lists one
   only from 2.1.280, by the memory page; no changelog entry says so.
-  2.1.282 on 2026-09-25, 2.1.293 for the trial on 2026-10-15, when the
-  probe set was not re-run.
+  2.1.282 on 2026-09-25, 2.1.293 for the trial on 2026-10-15 and for
+  the probe run above.
 - The three doc pages above, last re-read 2026-09-25; the memory page's
   `/init` paragraphs again on 2026-10-15. The VS Code page's
   source now sits under `docs/agent-customization/` in
@@ -609,8 +618,8 @@ systems and its session ids stay out of every commit (`author-skill`
   8 moved behind `paths:` rules that point at `.github/instructions/`
   files, and 4 stayed, since a live command or a sync triggers the
   mistake and no Read does
-  ([scoped-rule-imports-and-trigger-sorting.md](scoped-rule-imports-and-trigger-sorting.md),
-  item 2; `copilot-client-repo-findings.md`, item 3, for the pointer
+  ([agent-instructions-scoping.md](../../../claude/rules/agent-instructions-scoping.md)'s
+  `paths:` row; `copilot-client-repo-findings.md`, item 3, for the pointer
   shape, which the client repo inverted on 2026-10-02 so each rule holds
   its content, and which left with that brief on 2026-10-13). Phase 3's
   pilot expects a draft to re-find the 2026-09-24 proposal there: check

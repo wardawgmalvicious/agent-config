@@ -72,6 +72,11 @@ a rule or a nested file, and the README keeps the rest.
 - **A `.claude/rules/` file with no `paths:` loads at launch**, like root.
   A user-scope rule and a same-named project rule both load; neither
   overrides the other unless its text says so.
+- **An `@import` in a `paths:` rule loads at launch**, while the rule's
+  own text waits for its match (probed 2026-10-15, 2.1.293). So a scoped
+  rule cannot defer a long document by importing it: one that sends
+  Claude to another file names it in a code span, which import parsing
+  skips.
 - **`AGENTS.md` is either/or.** Claude reads it only when no `CLAUDE.md`,
   `.claude/CLAUDE.md` or `CLAUDE.local.md` sits in the working directory
   or above it; `~/.claude/CLAUDE.md`, managed files, rules, and a

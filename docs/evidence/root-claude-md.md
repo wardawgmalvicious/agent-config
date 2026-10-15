@@ -254,6 +254,30 @@ marker had nothing left to exempt, so it went with
 `is_no_copilot_group()`, and `lint-frontmatter.py` now fails an active
 `model:` anywhere under `skills/`.
 
+**2026-10-15.** "Never an unscoped rule or an `@import`" now reaches an
+import inside a `paths:` rule, which loads at launch while the rule waits
+for its match. A client Fabric repo's session found it on 2026-09-29, on
+2.1.282, trimming its root file by moving gotchas into `paths:` rules. In
+a scratch project holding `.claude/rules/probe.md`, scoped to
+`**/*.probe` and importing `../../docs/target.md`, two cold haiku
+sessions each carried the import's marker in the launch `instructions`
+record, and only the one that read `sample.probe` got the rule, as a
+`nested_memory` record holding the rule's own marker. Those transcripts
+are gone. Probe `r1` in `scripts/test-instruction-loading.py` rebuilds
+the case and passed three times on 2.1.293 (`0cba9e07`, `c2d80c92`,
+`a3d2fd24`): the import arrives at launch as its own `Project` entry,
+with no globs, and the rule's record keeps its `@../../docs/target.md`
+line unexpanded. The memory docs, read the same day, say imports load
+"at launch alongside the CLAUDE.md that references them" and nothing of
+one in a rule, so the probe is the only witness. They do say import
+parsing skips code spans, so the new bullet in
+`agent-instructions-scoping.md` has a scoped rule name another file in
+one. The same trim gave that rule's `paths:` row its clause on a live
+command or a sync: of 12 gotchas it weighed for a `paths:` home, 8 moved
+and 4 stayed, one about creating a file, which the row already covered,
+and three whose mistake is a live command or a sync, which touches no
+file, by that session's count.
+
 ## Commands
 
 ```bash
