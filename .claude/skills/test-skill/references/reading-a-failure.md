@@ -701,6 +701,20 @@ construction. The second held the same day on `learn`, whose two arms
 ran one after the other: the `/learn` arm's `ListAgents` showed five
 live sessions and no sibling probe.
 
+**Arms launched from one directory share its transcript folder.**
+`~/.claude/projects/<slug>/` holds every session started there, and an
+arm that greps its own transcripts, as `learn`'s step 5 does for the
+session's `"version"`, reads every earlier round's too. On 2026-10-14
+(2.1.293) a rerun `learn` arm reported "None of the four transcripts
+for this repo contains a `git branch -d` call", two of them a stopped
+round's. So a rerun after an arm read something it should not have
+reaches it again: launch each round from a fresh directory, or deny the
+old folder, `Read(~/.claude/projects/*-<probe>/**)`, which held on a
+Haiku probe. Moving a transcript aside is no remedy: auto mode refused
+the `mv` as "[Session Transcript Tampering]", and refused the testing
+session's next call, a read-only `jq` over an arm's stream file in its
+scratchpad, the same way (2.1.296).
+
 **A peer can still message an arm, and the arm answers it as a second
 turn.** The stream shows the turn, never the message: a second `init`,
 on the session model, and a second `result`, between a pair of
