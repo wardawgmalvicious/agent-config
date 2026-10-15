@@ -1,9 +1,8 @@
 ---
-status: deferred
+status: open
 priority: 3
 needs: []
 blocked-by: []
-reopen-when: decision 1's trial, of `CLAUDE_CODE_NEW_INIT=1` `/init` and `claude-md-improver` on a scratch repo, leaves a gap
 written: 2026-09-24
 ---
 
@@ -24,7 +23,9 @@ written: 2026-09-24
   and Phase 2's transcript measurement ran the same day, and decision 5
   handed Phase 2's placement to `queue-state-per-brief.md`, which landed
   it that day as `docs/handoffs/CLAUDE.md`. What is left is
-  Phase 3, deferred by decision 1.
+  Phase 3, deferred by decision 1 until its trial, which ran on
+  2026-10-15 and left a gap (§ "Decision 1's trial, 2026-10-15"), so
+  Phase 3 is `/author-skill`'s now.
 
 ## The ask
 
@@ -410,6 +411,63 @@ here and strips that session's own root `CLAUDE.md` (`p7-wt-x`). What it
 would prevent, a second copy of root when a session here Reads into a
 worktree, is the smaller cost; no worktree existed on 2026-09-27.
 
+## Decision 1's trial, 2026-10-15
+
+**Both built-ins leave the placement half of the ask undone.** In three
+runs none moved a section out of a root `CLAUDE.md`, into a nested file
+or a `paths:` rule, even once with `agent-instructions-scoping.md` in
+the context that wrote the proposal; each did the rest well. Run on the
+user's word on 2.1.293, Opus 5.5 at `--effort medium`,
+`--strict-mcp-config`, under this machine's user scope, for $3.72 in
+all. One run per arm, at medium effort: Phase 3's pilot repeats it.
+
+The fixture was a scratch repo, `orders-sync`, built to six known
+answers. A 75-line root `CLAUDE.md` held a `contracts/` section (K1, a
+nested file's), a section on every `.sql` file across two folders (K2,
+a `paths:` rule's), style rules `pyproject.toml` already enforces and a
+layout list (K5, nowhere), and `make db-migrate`, a target the
+`Makefile` lacks (K6, a control). `contracts/README.md` held the only
+breaking-change rule (K3); a root `AGENTS.md`, silent beside the
+`CLAUDE.md`, the only "never log customer email" rule (K4); and
+`.github/copilot-instructions.md` said 88-character lines against
+`pyproject.toml`'s 100 (K5). Its generator lived in that session's
+scratchpad, so rebuild it from this paragraph.
+
+| Known answer | `CLAUDE_CODE_NEW_INIT=1` `/init` | `claude-md-improver`, as run | `claude-md-improver`, Bash denied |
+| --- | --- | --- | --- |
+| K1 `contracts/` rules to a nested file | no | weighed, declined: some govern code outside the folder | no |
+| K2 SQL rules to a `paths:` rule | no | no | no |
+| K3 the README's rule surfaced | yes | yes | yes |
+| K4 `AGENTS.md` silenced, its rule recovered | yes, copied, so two files hold it | yes, `@AGENTS.md` | yes, `@AGENTS.md` placed to spare MD041 |
+| K5 derivable rules cut, Copilot drift flagged | yes | yes | yes |
+| K6 the stale command | yes | yes | yes |
+
+- **No run proposed a `.claude/rules/` file at all**, and the improver's
+  procedure never asks where a section belongs. Its rubric scores
+  commands, architecture, gotchas, conciseness, currency and
+  actionability, and its `SKILL.md` says "Propose targeted additions
+  only". Its discovery `find` names `.claude.local.md`, which Claude
+  Code never reads, and not `CLAUDE.local.md`, `AGENTS.md` or
+  `.claude/rules/`; the model found the other files by listing the repo.
+- **The rule reached the deciding context in one run of three.** The
+  improver read every file through Bash, which loads nothing. `/init`
+  handed every Read to an Explore subagent, so whatever loaded stayed
+  there, as probe 6 found, and the main session that wrote the proposal
+  held no `nested_memory` record. Denied Bash, the improver Read in its
+  main context, got `agent-instructions-scoping.md` beside three coding
+  rules, and still proposed root-only edits.
+- **Under `claude -p`, `/init` asks its questions in text**: three turns
+  to a diff. Git Bash rewrote the bare `/init` argument to
+  `C:/Program Files/Git/init`, which the session saw through;
+  `MSYS2_ARG_CONV_EXCL='*'` keeps it intact.
+- `claude-code-setup`'s `claude-automation-recommender` was not tried: it
+  recommends hooks, skills and MCP servers, not where instructions go.
+
+So a line in the rule would not close the gap alone: the procedure that
+writes the proposal never asks the placement question, and the rule
+missed two of the three routes. What Phase 3 adds is that question,
+asked of each section of a root file.
+
 ## Phase 3: the skill, if Decision 1 says so
 
 Through `/author-skill`, whose steps 1 and 2 must weigh these before a
@@ -418,9 +476,14 @@ name is chosen:
 - **`learn`**, whose Step 3 destination table has root files, rules and
   skills but no row for a nested file or an `AGENTS.md`. A row there may
   be most of the value.
-- **The built-ins and the two disabled plugins.** Read
-  `claude-md-improver` and run `CLAUDE_CODE_NEW_INIT=1` `/init` on a
-  scratch repo before claiming a gap; neither has been tried here.
+- **The built-ins and the two disabled plugins.** `claude-md-improver`
+  and `CLAUDE_CODE_NEW_INIT=1` `/init` were tried on a scratch repo on
+  2026-10-15 and left the placement gap (§ "Decision 1's trial,
+  2026-10-15"). A draft must find K1 and K2 there, where neither did.
+- **The cheapest rival**: a sentence in `agent-instructions-scoping.md`
+  telling a session that audits a root file to sort each section by the
+  table first. It reaches only a session that Reads an instruction file
+  in its main context, one route of the trial's three.
 
 "Deeper than init", as proposals for `/author-skill` to keep or cut:
 
@@ -461,10 +524,12 @@ which load as nested files in any session here that Reads them, so
 
 ## Decisions for the user
 
-1. **A skill at all: deferred 2026-09-25, not declined.** Re-open when
-   `CLAUDE_CODE_NEW_INIT=1` `/init` and the disabled `claude-md-improver`
-   have been tried on a scratch repo and leave a gap. Until then Phase 3
-   waits, and the strategy stands alone in the home 2 picks.
+1. **A skill at all: deferred 2026-09-25, reopened 2026-10-15.** It
+   waited until `CLAUDE_CODE_NEW_INIT=1` `/init` and the disabled
+   `claude-md-improver` had been tried on a scratch repo and left a gap.
+   On the user's word the trial ran on 2026-10-15, and both left the
+   placement gap (§ "Decision 1's trial, 2026-10-15"), so Phase 3 goes to
+   `/author-skill`, the strategy staying in the home 2 picks meanwhile.
 2. **Where the strategy lives: a user-scope rule, answered 2026-09-25.**
    Not `learn`: its Step 0 hands a repo's own `CLAUDE.md` and
    `.claude/rules/` back to that repo, which is where every placement
@@ -526,8 +591,10 @@ systems and its session ids stay out of every commit (`author-skill`
   changed under a conclusion here.
 - `claude --version`: `AGENTS.md` needs 2.1.277, and `/memory` lists one
   only from 2.1.280, by the memory page; no changelog entry says so.
-  2.1.282 on 2026-09-25.
-- The three doc pages above, last re-read 2026-09-25. The VS Code page's
+  2.1.282 on 2026-09-25, 2.1.293 for the trial on 2026-10-15, when the
+  probe set was not re-run.
+- The three doc pages above, last re-read 2026-09-25; the memory page's
+  `/init` paragraphs again on 2026-10-15. The VS Code page's
   source now sits under `docs/agent-customization/` in
   `microsoft/vscode-docs`.
 - The client repo's root file and rules. Three sessions were live there
