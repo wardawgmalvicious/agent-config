@@ -4,10 +4,8 @@ What a session must know before it writes, starts or lands a brief here;
 [execute/README.md](execute/README.md) keeps the reasoning.
 
 - **No file lists the queue**: `uv run scripts/handoff-status.py` prints
-  it from each brief's frontmatter, grouped ready, needs you, needs
-  something else, blocked and deferred, by priority, then oldest first.
-  `. --no-inbox` gives this repo alone. Starting or landing a brief edits
-  no shared file.
+  it from each brief's frontmatter, `. --no-inbox` for this repo alone, so
+  starting or landing a brief edits no shared file.
 - **A brief's frontmatter is its whole state**, and its body restates none
   of it. `lint-briefs` fails a commit on a bad value, on a `blocked-by`
   naming a brief that is gone, and on a brief with no frontmatter.
@@ -51,10 +49,12 @@ What a session must know before it writes, starts or lands a brief here;
 - **Landing deletes the brief** in the commit that finishes its work: drop
   its name from every `blocked-by`, and re-point whatever linked to it.
 - **A skill brief beside a skill that exists means `/test-skill` has not
-  run**; `uv run --with pyyaml scripts/skill-status.py --stale` says which
-  skills need a retest.
+  run**; `skill-status.py --stale` says which skills need a retest.
 - **Audit briefs are a second queue**, which the view prints after the
   first from their logs: one left open carries a `**Needs**:` line, and
   a `**Closed**:` one lands with its work, or as `/triage` carries it here
   ([why](execute/README.md#audit-briefs-are-a-second-queue)).
-- **A filename is a link target**, so it carries no date or number.
+- **A filename is a link target**, so it carries no date or number. **A
+  brief is the unit of deletion**: merge two only on one subject, not on a
+  shared `needs` or a dependency (`blocked-by`); a sweep follows
+  [execute/README.md](execute/README.md#sweeping-the-queue).

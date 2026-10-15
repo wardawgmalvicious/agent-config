@@ -386,6 +386,40 @@ the world. Derive skill counts the same way rather than restating a total
 here — each figure is owned by its set's `expected_activations.md`, and
 the last one that got duplicated into prose drifted three ways at once.
 
+## Sweeping the queue
+
+A sweep reads the whole queue for briefs to merge or prune, as one did
+on 2026-10-15, when 25 briefs became 22, and 20 once the parked
+`drift-audit-on-disk-diffing` branch lands. Nothing is written before
+the user answers one numbered list of verdicts, and each verdict lands
+as its own commit, its reasoning in the message.
+
+1. **List the queue and its worktrees.** Run
+   `uv run scripts/handoff-status.py . --no-inbox`, then
+   `git worktree list --porcelain` and `git log main..<branch>` for each
+   worktree. A held worktree's briefs are its session's. A parked one's
+   are edited on its branch, entered by `EnterWorktree` with its path,
+   since an edit on `main` to a brief the branch changed meets a
+   modify/delete conflict at its rebase: that day the parked branch had
+   edited two of the briefs the sweep merged or declined.
+2. **Read every brief whole** before proposing anything.
+3. **Merge on subject alone**, by [../README.md](../README.md)'s
+   convention, which also says what a shared need and a dependency are
+   instead. That day four Desktop briefs merged on their need, and a UDF
+   brief and its report side on their dependency; both were split back
+   the same day, in `45f94b9` and `cc8bd44`.
+4. **Prune on four signs**: a deferred trigger that waits on work no one
+   has scheduled, an open task in disguise, to run or decline; a job
+   since done another way; a decision whose options an existing rule
+   already settles; and a spec whose own corrections outrun its plan. A
+   deferred brief still goes only when ruled out, as § "A brief can be a
+   decision rather than an edit" says.
+5. **On the answer**, move text verbatim, so `git blame -C` reaches the
+   commits that wrote it; keep an in-flight brief's filename, which pairs
+   it with its worktree; and re-point every link, here, in `tests/` and
+   `scripts/`, in other repos and in `~/handoff-inbox/`, leaving the
+   dated ledgers under `docs/audits/` and `docs/evidence/` as they stand.
+
 ## Lifecycle
 
 Unchanged from [../README.md](../README.md): **once the change lands, the

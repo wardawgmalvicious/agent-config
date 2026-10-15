@@ -61,7 +61,11 @@ the same subject belong in one file** — four were consolidated into two on
 finding from one had propagated into a third. But **briefs that resolve
 independently belong in separate files**, because that is the unit of
 deletion; the five added from the trigger-fixture work are separate for
-that reason. Subject, not lineage, decides.
+that reason. Subject, not lineage, decides. Nor does a shared need: the
+queue view already lists briefs by their `needs`, and one brief waiting
+on another is a `blocked-by`. On 2026-10-15 four Desktop briefs merged
+on their need, and a UDF brief and its report side on their dependency,
+were split back the same day.
 
 **Once the change lands, the brief is deleted.** Git history is the
 archive — the brief was committed when it was written, so
