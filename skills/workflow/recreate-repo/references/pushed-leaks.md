@@ -92,6 +92,11 @@ one, and read from each session's transcript rather than the model's
 echo: each expanded to the path the skill was found by, junction and
 all, never the junction's target, with forward slashes. So the command
 runs in either shell and names no checkout.
+At user scope, where this skill deploys, the same held on 2026-10-14
+(2.1.293): two cold `-p` arms that reached the skill through `Skill`
+each recorded its body with
+`C:/Users/<username>/.claude/skills/recreate-repo/scripts/repo-settings.ps1`
+and no literal `${CLAUDE_SKILL_DIR}`.
 
 Measured 2026-10-12 through `~/.claude/skills/recreate-repo/scripts/`,
 from a clone holding its own snapshot, with no argument:
@@ -192,8 +197,6 @@ the bit in the index on a machine whose filesystem does not.
 ## Unverified
 
 - `-Apply` against a repository with no commits.
-- `${CLAUDE_SKILL_DIR}` at user scope, where this skill deploys: probed
-  at project scope only (2026-10-12).
 - Whether the Bash tool's worktree guard still refuses
   `pwsh -NoProfile -File` on the script. It refused the version that ran
   git in the payload checkout, outside the worktree (Claude Code 2.1.283,
