@@ -216,7 +216,7 @@ that gap is still not the skill's margin, because root `CLAUDE.md` is
 stripped with the payload and carried 15 of the skill's 16 claims; only
 the MSYS2 trap was skill-only. The ablation is the payload arm with
 `Skill` added to `--disallowedTools`, everything else identical: the
-listing entry stays, the body cannot load, and `CLAUDE.md` stays in
+listing entry stayed, the body could not load, and `CLAUDE.md` stayed in
 context. It scored 9 of 12 to the skill arm's 11. Read the skill's
 contribution off that gap, and expect it to be narrow wherever root
 `CLAUDE.md` carries the same procedure — a narrow margin there is not a
@@ -228,7 +228,7 @@ activation-testing procedure to `.claude/rules/activation-testing.md`.
 That rule loads only on a matching `Read`, so with the file tools
 disallowed no arm carries it, and root keeps a summary of it: the 15 of
 16 no longer holds, and the ablation margin has not been re-measured
-since.
+since. On 2.1.293 that flag drops the listing too (below).
 
 **Outside this repo the payload is still within a baseline's reach.**
 Measured 2026-10-14 on `learn`, 2.1.293: `--safe-mode` baselines
@@ -250,7 +250,7 @@ settings." for `Read`, "Permission to read … has been denied." for
 
 **The ablation needs one tool declared, and `--tools ""` declares none.**
 Under the allowlist the ablation above, `Skill` denied beside the file
-tools, becomes `--tools CronList`, a read-only placeholder. Measured
+tools, became `--tools CronList`, which drops the listing (below). Measured
 2026-09-29 on `test-skill`, Opus 5.5 at max effort, one walkthrough
 query: with no tool declared, the model wrote 14 calls as text, 7
 `Read`, 5 `Glob` and 2 `Grep`, then wrote their results itself, among
@@ -271,6 +271,25 @@ skill: one turn, `end_turn`, no tool call and none written as text,
 95,930 output tokens and $2.03 to its baseline's 94,582 and $1.93
 (`51d7487`). The stream carried no thinking text, so that check covers
 the answer alone; the first `CronList` arm was stopped early (below).
+
+**`--tools CronList` drops the description with the body; a deny rule
+on the one skill keeps it.** Measured 2026-10-14 on 2.1.293 with Haiku
+probes run here, read off each transcript. Under `--tools CronList`,
+`--disallowedTools Skill` (as above) or both together, `Skill` left
+`init.tools`, and with it every `skill_listing` record and every line of
+`test-skill`'s description; `--tools Skill` kept both.
+`--tools Skill --disallowedTools 'Skill(test-skill)'`, or that rule under
+`permissions.deny` in `--settings`, kept `Skill` and the whole listing,
+and the call came back `is_error`, "Skill execution blocked by permission
+rules", with the body nowhere in the transcript. So a `CronList` arm
+measures root `CLAUDE.md` without the description, and a claim the
+description carries separates there as if the body made it: that day's
+`test-skill` retest found its description's probe *copy* in all three
+routing arms that answered without loading the body, while its
+`CronList` arm junctioned the skill in, from root `CLAUDE.md`'s
+`-ClaudeDir`. The deny form is unmeasured on a full arm, so until one
+runs, check a separating claim against the `description` before
+crediting the body, as for a rule's (below).
 
 **A max-effort arm with nothing to call is silent for most of its run.**
 Until its first content block closes, the stream holds only

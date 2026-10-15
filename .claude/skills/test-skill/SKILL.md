@@ -359,11 +359,11 @@ an in-repo run is a guaranteed false negative that looks exactly like a
 broken skill. **A project-scope skill must run here**, where the payload
 is on disk and root `CLAUDE.md` may repeat it: give both arms
 `--tools Skill`, so neither can read the payload off disk, then add a
-third arm with `--tools CronList` — **model-invoked, never slash**, or
-the expansion inlines the body straight past the denial and the arm is
-inert. Never `--tools ""`: with no tool declared, the model writes its
-calls as text and invents their results; one read-only tool avoids it.
-`references/reading-a-failure.md`, 2026-09-13 and 2026-09-29.
+third arm with `--disallowedTools 'Skill(<name>)'` too: it keeps the
+description listed and refuses the body — **model-invoked, never slash**,
+or the expansion inlines the body past the denial. Never `--tools CronList`,
+which drops the listing with `Skill`, nor `--tools ""`, which declares none.
+`references/reading-a-failure.md`, 2026-09-13, 2026-09-29, 2026-10-14.
 
 **Parallel arms read each other as peers**, and only payload arms look:
 keep `ListAgents` and `SendMessage` out of every arm, as `--tools` does
@@ -485,7 +485,7 @@ activated". Work down this table before touching a glob:
 | The debug log shows nothing | `--debug-file` emits its skill lines before any Read runs, so it can never witness an activation |
 | The session answers *well* but the skill never loaded | A conditional skill is absent from the startup listing, so a plain-English query cannot reach it. Better answers were base-model variance — confirm a `Skill` tool_use before believing a pass |
 | `/<skill-name>` returns `Unknown command` | Expected for a **conditional** skill cold; it becomes reachable only after a matching file is Read in that same process: a `--resume` answered it too (2026-09-12). Unconditional skills slash normally — unless the skill is new and the linker has not run since `/author-skill` wrote it (step 7; `prune-branches` had no junction on 2026-09-14) |
-| The baseline scores nearly as high as the payload | It read the payload off disk, root `CLAUDE.md` carries the same claims, or the session-start git log names them, which `--safe-mode` keeps. Allowlist `--tools Skill` on both arms, then ablate with `--tools CronList`. **A baseline holds no file tool outside this repo either**: one found this checkout from its probe's path under your scratchpad, read the skill and opened inbox notes (`learn`, 2026-10-14). Set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` on every arm but a commit or PR skill's (`commit`, `land`): it also removes the built-in commit and PR instructions, so read the log for the claim there instead |
+| The baseline scores nearly as high as the payload | It read the payload off disk, root `CLAUDE.md` carries the same claims, or the session-start git log names them, which `--safe-mode` keeps. Allowlist `--tools Skill` on both arms, then ablate by adding `--disallowedTools 'Skill(<name>)'`. **A baseline holds no file tool outside this repo either**: one found this checkout from its probe's path under your scratchpad, read the skill and opened inbox notes (`learn`, 2026-10-14). Set `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1` on every arm but a commit or PR skill's (`commit`, `land`): it also removes the built-in commit and PR instructions, so read the log for the claim there instead |
 | The payload arm changed since the last stamp | Not yet the edit's doing. Run the pre-edit body as `<name>-old` at project scope in the probe directory on the same query; a check-shaped edit ("if X, do Y") also needs the no-X arm |
 
 The witnesses behind that table — the transcript record, the `-p`
