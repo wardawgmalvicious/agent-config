@@ -86,7 +86,9 @@ Drilled 2026-10-15 on CLI 2.1.293, the doc pages as raw markdown from
   of type `nested_memory`, with `path` and an inner `content` whose
   `type` reads `User` for a user rule and whose `globs` name a rule's
   `paths:`. A nested `AGENTS.md` is `hook_additional_context` opening
-  `Contents of <path>\AGENTS.md:` (probes C0 and 4, 2026-09-25).
+  `Contents of <path>\AGENTS.md:` (probes C0 and 4, 2026-09-25), its
+  content a list of strings and its `toolUseID` the call's id plus
+  `-context` (probe p4, 2026-10-15).
   Compactions are `system` records of subtype `compact_boundary`, and
   launch loads are an `instructions` attachment with `files`. A
   subagent writes `<session>/subagents/agent-<id>.jsonl`, each record
@@ -94,9 +96,12 @@ Drilled 2026-10-15 on CLI 2.1.293, the doc pages as raw markdown from
   worktree session gets a project directory of its own, and the drive
   letter's case varies between them (`c--…` and `C--…`); a session that
   enters a worktree by `EnterWorktree` moves its transcript there too.
-  A load links back to the tool result it follows through `parentUuid`,
-  up to five hops in 62 of 69 loads sampled, and some follow Bash calls,
-  2.1.293's single-file views. A prompt's @-mention is a `file`
+  A load links back through `parentUuid` to the last tool result before
+  it, up to five hops in 62 of 69 loads sampled. After parallel calls
+  that is the batch's last, often not the call that loaded it: of 1,115
+  rule loads here on 2026-10-15, 369 chained to a file their globs
+  match. A rule's record drops a trailing `/**` from its globs, keeping
+  `claude/hooks/**` as `claude/hooks`. A prompt's @-mention is a `file`
   attachment with `filename`, and a nested file it brings follows no
   tool call. The launch `instructions` record listed root's files only,
   one `Project` entry each in 79 sessions.
@@ -483,10 +488,10 @@ from it; its step 7 probe guards a new file. It wants a probe of its
 own, or a `/learn` note against `agent-instructions-scoping.md` once
 traced.
 
-The script's own reading of it, after its fixes that day: the nested
-file in 57 of 102 sessions working under `docs/handoffs/`, and the
-queue README opened first in 20 of 97 under `execute/`, later in 7,
-never in 70, against 11, 2 and 11 of 24 on 2026-09-27.
+The script's own reading of it, as fixed that day: the nested file in
+61 of 105 sessions working under `docs/handoffs/`, and the queue README
+opened first in 19 of 100 under `execute/`, later in 8, never in 73,
+against 11, 2 and 11 of 24 on 2026-09-27.
 
 ### Owed before this brief lands
 
@@ -494,12 +499,18 @@ never in 70, against 11, 2 and 11 of 24 on 2026-09-27.
   since 2026-10-15, p7 expecting what it found, that a main-checkout
   Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
   the exclude Phase 2 declined preventing nothing, so the decline stands.
-- **`tests/scripts/folder-sessions/`**, the script's negative cases:
-  no transcripts for the repo (exit 1), transcripts whose records no
-  longer parse (exit 2), a worktree session folded into its repo, a
-  probe session left out, a README @-mentioned before any call counted
-  first and named, another file @-mentioned not counted as work, and a
-  nested file that follows no file call pinned to its own folder.
+- **The pilot**, above, on the script as fixed on 2026-10-15 and
+  deployed: until then a rule pins to its batch's last call and a
+  nested `AGENTS.md` never pins, so the `loaded` lines the pilot reads
+  are wrong.
+
+`tests/scripts/folder-sessions/`, the script's negative cases, written
+2026-10-15: the seven this list named, which the script `f03128b`
+shipped passes, and five that writing them found, which it fails. A
+rule loaded beside a parallel Bash call pins by its globs, a recorded
+glob covers what lies under it, a rule file named `agents.md` is still
+a rule, a nested `AGENTS.md` pins from its hook's list of strings, and
+a load after a later prompt follows no call, not the turn before's.
 
 ### Scrubbing
 
@@ -514,6 +525,8 @@ citation.
   changelog past 2.1.293 touches no instruction loading.
 - `uv run scripts/test-instruction-loading.py`: all 28 passed on
   2026-10-15.
+- `bash tests/scripts/folder-sessions/test-folder-sessions.sh`: 28 of
+  28 on 2026-10-15, where the script `f03128b` shipped fails 7.
 - The memory, large-codebases and sessions pages, read 2026-10-15.
 - The client repo's root and rules, re-measured 2026-10-15 (§ "The
   pilot").
