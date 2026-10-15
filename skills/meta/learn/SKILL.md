@@ -162,6 +162,13 @@ there at all. And every `~/.claude/skills/<name>` is a junction, which
 payload path or one skill's folder. Record which tree you searched, and
 never report "not covered" off the deployed tree alone.
 
+**The inbox is not a third tree.** The notes waiting in
+`~/handoff-inbox/<target-repo>/` are for the user to bring in, and
+`~/.claude/CLAUDE.md` says to open none unasked; a grep of them for your
+term reads them, as a note-mode run checking for a duplicate did on
+2026-10-14 (2.1.293). Check their filenames at most, and name a likely
+twin in the note's **Coverage:** line for `/triage` to weigh.
+
 **Grep one distinctive token, not a phrase.** Prose here is hard-wrapped
 at 76 columns, so a multi-word term is routinely split across lines and
 `grep` cannot match it. On 2026-09-12 a search for "Microsoft 365 group"
