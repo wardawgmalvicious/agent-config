@@ -17,6 +17,8 @@ written: 2026-10-06
 - **Folded**: 2026-10-13, an inbox note of 2026-10-12 by a session in
   machine-config reviewing its gateway brief, re-measured against the
   payload at `cabf9c9`.
+- **Synced**: 2026-10-15, with machine-config's brief at `5685f27`,
+  read in a session that had both repos open, so no note was sent.
 - **Kind**: a decision, the user's, parked first on IT, which answered
   on 2026-10-12, and now on machine-config's gateway brief, where the
   pick is made. Nothing is drafted.
@@ -52,18 +54,24 @@ waiting on the first. They also find the Copilot-model fallback short
 of features they rely on, and its usage looked much higher (not
 measured).
 
-That brief, on an unlanded branch on 2026-10-12, orders three options:
+That brief, landed on machine-config's `main`, orders three options:
 
 - **A per-device exception from IT**, first: it matches the scope IT
   chose, builds nothing and loses no feature.
-- **The token**, kept under its own name and applied only on that
-  network, per launch or by a toggle, since one at User scope costs
-  Remote Control and the claude.ai connectors on every network (§ "What
-  is left if IT keeps the block").
-- **A self-hosted hop**, deferred, now of two kinds: an LLM gateway,
+- **The token**, applied only on that network, per launch, since one at
+  User scope costs Remote Control and the claude.ai connectors on every
+  network (§ "What is left if IT keeps the block"). Machine-config built
+  its launcher on 2026-10-13, `scripts/claude-onsite.ps1`, which keeps
+  the token in a file encrypted for the Windows account and sets it
+  only for the VS Code or shell it starts. A User-scope toggle was
+  rejected: left on at home, it drops those features without a word.
+  Untried with a real token, and none was stored on 2026-10-15.
+- **A self-hosted hop**, deferred, now of three kinds: an LLM gateway,
   which raises a question under Anthropic's legal and compliance terms
-  on intermediating claude.ai credentials, and a forward proxy, which
-  never sees the token.
+  on intermediating claude.ai credentials; a forward proxy, which
+  never sees the token; and Anthropic's `claude gateway`, ruled out
+  below as billed per token unless Anthropic lets a subscription sit
+  behind it.
 
 Its two questions for this repo were answered on 2026-10-13 by a note
 to machine-config's inbox: nothing in the payload starts a session
@@ -104,8 +112,10 @@ it graded"):
   ranks above the `/login` credential, so one set at User scope applies
   on every network. Minting it takes the `/login` browser flow, so it is
   done off that network, and it works only through the filter's gaps, so
-  the point about IT holds for it too. Machine-config would set the
-  variable, as it sets the PATs: a note to its inbox, not an edit here.
+  the point about IT holds for it too. Machine-config keeps it, though
+  not as it keeps the PATs: a User-scope variable reaches every process
+  and prints in any dump of the environment, so the token sits in a file
+  its launcher alone reads (§ "IT's answer, 2026-10-12").
 - **A gateway the user runs**, through `ANTHROPIC_BASE_URL`, carries
   inference only: the docs list `/v1/messages` and a few optional calls
   as what a gateway receives, not sign-in or refresh, so a plan login
@@ -142,7 +152,9 @@ must follow, or the tell above is seen.
   `docs/handoffs/claude-code-gateway.md`, triaged there on 2026-10-07
   from a note this repo sent assuming the block held. The token needs
   nothing from the payload, as the note of 2026-10-13 told it; a route
-  that does reopens this brief.
+  that does reopens this brief. One line changes if the token holds a
+  session there: `claude/CLAUDE.md` says Claude Code fails at sign-in
+  on that network, which would then hold only without the launcher.
 - The WebFetch tell is seen: `skipWebFetchPreflight` goes into
   `claude/settings.json` on the user's yes, deployed with
   `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
