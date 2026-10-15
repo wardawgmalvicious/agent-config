@@ -10,7 +10,7 @@ Each probe builds a small git repo in a scratch directory, runs cold
 `claude -p --model haiku` sessions in it, and reads the session transcript,
 the only complete witness of what loaded. Three records carry a load: the
 launch `instructions` record, a `nested_memory` attachment for a nested
-CLAUDE.md or an import it expands, and a PostToolUse
+CLAUDE.md, an import it expands or a `paths:` rule, and a PostToolUse
 `hook_additional_context` for a nested AGENTS.md read directly -- which is
 why InstructionsLoaded never logs one, and why a check keyed on
 `nested_memory` alone misses it. Every instruction file carries a
@@ -24,10 +24,12 @@ loading, and ERROR when no transcript turned up.
 Written 2026-09-25 on 2.1.282 for
 docs/handoffs/execute/nested-instruction-files.md, whose probes these are:
 c0 and 1-8 answer its load-order questions, k0-k2 and h1 its question of
-cutting a root CLAUDE.md over to AGENTS.md. Re-run it after a CLI upgrade,
+cutting a root CLAUDE.md over to AGENTS.md. r1, added 2026-10-15 on
+2.1.293, checks claude/rules/agent-instructions-scoping.md's claim that a
+`paths:` rule's @import loads at launch. Re-run it after a CLI upgrade,
 or when a changelog entry touches AGENTS.md or instruction loading: support
 shipped in 2.1.277 and changed in 2.1.281. A FAIL means the loader changed,
-and whatever that brief concluded from the probe may have changed with it.
+and whatever was concluded from the probe may have changed with it.
 
 The scratch root sits under the system temp directory, and the run refuses
 if any directory above it holds an instruction file other than
@@ -66,6 +68,10 @@ HOOK = "hook_additional_context"
 
 COMPACT = "/compact"
 
+# An "r@" file is a rule scoped to RULE_GLOB that imports RULE_IMPORT, probe-relative.
+RULE_GLOB = "**/*.probe"
+RULE_IMPORT = "docs/target.md"
+
 
 @dataclass(frozen=True)
 class Step:
@@ -77,7 +83,8 @@ class Step:
 class Probe:
     name: str
     question: str
-    files: dict[str, str]  # path -> "i" instructions, "i@" plus @AGENTS.md, "t" text
+    # path -> "i" instructions, "i@" plus @AGENTS.md, "r@" a rule (above), "t" text
+    files: dict[str, str]
     steps: tuple[Step, ...]
     expect: dict[str, dict[str, str]]  # phase -> {file: record kind}
     cwd: str = "."
@@ -184,6 +191,10 @@ PROBES = (
           (read("sub/file.txt"),),
           {"launch": {"AGENTS.md": LAUNCH}, "1": {"sub/AGENTS.md": HOOK}},
           settings={"disableAllHooks": True}),
+    Probe("r1", "rule: a paths: rule's @import loads at launch, the rule on a matching Read",
+          {".claude/rules/probe.md": "r@", "docs/target.md": "i", "sample.probe": "t"},
+          (read("sample.probe"),),
+          {"launch": {"docs/target.md": LAUNCH}, "1": {".claude/rules/probe.md": NESTED}}),
 )
 
 
@@ -200,6 +211,10 @@ def build(root: pathlib.Path, probe: Probe) -> pathlib.Path:
         text = "plain probe file, no instructions\n"
         if kind.startswith("i"):
             text = f"[[probe-marker {rel}]]\n" + ("\n@AGENTS.md\n" if kind == "i@" else "")
+        elif kind == "r@":
+            up = "../" * len(pathlib.PurePosixPath(rel).parent.parts)
+            text = (f'---\npaths:\n  - "{RULE_GLOB}"\n---\n\n'
+                    f"[[probe-marker {rel}]]\n\n@{up}{RULE_IMPORT}\n")
         elif rel.endswith("data.txt"):
             text = "needle\n"
         path = base / rel
