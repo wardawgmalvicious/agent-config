@@ -369,6 +369,17 @@ routing arms made the expected call, `triage`, `learn` and
 `author-skill`, for $0.17, $0.19 and $0.22, where the payload arms that
 answered cost $1.27 to $1.46.
 
+**A question can earn an offer where a request earns the call.**
+Measured 2026-10-14 on `test-skill`, 2.1.293, Opus 5.5, `--tools Skill`
+and `--max-turns 1`: "…it never loaded. How do I find out whether its
+description really triggers?" made no `Skill` call in 3 of 3 runs, each
+naming `/test-skill`, paraphrasing its `description`, citing its cost
+and offering to run it; the same query ending "Can you check whether
+its description really triggers?" called `Skill test-skill` in 2 of 2.
+Word a routing arm's query as a request, and count a question's offer
+as the description read, not missed. Measured on a skill that spends;
+one that only answers is unmeasured.
+
 **`--safe-mode` keeps the session-start git snapshot**, and a retest
 runs soon after the commit that made the claim under test, so the
 snapshot can hand that claim to the baseline. Measured 2026-09-29 on
