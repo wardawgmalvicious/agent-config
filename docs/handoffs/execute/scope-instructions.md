@@ -353,14 +353,19 @@ Should not fire, each owned by a neighbour:
 
 The behavioural test, after the landing and the deploy, since `meta`
 is a deployed group: the skill against a `--safe-mode` baseline on the
-fixture below, run from the scratchpad. **The discriminating claim** is
-a proposal that moves the `contracts/` section to a nested file or a
-rule on `contracts/**` (K1) and the SQL section to a `paths:` rule on
-`**/*.sql` (K2), from a main session whose transcript holds a
-`nested_memory` record for `agent-instructions-scoping.md`. Give each
-arm a fresh copy of the fixture: one no session has run in holds no
-transcripts, so `folder-sessions.py` exits 1 there and the skill should
-say it sorted on content alone.
+fixture below, built outside any path that names this repo. **K1 and K2
+do not discriminate.** Run 2026-10-15, every Opus 5.5 arm asked to
+split for loading moved the `contracts/` section to a nested file or a
+rule on `contracts/**` and the SQL section to a `paths:` rule on
+`**/*.sql`, the baseline and a `Skill`-denied ablation included. What
+separated was the body's, in a main session holding the
+`nested_memory` record for `agent-instructions-scoping.md`: a proposal
+with no edit, the lines the formatter enforces cut rather than moved,
+and the README's and the silent file's rules put into the plan rather
+than left as gaps (`tests/skills/scope-instructions/README.md`). Give
+each arm a fresh copy of the fixture: one no session has run in holds
+no transcripts, so `folder-sessions.py` exits 1 there and the skill
+should say it sorted on content alone.
 
 ### The fixture: decision 1's trial, 2026-10-15
 
@@ -380,8 +385,9 @@ layout list (K5, nowhere), and `make db-migrate`, a target the
 breaking-change rule (K3); a root `AGENTS.md`, silent beside the
 `CLAUDE.md`, the only "never log customer email" rule (K4); and
 `.github/copilot-instructions.md` said 88-character lines against
-`pyproject.toml`'s 100 (K5). Its generator lived in that session's
-scratchpad and is gone, so rebuild it from this paragraph.
+`pyproject.toml`'s 100 (K5). Its generator is gone;
+`tests/skills/scope-instructions/make_fixture.py` rebuilds the fixture
+from this paragraph.
 
 | Known answer | `CLAUDE_CODE_NEW_INIT=1` `/init` | `claude-md-improver`, as run | `claude-md-improver`, Bash denied |
 | --- | --- | --- | --- |
@@ -409,13 +415,13 @@ scratchpad and is gone, so rebuild it from this paragraph.
   a diff. Git Bash rewrote the bare `/init` argument to
   `C:/Program Files/Git/init`; `MSYS2_ARG_CONV_EXCL='*'` keeps it.
 
-**A draft passes when it finds K1 and K2** and keeps K3 to K6, where no
-built-in found the first two. `/test-skill` rebuilds the fixture, runs
-the draft against a `--safe-mode` baseline, and adds
-`/doctor prompt-audit` as a third arm, untried in the trial. The
-fixture's instruction files load as nested files in any session here
-that Reads them, so it is built in the scratchpad, never under
-`tests/` unisolated.
+**No built-in found K1 or K2, but the base model does once asked to
+split for loading**, so a draft passes on what separates it from the
+baseline (above), with K1 to K6 found. `/doctor prompt-audit`, the third
+arm, found K4 and K6 and moved nothing (2026-10-15). The fixture's
+instruction files load as nested files in any session here that Reads
+them, so the generator writes them outside this repo, never under
+`tests/`.
 
 ### The worked measurements
 
