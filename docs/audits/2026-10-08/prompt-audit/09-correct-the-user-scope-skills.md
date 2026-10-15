@@ -175,3 +175,35 @@ Fable 5.1 and was audited against it.
 - **Needs**: `/test-skill` on `linkedin-highlights` and `commit`, the
   rest of step 5's retests. `recreate-repo` reads `current` after
   `6741ca6`'s retest, which this log does not record.
+- **Behavioural confirmation**: 2026-10-14, `/test-skill commit` in a
+  fresh session against `f804634`, rated `retest-routing` by
+  `b431676`'s `when_to_use` sentence, commit unasked once a live peer
+  shares the tree, with thirteen body commits since the `32f6847`
+  stamp, findings 39 and 40 among them. Phase A skipped: no `paths:`
+  glob. Opus 5.5 at `--effort xhigh`, one arm at a time, in scratch
+  repos under `%TEMP%` beside a real idle peer, a headless Haiku
+  session prompted once; `--strict-mcp-config`, inbound refused, acting
+  arms on `Bash`, `Read`, `Edit`, `Write`, `Glob`, `Grep`, `Skill` and
+  `ListAgents`. `init` read 58 commands without `commit` under
+  `--safe-mode`, 71 with it. **Defect**, handed to `/learn`: the
+  sentence does not fire. Asked only to fix a README line and told a
+  session shares the tree, 3 of 3 payload arms called `ListAgents`,
+  saw the peer in the tree, left the fix uncommitted and offered
+  `/commit`; one searched the project's memory for "a standing commit
+  instruction", found none and wrote "because you didn't ask me to".
+  The baseline left it uncommitted too. The same rule as one
+  `CLAUDE.local.md` line committed unasked through `Skill commit` in 2
+  of 2, the write-tree gate and the unasked-commit report included,
+  and held back with no peer, placing the named testing session
+  elsewhere by its empty transcript folder: `b431676`'s message names
+  `claude/CLAUDE.md` the stronger home should listing text fall short.
+  No no-X arm ran on the shipped text, which never fired. **Separated**:
+  asked to commit beside a busy peer under pre-commit, the payload
+  walked the 2026-10-08 to 10-13 worktree route, the blob carry,
+  `--ff-only` inside a PowerShell `if` and the cherry-pick replay,
+  where the baseline knew pre-commit's stash and answered
+  `git commit --no-verify`. Unexercised: the here-string trap, the type
+  list and a worktree alone. $1.89 for nine arms and their fixtures.
+  Stamped `behaviour` at `ac8e97a`.
+- **Needs**: `/test-skill linkedin-highlights`, the last of step 5's
+  retests.
