@@ -187,7 +187,9 @@ conformance checking.
   harness's; since 2026-09-30 it also holds the docs' file table for the
   Copilot and Claude session targets, which VS Code's panels matched that
   day, and since 2026-10-13 the Local one; a Claude-target turn loaded
-  user rules on 2026-10-05. Triggers on
+  user rules on 2026-10-05. Since 2026-10-15 it also says how little a
+  folder added beside the working directory loads, from cold `--add-dir`
+  probes on 2.1.300. Triggers on
   `CLAUDE.md`, `CLAUDE.local.md` and `AGENTS.md` at any depth,
   `.claude/rules/`, and Copilot's `.github/` instruction files.
 

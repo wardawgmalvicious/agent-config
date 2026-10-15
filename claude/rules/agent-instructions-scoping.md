@@ -48,6 +48,18 @@ a rule or a nested file, and the README keeps the rest.
   one the session wrote or read itself, which is in context already. Grep,
   Glob and Bash load nothing, and a subagent's Read loads it into the
   subagent only.
+- **A folder added beside the working directory brings little of its
+  own guidance**, whether by `--add-dir`, `/add-dir` or as a VS Code
+  multi-root workspace's second folder. Only under
+  `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1` do its root
+  `CLAUDE.md` and its rules with no `paths:` load, at launch. Its
+  `paths:` rules and nested `CLAUDE.md` files never load, no user-scope
+  `paths:` rule fires on a Read of its files, and of its settings only
+  plugin keys apply, so its `claudeMdExcludes` and hooks do not; its
+  skills do load. Probed by `--add-dir` and seen in a VS Code workspace
+  without the variable, on 2.1.300 (2026-10-15); settings and skills by
+  the permissions docs. So edit a repo from a session launched in it,
+  or Read its `CLAUDE.md` and matching rules first.
 - **After `/compact`** root is re-read at once, while nested files and
   `paths:` rules return only at the next matching Read, Write or Edit.
 - **A new `agents` directory is not watched.** A subagent file is live

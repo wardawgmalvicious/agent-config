@@ -23,7 +23,7 @@ supersedes this one.
 | **`.vscode/settings.json`** | yes | editor behavior in this repo | Anything that is a property of *the codebase* — a formatter that produces conforming diffs, files that must not be hand-edited, associations for extensions the repo's file types need |
 | **`.vscode/extensions.json`** | yes | *suggestions only* | The list a new clone should be prompted to install |
 | **`.vscode/tasks.json`** | yes | runnable commands | Awkward invocations worth not retyping |
-| **`.code-workspace`** | either | multi-root folder set | Only when a window genuinely needs two repos open at once |
+| **`.code-workspace`** | either | multi-root folder set | Only when a window genuinely needs two repos open at once: Claude Code loads little of the second folder's guidance (`agent-instructions-scoping.md`) |
 
 The test for `.vscode/settings.json`: **would a colleague cloning this
 repo need it to produce a conforming diff?** If yes it is repo scope. If
