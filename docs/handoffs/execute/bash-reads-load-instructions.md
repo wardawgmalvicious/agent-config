@@ -38,9 +38,9 @@ user rules.
 
 **A compound read still loads nothing, and auto mode batches reads.** In
 the `/init` trial of 2026-10-15 on 2.1.293
-([nested-instruction-files.md](nested-instruction-files.md) § "Decision
-1's trial, 2026-10-15"), the improver session `a465d5cf` read every
-file in three Bash calls: a `find` piped to `head` then
+([scope-instructions.md](scope-instructions.md) § "The fixture:
+decision 1's trial, 2026-10-15"), the improver session `a465d5cf` read
+every file in three Bash calls: a `find` piped to `head` then
 `cat Makefile 2>/dev/null`, a `for` loop over `cat "$f"`, and one
 `tail -n +1` across many files. Its transcript holds no `nested_memory`
 record. None of the three is a single-file view, so the trial agrees
@@ -106,6 +106,19 @@ after the Write, which ends a `-p` turn. Give each step its own
 `--resume` process, as `segments()` already gives a `/compact`, or keep
 "done N" out of a message of its own.
 
+p6 and p7 come here too, from `scope-instructions.md` on 2026-10-15,
+since they are this script's: both ran that day on 2.1.293, twice. p7
+FAILED: a main-checkout Read in `.claude/worktrees/w1/` loaded no
+`CLAUDE.md` there, the nearest changelog entry being 2.1.286's on
+worktree subagents. The memory page points files under
+`.claude/worktrees/` at the worktrees page, which says only that a
+subagent in such a worktree "doesn't load the `CLAUDE.md` file or
+`.claude/rules/` directory at the worktree's root as it reads files
+there" (read 2026-10-15); a main session's Read goes unstated, so p7's
+new expectation is the observed one. p6 was INVALID, judging no loader:
+its subagent now ends with a `SubagentHandback` call, which the protocol
+check has to allow.
+
 Three arms the script cannot judge, run once as scratch probes the way
 the 2026-10-06 entry in the ledger's § "Validating a change" ran its
 arms E and F:
@@ -136,15 +149,14 @@ arms E and F:
   `docs/evidence/root-claude-md.md` § "Validating a change", the heading
   that holds the 2026-09-01 measurement the claim began as, with the arm
   table and session ids.
-- `nested-instruction-files.md` § "Re-measure before acting" names p8 as
-  stale and this brief as its fix; once p8 passes, that clause goes.
+- `scope-instructions.md` § "Re-measure before acting" names p6, p7
+  and p8 as this brief's; once they pass, that clause goes.
 
 ## Verification
 
-- Each new probe passes twice in fresh sessions, then the whole set. p6
-  and p7, INVALID and FAIL on 2026-10-15, are
-  `nested-instruction-files.md`'s; anything else failing means the
-  loader moved again.
+- Each new probe, p6 and p7 included, passes twice in fresh sessions,
+  then the whole set; anything else failing means the loader moved
+  again.
 - `uv run --with pyyaml scripts/lint-frontmatter.py` on each rule and
   skill touched, and `uv run scripts/lint-claude-md.py`.
 - If test-skill's `description` changes, `uv run --with pyyaml

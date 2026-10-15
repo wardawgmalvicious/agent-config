@@ -16,8 +16,8 @@ conflicted on it at merge, so briefs ran one at a time whatever else
 allowed more. It was read less than it was written, too: of 24 sessions
 that edited a brief here between 2026-09-11 and 2026-09-27, 7 opened it
 first of their own accord, 4 more because the user named it, and 11
-never did ([nested-instruction-files.md](nested-instruction-files.md),
-§ "Phase 2").
+never did ([root-claude-md.md](../../evidence/root-claude-md.md),
+§ "Editing conventions").
 
 Surveyed the day the user decided this, everything built for parallel
 agents keeps state per task and generates the view. Backlog.md holds one
