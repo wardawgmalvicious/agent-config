@@ -230,6 +230,24 @@ disallowed no arm carries it, and root keeps a summary of it: the 15 of
 16 no longer holds, and the ablation margin has not been re-measured
 since.
 
+**Outside this repo the payload is still within a baseline's reach.**
+Measured 2026-10-14 on `learn`, 2.1.293: `--safe-mode` baselines
+holding `Read`, `Glob` and `Grep`, in scratch repos under the testing
+session's scratchpad, whose path names this checkout
+(`…\c--Repos-Personal-agent-config\…`). The KQL baseline globbed the
+checkout before it had read any file that names it, and the hook
+baseline reached it after reading files under `~/.claude`. Both read
+`skills/meta/learn/SKILL.md` off disk and opened a pending agent-config
+inbox note each, in full, since `--safe-mode` strips the `CLAUDE.md`
+line that keeps those for the user's word. A payload arm, with that
+line in context, still grepped `~/handoff-inbox` for its key term and
+read matching lines of a third note, checking for a duplicate. The
+rerun gave baselines `--tools Skill` and denied every arm
+`Read(~/handoff-inbox/**)`, which a Haiku probe showed refuses all
+three tools: "File is in a directory that is denied by your permission
+settings." for `Read`, "Permission to read … has been denied." for
+`Glob` and `Grep`.
+
 **The ablation needs one tool declared, and `--tools ""` declares none.**
 Under the allowlist the ablation above, `Skill` denied beside the file
 tools, becomes `--tools CronList`, a read-only placeholder. Measured
