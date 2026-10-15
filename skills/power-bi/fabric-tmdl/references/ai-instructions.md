@@ -21,6 +21,59 @@ another doesn't inherit it
 ([Use Copilot with semantic models](https://learn.microsoft.com/power-bi/create-reports/copilot-semantic-models),
 read 2026-10-08).
 
+### Reaching the model from Microsoft 365 Copilot Chat
+
+Fabric IQ answers there from a report and the model beneath it, as the
+asking user, under their RLS and OLS
+([Fabric IQ in Microsoft 365 Copilot Chat](https://learn.microsoft.com/fabric/iq/connectors/microsoft-365-copilot-overview),
+read 2026-10-15). Who can ask the model there turns on four things:
+
+- **The reader**: a Microsoft 365 Copilot Premium licence, and
+  permission and licensed access to the report and the model, but no
+  access to Copilot in Fabric. A model in a workspace on an Embedded
+  capacity, A or EM SKUs, is not supported, nor a region where Power BI
+  is the only Fabric workload; Pro, PPU, Premium and Fabric capacities
+  are.
+- **Three tenant settings.** The Microsoft 365 admin center's *Fabric
+  data in Microsoft Copilot*, on by default, admits no users, all users
+  or specific groups; the overview calls it *Fabric data available in
+  M365 Copilot*. The Fabric admin portal's *Share Fabric data with your
+  Microsoft 365 services* sends Power BI metadata to Microsoft 365 for
+  Copilot search and the attachment menu, is on by default where the
+  two tenants share a geography, and takes up to 24 hours to change;
+  off, a reader can still paste a link or name the report. Outside the
+  United States and the European Union, *Data sent to Azure OpenAI can
+  be processed outside your capacity's geographic region, compliance
+  boundary, or national cloud instance* must be on.
+- **The model's Copilot access setting**, above.
+- **Sensitivity labels**: a conversation takes the most restrictive
+  label among the content it used, what it creates inherits that, and a
+  DLP policy can keep a label's content from Copilot altogether.
+
+Search sees a report's name, description, page names, chart titles and
+the names of the columns and measures it uses. The metadata page lists
+no semantic model among what that setting sends, and a report a reader
+reaches only by an org-wide link is not found
+([Share data with your Microsoft 365 services](https://learn.microsoft.com/fabric/admin/admin-share-power-bi-metadata-microsoft-365-services),
+read 2026-10-15). By that table, a model's columns and measures reach
+search only where a report uses them.
+
+A reader points Copilot at content by pasting the report's address-bar
+URL, since share links are not supported, by attaching it under **+** >
+**Other**, or by naming it. A model is not in the attachment menu, but
+its pasted URL answers from the model alone, with no visuals to ground
+the answer. A report in an org app takes attachment or its name, not a
+pasted link; paginated reports, dashboards and top-level apps are
+unsupported; and a data agent or ontology answers only through a
+published Microsoft 365 agent, which the fabric-iq skill's data agent
+reference covers. Answers reflect the last successful refresh.
+
+The Copilot Chat page mentions no AI instructions, AI data schema or
+verified answers, so the caveat above stands. Learn's Cowork page claims
+verified answers and schema selection for Cowork, a Frontier surface,
+and the metadata page still calls Copilot Chat's Power BI answers
+Frontier, against the overview's GA (both read 2026-10-15).
+
 ---
 
 ## When you use this vs. Data Agent instructions
@@ -329,6 +382,12 @@ The three highest-leverage entry points (instructions, prep-for-AI overview, ver
 - [Tutorial: Prepare semantic model for AI](https://learn.microsoft.com/power-bi/create-reports/tutorial-copilot-power-bi-prepare-model) — end-to-end tutorial: simplify schema, add verified answers, write AI instructions, mark as Prepped for AI. Good hands-on starting point.
 - [Use Copilot with semantic models (developer guidance)](https://learn.microsoft.com/power-bi/create-reports/copilot-semantic-models) — broader guidance for building Copilot-friendly models: naming conventions, descriptions, linguistic schema, DAX query view tips. Covers the whole authoring surface this file is one part of.
 - [Ask Copilot for data from your model](https://learn.microsoft.com/power-bi/create-reports/copilot-ask-data-question) — consumer-facing perspective on how Copilot uses the model when answering questions. Useful for understanding what your authoring is in service of.
+
+### Microsoft 365 Copilot Chat
+
+- [Fabric IQ in Microsoft 365 Copilot Chat](https://learn.microsoft.com/fabric/iq/connectors/microsoft-365-copilot-overview) — the reader's licence, the three tenant settings, and what Copilot Chat can and can't answer from.
+- [Share data with your Microsoft 365 services](https://learn.microsoft.com/fabric/admin/admin-share-power-bi-metadata-microsoft-365-services) — the metadata Fabric sends to Microsoft 365 for search and attachment, property by property.
+- [Use Power BI data in Microsoft Copilot](https://learn.microsoft.com/microsoft-365/copilot/copilot-powerbi-copilot-chat) — the Microsoft 365 admin center side: who may use Fabric data in Copilot.
 
 ### Linguistic schema (Q&A — overlaps with but is distinct from AI instructions)
 
