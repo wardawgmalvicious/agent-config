@@ -197,13 +197,17 @@ repos:
       # brief can break another's blocked-by. It also fails an audit brief
       # stamped open with no **Needs** line, which the view could not place,
       # so docs/audits/ and audit-status.py, which decides what is open, are
-      # in its files too.
+      # in its files too. always_run, since pre-commit passes no deleted
+      # file: a landing's only brief change is the deletion, so files: alone
+      # skipped the very commit that strands a blocked-by, four times on
+      # 2026-10-15. The run costs about 0.6 s.
       - id: lint-briefs
         name: Check each handoff brief's frontmatter and blockers
         entry: python scripts/handoff-status.py . --check --no-inbox
         language: python
         files: '^(docs/(handoffs|audits)/|scripts/(handoff|audit)-status\.py$)'
         pass_filenames: false
+        always_run: true
 
       # The identity-guard Claude Code hook sees only commits Claude Code
       # issues. A commit from Copilot, VS Code's Source Control view or a
