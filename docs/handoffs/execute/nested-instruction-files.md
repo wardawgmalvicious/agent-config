@@ -598,6 +598,8 @@ systems and its session ids stay out of every commit (`author-skill`
   model stopped after its Write, which loaded `w/CLAUDE.md` as 2.1.288
   has a Write do. 8's Bash arm is stale by the changelog too: since
   2.1.293 a single-file `cat` loads a nested `CLAUDE.md` or `paths:` rule.
+  [bash-reads-load-instructions.md](bash-reads-load-instructions.md)
+  reworks 8.
 - `claude --version`: `AGENTS.md` needs 2.1.277, and `/memory` lists one
   only from 2.1.280, by the memory page; no changelog entry says so.
   2.1.282 on 2026-09-25, 2.1.293 for the trial on 2026-10-15 and for
