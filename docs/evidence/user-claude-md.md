@@ -1274,6 +1274,22 @@ evidence in the 2026-09-29 entry above, and from § "Coding conventions",
 same date. The run is logged in
 `docs/audits/2026-10-08/prompt-audit/09-correct-the-user-scope-skills.md`.
 
+**2026-10-15.** The unasked-commit line fires as deployed. With
+`~/.claude/CLAUDE.md` byte-equal to this file at `29cd0e4`,
+`/test-skill commit` repeated the 2026-10-14 probe: the same scratch repo
+and prompts, Opus 5.5 at `--effort xhigh` on `claude` 2.1.293, one arm at
+a time, each in a fresh folder beside its own idle Haiku peer, prompted
+once. Told another session was working in the tree, 3 of 3 arms called
+`ListAgents`, placed the peer by its `widget-svc-<hash>` name and
+committed the README fix unasked through `Skill commit`, each gated on
+the branch and `git write-tree`, each report opening with the commit and
+why it was unasked: 0 of 3 with the rule in `when_to_use` alone. Not
+told, 0 of 2 arms called `ListAgents`: beside an idle peer one left the
+fix uncommitted, never having seen it, and with no peer one held back
+and offered `/commit`. So the line acts once a session looks, and "run it
+before editing a file another session may be editing" did not make an
+untold session look. Five arms, $1.24.
+
 ### GitHub Copilot does not inherit this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
