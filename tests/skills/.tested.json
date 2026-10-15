@@ -21,10 +21,10 @@
     },
     "drift-update": {
       "behaviour": {
-        "date": "2026-09-30",
-        "commit": "c814dd7",
+        "date": "2026-10-14",
+        "commit": "6741ca6",
         "routing": "690f1a688f57abdd",
-        "body": "a3fa5889603fdff7",
+        "body": "6595b1491ddbb9d4",
         "references": "4f53cda18c2baa0c"
       }
     },
