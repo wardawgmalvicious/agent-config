@@ -2682,6 +2682,77 @@ from a payload arm in auto from `claude/settings.json` since `b7c2260`
 measurement went to `test-skill`'s `references/reading-a-failure.md`
 beside the other `--safe-mode` facts.
 
+**2026-10-15.** A Bash view of one file loads what a Read does, rules and
+nested `CLAUDE.md` alike, but no skill. 2.1.293's changelog fixed
+"path-scoped rules and nested CLAUDE.md files not loading when Claude
+views a file with a single-file cat, head, tail, sed -n or grep command
+in the Bash tool instead of the Read tool", and the tools reference,
+§ "Edit tool behavior", read that day, gives the set: `cat`, `nl`, `bat`,
+`batcat`, `head`, `tail`, `sed -n 'X,Yp'`, `grep`, `egrep`, `fgrep` and
+`rg`, "each run on one file with no pipes or redirects", a search that
+prints no match not counting. Neither it nor the memory page says
+whether a skill's `paths:` follows, or tells project rules from user
+ones. `scripts/test-instruction-loading.py` gained a probe per arm, one
+haiku `claude -p` session each on 2.1.293, under a plain `paths:` rule on
+`**/*.probe`; each passed twice, then all 28 probes did:
+
+| Arm | Command | Loaded after the result |
+| --- | --- | --- |
+| `b-cat` | `cat a.probe` | the rule |
+| `b-head` | `head -n 1 a.probe` | the rule |
+| `b-sed` | `sed -n '1,1p' a.probe` | the rule |
+| `b-grep` | `grep plain a.probe` | the rule |
+| `b-grep0` | `grep zzz a.probe` | nothing; a Read then loaded it |
+| `b-pipe` | `cat a.probe \| head -n 1` | nothing; a Read then loaded it |
+| `b-two` | `cat a.probe b.probe` | nothing; a Read then loaded it |
+| `b-edit` | `sed -i 's/plain/flat/' a.probe` | nothing; a Read then loaded it |
+| `b-nest` | `cat sub/x.txt` | `sub/CLAUDE.md` |
+| `ps-get` | PowerShell's `Get-Content a.probe` | nothing; a Read then loaded it |
+
+Every load was a `nested_memory` record, as a Read's is, and p8's `cat` of
+`b/y.txt` by its absolute path loaded `b/CLAUDE.md`. Two arms ran as
+scratch sessions, since the script judges only files it marks. A
+conditional skill on `**/*.probe`, with `--tools Bash,Skill`: a `cat` of
+`a.probe` brought no listing delta, in one session alone and in two where
+a second `cat`, of a `.md` file, then loaded the user rule
+`coding-markdown.md`, so attachments had flushed; a Read of the file,
+with `--tools Read,Skill`, brought the delta. That user rule, on
+`**/*.md`, loaded on a `cat` of `notes.md` as on a Read, its
+`attachment.content.type` `User`. Transcripts, first pass, in table
+order: `b42c71d3`, `3af175a9`, `2a960a13`, `9251abc5`, `de6124d5`,
+`d173dbbe`, `e0cfb7bd`, `b74c8075`, `dbcbeeec`, `b862496c`; the skill
+arms `bd9c642e`, `7900021c` and `0791c088`, their Read control
+`96e66c47`; the user rule `b02f1070`, its Read control `c4144c84`.
+
+So the rule half moved and the skill half held. Root's "Activation keys on
+Read, Write and Edit, not `cat` or `Grep`" became "A skill activates
+on…"; `activation-testing.md`, `editing-rules.md`,
+`agent-instructions-scoping.md` and `claude/rules/README.md` gained the
+Bash view; `test-activation.ps1` and the two trigger READMEs narrowed
+"nothing" to "no skill". `test-skill`'s description and failure table
+speak of skills alone and stand, so its routing needed no retest. The
+probe pin stays: the `/init` trial's improver read every file that day
+in compound Bash commands, which load nothing, so auto mode still leaves
+an unpinned probe dark at random, now by its command's shape.
+
+The same runs mended three probes that had stopped judging the loader.
+p8 ran INVALID twice earlier that day when haiku printed "done 1" as a
+message of its own, which ends a `-p` turn (`8fd712fa`): its prompt now
+asks for no text until the end, and a call made before the last one's
+result is INVALID. p6's subagent ends with a `SubagentHandback` call,
+auto mode's report channel since 2.1.271, which the check now allows;
+its report reaches the parent as a `queued_command` record, which quoted
+the marker it saw load and no longer counts as a load. p7 failed twice:
+a main-checkout Read of a file in a worktree under `.claude/worktrees/`
+loads no `CLAUDE.md` there. The memory page sends such files to the
+worktrees page, which speaks only of subagents, so p7 now expects what
+it found, and `p7x`'s exclude changes nothing.
+
+Not checked: a file outside the working directory or in an added folder,
+whether the InstructionsLoaded hook fires for a Bash view's load, a
+subagent's Bash view, and the set's untried members, `tail`, `nl`, `bat`,
+`egrep`, `fgrep` and `rg`.
+
 ## Line endings
 
 Nothing moved: this section stands in root unchanged.

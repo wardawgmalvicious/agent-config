@@ -27,7 +27,9 @@
 
     3. The probe reads with `cat`. Activation is keyed to the Read TOOL, not
        to the file — Bash `cat` and Grep touch the same bytes and activate
-       nothing. This machine defaults every session to auto mode, which
+       no skill. Since 2.1.293 a `cat` of one file does load a rule, so a
+       probe that cats reports rules and no skills (2026-10-15). This
+       machine defaults every session to auto mode, which
        prefers `cat`, and the model's choice is not deterministic. So the
        tools are pinned below AND a non-Read tool call is a hard failure,
        never a "no activation" result.

@@ -259,7 +259,8 @@ omitted an unconditional skill that was certainly present).
 
 **The probe must use the `Read` tool**, and must be made to: activation
 is keyed to `Read`, and `cat` through Bash or a `Grep` over the same file
-activates **nothing** — output indistinguishable from a broken glob. This
+activates **no skill** — output indistinguishable from a broken glob. Since
+2.1.293 a `cat` of one file loads the rules alone (2026-10-15). This
 machine defaults every session to auto mode, which prefers `cat`, so an
 unpinned probe goes dark at random. Pin the tools:
 

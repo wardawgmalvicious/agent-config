@@ -146,9 +146,10 @@ Not drilled:
   `get_session_messages()` returning only the chain since the last
   compaction (2026-10-06); not re-measured, and the script reads the
   JSONL for the same reason.
-- **Bash views as reads**: unprobed here (`bash-reads-load-instructions.md`
-  probes them). The script counts Read, Write and Edit, so a README
-  viewed by `cat` reads as never opened: it overcounts misses, the
+- **Bash views as reads**: a one-file `cat` loads a nested file or rule
+  as a Read does (probed 2026-10-15, `docs/evidence/root-claude-md.md`
+  § "Validating a change"). The script counts Read, Write and Edit, so a
+  README viewed by `cat` reads as never opened: it overcounts misses, the
   direction that favours a move, and its output says so.
 - **Per-directory skills and a skill's own `paths:`**: a skill is a
   home in the table; where one sits, and whether a Bash view ends a
@@ -489,11 +490,10 @@ never in 70, against 11, 2 and 11 of 24 on 2026-09-27.
 
 ### Owed before this brief lands
 
-- **Not p6 or p7** of `scripts/test-instruction-loading.py`, FAIL and
-  INVALID on 2026-10-15: they went to `bash-reads-load-instructions.md`
-  that day, the user's call, beside its p8 in the same script, and this
-  brief does not wait on them. p7's FAIL leaves the exclude Phase 2
-  declined preventing nothing, so the decline stands.
+- **Not p6 or p7** of `scripts/test-instruction-loading.py`: both pass
+  since 2026-10-15, p7 expecting what it found, that a main-checkout
+  Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
+  the exclude Phase 2 declined preventing nothing, so the decline stands.
 - **`tests/scripts/folder-sessions/`**, the script's negative cases:
   no transcripts for the repo (exit 1), transcripts whose records no
   longer parse (exit 2), a worktree session folded into its repo, a
@@ -512,8 +512,8 @@ citation.
 
 - `claude --version`: 2.1.293 on 2026-10-15; 2.1.300 is out, and its
   changelog past 2.1.293 touches no instruction loading.
-- `uv run scripts/test-instruction-loading.py`: 15 of 18 passed on
-  2026-10-15; p6, p7 and p8 are `bash-reads-load-instructions.md`'s.
+- `uv run scripts/test-instruction-loading.py`: all 28 passed on
+  2026-10-15.
 - The memory, large-codebases and sessions pages, read 2026-10-15.
 - The client repo's root and rules, re-measured 2026-10-15 (§ "The
   pilot").

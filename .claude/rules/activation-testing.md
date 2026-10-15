@@ -11,9 +11,14 @@ paths:
 
 # Activation testing, and what can witness an activation
 
-- Activation is keyed to the `Read`, `Write` and `Edit` tools, not to the
-  file: a `cat` through Bash, or a `Grep`, loads no skill and no rule, and
-  auto mode, which every session on this machine starts in, prefers `cat`.
+- A skill activates on the `Read`, `Write` and `Edit` tools, never on a
+  Bash `cat` of the file (2026-10-15, 2.1.293) or a `Grep`. A rule or
+  nested `CLAUDE.md` loads on those three and on a Bash view of one file:
+  a `cat`, `head`, `sed -n` or matching `grep` loaded one, while a pipe, a
+  second file, a `sed -i`, a `Grep` and PowerShell's `Get-Content` did
+  not (2026-10-15, 2.1.293). Auto mode, which every session on this
+  machine starts in, prefers `cat` and batches reads, so an unpinned probe
+  goes dark by its command's shape.
   `--allowedTools` alone removes nothing, so a probe measuring activation
   pins `--allowedTools Read --disallowedTools Bash …` and asserts each
   `tool_use` really was a `Read` (2026-09-01). A `Write` that creates a

@@ -19,7 +19,9 @@ Each rule's frontmatter declares a `paths:` glob list. When the session's
 own Read, Write or Edit touches a file matching one of those globs, the
 rule is loaded into context, a Write's or an Edit's with the tool's
 result, and never for an Edit the harness refuses (both probed on 2.1.291
-inside the working directory, Write 2026-10-06 and Edit 2026-10-07). A
+inside the working directory, Write 2026-10-06 and Edit 2026-10-07). So
+does a Bash `cat`, `head`, `sed -n` or matching `grep` of one file alone,
+though not a pipe, a second file or PowerShell (2.1.293, 2026-10-15). A
 subagent's Read loads it into the subagent only.
 
 The rules don't enforce style — they tell the model the conventions to
@@ -170,8 +172,9 @@ conformance checking.
   coding convention: which home a piece of agent guidance takes — root
   `CLAUDE.md`, a `paths:` rule, a nested file, a skill, a hook, a README
   — and how each misses in silence. Carries when Claude Code loads each
-  file (a nested one on the session's own Read, Write or Edit, never on
-  Grep, and on a subagent's Read into that subagent only), that a
+  file (a nested one on the session's own Read, Write, Edit or one-file
+  Bash view, never on Grep, and on a subagent's Read into that subagent
+  only), that a
   `CLAUDE.md` anywhere on the path
   silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
   and the `@AGENTS.md` import form that loses none, with the two

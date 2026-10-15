@@ -184,9 +184,9 @@ The two `tests/skills/*-triggers/expected_activations.md` assert every
 conditional skill. Never restate their total: read it there, or run
 `grep -l '^paths:' skills/*/*/SKILL.md | wc -l`. The static check,
 `test-activation.ps1 -Set fabric -StaticOnly` then `-Set pbip`, holds the
-tables to the globs. Activation keys on Read, Write and Edit, not `cat` or
-`Grep`: a probe pins `--allowedTools Read --disallowedTools Bash …`, and the
-transcript is the witness (`.claude/rules/activation-testing.md`).
+tables to the globs. A skill activates on Read, Write and Edit, not `cat`
+or `Grep`: a probe pins `--allowedTools Read --disallowedTools Bash …`, and
+the transcript is the witness (`.claude/rules/activation-testing.md`).
 
 ## Line endings
 

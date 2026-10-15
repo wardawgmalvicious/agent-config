@@ -7,7 +7,9 @@ paths:
 # Editing a rule
 
 - A rule carries only `paths:`, and loads when a file matching it is Read,
-  Written or Edited, never for a `cat`, `sed` or heredoc edit. A Write's or
+  Written or Edited, or viewed alone by a Bash `cat`, `head`, `sed -n` or
+  matching `grep` (2026-10-15, 2.1.293), never for an edit by `sed -i`, a
+  redirect or a heredoc. A Write's or
   an Edit's load arrives with its result, once the file exists, and a
   refused Edit loads nothing, so a rule still cannot govern creating a
   file: guidance about making something belongs in a skill description or

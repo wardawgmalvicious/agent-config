@@ -25,8 +25,8 @@ Claude Code 2.1.282 on 2026-09-25; `AGENTS.md` support needs 2.1.277.
 | Guidance is… | Home | Fails silently when |
 | --- | --- | --- |
 | Needed before any Read: commands, repo-wide conventions | root `CLAUDE.md` | it passes ~200 lines and adherence drops |
-| About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, only Grep or `cat` touch it, or the mistake is a live command or a sync, which touches no file; a Write or Edit loads it only once the file exists |
-| About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads, Writes or Edits there itself (below), or has compacted and done none of them there since |
+| About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, only Grep, a pipe or a multi-file `cat` touch it, or the mistake is a live command or a sync, which touches no file; a Write or Edit loads it only once the file exists |
+| About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads, Writes, Edits or views one file there itself (below), or has compacted and done none of them there since |
 | A procedure asked for in words | skill | its description never matches |
 | Must hold before the agent acts | hook or `permissions.deny` | the hook itself fails open |
 | Long reference for people | README, or a short nested `CLAUDE.md` of `@README.md` | the agent never opens it |
@@ -45,9 +45,12 @@ a rule or a nested file, and the README keeps the rest.
   launch.** A subdirectory's loads on the session's own first Read,
   Write or Edit beneath it, after its ancestors' (Write probed 2026-10-06
   and Edit 2026-10-07, on 2.1.291; a refused Edit loads nothing), but not
-  one the session wrote or read itself, which is in context already. Grep,
-  Glob and Bash load nothing, and a subagent's Read loads it into the
-  subagent only.
+  one the session wrote or read itself, which is in context already. A
+  Bash view of one file loads it as a Read does, a `paths:` rule too, but
+  no `paths:` skill: a `cat`, `head`, `sed -n` or matching `grep` did,
+  while a pipe, a second file, a `sed -i` and PowerShell's `Get-Content`
+  did not (probed 2026-10-15, 2.1.293). Grep and Glob load nothing, and a
+  subagent's Read loads it into the subagent only.
 - **A folder added beside the working directory brings little of its
   own guidance**, whether by `--add-dir`, `/add-dir` or as a VS Code
   multi-root workspace's second folder. Only under

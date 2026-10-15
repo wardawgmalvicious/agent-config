@@ -161,9 +161,10 @@ actually loads on a match.
 
 **The probe must use the `Read` tool.** Activation is keyed to file
 access through `Read`, not to the file itself — `cat` through Bash, and
-`Grep`, both touch the same file and activate **nothing**. This is the
+`Grep`, both touch the same file and activate **no skill**. This is the
 trap, and it has no error path: a Bash-read probe reports exactly the
-output a broken glob does. Measured 2026-09-01 on 2.1.252; see
+output a broken glob does. Measured 2026-09-01 on 2.1.252, and for a
+skill again on 2026-10-15 on 2.1.293; see
 [the auto-mode note](#why-a-probe-silently-reads-with-bash) below for why
 it happens by default on this machine.
 
@@ -269,9 +270,10 @@ path, and the fixture's depth below the project root (`fixtures/…`
 matched identically to `tests/skills/pbip-triggers/fixtures/…`). Project
 scope activates; skills reached through this repo's junctions activate.
 
-**Rules follow the same rule.** A `paths:` rule loads on a `Read` and not
-on a `cat`, arriving as a `nested_memory` attachment naming the rule file.
-Assert it from the transcript, not from
+**Rules differ at a `cat`.** A `paths:` rule loads on a `Read` and,
+since 2.1.293, on a `cat` of one file, though not on a pipe or a second
+file (2026-10-15), arriving as a `nested_memory` attachment naming the
+rule file. Assert it from the transcript, not from
 `~/.claude/logs/instructions-loaded.log` — the `InstructionsLoaded` hook
 missed two of four confirmed loads in short `-p` sessions, so its silence
 proves nothing.
