@@ -726,6 +726,9 @@ user-scope edit would reach every live session. Measured 2026-10-14 on
 3), fired from one such line in 2 of 2 arms and held back in a no-peer arm.
 The proxy held: worded into a user-scope paragraph and deployed, the rule
 fired in 3 of 3 the next day (`docs/evidence/user-claude-md.md`).
+Its control is the payload without the line, so the last run's payload
+arms serve while the CLI and model are unchanged: a `--safe-mode` baseline
+strips the line with the rest, and re-measures the base model alone.
 
 **A check-shaped claim needs its no-case arm.** An edit of the form
 "if X, do Y" passes the X arm whether it checks X or not, so a skill
