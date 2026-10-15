@@ -586,7 +586,7 @@ expands, and a `model:` pin, which only that path honours, so on a
 pinned skill it alone runs the body on the model `/<name>` gets. So a
 skill's first test runs both paths, and a retest adds the slash arm for
 a body edit on a pinned skill and for a `model:` or `name:` edit.
-`learn` pins `fable`, which a model-invoked arm at `--model opus` never
+A `fable` pin is one a model-invoked arm at `--model opus` never
 runs; list the pins with `grep -rn "^model:" .claude/skills skills`,
 where `inherit` pins nothing. Nothing flags a `name:` edit either:
 `lint-frontmatter.py` does not tie `name:` to the directory, which keys
