@@ -289,11 +289,11 @@
     },
     "learn": {
       "behaviour": {
-        "date": "2026-09-30",
-        "commit": "c145751",
+        "date": "2026-10-14",
+        "commit": "9e7546f",
         "routing": "6124c8c9675e1f9a",
-        "body": "2c4f826a118a69bb",
-        "references": "4f53cda18c2baa0c"
+        "body": "452c5d3a559d1476",
+        "references": "1c9ab478b93accad"
       }
     },
     "msix-packaging": {

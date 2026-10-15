@@ -135,3 +135,43 @@ Fable 5.1 and was audited against it.
 - **Needs**: the landing, a fresh session — `/test-skill` on `learn`,
   `linkedin-highlights`, `commit` and `recreate-repo`, step 5's
   retests.
+- **Behavioural confirmation**: 2026-10-14, `/test-skill learn` in a
+  fresh session against `6741ca6`, the body `3cd39dc` left, at
+  `effort: max`; it also covers the body edits since the 2026-09-30
+  stamp. Phase A skipped: no `paths:` glob. Three note-mode scenarios
+  in scratch repos outside the payload: a KQL `row_number()` straight
+  after `summarize` by slash `/learn`, and by "learn!" a PostToolUse
+  hook's exit 2 and `prune-branches` missing "tidy up the stale
+  branches". Every arm ran Opus 5.5 at `--effort max` with
+  `--strict-mcp-config`, inbound messages refused and
+  `CLAUDE_CODE_DISABLE_GIT_INSTRUCTIONS=1`; payload arms
+  `--tools Skill,Read,Grep,Glob` with `Read(~/handoff-inbox/**)`
+  denied, `--safe-mode` baselines `--tools Skill`. `init` read 58
+  commands without `learn` under `--safe-mode`, 71 with it, and both
+  "learn!" arms called `Skill learn`. **Separated**: finding 8, the
+  payload put "tidy up" in `when_to_use`'s first clause, 481 to 490 of
+  512, and left `description` alone, where the baseline edited
+  `description` with no cap in view. Finding 34, all three payload
+  notes carried **Scrubbing:** and **Coverage:** with the inbox README
+  denied to them, so from the template alone; no baseline wrote a
+  note. Also the hook arm's `code.claude.com/docs/en/hooks.md` and its
+  2.1.293 from the transcript's `"version"`, where the baseline cited
+  the docs from memory; and the KQL arm's emulator route, with
+  `--accept-eula` held for the user's agreement, the engine build and
+  `Kusto emulator, <date>; not yet run in Fabric`, where the baseline
+  proposed test queries in the Eventhouse itself. The slash arm made no
+  `Skill` call and ran every turn on `claude-opus-5-5`, so `1555200`'s
+  unpin holds; no stamp hash covers `model:`. **Defect**, handed to
+  `/learn`: before the deny rule, a payload arm checked for a duplicate
+  by grepping `~/handoff-inbox` for its key term and read matching
+  lines of a pending agent-config note, against `claude/CLAUDE.md`'s
+  "open none unasked", which the skill does not mention. The first
+  round's baselines held `Read` too, found the payload from their own
+  working directory, a path under this session's scratchpad, and read
+  the skill and two inbox notes; every first-round arm was stopped and
+  rerun as above. $5.64 for the six graded arms, plus the stopped ones.
+  Stamped `behaviour` at `6741ca6`, then at `9e7546f` before the
+  commit with the `body` hash unchanged; `routing` never moved.
+- **Needs**: `/test-skill` on `linkedin-highlights` and `commit`, the
+  rest of step 5's retests. `recreate-repo` reads `current` after
+  `6741ca6`'s retest, which this log does not record.
