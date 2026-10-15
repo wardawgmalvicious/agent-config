@@ -359,6 +359,15 @@
         "references": "ee17840dbc345465"
       }
     },
+    "scope-instructions": {
+      "behaviour": {
+        "date": "2026-10-15",
+        "commit": "f03128b",
+        "routing": "881437837eb3d8f3",
+        "body": "ae986f6a192ba17f",
+        "references": "dcd09eac4109849d"
+      }
+    },
     "test-skill": {
       "behaviour": {
         "date": "2026-10-14",
