@@ -81,10 +81,10 @@ separates on the refresh.
 
 - `ai` repeated the reference's "not stored in TMDL" and said it could
   not name the file. The culture file holds the instructions in a
-  Git-synced model, observed 2026-10-07; correcting that line is
-  [`semantic-model-ai-instructions-storage.md`](../../../docs/handoffs/execute/semantic-model-ai-instructions-storage.md)'s
-  work. The baseline guessed a `Copilot/` folder beside `definition/`,
-  the other shape that brief holds open.
+  Git-synced model, observed 2026-10-07; correcting that line is part 3
+  of [`power-bi-desktop-probes.md`](../../../docs/handoffs/execute/power-bi-desktop-probes.md).
+  The baseline guessed a `Copilot/` folder beside `definition/`, the
+  other shape that brief holds open.
 - `api` flagged that `fabric-rest-api` gives
   `PATCH /v1/workspaces/{wsId}/items/{itemId}/definition`. Learn's
   Update Item Definition is
