@@ -1290,6 +1290,22 @@ and offered `/commit`. So the line acts once a session looks, and "run it
 before editing a file another session may be editing" did not make an
 untold session look. Five arms, $1.24.
 
+**2026-10-15.** The `ListAgents` sentence gains an unconditional trigger,
+a session's first edit. It read "Run it before editing a file another
+session may be editing", worded on 2026-09-17 for edits to shared files,
+and `6893e81` hung the unasked-commit rule on it as the sentence "that
+already sends every session to ListAgents before an edit", which the
+entry above found it does not. The shared-file check stays as the second
+trigger. Measured before landing, from the paragraph as it now reads in a
+probe repo's `CLAUDE.local.md`, the probe otherwise unchanged: not told
+of a peer, 3 of 3 arms called `ListAgents` first, found the idle peer,
+one confirming its folder by the `cwd` in `~/.claude/sessions/<pid>.json`,
+and committed the fix unasked through `Skill commit`, where 0 of 2 had
+looked above; with no peer, 2 of 2 looked and held back. Both named the
+testing session's custom-named row as one they could not place: one asked
+whether to commit, the other judged it elsewhere. Unmeasured as deployed.
+Five arms, $1.31. The rest of the paragraph is rewrapped, not reworded.
+
 ### GitHub Copilot does not inherit this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude

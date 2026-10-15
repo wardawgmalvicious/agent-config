@@ -158,13 +158,13 @@ files, citing `permissions.blockReadsOutsideWorkingDirectories`.
 else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
 **Message another repo only in a coordination the user starts**, the sends
 they direct and answers within it (2026-10-01); else use its inbox.
-**Run it before editing a file another session may be editing**, and while
-one shares your tree, **commit each finished unit unasked** (`/commit`): its
-stash or pre-commit run can lose your edits, silently (2026-10-09). **Ask a
-peer only for what exists nowhere but in its context**: uncommitted work,
-what it tried, a live login. For the rest, or a `--safe-mode` baseline, run
-a cold probe from the target repo, read-only via `--tools`, not
-`--disallowedTools` or `--allowedTools` (2026-09-29):
+**Run it before your first edit and before editing a file a peer may be
+editing**; while one shares your tree, **commit each finished unit unasked**
+(`/commit`): its stash or pre-commit run can lose your edits, silently
+(2026-10-09). **Ask a peer only for what exists nowhere but in its
+context**: uncommitted work, what it tried, a live login. For the rest, or a
+`--safe-mode` baseline, run a cold probe from the target repo, read-only via
+`--tools`, not `--disallowedTools` or `--allowedTools` (2026-09-29):
 
 ```powershell
 claude -p '<question>' -n 'probe: <topic>' --model haiku --tools Read,Glob,Grep --strict-mcp-config
