@@ -1247,6 +1247,33 @@ unapproved at that day's triage table, lands as this cut. The opening
 paragraph of this section, "`skills` is junctioned, and is the only
 thing that is", stays as written on 2026-09-23.
 
+**2026-10-15.** The Peers paragraph takes the unasked-commit rule from
+`commit`'s `when_to_use`, where `b431676` put it on 2026-10-09 with both
+`CLAUDE.md` files at their cap, naming this file "the stronger home" if
+listing text alone did not outweigh the harness default, committing only
+when asked. It did not. On 2026-10-14 `/test-skill commit` ran Opus 5.5
+arms at `--effort xhigh` on `claude` 2.1.293 in scratch repos. Asked
+only to fix a README line, told another session was working in the tree
+and with one idle there, 3 of 3 payload arms called `ListAgents`, saw the
+peer, left the fix uncommitted and offered `/commit`; one searched the
+project's memory for "a standing commit instruction", found none, and
+declined "because you didn't ask me to". The `--safe-mode` baseline left
+it uncommitted too. The same rule as a `CLAUDE.local.md` line in the
+probe repo committed unasked through `Skill commit` in 2 of 2 arms, and
+held back in 1 of 1 with no peer in the tree. That line read: "**While
+another live session shares the working tree, commit each finished unit
+of work unasked** (`/commit`): a peer's stash, checkout or pre-commit run
+can take uncommitted work, and nothing reports it (2026-10-09)." The line
+here words that rule into the `ListAgents` sentence, whose "not only
+before a commit" it replaces, and is unmeasured as deployed: a project's
+`CLAUDE.local.md`, not this file, carried it in those three arms. Room
+came from the cold-probe sentence, which read "read-only through
+`--tools`, an allowlist: a `--disallowedTools` list left `Monitor` and
+GitHub writes open (2026-09-29), and `--allowedTools` only approves:", its
+evidence in the 2026-09-29 entry above, and from § "Coding conventions",
+same date. The run is logged in
+`docs/audits/2026-10-08/prompt-audit/09-correct-the-user-scope-skills.md`.
+
 ### GitHub Copilot does not inherit this payload
 
 Since 2026-09-09 every `chat.*Locations` entry pointing at a Claude
@@ -1684,3 +1711,12 @@ folders, and that the README named in the sentence before lists; the
 `commit` skill names the rule for its Fabric checks too. What only the
 pointer reached is a session about to create an item folder, since a
 rule loads once a matching file exists, not before.
+
+**2026-10-15.** The clause "and overridden by a repo's own
+`.claude/rules/` copy" went out to make room for the unasked-commit rule
+(§ "Agent config source", same date). Every `coding-<lang>.md` says it in
+its own text, 15 of 15 that day: "If a project-scope
+`.claude/rules/coding-<lang>.md` exists, that file supersedes this one".
+That sentence is what makes it true, since Claude Code loads a same-named
+project rule beside the user-scope one, and neither overrides the other
+unless its text says so (`claude/rules/agent-instructions-scoping.md`).

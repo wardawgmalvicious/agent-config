@@ -158,12 +158,13 @@ files, citing `permissions.blockReadsOutsideWorkingDirectories`.
 else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
 **Message another repo only in a coordination the user starts**, the sends
 they direct and answers within it (2026-10-01); else use its inbox.
-**Run it before editing a file another session may be editing**, not only
-before a commit. **Ask a peer only for what exists nowhere but in its
-context**: uncommitted work, what it tried, a live login. For the rest, or a
-`--safe-mode` baseline, run a cold probe from the target repo, read-only
-through `--tools`, an allowlist: a `--disallowedTools` list left `Monitor`
-and GitHub writes open (2026-09-29), and `--allowedTools` only approves:
+**Run it before editing a file another session may be editing**, and while
+one shares your tree, **commit each finished unit unasked** (`/commit`): its
+stash or pre-commit run can lose your edits, silently (2026-10-09). **Ask a
+peer only for what exists nowhere but in its context**: uncommitted work,
+what it tried, a live login. For the rest, or a `--safe-mode` baseline, run
+a cold probe from the target repo, read-only via `--tools`, not
+`--disallowedTools` or `--allowedTools` (2026-09-29):
 
 ```powershell
 claude -p '<question>' -n 'probe: <topic>' --model haiku --tools Read,Glob,Grep --strict-mcp-config
@@ -196,5 +197,4 @@ user scope (`~/.claude/rules/claude-config-scoping.md`).
 ## Coding conventions
 
 Per-language rules are `~/.claude/rules/coding-<lang>.md`, loaded by
-`paths:` glob and overridden by a repo's own `.claude/rules/` copy;
-`~/.claude/rules/README.md` § "What's here" lists them.
+`paths:` glob; `~/.claude/rules/README.md` § "What's here" lists them.
