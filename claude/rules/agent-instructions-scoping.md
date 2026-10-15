@@ -25,7 +25,7 @@ Claude Code 2.1.282 on 2026-09-25; `AGENTS.md` support needs 2.1.277.
 | Guidance is… | Home | Fails silently when |
 | --- | --- | --- |
 | Needed before any Read: commands, repo-wide conventions | root `CLAUDE.md` | it passes ~200 lines and adherence drops |
-| About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, or only Grep or `cat` touch it; a Write or Edit loads it only once the file exists |
+| About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, only Grep or `cat` touch it, or the mistake is a live command or a sync, which touches no file; a Write or Edit loads it only once the file exists |
 | About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads, Writes or Edits there itself (below), or has compacted and done none of them there since |
 | A procedure asked for in words | skill | its description never matches |
 | Must hold before the agent acts | hook or `permissions.deny` | the hook itself fails open |
