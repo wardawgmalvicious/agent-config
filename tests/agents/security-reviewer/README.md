@@ -102,6 +102,13 @@ Confirm that before comparing two runs — the agent's `model:` frontmatter,
 an Agent-tool `model` override, and the session model are three different
 inputs, and the transcript is the only place the winner shows.
 
+**Not the Agent tool's `output_file`.** Its result calls
+`tasks/<agentId>.output` the full subagent transcript, but on this
+machine the file stays 0 bytes once the agent finishes, so a query on it
+returns nothing and reads as a pass (two agents, 2026-10-15, 2.1.296).
+`<project>` above is the directory the session launched in, even for an
+agent spawned after `EnterWorktree`.
+
 **Which of the three won** is answered by the sibling file,
 `subagents/agent-<agentId>.meta.json`. It carries a `model` key *only* when
 an Agent-tool override was passed:
