@@ -158,6 +158,11 @@ ending the holder: on EOF it exits and removes its registry entry.
 `TaskStop` on the background shell left the native `claude.exe`
 running, to be killed by PID, after which its registry file was gone
 within a minute (a second session, 2026-10-01).
+To kill the holder rather than `claude.exe`, write its PID first:
+`( echo $BASHPID > holder.pid; exec sleep 3500 ) | claude -p …`, with a
+`printf` of the one message before the `exec` for the prompted case.
+`kill $(cat holder.pid)` then ended the session and removed its registry
+file within seconds, twice (2026-10-14, 2.1.293).
 
 **The `init` record is what proves the strip.** Measured 2026-09-12 on
 `fabric-catalog-governance` — 21 commands with the skill absent against
