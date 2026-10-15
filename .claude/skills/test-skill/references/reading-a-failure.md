@@ -395,6 +395,29 @@ so for a skill whose claims overlap them, such as `commit` or `land`, it
 thins the baseline beyond the snapshot: read the log for the claim
 instead of setting it there.
 
+**`--safe-mode` drops auto memory, and every other arm keeps it.** The
+`init` record of a payload or ablation arm names `memory_paths.auto`,
+the project's memory directory, while a `--safe-mode` baseline's has no
+`memory_paths` key, so a `MEMORY.md` line about the skill under test
+reaches every arm but the baseline. Measured 2026-10-14 on
+`drift-update` (2.1.293), six arms run in this repo, whose index called
+the Kusto emulator "/drift-update 4.4's standing gate" with "licence
+consent per run, ask": the ablation on a KQL brief, then a `CronList`
+arm, asked that consent and logged the engine version, without the
+skill's script, and the other ablation cited "what you chose in all
+three conflicts like this on 2026-10-06", a second line's "chosen 3 of
+3 times". Neither `CLAUDE.md` nor the `description` says either. A
+payload arm also put a Learn check before a same-run correction the
+body asks no check of, in line with that second line; whether the line
+prompted it was not isolated. The deny-rule ablation loads the index
+too: a Haiku arm in that shape quoted the line verbatim. Arms run here
+load the index your own session shows; a probe directory outside the
+repo has its own. Where a line names the skill, set
+`CLAUDE_CODE_DISABLE_AUTO_MEMORY=1` on every arm, which the memory page
+documents (read 2026-10-14): a Haiku arm with it answered NONE where
+its twin quoted the line verbatim, `memory_paths` absent and all 77
+commands still listed.
+
 **`--safe-mode` keeps the permission mode too**, so a baseline runs in
 the payload arm's: `permissions.defaultMode`, `auto` in user scope here
 since 2026-08-31, survives the strip. Measured 2026-10-07 on 2.1.291 on
