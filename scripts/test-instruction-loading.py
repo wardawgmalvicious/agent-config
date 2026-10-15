@@ -13,13 +13,15 @@ launch `instructions` record, a `nested_memory` attachment for a nested
 CLAUDE.md, an import it expands or a `paths:` rule, and a PostToolUse
 `hook_additional_context` for a nested AGENTS.md read directly -- which is
 why InstructionsLoaded never logs one, and why a check keyed on
-`nested_memory` alone misses it. Every instruction file carries a
+`nested_memory` alone misses it. A subagent's report reaches its parent as
+a `queued_command` record, which can quote a file the subagent saw load,
+so a marker there counts for nothing. Every instruction file carries a
 `[[probe-marker <path>]]` line, so each load is attributed to its file and
 to the step after which it arrived: launch, or a numbered step, where
 `/compact` counts as one. A probe PASSes when those loads match its
 expectation exactly, record kind included. It is INVALID when the model
-did not make the tool calls it was told to, which says nothing about
-loading, and ERROR when no transcript turned up.
+did not make the tool calls it was told to, one at a time, which says
+nothing about loading, and ERROR when no transcript turned up.
 
 Written 2026-09-25 on 2.1.282 for the brief nested-instruction-files.md,
 whose probes these are, kept at
@@ -28,7 +30,11 @@ docs/handoffs/execute/scope-instructions.md replaced it on 2026-10-15:
 c0 and 1-8 answer its load-order questions, k0-k2 and h1 its question of
 cutting a root CLAUDE.md over to AGENTS.md. r1, added 2026-10-15 on
 2.1.293, checks claude/rules/agent-instructions-scoping.md's claim that a
-`paths:` rule's @import loads at launch. Re-run it after a CLI upgrade,
+`paths:` rule's @import loads at launch. The b- and ps- probes, added the
+same day for the brief bash-reads-load-instructions.md, kept at
+`git show 92f8afc:docs/handoffs/execute/bash-reads-load-instructions.md`,
+check 2.1.293's changelog: a single-file cat, head, tail, sed -n or grep
+in the Bash tool loads what a Read would. Re-run it after a CLI upgrade,
 or when a changelog entry touches AGENTS.md or instruction loading: support
 shipped in 2.1.277 and changed in 2.1.281. A FAIL means the loader changed,
 and whatever was concluded from the probe may have changed with it.
@@ -54,6 +60,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import uuid
 from dataclasses import dataclass, field
 
@@ -67,25 +74,30 @@ INSTRUCTION_NAMES = ("CLAUDE.md", "CLAUDE.local.md", ".claude/CLAUDE.md",
 LAUNCH = "instructions"
 NESTED = "nested_memory"
 HOOK = "hook_additional_context"
+RELAYED = "queued_command"  # a subagent's report to its parent: never a load
 
 COMPACT = "/compact"
+SHELLS = ("Bash", "PowerShell")
 
-# An "r@" file is a rule scoped to RULE_GLOB that imports RULE_IMPORT, probe-relative.
+# An "r" file is a rule scoped to RULE_GLOB; an "r@" one also imports RULE_IMPORT,
+# probe-relative.
 RULE_GLOB = "**/*.probe"
 RULE_IMPORT = "docs/target.md"
+RULE = ".claude/rules/probe.md"
 
 
 @dataclass(frozen=True)
 class Step:
-    tool: str         # Read, Write, Grep, Glob, Bash, Agent, or /compact
-    target: str = ""  # probe-relative; a directory for Grep and Glob
+    tool: str          # Read, Write, Grep, Glob, Bash, PowerShell, Agent, or /compact
+    target: str = ""   # probe-relative; a directory for Grep and Glob
+    command: str = ""  # a shell step's exact command; a Bash step without one cats target
 
 
 @dataclass(frozen=True)
 class Probe:
     name: str
     question: str
-    # path -> "i" instructions, "i@" plus @AGENTS.md, "r@" a rule (above), "t" text
+    # path -> "i" instructions, "i@" plus @AGENTS.md, "r" or "r@" a rule (above), "t" text
     files: dict[str, str]
     steps: tuple[Step, ...]
     expect: dict[str, dict[str, str]]  # phase -> {file: record kind}
@@ -98,6 +110,17 @@ class Probe:
 
 def read(path: str) -> Step:
     return Step("Read", path)
+
+
+def view(name: str, question: str, command: str, *, loads: bool, tool: str = "Bash") -> Probe:
+    """One shell command on a.probe, under a plain rule, alone in its session.
+
+    One that should load nothing is followed by a Read, the control that the
+    rule loads at all. b.probe is there for a command naming two files.
+    """
+    steps = (Step(tool, command=command),) + (() if loads else (read("a.probe"),))
+    return Probe(name, question, {RULE: "r", "a.probe": "t", "b.probe": "t"}, steps,
+                 {"1" if loads else "2": {RULE: NESTED}})
 
 
 PROBES = (
@@ -138,13 +161,12 @@ PROBES = (
           (Step("Agent", "sub/one.txt"), read("sub/two.txt")),
           {"launch": {"CLAUDE.md": LAUNCH}, "2": {"sub/CLAUDE.md": NESTED}},
           subagent={"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED}}),
-    Probe("p7", "7: a main-checkout Read in a worktree under .claude/worktrees/ loads its CLAUDE.md",
+    Probe("p7", "7: a main-checkout Read inside .claude/worktrees/w1 loads no CLAUDE.md there",
           {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/file.txt": "t", "top.txt": "t"},
           (read("sub/file.txt"), read(".claude/worktrees/w1/top.txt")),
-          {"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED},
-           "2": {".claude/worktrees/w1/CLAUDE.md": NESTED}},
+          {"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED}},
           worktree=".claude/worktrees/w1"),
-    Probe("p7x", "7: claudeMdExcludes **/.claude/worktrees/** keeps it out of the main checkout",
+    Probe("p7x", "7: claudeMdExcludes **/.claude/worktrees/** changes nothing p7 sees",
           {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/file.txt": "t", "top.txt": "t"},
           (read("sub/file.txt"), read(".claude/worktrees/w1/top.txt")),
           {"launch": {"CLAUDE.md": LAUNCH}, "1": {"sub/CLAUDE.md": NESTED}},
@@ -161,15 +183,15 @@ PROBES = (
           {},
           settings={"claudeMdExcludes": ["**/.claude/worktrees/**"]},
           cwd=".claude/worktrees/w1", worktree=".claude/worktrees/w1"),
-    Probe("p8", "8: Write, Grep, Glob and Bash load no nested CLAUDE.md; a Read does",
+    Probe("p8", "8: a Write or Bash cat loads a nested CLAUDE.md, Grep and Glob none; a Read does",
           {"CLAUDE.md": "i", "w/CLAUDE.md": "i", "g/CLAUDE.md": "i", "g/data.txt": "t",
            "gl/CLAUDE.md": "i", "gl/x.txt": "t", "b/CLAUDE.md": "i", "b/y.txt": "t"},
           (Step("Write", "w/new.txt"), Step("Grep", "g"), Step("Glob", "gl"),
            Step("Bash", "b/y.txt"), read("w/new.txt"), read("g/data.txt"),
            read("gl/x.txt"), read("b/y.txt")),
-          {"launch": {"CLAUDE.md": LAUNCH}, "5": {"w/CLAUDE.md": NESTED},
-           "6": {"g/CLAUDE.md": NESTED}, "7": {"gl/CLAUDE.md": NESTED},
-           "8": {"b/CLAUDE.md": NESTED}}),
+          {"launch": {"CLAUDE.md": LAUNCH}, "1": {"w/CLAUDE.md": NESTED},
+           "4": {"b/CLAUDE.md": NESTED}, "6": {"g/CLAUDE.md": NESTED},
+           "7": {"gl/CLAUDE.md": NESTED}}),
     Probe("k0", "cutover baseline: CLAUDE.md, root and nested, returns after /compact",
           {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/one.txt": "t", "sub/two.txt": "t"},
           (read("sub/one.txt"), Step(COMPACT), read("sub/two.txt")),
@@ -194,9 +216,28 @@ PROBES = (
           {"launch": {"AGENTS.md": LAUNCH}, "1": {"sub/AGENTS.md": HOOK}},
           settings={"disableAllHooks": True}),
     Probe("r1", "rule: a paths: rule's @import loads at launch, the rule on a matching Read",
-          {".claude/rules/probe.md": "r@", "docs/target.md": "i", "sample.probe": "t"},
+          {RULE: "r@", "docs/target.md": "i", "sample.probe": "t"},
           (read("sample.probe"),),
-          {"launch": {"docs/target.md": LAUNCH}, "1": {".claude/rules/probe.md": NESTED}}),
+          {"launch": {"docs/target.md": LAUNCH}, "1": {RULE: NESTED}}),
+    view("b-cat", "view: a Bash cat of one file loads the rule a Read would",
+         "cat a.probe", loads=True),
+    view("b-head", "view: so does head -n 1", "head -n 1 a.probe", loads=True),
+    view("b-sed", "view: so does sed -n '1,1p'", "sed -n '1,1p' a.probe", loads=True),
+    view("b-grep", "view: so does a grep that matches", "grep plain a.probe", loads=True),
+    view("b-grep0", "view: a grep matching nothing loads nothing; a Read then does",
+         "grep zzz a.probe", loads=False),
+    view("b-pipe", "view: a cat piped to head loads nothing; a Read then does",
+         "cat a.probe | head -n 1", loads=False),
+    view("b-two", "view: a cat of two files loads nothing; a Read then does",
+         "cat a.probe b.probe", loads=False),
+    view("b-edit", "view: a sed -i edit loads nothing; a Read then does",
+         "sed -i 's/plain/flat/' a.probe", loads=False),
+    Probe("b-nest", "view: a Bash cat of a file in sub/ loads sub/CLAUDE.md",
+          {"sub/CLAUDE.md": "i", "sub/x.txt": "t"},
+          (Step("Bash", command="cat sub/x.txt"),),
+          {"1": {"sub/CLAUDE.md": NESTED}}),
+    view("ps-get", "view: a PowerShell Get-Content, outside the set, loads nothing; a Read does",
+         "Get-Content a.probe", loads=False, tool="PowerShell"),
 )
 
 
@@ -205,6 +246,7 @@ class Observed:
     loads: dict[str, dict[str, str]] = field(default_factory=dict)  # phase -> {file: kind}
     order: list[str] = field(default_factory=list)  # files in first-load order
     calls: list[tuple[str, dict]] = field(default_factory=list)  # (tool, input)
+    parallel: bool = False  # a call made before the previous one's result, so unattributable
 
 
 def build(root: pathlib.Path, probe: Probe) -> pathlib.Path:
@@ -213,10 +255,10 @@ def build(root: pathlib.Path, probe: Probe) -> pathlib.Path:
         text = "plain probe file, no instructions\n"
         if kind.startswith("i"):
             text = f"[[probe-marker {rel}]]\n" + ("\n@AGENTS.md\n" if kind == "i@" else "")
-        elif kind == "r@":
+        elif kind.startswith("r"):
             up = "../" * len(pathlib.PurePosixPath(rel).parent.parts)
-            text = (f'---\npaths:\n  - "{RULE_GLOB}"\n---\n\n'
-                    f"[[probe-marker {rel}]]\n\n@{up}{RULE_IMPORT}\n")
+            text = (f'---\npaths:\n  - "{RULE_GLOB}"\n---\n\n[[probe-marker {rel}]]\n'
+                    + (f"\n@{up}{RULE_IMPORT}\n" if kind == "r@" else ""))
         elif rel.endswith("data.txt"):
             text = "needle\n"
         path = base / rel
@@ -254,6 +296,8 @@ def step_line(n: int, step: Step, base: pathlib.Path) -> str:
         return f"{n}. Grep tool: pattern needle, path {target}, output_mode files_with_matches"
     if step.tool == "Glob":
         return f"{n}. Glob tool: pattern *.txt, path {target}"
+    if step.tool in SHELLS and step.command:
+        return f"{n}. {step.tool} tool, exactly this command and nothing else: {step.command}"
     if step.tool == "Bash":
         return f"{n}. Bash tool: cat '{target.as_posix()}'"
     if step.tool == "Agent":
@@ -295,11 +339,14 @@ def run_probe(root: pathlib.Path, probe: Probe, claude: str) -> str:
         if seg[0][1].tool == COMPACT:
             prompt = COMPACT
         else:
+            # No text between steps: a message of text alone ends a -p turn, which
+            # cut p8 short at "done 1" on 2026-10-15.
             lines = "\n".join(step_line(n, step, base) for n, step in seg)
-            prompt = ("Do exactly these steps, in order, one tool call per step. After each "
-                      'step print the line "done N" with its number, and only then start the '
-                      "next. Use only the tool each step names, and do not comment on any "
-                      f"output.\n\n{lines}\n\nWhen every step is done, reply with just: ok")
+            prompt = ("Do exactly these steps, in order, one tool call per step. Make each "
+                      "call alone and wait for its result before the next, and write no text "
+                      "until every step is done. Use only the tool each step names, and do "
+                      f"not comment on any output.\n\n{lines}\n\n"
+                      "When every step is done, reply with just: ok")
         session = ["--session-id", sid] if i == 0 else ["--resume", sid]
         try:
             subprocess.run([claude, "-p", prompt, *common, *session], cwd=base / probe.cwd,
@@ -313,7 +360,7 @@ def run_probe(root: pathlib.Path, probe: Probe, claude: str) -> str:
 def observe(transcript: pathlib.Path) -> Observed:
     """Attribute every marked load to the latest step started before it arrived."""
     seen = Observed()
-    phase, started = "launch", 0
+    phase, started, unanswered = "launch", 0, 0
     for line in transcript.read_text(encoding="utf-8").splitlines():
         try:
             rec = json.loads(line)
@@ -326,11 +373,19 @@ def observe(transcript: pathlib.Path) -> Observed:
         elif kind == "assistant":
             for item in rec.get("message", {}).get("content") or []:
                 if item.get("type") == "tool_use":
+                    seen.parallel |= unanswered > 0
+                    unanswered += 1
                     started += 1
                     phase = str(started)
                     seen.calls.append((item.get("name", ""), item.get("input", {})))
+        elif kind == "user":
+            content = rec.get("message", {}).get("content")
+            if isinstance(content, list):
+                unanswered -= sum(item.get("type") == "tool_result" for item in content)
         elif kind == "attachment":
             att_kind = rec.get("attachment", {}).get("type", "")
+            if att_kind == RELAYED:
+                continue
             for rel in MARK.findall(line):
                 seen.loads.setdefault(phase, {})[rel] = att_kind
                 if rel not in seen.order:
@@ -352,9 +407,17 @@ def calls_match(calls: list[tuple[str, dict]], steps: list[Step], base: pathlib.
             return False
         if name in ("Grep", "Glob") and not same(args.get("path", ""), target):
             return False
-        if name == "Bash" and target.as_posix() not in args.get("command", ""):
-            return False
+        if name in SHELLS:
+            command = args.get("command", "")
+            if step.command and command.strip() != step.command:
+                return False
+            if not step.command and target.as_posix() not in command:
+                return False
     return True
+
+
+def described(calls: list[tuple[str, dict]]) -> list[str]:
+    return [f"{name} {args['command']!r}" if "command" in args else name for name, args in calls]
 
 
 def judge(root: pathlib.Path, probe: Probe, sid: str) -> tuple[str, list[str]]:
@@ -365,16 +428,19 @@ def judge(root: pathlib.Path, probe: Probe, sid: str) -> tuple[str, list[str]]:
     seen = observe(mains[0])
     detail = [f"session {sid}"] + [f"{p}: {seen.loads[p]}" for p in seen.loads]
     tool_steps = [s for s in probe.steps if s.tool != COMPACT]
-    if not calls_match(seen.calls, tool_steps, base):
-        return "INVALID", detail + [f"tool calls: {[c[0] for c in seen.calls]}"]
+    if seen.parallel or not calls_match(seen.calls, tool_steps, base):
+        at_once = ", some at once" if seen.parallel else ""
+        return "INVALID", detail + [f"tool calls{at_once}: {described(seen.calls)}"]
     ok = seen.loads == probe.expect
     if probe.order:
         ok &= [f for f in seen.order if f in probe.order] == list(probe.order)
     if probe.subagent is not None:
         subs = sorted(PROJECTS.glob(f"*/{sid}/subagents/*.jsonl"))
         sub = observe(subs[0]) if subs else Observed()
-        if not calls_match(sub.calls, [read(probe.steps[0].target)], base):
-            return "INVALID", detail + [f"subagent tool calls: {[c[0] for c in sub.calls]}"]
+        # In auto mode a subagent hands its report back with a call of its own (2.1.271).
+        calls = [c for c in sub.calls if c[0] != "SubagentHandback"]
+        if sub.parallel or not calls_match(calls, [read(probe.steps[0].target)], base):
+            return "INVALID", detail + [f"subagent tool calls: {described(sub.calls)}"]
         detail += [f"subagent {p}: {sub.loads[p]}" for p in sub.loads]
         ok &= sub.loads == probe.subagent
     if not ok:
@@ -399,7 +465,17 @@ def remove_tree(path: pathlib.Path) -> None:
         os.chmod(target, stat.S_IWRITE)
         func(target)
 
-    shutil.rmtree(path, onexc=writable)
+    # A session's child process can hold its directory after the session exits:
+    # b-sed's in two of three runs on 2026-10-15, once past these retries.
+    for wait in (2, 5, 10, 20, 0):
+        try:
+            shutil.rmtree(path, onexc=writable)
+            return
+        except PermissionError as exc:
+            if not wait:
+                print(f"left {path}: {exc}", file=sys.stderr)
+                return
+            time.sleep(wait)
 
 
 def main() -> int:
