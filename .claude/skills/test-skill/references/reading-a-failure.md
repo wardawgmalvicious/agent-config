@@ -587,8 +587,12 @@ defect before recording it.
 
 **Scope the arms to the hash that moved.** The stamp keeps four,
 `paths`, `routing`, `body` and `references` (`scripts/skill-status.py`),
-and `--stale` names the one an edit moved as its verdict. Each has one
-witness, and an arm can witness only what its invocation path reads:
+and `--stale` names only the first that moved, in that order: on
+2026-10-14 `test-skill` read `retest-routing` with its body and
+references moved too. `git diff <stamp commit> -- <skill dir>` shows
+every part that moved, over-reporting when the stamp's commit predates
+the tested edit (above), never missing one. Each hash has one witness,
+and an arm can witness only what its invocation path reads:
 
 | Verdict | Hash covers | Arm that reads it | Witness |
 | --- | --- | --- | --- |

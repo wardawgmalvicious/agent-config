@@ -32,8 +32,9 @@ the commit, and a hash of the part of the skill that phase tested:
               used for real work and held. /learn is its natural writer,
               since folding in a learning from real use is the evidence.
 
-The verdict then says which part moved since the stamp, and that is the
-answer to "does this edit need a new test":
+The verdict then names the first part that moved since the stamp, in the
+order below, and is the answer to "does this edit need a new test" for
+that part; a later part can have moved too, unnamed:
 
   retest-activation   a glob changed; run Phase A, static then real-path
   retest-routing      description or when_to_use changed; the trigger
