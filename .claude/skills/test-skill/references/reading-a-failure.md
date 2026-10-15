@@ -724,6 +724,8 @@ shows it. It loads as the user's private project instructions, where a
 user-scope edit would reach every live session. Measured 2026-10-14 on
 `commit` (2.1.293): its unasked-commit rule, inert in `when_to_use` (0 of
 3), fired from one such line in 2 of 2 arms and held back in a no-peer arm.
+The proxy held: worded into a user-scope paragraph and deployed, the rule
+fired in 3 of 3 the next day (`docs/evidence/user-claude-md.md`).
 
 **A check-shaped claim needs its no-case arm.** An edit of the form
 "if X, do Y" passes the X arm whether it checks X or not, so a skill
