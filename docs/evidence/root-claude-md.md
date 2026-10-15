@@ -1683,6 +1683,41 @@ was retests, 13 skills by `skill-status.py --stale`, which no merge
 gate clears, and this section records no silent collision since
 2026-09-30, its reopen condition.
 
+**2026-10-15.** The guard refuses more than the four paths of
+2026-09-24, on 2.1.296 in the VS Code extension. A background Opus
+subagent, spawned after `EnterWorktree` into the parked
+`drift-audit-on-disk-diffing` worktree to verify `drift-audit` Phase 1
+on a scratchpad clone, ran isolated too: each refusal opened "This
+session is isolated in the worktree `<path>`". The guard refused nine of
+its 104 Bash calls, none of them aimed at the repo, each worded as below
+after "but this command":
+
+- `git -C 'C:/Users/USERNA~1/AppData/Local/Temp/claude/…/fabric-docs'`,
+  the scratchpad path as the harness hands it out, quoted: "points git
+  at a directory computed at runtime". 44 `git -C` calls at the long
+  path, `C:/Users/<username>/…`, ran.
+- `S='C:/Users/USERNA~1/…'` before a git call, and a `for` loop around
+  `git -C`: "names git in a form too complex to verify that it stays
+  inside the worktree".
+- Three `cat >>` heredocs appending to a Python script: "is too complex
+  to verify that it stays inside the worktree". Smaller chunks without
+  f-strings ran; the exact trigger was not isolated.
+- `sed` inside a compound command: "runs sed with a program computed at
+  runtime inside a construct too complex to verify". `python3.13` handed
+  a variable: "runs python with a value computed at runtime (the
+  variable F)". `awk -F'\t'` with a `$1==…` program: "runs awk with a
+  program that can execute commands or that it cannot read in a plain
+  command", where a plain `awk 'NR==40||…'` ran.
+
+The parent session, in the same worktree, had `sort -t "$(printf '\t')"`
+refused: "runs sort with a value computed at runtime (command output)
+where an option may stand". Each refusal ends "Split it into plain,
+separate commands", which is how the subagent finished. So the guard
+reads a command's text, not where it points: a computed value where a
+program, an option or git's directory could stand fails it, the
+session's own scratchpad included, and a subagent the session spawns
+inherits the isolation.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

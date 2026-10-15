@@ -136,6 +136,11 @@ but loads only its own `.claude/skills/`, `.claude/rules/` and `CLAUDE.md`.
 Its guard stops `Write` and `git -C` into the main checkout, not a Bash
 write or PowerShell's `git -C`; a `cd` out runs, then every command is
 refused, `cd` back too, until `EnterWorktree` (probed 2026-09-24, 2.1.282).
+It refuses, too, Bash it cannot read, "too complex to verify", even in the
+scratchpad: a loop around git, some heredocs, a computed value where a
+program or an option may stand, and `git -C` at the 8.3 scratchpad path,
+though the long path runs. A subagent spawned there inherits it
+(2026-10-15, 2.1.296).
 
 ## Editing conventions
 
