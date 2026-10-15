@@ -15,7 +15,7 @@ there, how many edited, how many only through a subagent, and how many
 compacted; whether each session opened the folder's README before any
 other file there, only later, or never, and whether a prompt the user
 typed named that README first; and which nested CLAUDE.md files and rules
-loaded on a call there. That is the evidence for moving guidance: a README
+loaded for its work there. That is the evidence for moving guidance: a README
 is the agent's choice to open, a nested file or a paths: rule is not. In a
 client Fabric repo 5 of 9 sessions working in a folder with a README
 opened it late or never (2026-09-24).
@@ -31,28 +31,37 @@ folder. A README a prompt @-mentions, which arrives as a `file`
 attachment, counts as opened first and named by the user; another file
 mentioned is context, not work. A README viewed with a single-file `cat`
 reads as never opened, and an edit made through Bash is not seen, so
-README misses are an upper bound. A load is pinned to the call whose
-result it follows, by the transcript's parentUuid links, so one beside
-parallel calls can land on a sibling's result. A nested CLAUDE.md or
-AGENTS.md that follows no file call here, as one an @-mention brings
-does, is pinned to its own folder. A rule after a Bash call, which since
-2.1.293 can load as a Read does, after another tool, after a file outside
-the repo or after no call is pinned to no folder, and the summary counts
-each kind: on this repo on 2026-10-15, 295 followed a Bash call.
+README misses are an upper bound.
+
+A load is pinned to the files it loaded for, not to the call the
+transcript chains it to: calls made in parallel share one batch of
+results, and every load the batch caused follows the last of them. A
+nested CLAUDE.md or AGENTS.md goes to each file the session touched under
+its own folder, and a rule to each file the session touched that the
+rule's paths: globs match. The record drops a trailing /** from a glob,
+keeping claude/hooks/** as claude/hooks, so a glob here also matches all
+under what it names. A rule no touched file matches, as one a Bash call
+loads, which a single-file view can since 2.1.293, is pinned to no folder,
+and the summary counts those by the call the chain reaches. On this repo
+on 2026-10-15 the chain alone put 369 of 1,115 rule loads on a file the
+rule's globs match.
 
 It reads ~/.claude/projects/<project>/*.jsonl and each session's
 subagents/ itself, though the docs call that format internal and liable
 to change in any release (sessions page, 2026-10-15). The records keyed
 on, as of 2.1.293: `cwd`, `version`, `uuid` and `parentUuid` on every
 record; assistant `tool_use` blocks and user `tool_result` blocks;
-`nested_memory` attachments for a nested CLAUDE.md or a rule,
-`hook_additional_context` opening "Contents of ...AGENTS.md:" for a nested
-AGENTS.md; and `compact_boundary` system records. When the format changes
+`nested_memory` attachments for a nested CLAUDE.md or a rule, a rule's
+holding its `globs`; for a nested AGENTS.md, a `hook_additional_context`
+whose content, a list of strings, opens "Contents of ...AGENTS.md:" and
+whose toolUseID is the call's id plus "-context"; and `compact_boundary`
+system records. When the format changes
 this fails rather than reporting nothing: transcripts for the repo on disk
 but no `cwd` or no message read from them exits 2. Exits 1 when no session
 ran in the repo. It reaches back only as far as transcripts are kept,
 cleanupPeriodDays, 30 days by default, and prints the day the oldest one
-was written. No dependencies.
+was written. No dependencies; tests/scripts/folder-sessions/ holds each
+case.
 """
 
 from __future__ import annotations
@@ -67,6 +76,7 @@ import time
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 
 FILE_TOOLS = {"Read": "file_path", "Write": "file_path", "Edit": "file_path",
@@ -81,12 +91,22 @@ MAX_HOPS = 8  # parentUuid steps from a load back to its tool result; 5 seen (20
 
 @dataclass
 class Touch:
-    """One file call, or one instruction file that loaded after a file call."""
+    """One file call, or one file a prompt @-mentioned."""
     order: int
-    kind: str  # "read", "edit" or "load"
-    rel: str  # the file's repo-relative key; for a load, the loaded file as shown
-    after: str = ""  # for a load: the key of the file whose call it followed
+    kind: str  # "read" or "edit"
+    rel: str  # the file's repo-relative key
     by_user: bool = False  # a read that is a prompt's @-mention, not Claude's choice
+
+
+@dataclass
+class Load:
+    """One nested CLAUDE.md or AGENTS.md, or one rule, that loaded in the main session."""
+    shown: str  # the loaded file, as it prints
+    folder: str | None  # for a nested file, its folder's key ("" at the root); else None
+    globs: tuple[str, ...]  # for a rule, its paths: globs as the record keeps them
+    after: str  # the key of the file whose call the transcript chains it to, or ""
+    why: str  # what that call was, should the load pin to no folder
+    at: list[str] = field(default_factory=list)  # once pinned: the files it loaded for
 
 
 @dataclass
@@ -100,6 +120,7 @@ class Session:
     unpinned: Counter = field(default_factory=Counter)  # why a load is pinned to no folder
     main: list[Touch] = field(default_factory=list)
     sub: list[Touch] = field(default_factory=list)
+    loads: list[Load] = field(default_factory=list)
     prompts: list[tuple[int, str]] = field(default_factory=list)  # (order, folded text)
 
 
@@ -196,18 +217,54 @@ def project_dirs(projects: Path, root: Path) -> list[Path]:
 
 
 def texts_of(content: object) -> list[str]:
+    """The text in a message's content, or in a hook's, which is a list of plain strings."""
     if isinstance(content, str):
         return [content]
     if isinstance(content, list):
-        return [b.get("text", "") for b in content
-                if isinstance(b, dict) and b.get("type") == "text"]
+        return [b if isinstance(b, str) else b.get("text", "") for b in content
+                if isinstance(b, str) or (isinstance(b, dict) and b.get("type") == "text")]
     return []
 
 
+def glob_regex(glob: str) -> str:
+    """A paths: glob as a regex: ** spans folders, * and ? stay within one, {a,b} picks."""
+    out, i = [], 0
+    while i < len(glob):
+        if glob.startswith("**/", i):
+            out.append("(?:[^/]*/)*")
+            i += 3
+        elif glob.startswith("**", i):
+            out.append(".*")
+            i += 2
+        elif glob[i] == "*":
+            out.append("[^/]*")
+            i += 1
+        elif glob[i] == "?":
+            out.append("[^/]")
+            i += 1
+        elif glob[i] == "{" and "}" in glob[i:]:
+            end = glob.index("}", i)
+            out.append("(?:" + "|".join(glob_regex(alt) for alt in glob[i + 1:end].split(","))
+                       + ")")
+            i = end + 1
+        else:
+            out.append(re.escape(glob[i]))
+            i += 1
+    return "".join(out)
+
+
+@lru_cache(maxsize=None)
+def glob_pattern(glob: str) -> re.Pattern[str]:
+    """A rule's glob as its record keeps it, matching what it names and all under that."""
+    body = glob_regex(glob.strip().removeprefix("./").lstrip("/"))
+    return re.compile(body + "(?:/.*)?", re.IGNORECASE if os.name == "nt" else 0)
+
+
 def parse(path: Path, s: Session, into: list[Touch], paths: Paths, main: bool) -> None:
-    """Add one transcript's file calls and the loads they caused to the session."""
+    """Add one transcript's file calls to the session, and the main transcript's loads."""
     parents: dict[str, str] = {}  # uuid -> parentUuid
     results: dict[str, str] = {}  # uuid of a tool-result record -> its tool_use_id
+    prompts: set[str] = set()  # uuids of the user's own messages, where a turn starts
     calls: dict[str, tuple[str, str]] = {}  # tool_use_id -> (tool, repo-relative key or "")
     with path.open(encoding="utf-8", errors="replace") as fh:
         for order, line in enumerate(fh):
@@ -239,6 +296,8 @@ def parse(path: Path, s: Session, into: list[Touch], paths: Paths, main: bool) -
                 if ids and isinstance(uuid, str):
                     results[uuid] = ids[0]
                 elif main and not rec.get("isMeta") and not rec.get("isCompactSummary"):
+                    if isinstance(uuid, str):
+                        prompts.add(uuid)
                     for t in texts_of(content):
                         t = REMINDER.sub("", t).replace("\\", "/").casefold()
                         if t.strip():
@@ -262,28 +321,50 @@ def parse(path: Path, s: Session, into: list[Touch], paths: Paths, main: bool) -
                     if rel:
                         into.append(Touch(order, "read", rel, by_user=True))
                     continue
-                loaded, call = None, a.get("toolUseID")
+                if not main:
+                    continue  # a subagent's loads stay in the subagent
+                loaded, globs = None, ()
                 if a.get("type") == "nested_memory" and isinstance(a.get("path"), str):
                     loaded = a["path"]
+                    content = a.get("content")
+                    if isinstance(content, dict) and isinstance(content.get("globs"), list):
+                        globs = tuple(g for g in content["globs"] if isinstance(g, str))
                 elif a.get("type") == "hook_additional_context":
-                    m = AGENTS_CONTEXT.search(str(a.get("content")))
+                    m = AGENTS_CONTEXT.search("\n".join(texts_of(a.get("content"))))
                     loaded = m.group(1) if m else None
                 if not loaded:
                     continue
+                call = str(a.get("toolUseID") or "").removesuffix("-context")
                 hop = rec.get("parentUuid")
-                for _ in range(MAX_HOPS):
-                    if call or not isinstance(hop, str):
+                for _ in range(MAX_HOPS):  # back to the result it follows, within the turn
+                    if call or not isinstance(hop, str) or hop in prompts:
                         break
-                    call, hop = results.get(hop), parents.get(hop)
-                tool, after = calls.get(call or "", ("", ""))
+                    call, hop = results.get(hop, ""), parents.get(hop)
+                tool, after = calls.get(call, ("", ""))
+                why = (("a file call its globs miss" if after else "a file outside the repo")
+                       if tool in FILE_TOOLS else tool or "no call")
                 own = paths.relative(loaded)
-                if not after and own and own.rsplit("/", 1)[-1].casefold() in INSTRUCTION_NAMES:
-                    after = own  # a nested file belongs to its own folder, whatever loaded it
-                if after:
-                    into.append(Touch(order, "load", paths.loaded(loaded), after))
-                elif main:
-                    s.unpinned["a file outside the repo" if tool in FILE_TOOLS
-                               else tool or "no call"] += 1
+                folder = None  # a record with globs is a rule, whatever its file is called
+                if (not globs and own is not None
+                        and own.rsplit("/", 1)[-1].casefold() in INSTRUCTION_NAMES):
+                    folder = own.rsplit("/", 1)[0] if "/" in own else ""
+                s.loads.append(Load(paths.loaded(loaded), folder, globs, after, why))
+
+
+def pin(s: Session) -> None:
+    """Pin each load to the files the session touched that it loaded for."""
+    touched = sorted({t.rel for t in s.main})
+    for load in s.loads:
+        if load.folder is not None:  # a nested file: its folder's work, whatever came first
+            under = load.folder + "/" if load.folder else ""
+            load.at = [r for r in touched if r.startswith(under)]
+            continue
+        if load.globs:
+            load.at = [r for r in touched if any(glob_pattern(g).fullmatch(r) for g in load.globs)]
+        elif load.after:
+            load.at = [load.after]
+        if not load.at:
+            s.unpinned[load.why] += 1
 
 
 def folders_of(rel: str, depth: int) -> list[str]:
@@ -326,10 +407,9 @@ def tally(sessions: list[Session], root: Path, depth: int) -> dict[str, Folder]:
         mine: dict[str, list[Touch]] = {}  # the session's own calls, by folder
         mentioned: dict[str, list[Touch]] = {}  # files a prompt @-mentioned, by folder
         for t in s.main:
-            if t.kind != "load":
-                for f in folders_of(t.rel, depth):
-                    (mentioned if t.by_user else mine).setdefault(f, []).append(t)
-        theirs = {f for t in s.sub if t.kind != "load" for f in folders_of(t.rel, depth)}
+            for f in folders_of(t.rel, depth):
+                (mentioned if t.by_user else mine).setdefault(f, []).append(t)
+        theirs = {f for t in s.sub for f in folders_of(t.rel, depth)}
         for f in theirs - set(mine):
             out.setdefault(f, describe(root, f)).subagent_only += 1
         for f, touches in mine.items():
@@ -352,8 +432,8 @@ def tally(sessions: list[Session], root: Path, depth: int) -> dict[str, Folder]:
                     folder.later += 1
                 else:
                     folder.never += 1
-            folder.loads.update({t.rel for t in s.main
-                                 if t.kind == "load" and f in folders_of(t.after, depth)})
+            folder.loads.update({load.shown for load in s.loads
+                                 if any(f in folders_of(r, depth) for r in load.at)})
     return out
 
 
@@ -396,6 +476,7 @@ def main(argv: list[str] | None = None) -> int:
             continue
         for sub in sorted((path.parent / path.stem / "subagents").glob("*.jsonl")):
             parse(sub, s, s.sub, paths, main=False)
+        pin(s)
         sessions.append(s)
         mtime = path.stat().st_mtime
         oldest = mtime if oldest is None else min(oldest, mtime)
