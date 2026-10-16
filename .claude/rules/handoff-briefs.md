@@ -1,7 +1,13 @@
+---
+paths:
+  - "docs/handoffs/**"
+---
+
 # Before touching a brief
 
-What a session must know before it writes, starts or lands a brief here;
-[execute/README.md](execute/README.md) keeps the reasoning.
+What a session must know before it writes, starts or lands a brief in
+`docs/handoffs/`; [execute/README.md](../../docs/handoffs/execute/README.md)
+keeps the reasoning.
 
 - **No file lists the queue**: `uv run scripts/handoff-status.py` prints
   it from each brief's frontmatter, `. --no-inbox` for this repo alone, so
@@ -52,9 +58,9 @@ What a session must know before it writes, starts or lands a brief here;
   run**; `skill-status.py --stale` says which skills need a retest.
 - **Audit briefs are a second queue**, which the view prints after the
   first from their logs: one left open carries a `**Needs**:` line, and
-  a `**Closed**:` one lands with its work, or as `/triage` carries it here
-  ([why](execute/README.md#audit-briefs-are-a-second-queue)).
+  a `**Closed**:` one lands with its work, or as `/triage` queues it
+  ([why](../../docs/handoffs/execute/README.md#audit-briefs-are-a-second-queue)).
 - **A filename is a link target**, so it carries no date or number. **A
   brief is the unit of deletion**: merge two only on one subject, not on a
   shared `needs` or a dependency (`blocked-by`); a sweep follows
-  [execute/README.md](execute/README.md#sweeping-the-queue).
+  [execute/README.md](../../docs/handoffs/execute/README.md#sweeping-the-queue).

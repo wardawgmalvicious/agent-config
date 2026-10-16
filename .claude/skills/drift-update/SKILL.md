@@ -434,7 +434,7 @@ that wrote nothing has nothing to hand over: report the clean tree and stop,
 rather than invoking `/commit` against an empty diff.
 
 **The pass lands as a brief's worktree does**: from the main checkout, by
-fast-forward with no push, by the commands `docs/handoffs/CLAUDE.md`
+fast-forward with no push, by the commands `.claude/rules/handoff-briefs.md`
 gives, once the user asks this session to leave the worktree. Then run
 the deferred steps that need the deployed payload, deploying first, and
 append `**Closed**:` to each brief whose steps pass, as 4.5 says.

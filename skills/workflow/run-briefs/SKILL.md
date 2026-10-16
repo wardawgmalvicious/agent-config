@@ -44,8 +44,8 @@ checkout and the landing fast-forwards it. Under the default
 default branch, so a brief landed here without a push is missing from
 the next brief's worktree with nothing said. And the landing is the
 repo's own: read its instructions for a brief's worktree before the
-first worker runs. In this repo that is `docs/handoffs/CLAUDE.md`, which
-lands by fast-forward with no push. A repo whose instructions say
+first worker runs. In this repo that is `.claude/rules/handoff-briefs.md`,
+which lands by fast-forward with no push. A repo whose instructions say
 nothing about landing a brief's worktree gets no worker: say what is
 missing and stop, since a worker's branch would wait for a landing nobody
 has written down.
@@ -148,8 +148,8 @@ turn. Leave the worktree and branch where they are.
 
 ## 6. Land
 
-As the repo's instructions say. This repo's, from `docs/handoffs/CLAUDE.md`,
-with what the coordinator adds in front:
+As the repo's instructions say. This repo's, from
+`.claude/rules/handoff-briefs.md`, with what the coordinator adds in front:
 
 1. **Another session live in the main checkout stops the landing.**
    `claude agents --json` rows carry a `cwd`; one at the main checkout

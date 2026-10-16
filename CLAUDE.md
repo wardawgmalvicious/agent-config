@@ -128,7 +128,7 @@ change can vanish, staged or not, as `git status` looks innocent
 procedure; change it there, not here. **Work every brief in a worktree
 named after it**, by `EnterWorktree` or `claude --worktree` with its name
 less `.md`, or the queue never marks it `in flight` (2026-09-29). Land it as
-`docs/handoffs/CLAUDE.md` says: `link-claude.ps1`, bar a probe root, and git
+`handoff-briefs.md` says: `link-claude.ps1`, bar a probe root, and git
 refuse a worktree (2026-09-29). `.claude/settings.json` branches a worktree
 from local `HEAD`; the default, `fresh`, drops unpushed commits unannounced.
 A worktree buys no payload isolation for the deployed groups (2026-09-02),
@@ -149,7 +149,8 @@ though the long path runs. A subagent spawned there inherits it
   change, `sed` or heredoc never, silently. For a new file, Read a sibling.
 - Rules here: `editing-skills.md`, `editing-rules.md`,
   `editing-claude-md.md`, `deploy-scripts.md`, `hooks-and-agents.md`,
-  `pre-commit-hooks.md`, `activation-testing.md` and `skill-overrides.md`.
+  `pre-commit-hooks.md`, `activation-testing.md`, `skill-overrides.md`
+  and `handoff-briefs.md`.
 - Long detail goes in a skill's own `references/`, not its `SKILL.md`.
 - **Adding a harness**: what only that tool reads goes under `<tool>/`,
   promoted to the root only when a second tool reads it, and deploys via a

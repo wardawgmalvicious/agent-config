@@ -59,7 +59,7 @@ skill was renamed or deleted and the stamp did not follow. That is the one
 thing the pre-commit hook enforces. "Untested" is not a failure:
 /author-skill commits before /test-skill runs, by design, so a new skill
 is legitimately untested for a commit or two. The honesty mechanism for
-that state is docs/handoffs/CLAUDE.md, pointing every session that
+that state is .claude/rules/handoff-briefs.md, pointing every session that
 touches a brief at this.
 """
 

@@ -8,9 +8,9 @@ for another repo, and the commit message that replaces the notes.
 
 One file per subject in `docs/handoffs/execute/`, named for the subject,
 with no date and no number: the filename is a link target.
-`docs/handoffs/CLAUDE.md` holds the frontmatter keys. The body below is
-the shape that held for the briefs written from notes on 2026-09-22 and
-2026-09-30.
+`.claude/rules/handoff-briefs.md` holds the frontmatter keys. The body
+below is the shape that held for the briefs written from notes on
+2026-09-22 and 2026-09-30.
 
 ```markdown
 ---

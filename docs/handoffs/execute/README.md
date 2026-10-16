@@ -2,9 +2,10 @@
 
 Each brief here holds its own state in frontmatter, and
 `uv run scripts/handoff-status.py` generates the queue from it.
-[../CLAUDE.md](../CLAUDE.md), which loads on the first Read under
-`docs/handoffs/`, has the keys and what a session must know before
-touching a brief; this file keeps the reasoning behind them.
+[handoff-briefs.md](../../../.claude/rules/handoff-briefs.md), a rule
+that loads on the first Read under `docs/handoffs/`, has the keys and
+what a session must know before touching a brief; this file keeps the
+reasoning behind them.
 
 ## No file lists the queue
 
@@ -180,7 +181,8 @@ in the main checkout, `git worktree list --porcelain` still read
 `locked claude session worktree-per-brief (pid 6452)`, and
 `~/.claude/sessions/6452.json` named the session that had just left.
 `git worktree remove` refuses a locked worktree, so the landing ran
-`git worktree unlock` first, as [../CLAUDE.md](../CLAUDE.md) says.
+`git worktree unlock` first, as
+[handoff-briefs.md](../../../.claude/rules/handoff-briefs.md) says.
 
 ## A brief's worktree lands without a push
 
@@ -191,8 +193,9 @@ here commits to `main` and pushes only when asked, and a worktree
 branches from local `HEAD`, so `/land` would have published the branch
 with every unpushed serial commit beneath it: `main` stood 4 commits
 ahead of `origin` that day. Only this repo lands this way, so the
-commands live in [../CLAUDE.md](../CLAUDE.md), and `/land` step 1 defers
-to a repo's instructions that land without a push.
+commands live in
+[handoff-briefs.md](../../../.claude/rules/handoff-briefs.md), and
+`/land` step 1 defers to a repo's instructions that land without a push.
 
 Measured that day in a scratch clone, on git 2.55.0 and Claude Code
 2.1.282: from the main checkout `git merge --ff-only <branch>` refused,

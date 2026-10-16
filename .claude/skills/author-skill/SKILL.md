@@ -453,7 +453,8 @@ a step here instead of a habit.
 - The brief written at step 5 **stays queued**. Nothing is validated
   until the fresh-session test has run.
 - A skill brief beside a skill that now exists **stays queued** too:
-  `docs/handoffs/CLAUDE.md` says why; `/test-skill` step 10 deletes it.
+  `.claude/rules/handoff-briefs.md` says why; `/test-skill` step 10
+  deletes it.
 - For any other brief whose subagent or other work now exists, **propose**
   deletion or promotion and name which. Propose rather than act: you
   can see that an artifact exists, but not whether the user considers
@@ -464,8 +465,8 @@ Hand off to **`/commit`, then `/test-skill`**, and do neither here. For
 a skill in a deployed group, `workflow`, `social` or `meta`,
 `/test-skill` step 7 cannot run in a worktree — the group's junction
 serves the main checkout's copy, and `link-claude.ps1` refuses a
-worktree — so land it as `docs/handoffs/CLAUDE.md` says, deploy, then
-test on `main`. A platform or project-scope skill can be tested in its
+worktree — so land it as `.claude/rules/handoff-briefs.md` says, deploy,
+then test on `main`. A platform or project-scope skill can be tested in its
 worktree, its stamp still waiting for `main` (`/test-skill` step 10).
 The test reads the brief from disk, so it need not follow at once, and
 a cold run is the better one (2026-10-01).

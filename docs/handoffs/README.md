@@ -40,8 +40,9 @@ top-level README for additional context.
 Open briefs — work scoped but not yet done — wait in
 [execute/](execute/), each holding its state, priority and blockers in
 its own frontmatter. `uv run scripts/handoff-status.py` prints the queue
-from them, and [CLAUDE.md](CLAUDE.md), which loads on the first Read
-here, holds what a session must know before touching one — not this file.
+from them, and [handoff-briefs.md](../../.claude/rules/handoff-briefs.md),
+a rule that loads on the first Read here, holds what a session must know
+before touching one — not this file.
 
 `docs/audits/` holds handoff briefs too — the two directories split by
 lifecycle, not by kind. Both are tracked; what differs is what happens

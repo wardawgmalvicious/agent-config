@@ -560,7 +560,7 @@ edits then read `review-body` against the fresh stamp (`857e65f`,
 
 **A stamp taken in a linked worktree can name a commit `main` never
 gets.** Landing rebases the branch onto `main` before the fast-forward
-(`docs/handoffs/CLAUDE.md`), and whenever `main` has moved, that
+(`.claude/rules/handoff-briefs.md`), and whenever `main` has moved, that
 rewrites the commit `rev-parse` named. `test-skill`, 2026-09-29: the
 no-X arm, walking a retest through in a brief's worktree, stamped there
 and landed by `--ff-only`, noting that a rebase "would leave the stamp

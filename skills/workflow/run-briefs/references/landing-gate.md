@@ -115,7 +115,7 @@ alive is a session at work there: stop.
 
 ## This repo's landing
 
-From `docs/handoffs/CLAUDE.md`, which is the authority; this is the
+From `.claude/rules/handoff-briefs.md`, which is the authority; this is the
 order the coordinator runs it in.
 
 ```bash

@@ -2386,6 +2386,32 @@ driveless pattern. The finding is in
 `claude/rules/agent-instructions-scoping.md` § "How Claude Code loads
 them".
 
+**2026-10-16.** The queue's must-knows moved from a nested
+`docs/handoffs/CLAUDE.md` to `.claude/rules/handoff-briefs.md`, scoped to
+`docs/handoffs/**`, by `git mv`, so `git blame -C` still reaches each
+line. A nested file loads only on a path whose drive letter is cased as
+the launch directory's, and a VS Code session, launched at `c:\`, writes
+its paths `C:\` from its first Bash call, while a `paths:` rule loads on
+either spelling (`claude/rules/agent-instructions-scoping.md` § "How
+Claude Code loads them"): 15 of 50 VS Code sessions that Read under
+`docs/handoffs/` never loaded the file (2026-10-15). The user chose the
+move that day over leaving the file, and the brief that carried it,
+`handoffs-claude-md-into-a-rule.md`, was deleted in the same commit. On
+`scripts/test-instruction-loading.py`'s d4 steps, run against the real
+queue, a cold haiku session launched at `c:\` made a Bash `pwd`, which
+respelled its cwd `C:\`, then Read a brief spelled `C:\`: on `main` at
+`e4a6771` nothing of the queue's loaded (`66c98130`), and in the brief's
+worktree the rule arrived as a `nested_memory` attachment (`2b7ae5e9`).
+
+The rule leaves `lint-claude-md.py`'s nested cap for `editing-rules.md`'s
+terms and joins root's list in § "Editing conventions", root going from
+197 lines to 198. Root's landing pointer, both queue READMEs, four
+project skills, four files of `run-briefs` and `land`, and
+`skill-status.py`'s docstring now name it. The brief's grep missed one,
+`docs/handoffs/README.md`'s `[CLAUDE.md](CLAUDE.md)`, a link from inside
+the folder. `tests/scripts/handoff-status/test-findings.sh` still plants
+a `docs/handoffs/CLAUDE.md`, since another repo's queue may keep one.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

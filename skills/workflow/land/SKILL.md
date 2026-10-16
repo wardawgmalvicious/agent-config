@@ -46,7 +46,7 @@ opening an empty PR.
 **Where the repo's instructions land this branch without a push, follow
 them instead**, unless a push or a PR was asked for: step 3 publishes
 every unpushed commit beneath the branch. agent-config's
-`docs/handoffs/CLAUDE.md` lands a brief's worktree that way.
+`.claude/rules/handoff-briefs.md` lands a brief's worktree that way.
 
 **Two different paths from the last command mean a linked worktree**:
 steps 7 to 9 change there, and a generated branch name is renamed first.

@@ -36,8 +36,8 @@ NOTES: anything the user should know, or none.
 
 - **"as the repository's instructions ... say"**: a `-p` run without
   `--bare` loads what an interactive session loads, so the repo's
-  `CLAUDE.md`, and here `docs/handoffs/CLAUDE.md` on the brief's first
-  Read, govern the worker as they would a typed session.
+  `CLAUDE.md`, and here `.claude/rules/handoff-briefs.md` on the brief's
+  first Read, govern the worker as they would a typed session.
 - **"nobody can answer a permission prompt or a question"**:
   `--permission-prompts none` denies whatever would prompt and removes
   `AskUserQuestion`; the sentence stops the worker planning around an
