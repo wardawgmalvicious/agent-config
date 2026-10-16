@@ -60,3 +60,46 @@ Consequences worth knowing before you diff or edit one of these:
   are — regardless of the column flags. Review table flags, ignore column ones.
 - A semantic model source has **no** `fewshots.json`; it does not support
   example queries.
+
+## Settings and publish, by REST
+
+The agent instructions and the runtime of each stage can be read and set
+without the portal, under
+`https://api.fabric.microsoft.com/v1/workspaces/{ws}/dataAgents/{id}/`
+with a Fabric token. Measured in one client estate on 2026-10-15, six
+publishes each read back from both stages:
+
+| Call | Does |
+| --- | --- |
+| `GET staging/settings` | returns the draft's `{aiInstructions, experimental}` |
+| `GET settings` | returns the published agent's, in the same shape |
+| `PATCH staging/settings` | takes `{"aiInstructions": …}` or `{"experimental": {…}}`, and keeps whatever it is not sent |
+| `POST staging/publish` | takes `{"publishedDescription": …}` and publishes the draft |
+
+Of the four, Learn's REST reference documents only the publish, as
+*Publish Data Agent*, in preview (read 2026-10-16).
+The SDK's `get_settings`, `update_settings(ai_instructions,
+experimental)` and `publish_staging(description)` call these four
+(0.1.33a0 source, read 2026-10-16).
+
+**`experimental.enableExperimentalFeatures` is the runtime**: `true` is
+the preview runtime. Set `false`, it is the standard runtime, and both
+GETs then **omit the key**, `experimental` holding
+`{"codeInterpreterEnabled": true}` alone. Read a missing key as false: a
+check written `is False` misread the standard runtime. Whether the PATCH
+merges inside `experimental` or replaces it whole is unmeasured, so a
+switch sends back the `experimental` it read, one key changed.
+
+**A switch reaches consumers only on the next publish.** The published
+agent keeps the runtime it was published with, as Learn's data agent
+runtime page says (read 2026-10-16), and Git shows the item modified
+until someone commits it from the workspace: each stage's
+`stage_config.json` carries `experimental`.
+
+Learn's runtime page switches with
+`update_configuration(enable_preview_features=True)`. The 0.1.33a0
+source marks `update_configuration` deprecated, a legacy workload-host
+call that emits a `FutureWarning` naming `update_settings()`, and names
+its parameter `enable_preview_runtime`, renamed from
+`enable_experimental_features` in 0.1.24a0: Learn's keyword is neither.
+Use `update_settings` or the PATCH (source read 2026-10-16, not run).
