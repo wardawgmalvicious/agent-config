@@ -1,13 +1,13 @@
 ---
 status: deferred
-priority: 3
+priority: 2
 needs: [user]
 blocked-by: []
-reopen-when: machine-config's gateway brief picks a route that needs a payload change, or WebFetch fails its domain check in a session on that network
+reopen-when: the organization's Claude seat is live on the corporate network, or machine-config's claude-login-pin.md picks a route the payload must follow
 written: 2026-10-06
 ---
 
-# Handoff: Claude Code on the corporate network waits on the gateway brief
+# Handoff: the payload when the work Claude account arrives
 
 - **Written**: 2026-10-06, from two inbox notes of 2026-10-02 and
   2026-10-05 by VS Code sessions in a client Fabric repo, the first
@@ -19,9 +19,17 @@ written: 2026-10-06
   payload at `cabf9c9`.
 - **Synced**: 2026-10-15, with machine-config's brief at `5685f27`,
   read in a session that had both repos open, so no note was sent.
-- **Kind**: a decision, the user's, parked first on IT, which answered
-  on 2026-10-12, and now on machine-config's gateway brief, where the
-  pick is made. Nothing is drafted.
+- **Reframed**: 2026-10-16, from `claude-code-corporate-network.md`.
+  The organization is taking Claude Team, perhaps Enterprise later, so
+  the user no longer needs a way around the filter. Agreed that day with
+  a machine-config session and approved by the user: the gateway stays
+  in machine-config's `docs/handoffs/claude-code-gateway.md`, reframed
+  as a project of its own and deferred until it has its own repo; the
+  token launcher's removal is its `claude-onsite-removal.md`; and the
+  per-folder login pin is its `claude-login-pin.md`. This brief keeps
+  what the payload must change.
+- **Kind**: two edits, each on its own trigger, the second shaped by
+  the route the user picks in `claude-login-pin.md`.
 
 ## Why it waits
 
@@ -34,101 +42,46 @@ measurements are in
 `claude/CLAUDE.md` section that carries the rule, "GitHub Copilot does
 not inherit this payload" (2026-10-13).
 
-Asking IT to allow those hosts came first. The filter reset every
-Anthropic name it was shown, which made a deliberate block likely, and
-routing around a deliberate block is the organization's call, not a
-technical one. IT answered on 2026-10-12.
+The organization's seat signs in through those hosts, so its rollout
+should open them, though not necessarily for the personal login: a
+filter by name cannot tell the two apart, yet the opening is IT's to
+scope (reasoned, not measured). Until a session there signs in, the
+rule stands, and the fallback there stays VS Code's Claude target on a
+Copilot model.
 
-## IT's answer, 2026-10-12
+## The corporate-network rule
 
-IT approved the user's own use of Claude Code and declined only to open
-Anthropic's endpoints to the whole organization, which wants mainly
-Claude Desktop. The filter stays, as a decision about scope rather than
-a refusal of that use. The user relayed it to a machine-config session
-that day, which sent it here as an inbox note.
+**On the first trigger, re-measure both logins on that network**, and
+correct the rule by what each does:
 
-The user decided the same day to pursue machine-config's
-`docs/handoffs/claude-code-gateway.md`, to keep its self-hosted hop
-deferred rather than drop it, and to plan its token option next without
-waiting on the first. They also find the Copilot-model fallback short
-of features they rely on, and its usage looked much higher (not
-measured).
+- **The work seat**: a session signs in and answers there.
+- **The personal login**: a `/login` that completes there shows the
+  sign-in host passes, and machine-config's `scripts/network-soak.ps1`
+  measures `platform.claude.com` beside `api.anthropic.com`.
 
-That brief, landed on machine-config's `main`, orders three options:
+Then, in one commit:
 
-- **A per-device exception from IT**, first: it matches the scope IT
-  chose, builds nothing and loses no feature.
-- **The token**, applied only on that network, per launch, since one at
-  User scope costs Remote Control and the claude.ai connectors on every
-  network (§ "What is left if IT keeps the block"). Machine-config built
-  its launcher on 2026-10-13, `scripts/claude-onsite.ps1`, which keeps
-  the token in a file encrypted for the Windows account and sets it
-  only for the VS Code or shell it starts. A User-scope toggle was
-  rejected: left on at home, it drops those features without a word.
-  Untried with a real token, and none was stored on 2026-10-15.
-- **A self-hosted hop**, deferred, now of three kinds: an LLM gateway,
-  which raises a question under Anthropic's legal and compliance terms
-  on intermediating claude.ai credentials; a forward proxy, which
-  never sees the token; and Anthropic's `claude gateway`, ruled out
-  below as billed per token unless Anthropic lets a subscription sit
-  behind it.
+- Correct `claude/CLAUDE.md` § "GitHub Copilot does not inherit this
+  payload" in place: the sentence that Claude Code fails at sign-in on
+  the corporate network goes, or names the login that still fails.
+- Add a dated entry under that heading in
+  [docs/evidence/user-claude-md.md](../../evidence/user-claude-md.md),
+  leaving the 2026-10-05 one as it stands.
+- Deploy with
+  `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
 
-Its two questions for this repo were answered on 2026-10-13 by a note
-to machine-config's inbox: nothing in the payload starts a session
-under the background supervisor, since its headless workers are
-children of the session that launches them, and the payload relies on
-none of Remote Control, claude.ai connectors, `/schedule` or the
-Artifact tool.
+With it, write a note to `~/handoff-inbox/machine-config/` naming each
+login's outcome separately, since the personal one triggers
+`claude-onsite-removal.md`, and correct this repo's auto-memory
+`sole-reader-of-the-payload`, which has Copilot as the fallback on that
+network. A session there that sees an outcome first `/learn`s it to
+both inboxes.
 
-## What the user decided, 2026-10-02
+## WebFetch behind a gateway
 
-Nothing billed per token. The Copilot Business seat is already paid
-monthly, and VS Code's Claude target on a Copilot model bills against it
-and sends model traffic only to GitHub's hosts, so that target is the
-fallback on that network. It answered there on 2026-10-05. A gateway is
-parked as a possible project, not a need.
-
-Two things seen on 2026-10-05 bear on that, read from the turn's
-transcript on this machine on 2026-10-06 (the retirement brief's § "How
-it graded"):
-
-- **The seat has a monthly quota.** At 18:19:48 UTC VS Code's proxy
-  answered `402` `quotaExceeded`, "You have exceeded your monthly
-  quota". 195 answers on the same model followed; whether overage
-  billing or something else let them through was not traced.
-- **The target's Copilot group has no Opus**: Claude Sonnet 5.5, Claude
-  Sonnet 5 and Claude Haiku 4.5, by the Agent Host log as a session there
-  read it.
-
-## What is left if IT keeps the block
-
-- **A long-lived token**, researched 2026-10-05 from code.claude.com
-  `authentication`, not tried. `claude setup-token` prints a one-year
-  OAuth token for `CLAUDE_CODE_OAUTH_TOKEN`, billed to the claude.ai
-  plan, not per token. Claude Code never refreshes it, so the sign-in
-  hosts stop mattering and only `api.anthropic.com` is left, which let 6
-  of 7 of the `/login` session's requests through on 2026-10-05. It carries
-  model requests only: no Remote Control and no claude.ai connectors. It
-  ranks above the `/login` credential, so one set at User scope applies
-  on every network. Minting it takes the `/login` browser flow, so it is
-  done off that network, and it works only through the filter's gaps, so
-  the point about IT holds for it too. Machine-config keeps it, though
-  not as it keeps the PATs: a User-scope variable reaches every process
-  and prints in any dump of the environment, so the token sits in a file
-  its launcher alone reads (§ "IT's answer, 2026-10-12").
-- **A gateway the user runs**, through `ANTHROPIC_BASE_URL`, carries
-  inference only: the docs list `/v1/messages` and a few optional calls
-  as what a gateway receives, not sign-in or refresh, so a plan login
-  still fails there, and fast mode's availability check calls
-  `api.anthropic.com` directly. It is a server to host where that network
-  reaches it, kept in step with Claude Code releases. Inferred from
-  code.claude.com `llm-gateway` and `llm-gateway-protocol`, read
-  2026-10-02.
-- **Ruled out on 2026-10-02**, as billed per token: Microsoft Foundry, on
-  an Azure subscription, and Anthropic's `claude gateway`, which also
-  stops a signed-in Claude Code at startup wherever it is unreachable.
-
-## WebFetch in the Claude target
+This matters again if the seat reaches Anthropic through a gateway, the
+organization's Claude apps gateway among them, while the filter keeps
+resetting `api.anthropic.com`.
 
 Claude Code checks each WebFetch domain with `api.anthropic.com` even
 when its model traffic goes elsewhere, unless `skipWebFetchPreflight` is
@@ -139,37 +92,81 @@ working. Not observed: the 2026-10-05 turn made no WebFetch call. The
 fix is a key in `claude/settings.json`, which costs Anthropic's domain
 blocklist, and a settings change takes the user's yes.
 
+## The payload side of a login pin
+
+**Waits on machine-config's `claude-login-pin.md`**, which holds the
+mechanism, its measurements and the user's pick of route. One
+measurement shows what is at stake: on 2026-10-16 the user switched a
+client repo's VS Code window to the work seat from the extension's
+account menu, and the switch rewrote the shared
+`~/.claude/.credentials.json`, so every new session on the machine
+started on the work seat, personal repos included. No settings file can
+pin the account or guard it: project and local settings ignore
+`CLAUDE_CONFIG_DIR`, and `forceLoginOrgUUID` is enforced only from a
+managed source (code.claude.com `env-vars` and `settings-reference`,
+read 2026-10-16).
+
+What the payload then needs, by route:
+
+- **On either route**, a section in `claude/CLAUDE.md` beside "Azure CLI
+  state is per tenant", saying how the login is pinned and what a wrong
+  one looks like; and perhaps a `SessionStart` hook that warns when a
+  session's account is not its folder's, since a hook runs on every
+  launch path, the extension, `claude` in a terminal and each
+  `claude -p` child alike. The hook reads the folder-to-identity map
+  that machine-config generates into `~/.config`, so the payload holds
+  no identity. `claude auth status` reports `email`, `orgId`, `orgName`
+  and `subscriptionType`, and with every connection refused it printed
+  the same fields in the same 2.5 to 2.7 s (2.1.293, measured
+  2026-10-16), which is too slow for every session start; `.claude.json`
+  in the config directory is fast to read, but an internal format.
+- **On a second config directory**, the docs' own pattern for work and
+  personal accounts side by side (code.claude.com `authentication`, read
+  2026-10-16), the payload pays more:
+  - `scripts/link-claude.ps1` hard-codes `$UserScopeDir` and
+    `$GlobalMcpConfig` to `~/.claude` and `~/.claude.json`, so
+    `-GlobalMcp` skips any other directory, which then starts without
+    `microsoft-learn-mcp`; and root `CLAUDE.md` § "Commands" deploys to
+    one directory.
+  - `claude/settings.json`'s hook commands resolve `$HOME/.claude/...`
+    (`.claude/rules/deploy-scripts.md`), so the second directory runs
+    the first one's hooks.
+  - `find-session.py`, `folder-sessions.py`, and `land`'s
+    `never-prompted.sh` and `placed-elsewhere.sh` read
+    `CLAUDE_CONFIG_DIR`, so each sees one directory's transcripts.
+  - The payload's prose names `~/.claude/rules/...` by path.
+- **On a work token**, nothing beyond the section above.
+
+If IT deploys `forceLoginOrgUUID` to this laptop, the pin is moot, as
+`claude-login-pin.md` says: Claude Code would then refuse the personal
+login at startup in every folder.
+
 ## Where it lands
 
-Nothing until machine-config's gateway brief settles a route this repo
-must follow, or the tell above is seen.
-
-- IT allows the hosts, as a per-device exception would: this brief is
-  deleted, with that recorded.
-- IT kept the filter and approved the user's own use (2026-10-12), a
-  case this list did not name. The pick between the Claude target
-  alone, the token and a gateway is made in machine-config's
-  `docs/handoffs/claude-code-gateway.md`, triaged there on 2026-10-07
-  from a note this repo sent assuming the block held. The token needs
-  nothing from the payload, as the note of 2026-10-13 told it; a route
-  that does reopens this brief. One line changes if the token holds a
-  session there: `claude/CLAUDE.md` says Claude Code fails at sign-in
-  on that network, which would then hold only without the launcher.
-- The WebFetch tell is seen: `skipWebFetchPreflight` goes into
-  `claude/settings.json` on the user's yes, deployed with
-  `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
+The rule lands on the first trigger, and the WebFetch key on its tell,
+on the user's yes, deployed with
+`./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
+The brief is deleted once the rule and the pin's side have both landed,
+or the pin's brief has closed on a route that needs nothing here. A
+WebFetch case still open then becomes a brief of its own.
 
 ## Not checked
 
-- What let 195 answers through after the `402`.
-- The token, the gateway and the Claude target's WebFetch, on that
-  network or anywhere.
+- Either login on that network since 2026-10-05.
+- Whether a session already running moves to the work seat at its next
+  token refresh, after another window's switch.
+- The WebFetch check there, on any route.
+- `claude auth status` on an expired token, or a connection that hangs
+  rather than refuses.
 
 ## Scrubbing
 
 This repo is public. The client repo is cited by kind, and the
 organization and its network are named nowhere. Both notes and the
 transcript were raw.
+
+The work account's email, organization name and ID go in no file here
+either: write "the work seat".
 
 ## Re-measure before acting
 
@@ -181,5 +178,11 @@ transcript were raw.
   curl -sS -o /dev/null -w '%{http_code}\n' https://platform.claude.com
   ```
 
-- The code.claude.com pages above, for the token's lifetime and what a
-  gateway receives.
+- Which account the stored login is, printing no identity:
+
+  ```bash
+  claude auth status | jq -b -c '{authMethod, subscriptionType, configDirectory}'
+  ```
+
+- Whether `claude-login-pin.md` has picked a route, and where its map
+  lives.
