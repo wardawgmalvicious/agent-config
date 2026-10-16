@@ -26,7 +26,7 @@ Claude Code 2.1.282 on 2026-09-25; `AGENTS.md` support needs 2.1.277.
 | --- | --- | --- |
 | Needed before any Read: commands, repo-wide conventions | root `CLAUDE.md` | it passes ~200 lines and adherence drops |
 | About one file kind, wherever it sits | `.claude/rules/` file with `paths:` | the glob is wrong, only Grep, a pipe or a multi-file `cat` touch it, or the mistake is a live command or a sync, which touches no file; a Write or Edit loads it only once the file exists |
-| About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads, Writes, Edits or views one file there itself (below), or has compacted and done none of them there since |
+| About one directory, kept by its owners | nested `CLAUDE.md` | the session never Reads, Writes, Edits or views one file there itself (below), spells the path's drive letter unlike the launch directory, or has compacted and done none of them there since |
 | A procedure asked for in words | skill | its description never matches |
 | Must hold before the agent acts | hook or `permissions.deny` | the hook itself fails open |
 | Long reference for people | README, or a short nested `CLAUDE.md` of `@README.md` | the agent never opens it |
@@ -96,9 +96,19 @@ a rule or a nested file, and the README keeps the rest.
   a nested `AGENTS.md` as `hook_additional_context`. The InstructionsLoaded
   hook never fires for an `AGENTS.md` read directly, and missed two of four
   confirmed rule loads in one test (2026-09-01).
-- **A `claudeMdExcludes` pattern stays driveless**, `**/<dir>/**`: one
-  naming the drive misses whenever the letter's case differs from how the
-  Read spelled the path (2026-09-24).
+- **On Windows a nested file loads only on a path whose drive letter is
+  cased as the launch directory's.** Launched at `c:\`, a Read, Write or
+  Edit spelled `C:\` loads no nested `CLAUDE.md` or `AGENTS.md`, and the
+  reverse holds, while a `paths:` rule loads on either; the transcript
+  records no miss (probed 2026-10-15, 2.1.293). VS Code launches at
+  `c:\`, and its first Bash call reports the working directory as `C:\`,
+  which the paths Claude writes then follow: in one repo 15 of 50 VS Code
+  sessions never loaded the nested file they worked under (2.1.288 to
+  2.1.296). A worktree `EnterWorktree` made is rooted at git's `C:\`. So
+  on Windows a folder's must-knows are surer in a `paths:` rule on
+  `<dir>/**`. A `claudeMdExcludes` pattern stays driveless,
+  `**/<dir>/**`: one naming the drive misses whenever its letter's case
+  differs from the path's (2026-09-24).
 
 ## Naming a nested file
 

@@ -192,7 +192,9 @@ conformance checking.
   day, and since 2026-10-13 the Local one; a Claude-target turn loaded
   user rules on 2026-10-05. Since 2026-10-15 it also says how little a
   folder added beside the working directory loads, from cold `--add-dir`
-  probes on 2.1.300. Triggers on
+  probes on 2.1.300, and that on Windows a nested file loads only on a
+  path whose drive letter is cased as the launch directory's, which a
+  VS Code session stops writing at its first Bash call. Triggers on
   `CLAUDE.md`, `CLAUDE.local.md` and `AGENTS.md` at any depth,
   `.claude/rules/`, and Copilot's `.github/` instruction files.
 
