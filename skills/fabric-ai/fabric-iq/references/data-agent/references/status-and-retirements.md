@@ -13,5 +13,5 @@ integration has stopped working.
 
 ## Learn pages
 
-- [Fabric data agent Python SDK (preview)](https://learn.microsoft.com/fabric/data-science/fabric-data-agent-sdk) — management plane; querying moved to the MCP endpoint
+- [Fabric data agent Python SDK (preview)](https://learn.microsoft.com/fabric/data-science/fabric-data-agent-sdk) — management plane, and Learn sends querying to the MCP endpoint, yet its Responses client still queries and is the one scripted route to an answer's DAX ([consumption-surfaces.md](consumption-surfaces.md))
 - [Consume a Fabric data agent from Copilot in Power BI](https://learn.microsoft.com/fabric/data-science/data-agent-copilot-powerbi) — **integration retired 2026-08-26**; page kept for reference only
