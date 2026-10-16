@@ -167,10 +167,13 @@ guard refuses the chained form below there as too complex to verify
 user's standing word since 2026-10-09. Held for their review, it can
 vanish under a peer's stash, checkout or pre-commit run before they
 look, and nothing reports it; a commit they did not want costs a revert.
-A peer is any live `ListAgents` row that may sit in this tree: a
-`<cwd-basename>-<hash>` naming it or a folder in it, or a named row you
-cannot place elsewhere, idle or never prompted alike, since the user can
-prompt it at any moment. Finished means the hooks pass and nothing in it
+A peer is any live `ListAgents` row that
+`bash ~/.claude/skills/land/scripts/placed-elsewhere.sh <name>` does not
+place elsewhere, idle or never prompted alike, since the user can
+prompt it at any moment. The script places a row by its session's
+working directory, which a name set by `/rename`, `--name` or a hook
+does not give, and keeps in this tree a row it cannot place: `land` step
+1 has why. Finished means the hooks pass and nothing in it
 dangles; work in progress stays out, and the report says it is at risk.
 Only the user's word in this conversation holds a finished unit back.
 Run the whole procedure, but on `main` where step 4 would branch, ask
@@ -178,7 +181,8 @@ instead, since `git switch -c` moves the peer's HEAD too. Open the report
 with the commit and why it was made unasked.
 
 - **Ask them.** `ListAgents` names every live session by its
-  `/rename` or `--name` name, else `<cwd-basename>-<hash>` — its
+  `/rename` or `--name` name, or one a hook set, else
+  `<cwd-basename>-<hash>` — its
   working directory, not its repo — and
   `SendMessage` reaches one. **Read every row rather than filtering by
   repo name**: a peer sitting in a subdirectory of this tree is both the
