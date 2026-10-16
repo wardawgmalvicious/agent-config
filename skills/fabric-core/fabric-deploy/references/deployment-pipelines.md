@@ -195,8 +195,13 @@ before reading a header. `deployment-id` is a **different** UUID from
 `x-ms-operation-id`: the pipeline's own operation ID, by Learn's
 samples, which give one UUID as Deploy Stage Content's `deployment-id`
 and as the ID Get Deployment Pipeline Operation is called with and
-returns (read 2026-10-13; the header itself unmeasured). Poll the deploy
-with `x-ms-operation-id`, and never send that to
+returns (read 2026-10-13), and by one deploy, whose `deployment-id`
+fetched it there, `Succeeded` with its steps, and matched the newest
+entry of List Deployment Pipeline Operations (one client estate,
+2026-10-13). So read a deploy's plan by
+`GET /v1/deploymentPipelines/{id}/operations/{deployment-id}`, never by
+the newest operation, which is another deploy's when two overlap. Poll
+the deploy with `x-ms-operation-id`, and never send that to
 `/v1/deploymentPipelines/{id}/operations/{operationId}`: it answered
 `404` `EntityNotFound`, `resourceType` `DeploymentPipelineOperation`, on
 every one of 85 polls while the deploy succeeded (one client estate,
