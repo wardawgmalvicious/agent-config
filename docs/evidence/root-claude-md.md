@@ -2422,6 +2422,22 @@ first Bash call, while a rule loads on either spelling. The user chose
 the change that day, once the move was made. The bullet on a nested
 `CLAUDE.md` and `lint-claude-md.py`'s placement checks stand.
 
+**2026-10-16.** `editing-skills.md`'s "Bundled scripts" gained its
+clause on platform skills when `fabric-iq` took the first two scripts
+any platform skill bundles, `data-agent-eval.py` and
+`data-agent-settings.py`, from a client-estate session's inbox note.
+`ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'`
+prints nothing, as root `CLAUDE.md` requires, and the note's session
+found its repo's `.claude/skills/fabric-iq` a link to this checkout's
+`skills/fabric-ai/fabric-iq`: a `~/.claude/skills/fabric-iq/scripts/`
+path in a `references/` file would name nothing there. The brief that
+landed it held the substitution unmeasured at project scope, since the
+rule gave no scope. The 2026-10-12 entry above says otherwise: both of
+that day's skills were project-scope, one reached through a junction,
+on 2.1.293, the version still installed on 2026-10-16. So the rule now
+says project scope, and no new probe ran. User scope is
+`recreate-repo`'s `references/pushed-leaks.md`, 2026-10-14.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

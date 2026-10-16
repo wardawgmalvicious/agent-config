@@ -124,11 +124,15 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
 - `SKILL.md` names it `${CLAUDE_SKILL_DIR}/scripts/<file>`, which Claude
   Code also substitutes in an `allowed-tools` Bash rule. Through a
   junction it expands to the junction's path, not its target, with
-  forward slashes (2.1.293, 2026-10-12), so it suits either shell. A
-  `references/` file is Read unsubstituted, so it spells
-  `~/.claude/skills/<name>/scripts/<file>`. Older skills spell that in
-  `SKILL.md` too, which works; `find-session`'s `allowed-tools` rule
-  moves only with a `dontAsk` re-run of the arms above.
+  forward slashes, at project scope (2.1.293, 2026-10-12) as at user
+  scope, so it suits either shell. A `references/` file is Read
+  unsubstituted, so it spells `~/.claude/skills/<name>/scripts/<file>`;
+  older skills spell that in `SKILL.md` too, which works. A platform
+  skill, which a `-ClaudeDir` run links into a repo's `.claude/skills/`,
+  has no such path, so its `references/` point at the `SKILL.md` line
+  that names the script (`fabric-iq`, 2026-10-16). `find-session`'s
+  `allowed-tools` rule moves only with a `dontAsk` re-run of the arms
+  above.
 - A bundled script takes the repo it acts on from an argument or the
   working directory, never its own folder: through the junction, git run
   there finds this checkout, and paths built on `$PSScriptRoot` land in
