@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 3
-needs: [user]
+needs: []
 blocked-by: []
 written: 2026-10-15
 ---
@@ -489,7 +489,9 @@ records it. The repo's name stays out of this repo.
 It ran there on 2026-10-15 and held, stamped at `7a02e6c`:
 `tests/skills/scope-instructions/README.md` § "Real use, 2026-10-15"
 has the verdict. The run here, which this section's first line plans,
-has not been made.
+the user dropped on 2026-10-16: the client run was the real use, the
+fixture retest exercises step 4's drive-letter edit, and this repo's
+one placement question is `handoffs-claude-md-into-a-rule.md`'s.
 
 ### Owed before this brief lands
 
