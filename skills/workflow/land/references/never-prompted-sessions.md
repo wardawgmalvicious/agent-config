@@ -1,10 +1,13 @@
-# A listed session that was never prompted
+# A listed session: never prompted, or placed elsewhere
 
-Everything behind step 1's exemption: what such a session is, what
-[scripts/never-prompted.sh](../scripts/never-prompted.sh) reads to find
-one, why any doubt reads as live, and what a switch under one costs.
-Step 1 and the Absolute bullet carry the rule; `commit` asks the same
-script before it messages a peer.
+Everything behind step 1's two exemptions: what a never-prompted session
+is, what [scripts/never-prompted.sh](../scripts/never-prompted.sh) reads
+to find one, how
+[scripts/placed-elsewhere.sh](../scripts/placed-elsewhere.sh) finds
+where a session sits, why any doubt reads as live and in this tree, and
+what a switch under one costs. Step 1 and the Absolute bullet carry the
+rules; `commit` asks the same scripts before it messages a peer or
+counts one.
 
 ## What it is
 
@@ -74,6 +77,67 @@ round with the user, as every listed session did before, and never a
 switch under a peer. `tests/scripts/never-prompted/test-never-prompted.sh`
 holds each case.
 
+## Where a listed session sits
+
+**A row's name does not place it.** A `<cwd-basename>-<hash>` names its
+session's directory, not its repo: the same for a clone elsewhere, and
+another for a subdirectory of this tree. One set by `/rename`, `--name`
+or a hook says nothing of where its session sits, and can look like a
+derived one. A row nothing places elsewhere sits in this tree, where
+`commit` counts it as a peer, and `land`, unless it was never prompted,
+makes no `git switch` and keeps its local branch. On 2026-10-14 a
+`/land` in a client repo placed a busy `brief: <slug>` row by two
+indirect checks, both right and neither a method.
+
+[scripts/placed-elsewhere.sh](../scripts/placed-elsewhere.sh) is the
+method. It takes the one registry entry carrying the row's name, the
+entry `never-prompted.sh` reads, and asks git for the top level of its
+`cwd` and of the tree it runs in. The same top level shares this HEAD
+and index; another places the session elsewhere, and so does a `cwd` in
+no repository, where git answers `fatal: not a git repository`. Any
+doubt keeps the row in this tree, by the rule above: no entry, two, a
+`cwd` missing, empty or not a string, or one git cannot read, such as a
+directory gone. On 2026-10-15 the registry held seven entries, each with
+a `name`, a `nameSource` and a `cwd`, and one `/triage` run placed its
+six peers by them, four in this tree and two in a client repo.
+
+**`nameSource` says how the name was set**: `derived` for a
+`<cwd-basename>-<hash>`, and `hook` for one a `UserPromptSubmit` hook
+set, such as this machine's `brief: <slug>` (2026-10-15 and 2026-10-16).
+The script reads none of it, since a `cwd` places a derived row as
+surely as any other.
+
+**`cwd` follows `EnterWorktree`, not a Bash `cd`.** One session's entry
+read its main checkout until it ran `EnterWorktree`, then the worktree,
+with `updatedAt` moving and `statusUpdatedAt` not; a Bash `cd` into a
+subdirectory then moved neither `cwd` nor `updatedAt` (2026-10-16,
+2.1.300). A place is as old as its read, so each move's command places
+its rows again. A session whose shell has left its `cwd`, or that runs
+git in this tree by path from elsewhere, stays invisible, as it always
+was to the derived names.
+
+**One directory has several spellings, and git gives one.** Entries held
+`c:\Repos\…` and `C:\Repos\…`, one transcript recorded its `cwd` three
+ways (2026-10-14), and that session's entry changed its drive letter's
+case when it entered the worktree. For a lowercase drive letter, a path
+all in lowercase, a trailing backslash, an 8.3 form, and a junction to a
+top level or to a folder in one, git 2.55.0.windows.3 answered one
+`C:/Users/<username>/…`, in the filesystem's own case (2026-10-16). So
+the script compares git's answers, never the `cwd` strings. It compares
+them case-insensitively and as one directory to bash's `-ef` besides,
+since either match keeps the row in this tree, the safe side; with both
+taken out, every spelling in the suite still passed.
+
+**A linked worktree inside its main checkout is another tree.**
+`EnterWorktree` puts one under `.claude/worktrees/`, where a path-prefix
+match counts it as the main checkout. git gives it a top level of its
+own, and it has its own HEAD and index, so the script places its
+sessions elsewhere from the main checkout, and the main checkout's
+elsewhere from it.
+
+`tests/scripts/placed-elsewhere/test-placed-elsewhere.sh` holds each
+case, the 8.3 form among the spellings.
+
 ## What a switch under one costs
 
 A never-prompted session holds no work, but it is not stateless: its
@@ -85,20 +149,24 @@ out believing in the branch HEAD was on, until its first `git` read
 says otherwise. That stale belief is what the exemption risks, against
 a round with the user at every landing where such a process is listed.
 
-**Run the script in the same command as the move, ahead of it.** A
-prompt that reaches the session between an earlier check and the switch
-makes it a peer, and the chain then stops before the switch. Step 7's
-default route, with one row the script passed at step 1:
+**Run the scripts in the same command as the move, ahead of it.** A
+prompt that reaches a never-prompted session between an earlier check
+and the switch makes it a peer, a session placed elsewhere can enter
+this tree by `EnterWorktree`, and the chain then stops before the
+switch. Step 7's default route, each script given the rows it passed at
+step 1:
 
 ```bash
-bash ~/.claude/skills/land/scripts/never-prompted.sh <name> \
+bash ~/.claude/skills/land/scripts/placed-elsewhere.sh <name> \
+  && bash ~/.claude/skills/land/scripts/never-prompted.sh <name> \
   && [[ "$(git branch --show-current)" == "<branch>" && "$(git rev-parse <branch>)" == "<sha>" ]] \
   && git switch main && git merge --ff-only <branch> && git push origin main
 ```
 
-An exit 1 there makes the row a peer: step 7 takes its table's second
-row, as for a peer who appeared after step 6, and step 9 keeps the local
-branch.
+Leave out a script that passed no row: given no name, it prints its
+usage and exits 2, and the chain stops there. An exit 1 from either
+makes a row a peer: step 7 takes its table's second row, as for a peer
+who appeared after step 6, and step 9 keeps the local branch.
 
 ## Not established
 
@@ -110,3 +178,10 @@ branch.
 - Whether anything but a prompt moves a never-prompted entry's
   `updatedAt`. If something does, the session reads as live: the safe
   side.
+- What `nameSource` a `/rename` or a `--name` writes: only `derived` and
+  `hook` were seen.
+- Whether `ExitWorktree` moves `cwd` back, as `EnterWorktree` moved it
+  forward.
+- Whether git spells one directory one way on a network share or a
+  `subst` drive. The script's `-ef` is there for a spelling git does not
+  canonicalize, and no case has needed it yet.
