@@ -497,9 +497,9 @@ has not been made.
   since 2026-10-15, p7 expecting what it found, that a main-checkout
   Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
   the exclude Phase 2 declined preventing nothing, so the decline stands.
-- **The three body gaps the pilot found**, listed in the tests README,
-  landing under one Phase B retest with the drive-letter edits to steps
-  4 and 7, made 2026-10-16 (the user's call of 2026-10-15).
+- **One Phase B retest**, by `/test-skill`, of the body the pilot's
+  three gaps and the drive-letter edits to steps 4 and 7 left on
+  2026-10-16: one retest for both, the user's call of 2026-10-15.
 
 `tests/scripts/folder-sessions/`, the script's negative cases, written
 2026-10-15: the seven this list named, which the script `f03128b`

@@ -116,7 +116,9 @@ sessions compacted. `--folder <path>` narrows it, `--depth`, `--min` and
   not.** Many `never` beside many sessions is the evidence that the
   folder's must-know lines belong in a rule or a nested file.
 - **`loaded` shows what already reaches the folder's work**, so a move
-  there may be into a home that exists.
+  there may be into a home that exists. A home that loads covers a
+  README only for the lines it holds: check the README's must-know lines
+  against it before calling the folder covered.
 - **`compacted` counts sessions that lost them for a while**: after
   `/compact`, root returns at once while nested files and `paths:` rules
   return only at the next matching Read, Write or Edit.
@@ -180,6 +182,10 @@ In the same pass:
   and flag what is missing. A full pass for staleness, contradiction and
   prompting written for older models is `/doctor prompt-audit`'s, from
   2.1.283: name it rather than redo it.
+- **Memory, the session's own.** An auto-memory index loads at launch
+  as root does, so a memory that contradicts an instruction file or the
+  repo, as one saying where guidance goes, is a row like any other:
+  proposed, never corrected in passing.
 - **A nested file's name** follows the rule's table: `CLAUDE.md` under a
   root `CLAUDE.md`, `AGENTS.md` under a bare root `AGENTS.md`, and under
   the import form a `CLAUDE.md` importing a sibling `AGENTS.md` where
@@ -213,7 +219,9 @@ One table, a row for every section, moved or kept:
 
 Under it: each new file's full text, root's line count before and
 after, the silent files and what becomes of them, the stale lines
-flagged, and what goes to `/learn` or `/doctor prompt-audit`. Then stop.
+flagged, and what goes to `/learn`, to `/doctor` (trimming derivable
+lines from a file that stays) or to `/doctor prompt-audit` (stale and
+contradicting lines). Then stop.
 The user approves rows, not the table: some may go and some stay.
 
 ## 7. Apply what was approved
@@ -247,7 +255,8 @@ The user approves rows, not the table: some may go and some stay.
 
 ## Constraints
 
-- **Proposes first.** Nothing changes before the user approves a row.
+- **Proposes first.** Nothing changes before the user approves a row,
+  this session's own auto-memory included.
 - **Reads in its own context, with Read**, never through a subagent or
   a compound Bash command.
 - **Edits no user-scope file**; those learnings are `/learn`'s.
