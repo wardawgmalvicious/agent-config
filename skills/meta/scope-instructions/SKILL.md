@@ -145,6 +145,10 @@ nested file past about 60. Ask in order, and stop at the first yes:
    `paths:` rule on that folder: a nested file where the folder's owners
    keep their own conventions with the code, a rule where all
    conventions are kept in one place (the large-codebases docs' split).
+   On Windows, prefer the `paths:` rule either way: a nested file misses
+   every Read, Write or Edit whose drive letter is cased unlike the
+   launch directory's, and a rule loads on both (the drive-letter bullet
+   of `agent-instructions-scoping.md`).
    A section that also governs files outside the folder is split, each
    line going where the files it governs are touched.
 3. **Is it about one kind of file, wherever it sits?** A `paths:` rule
@@ -222,7 +226,13 @@ The user approves rows, not the table: some may go and some stay.
   session reading a file in that folder. Offer a cold probe, which costs
   cents, and run it only on a yes. It drops this session's `CLAUDE*`
   variables first, as this machine's loader probes do, so that it starts
-  as a session of its own rather than a child of this one:
+  as a session of its own rather than a child of this one. On Windows,
+  name the file by its absolute path, its drive letter in upper case.
+  Git Bash starts the probe on an upper-case drive, `C:\` and not
+  `c:\` (2026-10-15), and a nested file loads only on a path whose
+  drive letter is cased as the launch directory's (the rule), so a
+  `c:\` path copied from a VS Code session misses a file that is in
+  place.
 
   ```bash
   ( for v in $(compgen -e | grep -E '^(CLAUDE|MCP_CONNECTION_NONBLOCKING)'); do unset "$v"; done
@@ -231,7 +241,8 @@ The user approves rows, not the table: some may go and some stay.
   ```
 
   The new file listed under `loaded` is the proof. Its absence, with the
-  file in place, means a glob or a name is wrong.
+  file in place and the path so spelled, means a glob or a name is
+  wrong.
 - **Hand off to `/commit`.** The repo's own checks run there.
 
 ## Constraints

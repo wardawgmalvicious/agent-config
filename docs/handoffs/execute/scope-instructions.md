@@ -498,19 +498,8 @@ has not been made.
   Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
   the exclude Phase 2 declined preventing nothing, so the decline stands.
 - **The three body gaps the pilot found**, listed in the tests README,
-  landing with the drive-letter edits below under one Phase B retest.
-- **Two body edits from the drive-letter finding**, landing with the
-  pilot's verdict so one Phase B retest covers both, the user's call on
-  2026-10-15. Since `32c021e` the rule says a nested file loads only on
-  a path whose drive letter is cased as the launch directory's. Step 7's
-  probe launches at `C:\` from either tool shell (measured that day), so
-  a path spelled `c:\`, as VS Code's launch directory and @-mentions
-  spell it, misses a nested file that is in place, which step 7 reads as
-  "a glob or a name is wrong": the probe names the file relative to the
-  repo, and a miss is checked for the drive's case before the glob.
-  Step 4's second question weighs a nested file against a rule only by
-  where conventions are kept; on Windows the rule now tips it to a
-  `paths:` rule. The script needs no edit: it casefolds paths on Windows.
+  landing under one Phase B retest with the drive-letter edits to steps
+  4 and 7, made 2026-10-16 (the user's call of 2026-10-15).
 
 `tests/scripts/folder-sessions/`, the script's negative cases, written
 2026-10-15: the seven this list named, which the script `f03128b`
