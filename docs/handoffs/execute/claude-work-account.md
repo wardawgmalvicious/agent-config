@@ -3,7 +3,7 @@ status: deferred
 priority: 2
 needs: [user]
 blocked-by: []
-reopen-when: the organization's Claude seat is live on the corporate network, or machine-config's claude-login-pin.md picks a route the payload must follow
+reopen-when: machine-config's claude-login-pin.md has a work config directory logged in to measure against, or the organization's Claude seat is live on the corporate network
 written: 2026-10-06
 ---
 
@@ -28,8 +28,11 @@ written: 2026-10-06
   token launcher's removal is its `claude-onsite-removal.md`; and the
   per-folder login pin is its `claude-login-pin.md`. This brief keeps
   what the payload must change.
-- **Kind**: two edits, each on its own trigger, the second shaped by
-  the route the user picks in `claude-login-pin.md`.
+- **Designed**: 2026-10-16, the payload's share of the per-folder
+  login, once the user chose a config directory per account that day.
+- **Kind**: two edits, each on its own trigger: the corporate-network
+  rule, and the payload's share of the login pin, built once
+  machine-config's side and the measurements below are ready.
 
 ## Why it waits
 
@@ -94,9 +97,17 @@ blocklist, and a settings change takes the user's yes.
 
 ## The payload side of a login pin
 
-**Waits on machine-config's `claude-login-pin.md`**, which holds the
-mechanism, its measurements and the user's pick of route. One
-measurement shows what is at stake: on 2026-10-16 the user switched a
+**The route is a config directory per account**, which the user chose
+on 2026-10-16, to design now and build once IT has said whether a
+device login policy is coming: the docs' own pattern for work and
+personal accounts side by side (code.claude.com `authentication`, read
+2026-10-16). Client roots run under a work directory and the rest under
+`~/.claude`. Machine-config's `claude-login-pin.md` holds the mechanism:
+which directory each launch gets, the folder-to-account map it generates
+into `~/.config`, the VS Code profiles, the terminal wrapper, and moving
+the client projects' transcripts and memory into the work directory.
+
+One measurement shows what is at stake: on 2026-10-16 the user switched a
 client repo's VS Code window to the work seat from the extension's
 account menu, and the switch rewrote the shared
 `~/.claude/.credentials.json`, so every session on the machine moved to
@@ -107,40 +118,80 @@ pin the account or guard it: project and local settings ignore
 `CLAUDE_CONFIG_DIR`, and `forceLoginOrgUUID` is enforced only from a
 managed source (code.claude.com `env-vars` and `settings-reference`,
 read 2026-10-16).
+A directory per account keeps a switch inside that directory.
 
-What the payload then needs, by route:
+The payload's share, in build order:
 
-- **On either route**, a section in `claude/CLAUDE.md` beside "Azure CLI
-  state is per tenant", saying how the login is pinned and what a wrong
-  one looks like; and perhaps a `SessionStart` hook that warns when a
-  session's account is not its folder's, since a hook runs on every
-  launch path, the extension, `claude` in a terminal and each
-  `claude -p` child alike. The hook reads the folder-to-identity map
-  that machine-config generates into `~/.config`, so the payload holds
-  no identity. `claude auth status` reports `email`, `orgId`, `orgName`
-  and `subscriptionType`, and with every connection refused it printed
-  the same fields in the same 2.5 to 2.7 s (2.1.293, measured
-  2026-10-16), which is too slow for every session start; `.claude.json`
-  in the config directory is fast to read, but an internal format.
-  Where two accounts share one config directory, a check at session
-  start misses a later switch in another window; with a directory per
-  account, a switch cannot cross.
-- **On a second config directory**, the docs' own pattern for work and
-  personal accounts side by side (code.claude.com `authentication`, read
-  2026-10-16), the payload pays more:
-  - `scripts/link-claude.ps1` hard-codes `$UserScopeDir` and
-    `$GlobalMcpConfig` to `~/.claude` and `~/.claude.json`, so
-    `-GlobalMcp` skips any other directory, which then starts without
-    `microsoft-learn-mcp`; and root `CLAUDE.md` § "Commands" deploys to
-    one directory.
-  - `claude/settings.json`'s hook commands resolve `$HOME/.claude/...`
-    (`.claude/rules/deploy-scripts.md`), so the second directory runs
-    the first one's hooks.
-  - `find-session.py`, `folder-sessions.py`, and `land`'s
-    `never-prompted.sh` and `placed-elsewhere.sh` read
-    `CLAUDE_CONFIG_DIR`, so each sees one directory's transcripts.
-  - The payload's prose names `~/.claude/rules/...` by path.
-- **On a work token**, nothing beyond the section above.
+1. **Deploy to every account's directory.** `scripts/link-claude.ps1`
+   hard-codes `$UserScopeDir` and `$GlobalMcpConfig` to `~/.claude` and
+   `~/.claude.json`, so `-GlobalMcp` skips any other directory, which
+   then starts without `microsoft-learn-mcp`. It should take every
+   directory the map names as user scope, so the default command
+   deploys to all of them and none goes stale unseen, and reconcile the
+   MCP servers in each one's own `.claude.json`: with
+   `CLAUDE_CONFIG_DIR` set, the CLI wrote `.claude.json` and a
+   `backups/` folder inside that directory and left `~/.claude.json`
+   alone (2.1.293, measured 2026-10-16). Root `CLAUDE.md` § "Commands"
+   and `.claude/rules/deploy-scripts.md` follow. It runs before the work
+   directory's first session, which then never starts bare.
+2. **Hooks.** `claude/settings.json`'s hook commands resolve
+   `$HOME/.claude/...` (`.claude/rules/deploy-scripts.md`), so a work
+   session runs the personal directory's copies, which one deploy keeps
+   identical: keep that. But three hooks keep state at a fixed
+   `$HOME/.claude` where it should follow `CLAUDE_CONFIG_DIR`, as
+   `name-session.sh` and `prune-probe-sessions` already do:
+   `log-instructions-loaded.sh` and `log-skill-invocations.sh` would log
+   work sessions into the personal directory, and
+   `security-reviewer-memory-scope.sh` allows only the personal
+   directory's `agent-memory/security-reviewer/`, so that agent could
+   not keep its memory in a work session.
+3. **Readers of transcripts and sessions.** `find-session.py`,
+   `folder-sessions.py`, and `land`'s `never-prompted.sh` and
+   `placed-elsewhere.sh` read `CLAUDE_CONFIG_DIR`, so each sees one
+   directory: `find-session` should search every directory the map
+   names, `folder-sessions` the one its repo maps to, and the two
+   `land` scripts every directory a peer may run under.
+4. **A section in `claude/CLAUDE.md`** beside "Azure CLI state is per
+   tenant": which directory a folder gets; the tell of a wrong one,
+   `claude auth status`'s `configDirectory` and `subscriptionType`,
+   printing no identity; and never to switch accounts from the
+   extension's menu, which rewrites that directory's login under every
+   session in it, each keeping the old account's email in its context
+   (a client session's transcript, 2026-10-16). The file stands at its
+   200-line cap, so the section pays for itself: the corporate-network
+   sentence the rule above corrects is one candidate.
+5. **A `SessionStart` guard hook** that warns when a session's
+   directory or account is not its folder's, since a hook runs on every
+   launch path, the extension, `claude` in a terminal and each
+   `claude -p` child alike. It reads the map from `~/.config`, so the
+   payload holds no identity, and the session's organization from
+   `.claude.json` in its directory, fast to read but an internal
+   format. `claude auth status` reports `email`, `orgId`, `orgName` and
+   `subscriptionType`, and with every connection refused it printed the
+   same fields in the same 2.5 to 2.7 s (2.1.293, measured 2026-10-16),
+   which is too slow for every session start. A check at start is
+   enough, since a switch cannot cross directories; where the map is
+   absent, the hook fails open and says so.
+6. **The prose paths.** The payload names `~/.claude/rules/...` by path,
+   which in a work session is the personal directory's copy, identical
+   after one deploy, unless Read refuses it as outside the working
+   directories (below). If it does, the deploy rewrites the path in each
+   directory's copy, or the prose stops naming the directory.
+
+**Measure before building**, each against a session logged in under a
+second directory, the work one once machine-config makes it:
+
+- `ListAgents` and `SendMessage` between sessions under different
+  directories. The coordination of 2026-10-16 crossed accounts, and the
+  `land` scripts find a peer by its file under a config directory, so
+  this decides both whether such a coordination survives the split and
+  what those scripts must search.
+- Whether Read refuses `~/.claude/...` from a session whose directory
+  is elsewhere, once `blockReadsOutsideWorkingDirectories` is on.
+- Where server-managed settings are cached, so that the organization's,
+  which the user will set as an admin of its plan (2026-10-16), stay
+  out of personal sessions. They reach only accounts already in the
+  organization (code.claude.com `authentication`, read 2026-10-16).
 
 If IT deploys `forceLoginOrgUUID` to this laptop, the pin is moot, as
 `claude-login-pin.md` says: Claude Code would then refuse the personal
@@ -152,7 +203,7 @@ The rule lands on the first trigger, and the WebFetch key on its tell,
 on the user's yes, deployed with
 `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta -Force`.
 The brief is deleted once the rule and the pin's side have both landed,
-or the pin's brief has closed on a route that needs nothing here. A
+or the pin is dropped, as a device login policy would drop it. A
 WebFetch case still open then becomes a brief of its own.
 
 ## Not checked
@@ -187,5 +238,6 @@ either: write "the work seat".
   claude auth status | jq -b -c '{authMethod, subscriptionType, configDirectory}'
   ```
 
-- Whether `claude-login-pin.md` has picked a route, and where its map
-  lives.
+- Where machine-config's map lives and how it is shaped, whether its
+  measurements passed, and whether IT has answered on a device login
+  policy.
