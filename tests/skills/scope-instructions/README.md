@@ -76,7 +76,9 @@ claude -p '<prompt>' --output-format stream-json --verbose --model opus --effort
 The settings file holds
 `{"crossSessionInbound":"refuse","permissions":{"deny":["Read(~/.claude/**)","Read(~/handoff-inbox/**)"]}}`.
 Launch the slash and doctor arms from PowerShell, since Git Bash
-rewrites a leading `/`. The deny stops Read, Glob and Grep, not Bash:
+rewrites a leading `/`. The deny stops Read, Glob and Grep, and a Bash
+file command naming a denied path, as the 2026-10-16 retest's `head`
+of a user rule was (the permissions page), but not a listing:
 the doctor arm listed `~/.claude` through Bash, so audit each arm's Bash
 calls before trusting it. The arms edit their copies, so a copy serves
 one arm once.
