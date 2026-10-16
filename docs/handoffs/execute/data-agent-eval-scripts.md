@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 2
-needs: [user]
+needs: []
 blocked-by: []
 written: 2026-10-15
 ---
@@ -13,8 +13,8 @@ written: 2026-10-15
   Re-measured against the payload at `f8abbed`: fabric-iq has no
   `scripts/` folder, and nothing names `evaluate_data_agent`.
 - **Kind**: an edit that adds two scripts, a test suite and the lines
-  that point at them, after one decision, the user's: where the scripts
-  live. The scripts are written; nothing in the payload is drafted.
+  that point at them. The scripts are written; nothing in the payload is
+  drafted.
 
 ## The files, and where they wait
 
@@ -23,7 +23,7 @@ kept with its note, `2026-10-15-data-agent-eval-scripts.md`, until this
 brief lands, since they exist nowhere else. Each script's docstring is
 its usage. sha256 on 2026-10-15, first 12 digits:
 
-| File | sha256 | Proposed home |
+| File | sha256 | Home |
 | --- | --- | --- |
 | `data-agent-eval.py` | `b8c2ae6f117e` | `skills/fabric-ai/fabric-iq/scripts/` |
 | `data-agent-settings.py` | `45728b3dd1da` | the same |
@@ -94,10 +94,11 @@ there. It takes `num_query_repeats` (default 1) and `max_workers`
 
 ## The decision: where the scripts live
 
-The user asked the note's session for `references/data-agent/scripts/`,
-while `.claude/rules/editing-skills.md` § "Bundled scripts" puts a
-deployed skill's scripts in its own `scripts/`. The `data-agent-` prefix
-keeps them apart from any later ontology or graph scripts either way.
+The user chose `skills/fabric-ai/fabric-iq/scripts/` on 2026-10-16, the
+home `.claude/rules/editing-skills.md` § "Bundled scripts" gives a
+deployed skill's scripts, over `references/data-agent/scripts/`, which
+they had asked the note's session for. The `data-agent-` prefix keeps
+them apart from any later ontology or graph scripts.
 
 ## Spelling the path in a per-project group
 
