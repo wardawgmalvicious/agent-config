@@ -366,6 +366,10 @@
         "routing": "881437837eb3d8f3",
         "body": "ae986f6a192ba17f",
         "references": "dcd09eac4109849d"
+      },
+      "real-use": {
+        "date": "2026-10-15",
+        "commit": "7a02e6c"
       }
     },
     "test-skill": {

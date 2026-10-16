@@ -119,3 +119,48 @@ nothing.
 Routing went 11 of 11 for $1.21: each should-fire query called
 `scope-instructions` as its first act, questions 6 and 7 included, and
 the four others called `learn`, `init`, `find-session` and nothing.
+
+## Real use, 2026-10-15
+
+The pilot the brief named, on a client Fabric repo, run by the user in
+a session of their own on the body `7a02e6c` left. Its root was a
+275-line `AGENTS.md` behind a three-line `CLAUDE.md` of `@AGENTS.md`,
+beside three `paths:` rules and no nested file, with 50 sessions on
+disk since 2026-09-30.
+
+**It held.** It stopped at a 15-row table, a row for every root
+section, with root's line count, the silent files (none), stale lines
+by line number and the hand-offs under it, and asked which rows to
+apply. The trigger test did the sorting. Every root section stayed,
+since a live command, a sync or a file not yet written sets each off,
+and the moves ran the other way: three paragraphs of a source system's
+rule went to root, since a live command trips each before any file the
+rule matches is opened. Root would grow from 275 lines to 285, its trim
+handed on. Of the 2026-09-24 proposal the brief describes, which
+predates the trigger test, it kept the contract folder's README a
+README, the rule on that folder having loaded in 7 of 8 sessions there,
+and sent part of that rule back to root. The rule's drive-letter
+bullet, from `32c021e`, reached its context, and it cited it in
+proposing no nested file.
+
+Three gaps in the body's text, folded in after this run:
+
+- It corrected one of its own auto-memories, a stale claim about where
+  guidance goes, before the user had approved a row.
+- Step 6 named only `/doctor prompt-audit` as a hand-off, so it filed
+  root's trim there after calling the trim `/doctor`'s.
+- One row rested on a load count, which step 3's `loaded` bullet
+  allows, though a home that loads says nothing of whether it holds the
+  README's must-know lines.
+
+Not folded in: one move went to a wrapper script's own header, a home
+the rule's table lacks, chosen on the repo's own convention, which is a
+`/learn` candidate for the rule; and step 4's first question sends every
+gotcha a command triggers to root, where a hook on the command would
+fire first but spawn on every call.
+
+Collecting the verdict: a cross-session message asking that session
+which question decided each row, and where it improvised, was flagged
+by the API's safeguards as `[reasoning_extraction]`, which ended its
+turn. The user pasted its output instead and forked it; the follow-up
+questions asked only for its files' content.

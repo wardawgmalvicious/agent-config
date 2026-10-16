@@ -486,16 +486,19 @@ rules there that point at other files. The user runs it there, by
 and `skill-status.py --stamp scope-instructions --phase real-use`
 records it. The repo's name stays out of this repo.
 
+It ran there on 2026-10-15 and held, stamped at `7a02e6c`:
+`tests/skills/scope-instructions/README.md` § "Real use, 2026-10-15"
+has the verdict. The run here, which this section's first line plans,
+has not been made.
+
 ### Owed before this brief lands
 
 - **Not p6 or p7** of `scripts/test-instruction-loading.py`: both pass
   since 2026-10-15, p7 expecting what it found, that a main-checkout
   Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
   the exclude Phase 2 declined preventing nothing, so the decline stands.
-- **The pilot**, above, which the user runs, on the script as fixed in
-  `7a02e6c`: before it a rule pinned to its batch's last call and a
-  nested `AGENTS.md` never pinned, so the `loaded` lines a pilot reads
-  were wrong.
+- **The three body gaps the pilot found**, listed in the tests README,
+  landing with the drive-letter edits below under one Phase B retest.
 - **Two body edits from the drive-letter finding**, landing with the
   pilot's verdict so one Phase B retest covers both, the user's call on
   2026-10-15. Since `32c021e` the rule says a nested file loads only on
