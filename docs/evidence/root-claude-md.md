@@ -2375,6 +2375,17 @@ cannot license", from `/test-skill commit` on 2026-10-14. The arms, the
 `CLAUDE.local.md` control and the rule's new home are in
 `docs/evidence/user-claude-md.md` § "Agent config source", same date.
 
+**2026-10-15.** Of the 2026-09-24 table's ten rows, the `absolute` one
+launched at `c:` (`2c2d19c7`) shows nothing about its pattern: a Read
+spelled `C:\` in a session launched at `c:\` loads no nested `CLAUDE.md`
+at all, exclude or none, as `scripts/test-instruction-loading.py`'s d1
+shows on 2.1.293. So "the path takes the case the Read was spelled in,
+not the cwd's" is unproven, and moot, since a nested file loads only
+where the two agree. The other nine rows stand, and with them the
+driveless pattern. The finding is in
+`claude/rules/agent-instructions-scoping.md` § "How Claude Code loads
+them".
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
