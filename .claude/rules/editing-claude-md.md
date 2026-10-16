@@ -31,8 +31,11 @@ paths:
 - Guidance a file triggers goes to a `paths:`-scoped rule — `.claude/rules/`
   for root, `claude/rules/` for `claude/CLAUDE.md` — guidance for one task
   to a skill, and what a session must know before working in one directory
-  to a `CLAUDE.md` there. Never an unscoped rule or an `@import`, even one
-  in a `paths:` rule: both load at launch anyway (2026-10-15, 2.1.293).
+  to a rule on `<dir>/**`: a `CLAUDE.md` there misses every Read whose drive
+  letter is cased unlike the launch directory's, as a VS Code session's are
+  from its first Bash call (2026-10-15, 2.1.293). Never an unscoped rule or
+  an `@import`, even one in a `paths:` rule: both load at launch anyway
+  (2026-10-15, 2.1.293).
 - A nested `CLAUDE.md` loads on the session's own first Read, Write or
   Edit beneath it, never at launch, after `/compact` only at the next one,
   so it can hold nothing needed sooner. It keeps to the must-knows, and

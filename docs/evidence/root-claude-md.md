@@ -2412,6 +2412,16 @@ project skills, four files of `run-briefs` and `land`, and
 the folder. `tests/scripts/handoff-status/test-findings.sh` still plants
 a `docs/handoffs/CLAUDE.md`, since another repo's queue may keep one.
 
+**2026-10-16.** `editing-claude-md.md` now sends what a session must
+know before working in one directory to a rule on `<dir>/**`, where it
+sent it to a `CLAUDE.md` there, as the 2026-09-27 entry above decided
+for the queue. The finding behind the move just above holds for any
+directory here: a nested file misses every Read whose drive letter is
+cased unlike the launch directory's, as a VS Code session's are from its
+first Bash call, while a rule loads on either spelling. The user chose
+the change that day, once the move was made. The bullet on a nested
+`CLAUDE.md` and `lint-claude-md.py`'s placement checks stand.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter
