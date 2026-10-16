@@ -56,6 +56,46 @@ regions and product categories.
 
 Keep this blob focused on cross-source routing and business-wide terminology. Source-specific query logic belongs in the data source instructions layer (below).
 
+**For a semantic model source, this blob reaches the DAX through the
+rewritten question.** Learn says agent-level instructions are not passed
+to the DAX generation tool (semantic model best practices, step 8, read
+2026-10-16). Yet the orchestrator rewrites the question before it calls
+that tool, and the blob shapes the rewrite, for better and for worse. In
+one client estate on 2026-10-15, testing one Direct Lake model, each
+fault below showed in one or two of twelve answers and was gone the
+round after its fix:
+
+- **A scope line is read as all the model holds.** A line listing the
+  model's measures drew refusals of questions by item, saying the model
+  held no items, one in 4.3 s with no query run. Naming the breakdowns
+  too, by date, item, customer and the like, and adding "Query the model
+  before saying it cannot answer a question" ended them.
+- **The agent works out relative dates itself.** "This year" became a
+  range from the previous year's 1 January, and "last month" a month
+  seven months off. The fix: "Never work out a date yourself: pass a
+  period such as this year or last month to the query as written, ask it
+  to return the dates it covers, and name the period from those." The
+  rewritten question then asked for last month's figure and the dates it
+  covered, and the DAX took the period from the model's own today
+  measure.
+- **On the standard runtime, asking for the dates can bring back empty
+  rows.** Its DAX set the dates as never-blank `SUMMARIZECOLUMNS`
+  columns, so a breakdown returned every calendar month and every item
+  ever ordered, and the answers read an empty month at $0 as the lowest.
+  The preview runtime's DAX made them measures guarded by
+  `IF(NOT ISBLANK(…))` and kept no empty row. The DAX fix, `IGNORE`, is
+  in the `coding-dax` rule, *Anti-patterns*.
+- **On the preview runtime, no instruction removes the result-file
+  line** that ends an answer:
+  [consumption-surfaces.md](consumption-surfaces.md), under the MCP
+  endpoint.
+
+So for a semantic model source, use this blob to shape the question the
+DAX tool receives: periods passed as the user wrote them, breakdowns
+named, and a query before any refusal. Keep business logic in the
+model's AI instructions, and re-read the DAX after any change, since one
+line can help on one runtime and hurt on the other.
+
 ## 2. Data source instructions (per-source)
 
 Applies only when the agent routes a question to that specific source. This is where source-specific query logic belongs — **not** in the agent-level blob.

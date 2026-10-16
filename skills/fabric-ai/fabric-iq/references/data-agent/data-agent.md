@@ -53,6 +53,18 @@ Hard limits, and the caveat that catches people:
 
 **Two more inputs, SQL sources on the preview runtime only** (both preview, 2026-10-06): **topics**, up to 1 million characters of instructions organized by topic, from which the agent retrieves the sections relevant to a question for NL2SQL; and **schema object descriptions**, business context on tables and columns. Both need the agent switched from the **standard runtime** (GA, the default) to the **preview runtime**, which carries the newest orchestration and query-generation tools before they graduate. A published agent keeps the runtime it was published with until the next publish; to read or switch it by script, see [references/authoring-workflow.md § Settings and publish, by REST](references/authoring-workflow.md#settings-and-publish-by-rest).
 
+**Semantic model sources differ by runtime too.** The preview runtime's
+**advanced DAX generation** (preview) reasons over several steps and
+searches column values to choose its filters, a search that needs the
+model's Q&A setting, on by default for Import and Direct Lake, which
+retires in December 2026 for a replacement Learn has yet to name
+(semantic model best practices, read 2026-10-16). The DAX itself
+differs: in one client estate the standard runtime's returned empty
+months the preview runtime's left out, and one instruction line helped
+on one runtime and hurt on the other
+([references/configuration-layers.md § 1](references/configuration-layers.md#1-agent-instructions-top-level)).
+Re-read the DAX after a switch.
+
 One well-chosen example query can outperform paragraphs of prose instructions. Microsoft's recommended markdown structure for each layer, with worked examples: [references/configuration-layers.md](references/configuration-layers.md). A complete end-to-end configuration for one agent: [assets/example-retail-agent.md](assets/example-retail-agent.md).
 
 To author the layers conversationally rather than by hand, the **Creator Agent** ("Build agent with AI", preview) generates and validates all four — but only on **SQL and Eventhouse sources**, and it refuses to run if any unsupported source is attached: [references/creator-agent.md](references/creator-agent.md).
@@ -94,6 +106,7 @@ If your developer instructions conflict with a higher layer (e.g., tell the agen
 - Data source descriptions that are too generic. "Contains sales data" doesn't help routing.
 - Missing example queries. Without them, the agent guesses at query structure.
 - Adding example queries to a Power BI semantic model data source — they have no effect.
+- Agent instructions for a semantic model source that list only its measures, or leave relative dates to the agent. Learn says they never reach the DAX tool, yet they shape the question it receives: [references/configuration-layers.md § 1](references/configuration-layers.md#1-agent-instructions-top-level).
 - Instructions referencing deprecated tables, columns, or measures. Stale instructions are worse than none — they actively mislead the agent.
 - Duplicating rules across agent, data source, and semantic model layers. Pick the most specific layer and leave the others clean.
 - Treating the agent-level "Response guidelines" as a place for business logic. It's for conversational behavior — tone, clarification flows, disclaimers.
