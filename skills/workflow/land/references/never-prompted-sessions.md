@@ -107,14 +107,15 @@ set, such as this machine's `brief: <slug>` (2026-10-15 and 2026-10-16).
 The script reads none of it, since a `cwd` places a derived row as
 surely as any other.
 
-**`cwd` follows `EnterWorktree`, not a Bash `cd`.** One session's entry
-read its main checkout until it ran `EnterWorktree`, then the worktree,
-with `updatedAt` moving and `statusUpdatedAt` not; a Bash `cd` into a
-subdirectory then moved neither `cwd` nor `updatedAt` (2026-10-16,
-2.1.300). A place is as old as its read, so each move's command places
-its rows again. A session whose shell has left its `cwd`, or that runs
-git in this tree by path from elsewhere, stays invisible, as it always
-was to the derived names.
+**`cwd` follows `EnterWorktree` and `ExitWorktree`, not a Bash `cd`.**
+One session's entry read its main checkout, `c:\…`, until it ran
+`EnterWorktree`, then the worktree, `C:\…`, with `updatedAt` moving and
+`statusUpdatedAt` not. A Bash `cd` into a subdirectory then moved
+neither `cwd` nor `updatedAt`, and `ExitWorktree` put the main checkout
+back as first spelled, `c:\…` (2026-10-16, 2.1.300). A place is as old
+as its read, so each move's command places its rows again. A session
+whose shell has left its `cwd`, or that runs git in this tree by path
+from elsewhere, stays invisible, as it always was to the derived names.
 
 **One directory has several spellings, and git gives one.** Entries held
 `c:\Repos\…` and `C:\Repos\…`, one transcript recorded its `cwd` three
@@ -152,9 +153,9 @@ a round with the user at every landing where such a process is listed.
 **Run the scripts in the same command as the move, ahead of it.** A
 prompt that reaches a never-prompted session between an earlier check
 and the switch makes it a peer, a session placed elsewhere can enter
-this tree by `EnterWorktree`, and the chain then stops before the
-switch. Step 7's default route, each script given the rows it passed at
-step 1:
+this tree by `EnterWorktree` or `ExitWorktree`, and the chain then
+stops before the switch. Step 7's default route, each script given the
+rows it passed at step 1:
 
 ```bash
 bash ~/.claude/skills/land/scripts/placed-elsewhere.sh <name> \
@@ -180,8 +181,6 @@ who appeared after step 6, and step 9 keeps the local branch.
   side.
 - What `nameSource` a `/rename` or a `--name` writes: only `derived` and
   `hook` were seen.
-- Whether `ExitWorktree` moves `cwd` back, as `EnterWorktree` moved it
-  forward.
 - Whether git spells one directory one way on a network share or a
   `subst` drive. The script's `-ef` is there for a spelling git does not
   canonicalize, and no case has needed it yet.
