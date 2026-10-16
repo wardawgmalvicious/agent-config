@@ -498,7 +498,7 @@ has not been made.
   Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
   the exclude Phase 2 declined preventing nothing, so the decline stands.
 - **One Phase B retest**, by `/test-skill`, of the body the pilot's
-  three gaps and the drive-letter edits to steps 4 and 7 left on
+  four gaps and the drive-letter edits to steps 4 and 7 left on
   2026-10-16: one retest for both, the user's call of 2026-10-15.
 
 `tests/scripts/folder-sessions/`, the script's negative cases, written

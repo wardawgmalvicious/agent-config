@@ -143,7 +143,7 @@ and sent part of that rule back to root. The rule's drive-letter
 bullet, from `32c021e`, reached its context, and it cited it in
 proposing no nested file.
 
-Three gaps in the body's text, folded in after this run:
+Four gaps in the body's text, folded in after this run:
 
 - It corrected one of its own auto-memories, a stale claim about where
   guidance goes, before the user had approved a row.
@@ -151,16 +151,22 @@ Three gaps in the body's text, folded in after this run:
   root's trim there after calling the trim `/doctor`'s.
 - One row rested on a load count, which step 3's `loaded` bullet
   allows, though a home that loads says nothing of whether it holds the
-  README's must-know lines.
+  README's must-know lines. Asked, a fork of the session found four in
+  that README that neither the rule nor root held.
+- One move went to a wrapper script's own header, which a session reads
+  by choice, and root's one pointer to its `-h` fired only for a session
+  guessing at a flag, not the ones the traps catch. Asked, the fork
+  judged the move sound only with a pointer added to root.
 
-Not folded in: one move went to a wrapper script's own header, a home
-the rule's table lacks, chosen on the repo's own convention, which is a
-`/learn` candidate for the rule; and step 4's first question sends every
-gotcha a command triggers to root, where a hook on the command would
-fire first but spawn on every call.
+Not folded in: a script's header is a home the rule's table lacks, a
+`/learn` candidate for the rule; and step 4's first question sends
+every gotcha a command triggers to root, where a hook on the command
+would fire first but spawn on every call.
 
 Collecting the verdict: a cross-session message asking that session
 which question decided each row, and where it improvised, was flagged
 by the API's safeguards as `[reasoning_extraction]`, which ended its
-turn. The user pasted its output instead and forked it; the follow-up
-questions asked only for its files' content.
+turn. Its fork's reply to two questions about its files' content alone
+was stopped by a safety check before it went out, so plain wording does
+not avoid it: both tries to carry the run's results to another session
+failed, and the user pasted each output here instead.

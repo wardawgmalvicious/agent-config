@@ -172,6 +172,11 @@ In the same pass:
   file's unique lines move to where a session will load them. A silent
   root `AGENTS.md` becomes the import form, `@AGENTS.md` at the top of
   the `CLAUDE.md`, never a copy, which leaves two homes to drift.
+- **A home the agent opens by choice**, a README, a script's header or
+  its `-h`, guards a mistake only when a home that loads before the
+  mistake sends the agent there. Propose that pointer in the same row,
+  or leave the line where it loads; a pointer that fires only for a
+  guess misses the session that already knows the command.
 - **One fact, one home across tools.** Where Copilot's file and the
   `CLAUDE.md` disagree, say on a line length the formatter config
   settles, the config wins and the duplicates go; shared long form
