@@ -63,6 +63,13 @@ So Git sync and deployment carry the instructions. On 2026-10-14
 replaced "It is not stored in TMDL", and `REFERENCE.md`'s `cultureInfo`
 row gained the key.
 
+On 2026-10-15 a session in a client Fabric estate found the same
+absence for a model holding verified answers, set in the service: its
+`getDefinition` gave no `Copilot/` part, and the answers could be read
+only from an export (a note of that day; the definition format was not
+recorded). So no definition part seen yet carries verified answers from
+the service, which bears on item 1's verified-answer test.
+
 ## What is left
 
 1. In a current Power BI Desktop, set an AI instruction on any model,

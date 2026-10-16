@@ -217,3 +217,16 @@ new evidence gets a verdict, or a new entry.
 - **Would change it**: a transcript in which a session met this error,
   or edited a `.schedules` file, with `fabric-data-pipeline` listed and
   not invoked.
+
+## 2026-10-15 — A claude/CLAUDE.md line on MCP folder trust and `Error dialing`
+
+- **From**: a note of 2026-10-14, by a session in a client repo whose
+  `headersHelper` server failed in the VS Code extension until its
+  lowercase key was trusted from cmd.
+- **Why not**: that note's own second incident has the session finding
+  `claude/mcp/README.md`'s recipe from the startup error, so diagnosis
+  already reaches the fix; the miss was at setup, which the README's
+  install step 4 covers since 2026-10-15. `claude/CLAUDE.md` loads in
+  every session on the machine.
+- **Would change it**: a session that met `Error dialing <url>` or the
+  DCR error from a project helper and did not reach the README's recipe.
