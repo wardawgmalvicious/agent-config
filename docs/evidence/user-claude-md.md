@@ -1701,6 +1701,36 @@ Search the bundle by `registeredExperimentalDefaults`, and slice it with
 `node` or Python as § "Reproducing" above does, since a wide `grep -o`
 window timed out at 120 s again.
 
+#### What the profiles hold, 2026-10-13 evening
+
+Later that day the user changed every profile, in a machine-config
+session whose two notes reached this repo; both changes re-read from the
+live settings files on 2026-10-15:
+
+- **Each profile holds Claude's hooks off a second way.** Default's two
+  copies of `chat.agentSkillsLocations` and of `chat.hookFilesLocations`
+  were merged into one each, the hook map `false` throughout, so
+  `chat.useClaudeHooks` is no longer its only guard. Default and Azure
+  list the three Claude hook files `false`, Fabric sets `chat.useHooks`
+  `false`, and Config does both.
+- **Every profile pins the four harness settings**:
+  `chat.copilotHarnessIntroduction.mode` `off`,
+  `chat.defaultToCopilotHarness` `false`,
+  `chat.editor.localAgent.enabled` `true` and
+  `chat.editor.preferCopilotHarness` `false`. They equal the stable
+  defaults and are kept so an experiment cannot move them; by the
+  user's call, no `-Audit` check enforces them.
+
+`~/.agents/hooks`, listed `false` in three profiles, is no built-in hook
+location. That session's reads of the 1.141.0 and 1.141.1 bundles build
+`chat.hookFilesLocations`' default from five paths, `.github/hooks`,
+`~/.copilot/hooks` and the three Claude hook files, and none of the
+installed 1.141.1, 1.141.2 and 1.142.0 bundles holds the string
+`agents/hooks` (2026-10-15). The skills default holds six paths, both
+`.agents` folders `true`, so Default's Local agent could list the 28
+Azure skills in `~/.agents/skills` until the merge listed them `false`
+(read from the bundle, not watched in a chat).
+
 ### User-scope MCP servers are bound to nothing
 
 **A server bound to no workspace is still bound to a tenant.**

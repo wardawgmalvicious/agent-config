@@ -73,10 +73,12 @@ can. So "this repo should be lightweight" is a profile task, and
 - **Claude's hooks stay off.** A Claude-format hook runs under the Local
   agent only with `chat.useClaudeHooks` on, which defaults `false`, with
   no experiment and no configuration default able to move it (1.141.0).
-  Leave it unset, as every profile here does (2026-10-13); in Default
-  nothing else holds those hooks off. Reading Claude's guidance is
-  wanted, while its hook scripts were never tested under another
-  harness.
+  Leave it unset, as every profile here does (2026-10-13). Each also
+  holds those hooks off a second way, listing Claude's three hook files
+  `false` in `chat.hookFilesLocations` or setting `chat.useHooks`
+  `false`, Default since that evening (read 2026-10-15). Reading
+  Claude's guidance is wanted, while its hook scripts were never tested
+  under another harness.
 - **These switches govern the Local harness alone, and an experiment
   can move a new chat off it.** Each says it is "only used by the Local
   agent harness"; the Copilot target reads nothing under `~/.claude`,
@@ -86,9 +88,13 @@ can. So "this repo should be lightweight" is a profile task, and
   place, and `chat.editor.localAgent.enabled`, default `true`, hides
   Local when off. All three are experiment-controlled at startup, but an
   experiment changes only a default (1.141.0), so a value a profile sets
-  holds against it, and a policy outranks both. A Claude-target pick is
-  unaffected; the docs mark Local and these switches for removal
-  together, so plan for the Claude target.
+  holds against it, and a policy outranks both. So every profile here
+  sets all three at those defaults, and
+  `chat.copilotHarnessIntroduction.mode`, which an experiment here had
+  at `afterRequest`, to `off` (2026-10-13, read 2026-10-15): keep them,
+  though they match the defaults. A Claude-target pick is unaffected;
+  the docs mark Local and these switches for removal together, so plan
+  for the Claude target.
 - **The Settings UI may not save.** Object-valued `chat.*` settings
   edited through the UI can leave `settings.json` untouched with no
   error — measured 2026-09-09, repeated edits against an mtime four days
