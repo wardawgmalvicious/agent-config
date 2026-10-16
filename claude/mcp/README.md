@@ -172,6 +172,17 @@ Since 2.1.292 Claude Code asks every stdio server for MCP protocol revision 2026
     claude mcp reset-project-choices
     ```
 
+    Trust is kept per launch directory, and
+    [the keys are case-split](#local-scope-keys-are-case-split): a
+    `claude` started from PowerShell or Git Bash records `C:`, the
+    VS Code extension `c:`. So before a repo with a `headersHelper`
+    server is first opened in the extension, trust its lowercase key
+    from cmd with the recipe under
+    [The DCR error is a credential failure](#the-dcr-error-is-a-credential-failure).
+    Skipped, every extension session there starts with
+    `Error dialing <url>` on a bound URL, or the DCR error on a bare one:
+    met on 2026-10-03, and again in a client repo on 2026-10-13.
+
 Pair the file with a `.claude/settings.json` in the same repo that pre-approves the specific tools you don't want prompts for. `.mcp.json` declares which servers exist; `settings.json` says which of their tools are safe to run unattended. This repo does exactly that for the two read-only Microsoft Learn tools.
 
 ### Servers (project scope)
@@ -304,7 +315,7 @@ the extension, with this error or with whatever its static `headers`
 send. Trust the lowercase key once from **cmd**, which keeps the case
 you type where PowerShell and Git Bash restore `C:`; accept the trust
 prompt and the server approval, then `/exit` (measured 2026-10-03 on
-2.1.282):
+2.1.282, and again in a client repo on 2026-10-13 on 2.1.296):
 
 ```bat
 cd /d c:\Repos\<repo>
