@@ -463,6 +463,10 @@ conventions, and what governs editing a script is in path rules. A run
 here that proposes a nested file in either without new evidence has
 overreached.
 
+The script's own reading here, as fixed on 2026-10-15: the queue README
+opened first in 19 of 100 sessions under `execute/`, later in 8, never
+in 73, against 11, 2 and 11 of 24 on 2026-09-27.
+
 ### The pilot
 
 On the client Fabric repo, then here. Re-measured 2026-10-15 and moved
@@ -481,25 +485,6 @@ rules there that point at other files. The user runs it there, by
 2026-10-15), so it is real use: its verdict comes back here scrubbed,
 and `skill-status.py --stamp scope-instructions --phase real-use`
 records it. The repo's name stays out of this repo.
-
-### Open: a nested file that did not load
-
-Found while checking the script on this repo, 2026-10-15. Of 50 fresh
-VS Code sessions launched in the main checkout that Read a file under
-`docs/handoffs/` and never touched `docs/handoffs/CLAUDE.md` itself, 12
-hold no `nested_memory` record of it and no copy of its text, on
-2.1.289 to 2.1.296, every one of those Reads successful; one made 31.
-Ruled out: worktree paths (all 12 touched the main checkout's files),
-a resume or a compaction before the first touch (all 12 fresh), a
-refused call. The cause is not traced, and the skill claims nothing
-from it; its step 7 probe guards a new file. It wants a probe of its
-own, or a `/learn` note against `agent-instructions-scoping.md` once
-traced.
-
-The script's own reading of it, as fixed that day: the nested file in
-61 of 105 sessions working under `docs/handoffs/`, and the queue README
-opened first in 19 of 100 under `execute/`, later in 8, never in 73,
-against 11, 2 and 11 of 24 on 2026-09-27.
 
 ### Owed before this brief lands
 
