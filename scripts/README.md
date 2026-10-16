@@ -68,7 +68,10 @@ Helper scripts for repo maintenance and observability.
   `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric-core` pushes
   only that group's skills into a client repo's `.claude`, without this
   machine's agents, hooks or rules; they are junctions, so every later
-  save to one is live in that repo's sessions.
+  save to one is live in that repo's sessions. Inside a git working tree
+  the run stops before writing anything unless git ignores every path it
+  writes there, `/.claude/skills/` for that form;
+  `tests/scripts/link-claude/` holds the cases.
 - [lint-claude-md.py](lint-claude-md.py) — cap both `CLAUDE.md` files at
   the memory docs' line target: `claude/CLAUDE.md`, which loads into every
   session on the machine, and root `CLAUDE.md`, which loads into every

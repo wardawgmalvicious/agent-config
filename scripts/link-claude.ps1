@@ -54,6 +54,17 @@
     a skill authored directly in the target, or one linked from another
     repo — is always left alone.
 
+    A TARGET INSIDE A GIT WORKING TREE MUST IGNORE EVERY PATH THE RUN WRITES
+    there, or the run stops before writing any. Git follows a junction, so
+    in a client repo that does not ignore /.claude/skills/ a git add commits
+    a copy of every linked skill, and the copies a run without -SkillsOnly
+    makes would go the same way. The check asks git check-ignore, so a line
+    counts in the repo's .gitignore or in its .git/info/exclude alike, and
+    so does a wider pattern such as .claude/*. The script never writes the
+    line itself: an ignore file is the repo's own, and adding the line is
+    one step per repo (the user's call, 2026-10-16). A target in no working
+    tree, user scope among them, skips the check.
+
     THIS REPO'S OWN .claude/skills IS DELIBERATELY OUT OF SCOPE HERE, and
     its absence is a design decision rather than an oversight. The skills
     that maintain this repo's payload (author-skill, test-skill, learn,
@@ -134,7 +145,9 @@
 .PARAMETER ClaudeDir
     The Claude Code config directory to link into. Defaults to ~/.claude.
     Point it at a project's .claude to deploy a partial payload there, or
-    at a scratch directory to test this script.
+    at a scratch directory to test this script. Inside a git working tree
+    the run stops unless git ignores every path it would write there; see
+    the description.
 
 .PARAMETER SkillGroups
     Which skill groups under skills/ to deploy. Defaults to all of them.
@@ -182,6 +195,7 @@
 .EXAMPLE
     ./scripts/link-claude.ps1 -ClaudeDir C:\Repos\Client\.claude -SkillGroups fabric-core,fabric-engineering,power-bi -SkillsOnly
     Give a client repo the platform groups its work needs and nothing else.
+    It stops unless that repo ignores /.claude/skills/ already.
 #>
 [CmdletBinding()]
 param(
@@ -563,34 +577,67 @@ function Sync-GlobalMcp {
     Write-Host "Confirm in a fresh session with 'claude mcp list'."
 }
 
+function Assert-PayloadIgnored {
+    # Stop before the first write when $Directory sits in a git working tree
+    # that does not ignore each of $Paths, given relative to it. Git follows a
+    # junction: in a scratch repo, git add -A and a git add naming the
+    # junction alone each staged its target's SKILL.md as an ordinary 100644
+    # blob (Git for Windows 2.55.0, 2026-10-16), so without the line a commit
+    # there carries a copy of the payload. check-ignore answers before a path
+    # exists and reads .gitignore and .git/info/exclude alike. A directory is
+    # asked with its trailing slash, as git sees a junction once it exists:
+    # without one, a per-skill directory-only line read as not ignored and a
+    # negated one as ignored (2026-10-16).
+    param([string]$Directory, [string[]]$Paths)
+
+    if ($Paths.Count -eq 0) { return }
+    $Directory = (Get-Item -LiteralPath $Directory -Force).FullName
+    $location = @(git -C $Directory rev-parse --show-toplevel --show-prefix 2>&1)
+    if ($LASTEXITCODE -ne 0) {
+        if ("$location" -match 'not a git repository') {
+            Write-Host "Skipped ignore check ($Directory is in no git working tree)"
+            return
+        }
+        throw "git could not read $Directory, so nothing was linked or copied: $location"
+    }
+    $lines = @($location | Where-Object { $_ -is [string] })
+    $topLevel = $lines[0]
+    $prefix = if ($lines.Count -gt 1) { $lines[1] } else { '' }
+
+    # Exit 0 when some path is ignored and 1 when none is; anything else is
+    # git failing. Only the ignored paths are printed.
+    $answer = @(git -C $Directory check-ignore -- @Paths 2>&1)
+    if ($LASTEXITCODE -gt 1) {
+        throw "git check-ignore failed in $Directory, so nothing was linked or copied: $answer"
+    }
+    $ignored = @($answer | Where-Object { $_ -is [string] } | ForEach-Object { $_.TrimEnd('/') })
+    $unignored = @($Paths | Where-Object { $ignored -notcontains $_.TrimEnd('/') })
+    if ($unignored.Count -eq 0) {
+        Write-Host "OK      ignore check (git ignores all $($Paths.Count) path(s) this run writes in $topLevel)"
+        return
+    }
+    $hints = @(
+        if (@($unignored | Where-Object { $_.StartsWith('skills/') }).Count) {
+            "Ignore /${prefix}skills/ in its .gitignore or .git/info/exclude, then re-run."
+        }
+        if (@($unignored | Where-Object { -not $_.StartsWith('skills/') }).Count) {
+            "A project's .claude takes -SkillsOnly: the rest of the payload is user scope's."
+        }
+    )
+    throw ("Refusing to write into $topLevel, a git working tree that does not ignore " +
+        (@($unignored | ForEach-Object { "$prefix$_" }) -join ', ') + '. A git add there ' +
+        'would commit a copy of this payload, junctions included: git follows one. ' +
+        ($hints -join ' ') + ' Nothing was linked or copied.')
+}
+
 if (-not (Test-Path $ClaudeDir)) {
     New-Item -ItemType Directory -Path $ClaudeDir | Out-Null
     Write-Host "Created $ClaudeDir"
 }
 
-#region Format-payload copies (agents, hooks, rules, mcp)
-if ($SkillsOnly) {
-    Write-Host "Skipped agents/hooks/rules/mcp (-SkillsOnly)"
-}
-else {
-    foreach ($dir in $CopyDirs) {
-        $source = Join-Path $RepoRoot $dir.Source
-        if (-not (Test-Path $source)) {
-            # Counts as drift, and it is quieter than the junction era was:
-            # a dangling junction stopped rules loading and hooks firing,
-            # whereas a copy keeps serving the last content the repo had. A
-            # mistyped or half-completed rename therefore looks like nothing
-            # happened at all unless this says so.
-            Write-Warning "Repo directory missing, skipped: $source"
-            $script:DriftCount++
-            continue
-        }
-        Sync-PayloadDirectory -Source $source -Dest (Join-Path $ClaudeDir $dir.Dest) -Label $dir.Dest
-    }
-}
-#endregion
-
-#region Skills (one junction per skill, selected by group)
+#region Skill selection (by group)
+# Resolved before anything is written, since the ignore check below needs
+# every skill name this run would link.
 $availableGroups = @(Get-ChildItem $SkillsRoot -Directory |
     Select-Object -ExpandProperty Name | Sort-Object)
 
@@ -624,7 +671,44 @@ foreach ($group in $selectedGroups) {
         $desiredSkills[$skill.Name] = $skill.FullName
     }
 }
+#endregion
 
+#region Ignore check (a -ClaudeDir inside a git working tree)
+# Each path as git will see it: a directory with its trailing slash, which
+# is what a junction is to git, and a file without.
+$writtenPaths = @(
+    if (-not $SkillsOnly) {
+        foreach ($copy in $CopyDirs) { "$($copy.Dest)/" }
+        foreach ($mirror in $MirrorFiles) { $mirror.Dest }
+    }
+    foreach ($name in $desiredSkills.Keys) { "skills/$name/" }
+)
+Assert-PayloadIgnored -Directory $ClaudeDir -Paths $writtenPaths
+#endregion
+
+#region Format-payload copies (agents, hooks, rules, mcp)
+if ($SkillsOnly) {
+    Write-Host "Skipped agents/hooks/rules/mcp (-SkillsOnly)"
+}
+else {
+    foreach ($dir in $CopyDirs) {
+        $source = Join-Path $RepoRoot $dir.Source
+        if (-not (Test-Path $source)) {
+            # Counts as drift, and it is quieter than the junction era was:
+            # a dangling junction stopped rules loading and hooks firing,
+            # whereas a copy keeps serving the last content the repo had. A
+            # mistyped or half-completed rename therefore looks like nothing
+            # happened at all unless this says so.
+            Write-Warning "Repo directory missing, skipped: $source"
+            $script:DriftCount++
+            continue
+        }
+        Sync-PayloadDirectory -Source $source -Dest (Join-Path $ClaudeDir $dir.Dest) -Label $dir.Dest
+    }
+}
+#endregion
+
+#region Skills (one junction per skill, selected by group)
 $skillsDir = Join-Path $ClaudeDir 'skills'
 $existingSkillsDir = Get-Item $skillsDir -Force -ErrorAction SilentlyContinue
 if ($existingSkillsDir -and

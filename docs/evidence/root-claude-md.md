@@ -523,6 +523,28 @@ session here, while the freeze that said not to run them sat in
 `.claude/rules/copilot-payload.md`, which loaded only on a Read under
 `copilot/` (a prompt audit of this repo, 2026-10-08, finding 17).
 
+**2026-10-16.** `link-claude.ps1` stops before its first write into a git
+working tree that does not ignore every path the run would write there:
+each skill junction, and on a run without `-SkillsOnly` the four copied
+directories and the two mirrored files. The user made all three calls
+the brief `link-claude-gitignore-check.md` put to them: stop rather than
+warn, never write the ignore line, and check every written path rather
+than the junctions alone. Measured that day in scratch repos, Git for
+Windows 2.55.0.windows.3 with `core.symlinks` true: an unignored junction
+shows as `?? .claude/`, and a `git add` naming it alone stages its
+target's `SKILL.md` as a `100644` blob, as `git add -A` does.
+`git check-ignore` exits 0 or 1 for a path not yet made, 128 outside a
+repo, and reads `.git/info/exclude` as it reads `.gitignore`. Asked for
+`skills/<name>` without its trailing slash, it read a per-skill
+directory-only line as not ignored and the negated
+`!/.claude/skills/<name>/` as ignored, both right with the slash.
+`git clean -fd`, and `-fdx` with the line, removed the junction alone,
+never the payload's files behind it. The three repos here with linked
+skills already passed, two client Fabric repos by `/.claude/skills/` and
+a personal one by `.claude/*`. `tests/scripts/link-claude/` holds the
+cases: the version before the check failed 24 of 41, and a check without
+the trailing slash 8, linking the negated case's skill.
+
 ## How this repo is structured
 
 Files here are synced into tool config directories; where an edit

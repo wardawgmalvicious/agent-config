@@ -64,4 +64,14 @@ edit goes live.
 - `-ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups fabric-core` pushes
   only that group's skills into a client repo, without this machine's
   agents, hooks or rules. They are junctions, so every save to one is live
-  in that repo's sessions from then on.
+  in that repo's sessions from then on. Inside a git working tree the run
+  stops before its first write unless git ignores every path it would
+  write, since git follows a junction and a `git add` there would commit
+  each skill: ignore `/.claude/skills/` in that repo's `.gitignore` or
+  `.git/info/exclude`, which the script never writes. The refusal opens
+  `Refusing to write into`; a target in no working tree prints
+  `Skipped ignore check` (2026-10-16).
+- After editing the script, run
+  `bash tests/scripts/link-claude/test-ignore-check.sh`. It deploys a copy
+  from a fake payload into throwaway repos, so no junction it makes points
+  at this repo's skills.

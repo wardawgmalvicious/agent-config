@@ -164,11 +164,13 @@ lists nothing until a matching file is read: a repo with narrower work
 pays for fewer always-listed skills. `powerbi` became `power-bi` the
 same day, hyphenated like the Fabric groups.
 
-**Ignore `/.claude/skills/` in a client repo before linking into it.**
-The junctions sit inside its tree, and git follows a junction:
-`git add -A` staged a junction's target files as ordinary files (Git for
-Windows 2.55.0, 2026-10-15), so a broad add there commits a copy of
-every linked skill.
+**Ignore `/.claude/skills/` in a client repo before linking into it**,
+in its `.gitignore` or `.git/info/exclude`: `link-claude.ps1` refuses a
+git working tree that does not ignore every path it would write
+(2026-10-16). The junctions sit inside its tree, and git follows a
+junction: `git add -A` staged a junction's target files as ordinary files
+(Git for Windows 2.55.0, 2026-10-15), so a broad add there commits a copy
+of every linked skill.
 
 ### Fabric core (5)
 
