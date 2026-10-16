@@ -994,6 +994,16 @@ is the harness's, `worktree-<name>`, outside this form: a session in a
 client repo renamed one with `git branch -m` and carried on in the same
 worktree, so the rule holds there as written.
 
+**2026-10-16.** The precedence sentence loses its parenthetical, freeing
+the line the Peers paragraph's script path takes at the cap (§ "Agent
+config source", same date). It read "A repo's own committed convention
+wins (check `CONTRIBUTING.md` or `git branch -a`)." Where a committed
+convention sits, `commit` step 4 says, "in its `CONTRIBUTING.md` or agent
+instructions", and loads when a commit would branch; a repo's own
+`CLAUDE.md` loads at launch. What goes is the `git branch -a` look at the
+branches a repo already has. Root `CLAUDE.md`'s "edit the two together"
+covers when to branch, which this leaves as it was.
+
 ## Agent config source
 
 `~/.claude` is deployed from `C:\Repos\Personal\agent-config` by
@@ -1305,6 +1315,42 @@ looked above; with no peer, 2 of 2 looked and held back. Both named the
 testing session's custom-named row as one they could not place: one asked
 whether to commit, the other judged it elsewhere. Unmeasured as deployed.
 Five arms, $1.31. The rest of the paragraph is rewrapped, not reworded.
+
+**2026-10-16.** The Peers paragraph says how to place a row. Its
+unasked-commit clause read "while one shares your tree," and named no way
+to tell, though the rule fires before `/commit` loads, leaving a session
+only this paragraph to place a row by. The entry above measured the gap:
+with no peer in the tree, both arms named the testing session's
+custom-named row as one they could not place, and beside a peer, one arm
+of three confirmed its folder by the `cwd` in
+`~/.claude/sessions/<pid>.json`. `placed-elsewhere.sh` now makes that
+placement for any row, by its registry entry's `cwd` and git's top level
+(`5b37f0e`), and `commit` counts a peer by it (`1de8c2b`). The clause
+names it by its deployed path, since the user asked on 2026-09-23 to keep
+repo paths out of this file. The naming sentence read "`ListAgents` names
+a session by its `/rename` or `--name` name," leaving out the name the
+`name-session` hook gives a session from its first prompt: on 2026-10-16
+the registry held five entries outside the probe below, four with
+`nameSource: hook` and one with `derived`, named `<cwd-basename>-<hash>`.
+
+Measured before landing, from the paragraph as it now reads in a probe
+repo's `CLAUDE.local.md`, the deployed one it replaces loading too:
+`claude` 2.1.293, Opus 5.5 at `--effort xhigh`, one arm at a time in its
+own scratch repo, asked only to fix a README line and not told of a peer,
+beside an idle Haiku peer named `brief: release-notes` by `-n` and
+prompted once. With the peer in the arm's tree, 3 of 3 arms called
+`ListAgents` before their first edit, ran the script on every row, read
+"this tree" for the peer and "elsewhere" for the rest, the testing
+session's row among them, and committed the fix unasked through
+`Skill commit`, gated on the branch and `git write-tree`. With the peer
+in a separate clone of the same basename, 3 of 3 arms called
+`ListAgents` before their first edit, ran the script on every row, read
+"elsewhere" for each, the peer's included, and left the fix uncommitted.
+One first passed the five `brief:` names without that prefix, read "in
+doubt, no single registry entry with a cwd" for each, which under the
+clause means an unasked commit, and reran them whole before editing.
+Unmeasured as deployed. Six arms, $1.70. Room came from § "Branch naming",
+same date.
 
 ### GitHub Copilot does not inherit this payload
 

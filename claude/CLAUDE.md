@@ -137,8 +137,7 @@ command naming one stays local. `identity-guard` checks only the other way.
 action: `feat/fabric-ontology-skill`. No tickets, dates or sequence markers
 (`wave-3`). **Branch when the work is more than one commit, or an
 intermediate state would break while deployed**, from commit one if bound
-for `/land`. A repo's own committed convention wins (check `CONTRIBUTING.md`
-or `git branch -a`).
+for `/land`. A repo's own committed convention wins.
 
 ## Agent config source
 
@@ -154,12 +153,13 @@ answer "Yes, and keep allowing"** (2026-10-07). Once on, Read refuses the
 inbox, other repos, other projects' transcripts and junctioned skills'
 files, citing `permissions.blockReadsOutsideWorkingDirectories`.
 
-**Peers.** `ListAgents` names a session by its `/rename` or `--name` name,
+**Peers.** `ListAgents` names a session by `/rename`, `--name` or a hook,
 else `<cwd-basename>-<hash>`: its directory, not its repo (2026-09-17).
 **Message another repo only in a coordination the user starts**, the sends
 they direct and answers within it (2026-10-01); else use its inbox.
 **Run it before your first edit and before editing a file a peer may be
-editing**; while one shares your tree, **commit each finished unit unasked**
+editing**; while `~/.claude/skills/land/scripts/placed-elsewhere.sh`
+places one in your tree or in doubt, **commit each finished unit unasked**
 (`/commit`): its stash or pre-commit run can lose your edits, silently
 (2026-10-09). **Ask a peer only for what exists nowhere but in its
 context**: uncommitted work, what it tried, a live login. For the rest, or a
