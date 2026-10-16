@@ -29,7 +29,10 @@
                 "@azure/mcp@latest",
                 "server",
                 "start"
-            ]
+            ],
+            "env": {
+                "AZURE_TOKEN_CREDENTIALS": "AzureCliCredential"
+            }
         },
         "sql-mcp": {
             "type": "stdio",
