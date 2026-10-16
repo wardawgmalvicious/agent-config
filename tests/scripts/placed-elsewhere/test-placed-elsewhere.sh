@@ -179,25 +179,34 @@ echo "4. A registry that does not single out the session is in doubt"
 config entries
 entry 101 p-01 "$OTHER"
 run "$main" p-02
-check "no entry under the name: exit 1" is "$rc:$(line p-02 'in doubt, no single')" "1:1"
+check "no entry under the name: exit 1, naming no other" is "$rc:$(line p-02 'in doubt, no registry entry under this name$')" "1:1"
+entry 103 'brief: p-03' "$OTHER"
+entry 104 np-03 "$OTHER"
+run "$main" p-03
+check "a name passed short, beside a hook's and np-03: exit 1, naming the hook's alone" \
+    is "$rc:$(line p-03 "in doubt, no registry entry under this name; one is named 'brief: p-03'$")" "1:1"
+entry 105 'worktree: p-03' "$OTHER"
+run "$main" p-03
+check "two names ending in it: exit 1, naming both" \
+    is "$rc:$(line p-03 "in doubt, no registry entry under this name; 2 are named 'brief: p-03', 'worktree: p-03'$")" "1:1"
 entry 102 p-01 "$OTHER"
 run "$main" p-01
-check "two entries under the name, both elsewhere: exit 1" is "$rc:$(line p-01 'in doubt, no single')" "1:1"
+check "two entries under the name, both elsewhere: exit 1" is "$rc:$(line p-01 'in doubt, 2 registry entries under this name$')" "1:1"
 
 echo "5. A cwd missing, retyped or unreadable is in doubt"
 config fields
 raw 101 '{"pid":101,"name":"p-01","status":"busy"}'
 run "$main" p-01
-check "cwd missing: exit 1" is "$rc:$(line p-01 'in doubt, no single')" "1:1"
+check "cwd missing: exit 1" is "$rc:$(line p-01 "in doubt, its registry entry's cwd is missing")" "1:1"
 raw 101 '{"pid":101,"name":"p-01","Cwd":"x"}'
 run "$main" p-01
-check "cwd renamed: exit 1" is "$rc:$(line p-01 'in doubt, no single')" "1:1"
+check "cwd renamed: exit 1" is "$rc:$(line p-01 "in doubt, its registry entry's cwd is missing")" "1:1"
 raw 101 '{"pid":101,"name":"p-01","cwd":""}'
 run "$main" p-01
-check "cwd empty: exit 1" is "$rc:$(line p-01 'in doubt, no single')" "1:1"
+check "cwd empty: exit 1" is "$rc:$(line p-01 "in doubt, its registry entry's cwd is missing")" "1:1"
 raw 101 '{"pid":101,"name":"p-01","cwd":42}'
 run "$main" p-01
-check "cwd a number: exit 1" is "$rc:$(line p-01 'in doubt, no single')" "1:1"
+check "cwd a number: exit 1" is "$rc:$(line p-01 "in doubt, its registry entry's cwd is missing")" "1:1"
 entry 101 p-01 "$(native "$tmproot/trees/gone")"
 run "$main" p-01
 check "cwd a directory that is gone: exit 1" is "$rc:$(line p-01 'in doubt, git could not read its cwd')" "1:1"

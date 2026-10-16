@@ -107,6 +107,15 @@ set, such as this machine's `brief: <slug>` (2026-10-15 and 2026-10-16).
 The script reads none of it, since a `cwd` places a derived row as
 surely as any other.
 
+**A name finds no entry when passed short, or when its session has
+gone.** On 2026-10-16 a row `ListAgents` had listed `idle`, three hours
+old, had no entry under its whole name 85 seconds later, and the next
+`ListAgents` no longer listed it. A hook's `brief: <slug>` opens with
+what reads like a label, and a probe arm passed such names as `<slug>`
+that day. So each script's no-entry line names every entry whose name
+ends in `: <name>`, for the next call to pass whole, and exits 1 all the
+same, not the usage error's 2.
+
 **`cwd` follows `EnterWorktree` and `ExitWorktree`, not a Bash `cd`.**
 One session's entry read its main checkout, `c:\…`, until it ran
 `EnterWorktree`, then the worktree, `C:\…`, with `updatedAt` moving and

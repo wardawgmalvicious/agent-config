@@ -26,6 +26,13 @@
 # each failure is caught where it happens, so every name still gets its
 # line.
 #
+# Each doubt has a line of its own. No entry can be the caller's own slip:
+# a name a hook sets, such as `brief: <slug>`, opens with what reads like
+# a label, and a probe arm passed such names as `<slug>` (2026-10-16). So
+# that line names each entry whose name ends in ": <name>", for the next
+# call to pass whole. It still exits 1, not 2, since a session that has
+# exited leaves no entry either.
+#
 # skills/workflow/land/references/never-prompted-sessions.md has the
 # measurements behind each read, and tests/scripts/placed-elsewhere/ holds
 # each case.
@@ -65,14 +72,24 @@ if [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
     CONFIG_DIR=$(cygpath -u "$CLAUDE_CONFIG_DIR" 2> /dev/null || printf '%s' "$CLAUDE_CONFIG_DIR")
 fi
 
-# The `cwd` of the entry under $n when it is the only one, a string with
-# something in it. Nothing otherwise.
-# shellcheck disable=SC2016 # $n is a jq variable
+# What the registry holds under $n, as "<entries carrying it><tab><detail>":
+# for one, its `cwd` when that is a string; for none, a clause naming each
+# entry whose name ends in ": $n", shell-quoted, when any does; else
+# nothing.
+# shellcheck disable=SC2016 # $n and $e are jq variables
 FILTER='
-    [.[] | select(.name == $n)]
-    | select(length == 1) | .[0].cwd
-    | select(type == "string" and . != "")
+    [.[] | select(.name == $n)] as $e
+    | "\($e | length)\t" + (
+        if ($e | length) == 1 then
+            $e[0].cwd | if type == "string" then . else "" end
+        elif ($e | length) == 0 then
+            [.[].name | select(type == "string" and endswith(": " + $n)) | @sh]
+            | if length == 0 then ""
+              elif length == 1 then "one is named \(.[0])"
+              else "\(length) are named \(join(", "))" end
+        else "" end)
 '
+TAB=$'\t'
 RC=0
 
 # kept <name> <text>: report the name as in this tree, and fail the run
@@ -82,12 +99,23 @@ kept() {
 }
 
 for name in "$@"; do
-    if ! cwd=$(jq "${JQ_BIN[@]}" -r -s --arg n "$name" "$FILTER" "$CONFIG_DIR"/sessions/*.json); then
+    if ! got=$(jq "${JQ_BIN[@]}" -r -s --arg n "$name" "$FILTER" "$CONFIG_DIR"/sessions/*.json); then
         kept "$name" "in doubt, the session registry did not read"
         continue
     fi
+    count=${got%%"$TAB"*}
+    detail=${got#*"$TAB"}
+    if [[ $count == 0 ]]; then
+        kept "$name" "in doubt, no registry entry under this name${detail:+; $detail}"
+        continue
+    fi
+    if [[ $count != 1 ]]; then
+        kept "$name" "in doubt, $count registry entries under this name"
+        continue
+    fi
+    cwd=$detail
     if [[ -z $cwd ]]; then
-        kept "$name" "in doubt, no single registry entry with a cwd"
+        kept "$name" "in doubt, its registry entry's cwd is missing, empty or of another type"
         continue
     fi
     # stderr stays out of $top: a warning printed beside a top level would

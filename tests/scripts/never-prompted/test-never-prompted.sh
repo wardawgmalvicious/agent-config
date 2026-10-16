@@ -118,7 +118,7 @@ check "a transcript nested deeper: exit 1" is "$rc:$(line p-01 'live, it has a t
 config touched
 entry 101 p-01 "$sid1" idle 1000
 run p-01
-check "updatedAt 1000 ms after start: exit 1" is "$rc:$(line p-01 'live, no single')" "1:1"
+check "updatedAt 1000 ms after start: exit 1" is "$rc:$(line p-01 'live, its registry entry is not still idle from its start$')" "1:1"
 entry 101 p-01 "$sid1" busy 355
 run p-01
 check "busy: exit 1" is "$rc" 1
@@ -130,10 +130,14 @@ echo "3. A registry that does not single out the session is live"
 config entries
 entry 101 p-01 "$sid1" idle 355
 run p-02
-check "no entry under the name: exit 1" is "$rc:$(line p-02 'live, no single')" "1:1"
+check "no entry under the name: exit 1, naming no other" is "$rc:$(line p-02 'live, no registry entry under this name$')" "1:1"
+entry 103 'brief: p-03' "$sid2" idle 355
+run p-03
+check "a name passed short beside a hook's: exit 1, naming the whole one" \
+    is "$rc:$(line p-03 "live, no registry entry under this name; one is named 'brief: p-03'$")" "1:1"
 entry 102 p-01 "$sid2" idle 355
 run p-01
-check "two entries under the name: exit 1" is "$rc:$(line p-01 'live, no single')" "1:1"
+check "two entries under the name: exit 1" is "$rc:$(line p-01 'live, 2 registry entries under this name$')" "1:1"
 
 echo "4. A field missing, renamed or retyped is live"
 config fields

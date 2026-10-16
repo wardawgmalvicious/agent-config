@@ -19,6 +19,10 @@
 # with the user, never a switch under a real peer. No -e: each failure is
 # caught where it happens, so every name still gets its line.
 #
+# No entry, two, and one not still idle from its start each have a line of
+# their own, and the first names each entry whose name ends in ": <name>":
+# a name passed short finds no entry, and placed-elsewhere.sh has why.
+#
 # skills/workflow/land/references/never-prompted-sessions.md has the
 # measurements behind each read, and tests/scripts/never-prompted/ holds
 # each case.
@@ -52,22 +56,34 @@ if [[ -n ${CLAUDE_CONFIG_DIR:-} ]]; then
     CONFIG_DIR=$(cygpath -u "$CLAUDE_CONFIG_DIR" 2> /dev/null || printf '%s' "$CLAUDE_CONFIG_DIR")
 fi
 
-# The entry under $n when it is the only one, still idle, and touched under
-# a second after its start, as "<sessionId> <pid> <minutes since its start>
-# <ms from start to updatedAt> <entrypoint>". Nothing otherwise: a field
-# missing or of another type selects nothing.
-# shellcheck disable=SC2016 # $n and $d are jq variables
+# What the registry holds under $n, as "<entries carrying it><tab><detail>":
+# for one still idle and touched under a second after its start,
+# "<sessionId> <pid> <minutes since its start> <ms from start to updatedAt>
+# <entrypoint>", where a field missing or of another type selects nothing;
+# for none, a clause naming each entry whose name ends in ": $n",
+# shell-quoted, when any does; else nothing.
+# shellcheck disable=SC2016 # $n, $e and $d are jq variables
 FILTER='
-    [.[] | select(.name == $n)]
-    | select(length == 1) | .[0]
-    | select(.status == "idle"
-        and (.sessionId | type) == "string"
-        and (.startedAt | type) == "number"
-        and (.updatedAt | type) == "number")
-    | (.updatedAt - .startedAt) as $d
-    | select($d >= 0 and $d < 1000)
-    | "\(.sessionId) \(.pid) \((now - .startedAt / 1000) / 60 | floor) \($d) \(.entrypoint)"
+    [.[] | select(.name == $n)] as $e
+    | "\($e | length)\t" + (
+        if ($e | length) == 1 then
+            ($e[0]
+            | select(.status == "idle"
+                and (.sessionId | type) == "string"
+                and (.startedAt | type) == "number"
+                and (.updatedAt | type) == "number")
+            | (.updatedAt - .startedAt) as $d
+            | select($d >= 0 and $d < 1000)
+            | "\(.sessionId) \(.pid) \((now - .startedAt / 1000) / 60 | floor) \($d) \(.entrypoint)"
+            ) // ""
+        elif ($e | length) == 0 then
+            [.[].name | select(type == "string" and endswith(": " + $n)) | @sh]
+            | if length == 0 then ""
+              elif length == 1 then "one is named \(.[0])"
+              else "\(length) are named \(join(", "))" end
+        else "" end)
 '
+TAB=$'\t'
 UUID='^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'
 RC=0
 
@@ -78,15 +94,25 @@ live() {
 }
 
 for name in "$@"; do
-    if ! entry=$(jq "${JQ_BIN[@]}" -r -s --arg n "$name" "$FILTER" "$CONFIG_DIR"/sessions/*.json); then
+    if ! got=$(jq "${JQ_BIN[@]}" -r -s --arg n "$name" "$FILTER" "$CONFIG_DIR"/sessions/*.json); then
         live "$name" "the session registry did not read"
         continue
     fi
-    if [[ -z $entry ]]; then
-        live "$name" "no single registry entry still idle from its start"
+    count=${got%%"$TAB"*}
+    detail=${got#*"$TAB"}
+    if [[ $count == 0 ]]; then
+        live "$name" "no registry entry under this name${detail:+; $detail}"
         continue
     fi
-    read -r sid pid minutes delta entrypoint <<< "$entry"
+    if [[ $count != 1 ]]; then
+        live "$name" "$count registry entries under this name"
+        continue
+    fi
+    if [[ -z $detail ]]; then
+        live "$name" "its registry entry is not still idle from its start"
+        continue
+    fi
+    read -r sid pid minutes delta entrypoint <<< "$detail"
     # A UUID, so the lookup below can match no other session's transcript.
     if [[ ! $sid =~ $UUID ]]; then
         live "$name" "its sessionId is not a UUID"
