@@ -82,3 +82,10 @@ long detail one file further:
 and the data agent's own [references/](references/data-agent/references/)
 and [assets/](references/data-agent/assets/). A task that spans items, an
 ontology-grounded agent for one, reads each item's file.
+
+The data agent has two scripts, each run by `uv run` and its docstring
+its usage: `${CLAUDE_SKILL_DIR}/scripts/data-agent-eval.py` grades the
+agent's replies against its semantic model's figures, and
+`${CLAUDE_SKILL_DIR}/scripts/data-agent-settings.py` reads and sets the
+draft's instructions and runtime, and publishes it
+([evaluation.md](references/data-agent/references/evaluation.md)).

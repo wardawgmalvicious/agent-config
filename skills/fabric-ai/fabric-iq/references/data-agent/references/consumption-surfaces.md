@@ -27,13 +27,19 @@ Beyond in-product chat (GA), a published data agent can be consumed from several
   the line ended 11 of 12 preview answers and none of 12 standard ones,
   and the preview answers embedded 13 CSVs, the standard ones none. So
   only the client, or the standard runtime, keeps it from a reader.
+
+  `data-agent-eval.py --route mcp` asks it as a consumer does and grades
+  each answer's text against the model's figures
+  ([evaluation.md](evaluation.md)).
 - **Python SDK's Responses client — preview.** `FabricOpenAIResponses`,
   in `fabric-data-agent-sdk`, asks the agent through the OpenAI
   Responses API and returns every step it took, so it is the scripted
   route to an answer's DAX. Learn's own route is the agent's step panel,
   where its semantic model best practices have the author review the DAX
   of each response (step 7, read 2026-10-16); this one a script can
-  grade.
+  grade, and `data-agent-eval.py`'s default route does, keeping the
+  rewritten question and the DAX beside each reply
+  ([evaluation.md](evaluation.md)).
 
   ```python
   from azure.identity import AzureCliCredential

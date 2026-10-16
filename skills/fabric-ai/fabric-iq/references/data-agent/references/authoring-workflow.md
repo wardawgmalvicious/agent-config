@@ -11,7 +11,7 @@ and operate an agent once it is live.
 - **Iterate against real questions.** Write, test, observe failures, adjust. Don't assume a single pass is sufficient.
 - **Version control the instructions** alongside the rest of the data platform code. Treat them as first-class artifacts — use Git integration on the Fabric workspace to track changes.
 - **Use example queries aggressively** on lakehouse/warehouse/KQL sources. They are the single most effective configuration mechanism for query accuracy.
-- **Maintain a regression question bank.** When instructions change, re-run the bank and check for accuracy drift.
+- **Maintain a regression question bank.** When instructions change, re-run the bank and check for accuracy drift. [evaluation.md](evaluation.md) has two ways to run one.
 - **Use deployment pipelines** to promote agent changes through dev/test/prod.
 - **Establish operational oversight.** Monitor interactions via built-in diagnostics, set up logging and audit, and review instructions periodically as data or business rules change.
 
@@ -103,3 +103,27 @@ call that emits a `FutureWarning` naming `update_settings()`, and names
 its parameter `enable_preview_runtime`, renamed from
 `enable_experimental_features` in 0.1.24a0: Learn's keyword is neither.
 Use `update_settings` or the PATCH (source read 2026-10-16, not run).
+
+## Testing an edit before it ships, by script
+
+Two scripts run the loop from a workstation, at the paths `SKILL.md`
+§ 3 names, each signing in as the Azure CLI's account:
+`data-agent-settings.py` makes the calls above, and `data-agent-eval.py`
+asks the agent a set of questions and grades each reply against its
+semantic model's own figures ([evaluation.md](evaluation.md)). Each
+one's docstring is its usage.
+
+```bash
+uv run <scripts>/data-agent-settings.py show WS AGENT --save draft.txt       # then edit draft.txt
+uv run <scripts>/data-agent-settings.py set WS AGENT --instructions draft.txt
+uv run <scripts>/data-agent-eval.py run WS AGENT cases.yaml --stage sandbox  # the draft, DAX kept
+uv run <scripts>/data-agent-settings.py publish WS AGENT                     # keeps the description
+uv run <scripts>/data-agent-eval.py run WS AGENT cases.yaml --route mcp      # what consumers get
+```
+
+`set` changes the draft alone, so the sandbox run tests it before anyone
+else gets it, and `--runtime` sends back the `experimental` it read with
+one key changed. Each write reads back what it wrote and exits 1 if the
+stage does not hold it, and `--dry-run` reports a write without making
+it. `set` and `publish` have not run in this form, though the same
+calls ran from an earlier session's scripts (2026-10-15).

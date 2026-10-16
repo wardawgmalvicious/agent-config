@@ -89,6 +89,18 @@ https://api.fabric.microsoft.com/v1/mcp/workspaces/{WorkspaceId}/dataagents/{Dat
 
 Three things decide whether an MCP integration works. It **only responds after publish** — an unpublished agent errors even with a correct URL. The client must speak the real `initialize` → `tools/list` → `tools/call` flow, so a plain REST call fails, and the tool name and its argument should be discovered from `tools/list` rather than hard-coded. And the **publish description becomes the tool description** an orchestrator reads to decide whether to call the agent — write it for that audience, not for humans. Prerequisites, sharing model, and the compliance caveat (responses may leave Fabric's compliance boundary on the M365 and MCP surfaces): [references/consumption-surfaces.md](references/consumption-surfaces.md).
 
+## Evaluating an agent
+
+Two routes judge an agent's replies to a set of questions. Learn's
+`evaluate_data_agent` (preview) runs in a notebook against literal
+expected answers, with an LLM critic, and keeps its results in a
+lakehouse: it suits a scheduled regression. This skill's
+`data-agent-eval.py` runs from a workstation, computes each expected
+answer from the semantic model by DAX at ask time, grades the reply's
+figures by rule and shows the agent's DAX beside it: it suits the loop
+between instruction edits. Side by side, with the SDK's options:
+[references/evaluation.md](references/evaluation.md).
+
 ## Governance and intent precedence
 
 When the agent decides what to do, layers override each other in this order (highest precedence first):
