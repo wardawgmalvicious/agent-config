@@ -496,6 +496,18 @@ records it. The repo's name stays out of this repo.
   `7a02e6c`: before it a rule pinned to its batch's last call and a
   nested `AGENTS.md` never pinned, so the `loaded` lines a pilot reads
   were wrong.
+- **Two body edits from the drive-letter finding**, landing with the
+  pilot's verdict so one Phase B retest covers both, the user's call on
+  2026-10-15. Since `32c021e` the rule says a nested file loads only on
+  a path whose drive letter is cased as the launch directory's. Step 7's
+  probe launches at `C:\` from either tool shell (measured that day), so
+  a path spelled `c:\`, as VS Code's launch directory and @-mentions
+  spell it, misses a nested file that is in place, which step 7 reads as
+  "a glob or a name is wrong": the probe names the file relative to the
+  repo, and a miss is checked for the drive's case before the glob.
+  Step 4's second question weighs a nested file against a rule only by
+  where conventions are kept; on Windows the rule now tips it to a
+  `paths:` rule. The script needs no edit: it casefolds paths on Windows.
 
 `tests/scripts/folder-sessions/`, the script's negative cases, written
 2026-10-15: the seven this list named, which the script `f03128b`
@@ -517,7 +529,8 @@ citation.
 - `claude --version`: 2.1.293 on 2026-10-15; 2.1.300 is out, and its
   changelog past 2.1.293 touches no instruction loading.
 - `uv run scripts/test-instruction-loading.py`: all 28 passed on
-  2026-10-15.
+  2026-10-15, before `0ab1dee` added d1 to d5; those five, p6 and p8
+  passed that day, the rest not rerun since.
 - `bash tests/scripts/folder-sessions/test-folder-sessions.sh`: 28 of
   28 on 2026-10-15, where the script `f03128b` shipped fails 7.
 - The memory, large-codebases and sessions pages, read 2026-10-15.
