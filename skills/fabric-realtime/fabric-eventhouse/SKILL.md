@@ -260,13 +260,27 @@ A **database shortcut** in an eventhouse can share selected subitems (tables, sh
 ## Monitoring
 
 ```kql
-.show queries                           // currently running
+.show queries                           // finished queries; live ones: .show running queries
 .show commands | where StartedOn > ago(1h)
 .show journal                           // management ops history
 .show ingestion failures | where FailedOn > ago(24h)
 .show table T extents                   // per-table extent count + size
 .show database datastats                // DB size, extent count, row count
 ```
+
+A Fabric KQL database's engine name is its item ID: `.show databases`
+gives the GUID as `DatabaseName` and the display name as `PrettyName`,
+and output columns that name a database carry the GUID, as
+`.show queries`' `Database` and a policy's `EntityName` did. So
+`.show queries | where Database == '<display name>'` returns no rows
+and no error: map the two first with
+`.show databases | project DatabaseName, PrettyName`. A display name
+still works wherever a database is named as input (one client estate,
+2026-10-13, in two environments; Learn says only that `Database` is the
+database's name). A finished query's
+`tolong(ResultSetStatistics.TablesStatistics[0].RowCount)` is the rows
+it returned, `0` for a poll with nothing to send (seen once that day; a
+`RowsCount` path reads null, silently).
 
 ## Cross-Database Queries
 
