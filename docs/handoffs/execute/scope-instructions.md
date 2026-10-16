@@ -1,7 +1,7 @@
 ---
 status: open
 priority: 3
-needs: []
+needs: [user]
 blocked-by: []
 written: 2026-10-15
 ---
@@ -471,8 +471,11 @@ Eventhouse folder sit under no rule. So the 2026-09-24 proposal, move
 root's contract section into the rule covering it and fold each
 README's must-know lines into that rule, is half done by hand. A draft
 should find what is left of it, and handle the trigger test and the
-rules there that point at other files. Ask the user for the repo; its
-name stays out of this repo.
+rules there that point at other files. The user runs it there, by
+`/scope-instructions` in a session of their own (their call,
+2026-10-15), so it is real use: its verdict comes back here scrubbed,
+and `skill-status.py --stamp scope-instructions --phase real-use`
+records it. The repo's name stays out of this repo.
 
 ### Open: a nested file that did not load
 
@@ -499,10 +502,10 @@ against 11, 2 and 11 of 24 on 2026-09-27.
   since 2026-10-15, p7 expecting what it found, that a main-checkout
   Read in `.claude/worktrees/` loads no `CLAUDE.md` there. That leaves
   the exclude Phase 2 declined preventing nothing, so the decline stands.
-- **The pilot**, above, on the script as fixed on 2026-10-15 and
-  deployed: until then a rule pins to its batch's last call and a
-  nested `AGENTS.md` never pins, so the `loaded` lines the pilot reads
-  are wrong.
+- **The pilot**, above, which the user runs, on the script as fixed in
+  `7a02e6c`: before it a rule pinned to its batch's last call and a
+  nested `AGENTS.md` never pinned, so the `loaded` lines a pilot reads
+  were wrong.
 
 `tests/scripts/folder-sessions/`, the script's negative cases, written
 2026-10-15: the seven this list named, which the script `f03128b`
