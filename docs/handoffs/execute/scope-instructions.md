@@ -155,7 +155,12 @@ Not drilled:
   as a Read does (probed 2026-10-15, `docs/evidence/root-claude-md.md`
   § "Validating a change"). The script counts Read, Write and Edit, so a
   README viewed by `cat` reads as never opened: it overcounts misses, the
-  direction that favours a move, and its output says so.
+  direction that favours a move, and its output says so. Sized on this
+  repo on 2026-10-15, counting any Bash or PowerShell command that names
+  the README: 10 of the 73 sessions marked never under
+  `docs/handoffs/execute/`, 8 of 84 under `skills/`, 8 of 39 under
+  `claude/rules/`, 5 of 47 under `docs/audits/`, fewer elsewhere, so the
+  script still counts no shell view.
 - **Per-directory skills and a skill's own `paths:`**: a skill is a
   home in the table; where one sits, and whether a Bash view ends a
   `paths:` skill's hold, is not judged.
