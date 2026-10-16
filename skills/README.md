@@ -164,6 +164,12 @@ lists nothing until a matching file is read: a repo with narrower work
 pays for fewer always-listed skills. `powerbi` became `power-bi` the
 same day, hyphenated like the Fabric groups.
 
+**Ignore `/.claude/skills/` in a client repo before linking into it.**
+The junctions sit inside its tree, and git follows a junction:
+`git add -A` staged a junction's target files as ordinary files (Git for
+Windows 2.55.0, 2026-10-15), so a broad add there commits a copy of
+every linked skill.
+
 ### Fabric core (5)
 
 Any Fabric repo: the REST surface, deployment, security, governance and
