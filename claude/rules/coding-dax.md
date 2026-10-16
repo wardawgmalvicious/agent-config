@@ -198,6 +198,14 @@ CALCULATE (
   usually a model design issue.
 - **Iterator inside iterator** without understanding row context:
   `SUMX ( T1, SUMX ( T2, ... ) )`. Profile before shipping.
+- **A helper column in `SUMMARIZECOLUMNS`** — a label, a date range, a
+  constant — switches off its blank-row removal. A row drops only when
+  every expression is blank, and a date or a constant never is, so every
+  group-by value comes back. Wrap the helper in `IGNORE`, which leaves
+  it out of that test (Learn's SUMMARIZECOLUMNS and IGNORE pages, read
+  2026-10-15): `"Month Start", IGNORE ( MIN ( 'Date'[Date] ) )`. On one
+  Direct Lake model, months came back 154 bare and 70, the months with
+  orders, wrapped (2026-10-15).
 
 ## Stable object references with NAMEOF
 
