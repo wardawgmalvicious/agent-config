@@ -100,10 +100,12 @@ compared before each `**Closed**:` line, not before a delete.
 - `docs/handoffs/declined.md`, if it exists yet, is every learning
   refused so far.
 - `ListAgents`, reading every row: a name is the session's `/rename` or
-  `--name` name, else `<cwd-basename>-<hash>`, its directory and not
-  its repo. Another session in this tree shares
-  its files and its index. Say that it is there, re-read any existing
-  file right before editing it, and leave the commit's gate to
+  `--name` name, one a hook set, or else `<cwd-basename>-<hash>`, its
+  directory and not its repo, and none says whether it sits in this
+  tree: `bash skills/workflow/land/scripts/placed-elsewhere.sh <name>...`
+  does, and counts a row it cannot place as in it. Another session in
+  this tree shares its files and its index. Say that it is there, re-read
+  any existing file right before editing it, and leave the commit's gate to
   `/commit`. One that is busy is asked, before anything is written,
   whether it is triaging too.
 
