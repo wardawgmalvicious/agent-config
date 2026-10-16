@@ -82,6 +82,10 @@ Frontier, against the overview's GA (both read 2026-10-15).
 - **Data Agent** — a separate conversational interface with multi-source routing, few-shot example queries, and conversational response formatting.
 
 See the fabric-iq skill's data agent reference for data agent specifics.
+A data agent over this model takes no example queries, and verified
+answers, which Learn says steer its DAX, did not in one test: the caveat
+is in that skill's `references/data-agent/data-agent.md`, § The four
+configuration layers.
 
 ---
 

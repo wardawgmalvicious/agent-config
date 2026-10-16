@@ -2,7 +2,7 @@
 status: open
 priority: 2
 needs: [user]
-blocked-by: [data-agent-dax-trace.md]
+blocked-by: []
 written: 2026-10-15
 ---
 
@@ -119,7 +119,7 @@ clause on per-project groups.
 - `fabric-iq/SKILL.md`: one line naming both scripts, where it routes to
   the data agent reference.
 - `references/data-agent/references/authoring-workflow.md`: the loop,
-  beside the section `data-agent-dax-trace.md` adds;
+  beside § Settings and publish, by REST;
   `consumption-surfaces.md`: the two routes, a line each; and
   `data-agent.md`, or a short evaluation file beside it: the two
   evaluation routes side by side.
