@@ -99,8 +99,10 @@ mechanism, its measurements and the user's pick of route. One
 measurement shows what is at stake: on 2026-10-16 the user switched a
 client repo's VS Code window to the work seat from the extension's
 account menu, and the switch rewrote the shared
-`~/.claude/.credentials.json`, so every new session on the machine
-started on the work seat, personal repos included. No settings file can
+`~/.claude/.credentials.json`, so every session on the machine moved to
+the work seat, personal repos included: a new one at its start, and a
+running one at its next request, with no restart and the same session
+id (a client session's transcript, extension 2.1.301). No settings file can
 pin the account or guard it: project and local settings ignore
 `CLAUDE_CONFIG_DIR`, and `forceLoginOrgUUID` is enforced only from a
 managed source (code.claude.com `env-vars` and `settings-reference`,
@@ -120,6 +122,9 @@ What the payload then needs, by route:
   the same fields in the same 2.5 to 2.7 s (2.1.293, measured
   2026-10-16), which is too slow for every session start; `.claude.json`
   in the config directory is fast to read, but an internal format.
+  Where two accounts share one config directory, a check at session
+  start misses a later switch in another window; with a directory per
+  account, a switch cannot cross.
 - **On a second config directory**, the docs' own pattern for work and
   personal accounts side by side (code.claude.com `authentication`, read
   2026-10-16), the payload pays more:
@@ -153,8 +158,6 @@ WebFetch case still open then becomes a brief of its own.
 ## Not checked
 
 - Either login on that network since 2026-10-05.
-- Whether a session already running moves to the work seat at its next
-  token refresh, after another window's switch.
 - The WebFetch check there, on any route.
 - `claude auth status` on an expired token, or a connection that hangs
   rather than refuses.
