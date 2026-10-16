@@ -60,15 +60,14 @@ anyone else working here. **`ListAgents` answers this; the two git
 commands above cannot.** They report worktrees and refs, and print the
 same thing whether one session shares this HEAD or five — measured
 2026-09-22, when both came back clean while `ListAgents` named two live
-sessions in the tree. Read every row rather than matching on the repo's
-name: a session is named for its working directory, so one in a
-subdirectory shares this HEAD under another name. What the git commands
-do show is a branch tip equal to your own — the tell that someone cut
-their branch from yours, which is what makes the merge method at step 7
-load-bearing. Asked directly, a user answers about *subject matter* —
-"working on something else that won't touch your edits" is truthful and
-entirely compatible with sharing this HEAD, which is what it turned out
-to mean on 2026-09-15.
+sessions in the tree. Read every row, and place none by its name, which
+names a directory at best, and not which one: the script below places
+each. What the git commands do show is a branch tip equal to your own —
+the tell that someone cut their branch from yours, which is what makes
+the merge method at step 7 load-bearing. Asked directly, a user answers
+about *subject matter* — "working on something else that won't touch
+your edits" is truthful and entirely compatible with sharing this HEAD,
+which is what it turned out to mean on 2026-09-15.
 
 **The answer expires.** Re-run `ListAgents` immediately before each
 command that moves HEAD — step 7's `git switch`, and step 9's when it
@@ -78,10 +77,11 @@ HEAD are not. On 2026-09-22 a switch made after the check, once the one
 peer it found had ended and two others had started, put one of their
 next commits on `main`, unnoticed for over an hour. The reflog records
 every move and never the mover, so the check comes before the move.
-**A row `scripts/never-prompted.sh` passes was never prompted and is
-not live** ([why](references/never-prompted-sessions.md)): give it the
-rows here and again in each move's command, ahead of the move, and name
-at step 6 what it passed. A failed read keeps a row live.
+**A row `scripts/placed-elsewhere.sh` places elsewhere is no peer, nor
+one it keeps that `scripts/never-prompted.sh` passes**
+([why](references/never-prompted-sessions.md)): run each on its rows
+here and, ahead of each move in its command, on those it passed. Name at
+step 6 what each passed; a failed read keeps a row in this tree, or live.
 
 Someone being live is **not** a reason to abandon the landing — step 7
 has a no-checkout route for exactly this case. Disclose it at step 6
@@ -440,7 +440,7 @@ Do not delete, and say why, when:
 - The user asked to keep it. Honour that with no round — it costs
   nothing, and the reference says why.
 - Another session is live in the tree, or is on this branch — by a
-  `ListAgents` run now and step 1's script, since step 1's answer has
+  `ListAgents` run now and step 1's scripts, since step 1's answer has
   expired. Note this blocks the *deletion*, not the landing — step 7's
   variant covers that.
 - **The branch is checked out in a linked worktree** still on disk: git
@@ -486,7 +486,7 @@ yours to override; make the override informed rather than refusing it.
   `main` are two decisions, not one.
 - **Never `git switch` while another session is live in the tree** —
   live by a `ListAgents` run immediately before the switch and step 1's
-  script inside its command, never by step 1's run or by an instruction.
+  scripts inside its command, never by step 1's run or by an instruction.
 - If the repo is not one the authenticated identity owns, stop and
   report rather than working around it. **A protected `main` is not
   that case** — a ruleset requiring pull requests is the repo working
