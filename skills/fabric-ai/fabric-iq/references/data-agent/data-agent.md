@@ -48,7 +48,7 @@ Each layer has a specific job — don't conflate them. Source-specific query log
 Hard limits, and the caveat that catches people:
 
 - **5 data sources** per agent; **100 example queries** per source.
-- **Example queries are not supported on Power BI semantic model sources.** The UI won't stop you in all flows, but they have no effect — rely on the model's own AI instructions, TMDL metadata, and Verified Answers instead.
+- **Example queries are not supported on Power BI semantic model sources.** The UI won't stop you in all flows, but they have no effect — rely on the model's own AI instructions and TMDL metadata instead. Learn adds Verified Answers, saying the agent looks for a matching one before it writes DAX, yet in one client estate on 2026-10-15 trigger phrases of two verified answers left the DAX unsteered on both runtimes, as an earlier project had: review each answer's DAX, as Learn's own workflow asks, before counting on one.
 - **Data source routing went GA in August 2026** and feeds on layers 2–4 plus schema metadata. A weak description ("contains sales data") makes the agent guess; always say what a source IS good for AND what it ISN'T.
 
 **Two more inputs, SQL sources on the preview runtime only** (both preview, 2026-10-06): **topics**, up to 1 million characters of instructions organized by topic, from which the agent retrieves the sections relevant to a question for NL2SQL; and **schema object descriptions**, business context on tables and columns. Both need the agent switched from the **standard runtime** (GA, the default) to the **preview runtime**, which carries the newest orchestration and query-generation tools before they graduate.

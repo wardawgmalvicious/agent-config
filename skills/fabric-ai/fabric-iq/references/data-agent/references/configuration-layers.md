@@ -167,4 +167,4 @@ ORDER BY units_sold DESC;
 
 One well-chosen example can outperform paragraphs of prose instructions.
 
-**Important caveat**: example queries are **NOT currently supported for Power BI semantic model data sources**. For semantic models, rely on the model's own AI instructions, TMDL metadata, and Verified Answers instead.
+**Important caveat**: example queries are **NOT currently supported for Power BI semantic model data sources**. For semantic models, rely on the model's own AI instructions and TMDL metadata instead; Verified Answers steer the DAX by Learn's account but did not in one test ([data-agent.md § The four configuration layers](../data-agent.md#the-four-configuration-layers)).
