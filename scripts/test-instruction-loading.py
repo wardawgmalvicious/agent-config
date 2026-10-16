@@ -34,7 +34,12 @@ cutting a root CLAUDE.md over to AGENTS.md. r1, added 2026-10-15 on
 same day for the brief bash-reads-load-instructions.md, kept at
 `git show 92f8afc:docs/handoffs/execute/bash-reads-load-instructions.md`,
 check 2.1.293's changelog: a single-file cat, head, tail, sed -n or grep
-in the Bash tool loads what a Read would. Re-run it after a CLI upgrade,
+in the Bash tool loads what a Read would. The d- probes, added the same
+day for the brief nested-claude-md-misses.md, kept at
+`git show e6c28bd:docs/handoffs/execute/nested-claude-md-misses.md`, run
+on Windows only: a nested CLAUDE.md loads only on a path whose drive
+letter is cased as the launch directory's, even once Bash respells the
+cwd, and a `paths:` rule on either spelling. Re-run it after a CLI upgrade,
 or when a changelog entry touches AGENTS.md or instruction loading: support
 shipped in 2.1.277 and changed in 2.1.281. A FAIL means the loader changed,
 and whatever was concluded from the probe may have changed with it.
@@ -91,6 +96,7 @@ class Step:
     tool: str          # Read, Write, Grep, Glob, Bash, PowerShell, Agent, or /compact
     target: str = ""   # probe-relative; a directory for Grep and Glob
     command: str = ""  # a shell step's exact command; a Bash step without one cats target
+    drive: str = ""    # "lower" or "upper": the case the prompt spells target's drive letter in
 
 
 @dataclass(frozen=True)
@@ -106,10 +112,25 @@ class Probe:
     subagent: dict[str, dict[str, str]] | None = None
     order: tuple[str, ...] = ()  # files that must first load in this order
     worktree: str = ""  # a git worktree checked out here, with a CLAUDE.md of its own
+    # The drive letter's case the transcript's cwd takes, in order, "lower" or "upper":
+    # the session launches in the first, and a shell call may respell it.
+    spellings: tuple[str, ...] = ()
 
 
-def read(path: str) -> Step:
-    return Step("Read", path)
+def read(path: str, drive: str = "") -> Step:
+    return Step("Read", path, drive=drive)
+
+
+def spelled(path: pathlib.Path, drive: str) -> str:
+    """The path with its drive letter in the case drive names; as it is for ""."""
+    text = str(path)
+    if drive and len(text) > 1 and text[1] == ":":
+        text = (text[0].lower() if drive == "lower" else text[0].upper()) + text[1:]
+    return text
+
+
+def case_of(path: str) -> str:
+    return "lower" if path[:1].islower() else "upper"
 
 
 def view(name: str, question: str, command: str, *, loads: bool, tool: str = "Bash") -> Probe:
@@ -240,6 +261,36 @@ PROBES = (
          "Get-Content a.probe", loads=False, tool="PowerShell"),
 )
 
+if os.name == "nt":  # only a Windows path has a drive letter to spell
+    PROBES += (
+        Probe("d1", "drive: launched at c:\\, a Read spelled C:\\ loads no nested file, c:\\ does",
+              {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/one.txt": "t", "sub/two.txt": "t"},
+              (read("sub/one.txt", "upper"), read("sub/two.txt", "lower")),
+              {"launch": {"CLAUDE.md": LAUNCH}, "2": {"sub/CLAUDE.md": NESTED}},
+              spellings=("lower",)),
+        Probe("d2", "drive: launched at C:\\, a Read spelled c:\\ loads none either, C:\\ does",
+              {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/one.txt": "t", "sub/two.txt": "t"},
+              (read("sub/one.txt", "lower"), read("sub/two.txt", "upper")),
+              {"launch": {"CLAUDE.md": LAUNCH}, "2": {"sub/CLAUDE.md": NESTED}},
+              spellings=("upper",)),
+        Probe("d3", "drive: launched at c:\\, a paths: rule loads on a Read spelled C:\\",
+              {RULE: "r", "a.probe": "t"},
+              (read("a.probe", "upper"),),
+              {"1": {RULE: NESTED}},
+              spellings=("lower",)),
+        Probe("d4", "drive: once Bash respells the cwd C:\\, a C:\\ Read still misses, c:\\ loads",
+              {"CLAUDE.md": "i", "sub/CLAUDE.md": "i", "sub/one.txt": "t", "sub/two.txt": "t"},
+              (Step("Bash", command="pwd"), read("sub/one.txt", "upper"),
+               read("sub/two.txt", "lower")),
+              {"launch": {"CLAUDE.md": LAUNCH}, "3": {"sub/CLAUDE.md": NESTED}},
+              spellings=("lower", "upper")),
+        Probe("d5", "drive: launched at c:\\, a nested AGENTS.md misses a C:\\ Read too, c:\\ loads",
+              {"AGENTS.md": "i", "sub/AGENTS.md": "i", "sub/one.txt": "t", "sub/two.txt": "t"},
+              (read("sub/one.txt", "upper"), read("sub/two.txt", "lower")),
+              {"launch": {"AGENTS.md": LAUNCH}, "2": {"sub/AGENTS.md": HOOK}},
+              spellings=("lower",)),
+    )
+
 
 @dataclass
 class Observed:
@@ -247,6 +298,7 @@ class Observed:
     order: list[str] = field(default_factory=list)  # files in first-load order
     calls: list[tuple[str, dict]] = field(default_factory=list)  # (tool, input)
     parallel: bool = False  # a call made before the previous one's result, so unattributable
+    cwds: list[str] = field(default_factory=list)  # the cwd's drive case, at each change
 
 
 def build(root: pathlib.Path, probe: Probe) -> pathlib.Path:
@@ -288,21 +340,22 @@ def add_worktree(base: pathlib.Path, rel: str) -> None:
 
 def step_line(n: int, step: Step, base: pathlib.Path) -> str:
     target = base / step.target
+    shown = spelled(target, step.drive)
     if step.tool == "Read":
-        return f"{n}. Read tool: {target}"
+        return f"{n}. Read tool: {shown}"
     if step.tool == "Write":
-        return f"{n}. Write tool: create {target} containing the single line: probe"
+        return f"{n}. Write tool: create {shown} containing the single line: probe"
     if step.tool == "Grep":
-        return f"{n}. Grep tool: pattern needle, path {target}, output_mode files_with_matches"
+        return f"{n}. Grep tool: pattern needle, path {shown}, output_mode files_with_matches"
     if step.tool == "Glob":
-        return f"{n}. Glob tool: pattern *.txt, path {target}"
+        return f"{n}. Glob tool: pattern *.txt, path {shown}"
     if step.tool in SHELLS and step.command:
         return f"{n}. {step.tool} tool, exactly this command and nothing else: {step.command}"
     if step.tool == "Bash":
         return f"{n}. Bash tool: cat '{target.as_posix()}'"
     if step.tool == "Agent":
         return (f'{n}. Agent tool with subagent_type general-purpose, giving the subagent '
-                f'exactly this task: "Use the Read tool on {target} and reply with its '
+                f'exactly this task: "Use the Read tool on {shown} and reply with its '
                 'contents verbatim. Use no other tool." Do not read that file yourself.')
     raise ValueError(f"unknown step tool {step.tool}")
 
@@ -348,8 +401,9 @@ def run_probe(root: pathlib.Path, probe: Probe, claude: str) -> str:
                       f"not comment on any output.\n\n{lines}\n\n"
                       "When every step is done, reply with just: ok")
         session = ["--session-id", sid] if i == 0 else ["--resume", sid]
+        cwd = spelled(base / probe.cwd, probe.spellings[0] if probe.spellings else "")
         try:
-            subprocess.run([claude, "-p", prompt, *common, *session], cwd=base / probe.cwd,
+            subprocess.run([claude, "-p", prompt, *common, *session], cwd=cwd,
                            env=cold_env(), capture_output=True, text=True, encoding="utf-8",
                            errors="replace", timeout=300)
         except subprocess.TimeoutExpired:
@@ -367,6 +421,9 @@ def observe(transcript: pathlib.Path) -> Observed:
         except json.JSONDecodeError:
             continue
         kind = rec.get("type")
+        cwd = rec.get("cwd")
+        if isinstance(cwd, str) and cwd and (not seen.cwds or seen.cwds[-1] != case_of(cwd)):
+            seen.cwds.append(case_of(cwd))
         if kind == "system" and rec.get("subtype") == "compact_boundary":
             started += 1
             phase = str(started)
@@ -405,6 +462,8 @@ def calls_match(calls: list[tuple[str, dict]], steps: list[Step], base: pathlib.
             return False
         if name in ("Read", "Write") and not same(args.get("file_path", ""), target):
             return False
+        if step.drive and args.get("file_path", "")[:1] != spelled(target, step.drive)[:1]:
+            return False
         if name in ("Grep", "Glob") and not same(args.get("path", ""), target):
             return False
         if name in SHELLS:
@@ -431,6 +490,10 @@ def judge(root: pathlib.Path, probe: Probe, sid: str) -> tuple[str, list[str]]:
     if seen.parallel or not calls_match(seen.calls, tool_steps, base):
         at_once = ", some at once" if seen.parallel else ""
         return "INVALID", detail + [f"tool calls{at_once}: {described(seen.calls)}"]
+    if probe.spellings:
+        detail.append(f"cwd's drive letter: {' then '.join(seen.cwds)}")
+        if tuple(seen.cwds) != probe.spellings:
+            return "INVALID", detail + [f"expected the cwd's: {' then '.join(probe.spellings)}"]
     ok = seen.loads == probe.expect
     if probe.order:
         ok &= [f for f in seen.order if f in probe.order] == list(probe.order)
