@@ -26,7 +26,8 @@ nothing about loading, and ERROR when no transcript turned up.
 Written 2026-09-25 on 2.1.282 for the brief nested-instruction-files.md,
 whose probes these are, kept at
 `git show 92f8afc:docs/handoffs/execute/nested-instruction-files.md` since
-docs/handoffs/execute/scope-instructions.md replaced it on 2026-10-15:
+scope-instructions.md replaced it on 2026-10-15, itself kept at
+`git show 7666bd7:docs/handoffs/execute/scope-instructions.md`:
 c0 and 1-8 answer its load-order questions, k0-k2 and h1 its question of
 cutting a root CLAUDE.md over to AGENTS.md. r1, added 2026-10-15 on
 2.1.293, checks claude/rules/agent-instructions-scoping.md's claim that a

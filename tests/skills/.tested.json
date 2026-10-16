@@ -361,11 +361,11 @@
     },
     "scope-instructions": {
       "behaviour": {
-        "date": "2026-10-15",
-        "commit": "f03128b",
+        "date": "2026-10-16",
+        "commit": "7666bd7",
         "routing": "881437837eb3d8f3",
-        "body": "ae986f6a192ba17f",
-        "references": "dcd09eac4109849d"
+        "body": "9c6b0f24e72a3abc",
+        "references": "a551f99984f00b94"
       },
       "real-use": {
         "date": "2026-10-15",

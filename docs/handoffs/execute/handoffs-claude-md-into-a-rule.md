@@ -60,8 +60,6 @@ stand as written:
   `land/SKILL.md`. These are junctioned and live machine-wide the moment
   they change, so they change in the commit that moves the file.
 - `scripts/skill-status.py`, a docstring line
-- `docs/handoffs/execute/scope-instructions.md`, one mention, if that
-  brief still stands
 
 `tests/scripts/handoff-status/test-findings.sh` plants a
 `docs/handoffs/CLAUDE.md` to prove the scanner skips instruction files.

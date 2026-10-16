@@ -170,3 +170,40 @@ turn. Its fork's reply to two questions about its files' content alone
 was stopped by a safety check before it went out, so plain wording does
 not avoid it: both tries to carry the run's results to another session
 failed, and the user pasted each output here instead.
+
+## Retest, 2026-10-16
+
+The payload arm alone, on 2.1.293, against the body `14b1711` left:
+Opus 5.5 at `max`, $1.75, 23 turns, 11 minutes. The body had changed
+at `6c4c320`, `50e9b63` and `14b1711`, the routing text had not, and
+the baseline, ablation and doctor arms read no body, so their 2026-10-15
+results stand. Witnesses: the `Skill` call as its first act, the main
+session's `nested_memory` record of `agent-instructions-scoping.md`, a
+Read of every instruction file in that session, and one Bash read of a
+user rule, which was denied. The fixture and the skill's fingerprint
+were unchanged after it.
+
+| Known answer | 2026-10-15 | 2026-10-16 |
+| --- | --- | --- |
+| K1, contracts out of root | nested `contracts/CLAUDE.md` | rule on `contracts/**`, for the drive-letter case; the `models.py` line kept in it |
+| K2, SQL to `**/*.sql` | yes | yes |
+| K3, the README's rule | imported into the nested file | pointed at from the rule, which carries its must-know line |
+| K4, the silent `AGENTS.md` | moved to `src/CLAUDE.md`, import form offered | `@AGENTS.md`, root's launch content moved into it |
+| K5, derivable lines | Code style cut, ruff tested; Layout kept | the same, and two more lines handed to `/doctor` |
+| K5, Copilot's 88 | flagged | flagged, its file cut to pointers |
+| K6, `make db-migrate` | flagged | flagged and fixed |
+| Changed the fixture | no | no |
+| Cost | $2.39 | $1.75 |
+
+It proposed and stopped, offered the cold probe for its new rules,
+found the unintended `.env` flaw, and kept the production warning at
+launch as a gotcha a command triggers, naming a hook to enforce it.
+**K1 moved as the step 4 edit intends, but not on the edit alone**: the
+rule's drive-letter bullet, which the 2026-10-15 arm ran without, says
+the same, and the pilot cited the rule for that choice; an arm on the
+pre-edit body would separate them. Its `models.py` line stayed in the
+contracts rule, which loads on the contract change that precedes that
+mistake, so the fixture's split may be the weaker answer. The memory,
+`loaded` and step 7 edits lie beyond this fixture: it has no
+transcripts, the arms run with auto-memory off, and each stops at its
+proposal.
