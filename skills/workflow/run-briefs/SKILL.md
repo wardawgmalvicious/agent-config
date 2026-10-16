@@ -151,11 +151,15 @@ turn. Leave the worktree and branch where they are.
 As the repo's instructions say. This repo's, from
 `.claude/rules/handoff-briefs.md`, with what the coordinator adds in front:
 
-1. **Another session live in the main checkout stops the landing.**
-   `claude agents --json` rows carry a `cwd`; one at the main checkout
-   that is not this session means the fast-forward would move the tree
-   under it, as a `git switch` would. `ListAgents` names the session but
-   not where it sits. Say who, and wait for the user's word.
+1. **Another session live in the main checkout stops the landing**, in
+   any directory of it: the fast-forward would move the tree under it,
+   as a `git switch` would. A linked worktree has a HEAD of its own, so
+   a session there does not. `land`'s `placed-elsewhere.sh` places each
+   `claude agents --json` row but this session's by git's top level for
+   its `cwd`, as neither a row's name nor its `cwd` string can
+   ([references/landing-gate.md](references/landing-gate.md) has the
+   line). Anything but `exit=0` stops: say who, or what failed, and wait
+   for the user's word.
 2. **The lock.** `git worktree list --porcelain` may still read
    `locked claude session <stem> (pid N)`: a `-p` run leaves its lock
    for a later session's sweep. With the pid gone, `git worktree unlock`

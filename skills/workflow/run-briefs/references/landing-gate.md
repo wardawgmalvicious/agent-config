@@ -119,7 +119,9 @@ From `.claude/rules/handoff-briefs.md`, which is the authority; this is the
 order the coordinator runs it in.
 
 ```bash
-claude agents --json | jq -b -r '.[] | select(.cwd | ascii_downcase | endswith("agent-config")) | "\(.pid)\t\(.sessionId)\t\(.status)\t\(.name)"'   # any row but this session's sessionId: stop
+set -o pipefail; claude agents --json \
+  | jq -b -n --raw-output0 --arg me '<session-id>' 'def mine: .sessionId == $me or (.pid | tostring) == $me; (input? // []) | if any(.[]; mine) then .[] | select(mine | not) | .name else error("no row is this session") end' \
+  | xargs -0 -r bash ~/.claude/skills/land/scripts/placed-elsewhere.sh; echo "exit=$?"   # anything but exit=0: stop
 git -C .claude/worktrees/<stem> rebase main            # auto mode may refuse it as [Git Destructive]: the user's word lets it run
 (cd .claude/worktrees/<stem> && pre-commit run --all-files)   # nothing hooks a rebase or a fast-forward
 git merge --ff-only worktree-<stem>
@@ -129,15 +131,33 @@ ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'   # after
 git worktree remove .claude/worktrees/<stem> && git branch -d worktree-<stem>   # only with the brief gone from main
 ```
 
-**This session's row is the one whose `sessionId` is its own id**, the
-directory above `scratchpad` in its scratchpad path. Both checked on
-2026-10-12 matched: an interactive session's row and a `-p`
-coordinator's. Never match by name: a `claude --resume <id> -p` dropped
-its `-n` name, and the resumed coordinator was listed as
-`agent-config-15`. Whether a resumed row keeps its `sessionId` is
-unmeasured; both coordinators that day found themselves by walking their
-process ancestry instead (`Get-Process -Id $PID`, then `.Parent`, up to
-the `claude` process).
+**The first line places every session but this one**, and anything but
+`exit=0` stops the landing. `land`'s `placed-elsewhere.sh` places each
+by git's top level for its `cwd`: a session in any directory of the main
+checkout shares its HEAD, and one in a linked worktree has its own
+(`land`'s `references/never-prompted-sessions.md` § "Where a listed
+session sits"). It keeps in this tree a row it cannot place, a name two
+sessions share among them, and exits 1, which `xargs` returns as 123.
+`-0` hands it each name as one argument, since a hook's `brief: <slug>`
+holds a space, and `-r` runs nothing when no other session is listed,
+where the script, given no name, exits 2. No match on the `cwd` string
+places a session: on 2026-10-16 (2.1.293) the suffix this line held,
+`endswith("agent-config")`, missed an idle session started in
+`skills\`, which this line placed in this tree.
+
+**`<session-id>` is this session's own id**, the directory above
+`scratchpad` in its scratchpad path. Both checked on 2026-10-12 matched:
+an interactive session's row and a `-p` coordinator's. Never leave this
+session's row out by name: a `claude --resume <id> -p` dropped its `-n`
+name, and the resumed coordinator was listed as `agent-config-15`.
+Whether a resumed row keeps its `sessionId` is unmeasured; both
+coordinators that day found themselves by walking their process ancestry
+instead (`Get-Process -Id $PID`, then `.Parent`, up to the `claude`
+process), and that pid, passed as `<session-id>`, leaves out the same
+row. A list without that row stops the landing, with jq's `no row is
+this session` and exit 5, as an empty read, output that is not JSON,
+`[]` and a wrong id each did on 2026-10-16; without the check, a list
+that read as nothing would show no one, and pass.
 
 `git worktree remove` refuses a dirty worktree, `fatal: '<path>'
 contains modified or untracked files, use --force to delete it`, and
