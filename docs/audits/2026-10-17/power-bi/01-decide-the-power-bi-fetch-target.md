@@ -40,12 +40,12 @@ the session scratchpad: 63,605 bytes, carrying
 <title>See What&#39;s New in the August 2026 Power BI Update - Power BI | Microsoft Learn</title>
 ```
 
-The SHA is the 2026-10-06 run's head
-(`docs/audits/2026-10-06/power-bi/00-audit-report.md:59`), so the entry's
-step 1 had the run fetch nothing more, and no row was read. Fifty-three
-days since `updated_at`. The same SHA was served on 2026-10-06, per that
-run's report, and on 2026-10-16, per the entry's step 1, which adds "a
-web search found no September summary".
+The SHA is the 2026-10-06 run's head (line 59 of its report,
+`git show 7837759:docs/audits/2026-10-06/power-bi/00-audit-report.md`),
+so the entry's step 1 had the run fetch nothing more, and no row was
+read. Fifty-three days since `updated_at`. The same SHA was served on
+2026-10-06, per that run's report, and on 2026-10-16, per the entry's
+step 1, which adds "a web search found no September summary".
 
 ### The blog posts, 2026-10-17
 
