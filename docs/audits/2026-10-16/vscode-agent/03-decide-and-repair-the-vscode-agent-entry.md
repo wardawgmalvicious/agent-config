@@ -26,6 +26,10 @@ had landed. It has. This window adds evidence: the entry's fetch set
 missed most of what the run needed, and the run still found stale claims
 about VS Code in this repo's prose.
 
+Since the audit, the question has narrowed. On 2026-10-16 the user
+chose VS Code's Claude session target for every chat, so only one of
+the targets A would track is in use; see the last part of Evidence.
+
 ## Evidence
 
 ### The prior brief
@@ -120,16 +124,56 @@ directory) names four:
 - Two VS Code releases fell in the window, for D-3: 1.141 (`4fe6b0340`,
   2026-10-06) and 1.142 (`f7ee5a5c6`, 2026-10-14).
 
+### Since the audit: the Claude target only
+
+On 2026-10-16, after this brief was written, the user chose VS Code's
+Claude session target for every chat, and stopped using Local and
+Copilot. A note in `~/handoff-inbox/machine-config/` asks machine-config
+to hide Local in every profile and to drop the settings only Local uses.
+Here is what that does to this source:
+
+- **Most of the four `files` no longer apply to anything in use.** The
+  pages say where each harness finds instructions, skills, agents and
+  hooks, and most of their text is about Local: its `chat.*Locations`
+  settings, its hooks, and its commands (the report's No-op bucket).
+  What the Claude target reads is decided by Claude Code itself. The
+  hooks page's Claude row names the "Claude Agent SDK" and points to
+  "the [Claude hooks reference](https://code.claude.com/docs/en/hooks)",
+  and the `claude-code` source already audits Claude Code through its
+  CHANGELOG.
+- **What only VS Code decides is which target a new chat starts on,
+  and what can move it.** Read from VS Code 1.142.0's
+  `workbench.desktop.main.js` on 2026-10-16, the order is: a managed
+  policy; then an explicit override; then the profile's remembered pick
+  (`chat.userSelectedSessionType`, kept in storage rather than in
+  settings); then `chat.defaultToCopilotHarness`; then
+  `chat.editor.localAgent.enabled`.
+  `chat.agentHost.claudeAgent.enabled` set to `false` removes the Claude
+  target. Brief 01's evidence puts the Agent Host, which runs the Claude
+  target, in `docs/agents/concepts/agent-host.md`, outside `path`.
+  Whether any docs page describes this selection order was not checked.
+- **Local's removal still matters**, but now because it lets
+  machine-config drop the pins that hold chats off Local, not because a
+  payload reads through Local. Brief 02's narrowing is about that
+  removal.
+
 ## The decision
 
 Put to the user, as brief 04's D-4 framed it:
 
-- **A — keep the source**, re-scoped to which VS Code session targets
-  read `~/.claude`. Within A, one sub-choice the report names: cover
-  `docs/agents/reference/` by widening `path` or by a second source.
-  Brief 04's D-1 names a third, leaving those pages as Phase 3 drill
-  targets.
-- **B — retire it** with the payload it was written for.
+- **A — keep the source**, re-scoped. Brief 04's D-4 framed the scope as
+  which VS Code session targets read `~/.claude`. Since 2026-10-16 that
+  is the Claude target alone, so A now means auditing how VS Code picks
+  the target, what can move a chat off it, and Local's removal. Within
+  A there is one sub-choice the report names: cover
+  `docs/agents/reference/` and `docs/agents/concepts/agent-host.md`
+  either by widening `path` or by adding a second source. Brief 04's D-1
+  names a third option: leave those pages as Phase 3 drill targets.
+- **B — retire it** along with the payload it was written for. The
+  Claude target's reading would then reach this repo through the
+  `claude-code` source alone. VS Code's target selection would reach it
+  through no source, only through a measurement like the one taken on
+  2026-10-16.
 
 ## What to change
 
@@ -137,13 +181,17 @@ Put to the user, as brief 04's D-4 framed it:
 
 1. The premise, `:18-20`, and the lines that lean on it, the
    `artifacts` rationale at `:65-78`: restate what the source is for
-   after the retirement.
+   after the retirement and the user's 2026-10-16 choice of the Claude
+   target.
 2. `files`: add `migrate-customizations.md` and `mcp-servers.md`, and
-   `overview.md`, which brief 04's D-1 asked for.
+   `overview.md`, which brief 04's D-1 asked for. Weigh each against the
+   2026-10-16 choice first: `migrate-customizations.md` moves
+   customizations out of Local's locations, and no profile here will
+   use those once machine-config lands its note.
 3. `path`: reach the pages under `docs/agents/reference/`, at least
    `ai-settings.md`, `mcp-configuration.md`,
-   `custom-agent-file-reference.md` and `hooks-reference.md`, by the
-   sub-choice above.
+   `custom-agent-file-reference.md` and `hooks-reference.md`, plus
+   `docs/agents/concepts/agent-host.md`, by the sub-choice above.
 4. `drill.strip`: add the field, a pattern or `none` with its reason, as
    the other entries do.
 5. Brief 04's D-2 (`artifacts`) and D-3 (cadence), from that brief: they
@@ -176,7 +224,9 @@ names brief 04 as it stood and is verbatim: leave it.
 
 - The decision is the user's. Brief 04's log records the user deferring
   it once; neither that deferral nor this audit's recommendation to put
-  it again is an answer.
+  it again is an answer. Nor is the user's 2026-10-16 choice of the
+  Claude target: it narrows what A would mean, and still leaves A or B
+  to the user.
 - Price a wider fetch set before settling on it. On a clone the run
   reads a diff, but on the WebFetch fallback a directory `path` costs
   `1 + 2 x |files|` calls against GitHub's anonymous 60 an hour
@@ -190,13 +240,15 @@ names brief 04 as it stood and is verbatim: leave it.
 1. **On A**: re-run
    `/drift-audit c642b585b02a55cbc28508a56c927d34262fded6 --sources vscode-agent`
    against the amended entry, with this directory's `00-audit-report.md`
-   as the known answer. The run should reach
-   `migrate-customizations.md`, `mcp-servers.md` and the
-   `docs/agents/reference/` pages through the entry, not by targeted
-   reads outside it, and its diff should still carry the hooks-page
-   restructure, the removal sentence left on `chat.agentSkillsLocations`
-   alone, and `chat.mcp.workspaceRootConfig.enabled`, each mapped to the
-   files it bears on. **On B**: `/drift-audit --sources vscode-agent`
+   as the known answer. The run should reach, through the entry rather
+   than by targeted reads outside it, whichever of
+   `migrate-customizations.md`, `mcp-servers.md`, the
+   `docs/agents/reference/` pages and `concepts/agent-host.md` the
+   amended `files` and `path` keep, and its diff should still carry the
+   hooks-page restructure, the removal sentence left on
+   `chat.agentSkillsLocations` alone, and
+   `chat.mcp.workspaceRootConfig.enabled`, each mapped to the files it
+   bears on. **On B**: `/drift-audit --sources vscode-agent`
    stops on an unknown id and lists the valid ids without it.
 2. `uv run --with pyyaml scripts/lint-frontmatter.py .claude/skills/drift-audit/SKILL.md`,
    then `uv run --with pyyaml scripts/skill-status.py --stale`, which
