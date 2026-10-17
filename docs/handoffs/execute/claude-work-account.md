@@ -3,7 +3,7 @@ status: deferred
 priority: 2
 needs: [user]
 blocked-by: []
-reopen-when: machine-config's claude-login-pin.md has a work config directory logged in to measure against, or the organization's Claude seat is live on the corporate network
+reopen-when: the work config directory machine-config made is signed in to measure against, or the organization's Claude seat is live on the corporate network
 written: 2026-10-06
 ---
 
@@ -30,6 +30,12 @@ written: 2026-10-06
   what the payload must change.
 - **Designed**: 2026-10-16, the payload's share of the per-folder
   login, once the user chose a config directory per account that day.
+- **Folded**: 2026-10-17, an inbox note of 2026-10-16 by a machine-config
+  session working its `claude-login-pin.md`, re-measured against
+  machine-config at `5a0c66c` and its `.claude/rules/claude-accounts.md`:
+  the device-policy answer, the work root, the map's format, the
+  extension's route and three findings below. machine-config's side
+  landed whole that day; the work directory exists, signed out.
 - **Kind**: two edits, each on its own trigger: the corporate-network
   rule, and the payload's share of the login pin, built once
   machine-config's side and the measurements below are ready.
@@ -98,14 +104,38 @@ blocklist, and a settings change takes the user's yes.
 ## The payload side of a login pin
 
 **The route is a config directory per account**, which the user chose
-on 2026-10-16, to design now and build once IT has said whether a
-device login policy is coming: the docs' own pattern for work and
-personal accounts side by side (code.claude.com `authentication`, read
-2026-10-16). Client roots run under a work directory and the rest under
-`~/.claude`. Machine-config's `claude-login-pin.md` holds the mechanism:
-which directory each launch gets, the folder-to-account map it generates
-into `~/.config`, the VS Code profiles, the terminal wrapper, and moving
-the client projects' transcripts and memory into the work directory.
+on 2026-10-16, to build once the work directory is signed in: the docs'
+own pattern for work and personal accounts side by side
+(code.claude.com `authentication`, read 2026-10-16). No device login
+policy will tie this laptop to the organization, as the user, an admin
+of its plan, said on 2026-10-16 (machine-config's brief). Folders under
+the work root (`config.psd1`'s `WorkRepoRoot`) run under the work
+directory, and every other folder, those outside every root included,
+under `~/.claude`; a client root joins the work account only by
+declaring `ClaudeAccount = 'work'`, and none does. Machine-config's
+`claude-login-pin.md` holds the mechanism: which directory each launch
+gets, the VS Code profiles, the terminal wrapper, and moving the client
+projects' transcripts and memory into the work directory. A VS Code
+window gets its account from a profile setting; the process wrapper was
+dropped, since on Windows it would have to be a compiled `.exe`, under
+which the extension stops following the CLI's directory (extension
+2.1.301 code, read by that session).
+
+**The map is a contract with machine-config**, which keeps its format in
+`.claude/rules/claude-accounts.md` and bumps `version` on any change a
+reader must know about (read 2026-10-17):
+
+- `~/.config/claude-accounts.json`, generated, `version` 1. Each account
+  lists `configDir`, `claudeJson` (the `.claude.json` the directory
+  uses, so step 1 reads it rather than deriving it), `env` and `orgId`.
+- `env` is the exact value a launcher puts in `CLAUDE_CONFIG_DIR`, and
+  `null` means leave it unset: setting it, even to `~/.claude`, moves
+  `.claude.json` into that directory.
+- A folder takes the account of the longest root that is it or contains
+  it, case-insensitively, separators folded, on a component boundary;
+  no root means `default`.
+- `orgId` is `null` until that account is signed in. A reader that meets
+  another `version` fails open and says so.
 
 One measurement shows what is at stake: on 2026-10-16 the user switched a
 client repo's VS Code window to the work seat from the extension's
@@ -185,17 +215,33 @@ second directory, the work one once machine-config makes it:
   directories. The coordination of 2026-10-16 crossed accounts, and the
   `land` scripts find a peer by its file under a config directory, so
   this decides both whether such a coordination survives the split and
-  what those scripts must search.
+  what those scripts must search. A live session registers as
+  `<config dir>/sessions/<pid>.json`, with `cwd`, `peerProtocol` and
+  `messagingSocketPath` among its keys (seen under `~/.claude` by the
+  machine-config session, 2026-10-16); where a work session registers is
+  not measured.
 - Whether Read refuses `~/.claude/...` from a session whose directory
   is elsewhere, once `blockReadsOutsideWorkingDirectories` is on.
 - Where server-managed settings are cached, so that the organization's,
   which the user will set as an admin of its plan (2026-10-16), stay
   out of personal sessions. They reach only accounts already in the
   organization (code.claude.com `authentication`, read 2026-10-16).
+- Whether VS Code's built-in Agents profile runs the payload's hooks,
+  the guard included, and takes a claude.ai login at all. It shares
+  Default's settings and the extension contributes no session type
+  there, so a Claude session in it is VS Code's own Claude target on
+  `~/.claude` (the machine-config session, 2026-10-16).
 
-If IT deploys `forceLoginOrgUUID` to this laptop, the pin is moot, as
-`claude-login-pin.md` says: Claude Code would then refuse the personal
-login at startup in every folder.
+IDE integration needs nothing: the extension always writes its lock
+file to `~/.claude/ide`, the CLI also searches there whenever
+`CLAUDE_CONFIG_DIR` is set, and the panel uses the in-process
+`claude-vscode` MCP server, not the lock file (extension 2.1.301 code,
+read by that session, 2026-10-16).
+
+If a device policy ever deploys `forceLoginOrgUUID` to this laptop, the
+pin is moot, as `claude-login-pin.md` says: Claude Code would then
+refuse the personal login at startup in every folder. Machine-config's
+map generator warns when managed settings carry it.
 
 ## Where it lands
 
@@ -238,6 +284,14 @@ either: write "the work seat".
   claude auth status | jq -b -c '{authMethod, subscriptionType, configDirectory}'
   ```
 
-- Where machine-config's map lives and how it is shaped, whether its
-  measurements passed, and whether IT has answered on a device login
-  policy.
+- Whether the work directory is signed in: the map's `work` account has
+  a non-null `orgId`, tested without printing it. On 2026-10-16 it was
+  signed out, and signing in is the user's step, after step 1's deploy
+  to every directory:
+
+  ```powershell
+  $env:CLAUDE_CONFIG_DIR = "$HOME\.claude-work"; claude auth login
+  ```
+
+- Whether machine-config's `.claude/rules/claude-accounts.md` still
+  gives the map `version` 1.
