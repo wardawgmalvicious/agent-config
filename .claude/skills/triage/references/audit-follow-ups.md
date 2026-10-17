@@ -73,7 +73,10 @@ nothing.
   another's session moves with that one's verdict.
 - **A later audit of the same source may own the work now**: a newer
   follow-up that owes the same re-check, or a brief that re-scoped the
-  same registry entry. Then the older one is Covered by it.
+  same registry entry. Then the older one is Covered by it. A stamp
+  written since 2026-10-17 carries a wait it cannot settle into its own
+  run and closes the old log (`/drift-handoff` § 4), so an open wait in
+  an older run was stamped before then, or by a stamp not yet run.
 
 ## 4. Give each one verdict
 
@@ -91,10 +94,12 @@ but Stays closes the follow-up, with one line appended to its log:
 | Briefed | the same line as Folded |
 
 - **Stays is a re-check that the next audit of its source performs,
-  while no audit of that source has run since.** The audit pipeline
-  owns that one, and carrying it would only move the wait. Once such an
-  audit has run without doing it, the follow-up falls through to the
-  rows below.
+  while no audit of that source has run since**, or one an audit has
+  re-stamped onto its log, as stamps did before 2026-10-17: the next
+  audit of its source carries it forward, closing the log. The audit
+  pipeline owns that one, and carrying it here would only move the
+  wait. Once such an audit has run without doing or carrying it, the
+  follow-up falls through to the rows below.
 - **A decline goes in the Closed line**, never in `declined.md`, whose
   entries are inbox learnings: `2026-09-07/powerbi/07` closed as
   declined is the precedent.

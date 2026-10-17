@@ -311,6 +311,19 @@ stays in its log, where that audit looks for it (2026-10-14):
 outcome, and `/drift-handoff` briefs the stamps that close each one or
 record what it still waits on.
 
+**A wait an audit cannot settle moves into that audit's run** (decided
+2026-10-17). Its stamp closes the old log as carried and takes the wait
+over, so each open wait lives in the newest run of its source, and an
+older run retires once its other briefs finish. Until then the stamp
+re-stamped it onto the old log, which pinned that run open with a newer
+one on disk: on 2026-10-17 six waits held the 2026-10-06 `fabric`,
+`claude-code` and `fabric-iq-ontology` runs that way, and `/triage`
+could only leave them. No file moves, since a brief's window, evidence
+and report belong to the run that wrote it, and one stamp brief holds
+every wait it carries, since the stamp is already written and run each
+time. The six were left for the next audit of each source to carry,
+rather than swept into runs already executed.
+
 ## Filenames are stable
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`

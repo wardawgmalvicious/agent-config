@@ -146,3 +146,10 @@ retired run back with:
 git log --diff-filter=D --format=%h -1 -- docs/audits/<date>/<source-id>
 git show <that-sha>^:docs/audits/<date>/<source-id>/00-audit-report.md
 ```
+
+**A wait for an audit does not pin a run.** A re-check an audit cannot
+settle is carried into its own stamp brief, and the old log closes as
+carried (`.claude/skills/drift-handoff/SKILL.md` § 4). The carry copies
+the constraint the open work owes, since retiring re-points only links
+outside `docs/audits/`. Decided 2026-10-17
+([why](../handoffs/execute/README.md#audit-briefs-are-a-second-queue)).
