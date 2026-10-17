@@ -5,7 +5,7 @@ when_to_use: "Use when asked to triage, drain, process or bring in the inbox or 
 argument-hint: "[note-path ... | notes-directory | docs/audits/<date>[/<source-id>] ...]"
 allowed-tools: Read Glob Grep
 model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
-effort: max
+effort: xhigh
 disable-model-invocation: false
 context: inline
 ---

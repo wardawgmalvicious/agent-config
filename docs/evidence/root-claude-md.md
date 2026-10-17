@@ -2460,6 +2460,33 @@ on 2.1.293, the version still installed on 2026-10-16. So the rule now
 says project scope, and no new probe ran. User scope is
 `recreate-repo`'s `references/pushed-leaks.md`, 2026-10-14.
 
+**2026-10-17.** `land`, `triage` and `test-skill` moved from `effort: max`
+to `xhigh` on the user's word, after a week of local transcripts, about
+15,200 assistant messages across every project, was costed by a
+throwaway script in input-equivalent tokens: cache reads at 0.1, cache
+writes at 1.25 and output at 5, relative weights only. The usage panel's
+skill list that day put `commit` at 10%, `land` 9%, `test-skill` 6%,
+`learn` 4% and `triage` 3%. Per run, the cost is mostly the context a
+skill carries: `commit` spent 77% on cache reads, from a median 242k
+tokens at its start, and 11% on output, thinking included; `land` 69%
+and 18%, from 304k; `triage` and `test-skill`, which start new sessions,
+65% and 21%, and 47% and 32%. So an effort pin reaches the output share
+only, and the saving is unmeasured. `high` was turned down for the
+2026-10-08 entry's reason, no eval to sweep; `learn` stays at `max` on
+the user's word, as the skill needing the most reasoning; `commit` was
+`xhigh` already. A `model:` pin was declined: it holds only when the
+skill is typed, and the model itself called 111 of 149 `commit` runs and
+14 of 28 `land` runs.
+
+The same read found each assistant entry's `effort` and `perTurnEffort`.
+79% of the week's cost ran at `max`, the panel's figure too, and most of
+it began before any skill: VS Code sessions whose first message ran at
+`max` carried 63% of all cost, 74 sessions against 44 at `xhigh`, with
+`xhigh` saved for every model under `modelSettings` and `/effort` typed
+in none of them. A pin does not outlive its turn: in sessions that began
+at `xhigh`, `max` after a skill's own turn was 0.6% of cost. What sets
+VS Code's starting level was not traced.
+
 ## Validating a change
 
 There is no automated test suite here — `pre-commit` covers frontmatter

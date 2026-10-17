@@ -92,14 +92,19 @@ this repo's own. Long detail belongs in the skill's `references/`, as root
   `effort: max` sits on every behavioural skill but `commit` and the
   `fable` pins, at `xhigh`: the migration guide gives Fable 5.1 `xhigh` for
   "the most capability-sensitive workloads", and nothing measured shows
-  `max` beating it (2026-10-08). On platform skills `effort` stays
+  `max` beating it (2026-10-08). `land`, `triage` and `test-skill` joined
+  them as three of a week's top spenders (2026-10-17). On platform skills
+  `effort` stays
   commented, because they auto-trigger beside real work and a pin would
   govern that turn. Derive the set with
   `grep -rln "^effort: max" skills/ .claude/skills/`, never a count. The
   session level is live state, not the file: it can drift mid-session with
-  nothing warning, and only the transcript shows the real value. Below
+  nothing warning, and only the transcript shows the real value, as
+  `effort` and `perTurnEffort` on each assistant entry. Below
   `max`, the pins raise effort while their skill is active, the floor they
-  exist for (2026-09-01), and no setting reaches `max`.
+  exist for (2026-09-01), and no setting reaches `max`. A pin overrides
+  the session level both ways, so an `xhigh` pin lowers a `max` session,
+  as VS Code sessions often started with `xhigh` saved (2026-10-17).
 - `disable-model-invocation: true` drops the description from the listing in
   every session on the machine and blocks subagent preloading and scheduled
   firing. It is `false` everywhere here but `run-briefs`, which spends

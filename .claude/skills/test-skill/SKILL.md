@@ -5,7 +5,7 @@ when_to_use: "Use when asked to test, validate or verify a skill, to check wheth
 argument-hint: "[skill-name]"
 disable-model-invocation: false
 model: inherit  # live here — .claude/skills is Claude Code only; see scripts/lint-frontmatter.py
-effort: max
+effort: xhigh
 ---
 
 # Test a skill
