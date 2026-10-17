@@ -192,9 +192,24 @@ brief "$done1" completed/02-closed.md "**Executed**: 2026-09-02 — escalated" \
     "**Closed**: 2026-09-03 — answered"
 brief "$done2" completed/01-applied.md "**Executed**: 2026-09-09 — applied"
 brief "$pend1" 01-unrun.md
+# A wait the later audit could not settle, carried into its stamp brief:
+# the old log closes as carried, and the stamp holds the wait open.
+carry1="$fix/docs/audits/2026-09-01/carry"
+carry2="$fix/docs/audits/2026-09-08/carry"
+mkdir -p "$carry1/completed" "$carry2"
+echo "# report" > "$carry1/00-audit-report.md"
+echo "# report" > "$carry2/00-audit-report.md"
+brief "$carry1" completed/01-deferrals.md "**Executed**: 2026-09-02 — applied with deferrals" \
+    "**Needs**: the next carry drift audit — a re-check" \
+    "**Closed**: 2026-09-09 — carried to 2026-09-08/carry/01"
+brief "$carry2" 01-stamp.md "**Executed**: 2026-09-09 — applied with deferrals" \
+    "**Needs**: the next carry drift audit — carried 1"
 expect_exit "--retirable lists and exits clean" 0 --retirable
 expect_line "a finished run a later run supersedes is retirable" \
     "retirable: docs/audits/2026-09-01/done/  superseded by 2026-09-08"
+expect_line "a run whose wait was carried forward is retirable" \
+    "retirable: docs/audits/2026-09-01/carry/  superseded by 2026-09-08"
+expect_no_line "the run that holds the carried wait is not" "2026-09-08/carry"
 expect_no_line "the newest run of a source is not" "2026-09-08/done"
 expect_no_line "a superseded run with an open brief is not" "2026-09-01/src"
 expect_no_line "a superseded run with a brief never run is not" "2026-09-01/pend"
