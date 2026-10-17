@@ -166,8 +166,9 @@ The rest of `vscode-scoping.md`'s Local passages, as of 2026-10-16:
 
 Each describes the profiles as they stand until machine-config lands its
 2026-10-16 note. After that, each needs restating for the decision
-rather than for the docs. That restatement is a separate task, after the
-landing.
+rather than for the docs. That restatement belongs to
+`docs/handoffs/execute/vscode-claude-target-only.md`, deferred until
+the landing.
 
 ## Verification
 
