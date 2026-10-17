@@ -972,6 +972,27 @@ harness refuses, measured under § "Validating a change" that day for the
 "startup" to keep the line; the startup listing is the one a conditional
 skill is withheld from, so the meaning holds.
 
+**2026-10-17.** `hooks-and-agents.md` gained its "keep hooks spawn-lean"
+bullet, which `claude/CLAUDE.md` dropped on 2026-10-09 for its line cap. It
+records the user's call on the `hook-spawn-cost` brief, made after
+re-measuring: `bash-doctor.ps1` exited 1, `bash.exe` at a median 3,208 ms
+over 7 runs against 43 ms for `sh.exe`, up since 2026-10-10, so every Bash
+or PowerShell call paid two spawns of that. The two loggers went `async`;
+the hooks reference (read that day) bars an async hook from blocking, and
+delivers its output on the next turn, and nothing reads either log within
+a turn (`scripts/instructions-log`, `skill-telemetry.py` and `/test-skill`
+read them afterwards). Under `claude -p` an async hook still running at
+teardown is killed, so a probe's last skill record can go missing. The
+reference also says `InstructionsLoaded` "runs asynchronously for
+observability purposes", so the flag there may change nothing; neither way
+was timed. The two guards stay synchronous and unfiltered: `if` works on
+tool and permission events only, is best-effort, and the permissions page
+lists `git -C . push origin main` among what `Bash(git push *)` does not
+stop. The brief's claim that `async` is the only lever for
+`InstructionsLoaded` was wrong for that reason. The brief's open question
+settled the same way: the PreToolUse layer and the git hooks both stay,
+since git hooks run only where a repo's pre-commit config arms them.
+
 ## Working on this repo
 
 This repo's own operating procedure lives in `.claude/skills/` at

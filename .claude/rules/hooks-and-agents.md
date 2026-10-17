@@ -15,6 +15,16 @@ paths:
   never make it repo-relative. An edit is not live until
   `scripts/link-claude.ps1` runs; until then the deployed copy runs the old
   version, and nothing says so.
+- Keep hooks spawn-lean: each command hook costs a Git Bash spawn, about
+  60 ms healthy and 0.5 to 3.2 s while `bash.exe` is degraded
+  (`bash-doctor.ps1` exits 1; 2026-10-17), and `identity-guard` runs twice
+  per Bash or PowerShell call. The two loggers are `async`. The two guards
+  stay synchronous and unfiltered (decided 2026-10-17): an `if` on
+  `identity-guard` misses `git -C <path> commit`, and one on
+  `security-reviewer-memory-scope` runs it only for the writes it allows,
+  so either would fail open. `if` works on tool and permission events
+  only, and a hook with `if` on any other event never runs, silently.
+  Exec form (`args`) is unmeasured: brief `hook-spawn-cost`.
 - The `security-reviewer` subagent is scoped by an explicit tool allowlist
   plus a `PreToolUse` hook that blocks any Edit or Write outside
   `~/.claude/agent-memory/security-reviewer/`. Its procedure is
