@@ -2,7 +2,7 @@
 """Where every drift-audit brief stands, as a README.md in its directory.
 
     uv run scripts/audit-status.py                     # regenerate every index
-    uv run scripts/audit-status.py --dir docs/audits/2026-09-12/skills-for-fabric
+    uv run scripts/audit-status.py --dir docs/audits/2026-10-16/fabric
     uv run scripts/audit-status.py --check             # stale or missing? pre-commit
     uv run scripts/audit-status.py --retirable         # finished runs a later run supersedes
 
