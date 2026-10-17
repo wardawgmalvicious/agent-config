@@ -58,14 +58,17 @@ All KQL text lives in `queries[]`; everything else points at it:
   Explorer, Application Insights and Log Analytics sources; no `kind` but
   `kusto-trident` has been checked against a real dashboard (2026-10-06).
 
-**Nothing rebinds a data source between stages**: a deployed dashboard keeps
-reading the source stage's database, which looks right wherever one database
-feeds every stage. It is no Variable Library consumer and takes no deployment
-rule (Learn, 2026-10-12), and fabric-cicd v1.4.0 rebinds it only through
-`parameter.yml`'s `find_replace`, with the cluster URI present. So rewrite
-`databaseArtifactId` per stage: in a build per environment, by `find_replace`,
-or in the portal after each deploy. Whether `database`'s logicalId alone binds
-is untested, and a deployment pipeline may rebind one anyway: a KQL
+**Nothing is known to rebind `databaseArtifactId` between stages**, so a
+deployed dashboard may keep reading the source stage's database, which looks
+right wherever one database feeds every stage. It is no Variable Library
+consumer and takes no deployment rule (Learn, 2026-10-12). fabric-cicd v1.4.0
+rewrites `database`, `workspace` and an empty `clusterUri` to the target's
+when the source's `name` is the database's display name, and leaves
+`databaseArtifactId` as committed (`fabric-deploy`'s
+`references/fabric-cicd.md`, 2026-10-16). So rewrite `databaseArtifactId` per
+stage: in a build per environment, by `find_replace`, or in the portal after
+each deploy. Which of the two the dashboard reads when they differ is
+untested, and a deployment pipeline may rebind one anyway: a KQL
 queryset, which Learn says binds the same way, rebound to the target's
 database in one deploy (2026-10-13, `fabric-deploy`'s
 `references/deployment-pipelines.md`), so read a deployed dashboard's
