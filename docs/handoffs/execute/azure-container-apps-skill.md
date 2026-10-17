@@ -2,7 +2,7 @@
 status: deferred
 priority: 3
 needs: []
-blocked-by: [azure-access-skill.md]
+blocked-by: []
 reopen-when: learnings from the client Container Apps worker's first deploy reach this inbox
 written: 2026-10-15
 ---
@@ -13,10 +13,10 @@ written: 2026-10-15
   session in a client repo that runs a Python worker on Azure Container
   Apps. Re-measured against the payload at `f8abbed`, which holds
   nothing on Container Apps.
-- **Kind**: a skill candidate for `/author-skill`, in the group
-  `azure-access-skill.md` would open. Nothing is drafted, and none of it
-  is measured: that repo's `main.bicep` had never been deployed as of
-  2026-09-29.
+- **Kind**: a skill candidate for `/author-skill`, in the `azure`
+  group `azure-access` opened on 2026-10-17. Nothing is drafted, and
+  none of it is measured: that repo's `main.bicep` had never been
+  deployed as of 2026-09-29.
 
 ## What it would cover
 
@@ -41,8 +41,7 @@ sections are dropped.
 ## Why it waits
 
 Its learnings should come from that deploy, through `/learn` notes to
-this inbox, not from documentation alone, and the group it would join is
-`azure-access-skill.md`'s decision.
+this inbox, not from documentation alone.
 
 ## Where it lands
 
@@ -56,5 +55,5 @@ The note was genericized at source; its repo is cited by kind.
 
 ```bash
 ls ~/handoff-inbox/agent-config/   # the deploy's notes, when they come
-ls skills/ | grep -i azure          # the group, once azure-access-skill.md opens it
+ls skills/azure/                    # the group, opened 2026-10-17 with azure-access
 ```
