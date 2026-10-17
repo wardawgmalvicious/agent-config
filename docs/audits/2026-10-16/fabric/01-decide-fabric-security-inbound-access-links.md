@@ -209,3 +209,32 @@ line names five of those six and calls the largest "+90"; the table
 above is the `--stat` as printed. The changed lines came from the
 repository, not the published Learn pages, and the 94-line Real-Time
 hub page was not read at all.
+
+## Execution log
+
+- **Executed**: 2026-10-17 — escalated
+- **Session**: fresh (no audit or handoff ran in this session; the
+  whole pass, in worktree `2026-10-16-fabric`)
+- **Files changed**: none
+- **Verification**: none of the brief's steps ran, since a decision
+  brief is put to the user rather than executed. The evidence still
+  read as quoted at `9b00967`: in
+  `skills/fabric-core/fabric-security/references/REFERENCE.md`, trusted
+  workspace access at `:39`, § Network security at `:42` to `:52` with
+  "Workspace IP firewall rules" at `:49`, and no hit for either page's
+  path; `SKILL.md` has no line matching "private link", "Block Public"
+  or "inbound".
+- **Decision**: **option 1, both pages**, put to the user on 2026-10-17
+  beside options 2 and 3 as this run's recommendation, and chosen. Two
+  bullets go under § Network security, after "Workspace IP firewall
+  rules": OneLake's Resource Instance Rules page and the Real-Time hub's
+  private-links page, each title and summary written from the page as
+  fetched.
+- **Deferred**: the link edit and steps 1 to 4, to the session that
+  makes it.
+- **Deviations**: none
+- **Needs**: a session of its own — option 1's link edit, under this
+  brief's constraints: fetch both pages through `microsoft-learn-mcp`
+  first and write each bullet from the page as fetched, links only in
+  `references/REFERENCE.md`, `:39` untouched; then steps 1 to 4, and a
+  `**Closed**:` line here.

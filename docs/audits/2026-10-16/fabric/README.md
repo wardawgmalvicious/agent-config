@@ -5,9 +5,9 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 2 — applied with deferrals 1 · pending 1
+Briefs: 2 — applied with deferrals 1 · escalated 1
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
-| [01 decide whether fabric-security links the inbound access pages](01-decide-fabric-security-inbound-access-links.md) | 1 | a decision on one reference bundle of a platform skill | pending |
+| [01 decide whether fabric-security links the inbound access pages](01-decide-fabric-security-inbound-access-links.md) | 1 | a decision on one reference bundle of a platform skill | escalated 2026-10-17 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [02 stamp the re-checks this audit owed](02-stamp-the-owed-re-checks.md) | 2 | bookkeeping in the committed dated ledger | applied with deferrals 2026-10-17 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
