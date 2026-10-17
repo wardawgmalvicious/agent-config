@@ -157,8 +157,7 @@ command, and every cross-reference.
 - **Behavioral, cross-domain skills take the verb you invoke** —
   `commit`, `learn`, `code-review`, `drift-audit`. Read the name as the
   user typing it.
-- **Platform skills take their group's namespace prefix** — `fabric-`,
-  `pbir-`/`pbid-`/`pbip-`, or `msix-` (the lint's `PLATFORM_PREFIXES`).
+- **A platform skill takes its group's prefix**, from `PLATFORM_PREFIXES`.
 - **`powerbi-*` is reserved.** Those are vendored from
   `microsoft/skills-for-fabric` and keep upstream naming so re-sync
   diffs stay clean. Never take that prefix for a local skill.
@@ -181,7 +180,8 @@ command, and every cross-reference.
 - **Within `skills/`, the job picks the group directory**; the group
   directory is load-bearing: `skills/fabric-*/` by a `fabric-*` skill's job,
   `skills/power-bi/` for `pbir-`/`pbid-`/`pbip-` and a semantic-model
-  `fabric-*`, `skills/windows/` for `msix-*`, `skills/workflow/` for the
+  `fabric-*`, `skills/windows/` for `msix-*`, `skills/azure/` for
+  `azure-*`, `skills/workflow/` for the
   repo-general behavioral verbs (`ls skills/workflow`), `skills/meta/` for
   upkeep of the agent configuration that must also run in client repos
   (`ls skills/meta`), and `skills/social/` for personal-profile writing

@@ -234,7 +234,7 @@ since `--safe-mode` stops a skill loading, not a `Read` of its file.
 ```powershell
 $probe = '<a scratch directory outside this repo>'
 New-Item -ItemType Directory "$probe/payload/.claude/skills", "$probe/baseline" | Out-Null
-Get-ChildItem skills -Directory | Where-Object Name -Match '^(fabric-.+|power-bi)$' |   # every rival, not the skill's group alone; '^windows$' for msix-*
+Get-ChildItem skills -Directory | Where-Object Name -Match '^(fabric-.+|power-bi)$' |   # every rival, not the skill's group alone; '^windows$' for msix-*, '^azure$' for azure-*
     Get-ChildItem -Directory | ForEach-Object { Copy-Item $_.FullName "$probe/payload/.claude/skills" -Recurse }
 ```
 

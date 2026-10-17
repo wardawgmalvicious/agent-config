@@ -180,7 +180,7 @@ As the repo's instructions say. This repo's, from
 5. **Deploy** when the landed paths include `claude/` or a deployed skill
    group: `./scripts/link-claude.ps1 -SkillGroups workflow,social,meta`,
    with `-Force` when `claude/CLAUDE.md` or `claude/settings.json`
-   changed, then `ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'`
+   changed, then `ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix|azure)-'`
    must print nothing.
 6. **What the worker said landing owes**, from its `OWED:` line. Run the
    mechanical ones: a deploy, a check on the deployed payload, a stamp

@@ -127,7 +127,7 @@ git -C .claude/worktrees/<stem> rebase main            # auto mode may refuse it
 git merge --ff-only worktree-<stem>
 git log --oneline <preflight-HEAD>..HEAD               # the landed commits, post-rebase SHAs
 ./scripts/link-claude.ps1 -SkillGroups workflow,social,meta   # pwsh; when claude/ or a deployed group changed; -Force for claude/CLAUDE.md or claude/settings.json
-ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix)-'   # after any deploy: must print nothing
+ls ~/.claude/skills | grep -E '^(fabric|pbir|pbid|pbip|powerbi|msix|azure)-'   # after any deploy: must print nothing
 git worktree remove .claude/worktrees/<stem> && git branch -d worktree-<stem>   # only with the brief gone from main
 ```
 
