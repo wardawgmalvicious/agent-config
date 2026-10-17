@@ -155,3 +155,8 @@ proposed no patch for any of them.
 - **Needs**: a fresh session — `/test-skill commit` and
   `/test-skill test-skill`, the retests of decisions 3 and 4; the run
   that discharges the last appends **Closed** here, as step 10 now says.
+- **Closed**: 2026-10-17 — covered, by /triage: both retests ran after
+  the 2026-10-08 edits, `/test-skill commit` stamped at `038655f` and
+  `26fedf6` (2026-10-15), `/test-skill test-skill` at `65a58ae` and
+  `91fcbef` (2026-10-14). Neither appended this line, though step 10
+  says the discharging run does: `038655f` logged brief 09 alone.

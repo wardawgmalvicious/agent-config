@@ -141,3 +141,7 @@ wrote this brief did not check them against their sources.
   `link-claude.ps1 -SkillGroups workflow,social,meta` on `main` at
   `66ada3c`, after the landing, and all six deployed rules match the
   repo's (`cmp`).
+- **Closed**: 2026-10-17 — carried by /triage to
+  docs/handoffs/execute/adf-synapse-pipeline-folder.md: naming the
+  folder ADF and Synapse Git integration write pipelines to, deferred
+  until a repo with either is on this machine.

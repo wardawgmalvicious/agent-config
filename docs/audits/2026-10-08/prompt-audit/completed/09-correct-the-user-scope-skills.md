@@ -207,3 +207,7 @@ Fable 5.1 and was audited against it.
   Stamped `behaviour` at `ac8e97a`.
 - **Needs**: `/test-skill linkedin-highlights`, the last of step 5's
   retests.
+- **Closed**: 2026-10-17 — covered, by /triage:
+  `skill-status.py --stale` lists `linkedin-highlights` as `untested`,
+  which owes the `/test-skill` run this log names; root `CLAUDE.md`
+  keeps no other untested list.

@@ -119,3 +119,9 @@ pins Fable 5.1 and was audited against it.
 - **Needs**: a fresh session — `/test-skill author-skill`,
   `/test-skill drift-update` and `/test-skill test-skill`, the
   behaviour retests step 5 names.
+- **Closed**: 2026-10-17 — covered, by /triage: `drift-update`'s
+  behaviour stamp, `9e7546f`, and `test-skill`'s, `65a58ae` and
+  `91fcbef`, all of 2026-10-14, postdate this brief's edits.
+  `skill-status.py --stale` lists `author-skill` as `untested`, which
+  owes the `/test-skill` run this log names; root `CLAUDE.md` keeps no
+  other untested list.

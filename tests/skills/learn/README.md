@@ -5,7 +5,7 @@ cases test what its body says in note mode, the mode it runs in outside
 this repo, against a `--safe-mode` baseline. Between them they reach
 Step 3's destinations, Step 4's coverage search, Step 5's verification
 routes and Step 7's note, and they carry the two claims
-[brief 09](../../../docs/audits/2026-10-08/prompt-audit/09-correct-the-user-scope-skills.md)
+[brief 09](../../../docs/audits/2026-10-08/prompt-audit/completed/09-correct-the-user-scope-skills.md)
 of the 2026-10-08 prompt audit changed: a trigger fix covers
 `when_to_use` and its 512 cap (finding 8), and a note carries
 **Scrubbing:** (finding 34).

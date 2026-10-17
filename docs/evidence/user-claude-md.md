@@ -1282,7 +1282,7 @@ came from the cold-probe sentence, which read "read-only through
 GitHub writes open (2026-09-29), and `--allowedTools` only approves:", its
 evidence in the 2026-09-29 entry above, and from § "Coding conventions",
 same date. The run is logged in
-`docs/audits/2026-10-08/prompt-audit/09-correct-the-user-scope-skills.md`.
+`docs/audits/2026-10-08/prompt-audit/completed/09-correct-the-user-scope-skills.md`.
 
 **2026-10-15.** The unasked-commit line fires as deployed. With
 `~/.claude/CLAUDE.md` byte-equal to this file at `29cd0e4`,
