@@ -66,10 +66,17 @@ re-check — whether a source aimed at an unused workload earns its slot —
 resolves the other way round from how it reads: *not* having a sample is
 precisely why the docs are this skill's only ground truth.
 
-**Re-measured 2026-10-13.** The persona split put `fabric-iq` in the
-`fabric-ai` group, which neither client repo links, so the skill is
-live only in `fabric-tools`, a personal repo that links every Fabric
-group.
+**Re-measured 2026-10-16.** The persona split of 2026-10-13 put
+`fabric-iq` in the `fabric-ai` group, which no client repo linked at
+first, leaving the skill live only in `fabric-tools`, a personal repo
+that links every Fabric group. A client repo has since linked
+`fabric-ai` for the data-agent half of `fabric-iq`, and ontology work
+there is expected (the user, 2026-10-16), so the source stays.
+
+**Audit it with `fabric`**, as `--sources fabric,fabric-iq-ontology`:
+both read `MicrosoftDocs/fabric-docs`, so one clone serves the two
+(SKILL.md § 4a), and a `fabric` row announcing an ontology change lands
+in the same report as the spec pages behind it. Chosen 2026-10-16.
 
 **The doc set split on 2026-09-29.** The FabCon EU release (`80a24c9`)
 rebuilt it for a *new experience*, the default for new items, whose
