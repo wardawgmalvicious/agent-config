@@ -125,10 +125,12 @@ count. Without client use, stop and name what a client repo must use.
 **Before authoring a *platform* skill, check upstream first.** Microsoft
 ships a catalog at `microsoft/skills-for-fabric`, and vendoring one of
 its skills is sometimes the better answer than authoring a parallel one.
-`drift-audit`'s `skills-for-fabric` registry entry carries the
-counterpart table as a starting map. Decide vendor-versus-author
-deliberately; the failure this prevents is a local skill and an upstream
-one competing for the same request, with no record of why both exist.
+List its `skills/` when you check: `drift-audit` stopped watching it on
+2026-10-16, and its entry's counterpart table, a starting map as of
+then, is `git show f30d3df:.claude/skills/drift-audit/references/sources/skills-for-fabric.md`.
+Decide vendor-versus-author deliberately; the failure this prevents is a
+local skill and an upstream one competing for the same request, with no
+record of why both exist.
 
 Four outcomes:
 
