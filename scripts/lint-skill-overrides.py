@@ -64,7 +64,7 @@ SETTINGS_REL = ".claude/settings.json"
 # ones its work needs (skills/README.md).
 PLATFORM_GROUPS = {
     "fabric-core", "fabric-engineering", "fabric-realtime", "fabric-ai",
-    "power-bi", "windows",
+    "power-bi", "windows", "azure",
 }
 BEHAVIOURAL_GROUPS = {"workflow", "social", "meta"}
 
@@ -75,7 +75,7 @@ EXPECTED = "name-only"
 
 # Prefixes that mark a name as this repo's own platform payload, for the
 # orphan check only.
-PLATFORM_PREFIXES = ("fabric-", "pbir-", "pbid-", "pbip-", "powerbi-", "msix-")
+PLATFORM_PREFIXES = ("fabric-", "pbir-", "pbid-", "pbip-", "powerbi-", "msix-", "azure-")
 
 
 def platform_skills() -> tuple[dict[str, str], list[str]]:

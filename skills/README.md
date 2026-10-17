@@ -20,8 +20,8 @@ See each `SKILL.md` for its specific triggering conditions.
 
 Naming convention: behavioral skills are named as the verb you invoke
 (`/commit`, `/code-review`); platform skills carry a `fabric-` / `pbir-` /
-`pbid-` / `pbip-` / `msix-` namespace prefix. `powerbi-*` skills are
-vendored from
+`pbid-` / `pbip-` / `msix-` / `azure-` namespace prefix. `powerbi-*`
+skills are vendored from
 [microsoft/skills-for-fabric](https://github.com/microsoft/skills-for-fabric)
 and keep Microsoft's upstream naming so re-sync diffs and their
 internal cross-references stay intact.
@@ -361,6 +361,27 @@ until a repo links it.
   glob: a packaging request can arrive as words ("publish a new
   version") before any manifest is read, and a glob would hide the
   skill in the only repos that link it.
+
+### Azure (1)
+
+Linked into a repo that runs a workload on Azure, or a Fabric repo that
+uses service principals or Key Vault, with
+`link-claude.ps1 -ClaudeDir <repo>/.claude -SkillsOnly -SkillGroups azure`.
+Opened 2026-10-17 for `azure-access`, seeded from Microsoft's
+`azure-skills` and rewritten against Learn, since the plugin's own
+skills assume azd and web apps.
+
+- [azure-access/](azure/azure-access/) — give an Azure identity access
+  to a resource, and find why one gets a 401 or 403. Picks the identity
+  first, a user-assigned managed identity, a federated credential, an
+  app registration last; then the data role on its plane, since
+  Contributor reads no Key Vault or Storage data; then who can grant it,
+  what Contributor also grants, and the `AZURE_CLIENT_ID` a deploy and
+  its container read as two identities. Ends in a numbered 401 and 403
+  triage and a credential-expiry audit. Named for the job, access,
+  rather than RBAC, which is a third of it. Unconditional where linked,
+  with no `paths:` glob: an access failure arrives as terminal output,
+  not as a file type.
 
 ## Archived
 

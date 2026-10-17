@@ -19,6 +19,7 @@
         "baseRef": "head"
     },
     "skillOverrides": {
+        "azure-access": "name-only",
         "fabric-activator": "name-only",
         "fabric-catalog-governance": "name-only",
         "fabric-data-pipeline": "name-only",
