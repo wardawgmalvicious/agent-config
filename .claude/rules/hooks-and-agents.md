@@ -24,7 +24,9 @@ paths:
   `security-reviewer-memory-scope` runs it only for the writes it allows,
   so either would fail open. `if` works on tool and permission events
   only, and a hook with `if` on any other event never runs, silently.
-  Exec form (`args`) is unmeasured: brief `hook-spawn-cost`.
+  Exec form (`args`) saves about 45 ms per run (median 91 ms against 136 ms
+  in shell form, 2026-10-17) and is declined: it has no `$HOME`, so
+  `settings.json` would carry a literal profile path and Git's install path.
 - The `security-reviewer` subagent is scoped by an explicit tool allowlist
   plus a `PreToolUse` hook that blocks any Edit or Write outside
   `~/.claude/agent-memory/security-reviewer/`. Its procedure is

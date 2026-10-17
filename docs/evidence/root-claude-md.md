@@ -993,6 +993,23 @@ stop. The brief's claim that `async` is the only lever for
 settled the same way: the PreToolUse layer and the git hooks both stay,
 since git hooks run only where a repo's pre-commit config arms them.
 
+**2026-10-17, later.** Exec form (`args`) was measured and declined, which
+closed the `hook-spawn-cost` brief. `bash-doctor.ps1` exited 0 after a
+reboot (`bash.exe` 45 ms against 42 ms for `sh.exe`). Under hyperfine, Git's
+`bash.exe` on the script ran 54.4 ms against 83.1 ms for `bash.exe -c "bash
+$HOME/..."`, the modelled shell form. In the harness, `claude -p` with the
+guard as the only hook, read from its debug log's "PreToolUse:Bash ...
+finished" lines (3 alternating rounds of 6 calls, 18 runs a form), gave a
+median of 91 ms (82 to 139) for exec form against 136 ms (114 to 176) for
+shell form. Both exited 0, and the exec-form hook received the full hook
+JSON on stdin. The saving is about 45 ms a run, 90 ms a Bash or PowerShell
+call. The hooks reference lists no `$HOME` or `~` placeholder for `args`,
+only `${CLAUDE_PROJECT_DIR}` and the plugin ones, so exec form needs the
+literal `C:/Users/<name>/.claude/hooks/...` and Git's `bash.exe` path in the
+committed `settings.json`, against the rule that a profile path is `~`.
+The user declined a deploy-time token in `link-claude.ps1` as more
+machinery than 90 ms warrants.
+
 ## Working on this repo
 
 This repo's own operating procedure lives in `.claude/skills/` at
