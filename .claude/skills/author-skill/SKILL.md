@@ -474,7 +474,7 @@ The test reads the brief from disk, so it need not follow at once, and
 a cold run is the better one (2026-10-01).
 
 **In a brief's worktree, the hand-off opens with this session leaving
-it**, by `ExitWorktree` with `keep` when the user asks: the landing runs
+it**, by `ExitWorktree` `keep` on a yes it asks for: the landing runs
 from the main checkout, and a session entering `.claude/worktrees/<brief>`
 to test a project-scope skill is refused while this one is inside,
 `belongs to another running Claude Code session (locked: <reason>)`

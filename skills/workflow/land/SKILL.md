@@ -49,7 +49,7 @@ every unpushed commit beneath the branch. agent-config's
 `.claude/rules/handoff-briefs.md` lands a brief's worktree that way.
 
 **Two different paths from the last command mean a linked worktree**:
-steps 7 to 9 change there, and a generated branch name is renamed first.
+steps 6 to 9 change there, and a generated branch name is renamed first.
 Read [references/linked-worktree.md](references/linked-worktree.md)
 before step 3.
 
@@ -236,7 +236,8 @@ decision taken before the work, not a third gate on an action this
 recoverable. Ask in the same breath whether anything outside git is
 bound to the branch — a preview environment, a deploy target pinned to
 the ref; a synced Fabric workspace is no bar (step 9), whose other
-exceptions are git-internal and cannot see one. Ask it with the go-ahead
+exceptions are git-internal and cannot see one. A linked worktree you are
+in: name its removal, the yes `ExitWorktree` needs. Ask it with the go-ahead
 in one `AskUserQuestion` call where the session has it. **Then wait.**
 
 Everything past this point writes to `main`. Do not continue on your own
@@ -443,10 +444,9 @@ Do not delete, and say why, when:
   `ListAgents` run now and step 1's scripts, since step 1's answer has
   expired. Note this blocks the *deletion*, not the landing — step 7's
   variant covers that.
-- **The branch is checked out in a linked worktree** still on disk: git
-  refuses the local delete from either side until the worktree goes;
-  [references/linked-worktree.md](references/linked-worktree.md) says
-  when the worktree can go, and what to hand the user.
+- **The branch is checked out in a linked worktree**: git refuses the
+  delete until it goes, and only your own goes, given step 6's yes
+  ([references/linked-worktree.md](references/linked-worktree.md)).
 - **Something outside git is bound to the branch** — the question step
   6 asked — but not a Fabric workspace, which only needs re-pointing
   ([references/branch-deletion.md](references/branch-deletion.md)). What

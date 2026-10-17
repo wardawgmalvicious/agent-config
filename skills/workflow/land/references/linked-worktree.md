@@ -77,7 +77,8 @@ in the main checkout:
 git merge --ff-only origin/main
 ```
 
-**From the main checkout, when the user asks for it.** `ExitWorktree`
+**From the main checkout, when the user asks for it**, which step 6's
+question can carry beside the worktree's removal. `ExitWorktree`
 with `keep` returns the session there, leaving the worktree and branch
 on disk. Its description scopes it to worktrees `EnterWorktree` made,
 and to when the user asks; it worked on a `claude --worktree` launch too
@@ -111,25 +112,41 @@ used by worktree at '<path>'` (2026-09-29).
 
 - **The remote half runs from the worktree** as step 9 has it.
 - **The local half waits for the worktree's removal**, from the main
-  checkout:
+  checkout, since inside the worktree the lock names this session's pid
+  and the worktree guard refuses a `git -C` aimed at the main checkout.
+  **This session's own worktree, with step 6's yes, goes now**: run
+  `ListAgents` and step 1's scripts, then `ExitWorktree` `keep`, which
+  releases the lock and returns the session there, then:
 
   ```bash
+  git worktree list --porcelain                # no `locked` line under <worktree>
   git -C <worktree> status --short             # anything here is on no branch
   git worktree remove <worktree>               # refuses a dirty tree, and a locked one
   git merge-base --is-ancestor <branch> <sha> && git branch -D <branch>
   ```
 
-  A dirty tree is refused, `contains modified or untracked files, use
-  --force to delete it`, exit 128: never add the `--force`, which
-  discards that work. A worktree Claude Code made is locked while its
-  session runs, and the refusal's lock reason names that session and its
-  pid: leave a live one alone, and see `prune-branches` for a lock whose
-  pid is dead. `ExitWorktree` `keep` released the lock, so a session that
-  came back that way removed its own worktree (2.1.282, 2026-09-29).
-- **Otherwise keep both** and say so, handing the user those commands
-  for once the session has ended. At `/exit` a worktree holding commits
-  is offered keep or remove, and remove deletes the branch with its work
-  (code.claude.com/docs/en/worktrees, read 2026-09-29).
+  Measured twice: from a `claude --worktree` launch (2.1.282,
+  2026-09-29), and from `EnterWorktree` in VS Code (2.1.301,
+  2026-10-16), where `ExitWorktree` still named the branch it had made,
+  though `git branch -m` had renamed it: delete by the new name. Whether
+  a `claude --worktree` launch's lock still goes on 2.1.301 is untried,
+  as is running § "Step 7"'s catch-up from there.
+
+  A lock still naming this session's pid after the `keep` is one a
+  refused `EnterWorktree` by name left (2.1.283, 2026-09-30): run
+  `git worktree unlock <worktree>` first. A dirty tree is refused,
+  `contains modified or untracked files, use --force to delete it`,
+  exit 128: never add the `--force`, which discards that work. A lock
+  naming another session is refused too, its reason naming that session
+  and its pid: leave a live one alone, and see `prune-branches` for a
+  lock whose pid is dead.
+- **Otherwise keep both** and say so — a dirty tree, another session's
+  lock, or no yes at step 6 — handing the user those commands for once
+  the session has ended. At `/exit` a worktree holding commits is
+  offered keep or remove, and remove deletes the branch with its work
+  (code.claude.com/docs/en/worktrees, read 2026-09-29); in VS Code the
+  user saw no such offer, more than once (their report, 2026-10-16,
+  unmeasured).
 - **`ExitWorktree` `remove` is no substitute.** It refuses while the
   branch holds commits not on the original one, and after `git branch -m`
   it removed the worktree and left the renamed branch, saying nothing of

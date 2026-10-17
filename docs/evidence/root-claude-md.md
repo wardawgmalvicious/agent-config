@@ -1764,6 +1764,25 @@ program, an option or git's directory could stand fails it, the
 session's own scratchpad included, and a subagent the session spawns
 inherits the isolation.
 
+**2026-10-17.** `handoff-briefs.md`'s landing now has the brief's session
+ask, in one `AskUserQuestion` naming the exit and the worktree's removal
+with its branch, where it said only "`ExitWorktree` `keep` when the user
+asks". The tool's description holds it to the user's ask, and nothing
+asked, so every landing from a worktree ended with the user cleaning up
+by hand. An inbox note of 2026-10-16, from a VS Code session in
+machine-config on 2.1.301, measured the way out from the session's own
+`EnterWorktree` worktree: before, the porcelain read `locked claude
+session <name> (pid <its own pid>)` and a Bash `git -C` to the main
+checkout was refused; after `ExitWorktree` `keep`, no `locked` line,
+`git worktree remove` exit 0 and the guarded `git branch -D` deleted the
+branch. That repeats 2026-09-29's `claude --worktree` run on 2.1.282,
+in `docs/handoffs/execute/README.md` § "A brief's worktree lands without
+a push". The same note's user saw no keep-or-remove offer at
+`/exit` in VS Code, more than once, unmeasured. Brief
+`land-worktree-cleanup.md` gave `land` step 6 the same ask, and
+`/author-skill` step 9's hand-off took it too; the brief was deleted in
+the same commit.
+
 ## Editing conventions
 
 - **Skills** — Claude Code truncates the combined `description` +

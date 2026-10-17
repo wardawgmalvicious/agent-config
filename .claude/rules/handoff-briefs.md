@@ -30,9 +30,12 @@ keeps the reasoning.
 - **A worktree named after a brief marks it in flight** in that view; root
   `CLAUDE.md` § "Branching and concurrent sessions" says when to take one.
 - **A brief's worktree lands from the main checkout, with no push**, so
-  not through `/land`, which pushes. Its session gets there by
-  `ExitWorktree` `keep` when the user asks, or ends and keeps the
-  worktree: `/exit` offers to remove it, which deletes the branch. Then:
+  not through `/land`, which pushes. Its session asks first, in one
+  `AskUserQuestion` naming the exit and the worktree's removal with its
+  branch: a yes is the ask `ExitWorktree` waits for, and the session
+  leaves by `keep`. Or it ends and keeps the worktree: `/exit` offers to
+  remove it, which deletes the branch, though the user saw no offer in
+  VS Code (2026-10-16). Then:
 
   ```bash
   git -C <worktree> rebase main && (cd <worktree> && pre-commit run --all-files)   # no hook runs on a rebase or a fast-forward; auto mode denies the rebase as [Git Destructive] until the user says to run it
