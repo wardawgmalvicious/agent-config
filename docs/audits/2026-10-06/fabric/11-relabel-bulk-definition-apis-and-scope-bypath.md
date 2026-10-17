@@ -233,3 +233,9 @@ itself. The other quotes are the agents'.
 - **Needs**: the next fabric drift audit — D-7: whether the Catalog
   Search API documents table and column search, before `fabric-cli`'s
   `fab find` line changes.
+- **Needs**: the next fabric drift audit — D-7: whether the Catalog
+  Search API documents table and column search, before the `fab find`
+  line changes. The reference still named three fields on 2026-10-16,
+  in `docs/audits/2026-10-16/fabric/`: display name, workspace display
+  name and description. The line is now `fabric-rest-api`'s
+  `references/cli.md:54`, not `fabric-cli`'s `SKILL.md:62`.

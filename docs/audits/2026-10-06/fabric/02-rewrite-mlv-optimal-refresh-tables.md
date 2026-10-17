@@ -205,3 +205,10 @@ either way.
   `references/REFERENCE.md:3`. The `REFERENCE.md:52` fix landed
   2026-10-06: Runtime 2.0 is still opt-in, quoting the runtime page's
   "By default, all new workspaces currently use Runtime 1.3".
+- **Needs**: the next fabric drift audit — a Learn statement of the
+  Spark SQL MLV GA month, to settle `fabric-spark`'s
+  `references/mlv.md:307`, "(GA March 2026)". The 2026-10-16 run,
+  `docs/audits/2026-10-16/fabric/`, found none: Learn's MLV overview and
+  Spark SQL reference carry no GA month. This brief's `SKILL.md:3`
+  target is gone: `fabric-mlv` became part of `fabric-spark`, whose
+  description no longer dates GA.

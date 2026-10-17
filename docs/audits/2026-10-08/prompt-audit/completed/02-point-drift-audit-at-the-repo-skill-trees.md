@@ -152,3 +152,7 @@ run in this repo on 2026-10-08, audited against Fable 5.1, the model
   `skill-status.py` hashes no `effort:`.
 - **Needs**: the next `/drift-audit` of `fabric` or `powerbi`, for step
   6's skill-match reading on a real diff; the retest is done.
+- **Closed**: 2026-10-16 — step 6's skill-match reading passed on a real
+  diff, in `docs/audits/2026-10-16/fabric/`, whose one drift entry
+  mapped to `fabric-security`, a platform skill reached through
+  `skills/*/*/SKILL.md`.

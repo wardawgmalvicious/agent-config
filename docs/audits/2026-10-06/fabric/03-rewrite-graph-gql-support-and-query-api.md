@@ -227,3 +227,10 @@ these rows, which is brief 18's subject.
   `untested-behaviour`, and the four claims the Constraint put out of
   scope went to docs/handoffs/execute/platform-skill-portfolio.md, held
   for its Part 1.
+- **Needs**: the next fabric drift audit — whether Learn documents
+  incremental graph updates, which settles item 5. Its manage-data page
+  still read "every save refreshes your graph data" on 2026-10-16, in
+  `docs/audits/2026-10-16/fabric/`. The claims item 5 flagged, once
+  `fabric-graph`'s `SKILL.md:21` and `:107`, now sit in `fabric-iq`:
+  `references/graph.md:11` and `:115`, and
+  `references/graph-reference.md:196`.

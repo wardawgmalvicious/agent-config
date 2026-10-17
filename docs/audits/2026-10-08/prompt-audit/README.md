@@ -5,12 +5,12 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 10 — applied 3 · applied with deferrals 1 · closed 6
+Briefs: 10 — applied 3 · closed 7
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
 | [01 widen the platform prefix checks](completed/01-widen-the-platform-prefix-checks.md) | findings 1 and 2 | correction to a post-deploy guard command and a prefix list in project-scope instructions | applied 2026-10-08 |
-| [02 point drift-audit at the repo's skill trees](02-point-drift-audit-at-the-repo-skill-trees.md) | findings 9, 10 and 45 | changes which files `/drift-audit`'s mapping phase reads and where its proposed actions… | applied with deferrals 2026-10-08 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [02 point drift-audit at the repo's skill trees](completed/02-point-drift-audit-at-the-repo-skill-trees.md) | findings 9, 10 and 45 | changes which files `/drift-audit`'s mapping phase reads and where its proposed actions… | applied with deferrals 2026-10-08 · closed 2026-10-16 |
 | [03 correct stale claims in the pipeline skills](completed/03-correct-stale-claims-in-the-pipeline-skills.md) | findings 11, 12, 13, 14, 15, 42, 43, 44 and 46 | corrections to project-scope skill bodies that a newer file contradicts | applied with deferrals 2026-10-08 · closed 2026-10-17 |
 | [04 refresh the editing-skills rule](completed/04-refresh-the-editing-skills-rule.md) | findings 19, 20 and 21 | wording in a project-scope rule, plus one cost ratio to re-measure | applied 2026-10-08 |
 | [05 fold the Copilot and reviewer items into their open briefs](completed/05-fold-copilot-and-reviewer-items-into-open-briefs.md) | findings 17, 18 and 24, and decision 2 | edits to two open handoff briefs | applied 2026-10-08 |

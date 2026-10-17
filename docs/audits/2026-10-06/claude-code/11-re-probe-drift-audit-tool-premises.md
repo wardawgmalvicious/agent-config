@@ -138,3 +138,9 @@ observation was made in the same session while this brief was written.
   § 1 drops the two sizes and leaves each to its registry entry, and
   both entries now reason from WebFetch's 100,000-character read and
   § 4b's model rather than a size threshold.
+- **Needs**: the next drift audit that falls back to WebFetch — § 4b's
+  completeness check alone: that it catches the `[WebFetch note: …]` and
+  the summarization tells. § 1's half passed on 2026-10-16, in
+  `docs/audits/2026-10-16/fabric/`, when the slash-free `Glob` listed all
+  six registry entries; that run took the clone path, so no WebFetch
+  fallback ran.

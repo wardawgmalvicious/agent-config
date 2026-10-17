@@ -246,3 +246,11 @@ rather than edits.
   guessed a silent override, while both payload arms, the slash arm with
   no `Skill` call, gave the `GitSyncFailed` refusal and its text. Stamp
   written.
+- **Needs**: the next fabric drift audit — Learn documenting dynamic
+  warehouse schema, or how a destination expression is written into
+  `mashup.pq`; then correct `fabric-dataflow` `REF:93-98` or
+  `SKILL.md:273-282`. Neither was documented on 2026-10-16, in
+  `docs/audits/2026-10-16/fabric/`: the destinations page still allows
+  Warehouse only fixed schema, and the dynamic expression editor page
+  shows an expression only as tokens in the editor. The `SKILL.md`
+  passage the 2026-10-07 line names at `:269-278` is now `:273-282`.

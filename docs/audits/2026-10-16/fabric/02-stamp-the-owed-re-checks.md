@@ -250,3 +250,48 @@ name the next `fabric` drift audit or any drift audit;
 `00-audit-report.md` § Owed re-checks holds each outcome.
 `/drift-handoff` § 4 writes this brief whenever a report lists owed
 re-checks, since stamping records outcomes the audit already reached.
+
+## Execution log
+
+- **Executed**: 2026-10-17 — applied with deferrals
+- **Session**: fresh (no audit or handoff ran in this session; the
+  whole pass, in worktree `2026-10-16-fabric`)
+- **Files changed**:
+  `docs/audits/2026-10-06/fabric/02-rewrite-mlv-optimal-refresh-tables.md`,
+  `docs/audits/2026-10-06/fabric/03-rewrite-graph-gql-support-and-query-api.md`,
+  `docs/audits/2026-10-06/fabric/11-relabel-bulk-definition-apis-and-scope-bypath.md`,
+  `docs/audits/2026-10-06/fabric/14-update-dataflow-destinations-and-pipeline-activities.md`,
+  `docs/audits/2026-10-06/claude-code/11-re-probe-drift-audit-tool-premises.md`,
+  `docs/audits/2026-10-08/prompt-audit/completed/02-point-drift-audit-at-the-repo-skill-trees.md`,
+  which the regeneration moved there, and that directory's `README.md`;
+  the other two indexes came back current
+- **Verification**: the staleness gate found all six counting lines as
+  quoted, at `:203`, `:222`, `:233`, `:198`, `:153` and `:135` at
+  `9b00967`, and no 2026-10-16 line in any of the six. The skill lines
+  the new lines cite read as the brief gives them: `mlv.md:307`'s "(GA
+  March 2026)", no GA date in `fabric-spark`'s `SKILL.md:3`,
+  `graph.md:11` and `:115`, `graph-reference.md:196`, `cli.md:54`, and
+  `fabric-dataflow`'s `SKILL.md:273-282` and `REF:93-98`. Step 1 —
+  **passed**: each file prints its new line, and the moved path exists.
+  Step 2 — **passed**: `0` deletions on all five. Step 3 — **passed**:
+  `0` on all five. Step 4 — **passed**: targets 1 to 4 under "the next
+  fabric drift audit", target 6 under its WebFetch line, target 5 gone
+  from the open list. Step 5 — **passed**: "9 audit index(es) current".
+  Step 6 (`pre-commit run --all-files`) runs once at the end of the run.
+- **Deferred**: none of the brief's own work; one adjacent finding,
+  under Needs.
+- **Deviations**: one. Step 7's `git grep` also named two paths in
+  `docs/audits/2026-10-17/power-bi/`, a run dated after this brief: its
+  `00-audit-report.md:33`, verbatim, and its
+  `03-stamp-the-owed-re-checks.md:43`, a brief's own text, whose target 1
+  already says to append nothing once this `**Closed**:` line and the
+  move are in place. Neither is re-pointed, for the reasons the brief
+  gives for its own directory's two.
+- **Needs**: a session of its own — the adjacent finding, seen at step
+  4: `scripts/handoff-status.py` run from a linked worktree defaults its
+  sweep root to `REPO.parents[1]`, which is the main checkout's
+  `.claude/`, so it swept 1 repo and printed 6 orphan inbox directories
+  and 0 inbox notes, where `C:/Repos` as the root swept 11, with no
+  orphan and 4 notes. The pre-commit hook's `--check --no-inbox` is
+  unaffected. Fix the default for a linked worktree, with a case in
+  `tests/scripts/`, then a `**Closed**:` line here.
