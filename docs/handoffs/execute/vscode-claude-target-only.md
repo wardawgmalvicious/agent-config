@@ -1,9 +1,8 @@
 ---
-status: deferred
-priority: 3
+status: open
+priority: 2
 needs: []
 blocked-by: []
-reopen-when: machine-config lands its 2026-10-16 vscode-claude-target-only note, so its profiles set chat.editor.localAgent.enabled to false
 written: 2026-10-16
 ---
 
@@ -18,21 +17,23 @@ written: 2026-10-16
   changes. The machine-config edits this decision needs went to
   `~/handoff-inbox/machine-config/2026-10-16-vscode-claude-target-only.md`.
 
-## Why it waits
+## Why it waited
 
-Machine-config provisions the VS Code profiles. Its note asks it to hide
-Local in every profile (`chat.editor.localAgent.enabled` `false`) and to
-drop the eleven settings that VS Code 1.142.0's own setting text says
-only Local uses. Until that lands, most of the passages below still
-describe the profiles accurately: on 2026-10-16, three of the four
-profiles still opened new chats on Local. They should be restated once,
-against the profiles as they will stand, not twice. That note asks
-machine-config to leave a note in `~/handoff-inbox/agent-config/` when
-it lands.
+Machine-config provisions the VS Code profiles, and this repo's note of
+2026-10-16 asked it to hide Local in every profile
+(`chat.editor.localAgent.enabled` `false`) and to drop the eleven
+settings that VS Code 1.142.0's own setting text says only Local uses,
+so that the passages below are restated once, against the profiles as
+they stand. **It landed on machine-config's `main` on 2026-10-17** as
+`d37a1a7` (the three named profiles, its `vscode-profiles.md` rule and
+`docs/manual-steps.md`), then `60b20c8` and `cc1b2a1` (its keep-awake
+watcher, which no file here names). `/triage` re-measured it that day,
+below, and reopened this brief.
 
 ## What is stale
 
-Line numbers are as of `2bdad8a`.
+Line numbers are as of `2bdad8a`, re-checked unchanged at `d56fe51` on
+2026-10-17.
 
 **`claude/CLAUDE.md:181-189`**, § "GitHub Copilot does not inherit this
 payload":
@@ -92,7 +93,18 @@ user chose on 2026-10-08", and that `chat.useClaudeMdFile` is left on.
    (`chat.userSelectedSessionType`, kept in storage, never in a settings
    file), and no setting can name Claude as the default. That was read
    from 1.142.0's bundle on 2026-10-16; the machine-config note has the
-   full selection order.
+   full selection order. As landed on 2026-10-17, that rule keeps all
+   four pins, `chat.editor.preferCopilotHarness` included, where this
+   repo's 2026-10-16 note expected that one to stop mattering once Local
+   was hidden: nobody verified that a remembered Local pick is checked
+   against Local's switch. It drops a pin only once VS Code stops
+   registering it, so "keep them, though they match the defaults" now
+   holds for three of the four. No profile, Default included, sets any
+   of the eleven Local-only settings, so the `chat.*Locations`, Claude's
+   hooks and `chat.includeReferencedInstructions` passages describe
+   settings set nowhere here. Add too that a fresh machine needs one pick
+   per profile after apply, as machine-config's rule and
+   `docs/manual-steps.md` now say.
 4. **`claude/rules/README.md`**: rewrite both descriptions to match.
 5. **`docs/evidence/user-claude-md.md`**: add a dated entry at the end of
    § "GitHub Copilot does not inherit this payload" for edit 1, as
@@ -116,16 +128,19 @@ user chose on 2026-10-08", and that `chat.useClaudeMdFile` is left on.
 - Confirm machine-config has landed its note: each
   `configs/vscode/profiles/*.settings.json` there carries
   `"chat.editor.localAgent.enabled": false`. Also read its
-  `.claude/rules/vscode-profiles.md` for the pin set it kept.
+  `.claude/rules/vscode-profiles.md` for the pin set it kept. On
+  2026-10-17 all three, and Default's live `settings.json`, carried the
+  four pins and none of the eleven.
 - Read each profile's remembered target, as it was read on 2026-10-16:
   the `chat.userSelectedSessionType` key in each
   `globalStorage/state.vscdb` under `%APPDATA%\Code\User`, opened by
   `python3.13`'s `sqlite3` with `mode=ro`. That day only Fabric
   remembered `agent-host-claude`. Say how many profiles remember Claude
-  now.
+  now. On 2026-10-17 all four did, Default, Config, Azure and Fabric,
+  read from copies of the four files.
 - Check whether brief 02 of the 2026-10-16 vscode-agent audit has run.
   If it has, its clause at `vscode-scoping.md:96` is already rewritten:
-  work around it.
+  work around it. On 2026-10-17 it had not: that run is unexecuted.
 
 ## Verification
 
