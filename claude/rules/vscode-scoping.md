@@ -57,27 +57,22 @@ can. So "this repo should be lightweight" is a profile task, and
   under `%APPDATA%\Code\User\profiles\<id>\` unless it shares Default's;
   `%APPDATA%\Code\User\settings.json` is Default's alone, and the
   Settings UI edits the current window's profile. A switch set in one
-  profile is absent from the rest, so what the Local agent reads is
-  decided per profile: on 2026-09-11 one profile carried none of the
-  `chat.*Locations` entries the others wrote out `false`, so its Local
-  agent alone read the whole `~/.claude` payload.
+  profile is absent from the rest, so a pin goes in every profile: each
+  here carries the four harness pins below, Default by hand (2026-10-17).
 - **An unlisted location keeps its default, and the default is on.** The
   `chat.*Locations` settings are location → boolean maps *over* the
   built-in locations, nine of them Claude's (1.141.0), so leaving one
-  out reads it as surely as listing it `true`: every profile here does
-  one or the other for Claude's rules, skills and agents, since the Local
-  agent reading them is wanted (2026-10-08). Turning one off means
-  writing it out `false`, since an omitted one stays live:
-  `.claude/skills` and `.claude/rules` did on 2026-09-11, while every
-  root listed beside them read `false`.
+  out reads it as surely as listing it `true`, and turning one off means
+  writing it out `false`: `.claude/skills` and `.claude/rules` stayed
+  live on 2026-09-11 while every root listed beside them read `false`.
+  Only the Local harness reads these maps (1.142.0), and since Local was
+  hidden no profile here sets one (2026-10-17): leave them so.
 - **Claude's hooks stay off.** A Claude-format hook runs under the Local
   agent only with `chat.useClaudeHooks` on, which defaults `false`, with
   no experiment and no configuration default able to move it (1.141.0).
-  Leave it unset, as every profile here does (2026-10-13). Each also
-  holds those hooks off a second way, listing Claude's three hook files
-  `false` in `chat.hookFilesLocations` or setting `chat.useHooks`
-  `false`, Default since that evening (read 2026-10-15). Reading
-  Claude's guidance is wanted, while its hook scripts were never tested
+  Leave it unset: since Local was hidden no profile here sets it,
+  `chat.useHooks` or `chat.hookFilesLocations` (2026-10-17), so the
+  default alone holds them off. Claude's hook scripts were never tested
   under another harness.
 - **These switches govern the Local harness alone, and an experiment
   can move a new chat off it.** Each says it is "only used by the Local
@@ -89,12 +84,22 @@ can. So "this repo should be lightweight" is a profile task, and
   Local when off. All three are experiment-controlled at startup, but an
   experiment changes only a default (1.141.0), so a value a profile sets
   holds against it, and a policy outranks both. So every profile here
-  sets all three at those defaults, and
+  pins four (2026-10-17): `chat.editor.localAgent.enabled` `false`,
+  hiding Local from the target picker by the user's choice of the
+  Claude target (2026-10-16), and the other two `false` and
   `chat.copilotHarnessIntroduction.mode`, which an experiment here had
-  at `afterRequest`, to `off` (2026-10-13, read 2026-10-15): keep them,
-  though they match the defaults. A Claude-target pick is unaffected;
+  at `afterRequest`, `off`, so no experiment makes Copilot the default.
+  Keep all four, the last three though they match the defaults, until
+  VS Code stops registering each. A Claude-target pick is unaffected;
   the docs mark Local and these switches for removal together, so plan
   for the Claude target.
+- **No setting picks the Claude target.** A new chat starts on the
+  target the profile last picked, kept as `chat.userSelectedSessionType`
+  in that profile's `globalStorage/state.vscdb`, machine-only and never
+  in a settings file, and no setting can name Claude as the default
+  (1.142.0, 2026-10-16). So a fresh machine needs one pick in the target
+  picker per profile after apply; on 2026-10-17 all four profiles here
+  remembered `agent-host-claude`.
 - **The Settings UI may not save.** Object-valued `chat.*` settings
   edited through the UI can leave `settings.json` untouched with no
   error — measured 2026-09-09, repeated edits against an mtime four days
@@ -107,7 +112,8 @@ can. So "this repo should be lightweight" is a profile task, and
   from `AGENTS.md` or `CLAUDE.md`. It defaults off, and Edit mode follows
   links regardless (1.139.1). A profile's `true` reaches every repo it
   opens: on 2026-09-25 one took a client repo's Copilot load from 18 KB
-  to 89 KB, found only by asking Copilot what it had loaded. Whether a
+  to 89 KB, found only by asking Copilot what it had loaded, and since
+  Local was hidden no profile here sets it (2026-10-17). Whether a
   link should load is the repo's call, so set it in that repo's
   `.vscode/settings.json`, and write a path meant to be read on demand as
   a code span, which holds under either value.

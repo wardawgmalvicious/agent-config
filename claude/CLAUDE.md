@@ -180,8 +180,7 @@ literal path; if denied, hand the user `! rm <that path>`, not a retry.
 
 ### GitHub Copilot does not inherit this payload
 
-Claude Code, VS Code's **Claude** session target (its engine, 2026-10-05)
-and its **Local** target on default locations (2026-10-08) read `~/.claude`;
+VS Code's **Claude** target, in use here (2026-10-16), reads `~/.claude`;
 the **Copilot** target does not, on any model. **On the corporate network
 Claude Code fails at sign-in**, `read ECONNRESET` at the TLS handshake or
 `401 OAuth access token has expired`, while the Claude target answers on a

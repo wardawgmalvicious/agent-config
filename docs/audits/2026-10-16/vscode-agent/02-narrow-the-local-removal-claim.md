@@ -166,9 +166,10 @@ The rest of `vscode-scoping.md`'s Local passages, as of 2026-10-16:
 
 Each describes the profiles as they stand until machine-config lands its
 2026-10-16 note. After that, each needs restating for the decision
-rather than for the docs. That restatement belongs to
-`docs/handoffs/execute/vscode-claude-target-only.md`, deferred until
-the landing.
+rather than for the docs. That restatement landed on 2026-10-17, by the
+execute brief `vscode-claude-target-only.md`, deleted with it; it left
+the clause at what was `:96` verbatim for this brief, a bullet that now
+ends on it, so find it by its quoted text.
 
 ## Verification
 

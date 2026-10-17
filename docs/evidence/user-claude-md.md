@@ -1809,6 +1809,34 @@ installed 1.141.1, 1.141.2 and 1.142.0 bundles holds the string
 Azure skills in `~/.agents/skills` until the merge listed them `false`
 (read from the bundle, not watched in a chat).
 
+#### The Claude target only, 2026-10-16
+
+**2026-10-17.** The section's first sentence drops the Local target and
+names the Claude target as the one in use. On 2026-10-16 the user chose
+VS Code's Claude session target for every chat, and stopped using the
+Local and Copilot targets. Machine-config hid Local in every named
+profile (`chat.editor.localAgent.enabled` `false`) and dropped the
+eleven settings VS Code 1.142.0's own setting text says only Local
+uses, landing on its `main` on 2026-10-17 as `d37a1a7`. Re-read this
+day: its three profile files and Default's live `settings.json` carry
+the four harness pins and none of the eleven, and all four profiles'
+`globalStorage/state.vscdb`, read from copies, remember
+`chat.userSelectedSessionType` as `agent-host-claude`.
+
+The cut text was "Claude Code, VS Code's **Claude** session target (its
+engine, 2026-10-05) and its **Local** target on default locations
+(2026-10-08) read `~/.claude`;". Its first two claims stand as this
+heading's 2026-10-13 entry measured them: the payload is Claude Code's
+own home, so the sentence no longer names it, and the Claude target
+reads it by Claude Code's engine. The Local claim still describes VS
+Code's defaults, which a colleague in a client repo may run, so it
+stays in `claude/rules/agent-instructions-scoping.md`, whose harness
+table keeps its Local row until VS Code removes Local, by the user's
+call of 2026-10-17. The file sat at its 200-line cap, and the
+work-account brief needs room in it, so the new sentence takes one line
+where the old took two; the corporate-network sentence and the pointer
+to `vscode-scoping.md` are unchanged.
+
 ### User-scope MCP servers are bound to nothing
 
 **A server bound to no workspace is still bound to a tenant.**

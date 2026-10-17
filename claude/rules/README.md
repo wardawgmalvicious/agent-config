@@ -138,10 +138,11 @@ conformance checking.
   globs that cannot match leading dots — and the three that decide
   what VS Code's Local agent reads of Claude's files: settings are per
   profile, an unlisted location defaults to on, and the Settings UI may
-  not save. Since 2026-10-13 those read as keeping the files in, as the
-  user chose on 2026-10-08, and the rule adds that Claude's hooks stay
-  off and that an experiment can start a new chat off Local, though not
-  past a value a profile sets. Also
+  not save. Since 2026-10-17 those read against the user's choice of
+  the Claude target (2026-10-16): every profile hides Local, pins three
+  more harness settings against an experiment, and sets none of Local's
+  own, Claude's hooks among them, and no setting can pick the Claude
+  target, which each profile remembers from its last pick. Also
   `chat.includeReferencedInstructions`, which makes a link in an
   instructions file an include. Triggers on `.vscode/*.json`,
   `*.code-workspace`, and any `vscode/**/*.json` — stored profile
@@ -178,19 +179,21 @@ conformance checking.
   `CLAUDE.md` anywhere on the path
   silences every `AGENTS.md`, the five things a bare `AGENTS.md` loses,
   and the `@AGENTS.md` import form that loses none, with the two
-  conditions a client Fabric repo found for it; the second kept
-  `chat.useClaudeMdFile` off until 2026-10-13, and now leaves it on, as
-  the user chose on 2026-10-08. Built from cold probes
+  conditions a client Fabric repo found for it; the second has given no
+  `chat.useClaudeMdFile` advice since 2026-10-17, as no profile here
+  runs Local. Built from cold probes
   on 2.1.282 and the memory docs, 2026-09-25. Since 2026-09-27 it also
   holds a nested file to around 60 lines and keeps one out of `.claude/`
   and out of a folder copied elsewhere, from agent-config's own
   nested-file lint: two things a cold haiku session missed without them,
   that `.claude/CLAUDE.md` loads at launch and that a skill folder's copy
-  carries its `CLAUDE.md` along. Its VS Code claims are the Local agent
-  harness's; since 2026-09-30 it also holds the docs' file table for the
+  carries its `CLAUDE.md` along. Its VS Code settings are the Local agent
+  harness's, though the Claude target is the one in use here
+  (2026-10-16); since 2026-09-30 it also holds the docs' file table for the
   Copilot and Claude session targets, which VS Code's panels matched that
-  day, and since 2026-10-13 the Local one; a Claude-target turn loaded
-  user rules on 2026-10-05. Since 2026-10-15 it also says how little a
+  day, and since 2026-10-13 the Local one, kept until VS Code removes
+  Local; a Claude-target turn loaded user rules on 2026-10-05.
+  Since 2026-10-15 it also says how little a
   folder added beside the working directory loads, from cold `--add-dir`
   probes on 2.1.300, and that on Windows a nested file loads only on a
   path whose drive letter is cased as the launch directory's, which a

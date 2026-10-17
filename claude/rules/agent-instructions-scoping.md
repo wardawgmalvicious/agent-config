@@ -174,16 +174,19 @@ conditions hold it together (a client Fabric repo, 2026-09-26):
   target in full, 64 KB there, while links in `AGENTS.md` and `CLAUDE.md`
   are not followed. A code span holds under either value.
 - **Each fact has one home.** VS Code's sources are additive, so a fact
-  kept in both `AGENTS.md` and a Copilot file is read twice. Leave
-  `chat.useClaudeMdFile` at its default, `true`: the Local agent then
-  reads the `CLAUDE.md`, Claude-only lines included, and
-  `~/.claude/CLAUDE.md`, which is wanted since 2026-10-08. Whether it
-  expands `@AGENTS.md`, reading `AGENTS.md` twice beside
+  kept in both `AGENTS.md` and a Copilot file is read twice. A Local
+  agent on its defaults also reads the `CLAUDE.md`, Claude-only lines
+  included, and `~/.claude/CLAUDE.md`, by `chat.useClaudeMdFile`.
+  Whether it expands `@AGENTS.md`, reading `AGENTS.md` twice beside
   `chat.useAgentsMdFile`, is untested; the standalone Copilot app does
   (2026-10-05).
 
-**Every VS Code claim here is the Local agent harness**, one of four a
-session's **Session Target** picks. Customizations follow the harness,
+**The Claude target is the one in use here**, by the user's call of
+2026-10-16, with Local hidden in every profile. Every VS Code setting
+named here is the Local agent harness's, which a default VS Code still
+offers, so it bears on a client repo a colleague opens there. Local is
+one of four harnesses a session's **Session Target** picks.
+Customizations follow the harness,
 and the model picker changes only who answers and who bills (VS Code
 docs, 2026-09-30). In 1.139.1 `chat.useAgentsMdFile`,
 `chat.useNestedAgentsMdFiles` (off by default) and `chat.useClaudeMdFile`
