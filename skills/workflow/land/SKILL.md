@@ -22,7 +22,7 @@ say why, and why that reasoning does not generalise.
 ## 1. Preflight
 
 ```bash
-git fetch origin                # origin/main current before anything reads it
+git fetch origin                # origin/main current before anything reads it; no origin at all: references/new-repository.md, before step 2
 git status --short              # see below — clean, or knowingly left
 git branch --show-current       # must not be main
 git log --oneline origin/main..HEAD
@@ -482,8 +482,8 @@ yours to override; make the override informed rather than refusing it.
   failed `--ff-only`. Step 9's `--force-with-lease` is on a *delete*,
   which needs no force; there it only adds a condition, and it licenses
   nothing anywhere else.
-- **Never write to `main` before step 6.** Opening a PR and pushing
-  `main` are two decisions, not one.
+- **Never write to `main` before step 6**, bar a new repo's base push,
+  asked first. Opening a PR and pushing `main` are two decisions.
 - **Never `git switch` while another session is live in the tree** —
   live by a `ListAgents` run immediately before the switch and step 1's
   scripts inside its command, never by step 1's run or by an instruction.
