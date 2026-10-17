@@ -193,3 +193,7 @@ anchor by hand and said so in its audit-window block.
 - **Needs**: the next powerbi drift audit — step 5's cold re-run, which
   must reach a verified fork with no widening by hand while Learn still
   serves `0e80b00b`.
+- **Closed**: 2026-10-16 — covered: the user dropped the fork route,
+  and the `power-bi` entry reads the Learn page alone
+  (`.claude/skills/drift-audit/references/sources/power-bi.md` § Fetch —
+  the Learn page), so step 5 has no fork search left to re-run.

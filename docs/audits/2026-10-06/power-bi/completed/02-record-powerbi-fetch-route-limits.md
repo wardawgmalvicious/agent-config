@@ -193,3 +193,8 @@ Microsoft Learn search and `WebFetch`.
   step 5: its step-4 results against the new SHA confirm or refute gap
   1, a window spanning two publishes tests gap 2, and it corrects the
   entry in place.
+- **Closed**: 2026-10-16 — covered: the user dropped the fork route, so
+  gap 1 has no route left to test, and gap 2 is step 4 of the `power-bi`
+  entry's § Fetch — the Learn page
+  (`.claude/skills/drift-audit/references/sources/power-bi.md`), where
+  the first window spanning two publishes measures it.

@@ -15,7 +15,7 @@ the `id` that `--sources` accepts.
 | `label` | Human name for the report's audit-window section: the file's H1, after the id. |
 | `repo` / `branch` / `path` | GitHub-hosted markdown. Enables the github-mcp fetch path and raw-URL fallback. `path` may be a single file or a directory. |
 | `files` | Optional; meaningful only when `path` is a directory. The filenames under it worth fetching. `path` drives the `list_commits` filter, `files` drives `get_file_contents` — which returns a directory listing, not content, if handed the directory. |
-| `url` | Non-GitHub source. WebFetch only; no commit list, so the window is resolved by the page's own dated entries. |
+| `url` | Non-GitHub source, with no commit list, so the window is resolved by the page's own dated entries. Read by WebFetch, unless the entry gives its own fetch, as `power-bi` does. |
 | `shape` | `table`, `prose`, or `changelog`. Drives extraction — see Shape contracts. |
 | `columns` | `table` shape only: which columns carry the feature name, the description, and the preview/GA status. |
 | `sections` | H2 / H3 headings used for targeted re-fetch when the WebFetch fallback summarizes the page. Ignored on the github-mcp path. |
