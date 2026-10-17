@@ -239,8 +239,11 @@ If it can't be verified, still carry it forward but mark it clearly as
 documented") so a future `drift-audit` can confirm or remove it.
 Include the date and version where relevant — these learnings age. **The
 version is the session's, and only its transcript names it**: each entry
-of `~/.claude/projects/<cwd slug>/<session id>.jsonl` (both names are in
-the scratchpad path) carries `"version":`. `claude --version` is the
+of `~/.claude/projects/<cwd slug>/<session id>.jsonl` carries
+`"version":`. Both names are in the scratchpad path, but the slug follows
+the session's directory: between `EnterWorktree` and `ExitWorktree` it is
+the worktree's, `<repo slug>--claude-worktrees-<name>`, which the
+compaction notice names (2.1.301, 2026-10-16). `claude --version` is the
 `PATH` binary, which a VS Code session (`"entrypoint":"claude-vscode"`)
 does not run, and a build can change at a resume (2026-10-01).
 
