@@ -5,12 +5,12 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 21 — applied 3 · applied with deferrals 4 · closed 14
+Briefs: 21 — applied 3 · applied with deferrals 3 · closed 15
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
 | [01 rewrite the result set caching guidance](completed/01-rewrite-result-set-caching-guidance.md) | 1 | partial rewrite of one skill section that now gives the opposite of the right advice,… | applied with deferrals 2026-10-06 · closed 2026-10-06 |
-| [02 rewrite the MLV optimal-refresh tables](02-rewrite-mlv-optimal-refresh-tables.md) | 2 | partial rewrite of two tables in one skill that now state the opposite of Learn, a… | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [02 rewrite the MLV optimal-refresh tables](completed/02-rewrite-mlv-optimal-refresh-tables.md) | 2 | partial rewrite of two tables in one skill that now state the opposite of Learn, a… | applied with deferrals 2026-10-06 · closed 2026-10-17 |
 | [03 rewrite the graph skill's GQL support and Query API](03-rewrite-graph-gql-support-and-query-api.md) | 3 | partial rewrite of a skill's language-support claims and of its REST contract for… | applied with deferrals 2026-10-06 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
 | [04 rewrite fabric-ontology for the TMDL experience](completed/04-rewrite-ontology-for-the-tmdl-experience.md) | 4 | partial rewrite of a skill whose premise changed | applied with deferrals 2026-10-06 · closed 2026-10-08 |
 | [05 correct the operations agent's status](completed/05-correct-operations-agent-status.md) | 5 | status correction (preview → GA) across one skill and its reference, plus one constraint… | applied with deferrals 2026-10-06 · closed 2026-10-08 |

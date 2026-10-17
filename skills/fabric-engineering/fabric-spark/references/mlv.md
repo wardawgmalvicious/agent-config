@@ -304,7 +304,7 @@ Auto-generated Power BI report tracking `CHECK` violations and `DROP` counts. La
 
 ## MS Learn link bundle
 
-Curated set of Microsoft Learn pages relevant to Microsoft Fabric Materialized Lake Views (MLVs) — the declarative `CREATE MATERIALIZED LAKE VIEW` Spark SQL surface (GA March 2026), the still-preview `@fmlv.materialized_lake_view` PySpark decorator, optimal refresh (skip / incremental / full) and the CDF prerequisite, lineage-driven scheduling, the `RefreshMaterializedLakeViews` REST API, the auto-generated data quality report, and the lakehouse-schemas + Runtime 1.3 prerequisites.
+Curated set of Microsoft Learn pages relevant to Microsoft Fabric Materialized Lake Views (MLVs) — the declarative `CREATE MATERIALIZED LAKE VIEW` Spark SQL surface (GA — What's New lists it September 2026; an older unsourced note here said March 2026, and no Learn page states the month, 2026-10-17), the still-preview `@fmlv.materialized_lake_view` PySpark decorator, optimal refresh (skip / incremental / full) and the CDF prerequisite, lineage-driven scheduling, the `RefreshMaterializedLakeViews` REST API, the auto-generated data quality report, and the lakehouse-schemas + Runtime 1.3 prerequisites.
 
 The 3 highest-leverage entry points (concept overview, Spark SQL reference, optimal refresh) are also linked in § Reference above; this section holds the comprehensive set.
 
@@ -312,7 +312,7 @@ The 3 highest-leverage entry points (concept overview, Spark SQL reference, opti
 
 ### Concept and when to use
 
-- [What are materialized lake views in Microsoft Fabric?](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/overview-materialized-lake-view) — start here. Concept, lifecycle (create / refresh / query / monitor), authoring options, when MLVs fit vs when to use Spark notebooks or Real-Time Intelligence instead. The South Central US region exclusion lives here.
+- [What are materialized lake views in Microsoft Fabric?](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/overview-materialized-lake-view) — start here. Concept, lifecycle (create / refresh / query / monitor), authoring options, when MLVs fit vs when to use Spark notebooks or Real-Time Intelligence instead.
 - [Get started with materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/get-started-with-materialized-lake-views) — the prerequisites: workspace on Fabric capacity, **schema-enabled lakehouse**, **Runtime 1.3**.
 - [Tutorial: Implement medallion architecture with materialized lake views](https://learn.microsoft.com/fabric/data-engineering/materialized-lake-views/tutorial) — end-to-end bronze → silver → gold walkthrough.
 - [Use materialized lake views for medallion architecture (OneLake guidance)](https://learn.microsoft.com/fabric/onelake/onelake-medallion-lakehouse-architecture#use-materialized-lake-views-for-medallion-architecture) — where MLVs fit in the broader medallion / data-mesh story.

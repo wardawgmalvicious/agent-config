@@ -212,3 +212,8 @@ either way.
   Spark SQL reference carry no GA month. This brief's `SKILL.md:3`
   target is gone: `fabric-mlv` became part of `fabric-spark`, whose
   description no longer dates GA.
+- **Closed**: 2026-10-17 — landed by /triage:
+  skills/fabric-engineering/fabric-spark/references/mlv.md § MS Learn
+  link bundle, recording What's New's September 2026 beside the
+  unsourced March 2026, as item 4 allowed, now that the line sits under
+  no description cap.
