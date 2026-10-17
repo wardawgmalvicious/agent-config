@@ -5,7 +5,7 @@
 
 Report: [00-audit-report.md](00-audit-report.md)
 
-Briefs: 13 — applied 1 · applied with deferrals 2 · closed 9 · escalated 1
+Briefs: 13 — applied 1 · applied with deferrals 1 · closed 10 · escalated 1
 
 | Brief | Actions | Kind | Status |
 | --- | --- | --- | --- |
@@ -13,7 +13,7 @@ Briefs: 13 — applied 1 · applied with deferrals 2 · closed 9 · escalated 1
 | [02 correct the instruction-load trigger set](completed/02-correct-the-instruction-load-trigger-set.md) | 2 | factual correction to committed prose in six files | applied with deferrals 2026-10-07 · closed 2026-10-07 |
 | [03 decide three user-scope configuration questions](completed/03-decide-three-user-scope-configuration-questions.md) | 3, 5 and 17 | decision on three configuration questions, then the edits each answer implies | escalated 2026-10-07 · closed 2026-10-07 |
 | [04 re-measure the skill `model:` pin](completed/04-re-measure-the-skill-model-pin.md) | 4 | measurement in a cold probe session, then a correction to one rules bullet | escalated 2026-10-07 · closed 2026-10-07 |
-| [05 update the MCP README for harness changes](05-update-the-mcp-readme-for-harness-changes.md) | 6 | factual correction to `claude/mcp/README.md` from documented changes in D-1 and D-2 | applied with deferrals 2026-10-07 · [queue](../../../handoffs/execute/README.md#audit-briefs-are-a-second-queue) |
+| [05 update the MCP README for harness changes](completed/05-update-the-mcp-readme-for-harness-changes.md) | 6 | factual correction to `claude/mcp/README.md` from documented changes in D-1 and D-2 | applied with deferrals 2026-10-07 · closed 2026-10-17 |
 | [06 add two documented harness facts to user rules](completed/06-add-two-documented-harness-facts-to-user-rules.md) | 7 and 9 | factual additions to two user-scope rules from documented changes | applied with deferrals 2026-10-07 · closed 2026-10-07 |
 | [07 decide the security reviewer's CLAUDE.md field](completed/07-decide-the-security-reviewer-claude-md-field.md) | 8 | decision on one subagent field in D-1 | escalated 2026-10-07 · closed 2026-10-07 |
 | [08 re-measure the spawn cost and decide the read-block note](completed/08-re-measure-spawn-cost-and-decide-read-block-note.md) | 10 | measurement of one timing figure in D-1 and a decision on one line in D-2, both landing… | escalated 2026-10-07 · closed 2026-10-07 |

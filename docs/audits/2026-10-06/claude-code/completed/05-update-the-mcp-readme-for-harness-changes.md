@@ -377,3 +377,7 @@ re-read them on the page before quoting them in the README.
   entry above's README edit is done: `link-claude.ps1` ran on `main` at
   `58aadb0`, and the deployed README diffs clean against the repo
   (2026-10-07).
+- **Closed**: 2026-10-17 — carried by /triage to
+  docs/handoffs/execute/fabric-iq-execute-query.md: a tenant probe of
+  `fabric-iq`'s `ExecuteQuery`, then, on the user's yes,
+  `powerbi-remote-mcp` out of the project template.
