@@ -11,7 +11,9 @@ start, before/after tool use, on stop, etc.).
   `coding-*.md` file is loaded into context). Appends the event as a
   pure-JSONL line (a `ts` timestamp folded into the event JSON) to
   `~/.claude/logs/instructions-loaded.log` for later inspection.
-  Pure observability; does not block.
+  Pure observability; does not block, and is wired `async` (2026-10-17).
+  The hooks reference already says this event "runs asynchronously", so
+  the flag may change nothing; neither way was timed.
 - [log-skill-invocations.sh](log-skill-invocations.sh) — fires on
   `PostToolUse` with matcher `Skill` (every skill invocation, whether
   the model triggered it or the user typed `/<name>`; the
@@ -20,8 +22,12 @@ start, before/after tool use, on stop, etc.).
   `args` only — the full payload carries the skill's entire content
   in `tool_response` — and appends pure JSONL to
   `~/.claude/logs/skills-invoked.log`. Pure observability; does not
-  block. Requires [jq](https://jqlang.org) (without it, a stub line
-  is logged and the event details are dropped).
+  block, and is wired `async` (2026-10-17), so the Skill call no longer
+  waits on a Git Bash spawn. Under `claude -p` an async hook still
+  running at teardown is killed, so a probe's last skill record can go
+  missing: the log is a floor (`scripts/skill-telemetry.py` says so),
+  never a witness. Requires [jq](https://jqlang.org) (without it, a stub
+  line is logged and the event details are dropped).
 - [security-reviewer-memory-scope.sh](security-reviewer-memory-scope.sh)
   — fires on `PreToolUse` with matcher `Edit|Write`. If the current
   agent is `security-reviewer`, enforces that the target `file_path`

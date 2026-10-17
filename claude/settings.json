@@ -9,7 +9,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/log-instructions-loaded.sh"
+            "command": "bash $HOME/.claude/hooks/log-instructions-loaded.sh",
+            "async": true
           }
         ]
       }
@@ -40,7 +41,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash $HOME/.claude/hooks/log-skill-invocations.sh"
+            "command": "bash $HOME/.claude/hooks/log-skill-invocations.sh",
+            "async": true
           }
         ]
       },
