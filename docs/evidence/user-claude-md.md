@@ -948,6 +948,38 @@ command, personal repo path and all:
   the script `handoff-status.py`, which the hand check above flags,
   though a script's name is not a repo's.
 
+**2026-10-16.** The rule is scoped by whose repo it is: an organization's
+names belong in its own repos and stay out of everyone else's. A session
+setting up an org-internal repo under a client root needed the user's
+work GitHub login in CODEOWNERS, a login that carries the organization's
+short name, and team handles would have carried it too. It read "in any
+repo" as forbidding both and asked first. The user answered that the
+rule was only ever meant for personal repos, that the organization's
+names are welcome in its internal repos, and that a new handle could be
+suggested where one was needed (relayed by that session's inbox note,
+read 2026-10-17).
+
+The tooling already drew that line. The denylist's header describes
+`exempt:` as naming the roots where a client's own repo carries its own
+name, mirroring the `includeIf` roots, and `identity-guard.sh`'s comment
+says the same; the guard let the login into that repo's CODEOWNERS
+because its root is exempt. So the 2026-09-30 entry's "keeping an
+organization's names out of every repo" was already narrower in
+practice, as its own next clause says.
+
+- **"Its own repos" are the roots the `exempt:` lines name.** The names
+  stay out of personal repos and out of other clients' repos.
+- **A profile path stays `~` or `<username>` in every repo.** That
+  clause is portability, not privacy, so it kept its scope.
+- **The 2026-09-30 direction is unchanged**: no personal repo's name in a
+  repo under a client root. The sentence's "`identity-guard` checks only
+  the other way" became "unguarded", and "(extend
+  `~/.config/identity-denylist.txt`)" folded into naming the file, to
+  keep `claude/CLAUDE.md` at its cap.
+- `commit`'s identity bullet takes the same scope, and `land`'s reason to
+  pass `--subject` to a merge commit no longer rests on the
+  organization's name alone.
+
 ### Branch naming
 
 `<type>/<kebab-slug>`, in every repo. `<type>` is the conventional-commit

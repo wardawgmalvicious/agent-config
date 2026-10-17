@@ -121,13 +121,13 @@ the Bash tool's `timeout`, not coreutils', and pin a native caller's token:
 export GH_TOKEN="$(command gh auth token --user "$(git config user.name)")"
 ```
 
-**An organization's account and tenant names and internal hostnames never go
-in a file or commit message, in any repo**; write `~` or `<username>` for a
-profile path. Pushes are permanent. `identity-guard` sees only listed names
-(extend `~/.config/identity-denylist.txt`) and only Claude Code's commits.
-**A personal repo's name goes in no repo under a client root**, in a file,
-commit, PR or branch name (2026-09-30): what is there may stay, and a
-command naming one stays local. `identity-guard` checks only the other way.
+**An organization's account and tenant names and internal hostnames go in no
+file or commit message outside its own repos**, the roots `exempt:` lines
+name in `~/.config/identity-denylist.txt` (2026-10-16); a profile path is
+`~` or `<username>` in all. Pushes are permanent; `identity-guard` sees only
+listed names in Claude Code's commits. **A personal repo's name goes in no
+repo under a client root**, in a file, commit, PR or branch name, unguarded
+(2026-09-30): what is there may stay, and a command naming one stays local.
 
 ### Branch naming
 

@@ -304,11 +304,12 @@ agent-config's own settings hold, gives the classic title,
 `Merge pull request #<n> from <owner>/<branch>`. GitHub's REST docs
 abbreviate it as "from branch-name"; real titles carry the head repo's
 owner, as microsoft/vscode's do (read 2026-09-29). On an organization's
-repo that is the organization's account name, in `main` for good,
-written by the server where no local check reads it: `identity-guard`
-sees only Claude Code's commits. Relayed from a client repo, 2026-09-27:
-its two earlier merges through this route named the org, and the two
-landed that day with `--subject` did not. So pass it:
+repo that is the organization's account name, which may stand in its own
+repo's `main` (2026-10-16), but the server writes it where no local check
+reads it: `identity-guard` sees only Claude Code's commits. Relayed from
+a client repo, 2026-09-27: its two earlier merges through this route
+named the org, and the two landed that day with `--subject` did not.
+Pass it anyway, by the rule below:
 
 - `gh`: `--subject "Merge pull request #<n> from <branch>"` and
   `--body "<PR title>"`

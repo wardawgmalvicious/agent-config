@@ -127,9 +127,11 @@ question.
   it uncommitted and flag it rather than sweeping it in.
 - **Scan for identity strings — in the diff *and* in the message you
   are about to write.** An organization's account names (`AzureAD\…`,
-  Entra accounts), tenant names, internal hostnames, and hardcoded
-  `C:\Users\<name>` profile paths get genericized before the commit,
-  whatever the repo's visibility. gitleaks does not cover this: it
+  Entra accounts), tenant names and internal hostnames get genericized
+  before the commit, whatever the repo's visibility, in every repo but
+  that organization's own: the client roots the denylist below exempts
+  (2026-10-16). Hardcoded `C:\Users\<name>` profile paths get
+  genericized in every repo. gitleaks does not cover this: it
   matches secrets, not identities, and the pre-commit hook only sees
   *staged content*, so the message is unguarded entirely. The trap is
   that a commit documenting machine- or tenant-specific behaviour is
