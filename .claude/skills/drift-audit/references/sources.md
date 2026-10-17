@@ -51,7 +51,7 @@ What "an entry" means for the diff, per shape.
   removal, which usually means preview→GA promotion (row moved between
   tables, status column cleared) rather than deletion. **That reading does
   not hold on a single-month page** — where the whole table is replaced
-  each month, as on `powerbi`, a removal means last month rolled off and
+  each month, as on `power-bi`, a removal means last month rolled off and
   carries no GA signal at all. Check the source's entry before reading a
   removal as a promotion. Capture the feature,
   description, and status cells plus any `drill.host` link in the row.

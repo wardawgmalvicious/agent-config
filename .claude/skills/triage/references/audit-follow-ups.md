@@ -66,7 +66,7 @@ it lacked), a CLI on `PATH` (`command -v <cli>`), the audit it waits for
 (`ls -d docs/audits/*/<source-id>`), a brief it depends on (the view).
 On 2026-10-07 `pbir` 0.9.29's schema listed matrix and donut properties
 that 0.9.7's lacked, which one follow-up named as its way past Desktop,
-and the `powerbi` audit another awaited had run on 2026-10-06 and closed
+and the `power-bi` audit another awaited had run on 2026-10-06 and closed
 nothing.
 
 - **Re-measure a dependency first.** A follow-up that waits inside
@@ -167,7 +167,7 @@ once it is spent: every brief finished, and a later run of its source
 on disk. `uv run scripts/audit-status.py --retirable` lists each such
 run, and `handoff-status.py` prints the same list. The newest run of a
 source is never listed, finished or not: the next audit of that source
-starts from it, as the 2026-10-06 `powerbi` run took its floor from the
+starts from it, as the 2026-10-06 `power-bi` run took its floor from the
 2026-09-07 directory. Decided by the user on 2026-10-08, ending the rule
 that kept finished runs whole; git history is a retired run's archive.
 

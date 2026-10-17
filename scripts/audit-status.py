@@ -68,7 +68,7 @@ lists each beside the run that supersedes it, /drift-handoff and /triage
 offer the user a `git rm -r` of it, and git history is its archive from
 then on. The newest run of a source is never listed, finished or not,
 because the next audit of that source starts from it: the 2026-10-06
-powerbi run took its floor from the 2026-09-07 directory. A run with a
+power-bi run took its floor from the 2026-09-07 directory. A run with a
 brief never run, or one too malformed to parse, is not finished. Added
 2026-10-08, when the user stopped keeping finished runs whole.
 

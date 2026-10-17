@@ -128,7 +128,7 @@ closing commit, re-pointing live links to the commit that last held
 them (`.claude/skills/triage/references/audit-follow-ups.md` § 8).
 
 **The newest run of each source stays**, finished or not. The next audit
-of that source starts from it, as the 2026-10-06 `powerbi` run took its
+of that source starts from it, as the 2026-10-06 `power-bi` run took its
 floor from the 2026-09-07 directory, and its no-action calls are the
 freshest record of what was decided.
 

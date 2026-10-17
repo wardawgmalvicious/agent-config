@@ -465,7 +465,7 @@ Authoring MCP Server*. Its npm package is still
 connection targets above are read from
 [`microsoft/powerbi-modeling-mcp`](https://github.com/microsoft/powerbi-modeling-mcp)'s
 README, **not** from Learn — the Learn overview links out to it rather
-than restating it, so a `drift-audit` run over the `powerbi` What's New
+than restating it, so a `drift-audit` run over the `power-bi` What's New
 source will not see a flag rename. Verified 2026-09-03 against that
 README and the Learn [MCP servers
 overview](https://learn.microsoft.com/power-bi/developer/mcp/mcp-servers-overview),

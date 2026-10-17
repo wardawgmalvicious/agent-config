@@ -1,4 +1,9 @@
-# `powerbi` — Power BI
+# `power-bi` — Power BI
+
+Renamed from `powerbi` on 2026-10-16 to match the `power-bi` skill
+group; the 2026-10-06 run's directory moved with it. A report, brief or
+`**Needs**:` line written before then says `powerbi` and means this
+source.
 
 - `repo`: **resolved per run** — see *Fetch strategy* below. The former
   value, `MicrosoftDocs/powerbi-docs`, is dead; do not fetch from it.

@@ -67,7 +67,7 @@ Argument forms, all optional:
   replaces, so it must keep working.
 - **ISO date** (`YYYY-MM-DD`) — that run's directory. If it holds more than one
   source directory, apply the multi-source rule below.
-- **Source id** (`fabric`, `powerbi`, `vscode-agent`, `claude-code`, …) — that
+- **Source id** (`fabric`, `power-bi`, `vscode-agent`, `claude-code`, …) — that
   source under the most recent audit date that has one.
 - **Trailing brief numbers** — one integer, or a comma-separated list
   (`1,2,3,5`), restricts the run to those briefs, still walked in numbered
