@@ -43,10 +43,18 @@ A passed reference applies to every source, intentionally: the audit window is "
 
 **Owed re-checks.** Once every floor is resolved, find the follow-ups this run owes. A brief whose open work only a drift audit can do names that audit on its log's `**Needs**:` line (`/drift-update` § 4.6), and `/triage` leaves such a line for the audit to settle: on 2026-10-07 a `power-bi` follow-up still waited on the audit that had run the day before. `handoff-status.py` lists these lines too, but it is a repo script, which § 3's Bash allowance does not reach:
 
-- **List the open lines.** `Grep` pattern `^- \*\*Needs\*\*:`, `path` `docs/audits`, `glob` `!**/completed/**`, output mode `content` with line numbers. The negated glob drops every brief under a `completed/` folder (2026-10-14, CLI 2.1.293), which is every finished one: `scripts/audit-status.py` files a brief there once its log leaves nothing open, and the `lint-audit-index` hook fails a commit with one on the wrong side. A brief never run has no such line. In each file only the hit with the highest line number counts, since a later session appends a fresh line rather than rewriting one.
+- **List the open lines.** `Grep` pattern `^- \*\*Needs\*\*:`, `path` `docs/audits`, `glob` `!**/completed/**`, output mode `content` with line numbers. The negated glob drops every brief under a `completed/` folder (2026-10-14, CLI 2.1.293), which is every finished one: `scripts/audit-status.py` files a brief there once its log leaves nothing open, and the `lint-audit-index` hook fails a commit with one on the wrong side. A brief never run has no such line, so the next step finds those. In each file only the hit with the highest line number counts, since a later session appends a fresh line rather than rewriting one.
 - **Keep the ones owed here**, from any run's directory, `prompt-audit/` included: a line whose words before its first ` — ` name the next drift audit of a selected source, by id or label, or of any source, or the first one after a condition, such as Learn republishing, which this window meets or does not. `/drift-update` writes `the next <source-id> drift audit`; older lines vary, as "the next `fabric` audit" and "the next `/drift-audit --sources fabric-iq-ontology` run" do.
 - **Read what each owes**: its line whole, from its log, and the step of its brief that the line names, a stamp brief's `### Carried` section included, each by `Read`'s `offset` and `limit`, never the whole brief.
 - **Do each where its work falls**, a check of this skill's own behaviour in the phase it names, an upstream question in this window's diff, and report every one under § 7's `## Owed re-checks`. One this window cannot settle is carried into this run's own stamp brief, closing the old log, so a wait lives only in the newest run of its source (`/drift-handoff` § 4).
+
+**Briefs never run gate their source.** The steps above cannot see them, and a newer run can brief the same skill lines as one, or void it, a preview it relabels gone GA, with neither run saying so: `/drift-update`'s staleness gate checks the skill side, not upstream. So once the owed lines are listed, per selected source, take its newest run, the directory the no-argument floor reads, whatever reference was passed:
+
+- **List its briefs never run.** `Glob` pattern `*.md`, `path` that directory, less `README.md` and the `00*` reports, then `Grep` pattern `^## Execution log` over the same `path`, output mode `files_with_matches`: a brief in the first list and not the second is unrun. `/drift-update` stamps every brief it reaches, an escalated decision too, so an unrun brief is one no pass reached.
+- **Ask before auditing that source**, naming each unrun brief, whether to run `/drift-update` on its directory first or proceed. Audit no source the user has not answered for; a source with none goes on.
+- **On proceed, list them** under § 7's `## Unexecuted at the floor`, so the old brief and any newer brief on its lines are seen together.
+
+Decided 2026-10-17, over absorbing such briefs into the new run, which costs part of every audit (`docs/handoffs/execute/README.md` § "Audit briefs are a second queue").
 
 ## 3. Read-only scope
 
@@ -219,6 +227,10 @@ Emit one markdown report to the conversation, sections in this exact order. If a
   - Owes: <what the line, and the step it names, ask of this run>
   - Outcome: <passed | failed | answered | not in this window> — <what this run saw, and the action carrying any work | what the window lacked>
   - Leaves open: <what else its line names, such as a fresh session | nothing>
+
+## Unexecuted at the floor
+
+- **`<run-date>/<id>/<NN>-<slug>.md`** — never run; the user said to proceed
 
 ## Recommended actions
 

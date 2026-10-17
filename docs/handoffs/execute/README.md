@@ -324,6 +324,17 @@ every wait it carries, since the stamp is already written and run each
 time. The six were left for the next audit of each source to carry,
 rather than swept into runs already executed.
 
+**A brief never run gates the next audit of its source** (decided
+2026-10-17). The owed lines are all an audit looks for, and such a
+brief has none, so a newer run could brief the same skill lines or void
+it, a preview it relabels gone GA, and neither run would say so, while
+`/drift-update`'s staleness gate checks only the skill side.
+`/drift-audit` asks first, to run `/drift-update` on the old directory
+or proceed, and on proceed lists the brief in its report. Absorbing such
+briefs into the newer run was the alternative, closing each it
+superseded, at part of every audit's cost and with a Closed line on a
+brief no pass had run.
+
 ## Filenames are stable
 
 `/drift-handoff` numbers its output `01-`, `02-`, … and `/drift-update`

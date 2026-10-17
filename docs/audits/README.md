@@ -151,5 +151,7 @@ git show <that-sha>^:docs/audits/<date>/<source-id>/00-audit-report.md
 settle is carried into its own stamp brief, and the old log closes as
 carried (`.claude/skills/drift-handoff/SKILL.md` § 4). The carry copies
 the constraint the open work owes, since retiring re-points only links
-outside `docs/audits/`. Decided 2026-10-17
+outside `docs/audits/`. And `/drift-audit` asks before auditing past a
+brief its source's newest run never ran, so a newer run does not brief
+over work nobody has read. Decided 2026-10-17
 ([why](../handoffs/execute/README.md#audit-briefs-are-a-second-queue)).
