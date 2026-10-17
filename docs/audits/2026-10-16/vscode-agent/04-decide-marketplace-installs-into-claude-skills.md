@@ -20,8 +20,8 @@ directory, and `~/.claude/skills/` is one of the personal skill
 locations VS Code lists. A skill installed there is a real directory
 beside this payload's junctions: `link-claude.ps1`'s prune skips it, and
 the post-deploy check in root `CLAUDE.md` does not look for it. Nothing
-is known to be installed, and the feature is off until a setting turns
-it on.
+is known to be installed. The feature is off by default, though an
+experiment can turn it on (see "Its default").
 
 ## Evidence
 
@@ -53,8 +53,15 @@ The same page's locations table, at head:
 **Its default.** Step 1 says to turn the setting on.
 `docs/agents/reference/ai-settings.md` at head has no row for
 `chat.customizations.marketplace.enabled`, so the docs state no default
-outright. Whether any VS Code profile on this machine sets it was not
-checked.
+outright. A read on 2026-10-16, after the audit, settled two points:
+
+- VS Code 1.142.0's `workbench.desktop.main.js` registers the setting
+  with `default: false` and `experiment: {mode: "auto"}`. An experiment
+  assignment can therefore turn it on without any profile setting it.
+  `vscode-scoping.md` records the same for the harness switches.
+- No profile on this machine sets it. Neither Default's `settings.json`
+  nor the three named profiles' files carry a
+  `chat.customizations.marketplace` key.
 
 **Why an install would go unseen here.**
 
@@ -79,17 +86,22 @@ Put to the user:
 
 - **A — no edit now**, the audit's proposal. Revisit when a VS Code
   profile here turns `chat.customizations.marketplace.enabled` on,
-  starting from this brief's evidence.
+  starting from this brief's evidence. An experiment can turn it on
+  without any profile doing so, and nothing here would notice.
 - **B — record it now**: name a Marketplace install among what the
   prune leaves and the deploy check misses. `.claude/rules/deploy-scripts.md`
   already lists what the prune leaves. The audit chose no home and
   wrote no text, so on B scope the edit as a task of its own.
+- **C — pin it `false`** in every profile, the way the profiles already
+  pin the harness switches against experiments. That edit belongs to
+  machine-config, which provisions the profiles.
 
 ## What to change
 
 On A, nothing outside this directory: record the answer in this brief's
 execution log. On B, nothing from this brief directly; the scoped task
-carries the edit and its verification.
+carries the edit and its verification. On C, write a note to
+`~/handoff-inbox/machine-config/` and change nothing in this repo.
 
 ## Verification
 
@@ -98,9 +110,10 @@ On A:
 1. `git status --short` — nothing changed outside
    `docs/audits/2026-10-16/vscode-agent/`.
 2. Optional, if A's premise is in doubt: read, without editing, whether
-   any VS Code profile sets the key. Each profile keeps its own
-   `settings.json`, Default's at `%APPDATA%\Code\User\settings.json` and
-   the rest under `%APPDATA%\Code\User\profiles\<id>\`
+   any VS Code profile sets the key. None did on 2026-10-16. Each
+   profile keeps its own `settings.json`, Default's at
+   `%APPDATA%\Code\User\settings.json` and the rest under
+   `%APPDATA%\Code\User\profiles\<id>\`
    (`~/.claude/rules/vscode-scoping.md`).
 
 Either way:
